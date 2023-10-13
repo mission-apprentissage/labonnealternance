@@ -1,3 +1,4 @@
+import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
 
 import { publicConfig } from "../config.public"
@@ -57,7 +58,6 @@ export const updateEntreprise = async (userId: string, establishment_id, user) =
 /**
  * Auth API
  */
-export const validateToken = async (token) => await API.post(`/login/verification`, token)
 export const sendMagiclink = async (email) => await API.post(`/login/magiclink`, email)
 export const sendValidationLink = async (email) => await API.post(`/login/confirmation-email`, email)
 
@@ -82,7 +82,8 @@ export const getEntrepriseOpco = async (siret) => {
     return data
   } catch (error) {
     const payload: { data: object | undefined; error: string; statusCode: number; message: string } = error.response.data
-    console.log(payload) // TODO sentry
+    captureException(error)
+    console.log(payload)
     return null
   }
 }

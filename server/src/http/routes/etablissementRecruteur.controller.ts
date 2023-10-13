@@ -274,7 +274,7 @@ export default (server: Server) => {
     "/etablissement/validation",
     {
       schema: zRoutes.post["/etablissement/validation"],
-      preHandler: [server.auth(zRoutes.post["/etablissement/validation"].securityScheme)],
+      onRequest: [server.auth(zRoutes.post["/etablissement/validation"].securityScheme)],
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"])

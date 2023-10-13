@@ -154,7 +154,9 @@ export default (server: Server) => {
       if (!user) return res.status(400).send({})
 
       if (user.type === ENTREPRISE) {
-        const response = await Recruiter.findOne({ establishment_id: user.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
+        const response = await Recruiter.findOne({ establishment_id: user.establishment_id as string })
+          .select({ jobs: 1, _id: 0 })
+          .lean()
         if (!response) {
           throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
         }

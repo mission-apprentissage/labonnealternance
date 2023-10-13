@@ -7,36 +7,9 @@ import { IRoutesDef } from "./common.routes"
 
 export const zEtablissementRoutes = {
   get: {
-    // TODO NOT USED TO DELETE
-    // "/admin/etablissements": {
-    //   querystring: z
-    //     .object({
-    //       query: z.string().optional(),
-    //       limit: z.coerce.number().optional().default(50),
-    //       page: z.coerce.number().optional().default(1),
-    //     })
-    //     .strict(),
-    //   response: {
-    //     "2xx": z
-    //       .object({
-    //         etablissements: z.array(ZEtablissement),
-    //         pagination: z
-    //           .object({
-    //             page: z.number().optional(),
-    //             resultats_par_page: z.number(),
-    //             nombre_de_page: z.number().optional(),
-    //             total: z.number().optional(),
-    //           })
-    //           .strict(),
-    //       })
-    //       .strict(),
-    //   },
-    //   securityScheme: {
-    //     auth: "jwt-rdv-admin",
-    //     role: "administrator",
-    //   },
-    // },
     "/admin/etablissements/siret-formateur/:siret": {
+      method: "get",
+      path: "/admin/etablissements/siret-formateur/:siret",
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         // TODO ANY TO BE FIXED
@@ -49,6 +22,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/admin/etablissements/:id": {
+      method: "get",
+      path: "/admin/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       response: {
         // TODO ANY TO BE FIXED
@@ -61,6 +36,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id": {
+      method: "get",
+      path: "/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement.pick({
@@ -85,49 +62,10 @@ export const zEtablissementRoutes = {
     },
   },
   post: {
-    // TODO NOT USED TO DELETE
-    // "/admin/etablissements": {
-    //   body: z
-    //     .object({
-    //       etablissements: z.array(
-    //         ZEtablissement.pick({
-    //           formateur_siret: true,
-    //           gestionnaire_siret: true,
-    //           raison_sociale: true,
-    //           adresse: true,
-    //           formateur_address: true,
-    //           formateur_zip_code: true,
-    //           formateur_city: true,
-    //           gestionnaire_email: true,
-    //           premium_invitation_date: true,
-    //           premium_activation_date: true,
-    //           premium_refusal_date: true,
-    //           premium_affelnet_invitation_date: true,
-    //           premium_affelnet_activation_date: true,
-    //           premium_affelnet_refusal_date: true,
-    //           optout_invitation_date: true,
-    //           optout_activation_scheduled_date: true,
-    //           optout_activation_date: true,
-    //           optout_refusal_date: true,
-    //           mailing: true,
-    //           last_catalogue_sync_date: true,
-    //           created_at: true,
-    //           affelnet_perimetre: true,
-    //           to_etablissement_emails: true,
-    //         })
-    //       ),
-    //     })
-    //     .strict(),
-    //   response: {
-    //     "2xx": ZEtablissement,
-    //   },
-    //   securityScheme: {
-    //     auth: "jwt-rdv-admin",
-    //     role: "administrator",
-    //   },
-    // },
     "/etablissements/:id/premium/affelnet/accept": {
       // TODO_SECURITY_FIX ajouter un jwt
+      method: "post",
+      path: "/etablissements/:id/premium/affelnet/accept",
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -138,6 +76,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/premium/accept": {
+      method: "post",
+      path: "/etablissements/:id/premium/accept",
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -149,6 +89,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/premium/affelnet/refuse": {
+      method: "post",
+      path: "/etablissements/:id/premium/affelnet/refuse",
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -160,6 +102,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/premium/refuse": {
+      method: "post",
+      path: "/etablissements/:id/premium/refuse",
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -171,6 +115,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/opt-out/unsubscribe": {
+      method: "post",
+      path: "/etablissements/:id/opt-out/unsubscribe",
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       body: z.union([z.object({ opt_out_question: z.string() }).strict(), z.object({}).strict()]),
@@ -185,6 +131,8 @@ export const zEtablissementRoutes = {
   },
   patch: {
     "/admin/etablissements/:id": {
+      method: "patch",
+      path: "/admin/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       body: ZEtablissement.pick({
         gestionnaire_email: true,
@@ -198,6 +146,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/appointments/:appointmentId": {
+      method: "patch",
+      path: "/etablissements/:id/appointments/:appointmentId",
       // TODO_SECURITY_FIX ajouter un jwt
       body: z.object({ has_been_read: z.boolean() }).strict(),
       params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),

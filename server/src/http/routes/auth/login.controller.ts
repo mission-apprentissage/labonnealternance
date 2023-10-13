@@ -117,7 +117,7 @@ export default (server: Server) => {
     "/login/verification",
     {
       schema: zRoutes.post["/login/verification"],
-      preHandler: [server.auth(zRoutes.post["/login/verification"].securityScheme)],
+      onRequest: [server.auth(zRoutes.post["/login/verification"].securityScheme)],
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/login/verification"])

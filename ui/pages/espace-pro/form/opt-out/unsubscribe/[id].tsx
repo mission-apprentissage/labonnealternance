@@ -2,12 +2,28 @@ import { Box, Button, Container, Flex, Heading, Radio, RadioGroup, Stack, Text, 
 import Head from "next/head"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
+import { IEtablissement } from "shared"
 
 import { apiGet, apiPost } from "@/utils/api.utils"
 
 import { Breadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
 import Layout from "../../../../../components/espace_pro/common/components/Layout"
 import { SuccessCircle } from "../../../../../theme/components/icons"
+
+type IEtablissementPartial = Pick<
+  IEtablissement,
+  | "_id"
+  | "optout_refusal_date"
+  | "raison_sociale"
+  | "formateur_siret"
+  | "formateur_address"
+  | "formateur_zip_code"
+  | "formateur_city"
+  | "premium_affelnet_activation_date"
+  | "gestionnaire_siret"
+  | "premium_activation_date"
+  | "premium_refusal_date"
+>
 
 /**
  * @description OptOutUnsubscribe component.
@@ -24,7 +40,7 @@ export default function OptOutUnsubscribe() {
   const [textarea, setTextarea] = useState("")
   const [hasBeenUnsubscribed, setHasBeenUnsubscribed] = useState(false)
   const [isQuestionSent, setIsQuestionSent] = useState(false)
-  const [etablissement, setEtablissement] = useState()
+  const [etablissement, setEtablissement] = useState<undefined | IEtablissementPartial>()
   const [radioValue, setRadioValue] = useState(radioOptions.UNSUBSCRIBE_NO_DETAILS)
 
   const title = "Désinscription à l'opt out"
@@ -128,35 +144,30 @@ export default function OptOutUnsubscribe() {
                         <Text>
                           Raison sociale :{" "}
                           <Text as="span" fontWeight="700">
-                            {/* @ts-expect-error: TODO */}
                             {etablissement.raison_sociale}
                           </Text>
                         </Text>
                         <Text>
                           SIRET :{" "}
                           <Text as="span" fontWeight="700">
-                            {/* @ts-expect-error: TODO */}
                             {etablissement.formateur_siret}
                           </Text>
                         </Text>
                         <Text>
                           Adresse :{" "}
                           <Text as="span" fontWeight="700">
-                            {/* @ts-expect-error: TODO */}
                             {etablissement.formateur_address}
                           </Text>
                         </Text>
                         <Text>
                           Code postal :{" "}
                           <Text as="span" fontWeight="700">
-                            {/* @ts-expect-error: TODO */}
                             {etablissement.formateur_zip_code}
                           </Text>
                         </Text>
                         <Text>
                           Ville :{" "}
                           <Text as="span" fontWeight="700">
-                            {/* @ts-expect-error: TODO */}
                             {etablissement.formateur_city}
                           </Text>
                         </Text>

@@ -4,7 +4,7 @@ import z, { ZodType } from "zod"
 import { zApplicationRoutes } from "./application.routes"
 import { zAppointmentsRoute } from "./appointments.routes"
 import { zCampaignWebhookRoutes } from "./campaignWebhook.routes"
-import { IRouteSchema } from "./common.routes"
+import { IRouteSchema, IRouteSchemaWrite } from "./common.routes"
 import { zCoreRoutes } from "./core.routes"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAppointment.routes"
 import { zEmailsRoutes } from "./emails.routes"
@@ -94,12 +94,26 @@ const zRoutesPatch = {
   ...zEligibleTrainingsForAppointmentRoutes.patch,
 } as const
 
+export type IGetRoutes = typeof zRoutesGet
+export type IPostRoutes = typeof zRoutesPost
+export type IPatchRoutes = typeof zRoutesPatch
+export type IPutRoutes = typeof zRoutesPut
+export type IDeleteRoutes = typeof zRoutesDelete
+
 export type IRoutes = {
-  get: typeof zRoutesGet
-  post: typeof zRoutesPost
-  put: typeof zRoutesPut
-  delete: typeof zRoutesDelete
-  patch: typeof zRoutesPatch
+  get: IGetRoutes
+  post: IPostRoutes
+  put: IPutRoutes
+  delete: IDeleteRoutes
+  patch: IPatchRoutes
+}
+
+export type IRoutesPath = {
+  get: keyof IRoutes["get"]
+  post: keyof IRoutes["post"]
+  put: keyof IRoutes["put"]
+  delete: keyof IRoutes["delete"]
+  patch: keyof IRoutes["patch"]
 }
 
 export const zRoutes: IRoutes = {
@@ -110,33 +124,25 @@ export const zRoutes: IRoutes = {
   patch: zRoutesPatch,
 } as const
 
-export type IGetRoutes = IRoutes["get"]
-export type IPostRoutes = IRoutes["post"]
-export type IPatchRoutes = IRoutes["patch"]
-export type IPutRoutes = IRoutes["put"]
-export type IDeleteRoutes = IRoutes["delete"]
-
 export type IResponse<S extends IRouteSchema> = S["response"][`200`] extends ZodType
   ? Jsonify<z.output<S["response"][`200`]>>
   : S["response"][`2${string}`] extends ZodType
   ? Jsonify<z.output<S["response"][`2${string}`]>>
   : never
 
-export type IBody<S extends IRouteSchema> = S["body"] extends ZodType ? z.input<S["body"]> : never
+export type IBody<S extends IRouteSchemaWrite> = S["body"] extends ZodType ? z.input<S["body"]> : never
 
 export type IQuery<S extends IRouteSchema> = S["querystring"] extends ZodType ? z.input<S["querystring"]> : never
 
 export type IParam<S extends IRouteSchema> = S["params"] extends ZodType ? z.input<S["params"]> : never
 
-type IHeadersAuth<S extends IRouteSchema> = S["securityScheme"]["auth"] extends "jwt-bearer" ? { authorization: `Bearer ${string}` } : never
-
-export type IHeaders<S extends IRouteSchema> = Omit<S["headers"] extends ZodType ? z.input<S["headers"]> & IHeadersAuth<S> : IHeadersAuth<S>, "referrer">
+export type IHeaders<S extends IRouteSchema> = Omit<S["headers"] extends ZodType ? z.input<S["headers"]> : never, "referrer">
 
 type IRequestRaw<S extends IRouteSchema> = {
   params: IParam<S>
   querystring: IQuery<S>
   headers: IHeaders<S>
-  body: IBody<S>
+  body: S extends IRouteSchemaWrite ? IBody<S> : never
 }
 
 export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never | EmptyObject>

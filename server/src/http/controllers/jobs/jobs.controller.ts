@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import { ICredential, IJob, IUserRecruteur, zRoutes } from "shared"
+import { ICredential, IJob, zRoutes } from "shared"
 import { IRouteSchema } from "shared/routes/common.routes"
 
 import { IUser } from "@/common/model/schema/user/user.types"
@@ -39,13 +39,7 @@ const config = {
   },
 }
 
-type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password"
-  ? IUser
-  : AuthScheme extends "jwt-bearer"
-  ? IUserRecruteur
-  : AuthScheme extends "api-key"
-  ? ICredential
-  : null
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-password" ? IUser : AuthScheme extends "api-key" ? ICredential : null
 
 const getUser = <S extends IRouteSchema>(req: FastifyRequest, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
   return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>

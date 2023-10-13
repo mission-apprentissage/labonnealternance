@@ -41,15 +41,15 @@ export default function ConfirmationValidationEmail() {
   const [isInvalid, setIsInvalid] = useBoolean()
   const [isAwaitingValidation, setIsAwaitingValidation] = useBoolean()
   const router = useRouter()
-  const { id, token } = router.query as { id: string; token: string }
+  const { token } = router.query as { token: string }
 
   const { setUser } = useAuth()
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading.on()
-      if (token && id) {
-        const user = (await apiPost("/etablissement/validation", { body: { id, token } })) as IUserRecruteurPublic
+      if (token) {
+        const user = (await apiPost("/etablissement/validation", { querystring: { token } })) as IUserRecruteurPublic
         if (user.status_current === ETAT_UTILISATEUR.ATTENTE) {
           setLoading.off()
           setIsInvalid.off()
@@ -66,7 +66,7 @@ export default function ConfirmationValidationEmail() {
       setLoading.off()
       setIsInvalid.on()
     })
-  }, [token, id])
+  }, [token])
 
   return (
     <>

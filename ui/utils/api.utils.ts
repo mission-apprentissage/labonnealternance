@@ -1,5 +1,5 @@
-import { IRequest, IResponse, IRoutes } from "shared"
-import { IResErrorJson, IRouteSchema } from "shared/routes/common.routes"
+import { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IResponse } from "shared"
+import { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
 import z, { ZodType } from "zod"
 
 import { publicConfig } from "../config.public"
@@ -11,11 +11,15 @@ interface WithQueryStringAndPathParam {
   querystring?: QueryString
 }
 
-type Options = {
-  [Prop in keyof Pick<IRouteSchema, "params" | "querystring" | "headers" | "body">]: IRouteSchema[Prop] extends ZodType ? z.input<IRouteSchema[Prop]> : undefined
+type OptionsGet = {
+  [Prop in keyof Pick<IRouteSchema, "params" | "querystring" | "headers">]: IRouteSchema[Prop] extends ZodType ? z.input<IRouteSchema[Prop]> : undefined
 }
 
-async function getHeaders(options: Options) {
+type OptionsWrite = {
+  [Prop in keyof Pick<IRouteSchemaWrite, "params" | "querystring" | "headers" | "body">]: IRouteSchemaWrite[Prop] extends ZodType ? z.input<IRouteSchemaWrite[Prop]> : undefined
+}
+
+async function getHeaders(options: OptionsGet | OptionsWrite) {
   const headers = new Headers()
 
   if (options.headers) {
@@ -121,14 +125,6 @@ export function generateUrl(path: string, options: WithQueryStringAndPathParam =
   return url
 }
 
-function getBody(headers: Headers, body?: BodyInit): BodyInit | null {
-  if (!body) {
-    return null
-  }
-
-  return headers.get("Content-Type") === "application/json" ? JSON.stringify(body) : body
-}
-
 export interface ApiErrorContext {
   path: string
   params: PathParam
@@ -187,35 +183,35 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiPost<P extends keyof IRoutes["post"], S extends IRoutes["post"][P] = IRoutes["post"][P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  // TODO: Use a better cast
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const o: any = options
+export async function apiPost<P extends keyof IPostRoutes, S extends IPostRoutes[P] = IPostRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
   const headers = await getHeaders(options)
 
-  if (!(o.body instanceof FormData)) {
-    headers.append("Content-Type", "application/json")
+  let body: BodyInit | null = null
+  if ("body" in options) {
+    if (options.body instanceof FormData) {
+      body = options.body
+    } else {
+      body = JSON.stringify(options.body)
+      headers.append("Content-Type", "application/json")
+    }
   }
 
-  const res = await fetch(generateUrl(path, o), {
+  const res = await fetch(generateUrl(path, options), {
     method: "POST",
     mode: publicConfig.env === "local" ? "cors" : "same-origin",
     credentials: publicConfig.env === "local" ? "include" : "same-origin",
-    body: getBody(headers, o?.body),
+    body,
     headers,
   })
 
   if (!res.ok) {
-    throw await ApiError.build(path, headers, o, res)
+    throw await ApiError.build(path, headers, options, res)
   }
 
   return res.json()
 }
 
-export async function apiGet<P extends keyof IRoutes["get"], S extends IRoutes["get"][P] = IRoutes["get"][P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  // TODO: Use a better cast
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const o: Record<string, any> = options
+export async function apiGet<P extends keyof IGetRoutes, S extends IGetRoutes[P] = IGetRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
   const headers = await getHeaders(options)
 
   const res = await fetch(generateUrl(path, options), {
@@ -226,66 +222,69 @@ export async function apiGet<P extends keyof IRoutes["get"], S extends IRoutes["
   })
 
   if (!res.ok) {
-    throw await ApiError.build(path, headers, o, res)
+    throw await ApiError.build(path, headers, options, res)
   }
 
   return res.json()
 }
 
-export async function apiPut<P extends keyof IRoutes["put"], S extends IRoutes["put"][P] = IRoutes["put"][P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  // TODO: Use a better cast
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const o: any = options
+export async function apiPut<P extends keyof IPutRoutes, S extends IPutRoutes[P] = IPutRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
   const headers = await getHeaders(options)
 
-  if (!(o.body instanceof FormData)) {
-    headers.append("Content-Type", "application/json")
+  let body: BodyInit | null = null
+  if ("body" in options) {
+    if (options.body instanceof FormData) {
+      body = options.body
+    } else {
+      body = JSON.stringify(options.body)
+      headers.append("Content-Type", "application/json")
+    }
   }
 
-  const res = await fetch(generateUrl(path, o), {
+  const res = await fetch(generateUrl(path, options), {
     method: "PUT",
     mode: publicConfig.env === "local" ? "cors" : "same-origin",
     credentials: publicConfig.env === "local" ? "include" : "same-origin",
-    body: getBody(headers, o?.body),
+    body,
     headers,
   })
 
   if (!res.ok) {
-    throw await ApiError.build(path, headers, o, res)
+    throw await ApiError.build(path, headers, options, res)
   }
 
   return res.json()
 }
 
-export async function apiPatch<P extends keyof IRoutes["patch"], S extends IRoutes["patch"][P] = IRoutes["patch"][P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  // TODO: Use a better cast
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const o: any = options
+export async function apiPatch<P extends keyof IPatchRoutes, S extends IPatchRoutes[P] = IPatchRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
   const headers = await getHeaders(options)
 
-  if (!(o.body instanceof FormData)) {
-    headers.append("Content-Type", "application/json")
+  let body: BodyInit | null = null
+  if ("body" in options) {
+    if (options.body instanceof FormData) {
+      body = options.body
+    } else {
+      body = JSON.stringify(options.body)
+      headers.append("Content-Type", "application/json")
+    }
   }
 
-  const res = await fetch(generateUrl(path, o), {
+  const res = await fetch(generateUrl(path, options), {
     method: "PATCH",
     mode: publicConfig.env === "local" ? "cors" : "same-origin",
     credentials: publicConfig.env === "local" ? "include" : "same-origin",
-    body: getBody(headers, o?.body),
+    body,
     headers,
   })
 
   if (!res.ok) {
-    throw await ApiError.build(path, headers, o, res)
+    throw await ApiError.build(path, headers, options, res)
   }
 
   return res.json()
 }
 
-export async function apiDelete<P extends keyof IRoutes["delete"], S extends IRoutes["delete"][P] = IRoutes["delete"][P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  // TODO: Use a better cast
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const o: Record<string, any> = options
+export async function apiDelete<P extends keyof IDeleteRoutes, S extends IDeleteRoutes[P] = IDeleteRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
   const headers = await getHeaders(options)
 
   const res = await fetch(generateUrl(path, options), {
@@ -296,7 +295,7 @@ export async function apiDelete<P extends keyof IRoutes["delete"], S extends IRo
   })
 
   if (!res.ok) {
-    throw await ApiError.build(path, headers, o, res)
+    throw await ApiError.build(path, headers, options, res)
   }
 
   return res.json()
