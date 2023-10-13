@@ -13,20 +13,25 @@ interface Props {
 }
 
 const AdminUserView = ({ params }: Props) => {
-  const { data: user, isLoading } = useQuery<IUserRecruteur>({
+  const {
+    data: user,
+    isLoading,
+    refetch: refetchUser,
+  } = useQuery<IUserRecruteur>({
     queryKey: ["adminusersview"],
     queryFn: async () => {
       const user = await apiGet("/admin/users/:userId", { params })
 
       return user
     },
+    enabled: !!params.userId,
   })
 
-  if (isLoading) {
+  if (isLoading || !params.userId) {
     return <LoadingEmptySpace />
   }
 
-  return <UserView user={user} />
+  return <UserView user={user} refetchUser={refetchUser} />
 }
 
 function AdminUserViewPage() {

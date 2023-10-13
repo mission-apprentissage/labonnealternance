@@ -1,11 +1,11 @@
 import { Box, Button, Flex, Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
 import dayjs from "dayjs"
-import Link from "next/link"
 import { useQuery } from "react-query"
 import { IUserRecruteur } from "shared"
 
 import { AUTHTYPE } from "@/common/contants"
 import { sortReactTableString } from "@/common/utils/dateUtils"
+import Link from "@/components/Link"
 import { ArrowRightLine2 } from "@/theme/components/icons"
 
 import { apiGet } from "../../../../utils/api.utils"

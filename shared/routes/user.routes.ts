@@ -1,7 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZRecruiterWritable } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.model"
+import { ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -165,9 +164,9 @@ export const zUserRecruteurRoutes = {
       path: "/admin/users/:userId",
       params: z.object({ userId: zObjectId }).strict(),
       // TODO ANY TO BE FIXED
-      body: ZRecruiterWritable.partial(),
+      body: ZUserRecruteurWritable.partial(),
       response: {
-        "200": z.any(),
+        "200": z.object({ ok: z.boolean() }).strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -230,7 +229,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "200": z.object({}).strict(),
+        "200": z.object({ ok: z.boolean() }).strict(),
       },
       securityScheme: {
         auth: "cookie-session",
