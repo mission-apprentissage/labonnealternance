@@ -1,14 +1,17 @@
 import { Box, Button, Center, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
+import { useContext } from "react"
 
 import { AUTHTYPE } from "../../common/contants"
 import { redirect } from "../../common/utils/router"
+import { WidgetContext } from "../../context/contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
 import { deleteCfa, deleteEntreprise } from "../../utils/api"
 
 export const ConfirmationCreationCompte = (props) => {
   const { isOpen, onClose, user, formulaire } = props
   const router = useRouter()
+  const { widget } = useContext(WidgetContext)
 
   const validateAccountCreation = () => {
     switch (user.type) {
@@ -34,7 +37,11 @@ export const ConfirmationCreationCompte = (props) => {
     } else {
       await deleteCfa(user._id)
     }
-    redirect("/", true)
+    if (widget.isWidget) {
+      redirect(`/espace-pro/widget/${formulaire.origin}`, true)
+    } else {
+      redirect("/", true)
+    }
   }
 
   return (

@@ -114,7 +114,7 @@ function DetailEntreprise() {
     }
   }
 
-  const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => getUser(userId), { cacheTime: 0 })
+  const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
   // @ts-expect-error: TODO
   const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
@@ -122,7 +122,7 @@ function DetailEntreprise() {
     },
   })
 
-  if (isLoading || !data) {
+  if (isLoading || !data || !userId) {
     return <LoadingEmptySpace />
   }
 

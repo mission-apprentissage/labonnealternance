@@ -1,9 +1,10 @@
-import axios, { AxiosResponse } from "axios"
+import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
 import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getHttpClient } from "@/common/utils/httpUtils"
 
 import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types"
@@ -188,7 +189,7 @@ export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Prom
  */
 export const getOpco = async (siret: string): Promise<ICFADock | null> => {
   try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -203,7 +204,7 @@ export const getOpco = async (siret: string): Promise<ICFADock | null> => {
  */
 export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
   try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -218,7 +219,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
   try {
-    const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient().get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
     return data
   } catch (err) {
     sentryCaptureException(err)
@@ -248,7 +249,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
     }
-    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
+    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
     return data
@@ -265,7 +266,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
  */
 export const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
   try {
-    const { data } = await axios.get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
+    const { data } = await getHttpClient().get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
     return data
   } catch (error: any) {
     sentryCaptureException(error)
@@ -283,7 +284,7 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
  */
 export const getEtablissementFromCatalogue = async (siret: string): Promise<IEtablissementCatalogue> => {
   try {
-    const result: IEtablissementCatalogue = await axios.get("https://catalogue.apprentissage.beta.gouv.fr/api/v1/entity/etablissements/", {
+    const result: IEtablissementCatalogue = await getHttpClient().get("https://catalogue.apprentissage.beta.gouv.fr/api/v1/entity/etablissements/", {
       params: {
         query: { siret },
       },
@@ -296,14 +297,13 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
 }
 
 export type GeoCoord = [number, number]
-
 /**
  * @description Get the geolocation information from the ADDRESS API for a given address
  * @param {String} adresse
  */
 export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
   try {
-    const response: AxiosResponse<IAPIAdresse> = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
+    const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
     const firstFeature = response.data?.features.at(0)
     if (!firstFeature) {
       throw new Error("pas trouvé")
@@ -353,19 +353,24 @@ export const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaC
  * @param {IEtablissementGouv} data
  * @returns {IFormatAPIEntreprise}
  */
-export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => ({
-  establishment_enseigne: d.enseigne,
-  establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
-  establishment_siret: d.siret,
-  establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
-  address_detail: d.adresse,
-  address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
-  contacts: [], // conserve la coherence avec l'UI
-  naf_code: d.activite_principale.code,
-  naf_label: d.activite_principale.libelle,
-  establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
-  establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
-})
+export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
+  if (!d.adresse) {
+    throw new Error("erreur dans le format de l'api SIRENE : le champ adresse est vide")
+  }
+  return {
+    establishment_enseigne: d.enseigne,
+    establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
+    establishment_siret: d.siret,
+    establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
+    address_detail: d.adresse,
+    address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
+    contacts: [], // conserve la coherence avec l'UI
+    naf_code: d.activite_principale.code,
+    naf_label: d.activite_principale.libelle,
+    establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
+    establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
+  }
+}
 
 /**
  * @description Format Referentiel data
@@ -520,6 +525,9 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
     }
   }
   const entrepriseData = formatEntrepriseData(result.data)
+  if (!entrepriseData.establishment_raison_sociale) {
+    throw Boom.internal("pas de raison sociale trouvée", { siret, cfa_delegated_siret, entrepriseData, apiData: result.data })
+  }
   const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
   const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
   const geo_coordinates = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
@@ -564,7 +572,7 @@ export const entrepriseOnboardingWorkflow = {
       phone?: string
       email: string
       cfa_delegated_siret?: string
-      origin: string
+      origin?: string | null
       opco: string
       idcc?: string
     },

@@ -38,7 +38,7 @@ const cleanCompany = async (company) => {
   modifiedCompanyCount++
 }
 
-const updateBlockedEmails = async ({ AllAddresses }) => {
+const updateBlockedEmails = async ({ AllAddresses }: { AllAddresses?: boolean }) => {
   logger.info(`Début mise à jour blacklist Brevo`)
 
   const defaultClient = SibApiV3Sdk.ApiClient.instance
@@ -85,7 +85,7 @@ const updateBlockedEmails = async ({ AllAddresses }) => {
 let blacklistedAddressCount = 0
 let modifiedCompanyCount = 0
 
-export default async function ({ AllAddresses }) {
+export default async function ({ AllAddresses }: { AllAddresses?: boolean }) {
   blacklistedAddressCount = 0
   modifiedCompanyCount = 0
 

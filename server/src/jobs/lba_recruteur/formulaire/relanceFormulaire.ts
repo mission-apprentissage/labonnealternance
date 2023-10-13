@@ -77,7 +77,7 @@ export const relanceFormulaire = async (threshold) => {
         first_name: contactCFA?.first_name ?? first_name,
         establishment_raison_sociale,
         is_delegated,
-        jobs,
+        offres: jobs,
         threshold,
         url: `${config.publicUrl}/espace-pro/authentification`,
       },
