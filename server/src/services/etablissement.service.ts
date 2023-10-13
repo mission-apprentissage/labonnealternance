@@ -296,7 +296,12 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
   }
 }
 
-export type GeoCoord = [number, number]
+// when in string format: $latitude,$longitude
+export type GeoCoord = {
+  latitude: number
+  longitude: number
+}
+
 /**
  * @description Get the geolocation information from the ADDRESS API for a given address
  * @param {String} adresse
@@ -309,12 +314,12 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
       throw new Error("pas trouvé")
     }
     const coords = firstFeature.geometry.coordinates.reverse()
-    const first = coords.at(0)
-    const second = coords.at(1)
-    if (first === undefined || second === undefined) {
-      throw Boom.internal("moins de 2 coordonnées", { first, second })
+    const latitude = coords.at(0)
+    const longitude = coords.at(1)
+    if (latitude === undefined || longitude === undefined) {
+      throw Boom.internal("moins de 2 coordonnées", { latitude, longitude })
     }
-    return [first, second]
+    return { latitude, longitude }
   } catch (error: any) {
     const newError = Boom.internal(`erreur de récupération des geo coordonnées`, { adresse })
     newError.cause = error
@@ -530,8 +535,8 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   }
   const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
   const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
-  const geo_coordinates = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
-  return { ...entrepriseData, geo_coordinates: geo_coordinates.join(",") }
+  const { latitude, longitude } = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
+  return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}` }
 }
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
