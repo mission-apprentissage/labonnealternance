@@ -19,9 +19,8 @@ export const ZUserStatusValidation = z
   })
   .strict()
 
-export const ZUserRecruteur = z
+export const ZUserRecruteurWritable = z
   .object({
-    _id: zObjectId,
     last_name: z.string().describe("Nom de l'utilisateur"),
     first_name: z.string().describe("Prénom de l'utilisateur"),
     opco: z.string().nullish().describe("Information sur l'opco de l'entreprise"),
@@ -42,10 +41,14 @@ export const ZUserRecruteur = z
     origin: z.string().nullish().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi"),
     status: z.array(ZUserStatusValidation).describe("Tableau des modifications de statut de l'utilisateur"),
     is_qualiopi: z.boolean().describe("Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)"),
-    createdAt: z.date().describe("Date de création"),
-    updatedAt: z.date().describe("Date de la dernière modification"),
   })
   .strict()
+
+export const ZUserRecruteur = ZUserRecruteurWritable.extend({
+  _id: zObjectId,
+  createdAt: z.date().describe("Date de creation"),
+  updatedAt: z.date().describe("Date de mise à jour"),
+})
 
 export const zReferentielData = z
   .object({
@@ -73,6 +76,7 @@ export type IReferentielData = z.output<typeof zReferentielData>
 
 export type IUserStatusValidation = z.output<typeof ZUserStatusValidation>
 export type IUserRecruteur = z.output<typeof ZUserRecruteur>
+export type IUserRecruteurWritable = z.output<typeof ZUserRecruteurWritable>
 export type IUserRecruteurJson = Jsonify<z.input<typeof ZUserRecruteur>>
 
 export const ZUserRecruteurPublic = ZUserRecruteur.pick({

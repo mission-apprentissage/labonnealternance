@@ -1,18 +1,20 @@
 import { Heading } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { FC } from "react"
 import { IUserRecruteur } from "shared"
 
-import { AUTHTYPE } from "@/common/contants"
-
 import { Breadcrumb } from "../../common/components/Breadcrumb"
+import UserValidationHistory from "../../UserValidationHistory"
 
-import InfoDetails from "./infoDetails/InfoDetails"
+import UserForm from "./UserForm"
 
 interface Props {
   user: IUserRecruteur
+  refetchUser: any
 }
 
-const UserView: FC<Props> = ({ user }) => {
+const UserView: FC<Props> = ({ user, refetchUser }) => {
+  const router = useRouter()
   return (
     <>
       <Breadcrumb
@@ -23,25 +25,14 @@ const UserView: FC<Props> = ({ user }) => {
         ]}
       />
 
-      <Heading as="h2" fontSize="2xl" mb={[3, 6]}>
+      <Heading as="h2" fontSize="2xl" mb={[3, 6]} mt={3}>
         Fiche utilisateur
       </Heading>
 
-      <InfoDetails
-        data={user}
-        rows={{
-          _id: {
-            header: () => "Identifiant",
-          },
-          email: {
-            header: () => "Email",
-          },
-          is_admin: {
-            header: () => "Administrateur",
-            cell: ({ type }) => (type === AUTHTYPE.ADMIN ? "Oui" : "Non"),
-          },
-        }}
-      />
+      <UserForm user={user} onDelete={() => router.push("/espace-pro/admin/utilisateurs")} onUpdate={() => refetchUser()} />
+
+      {/* @ts-expect-error */}
+      <UserValidationHistory histories={user.status} />
     </>
   )
 }

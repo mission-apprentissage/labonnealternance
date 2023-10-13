@@ -106,17 +106,18 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/admin/users/:userId"].securityScheme)],
     },
     async (req, res) => {
-      // const userPayload = req.body
-      // const { userId } = req.params
+      const userPayload = req.body
+      const { userId } = req.params
 
-      // const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean()
+      const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean()
 
-      // if (exist) {
-      //   return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
-      // }
+      if (exist) {
+        throw Boom.notFound()
+      }
 
-      // const user = await updateUser({ _id: userId }, userPayload)
-      return res.status(200).send({})
+      await updateUser({ _id: userId }, userPayload)
+
+      return res.status(200).send({ ok: true })
     }
   )
 
@@ -127,15 +128,16 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.delete["/admin/users/:userId"].securityScheme)],
     },
     async (req, res) => {
-      // const { userId, recruiterId } = req.query
+      const { recruiterId } = req.query
 
-      // await removeUser(userId)
+      await removeUser(req.params.userId)
 
-      // if (recruiterId) {
-      //   await deleteFormulaire(recruiterId)
-      // }
+      if (recruiterId) {
+        // Seulement dans le cas d'une entreprise (non utilisé en front pour l'instant)
+        await deleteFormulaire(recruiterId)
+      }
 
-      return res.status(200).send({})
+      return res.status(200).send({ ok: true })
     }
   )
 

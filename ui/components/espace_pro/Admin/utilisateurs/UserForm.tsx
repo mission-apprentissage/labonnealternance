@@ -1,53 +1,93 @@
-import { Box, Button, FormControl, FormLabel, FormErrorMessage, HStack, Input, Text, VStack, useToast, Checkbox } from "@chakra-ui/react"
+import { Box, Button, FormControl, FormLabel, FormErrorMessage, HStack, Input, VStack, useToast, Checkbox, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import React from "react"
 import * as Yup from "yup"
 
+import { USER_STATUS } from "@/common/contants"
+import useUserHistoryUpdate from "@/common/hooks/useUserHistoryUpdate"
+import { useAuth } from "@/context/UserContext"
 import { apiDelete, apiPost, apiPut } from "@/utils/api.utils"
 
-// import { USER_STATUS_LABELS } from "@/common/constants/usersConstants";
+import ConfirmationDesactivationUtilisateur from "../../ConfirmationDesactivationUtilisateur"
 
-// type: Type,
-// is_email_checked: Email_valide,
-//   status: [
-//     {
-//       status: "VALIDÉ",
-//       validation_type: "AUTOMATIQUE",
-//       user: "SERVEUR",
-//     },
-//   ],
-// },
+const ActivateUserButton = ({ userId }) => {
+  const updateUserHistory = useUserHistoryUpdate(userId, USER_STATUS.ACTIVE)
+
+  return (
+    <Button variant="primary" onClick={() => updateUserHistory()}>
+      Activer le compte
+    </Button>
+  )
+}
+
+const DisableUserButton = ({ confirmationDesactivationUtilisateur }) => {
+  return (
+    <Button variant="primary-red" onClick={() => confirmationDesactivationUtilisateur.onOpen()}>
+      Désactiver le compte
+    </Button>
+  )
+}
+
+const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisateur) => {
+  switch (userHistory.status) {
+    case USER_STATUS.WAITING:
+      return (
+        <>
+          <ActivateUserButton userId={userId} />
+          <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
+        </>
+      )
+    case USER_STATUS.ACTIVE:
+      return <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
+    case USER_STATUS.DISABLED:
+      return <ActivateUserButton userId={userId} />
+
+    default:
+      return <></>
+  }
+}
+
 const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?: any; onDelete?: any; onUpdate?: any }) => {
   const toast = useToast()
+  const { user: adminUser } = useAuth()
+  const confirmationDesactivationUtilisateur = useDisclosure()
   const { values, errors, touched, dirty, handleSubmit, handleChange } = useFormik({
     initialValues: {
-      nom: user?.last_name || "",
-      prenom: user?.first_name || "",
+      last_name: user?.last_name || "",
+      first_name: user?.first_name || "",
       email: user?.email || "",
-      telephone: user?.phone || "Non renseigné",
+      phone: user?.phone || "Non renseigné",
       beAdmin: user?.type === "ADMIN" || false,
+      type: user?.type || "",
       scope: user?.scope || "all",
       establishment_siret: user?.establishment_siret || "13002526500013",
       establishment_raison_sociale: user?.establishment_raison_sociale || "beta.gouv (Dinum)",
     },
     validationSchema: Yup.object().shape({
-      nom: Yup.string().required("Votre nom est obligatoire"),
-      prenom: Yup.string().required("Votre prénom est obligatoire"),
+      last_name: Yup.string().required("Votre nom est obligatoire"),
+      first_name: Yup.string().required("Votre prénom est obligatoire"),
       email: Yup.string().email("Format d'email invalide").required("Votre email est obligatoire"),
-      telephone: Yup.string(),
+      phone: Yup.string(),
       beAdmin: Yup.boolean().required("Vous devez cocher cette case"),
+      type: Yup.string(),
       scope: Yup.string().required("obligatoire"),
       establishment_siret: Yup.string().required("obligatoire"),
       establishment_raison_sociale: Yup.string().required("obligatoire"),
     }),
     enableReinitialize: true,
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async ({ beAdmin, ...values }, { setSubmitting }) => {
       let result
       let error
 
       try {
         if (user) {
-          result = await apiPut("/admin/users/:userId", { params: { userId: user._id }, body: values })
+          result = await apiPut("/admin/users/:userId", {
+            params: { userId: user._id },
+            body: {
+              ...values,
+              type: beAdmin ? "ADMIN" : values.type,
+            },
+          })
           if (result?.ok) {
             toast({
               title: "Utilisateur mis à jour",
@@ -62,8 +102,21 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
               description: " Merci de réessayer plus tard",
             })
           }
+          onUpdate?.()
         } else {
-          result = await apiPost("/admin/users", { body: values }).catch((err) => {
+          result = await apiPost("/admin/users", {
+            body: {
+              ...values,
+              type: beAdmin ? "ADMIN" : values.type,
+              status: [
+                {
+                  status: "EN ATTENTE DE VALIDATION",
+                  validation_type: "MANUELLE",
+                  user: adminUser._id,
+                },
+              ],
+            },
+          }).catch((err) => {
             if (err.statusCode === 409) {
               return { error: "Cet utilisateur existe déjà" }
             }
@@ -130,157 +183,103 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
     }
   }
 
-  const confirmUserAccess = async (validate) => {
-    if (!confirm(`Voulez-vous vraiment ${validate ? "valider" : "rejeter"} l'accès de cet utilisateur sur l'organisation ${user.organisation.label}? ?`)) {
-      return
-    }
-    try {
-      // await _put(`/api/v1/admin/users/${user._id}/${validate ? "validate" : "reject"}`)
-      // await apiPut("/admin/users/:userId", { params: { userId: user._id }, body })
-      toast({
-        title: `L'utilisateur a été ${validate ? "validé" : "rejeté"}.`,
-        status: "success",
-        isClosable: true,
-      })
-      validate ? onUpdate?.() : onDelete?.()
-    } catch (e) {
-      console.error(e)
-      toast({
-        title: "Erreur lors de la validation de l'accès.",
-        status: "error",
-        isClosable: true,
-        description: " Merci de réessayer plus tard",
-      })
-    }
-  }
-
-  const resendConfirmationEmail = async () => {
-    try {
-      // await _post(`/api/v1/admin/users/${user._id}/resend-confirmation-email`)
-      toast({
-        title: "L'email de confirmation a été renvoyé.",
-        status: "success",
-        isClosable: true,
-      })
-    } catch (e) {
-      console.error(e)
-      toast({
-        title: "Erreur lors de l'envoi de l'email.",
-        status: "error",
-        isClosable: true,
-        description: "Merci de réessayer plus tard",
-      })
-    }
-  }
+  const [lastUserState] = user?.status.slice(-1) || ""
 
   return (
-    <form onSubmit={handleSubmit}>
-      <VStack gap={2} alignItems="baseline" my={8}>
-        <FormControl py={2} isInvalid={!!errors.nom}>
-          <FormLabel>Nom</FormLabel>
-          <Input type="text" id="nom" name="nom" value={values.nom} onChange={handleChange} />
-          {errors.nom && touched.nom && <FormErrorMessage>{errors.nom as string}</FormErrorMessage>}
-        </FormControl>
-        <FormControl py={2} isInvalid={!!errors.prenom}>
-          <FormLabel>Prénom</FormLabel>
-          <Input type="text" id="prenom" name="prenom" value={values.prenom} onChange={handleChange} />
-          {errors.prenom && touched.prenom && <FormErrorMessage>{errors.prenom as string}</FormErrorMessage>}
-        </FormControl>
-        <FormControl py={2} isInvalid={!!errors.email} isRequired>
-          <FormLabel>Email</FormLabel>
-          <Input type="email" id="email" name="email" value={values.email} onChange={handleChange} />
-          {errors.email && touched.email && <FormErrorMessage>{errors.email as string}</FormErrorMessage>}
-        </FormControl>
-        <FormControl py={2} isInvalid={!!errors.telephone}>
-          <FormLabel>Téléphone</FormLabel>
-          <Input type="telephone" id="telephone" name="telephone" value={values.telephone} onChange={handleChange} />
-          {errors.telephone && touched.telephone && <FormErrorMessage>{errors.telephone as string}</FormErrorMessage>}
-        </FormControl>
-        <FormControl py={2} isInvalid={!!errors.establishment_siret}>
-          <FormLabel>Siret</FormLabel>
-          <Input type="establishment_siret" id="establishment_siret" name="establishment_siret" value={values.establishment_siret} onChange={handleChange} />
-          {errors.establishment_siret && touched.establishment_siret && <FormErrorMessage>{errors.establishment_siret as string}</FormErrorMessage>}
-        </FormControl>
-        <FormControl py={2} isInvalid={!!errors.establishment_raison_sociale}>
-          <FormLabel>Siret</FormLabel>
-          <Input
-            type="establishment_raison_sociale"
-            id="establishment_raison_sociale"
-            name="establishment_raison_sociale"
-            value={values.establishment_raison_sociale}
-            onChange={handleChange}
-          />
-          {errors.establishment_raison_sociale && touched.establishment_raison_sociale && <FormErrorMessage>{errors.establishment_raison_sociale as string}</FormErrorMessage>}
-        </FormControl>
-        <FormControl py={2} isInvalid={!!errors.scope}>
-          <FormLabel>scope</FormLabel>
-          <Input type="scope" id="scope" name="scope" value={values.scope} onChange={handleChange} />
-          {errors.scope && touched.scope && <FormErrorMessage>{errors.scope as string}</FormErrorMessage>}
-        </FormControl>
-        <FormControl my={6} isRequired isInvalid={!!errors.beAdmin}>
-          <Checkbox type="beAdmin" id="beAdmin" name="beAdmin" onChange={handleChange} size="lg" isChecked={values.beAdmin}>
-            Admin
-          </Checkbox>
-          {errors.beAdmin && touched.beAdmin && <FormErrorMessage>{errors.beAdmin as string}</FormErrorMessage>}
-        </FormControl>
-
-        {user && (
-          <>
-            <HStack spacing={5}>
-              <Text as="span">Statut du compte</Text>
-              <Text as="span" bgColor="galt2">
-                {/* {USER_STATUS_LABELS[user.account_status] || user.account_status} */}
-              </Text>
-
-              <HStack spacing={5}>
-                {user.account_status === "PENDING_EMAIL_VALIDATION" && (
-                  <HStack spacing={8} alignSelf="start">
-                    <Button type="button" variant="primary" onClick={() => resendConfirmationEmail()}>
-                      Renvoyer l’email de confirmation
-                    </Button>
-                  </HStack>
-                )}
-              </HStack>
+    <>
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...user} />
+      {user && (
+        <>
+          <HStack mb={4} alignItems="baseline">
+            <Box w="300px">Type de compte </Box>
+            <Box>{user.type}</Box>
+          </HStack>
+          <HStack mb={4} alignItems="baseline">
+            <Box w="300px">Statut du compte </Box>=
+            <HStack spacing={6}>
+              <Box> {lastUserState.status}</Box> {getActionButtons(lastUserState, user._id, confirmationDesactivationUtilisateur)}{" "}
             </HStack>
+          </HStack>
+        </>
+      )}
+      <form onSubmit={handleSubmit}>
+        <VStack gap={2} alignItems="baseline" my={8}>
+          {user && (
+            <FormControl py={2}>
+              <FormLabel>Identifiant</FormLabel>
+              <Input type="text" id="id" name="id" value={user._id} disabled />
+            </FormControl>
+          )}
+          <FormControl py={2} isInvalid={!!errors.last_name}>
+            <FormLabel>Nom</FormLabel>
+            <Input type="text" id="last_name" name="last_name" value={values.last_name} onChange={handleChange} />
+            {errors.last_name && touched.last_name && <FormErrorMessage>{errors.last_name as string}</FormErrorMessage>}
+          </FormControl>
+          <FormControl py={2} isInvalid={!!errors.first_name}>
+            <FormLabel>Prénom</FormLabel>
+            <Input type="text" id="first_name" name="first_name" value={values.first_name} onChange={handleChange} />
+            {errors.first_name && touched.first_name && <FormErrorMessage>{errors.first_name as string}</FormErrorMessage>}
+          </FormControl>
+          <FormControl py={2} isInvalid={!!errors.email} isRequired>
+            <FormLabel>Email</FormLabel>
+            <Input type="email" id="email" name="email" value={values.email} onChange={handleChange} />
+            {errors.email && touched.email && <FormErrorMessage>{errors.email as string}</FormErrorMessage>}
+          </FormControl>
+          <FormControl py={2} isInvalid={!!errors.phone}>
+            <FormLabel>Téléphone</FormLabel>
+            <Input type="phone" id="phone" name="phone" value={values.phone} onChange={handleChange} />
+            {errors.phone && touched.phone && <FormErrorMessage>{errors.phone as string}</FormErrorMessage>}
+          </FormControl>
+          <FormControl py={2} isInvalid={!!errors.establishment_siret}>
+            <FormLabel>Siret</FormLabel>
+            <Input type="establishment_siret" id="establishment_siret" name="establishment_siret" value={values.establishment_siret} onChange={handleChange} />
+            {errors.establishment_siret && touched.establishment_siret && <FormErrorMessage>{errors.establishment_siret as string}</FormErrorMessage>}
+          </FormControl>
+          <FormControl py={2} isInvalid={!!errors.establishment_raison_sociale}>
+            <FormLabel>Siret</FormLabel>
+            <Input
+              type="establishment_raison_sociale"
+              id="establishment_raison_sociale"
+              name="establishment_raison_sociale"
+              value={values.establishment_raison_sociale}
+              onChange={handleChange}
+            />
+            {errors.establishment_raison_sociale && touched.establishment_raison_sociale && <FormErrorMessage>{errors.establishment_raison_sociale as string}</FormErrorMessage>}
+          </FormControl>
+          <FormControl py={2} isInvalid={!!errors.scope}>
+            <FormLabel>scope</FormLabel>
+            <Input type="scope" id="scope" name="scope" value={values.scope} onChange={handleChange} />
+            {errors.scope && touched.scope && <FormErrorMessage>{errors.scope as string}</FormErrorMessage>}
+          </FormControl>
+          <FormControl py={2} isInvalid={!!errors.type} isDisabled={values.beAdmin}>
+            <FormLabel>type</FormLabel>
+            <Input type="type" id="type" name="type" value={values.type} onChange={handleChange} />
+            {errors.type && touched.type && <FormErrorMessage>{errors.type as string}</FormErrorMessage>}
+          </FormControl>
+          <FormControl my={6} isRequired isInvalid={!!errors.beAdmin}>
+            <Checkbox type="beAdmin" id="beAdmin" name="beAdmin" onChange={handleChange} size="lg" isChecked={values.beAdmin}>
+              Administrateur
+            </Checkbox>
+            {errors.beAdmin && touched.beAdmin && <FormErrorMessage>{errors.beAdmin as string}</FormErrorMessage>}
+          </FormControl>
 
-            <HStack spacing={5}>
-              <Text as="span">Type de compte</Text>
-              <Text as="span" bgColor="galtDark" px={2}>
-                {user.organisation.label}
-              </Text>
-
-              <HStack spacing={5}>
-                {user.account_status !== "CONFIRMED" && (
-                  <HStack spacing={8} alignSelf="start">
-                    <Button type="button" variant="primary" onClick={() => confirmUserAccess(true)}>
-                      Confirmer
-                    </Button>
-                    <Button type="button" variant="secondary" onClick={() => confirmUserAccess(false)}>
-                      Rejeter
-                    </Button>
-                  </HStack>
-                )}
-              </HStack>
-            </HStack>
-          </>
-        )}
-
-        {user ? (
-          <Box paddingTop={10}>
-            <Button type="submit" variant="primary" mr={5} isDisabled={!dirty}>
-              Enregistrer
+          {user ? (
+            <Box paddingTop={10}>
+              <Button type="submit" variant="primary" mr={5} isDisabled={!dirty}>
+                Enregistrer
+              </Button>
+              <Button variant="outline" colorScheme="red" borderRadius="none" onClick={onDeleteClicked}>
+                Supprimer l&apos;utilisateur
+              </Button>
+            </Box>
+          ) : (
+            <Button type="submit" variant="primary">
+              Créer l&apos;utilisateur
             </Button>
-            <Button variant="outline" colorScheme="red" borderRadius="none" onClick={onDeleteClicked}>
-              Supprimer l&apos;utilisateur
-            </Button>
-          </Box>
-        ) : (
-          <Button type="submit" variant="primary">
-            Créer l&apos;utilisateur
-          </Button>
-        )}
-      </VStack>
-    </form>
+          )}
+        </VStack>
+      </form>
+    </>
   )
 }
 
