@@ -211,8 +211,8 @@ export const zV1JobsRoutes = {
             lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
-        "400": z.union([ZResError, ZLbacError]),
-        "500": z.union([ZResError, ZApiError]),
+        "400": z.union([ZResError, ZLbacError, ZApiError]),
+        "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
       securityScheme: {
         auth: "none",
@@ -245,9 +245,9 @@ export const zV1JobsRoutes = {
             lbaCompanies: z.array(ZLbaItemLbaCompany),
           })
           .strict(),
-        "400": z.union([ZResError, ZLbacError]),
-        "404": z.union([ZResError, ZLbacError]),
-        "500": z.union([ZResError, ZLbacError]),
+        "400": z.union([ZResError, ZLbacError, ZApiError]),
+        "404": z.union([ZResError, ZLbacError, ZApiError]),
+        "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
       securityScheme: {
         auth: "none",
@@ -285,8 +285,8 @@ export const zV1JobsRoutes = {
           })
           .strict(),
         //"419": le code correspondant a disparu. ticket bug ouvert
-        "400": z.union([ZResError, ZLbacError]),
-        "500": z.union([ZResError, ZLbacError]),
+        "400": z.union([ZResError, ZLbacError, ZApiError]),
+        "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
       securityScheme: {
         auth: "none",
@@ -319,9 +319,9 @@ export const zV1JobsRoutes = {
             peJobs: z.array(ZLbaItemPeJob),
           })
           .strict(),
-        "400": z.union([ZResError, ZLbacError]),
-        "404": z.union([ZResError, ZLbacError]),
-        "500": z.union([ZResError, ZLbacError]),
+        "400": z.union([ZResError, ZLbacError, ZApiError]),
+        "404": z.union([ZResError, ZLbacError, ZApiError]),
+        "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
       securityScheme: {
         auth: "none",

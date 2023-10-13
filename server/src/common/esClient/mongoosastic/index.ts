@@ -253,6 +253,7 @@ function Mongoosastic(schema, options) {
     while (tries > 0) {
       try {
         await esClient.delete(_opts)
+        tries = 0
       } catch (e) {
         console.error(e)
         sentryCaptureException(e)

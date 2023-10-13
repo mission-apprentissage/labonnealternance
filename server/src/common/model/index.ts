@@ -14,6 +14,7 @@ import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppoin
 import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema"
 import Etablissement from "./schema/etablissements/etablissement.schema"
+import FicheMetierRomeV3 from "./schema/ficheRomeV3/ficheRomeV3"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema"
 import GeoLocation from "./schema/geolocation/geolocation.schema"
 import InternalJobs from "./schema/internalJobs/internalJobs.schema"
@@ -78,6 +79,7 @@ export {
   EligibleTrainingsForAppointment,
   EmailBlacklist,
   Etablissement,
+  FicheMetierRomeV3,
   FormationCatalogue,
   GeoLocation,
   InternalJobs,

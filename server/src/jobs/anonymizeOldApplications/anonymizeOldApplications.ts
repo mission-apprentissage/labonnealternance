@@ -43,7 +43,8 @@ export default async function () {
   try {
     logger.info(" -- Anonymisation des candidatures de plus de un (1) an -- ")
 
-    const nModified = await anonymizeApplications()
+    const anonymizedResult = await anonymizeApplications()
+    const nModified = anonymizedResult?.length ?? 0
 
     logger.info(`Fin traitement ${nModified}`)
 

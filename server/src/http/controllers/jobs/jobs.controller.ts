@@ -421,7 +421,7 @@ export default (server: Server) => {
         } else if (result.error === "not_found") {
           res.status(404)
         } else {
-          res.status(result.status || 500)
+          res.status(500)
         }
       }
 
@@ -459,7 +459,7 @@ export default (server: Server) => {
             break
           }
           default: {
-            res.status(result.status || 500)
+            res.status(500)
             break
           }
         }
@@ -504,7 +504,7 @@ export default (server: Server) => {
         } else if (result.error === "not_found") {
           res.status(404)
         } else {
-          res.status(result.status || 500)
+          res.status(500)
         }
       }
 

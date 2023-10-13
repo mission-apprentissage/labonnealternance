@@ -57,6 +57,10 @@ fileignoreconfig:
   checksum: f9d2657f85f9f885deddf2ed1fd006d8278d27174659f0ed5a35e4d11343bb3a
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/espace_pro/Admin/utilisateurs/UserList.tsx
+  checksum: c724389e84bb6351a48ac6623eb32f649f9c23314761bd369d9b630ca3662f53
+- filename: ui/components/espace_pro/Admin/utilisateurs/infoDetails/InfoDetails.tsx
+  checksum: be2ad6ca5c2bd36d26cd7aebb33ab876bd32662be3735fee3b167325c284ccff
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.jsx
   checksum: 26e08a59fba2fbace721a6109af82b5d0d70bd91ddf590484c69fd34a60db17b
 - filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx
@@ -65,6 +69,8 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+- filename: ui/pages/espace-pro/admin/utilisateurs/[userId]/index.tsx
+  checksum: de4e4335f1629c087eac4736a3ff22b34aed8b50508438c236c0195a3a3a29d3
 scopeconfig:
 - scope: node
 custom_patterns:
@@ -81,4 +87,5 @@ allowed_patterns:
 - APIKey
 - versionKey
 - '@apprentissage.beta.gouv.fr'
+- adminusersview
 version: "1.0"

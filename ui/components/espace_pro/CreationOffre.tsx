@@ -61,7 +61,7 @@ export default function CreationOffre() {
     }
   }
 
-  if (isLoading) return <LoadingEmptySpace label="Chargement en cours" />
+  if (isLoading || !establishment_id || !jobId) return <LoadingEmptySpace label="Chargement en cours" />
 
   return (
     <Container maxW="container.xl" mt={5}>
