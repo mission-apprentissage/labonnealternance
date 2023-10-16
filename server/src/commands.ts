@@ -14,7 +14,7 @@ import { addJob, processor } from "./jobs/jobs_actions"
 
 async function startJobProcessor(signal: AbortSignal) {
   logger.info(`Process jobs queue - start`)
-  if (config.env !== "local") {
+  if (config.env !== "local" && config.env !== "preview") {
     await addJob({
       name: "crons:init",
       queued: true,

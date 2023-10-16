@@ -5,11 +5,8 @@ import { IoMail } from "react-icons/io5"
 import { AuthentificationLayout } from "../index"
 
 export default function ConfirmationCreationCompte() {
-  // const location = useLocation()
-  // const { email } = location.state
   const router = useRouter()
   const { email } = router.query
-  // TODO_AB
 
   return (
     <AuthentificationLayout>

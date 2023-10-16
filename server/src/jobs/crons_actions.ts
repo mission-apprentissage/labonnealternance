@@ -32,11 +32,11 @@ export async function cronsInit() {
     type: "cron_task",
   })
 
-  if (!Object.keys(CRONS).length) {
+  if (!CRONS.length) {
     return
   }
 
-  for (const cron of Object.values(CRONS)) {
+  for (const cron of CRONS) {
     await createJobCron({
       name: cron.name,
       cron_string: cron.cron_string,

@@ -5,6 +5,8 @@ import { IRoutesDef } from "./common.routes"
 export const zTrainingLinksRoutes = {
   post: {
     "/traininglinks": {
+      method: "post",
+      path: "/traininglinks",
       body: z
         .array(
           z

@@ -2,10 +2,12 @@ import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, useToast } 
 import { useRouter } from "next/router"
 import { useQuery, useQueryClient } from "react-query"
 
+import { useAuth } from "@/context/UserContext"
+import { apiPost, apiPut } from "@/utils/api.utils"
+
 import { AUTHTYPE } from "../../common/contants"
-import useAuth from "../../common/hooks/useAuth"
 import { ArrowDropRightLine } from "../../theme/components/icons"
-import { getOffre, postOffre, putOffre } from "../../utils/api"
+import { getOffre } from "../../utils/api"
 
 import { AjouterVoeux, LoadingEmptySpace } from "."
 
@@ -13,9 +15,9 @@ export default function CreationOffre() {
   const toast = useToast()
   const router = useRouter()
   const client = useQueryClient()
-  const [auth] = useAuth()
+  const { user } = useAuth()
 
-  const { establishment_id, jobId } = router.query
+  const { establishment_id, jobId } = router.query as { establishment_id: string; jobId: string }
   const isCreation = jobId === "creation"
 
   const { data, isLoading } = useQuery("offre", () => getOffre(jobId), {
@@ -23,10 +25,10 @@ export default function CreationOffre() {
     cacheTime: 0,
   })
 
-  const handleSave = (values) => {
+  const handleSave = async (values) => {
     // Updates an offer
     if (!isCreation) {
-      putOffre(jobId, values)
+      apiPut(`/formulaire/offre/:jobId`, { params: { jobId }, body: { ...values, job_update_date: new Date() } })
         .then(() => {
           toast({
             title: "Offre mise à jour avec succès.",
@@ -38,27 +40,24 @@ export default function CreationOffre() {
         })
         .finally(() => router.push(`/espace-pro/administration/entreprise/${establishment_id}`))
     } else {
-      if (auth.type === AUTHTYPE.ENTREPRISE) {
+      const formulaire = (await apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: values })) as any
+      if (user.type === AUTHTYPE.ENTREPRISE) {
         // Create the offer and return the form with the related offer created
-        return postOffre(establishment_id, values).then(({ data }: any) => ({
-          form: data,
-          offre: data.jobs.slice(-1).shift(),
-        }))
+        return {
+          form: formulaire,
+          offre: formulaire.jobs.slice(-1).shift(),
+        }
       }
-
-      postOffre(establishment_id, values)
-        .then(() => {
-          toast({
-            title: "Offre enregistrée avec succès.",
-            position: "top-right",
-            status: "success",
-            duration: 2000,
-            isClosable: true,
-          })
-        })
-        .then(() => client.invalidateQueries("offre-liste"))
-
-        .finally(() => router.push(`/espace-pro/administration/entreprise/${establishment_id}`))
+      toast({
+        title: "Offre enregistrée avec succès.",
+        position: "top-right",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      })
+      client.invalidateQueries("offre-liste")
+      // TODO sleep before redirect ?
+      router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
     }
   }
 
@@ -68,7 +67,7 @@ export default function CreationOffre() {
     <Container maxW="container.xl" mt={5}>
       <Box mb={5}>
         <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
-          {auth.sub !== "anonymous" && auth.type !== AUTHTYPE.ENTREPRISE && (
+          {user && user.type !== AUTHTYPE.ENTREPRISE && (
             <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
               <BreadcrumbItem>
                 <BreadcrumbLink textDecoration="underline" onClick={() => router.back()} textStyle="xs">

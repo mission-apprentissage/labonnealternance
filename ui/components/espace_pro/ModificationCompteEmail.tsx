@@ -1,11 +1,19 @@
 import { Button, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 
-import useAuth from "../../common/hooks/useAuth"
-import { redirect } from "../../common/utils/router"
+import { useAuth } from "@/context/UserContext"
+import { apiGet } from "@/utils/api.utils"
 
 export default function ModificationCompteEmail(props) {
   const { isOpen, onClose } = props
-  const [, setAuth] = useAuth()
+  const { setUser } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await apiGet("/auth/logout", {})
+    setUser()
+    router.push("/espace-pro/authentification")
+  }
 
   return (
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="xl" isOpen={isOpen} onClose={onClose}>
@@ -21,13 +29,7 @@ export default function ModificationCompteEmail(props) {
           <Text pt={5}>Merci de vous connecter avec votre nouvel email.</Text>
         </ModalBody>
         <ModalFooter>
-          <Button
-            variant="primary"
-            onClick={() => {
-              setAuth(null)
-              redirect("/espace-pro/authentification", true)
-            }}
-          >
+          <Button variant="primary" onClick={handleLogout}>
             Confirmer
           </Button>
         </ModalFooter>

@@ -13,7 +13,8 @@ export const createUserFromCLI = async (
     address,
     email,
     scope,
-  }: Pick<IUserRecruteur, "first_name" | "last_name" | "establishment_siret" | "establishment_raison_sociale" | "phone" | "address" | "email" | "scope">,
+    status,
+  }: Pick<IUserRecruteur, "first_name" | "last_name" | "establishment_siret" | "establishment_raison_sociale" | "phone" | "address" | "email" | "scope" | "status">,
   { options }: { options: { Type: IUserRecruteur["type"]; Email_valide: IUserRecruteur["is_email_checked"] } }
 ) => {
   const { Type, Email_valide } = options
@@ -35,6 +36,7 @@ export const createUserFromCLI = async (
     scope,
     type: Type,
     is_email_checked: Email_valide,
+    status,
   }
 
   await createUser(payload)

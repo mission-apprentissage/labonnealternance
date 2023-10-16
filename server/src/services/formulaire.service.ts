@@ -359,7 +359,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
  * @returns {Promise<IRecruiter>}
  */
 export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
-  const offre = await getOffre(id)
+  const offre = await getOffre(id.toString())
   return offre ? true : false
 }
 
@@ -396,13 +396,9 @@ export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["es
 
 /**
  * @description Update existing formulaire and return updated version
- * @param {IRecruiter["establishment_id"]} id
- * @param {UpdateQuery<IRecruiter>} payload
- * @param {ModelUpdateOptions} [options={new:true}]
- * @returns {Promise<IRecruiter>}
  */
-export const updateFormulaire = async (id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>): Promise<IRecruiter> => {
-  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, payload, { new: true }).lean()
+export const updateFormulaire = async (establishment_id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>): Promise<IRecruiter> => {
+  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id }, payload, { new: true }).lean()
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }

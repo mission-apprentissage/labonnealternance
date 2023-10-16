@@ -39,6 +39,7 @@ export enum ETAT_UTILISATEUR {
   ERROR = "ERROR",
 }
 
+export const ADMIN = "ADMIN"
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
 export const REGEX = {

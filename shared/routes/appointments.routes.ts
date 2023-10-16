@@ -1,6 +1,6 @@
 import { referrers } from "../constants/referers"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment, ZEtablissement } from "../models"
+import { ZEtablissement } from "../models"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -67,20 +67,9 @@ const zContextCreateSchema = z.union([
 
 export const zAppointmentsRoute = {
   get: {
-    "/admin/appointments": {
-      response: {
-        "2xx": z
-          .object({
-            appointments: z.array(ZAppointment),
-          })
-          .strict(),
-      },
-      securityScheme: {
-        auth: "jwt-rdv-admin",
-        role: "administrator",
-      },
-    },
     "/admin/appointments/details": {
+      method: "get",
+      path: "/admin/appointments/details",
       response: {
         "2xx": z
           .object({
@@ -113,11 +102,13 @@ export const zAppointmentsRoute = {
           .strict(),
       },
       securityScheme: {
-        auth: "jwt-rdv-admin",
+        auth: "cookie-session",
         role: "administrator",
       },
     },
     "/appointment-request/context/recap": {
+      method: "get",
+      path: "/appointment-request/context/recap",
       // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
@@ -144,6 +135,8 @@ export const zAppointmentsRoute = {
   },
   post: {
     "/appointment-request/context/create": {
+      method: "post",
+      path: "/appointment-request/context/create",
       body: zContextCreateSchema,
       response: {
         "2xx": z.union([
@@ -199,6 +192,8 @@ export const zAppointmentsRoute = {
       },
     },
     "/appointment-request/validate": {
+      method: "post",
+      path: "/appointment-request/validate",
       body: z
         .object({
           firstname: z.string(),
@@ -228,6 +223,8 @@ export const zAppointmentsRoute = {
       },
     },
     "/appointment-request/reply": {
+      method: "post",
+      path: "/appointment-request/reply",
       // TODO_SECURITY_FIX token jwt
       body: z
         .object({

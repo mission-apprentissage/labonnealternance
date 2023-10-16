@@ -3,11 +3,14 @@ import { Field, Form, Formik } from "formik"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import React, { useState } from "react"
+import { IFormationCatalogue } from "shared"
 
-import { _get } from "../../../../common/httpClient"
-import LayoutAdminRdvA from "../../../../components/espace_pro/Admin/Layout"
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { Layout } from "@/components/espace_pro"
+import { apiGet } from "@/utils/api.utils"
+
 import { Breadcrumb } from "../../../../components/espace_pro/common/components/Breadcrumb"
-import withAuth from "../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 
 function SearchPage() {
   const [searchKeyword, setSearchKeyword] = useState("")
@@ -30,7 +33,7 @@ function SearchPage() {
 
     try {
       const keywordEncoded = encodeURIComponent(keyword)
-      const formations = await _get(`admin/formations?search_item=${keywordEncoded}`)
+      const formations = (await apiGet("/admin/formations", { querystring: { search_item: keywordEncoded } })) as IFormationCatalogue[]
 
       if (!formations.length) {
         toast({
@@ -55,41 +58,41 @@ function SearchPage() {
   }
 
   return (
-    <LayoutAdminRdvA>
-      <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]} pb={40}>
-        <Head>
-          <title>{title}</title>
-          <link rel="icon" href="/favicon/favicon.ico" />
-        </Head>
-        <Breadcrumb pages={[{ title: "Administration", to: "/admin" }, { title }]} />
-        <Heading textStyle="h2" mt={5}>
-          {title}
-        </Heading>
-        <Box border="1px solid #E0E5ED" bg="white" mx={40} mt={20}>
-          {loading && <Button isLoading={loading} color="secondary" />}
-          <Text fontWeight="500" textStyle="h6" p={4} px={6} borderBottom="1px solid #E0E5ED">
-            Rechercher un établissement
-          </Text>
-          <Box mt={5} px={6}>
-            <Formik initialValues={{ keyword: searchKeyword }} onSubmit={search}>
-              <Form>
-                <Box>
-                  <Field name="keyword">
-                    {({ field }) => {
-                      return <Input placeholder="Siret formateur / Cle ministère educatif / UAI / Identifiant RCO formation" {...field} />
-                    }}
-                  </Field>
-                </Box>
-                <Button variant="primary" mt={3} mb={5} type={"submit"} isLoading={loading}>
-                  Rechercher
-                </Button>
-              </Form>
-            </Formik>
-          </Box>
+    <Layout footer={false} rdva>
+      <Head>
+        <title>{title}</title>
+        <link rel="icon" href="/favicon/favicon.ico" />
+      </Head>
+      <Breadcrumb pages={[{ title: "Administration", to: "/espace-pro/admin" }, { title }]} />
+      <Heading textStyle="h2" mt={5}>
+        {title}
+      </Heading>
+      <Box border="1px solid #E0E5ED" bg="white" mx={40} mt={20}>
+        {loading && <Button isLoading={loading} color="secondary" />}
+        <Text fontWeight="500" textStyle="h6" p={4} px={6} borderBottom="1px solid #E0E5ED">
+          Rechercher un établissement
+        </Text>
+        <Box mt={5} px={6}>
+          <Formik initialValues={{ keyword: searchKeyword }} onSubmit={search}>
+            <Form>
+              <Box>
+                <Field name="keyword">
+                  {({ field }) => {
+                    return <Input placeholder="Siret formateur / Cle ministère educatif / UAI / Identifiant RCO formation" {...field} />
+                  }}
+                </Field>
+              </Box>
+              <Button variant="primary" mt={3} mb={5} type={"submit"} isLoading={loading}>
+                Rechercher
+              </Button>
+            </Form>
+          </Formik>
         </Box>
       </Box>
-    </LayoutAdminRdvA>
+    </Layout>
   )
 }
 
-export default withAuth(SearchPage, "adminRva")
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(SearchPage, "adminRva"))

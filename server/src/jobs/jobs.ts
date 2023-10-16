@@ -1,5 +1,6 @@
 import { createMongoDBIndexes } from "@/common/model"
-import { CronName, IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { ETAT_UTILISATEUR } from "@/services/constant.service"
 
 import { getLoggerWithContext } from "../common/logger"
 
@@ -50,159 +51,135 @@ import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBloc
 
 const logger = getLoggerWithContext("script")
 
+export const CronsMap = {
+  "Reindex formulaire collection": {
+    cron_string: "5 1 * * *",
+    handler: () => addJob({ name: "indexes:generate", payload: { index_list: "recruiters" } }),
+  },
+  "Create offre collection for metabase": {
+    cron_string: "55 0 * * *",
+    handler: () => addJob({ name: "metabase:offre:create", payload: {} }),
+  },
+  "Cancel lba recruteur expired offers": {
+    cron_string: "15 0 * * *",
+    handler: () => addJob({ name: "formulaire:annulation", payload: {} }),
+  },
+  "Send offer reminder email at J+7": {
+    cron_string: "20 0 * * *",
+    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "7" } }),
+  },
+  "Send offer reminder email at J+1": {
+    cron_string: "25 0 * * *",
+    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
+  },
+  "Send reminder to OPCO about awaiting validation users": {
+    cron_string: "30 0 * * 1,3,5",
+    handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
+  },
+  /*"Send CSV offers to Pôle emploi": {
+    cron_string: "30 5 * * *",
+    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" } }),
+  },*/
+  "Check companies validation state": {
+    cron_string: "30 6 * * *",
+    handler: () => addJob({ name: "user:validate", payload: { threshold: "1" } }),
+  },
+  "Mise à jour des recruteurs en erreur": {
+    cron_string: "10 0 * * *",
+    handler: () => addJob({ name: "siret:inError:update", payload: {} }),
+  },
+  "Active tous les établissements qui ont souscrits à l'opt-out.": {
+    cron_string: "50 0 * * *",
+    handler: () => addJob({ name: "etablissement:formations:activate:opt-out", payload: {} }),
+  },
+  "Invite les établissements (via email gestionnaire) à l'opt-out.": {
+    cron_string: "35 0 * * *",
+    handler: () => addJob({ name: "etablissement:invite:opt-out", payload: {} }),
+  },
+  "Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
+    cron_string: "0 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium", payload: {} }),
+  },
+  "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
+    cron_string: "30 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
+  },
+  "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
+    cron_string: "10 2 * * *",
+    handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
+  },
+  "Historisation des formations éligibles à la prise de rendez-vous.": {
+    cron_string: "55 2 * * *",
+    handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
+  },
+  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an": {
+    cron_string: "0 0 1 * *",
+    handler: () => addJob({ name: "users:anonimize", payload: {} }),
+  },
+  "Anonimisation des prises de rendez-vous de plus d'un an": {
+    cron_string: "10 0 1 * *",
+    handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
+  },
+  "Récupère la liste de toutes les formations Affelnet du Catalogue et les enregistre en base de données.": {
+    cron_string: "15 8 * * *",
+    handler: () => addJob({ name: "etablissements:formations:affelnet:sync", payload: {} }),
+  },
+  "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
+    cron_string: "15 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
+  },
+  "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
+    cron_string: "45 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:affelnet:follow-up", payload: {} }),
+  },
+  "Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
+    cron_string: "45 23 * * 2",
+    handler: () => addJob({ name: "referentiel:onisep:import", payload: {} }),
+  },
+  "Mise à jour depuis le Catalogue des formations.": {
+    cron_string: "15 3 * * *",
+    handler: () => addJob({ name: "catalogue:trainings:sync", payload: {} }),
+  },
+  "Mise à jour des champs spécifiques de la collection formations catalogue.": {
+    cron_string: "30 3 * * *",
+    handler: () => addJob({ name: "catalogue:trainings:sync:extra", payload: {} }),
+  },
+  "Mise à jour des adresses emails bloquées.": {
+    cron_string: "5 0 * * *",
+    handler: () => addJob({ name: "brevo:blocked:sync", payload: {} }),
+  },
+  "Anonymise les candidatures de plus de un an.": {
+    cron_string: "10 0 * * *",
+    handler: () => addJob({ name: "applications:anonymize", payload: {} }),
+  },
+  "Géolocation de masse des sociétés issues de l'algo": {
+    cron_string: "0 5 * * 6",
+    handler: () => addJob({ name: "geo-locations:update", payload: {} }),
+  },
+  "Détermination des opcos des sociétés issues de l'algo": {
+    cron_string: "30 6 * * 6",
+    handler: () => addJob({ name: "opcos:update", payload: {} }),
+  },
+  "Mise à jour des sociétés issues de l'algo": {
+    cron_string: "0 5 * * 7",
+    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
+  },
+} satisfies Record<string, Omit<CronDef, "name">>
+
+export type CronName = keyof typeof CronsMap
+
 interface CronDef {
   name: CronName
   cron_string: string
   handler: () => Promise<number>
 }
 
-export const CRONS: Record<CronName, CronDef> = {
-  "Reindex formulaire collection": {
-    name: "Reindex formulaire collection",
-    cron_string: "5 1 * * *",
-    handler: () => addJob({ name: "indexes:generate", payload: { index_list: "recruiters" } }),
-  },
-  "Create offre collection for metabase": {
-    name: "Create offre collection for metabase",
-    cron_string: "55 0 * * *",
-    handler: () => addJob({ name: "metabase:offre:create", payload: {} }),
-  },
-  "Cancel lba recruteur expired offers": {
-    name: "Cancel lba recruteur expired offers",
-    cron_string: "15 0 * * *",
-    handler: () => addJob({ name: "formulaire:annulation", payload: {} }),
-  },
-  "Send offer reminder email at J+7": {
-    name: "Send offer reminder email at J+7",
-    cron_string: "20 0 * * *",
-    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "7" } }),
-  },
-  "Send offer reminder email at J+1": {
-    name: "Send offer reminder email at J+1",
-    cron_string: "25 0 * * *",
-    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
-  },
-  "Send reminder to OPCO about awaiting validation users": {
-    name: "Send reminder to OPCO about awaiting validation users",
-    cron_string: "30 0 * * 1,3,5",
-    handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
-  },
-  /*"Send CSV offers to Pôle emploi": {
-    name: "Send CSV offers to Pôle emploi",
-    cron_string: "30 5 * * *",
-    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" } }),
-  },*/
-  "Check companies validation state": {
-    name: "Check companies validation state",
-    cron_string: "30 6 * * *",
-    handler: () => addJob({ name: "user:validate", payload: { threshold: "1" } }),
-  },
-  "Mise à jour des recruteurs en erreur": {
-    name: "Mise à jour des recruteurs en erreur",
-    cron_string: "10 0 * * *",
-    handler: () => addJob({ name: "siret:inError:update", payload: {} }),
-  },
-  "Active tous les établissements qui ont souscrits à l'opt-out.": {
-    name: "Active tous les établissements qui ont souscrits à l'opt-out.",
-    cron_string: "50 0 * * *",
-    handler: () => addJob({ name: "etablissement:formations:activate:opt-out", payload: {} }),
-  },
-  "Invite les établissements (via email gestionnaire) à l'opt-out.": {
-    name: "Invite les établissements (via email gestionnaire) à l'opt-out.",
-    cron_string: "35 0 * * *",
-    handler: () => addJob({ name: "etablissement:invite:opt-out", payload: {} }),
-  },
-  "Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
-    name: "Invite les établissements (via email gestionnaire) au premium (Parcoursup).",
-    cron_string: "0 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium", payload: {} }),
-  },
-  "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
-    name: "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).",
-    cron_string: "30 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
-  },
-  "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
-    name: "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.",
-    cron_string: "10 2 * * *",
-    handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
-  },
-  "Historisation des formations éligibles à la prise de rendez-vous.": {
-    name: "Historisation des formations éligibles à la prise de rendez-vous.",
-    cron_string: "55 2 * * *",
-    handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
-  },
-  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an": {
-    name: "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an",
-    cron_string: "0 0 1 * *",
-    handler: () => addJob({ name: "users:anonimize", payload: {} }),
-  },
-  "Anonimisation des prises de rendez-vous de plus d'un an": {
-    name: "Anonimisation des prises de rendez-vous de plus d'un an",
-    cron_string: "10 0 1 * *",
-    handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
-  },
-  "Récupère la liste de toutes les formations Affelnet du Catalogue et les enregistre en base de données.": {
-    name: "Récupère la liste de toutes les formations Affelnet du Catalogue et les enregistre en base de données.",
-    cron_string: "15 8 * * *",
-    handler: () => addJob({ name: "etablissements:formations:affelnet:sync", payload: {} }),
-  },
-  "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-    name: "Invite les établissements (via email gestionnaire) au premium (Affelnet).",
-    cron_string: "15 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
-  },
-  "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-    name: "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).",
-    cron_string: "45 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:affelnet:follow-up", payload: {} }),
-  },
-  "Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
-    name: "Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep",
-    cron_string: "45 23 * * 2",
-    handler: () => addJob({ name: "referentiel:onisep:import", payload: {} }),
-  },
-  "Mise à jour depuis le Catalogue des formations.": {
-    name: "Mise à jour depuis le Catalogue des formations.",
-    cron_string: "15 3 * * *",
-    handler: () => addJob({ name: "catalogue:trainings:sync", payload: {} }),
-  },
-  "Mise à jour des champs spécifiques de la collection formations catalogue.": {
-    name: "Mise à jour des champs spécifiques de la collection formations catalogue.",
-    cron_string: "30 3 * * *",
-    handler: () => addJob({ name: "catalogue:trainings:sync:extra", payload: {} }),
-  },
-  "Mise à jour des adresses emails bloquées.": {
-    name: "Mise à jour des adresses emails bloquées.",
-    cron_string: "5 0 * * *",
-    handler: () => addJob({ name: "brevo:blocked:sync", payload: {} }),
-  },
-  "Anonymise les candidatures de plus de un an.": {
-    name: "Anonymise les candidatures de plus de un an.",
-    cron_string: "10 0 * * *",
-    handler: () => addJob({ name: "applications:anonymize", payload: {} }),
-  },
-  "Géolocation de masse des sociétés issues de l'algo": {
-    name: "Géolocation de masse des sociétés issues de l'algo",
-    cron_string: "0 5 * * 6",
-    handler: () => addJob({ name: "geo-locations:update", payload: {} }),
-  },
-  "Détermination des opcos des sociétés issues de l'algo": {
-    name: "Détermination des opcos des sociétés issues de l'algo",
-    cron_string: "30 6 * * 6",
-    handler: () => addJob({ name: "opcos:update", payload: {} }),
-  },
-  "Mise à jour des sociétés issues de l'algo": {
-    name: "Mise à jour des sociétés issues de l'algo",
-    cron_string: "0 5 * * 7",
-    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
-  },
-}
+export const CRONS: CronDef[] = Object.entries(CronsMap).map(([name, cronDef]) => ({ ...cronDef, name: name as CronName }))
 
 export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): Promise<number> {
   return executeJob(job, async () => {
     if (job.type === "cron_task") {
-      return CRONS[job.name].handler()
+      return CronsMap[job.name].handler()
     }
     switch (job.name) {
       case "import:rome":
@@ -225,6 +202,14 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
             address,
             email,
             scope,
+            status: [
+              {
+                status: ETAT_UTILISATEUR.VALIDE,
+                validation_type: "AUTOMATIQUE",
+                user: "SERVEUR",
+                date: new Date(),
+              },
+            ],
           },
           {
             options: {

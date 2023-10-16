@@ -4,6 +4,8 @@ import distance from "@turf/distance"
 import axios, { AxiosRequestHeaders } from "axios"
 import { Dayjs } from "dayjs"
 
+import { logger } from "@/common/logger.js"
+
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { roundDistance } from "../common/utils/geolib.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
@@ -280,7 +282,8 @@ const getPeJobs = async ({
     }
 
     return data*/
-    console.log(romes, insee, radius, jobLimit, diploma, NIVEAUX_POUR_OFFRES_PE, peJobsApiEndpoint, peContratsAlternances)
+    console.log(jobLimit, NIVEAUX_POUR_OFFRES_PE, peJobsApiEndpoint, peContratsAlternances)
+    logger.info(`Call getPeJobs. Params : romes=${romes}, insee=${insee}, radius=${radius}, diploma=${diploma}`)
     const emptyPeResponse: PEResponse = { resultats: [] }
     return emptyPeResponse
   } catch (error) {
@@ -382,8 +385,8 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
       }
 
       return { peJobs: [peJob] }
-      */
-    console.log(id)
+    */
+    logger.info(`Call getPeJobFromId. Params : id=${id}`)
     if (caller) {
       trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
     }

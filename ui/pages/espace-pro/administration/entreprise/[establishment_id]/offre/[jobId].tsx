@@ -1,6 +1,8 @@
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+
 import { Layout } from "../../../../../../components/espace_pro"
 import CreationOffre from "../../../../../../components/espace_pro/CreationOffre"
-import withAuth from "../../../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../../../components/espace_pro/withAuth"
 
 function EntrepriseCreationOffre() {
   return <CreationOffre />
@@ -13,4 +15,7 @@ function EntrepriseCreationOffrePage() {
     </Layout>
   )
 }
-export default withAuth(EntrepriseCreationOffrePage)
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(EntrepriseCreationOffrePage))

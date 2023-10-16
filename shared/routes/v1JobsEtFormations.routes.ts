@@ -21,6 +21,8 @@ import { IRoutesDef, ZResError } from "./common.routes"
 export const zV1JobsEtFormationsRoutes = {
   get: {
     "/v1/jobsEtFormations": {
+      method: "get",
+      path: "/v1/jobsEtFormations",
       querystring: z
         .object({
           romes: zRomesParams("rncp"),

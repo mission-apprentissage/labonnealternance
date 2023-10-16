@@ -12,6 +12,7 @@ import { getUserAndRecruitersDataForOpcoUser } from "../../services/user.service
 import {
   createUser,
   getActiveUsers,
+  getAdminUsers,
   getAwaitingUsers,
   getDisabledUsers,
   getErrorUsers,
@@ -46,12 +47,23 @@ export default (server: Server) => {
       return res.status(200).send({ awaiting, active, disabled, error })
     }
   )
+  server.get(
+    "/admin/users",
+    {
+      schema: zRoutes.get["/admin/users"],
+      onRequest: [server.auth(zRoutes.get["/admin/users"].securityScheme)],
+    },
+    async (req, res) => {
+      const users = await getAdminUsers()
+      return res.status(200).send({ users })
+    }
+  )
 
   server.get(
-    "/user/:userId",
+    "/admin/users/:userId",
     {
-      schema: zRoutes.get["/user/:userId"],
-      preHandler: [],
+      schema: zRoutes.get["/admin/users/:userId"],
+      onRequest: [server.auth(zRoutes.get["/admin/users/:userId"].securityScheme)],
     },
     async (req, res) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
@@ -76,10 +88,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/user",
+    "/admin/users",
     {
-      schema: zRoutes.post["/user"],
-      preHandler: [],
+      schema: zRoutes.post["/admin/users"],
+      onRequest: [server.auth(zRoutes.post["/admin/users"].securityScheme)],
     },
     async (req, res) => {
       const user = await createUser(req.body)
@@ -88,10 +100,96 @@ export default (server: Server) => {
   )
 
   server.put(
+    "/admin/users/:userId",
+    {
+      schema: zRoutes.put["/admin/users/:userId"],
+      onRequest: [server.auth(zRoutes.put["/admin/users/:userId"].securityScheme)],
+    },
+    async (req, res) => {
+      const userPayload = req.body
+      const { userId } = req.params
+
+      const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean()
+
+      if (exist) {
+        throw Boom.notFound()
+      }
+
+      await updateUser({ _id: userId }, userPayload)
+
+      return res.status(200).send({ ok: true })
+    }
+  )
+
+  server.delete(
+    "/admin/users/:userId",
+    {
+      schema: zRoutes.delete["/admin/users/:userId"],
+      onRequest: [server.auth(zRoutes.delete["/admin/users/:userId"].securityScheme)],
+    },
+    async (req, res) => {
+      const { recruiterId } = req.query
+
+      await removeUser(req.params.userId)
+
+      if (recruiterId) {
+        // Seulement dans le cas d'une entreprise (non utilisé en front pour l'instant)
+        await deleteFormulaire(recruiterId)
+      }
+
+      return res.status(200).send({ ok: true })
+    }
+  )
+
+  server.get(
+    "/user/:userId",
+    {
+      schema: zRoutes.get["/user/:userId"],
+      onRequest: [server.auth(zRoutes.get["/user/:userId"].securityScheme)],
+    },
+    async (req, res) => {
+      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      let jobs: IJob[] = []
+
+      if (!user) return res.status(400).send({})
+
+      if (user.type === ENTREPRISE) {
+        const response = await Recruiter.findOne({ establishment_id: user.establishment_id as string })
+          .select({ jobs: 1, _id: 0 })
+          .lean()
+        if (!response) {
+          throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
+        }
+        jobs = response.jobs
+      }
+
+      return res.status(200).send({ ...user, jobs })
+    }
+  )
+
+  server.get(
+    "/user/status/:userId",
+    {
+      schema: zRoutes.get["/user/status/:userId"],
+    },
+    async (req, res) => {
+      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+
+      if (!user) throw Boom.notFound("User not found")
+      if (!user.status || user.status.length === 0) throw Boom.internal("User doesn't have status")
+
+      // @ts-expect-error: TODO
+      const status_current = user.status.pop().status
+
+      return res.status(200).send({ status_current })
+    }
+  )
+
+  server.put(
     "/user/:userId",
     {
       schema: zRoutes.put["/user/:userId"],
-      preHandler: [],
+      onRequest: [server.auth(zRoutes.put["/user/:userId"].securityScheme)],
     },
     async (req, res) => {
       const userPayload = req.body
