@@ -29,7 +29,7 @@ export const zV1JobsRoutes = {
       path: "/v1/jobs/establishment",
       querystring: z
         .object({
-          establishment_siret: extensions.siret(),
+          establishment_siret: extensions.siret,
           email: z
             .string()
             .email()
@@ -229,7 +229,7 @@ export const zV1JobsRoutes = {
       path: "/v1/jobs/company/:siret",
       params: z
         .object({
-          siret: extensions.siret(),
+          siret: extensions.siret,
         })
         .strict(),
       querystring: z
@@ -331,10 +331,10 @@ export const zV1JobsRoutes = {
       path: "/v1/jobs/establishment",
       body: z
         .object({
-          establishment_siret: extensions.siret(),
+          establishment_siret: extensions.siret,
           first_name: z.string(),
           last_name: z.string(),
-          phone: extensions.phone().optional(),
+          phone: extensions.phone.optional(),
           email: z.string().email(),
           idcc: z.string().optional(),
           origin: z.string().optional().openapi({
@@ -393,7 +393,7 @@ export const zV1JobsRoutes = {
         ressources: {
           recruiter: [
             {
-              establishment_id: "params.establishmentId",
+              establishment_id: { type: "params", key: "establishmentId" },
             },
           ],
         },
@@ -425,7 +425,7 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         access: "job:manage",
         ressources: {
-          job: [{ _id: "params.jobId" }],
+          job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
       openapi: {
@@ -450,7 +450,7 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         access: "job:manage",
         ressources: {
-          job: [{ _id: "params.jobId" }],
+          job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
       openapi: {
@@ -475,7 +475,7 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         access: "job:manage",
         ressources: {
-          job: [{ _id: "params.jobId" }],
+          job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
       openapi: {
@@ -500,7 +500,7 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         access: "job:manage",
         ressources: {
-          job: [{ _id: "params.jobId" }],
+          job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
       openapi: {
@@ -559,7 +559,7 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         access: "job:manage",
         ressources: {
-          job: [{ _id: "params.jobId" }],
+          job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
       openapi: {

@@ -13,9 +13,9 @@ export const zUpdateLbaCompanyRoutes = {
       querystring: z
         .object({
           secret: z.string(),
-          siret: extensions.siret(),
+          siret: extensions.siret,
           email: z.string().email().or(z.literal("")).optional(),
-          phone: extensions.phone().or(z.literal("")).optional(),
+          phone: extensions.phone.or(z.literal("")).optional(),
         })
         .strict(),
       response: {

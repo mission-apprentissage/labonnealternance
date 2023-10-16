@@ -10,7 +10,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
     "/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret": {
       method: "get",
       path: "/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret",
-      params: z.object({ siret: extensions.siret() }).strict(),
+      params: z.object({ siret: extensions.siret }).strict(),
       response: {
         "200": z.object({ parameters: z.array(ZEligibleTrainingsForAppointmentSchema) }).strict(),
       },

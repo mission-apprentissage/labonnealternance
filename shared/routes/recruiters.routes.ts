@@ -44,7 +44,7 @@ export const zRecruiterRoutes = {
       // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
       params: z
         .object({
-          siret: extensions.siret(),
+          siret: extensions.siret,
         })
         .strict(),
       querystring: z
@@ -75,7 +75,7 @@ export const zRecruiterRoutes = {
     "/etablissement/entreprise/:siret/opco": {
       method: "get",
       path: "/etablissement/entreprise/:siret/opco",
-      params: z.object({ siret: extensions.siret() }).strict(),
+      params: z.object({ siret: extensions.siret }).strict(),
       response: {
         "2xx": z
           .object({
@@ -91,7 +91,7 @@ export const zRecruiterRoutes = {
       path: "/etablissement/cfa/:siret",
       // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
-      params: z.object({ siret: extensions.siret() }).strict(),
+      params: z.object({ siret: extensions.siret }).strict(),
       response: {
         "2xx": zReferentielData,
       },
@@ -179,7 +179,7 @@ export const zRecruiterRoutes = {
       method: "post",
       path: "/etablissement/:establishment_siret/proposition/unsubscribe",
       // TODO_SECURITY_FIX jwt
-      params: z.object({ establishment_siret: extensions.siret() }).strict(),
+      params: z.object({ establishment_siret: extensions.siret }).strict(),
       response: {
         "2xx": z
           .object({

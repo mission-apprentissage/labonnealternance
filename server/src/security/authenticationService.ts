@@ -12,9 +12,11 @@ import config from "@/config"
 import { getSession } from "@/services/sessions.service"
 import { getUser as getUserRecruteur } from "@/services/userRecruteur.service"
 
+export type IUserWithType = UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>
+
 declare module "fastify" {
   interface FastifyRequest {
-    user?: null | undefined | UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>
+    user?: null | undefined | IUserWithType
   }
 }
 
@@ -24,7 +26,7 @@ type AuthenticatedUser<AuthScheme extends WithSecurityScheme["securityScheme"]["
   ? UserWithType<"ICredential", ICredential>
   : never
 
-export const getUserFromRequest = <S extends WithSecurityScheme>(req: FastifyRequest, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
+export const getUserFromRequest = <S extends WithSecurityScheme>(req: Pick<FastifyRequest, "user">, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
   if (!req.user) {
     throw Boom.internal("User should be authenticated")
   }

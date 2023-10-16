@@ -100,7 +100,7 @@ export const zUserRecruteurRoutes = {
         ressources: {
           user: [
             {
-              _id: "params.userId",
+              _id: { type: "params", key: "userId" },
             },
           ],
         },

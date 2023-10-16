@@ -29,7 +29,10 @@ export const AdminRole = {
 
 export type AccessPermission = Permission | { some: ReadonlyArray<AccessPermission> } | { every: ReadonlyArray<AccessPermission> }
 
-export type AccessResourcePath = `${"params" | "querystring"}.${string}`
+export type AccessResourcePath = {
+  type: "params" | "query"
+  key: string
+}
 
 export type AccessRessouces = {
   recruiter?: ReadonlyArray<
@@ -53,7 +56,7 @@ export type AccessRessouces = {
   >
 }
 
-export type UserWithType<T, V> = {
+export type UserWithType<T, V> = Readonly<{
   type: T
   value: V
-}
+}>

@@ -1,12 +1,13 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import { ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
+import { IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, RecruiterRole, Role, UserWithType } from "shared/security/permissions"
+import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, RecruiterRole, Role } from "shared/security/permissions"
+import { Primitive } from "type-fest"
 
 import { Recruiter, UserRecruteur } from "@/common/model"
 
-import { getUserFromRequest } from "./authenticationService"
+import { IUserWithType, getUserFromRequest } from "./authenticationService"
 
 type Ressouces = {
   recruiters: Array<IRecruiter | null>
@@ -14,22 +15,23 @@ type Ressouces = {
   users: Array<IUserRecruteur | null>
 }
 
+// Specify what we need to simplify mocking in tests
+type IRequest = Pick<FastifyRequest, "user" | "params" | "query">
+
+// TODO: Unit test access control
+// TODO: job.delegations
+// TODO: Unit schema access path properly defined (exists in Zod schema)
+
 function assertUnreachable(_x: never): never {
   throw new Error("Didn't expect to get here")
 }
 
-function getAccessResourcePathValue(path: AccessResourcePath, req: FastifyRequest): any {
-  const accessParts = path.split(".")
-  let value = req
-
-  for (const part of accessParts) {
-    value = value[part]
-  }
-
-  return value
+function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): any {
+  const obj = req[path.type] as Record<string, Primitive>
+  return obj[path.key]
 }
 
-async function getRecruitersResource<S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest): Promise<Ressouces["recruiters"]> {
+async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces["recruiters"]> {
   if (!schema.securityScheme.ressources.recruiter) {
     return []
   }
@@ -51,7 +53,7 @@ async function getRecruitersResource<S extends IRouteSchema & WithSecurityScheme
   )
 }
 
-async function getJobsResource<S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest): Promise<Ressouces["jobs"]> {
+async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces["jobs"]> {
   if (!schema.securityScheme.ressources.job) {
     return []
   }
@@ -80,7 +82,7 @@ async function getJobsResource<S extends IRouteSchema & WithSecurityScheme>(sche
   )
 }
 
-async function getUserResource<S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest): Promise<Ressouces["users"]> {
+async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces["users"]> {
   if (!schema.securityScheme.ressources.user) {
     return []
   }
@@ -102,7 +104,7 @@ async function getUserResource<S extends IRouteSchema & WithSecurityScheme>(sche
   )
 }
 
-async function getResources<S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest): Promise<Ressouces> {
+export async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces> {
   const [recruiters, jobs, users] = await Promise.all([getRecruitersResource(schema, req), getJobsResource(schema, req), getUserResource(schema, req)])
 
   return {
@@ -112,7 +114,7 @@ async function getResources<S extends IRouteSchema & WithSecurityScheme>(schema:
   }
 }
 
-function getUserRole(userWithType: UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>): Role {
+export function getUserRole(userWithType: IUserWithType): Role {
   if (userWithType.type === "ICredential") {
     return OpcoRole
   }
@@ -131,10 +133,7 @@ function getUserRole(userWithType: UserWithType<"IUserRecruteur", IUserRecruteur
   }
 }
 
-function canAccessRecruiter(
-  userWithType: UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>,
-  resource: Ressouces["recruiters"][number]
-): boolean {
+function canAccessRecruiter(userWithType: IUserWithType, resource: Ressouces["recruiters"][number]): boolean {
   if (resource === null) {
     return true
   }
@@ -152,13 +151,13 @@ function canAccessRecruiter(
     case "CFA":
       return resource.cfa_delegated_siret === user.establishment_siret
     case "OPCO":
-      return resource.opco === user.opco
+      return resource.opco === user.scope
     default:
       assertUnreachable(user.type)
   }
 }
 
-function canAccessJob(userWithType: UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>, resource: Ressouces["jobs"][number]): boolean {
+function canAccessJob(userWithType: IUserWithType, resource: Ressouces["jobs"][number]): boolean {
   if (resource === null) {
     return true
   }
@@ -176,19 +175,23 @@ function canAccessJob(userWithType: UserWithType<"IUserRecruteur", IUserRecruteu
     case "CFA":
       return resource.recruiter.cfa_delegated_siret === user.establishment_siret
     case "OPCO":
-      return resource.recruiter.opco === user.opco
+      return resource.recruiter.opco === user.scope
     default:
       assertUnreachable(user.type)
   }
 }
 
-function canAccessUser(userWithType: UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>, resource: Ressouces["users"][number]): boolean {
+function canAccessUser(userWithType: IUserWithType, resource: Ressouces["users"][number]): boolean {
   if (resource === null) {
     return true
   }
 
   if (userWithType.type === "ICredential") {
     return resource.type === "OPCO" && resource.scope === userWithType.value.organisation
+  }
+
+  if (resource._id.toString() === userWithType.value._id.toString()) {
+    return true
   }
 
   const user = userWithType.value
@@ -206,12 +209,7 @@ function canAccessUser(userWithType: UserWithType<"IUserRecruteur", IUserRecrute
   }
 }
 
-function isAuthorized(
-  access: AccessPermission,
-  userWithType: UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>,
-  role: Role,
-  resources: Ressouces
-): boolean {
+export function isAuthorized(access: AccessPermission, userWithType: IUserWithType, role: Role, resources: Ressouces): boolean {
   if (typeof access === "object") {
     if ("some" in access) {
       return access.some.some((a) => isAuthorized(a, userWithType, role, resources))
@@ -252,7 +250,7 @@ function isAuthorized(
   }
 }
 
-export async function authorizationnMiddleware<S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest) {
+export async function authorizationnMiddleware<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(schema: S, req: IRequest) {
   if (!schema.securityScheme) {
     throw Boom.internal(`authorizationnMiddleware: route doesn't have security scheme`, { method: schema.method, path: schema.path })
   }
@@ -263,12 +261,12 @@ export async function authorizationnMiddleware<S extends IRouteSchema & WithSecu
     return
   }
 
-  const resources = await getResources(schema, req)
-  const role = getUserRole(userWithType)
-
   if (schema.securityScheme.access === null) {
     return
   }
+
+  const resources = await getResources(schema, req)
+  const role = getUserRole(userWithType)
 
   if (!isAuthorized(schema.securityScheme.access, userWithType, role, resources)) {
     throw Boom.forbidden()

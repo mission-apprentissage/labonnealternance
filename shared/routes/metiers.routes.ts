@@ -34,7 +34,7 @@ export const zMetiersRoutes = {
       path: "/v1/metiers/metiersParEtablissement/:siret",
       params: z
         .object({
-          siret: extensions.siret(),
+          siret: extensions.siret,
         })
         .strict(),
       response: {

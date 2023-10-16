@@ -27,11 +27,11 @@ export const ZUserRecruteurWritable = z
     idcc: z.string().nullish().describe("Identifiant convention collective de l'entreprise"),
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
-    establishment_siret: extensions.siret().describe("Siret de l'établissement"),
+    establishment_siret: extensions.siret.describe("Siret de l'établissement"),
     address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
     address: z.string().nullish().describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
-    phone: extensions.phone().describe("Téléphone de l'établissement"),
+    phone: extensions.phone.describe("Téléphone de l'établissement"),
     email: z.string().email().describe("L'email de l'utilisateur"),
     scope: z.string().nullish().describe("Scope accessible par l'utilisateur"),
     is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),
@@ -93,7 +93,7 @@ export const ZUserRecruteurPublic = ZUserRecruteur.pick({
   establishment_id: true,
 }).extend({
   is_delegated: z.boolean(),
-  cfa_delegated_siret: extensions.siret().optional(),
+  cfa_delegated_siret: extensions.siret.optional(),
   status_current: z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).nullable(),
 })
 export type IUserRecruteurPublic = Jsonify<z.output<typeof ZUserRecruteurPublic>>

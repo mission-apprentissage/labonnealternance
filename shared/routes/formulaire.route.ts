@@ -111,7 +111,7 @@ export const zFormulaireRoute = {
         auth: "cookie-session",
         access: "recruiter:manage",
         ressources: {
-          recruiter: [{ establishment_id: "params.establishment_id" }],
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
     },

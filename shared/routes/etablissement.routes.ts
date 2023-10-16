@@ -10,7 +10,7 @@ export const zEtablissementRoutes = {
     "/admin/etablissements/siret-formateur/:siret": {
       method: "get",
       path: "/admin/etablissements/siret-formateur/:siret",
-      params: z.object({ siret: extensions.siret() }).strict(),
+      params: z.object({ siret: extensions.siret }).strict(),
       response: {
         // TODO ANY TO BE FIXED
         "2xx": z.any(),

@@ -9,7 +9,7 @@ export const zEmailsRoutes = {
     "/emails/webhook": {
       method: "post",
       path: "/emails/webhook",
-      body: extensions.brevoWebhook(),
+      body: extensions.brevoWebhook,
       response: {
         "200": z.object({}).strict(),
       },

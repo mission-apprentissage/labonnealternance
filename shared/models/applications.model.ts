@@ -16,7 +16,7 @@ export const ZApplication = z
       description: "Le nom du candidat.",
       example: "Dupont",
     }),
-    applicant_phone: extensions.phone().openapi({
+    applicant_phone: extensions.phone.openapi({
       description: "Le numéro de téléphone du candidat.",
       example: "0101010101",
     }),
@@ -34,7 +34,7 @@ export const ZApplication = z
     company_recruitment_intention: z.string().nullable().describe("L'intention de la société vis à vis du candidat"),
     company_feedback: z.string().nullable().describe("L'avis donné par la société"),
     company_feedback_date: z.date().nullable().describe("Date d'intention/avis donnée"),
-    company_siret: extensions.siret().openapi({
+    company_siret: extensions.siret.openapi({
       description: "Le siret de l'entreprise. Fourni par La bonne alternance. ",
       example: "00004993900000",
     }),

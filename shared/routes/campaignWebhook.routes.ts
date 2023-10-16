@@ -9,7 +9,7 @@ export const zCampaignWebhookRoutes = {
     "/campaign/webhook": {
       method: "post",
       path: "/campaign/webhook",
-      body: extensions.brevoWebhook(),
+      body: extensions.brevoWebhook,
       response: {
         "200": z
           .object({
