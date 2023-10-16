@@ -204,6 +204,8 @@ export const sendApplication = async ({
         return res
       }
 
+      const searched_for_job_label = query.searched_for_job_label || ""
+
       // Sends acknowledge email to "candidate" and application email to "company"
       const [emailCandidat, emailCompany] = await Promise.all([
         mailer.sendEmail({
@@ -222,7 +224,7 @@ export const sendApplication = async ({
           to: application.company_email,
           subject: buildTopic(application.job_origin, application.job_title),
           template: getEmailTemplate(emailTemplates.entreprise),
-          data: { ...application.toObject(), ...images, ...recruiterEmailUrls, urlOfDetail, urlOfDetailNoUtm },
+          data: { ...application.toObject(), ...images, ...recruiterEmailUrls, searched_for_job_label, urlOfDetail, urlOfDetailNoUtm },
           attachments: [
             {
               filename: application.applicant_attachment_name,
