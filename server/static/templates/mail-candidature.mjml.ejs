@@ -32,10 +32,11 @@
             <br /><br />
 
             <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé à
-            <a style="font-weight: bold; color: black" href="<%= data.urlOfDetail %>"> votre offre </a>
+            <a style="font-weight: bold; color: black" href="<%= data.urlOfDetail %>"> votre offre</a>
             sur le métier <%= data.job_title %>. <% } else { %> Bonjour,
             <br /><br />
-            <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé spontanément à partir du site
+            <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé spontanément <% if (data.searched_for_job_label!= "") { %>
+            dans le domaine <%= data.searched_for_job_label %> <% } %> à partir du site
             <a style="font-weight: bold; color: black" href="<%= data.urlOfDetail %>"> La bonne alternance</a>. <br /><br />
             Votre entreprise <span class="nom-societe"><%= data.company_name %></span>
             a été identifiée par notre algorithme comme susceptible de recruter en alternance. <% } %>
@@ -94,9 +95,6 @@
           <mj-text padding-bottom="32px" font-size="24px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#F07F87">
             <img style="margin-bottom: 2px" src="<%= data.images.icoCandidat %>" alt="" />&nbsp;&nbsp;Candidat
           </mj-text>
-          <% if (data.job_origin == "lba" ) { %>
-          <mj-text font-size="16px" padding-bottom="15px">Métier recherché : <span class="form-value"> <%= data.searched_for_job_label %> </span> </mj-text>
-          <% } %>
           <mj-text font-size="16px" padding-bottom="15px">Nom : <span class="form-value"> <%= data.applicant_last_name %> </span> </mj-text>
           <mj-text font-size="16px" padding-bottom="15px">Prénom : <span class="form-value"> <%= data.applicant_first_name %> </span> </mj-text>
           <mj-text font-size="16px" padding-bottom="15px">Téléphone : <span class="form-value"> <%= data.applicant_phone %> </span> </mj-text>
