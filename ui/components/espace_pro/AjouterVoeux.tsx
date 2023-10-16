@@ -207,7 +207,7 @@ const AjouterVoeuxForm = (props) => {
         job_level_label: Yup.string().required("Champ obligatoire"),
         job_start_date: Yup.date().required("Champ obligatoire"),
         job_type: Yup.array().required("Champ obligatoire"),
-        job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimal du contrat : 6 mois"),
+        job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimale du contrat : 6 mois"),
         is_multi_published: Yup.boolean(),
       })}
       onSubmit={props.fromDashboard ? (values, bag) => submitFromDashboard(values, bag) : (values) => submitFromDepotRapide(values)}

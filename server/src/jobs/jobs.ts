@@ -25,6 +25,7 @@ import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
+import { fillRecruiterRaisonSociale } from "./lba_recruteur/user/misc/fillRecruiterRaisonSociale"
 import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
 import updateGeoLocations from "./lbb/updateGeoLocations"
@@ -296,6 +297,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateDiplomesMetiers()
       case "referentiel:rncp-romes:update":
         return updateReferentielRncpRomes()
+      case "recruiters:raison-sociale:fill":
+        return fillRecruiterRaisonSociale()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
