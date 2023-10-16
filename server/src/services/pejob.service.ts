@@ -35,7 +35,7 @@ let tokenPE: TokenPE | null = null
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
 const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
-const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
+//const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
 const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
 
 /**
@@ -354,6 +354,8 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
+    /* TODO Remove when mistery solved
+
     const token = await getAccessToken()
     const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
@@ -380,7 +382,12 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
       }
 
       return { peJobs: [peJob] }
+      */
+    console.log(id)
+    if (caller) {
+      trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
     }
+    return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
   } catch (error) {
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
   }
