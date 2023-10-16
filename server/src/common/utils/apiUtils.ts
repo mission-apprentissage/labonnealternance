@@ -1,8 +1,16 @@
+import { AxiosInstance } from "axios"
 import { RateLimiterMemory, RateLimiterQueue } from "rate-limiter-flexible"
 
 import { timeout } from "./asyncUtils"
 
-export const apiRateLimiter = (name, options: any = {}) => {
+interface ApiRateLimiterOptions {
+  nbRequests?: number
+  durationInSeconds?: number
+  maxQueueSize?: number
+  timeout?: number
+  client: AxiosInstance
+}
+export const apiRateLimiter = (name: string, options: ApiRateLimiterOptions) => {
   const rateLimiter = new RateLimiterMemory({
     keyPrefix: name,
     points: options.nbRequests || 1,
@@ -13,7 +21,7 @@ export const apiRateLimiter = (name, options: any = {}) => {
     maxQueueSize: options.maxQueueSize || 25,
   })
 
-  return async (callback) => {
+  return async <T>(callback: (i: AxiosInstance) => T): Promise<T> => {
     await timeout(queue.removeTokens(1), options.timeout || 10000)
     return callback(options.client)
   }
