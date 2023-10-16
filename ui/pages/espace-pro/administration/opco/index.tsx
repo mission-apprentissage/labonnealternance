@@ -26,10 +26,12 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
-import useAuth from "../../../../common/hooks/useAuth"
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { useAuth } from "@/context/UserContext"
+
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
-import withAuth from "../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 import Link from "../../../../components/Link"
 import { ArrowDropRightLine, Parametre } from "../../../../theme/components/icons"
 import { getOpcoUsers } from "../../../../utils/api"
@@ -40,7 +42,7 @@ function AdministrationOpco() {
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
   const router = useRouter()
-  const [auth] = useAuth()
+  const { user } = useAuth()
   const toast = useToast()
 
   useEffect(() => {
@@ -56,7 +58,7 @@ function AdministrationOpco() {
     }
   }, [])
 
-  const { data, isLoading } = useQuery("user-list-opco", () => getOpcoUsers(auth.scope))
+  const { data, isLoading } = useQuery("user-list-opco", () => getOpcoUsers(user.scope))
 
   const columns = [
     {
@@ -257,4 +259,7 @@ function AdministrationOpcoPage() {
     </Layout>
   )
 }
-export default withAuth(AdministrationOpcoPage)
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(AdministrationOpcoPage))

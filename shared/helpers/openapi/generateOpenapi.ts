@@ -26,7 +26,7 @@ function generateOpenApiResponsesObject<R extends IRouteSchema["response"]>(resp
 function generateOpenApiRequest(route: IRouteSchema): RouteConfig["request"] {
   const requestParams: RouteConfig["request"] = {}
 
-  if (route.body) {
+  if (route.method !== "get" && route.body) {
     requestParams.body = {
       content: {
         "application/json": { schema: route.body },

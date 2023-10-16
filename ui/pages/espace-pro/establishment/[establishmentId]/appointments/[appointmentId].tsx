@@ -4,7 +4,8 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import * as Yup from "yup"
 
-import { _get, _patch, _post } from "../../../../../common/httpClient"
+import { apiGet, apiPatch, apiPost } from "@/utils/api.utils"
+
 import { formatDate } from "../../../../../common/utils/dateUtils"
 import { getReasonText } from "../../../../../common/utils/reasonsUtils"
 import { FormLayoutComponent } from "../../../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
@@ -19,7 +20,7 @@ import { CfaCandidatInformationUnreachable } from "../../../../../components/esp
  */
 export default function CfaCandidatInformationPage() {
   const router = useRouter()
-  const { establishmentId, appointmentId } = router.query
+  const { establishmentId, appointmentId } = router.query as { establishmentId: string; appointmentId: string }
   const [data, setData] = useState(null)
 
   const [currentState, setCurrentState] = useState("initial")
@@ -33,33 +34,43 @@ export default function CfaCandidatInformationPage() {
     validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
     onSubmit: async (values) => {
       setCurrentState("sending")
-      await _post("appointment-request/reply", {
-        appointment_id: appointmentId,
-        cfa_intention_to_applicant: "personalised_answer",
-        cfa_message_to_applicant: values.message,
-        cfa_message_to_applicant_date: formatDate(new Date()),
+
+      await apiPost("/appointment-request/reply", {
+        body: {
+          appointment_id: appointmentId,
+          cfa_intention_to_applicant: "personalised_answer",
+          cfa_message_to_applicant: values.message,
+          cfa_message_to_applicant_date: formatDate(new Date()),
+        },
       })
+
       setCurrentState("answered")
     },
   })
 
   const otherClicked = async () => {
     setCurrentState("sending")
-    await _post("appointment-request/reply", {
-      appointment_id: appointmentId,
-      cfa_intention_to_applicant: "other_channel",
-      cfa_message_to_applicant: "",
-      cfa_message_to_applicant_date: formatDate(new Date()),
+
+    await apiPost("/appointment-request/reply", {
+      body: {
+        appointment_id: appointmentId,
+        cfa_intention_to_applicant: "other_channel",
+        cfa_message_to_applicant: "",
+        cfa_message_to_applicant_date: formatDate(new Date()),
+      },
     })
     setCurrentState("other")
   }
   const unreachableClicked = async () => {
     setCurrentState("sending")
-    await _post("appointment-request/reply", {
-      appointment_id: appointmentId,
-      cfa_intention_to_applicant: "no_answer",
-      cfa_message_to_applicant: "",
-      cfa_message_to_applicant_date: formatDate(new Date()),
+
+    await apiPost("/appointment-request/reply", {
+      body: {
+        appointment_id: appointmentId,
+        cfa_intention_to_applicant: "no_answer",
+        cfa_message_to_applicant: "",
+        cfa_message_to_applicant_date: formatDate(new Date()),
+      },
     })
     setCurrentState("unreachable")
   }
@@ -72,9 +83,12 @@ export default function CfaCandidatInformationPage() {
     const fetchData = async () => {
       if (appointmentId && establishmentId) {
         if (utmSource === "mail") {
-          await _patch(`etablissements/${establishmentId}/appointments/${appointmentId}`, { has_been_read: true })
+          await apiPatch("/etablissements/:id/appointments/:appointmentId", { params: { id: establishmentId, appointmentId }, body: { has_been_read: true } })
         }
-        const response = await _get(`appointment-request/context/recap?appointmentId=${appointmentId}`)
+
+        const response = await apiGet("/appointment-request/context/recap", {
+          querystring: { appointmentId },
+        })
         setData(response)
       }
     }

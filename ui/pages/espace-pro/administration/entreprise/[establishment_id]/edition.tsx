@@ -4,16 +4,19 @@ import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import * as Yup from "yup"
 
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { useAuth } from "@/context/UserContext"
+import { apiPut } from "@/utils/api.utils"
+
 import { AUTHTYPE } from "../../../../../common/contants"
-import useAuth from "../../../../../common/hooks/useAuth"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise, Layout, LoadingEmptySpace } from "../../../../../components/espace_pro"
-import withAuth from "../../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../theme/components/icons"
-import { getFormulaire, putFormulaire, updateEntreprise } from "../../../../../utils/api"
+import { getFormulaire, updateEntreprise } from "../../../../../utils/api"
 
 const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) => {
   const toast = useToast()
-  const [auth] = useAuth()
+  const { user } = useAuth()
   const router = useRouter()
   const client = useQueryClient()
 
@@ -33,8 +36,9 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
       client.invalidateQueries("formulaire-edition")
     },
   })
+
   // @ts-expect-error: TODO
-  const cfaMutation = useMutation(({ establishment_id, values }) => putFormulaire(establishment_id, values), {
+  const cfaMutation = useMutation(({ establishment_id, values }) => apiPut(`/formulaire/:establishment_id`, { params: { establishment_id }, body: values }), {
     onSuccess: () => {
       toast({
         title: "Entreprise mise à jour avec succès.",
@@ -48,9 +52,9 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
   })
 
   const submitForm = async (values, { setSubmitting, setFieldError }) => {
-    if (auth.type === AUTHTYPE.ENTREPRISE) {
+    if (user.type === AUTHTYPE.ENTREPRISE) {
       entrepriseMutation.mutate(
-        { userId: auth.id, establishment_id: establishment_id, values },
+        { userId: user._id, establishment_id: establishment_id, values },
         {
           onError: (error: any) => {
             switch (error.response.data.reason) {
@@ -115,7 +119,7 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
               type="email"
               value={informationForm.values.email}
               info={
-                auth.type === AUTHTYPE.ENTREPRISE ? "Il s’agit de l’adresse qui vous permettra de vous connecter à votre compte. Privilégiez votre adresse professionnelle" : null
+                user.type === AUTHTYPE.ENTREPRISE ? "Il s’agit de l’adresse qui vous permettra de vous connecter à votre compte. Privilégiez votre adresse professionnelle" : null
               }
             />
             <Flex justifyContent="flex-end" alignItems="center" mt={5}>
@@ -141,7 +145,7 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
 
 function EditionEntrepriseContact() {
   const router = useRouter()
-  const [auth] = useAuth()
+  const { user } = useAuth()
 
   const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(router.query.establishment_id), { cacheTime: 0, enabled: !!router.query.establishment_id })
 
@@ -173,7 +177,7 @@ function EditionEntrepriseContact() {
           <Box>
             <Heading>Vos informations de contact</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2}>
-              {auth.type === AUTHTYPE.ENTREPRISE
+              {user.type === AUTHTYPE.ENTREPRISE
                 ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
                 : "il s’agit de l’entreprise qui vous a mandaté pour gérer ses offres d’emploi. Ces informations ne seront pas visibles sur l'offre."}
             </Text>
@@ -197,4 +201,7 @@ function EditionEntrepriseContactPage() {
     </Layout>
   )
 }
-export default withAuth(EditionEntrepriseContactPage)
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(EditionEntrepriseContactPage))

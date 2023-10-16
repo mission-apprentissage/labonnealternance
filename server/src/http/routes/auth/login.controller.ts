@@ -1,11 +1,11 @@
-import Joi from "joi"
-import { zRoutes } from "shared/index"
+import Boom from "boom"
+import { toPublicUser, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getUserFromRequest } from "@/http/middlewares/authMiddleware"
+import { createSession, deleteSession } from "@/services/sessions.service"
 
-import { UserRecruteur } from "../../../common/model/index"
-import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils"
+import { createMagicLinkToken, createUserToken } from "../../../common/utils/jwtUtils"
 import config from "../../../config"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service"
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
@@ -15,19 +15,6 @@ import { Server } from "../../server"
 
 export default (server: Server) => {
   server.post(
-    "/login",
-    {
-      schema: zRoutes.post["/login"],
-      preHandler: [server.auth(zRoutes.post["/login"].securityScheme)],
-    },
-    async (req, res) => {
-      const user = req.user
-      const token = createUserToken(user)
-      return res.status(200).send({ token })
-    }
-  )
-
-  server.post(
     "/login/confirmation-email",
     {
       schema: zRoutes.post["/login/confirmation-email"],
@@ -35,11 +22,9 @@ export default (server: Server) => {
     },
     async (req, res) => {
       try {
-        const { email } = await Joi.object({
-          email: Joi.string().email().required(),
-        }).validateAsync(req.body, { abortEarly: false })
-
-        const user = await getUser({ email })
+        const { email } = req.body
+        const formatedEmail = email.toLowerCase()
+        const user = await getUser({ email: formatedEmail })
 
         if (!user) {
           return res.status(400).send({ error: true, reason: "UNKNOWN" })
@@ -70,15 +55,11 @@ export default (server: Server) => {
     "/login/magiclink",
     {
       schema: zRoutes.post["/login/magiclink"],
-      preHandler: [],
     },
     async (req, res) => {
-      const { email } = await Joi.object({
-        email: Joi.string().email().required(),
-      }).validateAsync(req.body, { abortEarly: false })
-
+      const { email } = req.body
       const formatedEmail = email.toLowerCase()
-      const user = await UserRecruteur.findOne({ email: formatedEmail })
+      const user = await getUser({ email: formatedEmail })
 
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
@@ -136,12 +117,58 @@ export default (server: Server) => {
     "/login/verification",
     {
       schema: zRoutes.post["/login/verification"],
-      preHandler: [server.auth(zRoutes.post["/login/verification"].securityScheme)],
+      onRequest: [server.auth(zRoutes.post["/login/verification"].securityScheme)],
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/login/verification"])
-      await registerUser(user.email)
-      return res.status(200).send({ token: createUserRecruteurToken(user) })
+
+      const token = createUserToken({ email: user.email }, { payload: { email: user.email } })
+      await createSession({ token })
+
+      const formatedEmail = user.email.toLowerCase()
+      const connectedUser = await registerUser(formatedEmail)
+
+      if (!connectedUser) {
+        throw Boom.forbidden()
+      }
+
+      return res.setCookie(config.auth.session.cookieName, token, config.auth.session.cookie).status(200).send(toPublicUser(connectedUser))
+    }
+  )
+
+  /**
+   * Récupérer l'utilisateur connecté
+   */
+  server.get(
+    "/auth/session",
+    {
+      schema: zRoutes.get["/auth/session"],
+      onRequest: [server.auth(zRoutes.get["/auth/session"].securityScheme)],
+    },
+    async (request, response) => {
+      if (!request.user) {
+        throw Boom.forbidden()
+      }
+      const user = getUserFromRequest(request, zRoutes.get["/auth/session"])
+      return response.status(200).send(toPublicUser(user))
+    }
+  )
+
+  server.get(
+    "/auth/logout",
+    {
+      schema: zRoutes.get["/auth/logout"],
+    },
+    async (request, response) => {
+      const token = request.cookies[config.auth.session.cookieName]
+
+      if (token) {
+        await deleteSession(token)
+
+        return response.clearCookie(config.auth.session.cookieName, config.auth.session.cookie).status(200).send({})
+      }
+
+      return response.status(200).send({})
     }
   )
 }

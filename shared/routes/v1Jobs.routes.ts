@@ -25,6 +25,8 @@ import { IRoutesDef, ZResError } from "./common.routes"
 export const zV1JobsRoutes = {
   get: {
     "/v1/jobs/establishment": {
+      method: "get",
+      path: "/v1/jobs/establishment",
       querystring: z
         .object({
           establishment_siret: extensions.siret(),
@@ -56,6 +58,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/bulk": {
+      method: "get",
+      path: "/v1/jobs/bulk",
       // TODO_SECURITY_FIX il faut faire quelque chose car sinon nous allons claquer des fesses
       querystring: z
         .object({
@@ -120,6 +124,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/delegations/:jobId": {
+      method: "get",
+      path: "/v1/jobs/delegations/:jobId",
       // TODO_SECURITY_FIX scoper le retour aux seules offres de l'utilisateur (permissions jobid pour l'utilisateur connecté)
       params: z
         .object({
@@ -153,6 +159,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs": {
+      method: "get",
+      path: "/v1/jobs",
       querystring: z
         .object({
           romes: zRomesParams("rncp"),
@@ -217,6 +225,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/company/:siret": {
+      method: "get",
+      path: "/v1/jobs/company/:siret",
       params: z
         .object({
           siret: extensions.siret(),
@@ -250,6 +260,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/matcha/:id": {
+      method: "get",
+      path: "/v1/jobs/matcha/:id",
       params: z
         .object({
           id: z.string().openapi({
@@ -287,6 +299,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/job/:id": {
+      method: "get",
+      path: "/v1/jobs/job/:id",
       params: z
         .object({
           id: z.string(),
@@ -322,6 +336,8 @@ export const zV1JobsRoutes = {
   },
   post: {
     "/v1/jobs/establishment": {
+      method: "post",
+      path: "/v1/jobs/establishment",
       body: z
         .object({
           establishment_siret: extensions.siret(),
@@ -352,6 +368,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/:establishmentId": {
+      method: "post",
+      path: "/v1/jobs/:establishmentId",
       params: z
         .object({
           establishmentId: z.string(),
@@ -388,6 +406,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/delegations/:jobId": {
+      method: "post",
+      path: "/v1/jobs/delegations/:jobId",
       params: z
         .object({
           jobId: zObjectId,
@@ -413,6 +433,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/provided/:jobId": {
+      method: "post",
+      path: "/v1/jobs/provided/:jobId",
       // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
@@ -433,6 +455,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/canceled/:jobId": {
+      method: "post",
+      path: "/v1/jobs/canceled/:jobId",
       // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
@@ -453,6 +477,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/extend/:jobId": {
+      method: "post",
+      path: "/v1/jobs/extend/:jobId",
       // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
@@ -473,6 +499,8 @@ export const zV1JobsRoutes = {
       },
     },
     "/v1/jobs/matcha/:id/stats/view-details": {
+      method: "post",
+      path: "/v1/jobs/matcha/:id/stats/view-details",
       params: z
         .object({
           id: zObjectId,
@@ -494,6 +522,8 @@ export const zV1JobsRoutes = {
   },
   patch: {
     "/v1/jobs/:jobId": {
+      method: "patch",
+      path: "/v1/jobs/:jobId",
       // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({

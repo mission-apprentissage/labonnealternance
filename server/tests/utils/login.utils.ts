@@ -1,15 +1,20 @@
-import { createUser } from "@/services/user.service"
+import { IUserRecruteur } from "shared/models"
 
-export const createAndLogUser = async (httpClient, username, password, options = {}) => {
-  await createUser(username, password, { email: `${username}@mail.com`, ...options })
+import { createMagicLinkToken } from "@/common/utils/jwtUtils"
+import { Server } from "@/http/server"
+import { createUser } from "@/services/userRecruteur.service"
+
+export const createAndLogUser = async (httpClient: () => Server, username: string, password: string, options: Partial<IUserRecruteur> = {}) => {
+  const email = `${username}@mail.com`
+  await createUser({ username, password, email, ...options })
 
   const response = await httpClient().inject({
     method: "POST",
-    path: "/api/login",
-    body: { username, password },
+    path: "/api/login/verification",
+    query: { token: createMagicLinkToken(email) },
   })
 
   return {
-    Authorization: "Bearer " + JSON.parse(response.body).token,
+    Cookie: response.cookies.reduce((acc, cookie) => `${acc} ${cookie.name}=${cookie.value}`, ""),
   }
 }

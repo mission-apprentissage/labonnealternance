@@ -2,28 +2,26 @@ import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
-import useAuth from "../../../common/hooks/useAuth"
-import { validateToken } from "../../../utils/api"
+import { useAuth } from "@/context/UserContext"
+import { apiPost } from "@/utils/api.utils"
 
 export default function AuthValidation() {
   const router = useRouter()
-  const [, setAuth] = useAuth()
+  const { setUser } = useAuth()
 
-  const { token } = router.query
+  const { token } = router.query as { token: string | undefined }
 
   useEffect(() => {
-    if (token) {
-      // send token to back office
-      validateToken({ token })
-        .then(({ data }) => {
-          setAuth(data?.token)
-          // KBA 20230712 : Temporary solution until migration : use location href to reload the page to make the JWT token work.
-          router.push("/espace-pro/authentification/validation")
-        })
-        .catch(() => {
-          router.push("/")
-        })
+    const fetchData = async () => {
+      if (token) {
+        const user = await apiPost("/login/verification", { querystring: { token } })
+        setUser(user)
+        router.push("/espace-pro/authentification/validation")
+      }
     }
+    fetchData().catch(() => {
+      router.push("/")
+    })
   }, [token])
 
   return (
