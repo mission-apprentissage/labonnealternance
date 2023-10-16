@@ -98,6 +98,7 @@ export const ZApplicationUI = ZApplication.extend({
   crypted_company_email: z.string().nullish(),
   caller: zCallerParam.nullish(),
   job_id: ZApplication.shape.job_id.optional(),
+  searched_for_job_label: z.string().nullish(),
 })
   .omit({
     applicant_message_to_company: true,
