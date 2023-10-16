@@ -154,7 +154,6 @@ export const searchJobs = async (params: {
     return data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    sentryCaptureException(error)
     throw new ApiError("Api PE", error.message, error.code || error.response?.status)
   }
 }
@@ -176,7 +175,6 @@ export const getJob = async (id: string) => {
     return data // PEResponse
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    sentryCaptureException(error)
     throw new ApiError("Api PE", error.message, error.code || error.response?.status)
   }
 }
