@@ -40,10 +40,8 @@ describe("zRoutes", () => {
         if (def.securityScheme) {
           for (const [resourceType, resourceAccesses] of Object.entries(def.securityScheme.ressources)) {
             for (const resourceAccess of resourceAccesses as any) {
-              if (resourceAccess !== "self") {
-                for (const [, access] of Object.entries(resourceAccess) as any) {
-                  assert.notEqual(def[access.type]?.shape?.[access.key], undefined, `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`)
-                }
+              for (const [, access] of Object.entries(resourceAccess) as any) {
+                assert.notEqual(def[access.type]?.shape?.[access.key], undefined, `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`)
               }
             }
           }

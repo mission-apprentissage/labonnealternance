@@ -90,11 +90,6 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
 
   return Promise.all(
     schema.securityScheme.ressources.user.map(async (u) => {
-      if (u === "self") {
-        // We can ignore self, as it will always be true
-        return null
-      }
-
       if ("_id" in u) {
         const id = getAccessResourcePathValue(u._id, req)
         return await UserRecruteur.findById(id).lean()

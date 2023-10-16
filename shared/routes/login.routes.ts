@@ -47,10 +47,8 @@ export const zLoginRoutes = {
       },
       securityScheme: {
         auth: "jwt-token",
-        access: "user:manage",
-        ressources: {
-          user: ["self"],
-        },
+        access: null,
+        ressources: {},
       },
     },
   },
@@ -64,10 +62,8 @@ export const zLoginRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "user:manage",
-        ressources: {
-          user: ["self"],
-        },
+        access: null,
+        ressources: {},
       },
     },
     "/auth/logout": {

@@ -108,7 +108,7 @@ export const zRecruiterRoutes = {
         auth: "cookie-session",
         access: "user:manage",
         ressources: {
-          user: ["self"],
+          user: [{ _id: { type: "params", key: "userRecruteurId" } }],
         },
       },
     },
@@ -200,10 +200,8 @@ export const zRecruiterRoutes = {
       },
       securityScheme: {
         auth: "jwt-token",
-        access: "user:manage",
-        ressources: {
-          user: ["self"],
-        },
+        access: null,
+        ressources: {},
       },
     },
   },
@@ -228,7 +226,7 @@ export const zRecruiterRoutes = {
         auth: "cookie-session",
         access: null,
         ressources: {
-          user: ["self"],
+          user: [{ _id: { type: "params", key: "id" } }],
         },
       },
     },

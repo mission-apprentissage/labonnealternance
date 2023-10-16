@@ -163,7 +163,7 @@ export const zUserRecruteurRoutes = {
         auth: "cookie-session",
         access: "recruiter:manage",
         ressources: {
-          user: ["self"],
+          user: [{ _id: { type: "params", key: "userId" } }],
         },
       },
     },

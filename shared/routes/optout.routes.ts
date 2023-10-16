@@ -29,10 +29,8 @@ export const zOptoutRoutes = {
       },
       securityScheme: {
         auth: "jwt-password",
-        access: "user:manage",
-        ressources: {
-          user: ["self"],
-        },
+        access: null,
+        ressources: {},
       },
     },
   },

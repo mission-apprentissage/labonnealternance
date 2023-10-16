@@ -49,12 +49,9 @@ export type AccessRessouces = {
   application?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
-  user?: ReadonlyArray<
-    | "self"
-    | {
-        _id: AccessResourcePath
-      }
-  >
+  user?: ReadonlyArray<{
+    _id: AccessResourcePath
+  }>
 }
 
 export type UserWithType<T, V> = Readonly<{
