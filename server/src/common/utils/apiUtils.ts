@@ -1,4 +1,5 @@
 import { AxiosInstance } from "axios"
+import { AxiosCacheInstance } from "axios-cache-interceptor"
 import { RateLimiterMemory, RateLimiterQueue } from "rate-limiter-flexible"
 
 import { timeout } from "./asyncUtils"
@@ -8,7 +9,7 @@ interface ApiRateLimiterOptions {
   durationInSeconds?: number
   maxQueueSize?: number
   timeout?: number
-  client: AxiosInstance
+  client: AxiosInstance | AxiosCacheInstance
 }
 export const apiRateLimiter = (name: string, options: ApiRateLimiterOptions) => {
   const rateLimiter = new RateLimiterMemory({
@@ -21,7 +22,7 @@ export const apiRateLimiter = (name: string, options: ApiRateLimiterOptions) => 
     maxQueueSize: options.maxQueueSize || 25,
   })
 
-  return async <T>(callback: (i: AxiosInstance) => T): Promise<T> => {
+  return async <T>(callback: (i: AxiosInstance | AxiosCacheInstance) => T): Promise<T> => {
     await timeout(queue.removeTokens(1), options.timeout || 10000)
     return callback(options.client)
   }
