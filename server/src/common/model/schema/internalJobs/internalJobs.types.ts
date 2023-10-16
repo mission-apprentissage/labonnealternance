@@ -20,7 +20,7 @@ type CronName =
   | "Send offer reminder email at J+7"
   | "Send offer reminder email at J+1"
   | "Send reminder to OPCO about awaiting validation users"
-  | "Send CSV offers to Pôle emploi"
+  //| "Send CSV offers to Pôle emploi"
   | "Check companies validation state"
   | "Mise à jour des recruteurs en erreur"
   | "Active tous les établissements qui ont souscrits à l'opt-out."
