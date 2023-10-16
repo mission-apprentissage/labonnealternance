@@ -44,7 +44,7 @@ fileignoreconfig:
 - filename: server/tests/integration/http/passwordRoutes.test.ts
   checksum: e9869aceb9bb23877dccf1c6e2de729bfe685f7e40231c465fc40cdcc7c68c14
 - filename: server/tests/unit/security/authorisationService.test.ts
-  checksum: 078c94a436dcba0a49010e101ae7d7b5a48ba14f55751e663a60761482a09e58
+  checksum: 3d4c60bc4bfa3227c4d8a220fc133c2c83781409bcd1587a89671292a18f6340
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/openapi/generateOpenapi.test.ts

@@ -46,8 +46,9 @@ export type AccessRessouces = {
   job?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
-  // application?: ReadonlyArray<AccessResourcePath>
-  // cfa?: ReadonlyArray<AccessResourcePath>
+  application?: ReadonlyArray<{
+    _id: AccessResourcePath
+  }>
   user?: ReadonlyArray<
     | "self"
     | {

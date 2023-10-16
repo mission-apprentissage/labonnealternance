@@ -1,11 +1,11 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import { IJob, IRecruiter, IUserRecruteur } from "shared/models"
+import { IApplication, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, RecruiterRole, Role } from "shared/security/permissions"
 import { Primitive } from "type-fest"
 
-import { Recruiter, UserRecruteur } from "@/common/model"
+import { Recruiter, UserRecruteur, Application } from "@/common/model"
 
 import { IUserWithType, getUserFromRequest } from "./authenticationService"
 
@@ -13,6 +13,7 @@ type Ressouces = {
   recruiters: Array<IRecruiter | null>
   jobs: Array<{ job: IJob; recruiter: IRecruiter } | null>
   users: Array<IUserRecruteur | null>
+  applications: Array<{ application: IApplication; job: IJob; recruiter: IRecruiter } | null>
 }
 
 // Specify what we need to simplify mocking in tests
@@ -104,13 +105,54 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
   )
 }
 
+async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces["applications"]> {
+  if (!schema.securityScheme.ressources.application) {
+    return []
+  }
+
+  return Promise.all(
+    schema.securityScheme.ressources.application.map(async (u) => {
+      if ("_id" in u) {
+        const id = getAccessResourcePathValue(u._id, req)
+        const application = await Application.findById(id).lean()
+
+        if (!application || !application.job_id) return null
+
+        const jobId = application.job_id
+
+        const recruiter = await Recruiter.findOne({ "jobs._id": jobId }).lean()
+
+        if (!recruiter) {
+          return null
+        }
+
+        const job = recruiter.jobs.find((j) => j._id.toString() === jobId.toString())
+
+        if (!job) {
+          return null
+        }
+
+        return { application, recruiter, job }
+      }
+
+      assertUnreachable(u)
+    })
+  )
+}
+
 export async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces> {
-  const [recruiters, jobs, users] = await Promise.all([getRecruitersResource(schema, req), getJobsResource(schema, req), getUserResource(schema, req)])
+  const [recruiters, jobs, users, applications] = await Promise.all([
+    getRecruitersResource(schema, req),
+    getJobsResource(schema, req),
+    getUserResource(schema, req),
+    getApplicationResouce(schema, req),
+  ])
 
   return {
     recruiters,
     jobs,
     users,
+    applications,
   }
 }
 
@@ -209,6 +251,35 @@ function canAccessUser(userWithType: IUserWithType, resource: Ressouces["users"]
   }
 }
 
+function canAccessApplication(userWithType: IUserWithType, resource: Ressouces["applications"][number]): boolean {
+  if (resource === null) {
+    return true
+  }
+
+  if (userWithType.type === "ICredential") {
+    return false
+  }
+
+  const user = userWithType.value
+  switch (user.type) {
+    case "ADMIN":
+      return true
+    case "ENTREPRISE": {
+      if (resource.application.job_origin === "matcha") {
+        return resource.recruiter.establishment_id === userWithType.value.establishment_id
+      }
+
+      return false
+    }
+    case "CFA":
+      return false
+    case "OPCO":
+      return false
+    default:
+      assertUnreachable(user.type)
+  }
+}
+
 export function isAuthorized(access: AccessPermission, userWithType: IUserWithType, role: Role, resources: Ressouces): boolean {
   if (typeof access === "object") {
     if ("some" in access) {
@@ -239,7 +310,7 @@ export function isAuthorized(access: AccessPermission, userWithType: IUserWithTy
       // School is actually the UserRecruteur
       return resources.users.every((r) => canAccessUser(userWithType, r))
     case "application:manage":
-      throw new Error("Not implemented")
+      return resources.applications.every((r) => canAccessApplication(userWithType, r))
     case "user:manage":
       return resources.users.every((r) => canAccessUser(userWithType, r))
     case "admin":

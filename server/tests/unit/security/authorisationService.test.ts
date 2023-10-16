@@ -103,13 +103,20 @@ describe("authorisationService", () => {
   let recruteurUserO2E1R1: IUserRecruteur
   let recruteurO2E1R1: IRecruiter
   let credentialO1: ICredential
+  let applicationO1E1R1J1A1: IApplication
+  let applicationO1E1R1J1A2: IApplication
+  let applicationO1E1R1J2A1: IApplication
+  let applicationO1E1R2J1A1: IApplication
 
-  function getResourceAccessKey(resource: IUserRecruteur | IRecruiter | IJob, i: number): string {
+  function getResourceAccessKey(resource: IUserRecruteur | IRecruiter | IJob | IApplication, i: number): string {
     if (resource instanceof UserRecruteur) {
       return `userId${i}`
     }
     if (resource instanceof Recruiter) {
       return `recruiterId${i}`
+    }
+    if (resource instanceof Application) {
+      return `applicationId${i}`
     }
 
     return `jobId${i}`
@@ -117,7 +124,7 @@ describe("authorisationService", () => {
 
   function generateSecuritySchemeFixture(
     access: AccessPermission,
-    ressources: ReadonlyArray<IUserRecruteur | IRecruiter | IJob>,
+    ressources: ReadonlyArray<IUserRecruteur | IRecruiter | IJob | IApplication>,
     location: "params" | "query"
   ): [SecurityScheme, Pick<FastifyRequest, "params" | "query">] {
     return [
@@ -139,6 +146,13 @@ describe("authorisationService", () => {
             return {
               ...acc,
               recruiter: [...recruiter, { _id: { type: location, key } }],
+            }
+          }
+          if (resource instanceof Application) {
+            const application = acc.application ?? []
+            return {
+              ...acc,
+              application: [...application, { _id: { type: location, key } }],
             }
           }
           const job = acc.job ?? []
@@ -177,6 +191,7 @@ describe("authorisationService", () => {
     //               --> Application #O1#E1#R1#J2#A1
     //       --> Recruteur #O1#E1#R2
     //           --> Job #O1#E1#R2#J1
+    //               --> Application #O1#E1#R2#J1#A1
     //           --> Job #O1#E1#R2#J2
     //  |--- Entreprise #O1#E2
     //       --> Recruteur #O1#E2#R1
@@ -191,6 +206,7 @@ describe("authorisationService", () => {
     const CFA_SIRET = "80300515600044"
     const O1E1R1J1Id = new ObjectId()
     const O1E1R1J2Id = new ObjectId()
+    const O1E1R2J1Id = new ObjectId()
     const O1E1Siret = "88160687500014"
     const O1E2Siret = "38959133000060"
 
@@ -232,16 +248,19 @@ describe("authorisationService", () => {
         { _id: O1E1R1J2Id, job_description: "#O1#E1#R1#J2" },
       ]
     )
-    await createApplication({
+    applicationO1E1R1J1A1 = await createApplication({
       job_id: O1E1R1J1Id.toString(),
+      job_origin: "matcha",
       applicant_message_to_company: "#O1#E1#R1#J1#A1",
     })
-    await createApplication({
+    applicationO1E1R1J1A2 = await createApplication({
       job_id: O1E1R1J1Id.toString(),
+      job_origin: "matcha",
       applicant_message_to_company: "#O1#E1#R1#J1#A2",
     })
-    await createApplication({
+    applicationO1E1R1J2A1 = await createApplication({
       job_id: O1E1R1J2Id.toString(),
+      job_origin: "matcha",
       applicant_message_to_company: "#O1#E1#R1#J2#A1",
     })
 
@@ -257,8 +276,13 @@ describe("authorisationService", () => {
         establishment_id: "#O1#E1#R2",
         establishment_siret: O1E1Siret,
       },
-      [{ job_description: "#O1#E1#R2#J1" }, { job_description: "#O1#E1#R2#J2" }]
+      [{ _id: O1E1R2J1Id, job_description: "#O1#E1#R2#J1" }]
     )
+    applicationO1E1R2J1A1 = await createApplication({
+      job_id: O1E1R2J1Id.toString(),
+      job_origin: "matcha",
+      applicant_message_to_company: "#O1#E1#R2#J1#A1",
+    })
 
     recruteurUserO1E2R1 = await createUserRecruteur({
       type: "ENTREPRISE",
@@ -338,6 +362,9 @@ describe("authorisationService", () => {
               recruteurUserO2E1R1,
               recruteurO2E1R1,
               ...recruteurO2E1R1.jobs,
+              applicationO1E1R1J1A1,
+              applicationO1E1R1J1A2,
+              applicationO1E1R1J2A1,
             ],
             location
           )
@@ -492,8 +519,8 @@ describe("authorisationService", () => {
       })
 
       describe.each<[Permission]>([["application:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on recruiter from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
+        it("on application from my Opco", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1], location)
           await expect(
             authorizationnMiddleware(
               {
@@ -733,8 +760,8 @@ describe("authorisationService", () => {
       })
 
       describe.each<[Permission]>([["application:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on recruiter from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
+        it("on application from my Opco", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1], location)
           await expect(
             authorizationnMiddleware(
               {
@@ -1018,8 +1045,8 @@ describe("authorisationService", () => {
       })
 
       describe.each<[Permission]>([["application:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on delegated recruiter", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
+        it("on application of my delegated recruiter", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1], location)
           await expect(
             authorizationnMiddleware(
               {
@@ -1149,6 +1176,27 @@ describe("authorisationService", () => {
           ).resolves.toBe(undefined)
         })
       })
+      describe.each<[Permission]>([["application:manage"]])("I have %s permission", (permission) => {
+        it("on my applications", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1, applicationO1E1R1J1A2], location)
+          await expect(
+            authorizationnMiddleware(
+              {
+                method: "get",
+                path: "/path",
+                securityScheme,
+              },
+              {
+                user: {
+                  type: "IUserRecruteur",
+                  value: recruteurUserO1E1R1,
+                },
+                ...req,
+              }
+            )
+          ).resolves.toBe(undefined)
+        })
+      })
       describe.each<[Permission]>([["user:manage"]])("I have %s permission", (permission) => {
         it("on myself", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
@@ -1218,6 +1266,28 @@ describe("authorisationService", () => {
       describe.each<[Permission]>([["job:manage"], ["admin"]])("I do not have %s permission", (permission) => {
         it("on job from other recruiters from my company", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R2.jobs], location)
+          await expect(
+            authorizationnMiddleware(
+              {
+                method: "get",
+                path: "/path",
+                securityScheme,
+              },
+              {
+                user: {
+                  type: "IUserRecruteur",
+                  value: recruteurUserO1E1R1,
+                },
+                ...req,
+              }
+            )
+          ).rejects.toThrow("Forbidden")
+        })
+      })
+
+      describe.each<[Permission]>([["application:manage"], ["admin"]])("I do not have %s permission", (permission) => {
+        it("on other applications", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R2J1A1], location)
           await expect(
             authorizationnMiddleware(
               {
