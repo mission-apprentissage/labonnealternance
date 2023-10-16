@@ -81,6 +81,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 }
 
 export const getRomeDetailsFromDB = async (romeCode: string) => FicheMetierRomeV3.findOne({ code: romeCode }).select({ fiche_metier: 1 }).lean()
+export const getFicheMetierRomeV3FromDB = async ({ query }) => FicheMetierRomeV3.findOne(query).lean()
 
 export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
   token = await getToken(token)
