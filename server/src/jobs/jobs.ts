@@ -87,11 +87,11 @@ export const CRONS: Record<CronName, CronDef> = {
     cron_string: "30 0 * * 1,3,5",
     handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
   },
-  "Send CSV offers to Pôle emploi": {
+  /*"Send CSV offers to Pôle emploi": {
     name: "Send CSV offers to Pôle emploi",
     cron_string: "30 5 * * *",
     handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" } }),
-  },
+  },*/
   "Check companies validation state": {
     name: "Check companies validation state",
     cron_string: "30 6 * * *",
