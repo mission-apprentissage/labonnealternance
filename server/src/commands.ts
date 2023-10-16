@@ -475,6 +475,5 @@ program
   .action(createJobAction("recruiters:raison-sociale:fill"))
 
 export async function startCLI() {
-  console.log("cli", process.argv)
   await program.parseAsync(process.argv)
 }
