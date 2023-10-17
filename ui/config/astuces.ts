@@ -40,7 +40,7 @@ export const astuces = [
     id: "AID_1JEUNE_1SOL",
     theme: "Aide",
     message: "De nombreuses aides existent pour les jeunes : pour les connaître, faites une simulation sur 1 jeune 1 solution !",
-    lien: "https://mes-aides.1jeune1solution.beta.gouv.fr/?utm_source=labonnealternance",
+    lien: "https://www.1jeune1solution.gouv.fr/mes-aides",
   },
   {
     id: "AID_MENTOR_ANAF",

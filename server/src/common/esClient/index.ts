@@ -17,4 +17,8 @@ const createEsInstance = () => {
 const clientDefault = createEsInstance()
 const getElasticInstance = () => clientDefault
 
-export { getElasticInstance, mongoosastic }
+async function closeElasticSearch() {
+  await clientDefault?.close()
+}
+
+export { getElasticInstance, mongoosastic, closeElasticSearch }

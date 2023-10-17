@@ -233,7 +233,12 @@ function Mongoosastic(schema, options) {
       id: doc._id.toString(),
     }
 
-    await esClient.index(_opts)
+    try {
+      await esClient.index(_opts)
+    } catch (e) {
+      logger.error(e)
+      sentryCaptureException(e)
+    }
   }
 
   schema.methods.unIndex = async function schemaUnIndex() {
@@ -248,6 +253,7 @@ function Mongoosastic(schema, options) {
     while (tries > 0) {
       try {
         await esClient.delete(_opts)
+        tries = 0
       } catch (e) {
         console.error(e)
         sentryCaptureException(e)
@@ -263,19 +269,15 @@ function Mongoosastic(schema, options) {
       this.find({}).cursor(),
       writeData(
         async (doc) => {
-          try {
-            await schemaIndex(doc, refresh)
-            if (++count % 1000 === 0) {
-              logMessage("info", `${count} indexed ${this.modelName}`)
-            }
-          } catch (error) {
-            logger.error(error)
-            sentryCaptureException(error)
+          await schemaIndex(doc, refresh)
+          if (++count % 1000 === 0) {
+            logMessage("info", `progress: ${count} indexed ${this.modelName}`)
           }
         },
         { parallel: 8 }
       )
     )
+    logMessage("info", `end: ${count} indexed ${this.modelName}`)
   }
 
   schema.statics.unsynchronize = async function unsynchronize() {
@@ -312,12 +314,7 @@ function Mongoosastic(schema, options) {
 
     inSchema.post("insertMany", async (docs) => {
       for (let i = 0; i < docs.length; i++) {
-        try {
-          await postSave(docs[i])
-        } catch (e) {
-          logger.error(e)
-          sentryCaptureException(e)
-        }
+        await postSave(docs[i])
       }
     })
   }

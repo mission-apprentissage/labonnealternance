@@ -6,6 +6,8 @@ import { IRoutesDef, ZResError } from "./common.routes"
 export const zOptoutRoutes = {
   get: {
     "/optout/validate": {
+      method: "get",
+      path: "/optout/validate",
       // TODO_SECURITY_FIX jwt
       // jwt auth
       response: {

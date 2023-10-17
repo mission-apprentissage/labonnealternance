@@ -55,20 +55,20 @@ interface IAdresseV2 extends AcheminementPostal {
 
 interface IAdresseV3 {
   status_diffusion: string
-  complement_adresse: string
+  complement_adresse: string | null
   numero_voie: string
   indice_repetition_voie: string
   type_voie: string
   libelle_voie: string
   code_postal: string
   libelle_commune: string
-  libelle_commune_etranger: string
-  distribution_speciale: string
+  libelle_commune_etranger: string | null
+  distribution_speciale: string | null
   code_commune: string
-  code_cedex: string
-  libelle_cedex: string
-  code_pays_etranger: string
-  libelle_pays_etranger: string
+  code_cedex: string | null
+  libelle_cedex: string | null
+  code_pays_etranger: string | null
+  libelle_pays_etranger: string | null
   acheminement_postal?: AcheminementPostal
 }
 

@@ -2,11 +2,24 @@ import querystring from "querystring"
 
 import axios from "axios"
 
+import { FicheMetierRomeV3 } from "../common/model"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
 import dayjs from "./dayjs.service"
 import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "./rome.service.types"
+
+// const getApiClient = (options = {}) =>
+//   setupCache(
+//     axios.create({
+//       httpAgent: new http.Agent({ keepAlive: true }),
+//       httpsAgent: new https.Agent({ keepAlive: true }),
+//       ...options,
+//     }),
+//     {
+//       ttl: 2000 * 60 * 10, // 20 Minutes
+//     }
+//   )
 
 let token: IPEAPIToken = {
   access_token: "",
@@ -63,11 +76,12 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
     return data
   } catch (error: any) {
     sentryCaptureException(error)
-    if (error.response.status === 404) {
-      return null
-    }
+    return null
   }
 }
+
+export const getRomeDetailsFromDB = async (romeCode: string) => FicheMetierRomeV3.findOne({ code: romeCode }).select({ fiche_metier: 1 }).lean()
+export const getFicheMetierRomeV3FromDB = async ({ query }) => FicheMetierRomeV3.findOne(query).lean()
 
 export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
   token = await getToken(token)

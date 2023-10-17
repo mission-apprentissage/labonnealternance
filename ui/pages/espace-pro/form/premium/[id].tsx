@@ -3,7 +3,8 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
-import { _get, _post } from "../../../../common/httpClient"
+import { apiGet, apiPost } from "@/utils/api.utils"
+
 import { Layout } from "../../../../components/espace_pro"
 import { InfoCircleFilled, SuccessCircle } from "../../../../theme/components/icons"
 
@@ -24,7 +25,7 @@ type IPremiumEtablissement = {
  */
 export default function PremiumForm() {
   const router = useRouter()
-  const { id } = router.query
+  const { id } = router.query as { id: string }
   const [hasRefused, setHasRefused] = useState(false)
   const [hasAccepted, setHasAccepted] = useState(false)
   const [etablissement, setEtablissement]: [IPremiumEtablissement | null, (e: any) => void] = useState()
@@ -36,7 +37,9 @@ export default function PremiumForm() {
    * @returns {Promise<void>}
    */
   const accept = async () => {
-    await _post(`etablissements/${id}/premium/accept`)
+    await apiPost("/etablissements/:id/premium/accept", {
+      params: { id },
+    })
     setHasAccepted(true)
     window.scrollTo(0, 0)
   }
@@ -46,14 +49,18 @@ export default function PremiumForm() {
    * @returns {Promise<void>}
    */
   const refuse = async () => {
-    await _post(`etablissements/${id}/premium/refuse`)
+    await apiPost("/etablissements/:id/premium/refuse", {
+      params: { id },
+    })
     setHasRefused(true)
     window.scrollTo(0, 0)
   }
 
   useEffect(() => {
     const fetchData = async () => {
-      const etablissement = await _get(`etablissements/${id}`)
+      const etablissement = (await apiGet("/etablissements/:id", {
+        params: { id },
+      })) as any // TODO not any
 
       if (etablissement.premium_refusal_date) {
         setHasRefused(true)

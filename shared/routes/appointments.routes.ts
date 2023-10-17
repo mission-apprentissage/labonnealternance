@@ -1,6 +1,6 @@
 import { referrers } from "../constants/referers"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment, ZEtablissement } from "../models"
+import { ZEtablissement } from "../models"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -67,20 +67,9 @@ const zContextCreateSchema = z.union([
 
 export const zAppointmentsRoute = {
   get: {
-    "/admin/appointments": {
-      response: {
-        "2xx": z
-          .object({
-            appointments: z.array(ZAppointment),
-          })
-          .strict(),
-      },
-      securityScheme: {
-        auth: "jwt-rdv-admin",
-        role: "administrator",
-      },
-    },
     "/admin/appointments/details": {
+      method: "get",
+      path: "/admin/appointments/details",
       response: {
         "2xx": z
           .object({
@@ -113,11 +102,13 @@ export const zAppointmentsRoute = {
           .strict(),
       },
       securityScheme: {
-        auth: "jwt-rdv-admin",
+        auth: "cookie-session",
         role: "administrator",
       },
     },
     "/appointment-request/context/recap": {
+      method: "get",
+      path: "/appointment-request/context/recap",
       // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
@@ -144,6 +135,8 @@ export const zAppointmentsRoute = {
   },
   post: {
     "/appointment-request/context/create": {
+      method: "post",
+      path: "/appointment-request/context/create",
       body: zContextCreateSchema,
       response: {
         "2xx": z.union([
@@ -164,9 +157,12 @@ export const zAppointmentsRoute = {
                 example: "24113401",
               }),
               localite: z.string().openapi({ example: "Bagnolet" }),
-              id_rco_formation: z.string().openapi({
-                example: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-              }),
+              id_rco_formation: z
+                .string()
+                .openapi({
+                  example: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
+                })
+                .nullable(),
               cle_ministere_educatif: z.string().openapi({
                 example: "101249P01313538697790003635386977900036-93006#L01",
               }),
@@ -196,6 +192,8 @@ export const zAppointmentsRoute = {
       },
     },
     "/appointment-request/validate": {
+      method: "post",
+      path: "/appointment-request/validate",
       body: z
         .object({
           firstname: z.string(),
@@ -225,6 +223,8 @@ export const zAppointmentsRoute = {
       },
     },
     "/appointment-request/reply": {
+      method: "post",
+      path: "/appointment-request/reply",
       // TODO_SECURITY_FIX token jwt
       body: z
         .object({

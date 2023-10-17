@@ -1,3 +1,8 @@
+import { captureException } from "@sentry/node"
+
+import { logger } from "../logger"
+import { mongooseInstance } from "../mongodb"
+
 import ApiCalls from "./schema/apiCall/apiCall.schema"
 import Application from "./schema/application/applications.schema"
 import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
@@ -9,6 +14,7 @@ import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppoin
 import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema"
 import Etablissement from "./schema/etablissements/etablissement.schema"
+import FicheMetierRomeV3 from "./schema/ficheRomeV3/ficheRomeV3"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema"
 import GeoLocation from "./schema/geolocation/geolocation.schema"
 import InternalJobs from "./schema/internalJobs/internalJobs.schema"
@@ -22,10 +28,45 @@ import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.sche
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
 import ReferentielRome from "./schema/referentielRome/referentielRome.schema"
 import RncpRomes from "./schema/rncpRomes/rncpRomes.schema"
+import Session from "./schema/session/session.schema"
 import UnsubscribedLbaCompany from "./schema/unsubscribedLbaCompany/unsubscribedLbaCompany.schema"
 import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema"
 import User from "./schema/user/user.schema"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema"
+
+export async function createMongoDBIndexes() {
+  const results = await Promise.allSettled(
+    mongooseInstance.modelNames().map(async (name) => {
+      mongooseInstance
+        .model(name)
+        .createIndexes({ background: true })
+        .catch(async (e) => {
+          if (e.codeName === "IndexOptionsConflict") {
+            const err = new Error(`Conflict in indexes for ${name}`, { cause: e })
+            logger.error(err)
+            captureException(err)
+            await mongooseInstance.connection.collection(name).dropIndexes()
+            await mongooseInstance.model(name).createIndexes({ background: true })
+          }
+        })
+    })
+  )
+
+  const errors = results.reduce((acc, r) => {
+    if (r.status === "rejected") {
+      acc.push(r.reason)
+
+      logger.error(r.reason)
+      captureException(r.reason)
+    }
+
+    return acc
+  }, [] as Error[])
+
+  if (errors.length > 0) {
+    throw new AggregateError(errors, `createMongoDBIndexes failed with ${errors.length} errors`)
+  }
+}
 
 export {
   ApiCalls,
@@ -38,6 +79,7 @@ export {
   EligibleTrainingsForAppointment,
   EmailBlacklist,
   Etablissement,
+  FicheMetierRomeV3,
   FormationCatalogue,
   GeoLocation,
   InternalJobs,
@@ -55,5 +97,6 @@ export {
   UnsubscribedLbaCompany,
   User,
   UserRecruteur,
+  Session,
   eligibleTrainingsForAppointmentHistory,
 }

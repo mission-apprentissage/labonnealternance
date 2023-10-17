@@ -4,29 +4,33 @@ import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import * as Yup from "yup"
 
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { useAuth } from "@/context/UserContext"
+import { apiGet, apiPut } from "@/utils/api.utils"
+
 import { AUTHTYPE } from "../../common/contants"
-import useAuth from "../../common/hooks/useAuth"
 import { LoadingEmptySpace } from "../../components/espace_pro"
 import AnimationContainer from "../../components/espace_pro/AnimationContainer"
 import CustomInput from "../../components/espace_pro/CustomInput"
 import InformationLegaleEntreprise from "../../components/espace_pro/InformationLegaleEntreprise"
 import Layout from "../../components/espace_pro/Layout"
 import ModificationCompteEmail from "../../components/espace_pro/ModificationCompteEmail"
-import withAuth from "../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
-import { getUser, updateEntreprise, updatePartenaire } from "../../utils/api"
+import { updateEntreprise } from "../../utils/api"
 
 function Compte() {
   const client = useQueryClient()
   const toast = useToast()
   const router = useRouter()
-  const [auth] = useAuth()
   const ModificationEmailPopup = useDisclosure()
 
+  const { user } = useAuth()
+
   const getUserNavigationContext = () => {
-    switch (auth.type) {
+    switch (user.type) {
       case AUTHTYPE.ENTREPRISE:
-        return `/espace-pro/administration/entreprise/${auth.establishment_id}`
+        return `/espace-pro/administration/entreprise/${user.establishment_id}`
       case AUTHTYPE.CFA:
         return `/espace-pro/administration`
       case AUTHTYPE.ADMIN:
@@ -38,19 +42,28 @@ function Compte() {
     }
   }
 
-  const { data, isLoading } = useQuery("user", () => getUser(auth.id))
-  // @ts-expect-error: TODO
-  const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
+  const { data, isLoading } = useQuery("user", () => apiGet(`/user/:userId`, { params: { userId: user._id.toString() } }))
+
+  const userMutation = useMutation(({ userId, establishment_id, values }: any) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
     },
   })
-  // @ts-expect-error: TODO
-  const partenaireMutation = useMutation(({ userId, values }) => updatePartenaire(userId, values), {
-    onSuccess: () => {
-      client.invalidateQueries("user")
-    },
-  })
+
+  const partenaireMutation = useMutation(
+    ({ userId, values }: any) =>
+      apiPut("/etablissement/:id", {
+        params: {
+          id: userId,
+        },
+        body: values,
+      }),
+    {
+      onSuccess: () => {
+        client.invalidateQueries("user")
+      },
+    }
+  )
 
   if (isLoading) {
     return <LoadingEmptySpace label="Chargement en cours" />
@@ -62,7 +75,7 @@ function Compte() {
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>
             <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
-              {auth.type !== AUTHTYPE.OPCO && (
+              {user.type !== AUTHTYPE.OPCO && (
                 <BreadcrumbItem>
                   <BreadcrumbLink textDecoration="underline" onClick={() => router.push(getUserNavigationContext())} textStyle="xs">
                     Administration des offres
@@ -78,10 +91,10 @@ function Compte() {
             validateOnMount={true}
             enableReinitialize={true}
             initialValues={{
-              last_name: data.data.last_name,
-              first_name: data.data.first_name,
-              phone: data.data.phone,
-              email: data.data.email,
+              last_name: data.last_name,
+              first_name: data.first_name,
+              phone: data.phone,
+              email: data.email,
             }}
             validationSchema={Yup.object().shape({
               last_name: Yup.string().required("champ obligatoire"),
@@ -95,12 +108,11 @@ function Compte() {
             })}
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
-              if (auth.type === AUTHTYPE.ENTREPRISE) {
+              if (user.type === AUTHTYPE.ENTREPRISE) {
                 // @ts-expect-error: TODO
-                userMutation.mutate({ userId: data.data._id, establishment_id: auth.establishment_id, values })
+                userMutation.mutate({ userId: data._id, establishment_id: auth.establishment_id, values })
               } else {
-                // @ts-expect-error: TODO
-                partenaireMutation.mutate({ userId: data.data._id, values })
+                partenaireMutation.mutate({ userId: data._id, values })
               }
               toast({
                 title: "Mise à jour enregistrée avec succès",
@@ -123,11 +135,11 @@ function Compte() {
                     <Box>
                       <Heading>Vos informations de contact</Heading>
                       <Text fontSize="20px" textAlign="justify">
-                        {auth.type === AUTHTYPE.ENTREPRISE
+                        {user.type === AUTHTYPE.ENTREPRISE
                           ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
                           : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
                       </Text>
-                      {auth.type === AUTHTYPE.CFA && (
+                      {user.type === AUTHTYPE.CFA && (
                         <Text fontSize="20px" textAlign="justify" mt={2}>
                           Vous recevrez les candidatures sur l’email enregistré.
                         </Text>
@@ -147,7 +159,7 @@ function Compte() {
                       </Box>
                     </Box>
                     <Box>
-                      <InformationLegaleEntreprise {...data.data} />
+                      <InformationLegaleEntreprise {...data} />
                     </Box>
                   </SimpleGrid>
                 </>
@@ -160,4 +172,6 @@ function Compte() {
   )
 }
 
-export default withAuth(Compte)
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(Compte))

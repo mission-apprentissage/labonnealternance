@@ -2,44 +2,39 @@ import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { authProvider, withAuth } from "@/components/espace_pro/withAuth"
+import { useAuth } from "@/context/UserContext"
+
 import { AUTHTYPE } from "../../../../common/contants"
-import useAuth from "../../../../common/hooks/useAuth"
 
-export default function RedirectAfterAuth() {
+function RedirectAfterAuth() {
   const router = useRouter()
-  const [auth] = useAuth()
+  const { user } = useAuth()
 
-  // TODO_AB
   const fromEntrepriseCreation = router.query
 
   useEffect(() => {
-    if (auth.sub === "anonymous") return
-
-    switch (auth.type) {
+    switch (user.type) {
       case AUTHTYPE.ENTREPRISE:
         router.push({
-          pathname: `/espace-pro/administration/entreprise/${auth.establishment_id}`,
+          pathname: `/espace-pro/administration/entreprise/${user.establishment_id}`,
           query: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
         })
-
         break
-
       case AUTHTYPE.OPCO:
         router.push(`/espace-pro/administration/opco`)
         break
-
       case AUTHTYPE.CFA:
         router.push("/espace-pro/administration")
         break
-
       case AUTHTYPE.ADMIN:
         router.push("/espace-pro/administration/users")
         break
-
       default:
         break
     }
-  }, [auth])
+  }, [user])
 
   return (
     <>
@@ -52,3 +47,7 @@ export default function RedirectAfterAuth() {
     </>
   )
 }
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(RedirectAfterAuth))

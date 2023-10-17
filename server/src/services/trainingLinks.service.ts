@@ -7,22 +7,20 @@ import config from "../config.js"
 
 interface IWish {
   id: string
-  cle_ministere_educatif: string
-  mef: string
-  cfd: string
-  rncp: string
-  code_postal: string
-  uai: string
-  uai_lieu_formation: string
-  uai_formateur: string
-  uai_formateur_responsable: string
-  code_insee: string
+  cle_ministere_educatif?: string | null
+  mef?: string | null
+  cfd?: string | null
+  rncp?: string | null
+  code_postal?: string | null
+  uai?: string | null
+  uai_lieu_formation?: string | null
+  uai_formateur?: string | null
+  uai_formateur_responsable?: string | null
+  code_insee?: string | null
 }
 
 interface ILinks {
   id: string
-  error: boolean
-  message: string
   lien_prdv: string
   lien_lba: string
 }
@@ -145,7 +143,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
             rncp_code: wish.rncp,
           },
           {
-            cfd: wish.cfd,
+            cfd: wish.cfd ? wish.cfd : undefined,
           },
           {
             "bcn_mefs_10.mef10": wish.mef,
@@ -182,11 +180,12 @@ const getLBALink = async (wish: IWish): Promise<string> => {
           }
         )
 
+        const postCode = wish.code_insee || wish.code_postal
         if (formation) {
           ;[lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
-        } else if (wish.code_insee || wish.code_postal) {
+        } else if (postCode) {
           // KBA 20230817 : might be modified using INSEE postcode.
-          const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(wish.code_insee ?? wish.code_postal)
+          const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(postCode)
           if (responseApiAdresse && responseApiAdresse.features.length) {
             ;[lon, lat] = responseApiAdresse.features[0].geometry.coordinates
           }

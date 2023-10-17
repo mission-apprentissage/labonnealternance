@@ -2,7 +2,7 @@ import { randomUUID } from "crypto"
 
 import Boom from "boom"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IUserRecruteur, IUserStatusValidation } from "shared"
+import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -10,7 +10,7 @@ import { UserRecruteur } from "../common/model/index"
 import { createMagicLinkToken } from "../common/utils/jwtUtils"
 import config from "../config"
 
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR, ADMIN } from "./constant.service"
 import mailer from "./mailer.service"
 
 /**
@@ -91,7 +91,11 @@ export const createUser = async (values) => {
  * @param {ModelUpdateOptions} options
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateUser = async (query: FilterQuery<IUserRecruteur>, update: UpdateQuery<IUserRecruteur>, options: ModelUpdateOptions = { new: true }): Promise<IUserRecruteur> => {
+export const updateUser = async (
+  query: FilterQuery<IUserRecruteur>,
+  update: Partial<IUserRecruteurWritable>,
+  options: ModelUpdateOptions = { new: true }
+): Promise<IUserRecruteur> => {
   const userRecruterOpt = await UserRecruteur.findOneAndUpdate(query, update, options).lean()
   if (!userRecruterOpt) {
     throw Boom.internal(`could not update one user from query=${JSON.stringify(query)}`)
@@ -104,7 +108,7 @@ export const updateUser = async (query: FilterQuery<IUserRecruteur>, update: Upd
  * @param {IUserRecruteur["_id"]} id
  * @returns {Promise<void>}
  */
-export const removeUser = async (id: IUserRecruteur["_id"]) => {
+export const removeUser = async (id: IUserRecruteur["_id"] | string) => {
   const user = await UserRecruteur.findById(id)
   if (!user) {
     throw new Error(`Unable to find user ${id}`)
@@ -118,7 +122,7 @@ export const removeUser = async (id: IUserRecruteur["_id"]) => {
  * @param {IUserRecruteur["email"]} email
  * @returns {Promise<IUserRecruteur>}
  */
-export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.findOneAndUpdate({ email }, { last_connection: new Date() })
+export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.findOneAndUpdate({ email: email }, { last_connection: new Date() })
 
 /**
  * @description update user validation status
@@ -233,6 +237,8 @@ const projection = {
   opco: 1,
   status: 1,
 }
+
+export const getAdminUsers = () => UserRecruteur.find({ type: ADMIN }).lean()
 
 export const getActiveUsers = () =>
   UserRecruteur.find({

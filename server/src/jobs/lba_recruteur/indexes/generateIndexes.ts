@@ -1,8 +1,10 @@
+import { captureException } from "@sentry/node"
+
 import { logger } from "../../../common/logger"
 import { DiplomesMetiers, DomainesMetiers, FormationCatalogue, LbaCompany, Recruiter } from "../../../common/model/index"
 import { rebuildIndex } from "../../../common/utils/esUtils"
 
-export const generateIndexes = async (payload) => {
+export const generateIndexes = async (payload: { index_list?: string; recreate?: boolean }) => {
   const indexList = payload?.index_list ?? "recruiters,formationcatalogues,lbacompanies,diplomesmetiers,domainesmetiers"
   const recreate = payload?.recreate ?? false
   const list = indexList.split(",")
@@ -43,8 +45,14 @@ export const generateIndexes = async (payload) => {
     })
   )
   const errors = results.reduce((acc, item) => {
-    if (item.status === "rejected") acc.push(item.reason)
+    if (item.status === "rejected") {
+      acc.push(item.reason)
+      logger.error(item.reason)
+      captureException(item.reason)
+    }
     return acc
-  }, [] as any[])
-  if (errors.length) throw new AggregateError(errors)
+  }, [] as Error[])
+  if (errors.length) {
+    throw new AggregateError(errors, `generateIndexes failed with ${errors.length} errors`)
+  }
 }

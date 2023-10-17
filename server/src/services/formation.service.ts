@@ -5,6 +5,8 @@ import Boom from "boom"
 import { groupBy, maxBy } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
 
+import { logger } from "@/common/logger"
+
 import { getElasticInstance } from "../common/esClient/index"
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -646,15 +648,13 @@ const removeEmailFromLBFData = (data: any): any => {
 export const getFormationDescriptionQuery = async ({ id }: { id: string }): Promise<IApiError | any> => {
   try {
     const formationDescription = await axios.get(`${lbfDescriptionUrl}?${getLbfQueryParams(id)}`)
-
+    logger.info(`Call formationDescription. params=${id}`)
     return removeEmailFromLBFData(formationDescription.data)
   } catch (error) {
-    manageApiError({
+    return manageApiError({
       error,
       errorTitle: `getting training description from Labonneformation`,
     })
-
-    return { error: "internal_error" }
   }
 }
 

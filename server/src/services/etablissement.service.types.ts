@@ -56,9 +56,9 @@ interface IActivitePrincipale {
 interface ITrancheEffectifSalarie {
   de: any
   a: any
-  code: string
+  code: string | null
   date_reference: any
-  intitule: string
+  intitule: string | null
 }
 
 interface IUniteLegale {
@@ -80,7 +80,7 @@ interface IUniteLegale {
 }
 
 interface IPersonneMoraleAttributs {
-  raison_sociale: string
+  raison_sociale: string | null
   sigle: any
 }
 
@@ -105,9 +105,9 @@ interface IActivitePrincipale2 {
 interface ITrancheEffectifSalarie2 {
   de: any
   a: any
-  code: string
+  code: string | null
   date_reference: any
-  intitule: string
+  intitule: string | null
 }
 
 interface ILinks {
@@ -179,7 +179,7 @@ interface IContact {
 
 interface IFormeJuridique {
   code: string
-  label: string
+  libelle: string
 }
 
 interface ILieuxDeFormation {

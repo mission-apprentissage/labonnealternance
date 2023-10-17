@@ -92,7 +92,7 @@ const Formulaire = ({ submitForm }) => {
                   <Flex justifyContent="flex-end" alignItems="center" mt={5}>
                     {!widget?.isWidget && (
                       <Button variant="link" sx={{ color: "black", fontWeight: 400 }} mr={5} onClick={() => router.back()}>
-                        Annuler {/* TODO_AB */}
+                        Annuler
                       </Button>
                     )}
                     <Button type="submit" variant="form" leftIcon={<ArrowRightLine width={5} />} isActive={isValid} isDisabled={!isValid || isSubmitting}>
@@ -118,10 +118,7 @@ const Formulaire = ({ submitForm }) => {
 const FormulaireLayout = ({ left, right }) => {
   const { widget } = useContext(WidgetContext)
   const router = useRouter()
-  // const location = useLocation()
-  // const { type } = location.state
   const { type } = router.query
-  // TODO_AB
 
   return (
     <SimpleGrid columns={[1, 1, 1, 2]} spacing={["35px", "35px", "35px", "75px"]} mt={widget.isWidget ? 0 : 12}>

@@ -55,7 +55,15 @@ const cleanUp = () => {
   sirenWithoutOpco = new Set()
 }
 
-export default async function updateOpcoCompanies({ ClearMongo = false, ForceRecreate = false, SourceFile = null }) {
+export default async function updateOpcoCompanies({
+  ClearMongo = false,
+  ForceRecreate = false,
+  SourceFile = null,
+}: {
+  ClearMongo?: boolean
+  ForceRecreate?: boolean
+  SourceFile?: string | null
+}) {
   try {
     logMessage("info", " -- Start bulk opco determination -- ")
 

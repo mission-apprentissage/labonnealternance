@@ -3,7 +3,8 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
-import { _get, _post } from "../../../../../common/httpClient"
+import { apiGet, apiPost } from "@/utils/api.utils"
+
 import { Layout } from "../../../../../components/espace_pro"
 import { InfoCircleFilled, SuccessCircle } from "../../../../../theme/components/icons"
 
@@ -24,7 +25,7 @@ type IAffelnetEtablissement = {
  */
 export default function PremiumAffelnetForm() {
   const router = useRouter()
-  const { id } = router.query
+  const { id } = router.query as { id: string }
   const [hasRefused, setHasRefused] = useState(false)
   const [hasAccepted, setHasAccepted] = useState(false)
   const [etablissement, setEtablissement]: [IAffelnetEtablissement | null, (e: any) => void] = useState()
@@ -36,7 +37,10 @@ export default function PremiumAffelnetForm() {
    * @returns {Promise<void>}
    */
   const accept = async () => {
-    await _post(`etablissements/${id}/premium/affelnet/accept`)
+    await apiPost("/etablissements/:id/premium/affelnet/accept", {
+      params: { id },
+    })
+
     setHasAccepted(true)
     window.scrollTo(0, 0)
   }
@@ -46,14 +50,18 @@ export default function PremiumAffelnetForm() {
    * @returns {Promise<void>}
    */
   const refuse = async () => {
-    await _post(`etablissements/${id}/premium/affelnet/refuse`)
+    await apiPost("/etablissements/:id/premium/affelnet/refuse", {
+      params: { id },
+    })
     setHasRefused(true)
     window.scrollTo(0, 0)
   }
 
   useEffect(() => {
     const fetchData = async () => {
-      const etablissement = await _get(`etablissements/${id}`)
+      const etablissement = (await apiGet("/etablissements/:id", {
+        params: { id },
+      })) as any // TODO not any
 
       if (etablissement.premium_affelnet_refusal_date) {
         setHasRefused(true)
@@ -66,7 +74,7 @@ export default function PremiumAffelnetForm() {
       setEtablissement(etablissement)
     }
 
-    if(id) {
+    if (id) {
       fetchData().catch(console.error)
     }
   }, [id])

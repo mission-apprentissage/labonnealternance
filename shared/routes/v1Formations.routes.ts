@@ -8,6 +8,8 @@ import { IRoutesDef, ZResError } from "./common.routes"
 export const zV1FormationsRoutes = {
   get: {
     "/v1/formations": {
+      method: "get",
+      path: "/v1/formations",
       // TODO_SECURITY_FIX vérifier ce qu'on fait des emails et des téléphones et modifier les modèles en conséquences
       querystring: z
         .object({
@@ -52,6 +54,8 @@ export const zV1FormationsRoutes = {
       },
     },
     "/v1/formations/formation/:id": {
+      method: "get",
+      path: "/v1/formations/formation/:id",
       querystring: z
         .object({
           caller: zCallerParam,
@@ -79,6 +83,8 @@ export const zV1FormationsRoutes = {
       },
     },
     "/v1/formations/formationDescription/:id": {
+      method: "get",
+      path: "/v1/formations/formationDescription/:id",
       params: z
         .object({
           id: z.string(),
@@ -87,22 +93,22 @@ export const zV1FormationsRoutes = {
       response: {
         // Strip souhaité. Appel à une API décommissionnée en attente de remplacement
         // eslint-disable-next-line zod/require-strict
-        "200": z
-          .object({
-            // eslint-disable-next-line zod/require-strict
-            organisme: z
-              .object({
-                // eslint-disable-next-line zod/require-strict
-                contact: z
-                  .object({
-                    tel: z.string().nullish(),
-                    url: z.string().nullish(),
-                  })
-                  .strip(),
-              })
-              .strip(),
-          })
-          .strip(),
+        "200": z.any(),
+        // .object({
+        //   // eslint-disable-next-line zod/require-strict
+        //   organisme: z
+        //     .object({
+        //       // eslint-disable-next-line zod/require-strict
+        //       contact: z
+        //         .object({
+        //           tel: z.string().nullish(),
+        //           url: z.string().nullish(),
+        //         })
+        //         .strip(),
+        //     })
+        //     .strip(),
+        // })
+        // .strip(),
         "400": z.union([ZResError, ZLbacError]).openapi({
           description: "Bad Request",
         }),

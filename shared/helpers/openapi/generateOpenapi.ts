@@ -1,4 +1,5 @@
 import { OpenApiGeneratorV31, OpenAPIRegistry, ResponseConfig, RouteConfig } from "@asteasolutions/zod-to-openapi"
+import { formatParamUrl } from "@fastify/swagger"
 import type { SecurityRequirementObject } from "openapi3-ts/oas30"
 
 import { zRoutes } from "../../index"
@@ -25,7 +26,7 @@ function generateOpenApiResponsesObject<R extends IRouteSchema["response"]>(resp
 function generateOpenApiRequest(route: IRouteSchema): RouteConfig["request"] {
   const requestParams: RouteConfig["request"] = {}
 
-  if (route.body) {
+  if (route.method !== "get" && route.body) {
     requestParams.body = {
       content: {
         "application/json": { schema: route.body },
@@ -66,7 +67,7 @@ function addOpenApiOperation(path: string, method: "get" | "put" | "post" | "del
   registry.registerPath({
     ...route.openapi,
     method,
-    path,
+    path: formatParamUrl(path),
     request: generateOpenApiRequest(route),
     responses: generateOpenApiResponsesObject(route.response),
     security: getSecurityRequirementObject(route),

@@ -68,7 +68,7 @@ export default (server: Server) => {
         } else if (result.error === "not_found") {
           res.status(404)
         } else {
-          res.status(result.status || 500)
+          res.status(500)
         }
       } else {
         if (caller) {
@@ -100,12 +100,13 @@ export default (server: Server) => {
       })
 
       if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else if (result.error === "not_found") {
-          res.status(404)
+        const { status } = result
+        if (status === 400) {
+          return res.status(400).send({ error: "wrong_parameters" })
+        } else if (status === 404) {
+          return res.status(404).send({ error: "not_found" })
         } else {
-          res.status(result.status || 500)
+          return res.status(500).send({ error: "internal_error" })
         }
       }
 

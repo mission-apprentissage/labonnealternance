@@ -68,6 +68,16 @@ const config = {
       jwtSecret: env.get("LBA_AUTH_MAGICLINK_JWT_SECRET").required().asString(),
       expiresIn: env.get("LBA_MAGICLINK_JWT_SECRET_EXPIRE").required().asString(),
     },
+    session: {
+      cookieName: "lba_session",
+      cookie: {
+        maxAge: 30 * 24 * 3600000,
+        httpOnly: true,
+        sameSite: "lax" as const,
+        path: "/",
+        secure: true,
+      },
+    },
   },
   ftp: {
     host: env.get("LBA_FTP_HOST").required().asString(),
@@ -136,6 +146,7 @@ const config = {
     recipient: "12000101100010", // Siret Dinum
     object: "Consolidation des données",
     apiKey: env.get("LBA_ENTREPRISE_API_KEY").required().asString(),
+    simulateError: env.get("LBA_ENTREPRISE_SIMULATE_ERROR").default("false").asBool(),
   },
 }
 
