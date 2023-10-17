@@ -130,7 +130,7 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
 /**
  * @description Search for PE Jobs
  */
-export const searchJobs = async (params: {
+export const searchForPeJobs = async (params: {
   codeROME: string
   commune: string
   sort: number
@@ -161,7 +161,7 @@ export const searchJobs = async (params: {
 /**
  * @description Get a PE Job
  */
-export const getJob = async (id: string) => {
+export const getPeJob = async (id: string) => {
   tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
   try {
     const { data } = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/${id}`, {

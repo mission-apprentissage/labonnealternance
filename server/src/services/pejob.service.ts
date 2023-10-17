@@ -4,8 +4,8 @@ import distance from "@turf/distance"
 
 import {
   getPeReferentiels,
-  // getJob,
-  // searchJobs
+  // getPeJob,
+  // searchForPeJobs
 } from "@/common/apis/Pe.js"
 import { logger } from "@/common/logger.js"
 
@@ -210,7 +210,7 @@ const getPeJobs = async ({
     //   params.distance = distance
     // }
 
-    // const jobs = await searchJobs(params)
+    // const jobs = await searchForPeJobs(params)
 
     // const data: PEResponse | "" = jobs.data
 
@@ -297,7 +297,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
     // TODO Remove when mistery solved
-    // const job = await getJob(id)
+    // const job = await getPeJob(id)
 
     // if (job.status === 204 || job.status === 400) {
     //   if (caller) {
