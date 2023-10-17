@@ -623,7 +623,7 @@ export const getFormationDescriptionQuery = async ({ id }: { id: string }): Prom
     const formationDescription = await getLBFFormationDescription(id)
 
     logger.info(`Call formationDescription. params=${id}`)
-    return removeEmailFromLBFData(formationDescription.data)
+    return removeEmailFromLBFData(formationDescription)
   } catch (error) {
     return manageApiError({
       error,

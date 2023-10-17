@@ -63,14 +63,8 @@ const getLbfQueryParams = (id: string): string => {
  * @param {string} id
  */
 export const getLBFFormationDescription = async (id: string) => {
-  try {
-    const { data } = await axiosClient.get(`${LBF_API_BASE_URL}/detail?${getLbfQueryParams(id)}`)
-
-    return data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    throw new ApiError("Api LBF", error.message, error.code || error.response?.status)
-  }
+  const { data } = await axiosClient.get(`${LBF_API_BASE_URL}/detail?${getLbfQueryParams(id)}`)
+  return data
 }
 
 const ROME_ACESS = querystring.stringify({
