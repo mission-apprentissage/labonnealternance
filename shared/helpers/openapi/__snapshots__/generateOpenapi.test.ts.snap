@@ -157,6 +157,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "searched_for_job_label": {
+            "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
+            "example": "Vente de fleurs, végétaux",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "secret": {
             "type": [
               "string",
