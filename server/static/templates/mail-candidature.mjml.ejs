@@ -1,234 +1,228 @@
 <mjml>
-    <mj-head>
-        <mj-title>Candidature de <%= data.applicant_email %></mj-title>
-        <mj-font name="Roboto" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;700;800;900&display=swap" />
-        <mj-style inline="inline">
-            a:link,a:visited, a:hover, a:active {color: #206BC4;}, a {color: #3A55D1;}, body{background: #F9F8F6;}
-            a.purple {color: #3A55D1; text-decoration: none}
-            .link-nostyle { color: inherit; text-decoration: none; font-size: 28px }
-            .link-nostyle:hover { color: inherit; text-decoration: none }
-            .form-row { font-size: 16px; padding-bottom: 15px;}
-            .form-value { background: #F9F8F6; font-weight: 500; padding: 3px 15px  }
-            .form-msg { background: #F9F8F6; font-weight: 400; padding: 3px 15px  }
-            .nom-societe { font-size: 14px; color: #F07F87; font-weight: bold; }
-            .gras { font-weight: bold; }
-            .link-black { color: #000; text-decoration: underline; }
-            .link-black:hover { color: #000; text-decoration: underline; }
-            
-            .intention-link:hover td, 
-            .intention-link:hover a { 
-                background-color: #000091 !important; 
-                color: #fff !important; 
-            }
+  <mj-head>
+    <mj-title>Candidature de <%= data.applicant_email %></mj-title>
+    <mj-font name="Roboto" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;700;800;900&display=swap" />
+    <mj-style inline="inline">
+      a:link,a:visited, a:hover, a:active {color: #206BC4;}, a {color: #3A55D1;}, body{background: #F9F8F6;} a.purple {color: #3A55D1; text-decoration: none} .link-nostyle { color:
+      inherit; text-decoration: none; font-size: 28px } .link-nostyle:hover { color: inherit; text-decoration: none } .form-row { font-size: 16px; padding-bottom: 15px;}
+      .form-value { background: #F9F8F6; font-weight: 500; padding: 3px 15px } .form-msg { background: #F9F8F6; font-weight: 400; padding: 3px 15px } .nom-societe { font-size:
+      14px; color: #F07F87; font-weight: bold; } .gras { font-weight: bold; } .link-black { color: #000; text-decoration: underline; } .link-black:hover { color: #000;
+      text-decoration: underline; } .intention-link:hover td, .intention-link:hover a { background-color: #000091 !important; color: #fff !important; }
+    </mj-style>
+    <mj-attributes>
+      <mj-text padding="0px" font-family="Roboto,Arial,sans-serif" color="#232E3C" font-size="16px" line-height="23px" />
+      <mj-divider padding="0px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#EDF0F2">
+    <mj-section padding-bottom="10px">
+      <mj-column padding="0px" vertical-align="middle">
+        <mj-image padding="0px" width="150px" src="<%= data.images.logoLba %>" alt="Logo du site La bonne alternance" />
+      </mj-column>
+    </mj-section>
 
-        </mj-style>
-        <mj-attributes>
-            <mj-text padding="0px" font-family="Roboto,Arial,sans-serif" color="#232E3C" font-size="16px" line-height="23px" />
-            <mj-divider padding="0px" />
-        </mj-attributes>
-    </mj-head>
-    <mj-body background-color="#EDF0F2">
-        <mj-section padding-bottom="10px">
-            <mj-column padding="0px" vertical-align="middle">
-                <mj-image padding="0px" width="150px" src="<%= data.images.logoLba %>" alt="Logo du site La bonne alternance" />
-            </mj-column>
-        </mj-section>
+    <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
+      <mj-section padding="15px">
+        <mj-column>
+          <mj-text font-style="normal" padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
+            Vous avez reçu une candidature !
+          </mj-text>
+          <mj-text font-size="16px" line-height="24px">
+            <% if (data.job_origin == "matcha") { %> Bonjour,
+            <br /><br />
 
-        <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
-            <mj-section padding="15px">
-                <mj-column>
-                    <mj-text font-style="normal" padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
-                        Vous avez reçu une candidature !
-                    </mj-text>
-                    <mj-text font-size="16px" line-height="24px">
-                        
-                        <% if (data.job_origin == "matcha") { %>
-                            Bonjour, 
-                            <br /><br />
+            <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé à
+            <a style="font-weight: bold; color: black" href="<%= data.urlOfDetail %>"> votre offre</a>
+            sur le métier <%= data.job_title %>. <% } else { %> Bonjour,
+            <br /><br />
+            <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé spontanément <% if (data.searched_for_job_label!= "") { %>
+            dans le domaine <%= data.searched_for_job_label %> <% } %> à partir du site
+            <a style="font-weight: bold; color: black" href="<%= data.urlOfDetail %>"> La bonne alternance</a>. <br /><br />
+            Votre entreprise <span class="nom-societe"><%= data.company_name %></span>
+            a été identifiée par notre algorithme comme susceptible de recruter en alternance. <% } %>
+          </mj-text>
 
-                            <%= data.applicant_first_name %> <%= data.applicant_last_name %> 
-                            s'intéresse à votre entreprise et a postulé à 
-                            <a style="font-weight:bold; color:black" href="<%= data.urlOfDetail %>">
-                                votre offre
-                            </a>
-                             sur le métier <%= data.job_title %>.
-                        <% } else { %>
-                            Bonjour, 
-                            <br /><br />
-                            <%= data.applicant_first_name %>
-                            <%= data.applicant_last_name %>
-                            s'intéresse à votre entreprise et a postulé spontanément à partir du site
-                            <a style="font-weight:bold; color:black" href="<%= data.urlOfDetail %>">
-                            La bonne alternance</a>.
-                            <br /><br />
-                            Votre entreprise <span class="nom-societe"><%= data.company_name %></span> 
-                            a été identifiée par notre algorithme comme susceptible de recruter en alternance.
-                        <% } %>
-                    </mj-text>
+          <mj-text font-style="normal" padding-top="24px" padding-bottom="24px" font-size="16px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
+            Nous vous invitons à répondre au candidat à l'aide de l'un de nos 3 formulaires de réponse rapide ci-dessous :
+          </mj-text>
 
-                    <mj-text font-style="normal" padding-top="24px" padding-bottom="24px" font-size="16px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
-                        Nous vous invitons à répondre au candidat à l'aide de l'un de nos 3 formulaires de réponse rapide ci-dessous :
-                    </mj-text>
+          <mj-button
+            href="<%= data.meetCandidateUrl %>"
+            css-class="intention-link"
+            width="250px"
+            color="#FFFFFF"
+            font-family="Roboto,Arial,sans-serif"
+            font-size="14px"
+            font-weight="700"
+            background-color="#000091"
+            align="center"
+          >
+            &nbsp;Rencontrer le candidat
+          </mj-button>
+          <mj-button
+            href="<%= data.waitCandidateUrl %>"
+            css-class="intention-link"
+            width="250px"
+            color="#FFFFFF"
+            font-family="Roboto,Arial,sans-serif"
+            font-size="14px"
+            font-weight="700"
+            background-color="#000091"
+            align="center"
+          >
+            &nbsp;En attente de décision</mj-button
+          >
+          <mj-button
+            href="<%= data.refuseCandidateUrl %>"
+            css-class="intention-link"
+            width="250px"
+            color="#FFFFFF"
+            font-family="Roboto,Arial,sans-serif"
+            font-size="14px"
+            font-weight="700"
+            background-color="#000091"
+            align="center"
+            >&nbsp;Refuser la candidature</mj-button
+          >
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
 
-                    <mj-button href="<%= data.meetCandidateUrl %>" css-class="intention-link" width="250px" color="#FFFFFF"
-                        font-family="Roboto,Arial,sans-serif" font-size="14px" font-weight="700" background-color="#000091" align="center">
-                        &nbsp;Rencontrer le candidat
-                    </mj-button>
-                    <mj-button href="<%= data.waitCandidateUrl %>" css-class="intention-link" width="250px" color="#FFFFFF"
-                        font-family="Roboto,Arial,sans-serif" font-size="14px" font-weight="700" background-color="#000091" align="center">
-                        &nbsp;En attente de décision</mj-button>
-                    <mj-button href="<%= data.refuseCandidateUrl %>" css-class="intention-link" width="250px" color="#FFFFFF"
-                        font-family="Roboto,Arial,sans-serif" font-size="14px" font-weight="700" background-color="#000091" align="center">&nbsp;Refuser la
-                        candidature</mj-button>
+    <mj-section padding-bottom="30px"></mj-section>
+    <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
+      <mj-section padding="15px">
+        <mj-column>
+          <mj-text padding-bottom="32px" font-size="24px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#F07F87">
+            <img style="margin-bottom: 2px" src="<%= data.images.icoCandidat %>" alt="" />&nbsp;&nbsp;Candidat
+          </mj-text>
+          <mj-text font-size="16px" padding-bottom="15px">Nom : <span class="form-value"> <%= data.applicant_last_name %> </span> </mj-text>
+          <mj-text font-size="16px" padding-bottom="15px">Prénom : <span class="form-value"> <%= data.applicant_first_name %> </span> </mj-text>
+          <mj-text font-size="16px" padding-bottom="15px">Téléphone : <span class="form-value"> <%= data.applicant_phone %> </span> </mj-text>
+          <mj-text font-size="16px" padding-bottom="15px">E-mail : <span class="form-value"> <%= data.applicant_email %> </span> </mj-text>
+          <mj-text font-size="13px" padding-bottom="15px"
+            ><img style="margin-bottom: -3px; margin-right: 3px" src="<%= data.images.icoInfo %>" alt="" />&nbsp;&nbsp;Vous trouverez le curriculum vitae du candidat en pièce
+            jointe.</mj-text
+          >
+          <mj-text font-size="16px" padding-bottom="15px">Message du candidat : </mj-text>
+          <mj-text font-size="16px" padding-bottom="32px"><div class="form-msg" width="100%"><%- data.applicant_message_to_company %></div> </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
 
-                </mj-column>
-            </mj-section>
-        </mj-wrapper>
+    <mj-section padding-bottom="30px"></mj-section>
+    <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
+      <mj-section>
+        <mj-column>
+          <mj-table line-height="100%">
+            <tr>
+              <td valign="top" style="padding-top: 5px">
+                <img width="120" src="<%= data.images.logoLba %>" alt="Logo du site La bonne alternance" />
+              </td>
+              <td valign="top" style="font-family: Roboto, Arial, sans-serif; font-size: 16px; line-height: 22px; padding-left: 40px; padding-top: 0">
+                <% if (data.job_origin == "matcha" ) { %> Vous recevez cette candidature car vous avez déposé une offre sur le
+                <a style="font-weight: bold; color: black" href="<%= data.lbaRecruiterUrl %>"> service de dépôt d'offre simplifié </a>
+                de La bonne alternance.
+                <br /><br />
+                Votre offre est donc visible sur :
+                <ul>
+                  <li>La bonne alternance, un site web conçu et porté par la Mission interministérielle de l’apprentissage,</li>
+                  <li>Nos sites partenaires, afin d'étendre la portée de votre recrutement là où les candidats se trouvent.</li>
+                </ul>
+                <% } else { %> Vous recevez cette candidature car votre établissement est référencé sur
+                <a style="font-weight: bold; color: black" href="<%= data.lbaUrl %>"> La bonne alternance </a> puisqu'il a été identifié comme "à fort potentiel d'embauche en
+                alternance" par un algorithme prédictif. La bonne alternance, un site web conçu et porté par la Mission interministérielle de l’apprentissage. <% } %>
+              </td>
+            </tr>
+          </mj-table>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
 
-        <mj-section padding-bottom="30px"></mj-section>
-        <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
-            <mj-section padding="15px">
-                <mj-column>
-                    <mj-text padding-bottom="32px" font-size="24px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#F07F87">
-                        <img style="margin-bottom: 2px" src="<%= data.images.icoCandidat %>" alt="" />&nbsp;&nbsp;Candidat
-                    </mj-text>
-                    <mj-text font-size="16px" padding-bottom="15px" >Nom : <span class="form-value"> <%= data.applicant_last_name %> </span> </mj-text>
-                    <mj-text font-size="16px" padding-bottom="15px">Prénom : <span class="form-value"> <%= data.applicant_first_name %> </span> </mj-text>
-                    <mj-text font-size="16px" padding-bottom="15px">Téléphone : <span class="form-value"> <%= data.applicant_phone %> </span> </mj-text>
-                    <mj-text font-size="16px" padding-bottom="15px">E-mail : <span class="form-value"> <%= data.applicant_email %> </span> </mj-text>
-                    <mj-text font-size="13px" padding-bottom="15px"><img style="margin-bottom: -3px; margin-right:3px" src="<%= data.images.icoInfo %>" alt="" />&nbsp;&nbsp;Vous trouverez le curriculum vitae du candidat en pièce jointe.</mj-text>
-                    <mj-text font-size="16px" padding-bottom="15px">Message du candidat : </mj-text>
-                    <mj-text font-size="16px" padding-bottom="32px"><div class="form-msg" width="100%"> <%- data.applicant_message_to_company %> </div> </mj-text>
-                </mj-column>
-            </mj-section>
-        </mj-wrapper>
+    <mj-section padding-bottom="30px"></mj-section>
+    <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
+      <mj-section padding="15px">
+        <mj-column>
+          <mj-text padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
+            <span style="font-weight: bold">Une question ?</span>
+          </mj-text>
 
-        <mj-section padding-bottom="30px"></mj-section>
-        <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
-            <mj-section>
-                <mj-column>
-                    <mj-table line-height="100%">
-                        <tr>
-                            <td valign="top" style="padding-top:5px;">
-                                <img width="120" src="<%= data.images.logoLba %>" alt="Logo du site La bonne alternance" />
-                            </td>
-                            <td valign="top" style="font-family: Roboto,Arial,sans-serif; font-size:16px;line-height: 22px; padding-left: 40px; padding-top:0;">
-                                <% if (data.job_origin == "matcha" ) { %>
-                                    Vous recevez cette candidature car vous avez déposé une offre sur le  
-                                    <a style="font-weight:bold; color:black" 
-                                        href="<%= data.lbaRecruiterUrl %>">
-                                        service de dépôt d'offre simplifié
-                                    </a>
-                                    de La bonne alternance.
-                                    <br /><br />
-                                    Votre offre est donc visible sur :
-                                    <ul>
-                                        <li>
-                                            La bonne alternance, un site web conçu et porté par la Mission interministérielle de l’apprentissage,
-                                        </li>
-                                        <li>
-                                            Nos sites partenaires, afin d'étendre la portée de votre recrutement là où les candidats se trouvent.
-                                        </li>
-                                    </ul>
-                                <% } else { %>
-                                    Vous recevez cette candidature car votre établissement est référencé sur 
-                                    <a style="font-weight:bold; color:black" 
-                                        href="<%= data.lbaUrl %>">
-                                        La bonne alternance
-                                    </a> puisqu'il a été identifié comme "à fort potentiel d'embauche en alternance" par un algorithme prédictif. 
-                                    La bonne alternance, un site web conçu et porté par la Mission interministérielle de l’apprentissage.
-                                <% } %>
-                            </td>
-                        </tr>
-                    </mj-table>
-                </mj-column>
-            </mj-section>
-        </mj-wrapper>
+          <% if (data.job_origin == "matcha" ) { %>
+          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="link-black" href="<%= data.jobProvidedUrl %>"> ✅ Indiquer que mon offre est pourvue</a>
+          </mj-text>
+          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="link-black" href="<%= data.cancelJobUrl %>"> 📝 Supprimer mon offre</a>
+          </mj-text>
+          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="link-black" href="<%= data.faqUrl %>"> 💬 Consulter la FAQ</a>
+          </mj-text>
+          <% } else { %>
+          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="link-black" href="<%= data.unsubscribeUrl %>"> 🚫 Déréférencer mon établissement</a>
+          </mj-text>
+          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="link-black" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=MAJ%20informations%20entreprise%20-%20Candidature%20spontanée">
+              📝 Modifier les données de mon établissement</a
+            >
+          </mj-text>
+          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="link-black" href="<%= data.lbaRecruiterUrl %>"> 🚀 Diffuser simplement et gratuitement une offre en alternance</a>
+          </mj-text>
+          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
+            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="link-black" href="<%= data.faqUrl %>"> 💬 Consulter la FAQ</a>
+          </mj-text>
+          <% } %>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
 
-        <mj-section padding-bottom="30px"></mj-section>
-        <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
-            <mj-section padding="15px">
-                <mj-column>
-                    <mj-text padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
-                        <span style="font-weight: bold">Une question ?</span>
-                    </mj-text>
-
-                    <% if (data.job_origin == "matcha" ) { %>
-                        <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.jobProvidedUrl %>">
-                                ✅ Indiquer que mon offre est pourvue</a>
-                        </mj-text>
-                        <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.cancelJobUrl %>">
-                                📝 Supprimer mon offre</a>
-                        </mj-text>
-                        <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.faqUrl %>">
-                                💬 Consulter la FAQ</a>
-                        </mj-text>
-                    <% } else { %>
-                        <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.unsubscribeUrl %>">
-                                🚫 Déréférencer mon établissement</a>
-                        </mj-text>
-                        <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=MAJ%20informations%20entreprise%20-%20Candidature%20spontanée">
-                                📝 Modifier les données de mon établissement</a>
-                        </mj-text>
-                        <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.lbaRecruiterUrl %>">
-                                🚀 Diffuser simplement et gratuitement une offre en alternance</a>
-                        </mj-text>
-                        <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.faqUrl %>">
-                                💬 Consulter la FAQ</a>
-                        </mj-text>
-                    <% } %>
-
-                </mj-column>
-            </mj-section>
-        </mj-wrapper>
-        
-        <mj-wrapper padding="0px" border-radius="10px" padding-bottom="50px">
-            <mj-section>
-                <mj-column>
-                    <mj-table line-height="100%">
-                    <tr>
-                    <td valign="top" style="padding-top:5px;"><img width="89" height="auto" src="<%= data.images.logoRF %>" alt="Logo République française" /></td>
-                    <td valign="top" style="line-height: 22px; padding-left: 40px; padding-top:0;">
-
-                        <% if (data.job_origin == "lba" ) { %>
-                            <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
-                                La bonne alternance est un site développé par la <a class="link-black" href="https://mission-apprentissage.gitbook.io/general/">
-                                Mission interministérielle pour l'apprentissage</a>, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail. 
-                            </mj-text>
-                            <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
-                                Nous souhaitons vous proposer des candidats à l'alternance. 
-                                Par ailleurs, nous ne faisons aucune utilisation commerciale de vos données. 
-                                Conformément à l’article L.34-5 du code des postes et communications électroniques, vous bénéficiez d’un droit d’opposition 
-                                que vous pouvez utiliser à tout moment via l’adresse 
-                                <a class="link-black" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition%20entreprise%20-%20Candidature%20spontanée&body=Bonjour,%0A%0APouvez-vous%20proc%C3%A9der%20au%20d%C3%A9r%C3%A9f%C3%A9rencement%20de%20mon%20entreprise%20du%20service%20gouvernemental%20La%20bonne%20alternance%20%3F%0A%0AEn%20effet,%20mon%20entreprise%20%28merci%20de%20pr%C3%A9ciser%20la%20raison%20de%20votre%20demande%29%0A-%20A%20d%C3%A9j%C3%A0%20recrut%C3%A9%20tous%20ses%20alternants%20pour%20l'ann%C3%A9e%20en%20cours%0A-%20Re%C3%A7oit%20des%20candidatures%20qui%20ne%20correspondent%20pas%20%C3%A0%20notre%20besoin%0A-%20Utilise%20d'autres%20canaux%20pour%20ses%20recrutements%0A-%20Ne%20recrute%20pas%20en%20alternance%0A-%20Autre">
-                                    labonnealternance@apprentissage.beta.gouv.fr</a>. 
-                            </mj-text>
-                            <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
-                                Votre adresse e-mail sera dès lors supprimée de notre base de données et vous ne serez plus contacté.
-                                Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. 
-                                Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la 
-                                <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">
-                                    politique de confidentialité de La bonne alternance</a>.
-                            </mj-text>
-                            <br /><br />
-                        <% } %>
-
-                        Cet e-mail a été envoyé à <%= data.company_email %>
-                        <br  />
-                        Merci de ne pas répondre à cet e-mail. Pour toute question ou besoin d’aide, vous pouvez écrire à labonnealternance@apprentissage.beta.gouv.fr
-                        <br  />
-                    </td>
-                    </tr>
-                    </mj-table>
-                </mj-column>
-            </mj-section>
-        </mj-wrapper>
-    </mj-body>
+    <mj-wrapper padding="0px" border-radius="10px" padding-bottom="50px">
+      <mj-section>
+        <mj-column>
+          <mj-table line-height="100%">
+            <tr>
+              <td valign="top" style="padding-top: 5px"><img width="89" height="auto" src="<%= data.images.logoRF %>" alt="Logo République française" /></td>
+              <td valign="top" style="line-height: 22px; padding-left: 40px; padding-top: 0">
+                <% if (data.job_origin == "lba" ) { %>
+                <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
+                  La bonne alternance est un site développé par la
+                  <a class="link-black" href="https://mission-apprentissage.gitbook.io/general/"> Mission interministérielle pour l'apprentissage</a>, au sein de l’État,
+                  conformément aux missions d’intérêt public du ministère du Travail.
+                </mj-text>
+                <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
+                  Nous souhaitons vous proposer des candidats à l'alternance. Par ailleurs, nous ne faisons aucune utilisation commerciale de vos données. Conformément à l’article
+                  L.34-5 du code des postes et communications électroniques, vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse
+                  <a
+                    class="link-black"
+                    href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition%20entreprise%20-%20Candidature%20spontanée&body=Bonjour,%0A%0APouvez-vous%20proc%C3%A9der%20au%20d%C3%A9r%C3%A9f%C3%A9rencement%20de%20mon%20entreprise%20du%20service%20gouvernemental%20La%20bonne%20alternance%20%3F%0A%0AEn%20effet,%20mon%20entreprise%20%28merci%20de%20pr%C3%A9ciser%20la%20raison%20de%20votre%20demande%29%0A-%20A%20d%C3%A9j%C3%A0%20recrut%C3%A9%20tous%20ses%20alternants%20pour%20l'ann%C3%A9e%20en%20cours%0A-%20Re%C3%A7oit%20des%20candidatures%20qui%20ne%20correspondent%20pas%20%C3%A0%20notre%20besoin%0A-%20Utilise%20d'autres%20canaux%20pour%20ses%20recrutements%0A-%20Ne%20recrute%20pas%20en%20alternance%0A-%20Autre"
+                  >
+                    labonnealternance@apprentissage.beta.gouv.fr</a
+                  >.
+                </mj-text>
+                <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
+                  Votre adresse e-mail sera dès lors supprimée de notre base de données et vous ne serez plus contacté. Si vous pensez que vos droits ne sont pas respectés, vous
+                  pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la
+                  <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">
+                    politique de confidentialité de La bonne alternance</a
+                  >.
+                </mj-text>
+                <br /><br />
+                <% } %> Cet e-mail a été envoyé à <%= data.company_email %>
+                <br />
+                Merci de ne pas répondre à cet e-mail. Pour toute question ou besoin d’aide, vous pouvez écrire à labonnealternance@apprentissage.beta.gouv.fr
+                <br />
+              </td>
+            </tr>
+          </mj-table>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
 </mjml>
