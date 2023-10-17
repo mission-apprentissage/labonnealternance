@@ -5,7 +5,7 @@ import distance from "@turf/distance"
 import {
   getPeReferentiels,
   // getPeJob,
-  // searchForPeJobs
+  // searchForPeJobs,
 } from "@/common/apis/Pe.js"
 import { logger } from "@/common/logger.js"
 
@@ -176,9 +176,8 @@ const getPeJobs = async ({
   api: string
 }) => {
   try {
-    const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
-    const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
-    // TODO: remove temporary bypass
+    // const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
+    // // TODO: remove temporary bypass
     // const hasLocation = insee ? true : false
 
     // // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
@@ -212,7 +211,7 @@ const getPeJobs = async ({
 
     // const jobs = await searchForPeJobs(params)
 
-    // const data: PEResponse | "" = jobs.data
+    // const data: PEResponse | IApiError | "" = jobs
 
     // if (data === "") {
     //   const emptyPeResponse: PEResponse = { resultats: [] }
@@ -221,7 +220,7 @@ const getPeJobs = async ({
 
     // return data
 
-    console.log(jobLimit, NIVEAUX_POUR_OFFRES_PE, peJobsApiEndpoint, peContratsAlternances)
+    console.log(jobLimit, NIVEAUX_POUR_OFFRES_PE)
     logger.info(`Call getPeJobs. Params : romes=${romes}, insee=${insee}, radius=${radius}, diploma=${diploma}`)
     const emptyPeResponse: PEResponse = { resultats: [] }
     return emptyPeResponse
