@@ -295,7 +295,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
-    // TODO Remove when mistery solved
+    // // TODO Remove when mistery solved
     // const job = await getPeJob(id)
 
     // if (job.status === 204 || job.status === 400) {
@@ -305,7 +305,7 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
 
     //   return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
     // } else {
-    //   const peJob = transformPeJob({ job: job.data })
+    //   const peJob = transformPeJob({ job })
 
     //   if (caller) {
     //     trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
@@ -316,6 +316,7 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
     //   }
 
     //   return { peJobs: [peJob] }
+    // }
 
     console.log(id)
     logger.info(`Call getPeJobFromId. Params : id=${id}`)
