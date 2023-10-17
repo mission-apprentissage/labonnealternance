@@ -1,12 +1,12 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import { ICredential, IJob, IUserRecruteur, zRoutes } from "shared"
+import { ICredential, IJob, zRoutes } from "shared"
 import { IRouteSchema } from "shared/routes/common.routes"
 
 import { IUser } from "@/common/model/schema/user/user.types"
+import { Appellation } from "@/services/rome.service.types"
 
 import { Recruiter } from "../../../common/model/index"
-import { delay } from "../../../common/utils/asyncUtils"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service"
 import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service"
 import dayjs from "../../../services/dayjs.service"
@@ -27,7 +27,7 @@ import { getJobsQuery } from "../../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../../services/lbacompany.service"
 import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service"
 import { getPeJobFromId } from "../../../services/pejob.service"
-import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service"
+import { getFicheMetierRomeV3FromDB } from "../../../services/rome.service"
 import { Server } from "../../server"
 
 import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators"
@@ -39,13 +39,7 @@ const config = {
   },
 }
 
-type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password" | "jwt-rdv-admin"
-  ? IUser
-  : AuthScheme extends "jwt-bearer"
-  ? IUserRecruteur
-  : AuthScheme extends "api-key"
-  ? ICredential
-  : null
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-password" ? IUser : AuthScheme extends "api-key" ? ICredential : null
 
 const getUser = <S extends IRouteSchema>(req: FastifyRequest, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
   return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
@@ -159,27 +153,22 @@ export default (server: Server) => {
       // Validate job parameters
       await createJobSchema.validateAsync(body, { abortEarly: false })
 
-      // Get Appellation detail from Pole Emploi API
-      const appelationDetails = await getAppellationDetailsFromAPI(body.appellation_code)
-
-      if (!appelationDetails) {
-        return res.status(400).send({ error: true, message: "ROME Appelation details could not be retrieved" })
-      }
-
-      await delay(1000)
-
-      // Get Rome details from Pole Emploi API
-      const romeDetails = await getRomeDetailsFromAPI(appelationDetails.metier.code)
+      const romeDetails = await getFicheMetierRomeV3FromDB({
+        query: {
+          "fiche_metier.appellations.code": body.appellation_code,
+        },
+      }) //  fiche_metier.appellations[].code === body.appellation_code
 
       if (!romeDetails) {
         return res.send({ error: true, message: "ROME Code details could not be retrieved" })
       }
-      // Initialize job object with collected data
+
+      const appellation = romeDetails.fiche_metier.appellations.find(({ code }) => code === body.appellation_code) as Appellation
 
       const job: Partial<IJob> = {
-        rome_label: romeDetails.libelle,
-        rome_appellation_label: appelationDetails.libelle,
-        rome_code: [appelationDetails.metier.code],
+        rome_label: romeDetails.fiche_metier.libelle,
+        rome_appellation_label: appellation.libelle,
+        rome_code: [romeDetails.code],
         job_level_label: body.job_level_label,
         job_start_date: body.job_start_date,
         job_description: body.job_description,
@@ -187,7 +176,7 @@ export default (server: Server) => {
         job_expiration_date: dayjs().add(1, "month").toDate(),
         job_status: JOB_STATUS.ACTIVE,
         job_type: body.job_type,
-        rome_detail: romeDetails,
+        rome_detail: romeDetails.fiche_metier,
         is_disabled_elligible: body.is_disabled_elligible,
         job_count: body.job_count,
         job_duration: body.job_duration,
@@ -396,7 +385,7 @@ export default (server: Server) => {
       if ("matchas" in result) {
         const { matchas } = result
         if (matchas && "results" in matchas) {
-          matchas.results.map((matchaOffre) => matchaOffre?.job?.id && addOffreSearchView(matchaOffre.job.id))
+          await Promise.all(matchas.results.map((matchaOffre) => matchaOffre?.job?.id && addOffreSearchView(matchaOffre.job.id)))
         }
       }
 
@@ -427,7 +416,7 @@ export default (server: Server) => {
         } else if (result.error === "not_found") {
           res.status(404)
         } else {
-          res.status(result.status || 500)
+          res.status(500)
         }
       }
 
@@ -465,7 +454,7 @@ export default (server: Server) => {
             break
           }
           default: {
-            res.status(result.status || 500)
+            res.status(500)
             break
           }
         }
@@ -510,7 +499,7 @@ export default (server: Server) => {
         } else if (result.error === "not_found") {
           res.status(404)
         } else {
-          res.status(result.status || 500)
+          res.status(500)
         }
       }
 

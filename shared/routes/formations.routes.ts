@@ -6,12 +6,14 @@ import { IRoutesDef } from "./common.routes"
 export const zFormationRoute = {
   get: {
     "/admin/formations": {
+      method: "get",
+      path: "/admin/formations",
       querystring: z.object({ search_item: z.string() }).strict(),
       response: {
         "2xx": z.array(zFormationCatalogueSchema),
       },
       securityScheme: {
-        auth: "jwt-rdv-admin",
+        auth: "cookie-session",
         role: "administrator",
       },
     },

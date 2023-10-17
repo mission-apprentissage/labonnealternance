@@ -4,11 +4,6 @@
   gather_facts: false
   vars_files:
     - "../vault/vault.yml"
-  handlers:
-    - name: restart-fail2ban
-      service:
-        name: fail2ban
-        state: restarted
   tasks:
     - include_tasks: ./tasks/files_copy.yml
 
@@ -87,7 +82,7 @@
     - name: Attente du deploiement
       shell:
         chdir: /opt/app
-        cmd: "sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait lba"
+        cmd: "sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait:v0.2.3 lba"
       async: 1800
       poll: 10
 
@@ -101,20 +96,20 @@
         chdir: /opt/app
         cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{dns_name}}"
 
-    # - name: "Verification des certificats SSL"
-    #   shell:
-    #     chdir: /opt/app
-    #     cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }}"
-    #   when: env_type != "preview"
+    - name: "Verification des certificats SSL"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }}"
+      when: env_type != "preview"
 
-    # - name: Add cron to renew pole-emploi cert
-    #   ansible.builtin.cron:
-    #     name: "renew-certificate"
-    #     minute: "0"
-    #     hour: "2"
-    #     weekday: "1"
-    #     job: "bash /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }} >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Alias' -v $?"
-    #   when: env_type != "preview"
+    - name: Add cron to renew pole-emploi cert
+      ansible.builtin.cron:
+        name: "renew-certificate"
+        minute: "0"
+        hour: "2"
+        weekday: "1"
+        job: "bash /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }} >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Alias' -v $?"
+      when: env_type != "preview"
 
     - name: "Setup de la Metabase"
       shell:

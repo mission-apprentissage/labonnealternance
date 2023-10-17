@@ -4,6 +4,8 @@ import distance from "@turf/distance"
 import axios, { AxiosRequestHeaders } from "axios"
 import { Dayjs } from "dayjs"
 
+import { logger } from "@/common/logger.js"
+
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { roundDistance } from "../common/utils/geolib.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
@@ -35,7 +37,7 @@ let tokenPE: TokenPE | null = null
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
 const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
-const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
+//const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
 const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
 
 /**
@@ -230,6 +232,7 @@ const getPeJobs = async ({
   api: string
 }) => {
   try {
+    /* TODO: remove temporary bypass
     const token = await getAccessToken()
 
     const hasLocation = insee ? true : false
@@ -278,7 +281,11 @@ const getPeJobs = async ({
       return emptyPeResponse
     }
 
-    return data
+    return data*/
+    console.log(jobLimit, NIVEAUX_POUR_OFFRES_PE, peJobsApiEndpoint, peContratsAlternances)
+    logger.info(`Call getPeJobs. Params : romes=${romes}, insee=${insee}, radius=${radius}, diploma=${diploma}`)
+    const emptyPeResponse: PEResponse = { resultats: [] }
+    return emptyPeResponse
   } catch (error) {
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
   }
@@ -350,6 +357,8 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
+    /* TODO Remove when mistery solved
+
     const token = await getAccessToken()
     const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
@@ -376,7 +385,12 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
       }
 
       return { peJobs: [peJob] }
+    */
+    logger.info(`Call getPeJobFromId. Params : id=${id}`)
+    if (caller) {
+      trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
     }
+    return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
   } catch (error) {
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
   }

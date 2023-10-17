@@ -1,6 +1,5 @@
 import { Alert, AlertIcon, Box, Button, Flex, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-// import { useSearchParams } from "next/navigation" // TODO_AB
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import * as Yup from "yup"
@@ -144,10 +143,8 @@ export default function CreationCompte({ type, widget = false, origin = "lba" })
   const { setOrganisation } = useContext(LogoContext)
   const [qualiopi, setQualiopi] = useState(null)
   const [bandeau, setBandeau] = useState(null)
-  // const [searchParams] = useSearchParams() // TODO_AB
   const router = useRouter()
   const mobile = router.query.mobile === "true" ? true : false
-  // let mobile = searchParams.get("mobile") === "true" ? true : false
 
   useEffect(() => {
     if (widget) {

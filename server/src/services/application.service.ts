@@ -606,7 +606,7 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
  * sends email notification to applicant if it's application hardbounced
  */
 const notifyHardbounceToApplicant = async ({ application }: { application: EnforceDocument<IApplication, any> }): Promise<void> => {
-  mailer.sendEmail({
+  await mailer.sendEmail({
     to: application.applicant_email,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
@@ -618,7 +618,7 @@ const notifyHardbounceToApplicant = async ({ application }: { application: Enfor
  * sends email notification to applicant if it's application hardbounced
  */
 const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: EnforceDocument<IApplication, any> }): Promise<void> => {
-  mailer.sendEmail({
+  await mailer.sendEmail({
     to: config.transactionalEmail,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-matcha-hardbounce"),

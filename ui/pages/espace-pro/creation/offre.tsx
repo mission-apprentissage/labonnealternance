@@ -4,11 +4,8 @@ import { useRouter } from "next/router"
 import { AjouterVoeux, AuthentificationLayout, Bandeau } from "../../../components/espace_pro"
 
 export default function DepotRapideAjouterVoeux(props) {
-  // const location = useLocation()
-  // const { displayBanner } = location.state
   const router = useRouter()
   const { displayBanner } = router.query
-  // TODO_AB
 
   return (
     <AuthentificationLayout>

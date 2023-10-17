@@ -71,7 +71,7 @@ const clearingFiles = async () => {
 
 const geolocateCsvHeader = "rue;citycode"
 
-export default async function updateGeoLocations({ ForceRecreate = false, SourceFile = null }) {
+export default async function updateGeoLocations({ ForceRecreate = false, SourceFile = null }: { ForceRecreate?: boolean; SourceFile?: string | null }) {
   try {
     logMessage("info", " -- Start bulk geolocations -- ")
 

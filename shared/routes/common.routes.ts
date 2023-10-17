@@ -65,14 +65,15 @@ export const ZReqHeadersAuthorization = z
   })
   .strict()
 
-export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" | "jwt-token" | "jwt-rdv-admin" | "none"
+export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" | "jwt-token" | "cookie-session" | "none"
 
 export type SecurityScheme = {
   auth: AuthStrategy
-  role: "admin" | "all" | "administrator"
+  role: "all" | "administrator"
 }
 
-export interface IRouteSchemaGet {
+interface IRouteSchemaCommon {
+  path: string
   querystring?: AnyZodObject
   headers?: AnyZodObject
   params?: AnyZodObject
@@ -81,14 +82,21 @@ export interface IRouteSchemaGet {
   securityScheme: SecurityScheme
 }
 
-export interface IRouteSchema extends IRouteSchemaGet {
+export interface IRouteSchemaGet extends IRouteSchemaCommon {
+  method: "get"
+}
+
+export interface IRouteSchemaWrite extends IRouteSchemaCommon {
+  method: "post" | "put" | "patch" | "delete"
   body?: ZodType
 }
 
+export type IRouteSchema = IRouteSchemaGet | IRouteSchemaWrite
+
 export type IRoutesDef = {
   get?: Record<string, IRouteSchemaGet>
-  post?: Record<string, IRouteSchema>
-  put?: Record<string, IRouteSchema>
-  delete?: Record<string, IRouteSchema>
-  patch?: Record<string, IRouteSchema>
+  post?: Record<string, IRouteSchemaWrite>
+  put?: Record<string, IRouteSchemaWrite>
+  delete?: Record<string, IRouteSchemaWrite>
+  patch?: Record<string, IRouteSchemaWrite>
 }

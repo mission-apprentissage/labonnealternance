@@ -1,10 +1,12 @@
 import Boom from "boom"
-import { IUserRecruteur, zRoutes } from "shared"
+import { IUserRecruteur, toPublicUser, zRoutes } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter, UserRecruteur } from "@/common/model"
+import config from "@/config"
+import { createSession } from "@/services/sessions.service"
 
-import { createUserRecruteurToken } from "../../common/utils/jwtUtils"
+import { createUserToken } from "../../common/utils/jwtUtils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
@@ -13,7 +15,6 @@ import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
   getEntrepriseDataFromSiret,
-  getEtablissement,
   getOpcoData,
   getOrganismeDeFormationDataFromSiret,
   sendUserConfirmationEmail,
@@ -30,6 +31,7 @@ import {
   setUserHasToBeManuallyValidated,
   updateUser,
 } from "../../services/userRecruteur.service"
+import { getUserFromRequest } from "../middlewares/authMiddleware"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -272,41 +274,34 @@ export default (server: Server) => {
     "/etablissement/validation",
     {
       schema: zRoutes.post["/etablissement/validation"],
+      onRequest: [server.auth(zRoutes.post["/etablissement/validation"].securityScheme)],
     },
     async (req, res) => {
-      const id = req.body.id
-
-      if (!id) {
-        throw Boom.badRequest()
-      }
-
-      const exist = await getEtablissement({ _id: id })
-
-      if (!exist) {
-        throw Boom.badRequest("L'utilisateur n'existe pas.")
-      }
+      const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"])
 
       // Validate email
-      const validation = await validateEtablissementEmail(id)
+      const validation = await validateEtablissementEmail(user._id)
 
       if (!validation) {
         throw Boom.badRequest("La validation de l'adresse mail à échoué. Merci de contacter le support La bonne alternance.")
       }
 
-      const user = await getUser({ _id: req.body.id })
-
-      if (!user) throw Boom.badRequest("L'utilisateur n'existe pas.")
-
       const isUserAwaiting = getUserStatus(user.status) === ETAT_UTILISATEUR.ATTENTE
 
-      if (isUserAwaiting) {
-        return res.status(200).send({ isUserAwaiting: true })
+      if (!isUserAwaiting) {
+        await sendWelcomeEmailToUserRecruteur(user)
       }
-      await sendWelcomeEmailToUserRecruteur(user)
-      await registerUser(user.email)
 
-      // Log the user in directly
-      return res.status(200).send({ token: createUserRecruteurToken(user) })
+      const token = createUserToken({ email: user.email }, { payload: { email: user.email } })
+      await createSession({ token })
+
+      const connectedUser = await registerUser(user.email)
+
+      if (!connectedUser) {
+        throw Boom.forbidden()
+      }
+
+      return res.setCookie(config.auth.session.cookieName, token, config.auth.session.cookie).status(200).send(toPublicUser(connectedUser))
     }
   )
 }

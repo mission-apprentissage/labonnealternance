@@ -1,5 +1,7 @@
 import { ApiCalls } from "../model/index"
 
+import { sentryCaptureException } from "./sentryUtils"
+
 const trackApiCall = async ({
   caller,
   api_path,
@@ -25,9 +27,9 @@ const trackApiCall = async ({
       response,
     })
 
-    apiCall.save()
+    await apiCall.save()
   } catch (err) {
-    console.log("Error tracking api call.", err)
+    sentryCaptureException(err)
   }
 }
 

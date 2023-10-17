@@ -1,7 +1,7 @@
 import http from "http"
 import https from "https"
 
-import axios, { AxiosRequestConfig } from "axios"
+import axios, { AxiosRequestConfig, CreateAxiosDefaults } from "axios"
 import { compose, transformData } from "oleoduc"
 
 import { logger } from "../logger"
@@ -71,4 +71,12 @@ function addCsvHeaders(filename, encoding, res) {
   res.setHeader("Content-Type", `text/csv; charset=${encoding}`)
 }
 
-export { fetchStream, fetchJson, addCsvHeaders }
+const getHttpClient = (options: CreateAxiosDefaults<any> = {}) =>
+  axios.create({
+    timeout: 15000,
+    httpAgent: new http.Agent({ keepAlive: true }),
+    httpsAgent: new https.Agent({ keepAlive: true }),
+    ...options,
+  })
+
+export { addCsvHeaders, fetchJson, fetchStream, getHttpClient }
