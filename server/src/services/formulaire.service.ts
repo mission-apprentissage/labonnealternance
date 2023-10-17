@@ -4,6 +4,7 @@ import type { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur } from "shared"
 
+import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getElasticInstance } from "../common/esClient/index"
@@ -17,7 +18,6 @@ import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { ILbaJobEsResult } from "./lbajob.service.types"
 import mailer from "./mailer.service"
-import { getRomeDetailsFromAPI } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
 const esClient = getElasticInstance()

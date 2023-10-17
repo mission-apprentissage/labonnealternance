@@ -1,10 +1,8 @@
-import crypto from "crypto"
-
-import axios from "axios"
 import Boom from "boom"
 import { groupBy, maxBy } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
 
+import { getLBFFormationDescription } from "@/common/apis/Pe"
 import { logger } from "@/common/logger"
 
 import { getElasticInstance } from "../common/esClient/index"
@@ -15,15 +13,12 @@ import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { notifyToSlack } from "../common/utils/slackUtils"
-import config from "../config"
 
 import type { IFormationEsResult } from "./formation.service.types"
 import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
 const formationResultLimit = 500
-
-const lbfDescriptionUrl = `${config.laBonneFormationApiUrl}/api/v1/detail`
 
 const esClient = getElasticInstance()
 
@@ -599,28 +594,6 @@ export const getFormationQuery = async ({ id, caller }: { id: string; caller?: s
 }
 
 /**
- * Construit et retourne les paramètres de la requête vers LBF
- * @param {string} id L'id RCO de la formation dont on veut récupérer les données sur LBF
- * @returns {string}
- */
-const getLbfQueryParams = (id: string): string => {
-  // le timestamp doit être uriencodé avec le format ISO sans les millis
-  let date = new Date().toISOString()
-  date = encodeURIComponent(date.substring(0, date.lastIndexOf(".")))
-
-  let queryParams = `user=LBA&uid=${id}&timestamp=${date}`
-
-  const hmac = crypto.createHmac("md5", config.laBonneFormationPassword)
-  const data = hmac.update(queryParams)
-  const signature = data.digest("hex")
-
-  // le param signature doit contenir un hash des autres params chiffré avec le mdp attribué à LBA
-  queryParams += "&signature=" + signature
-
-  return queryParams
-}
-
-/**
  * Supprime les adresses emails de la payload provenant de l'api La Bonne Formation
  * @param {any} data la payload issue de LBF
  * @return {any}
@@ -647,9 +620,10 @@ const removeEmailFromLBFData = (data: any): any => {
  */
 export const getFormationDescriptionQuery = async ({ id }: { id: string }): Promise<IApiError | any> => {
   try {
-    const formationDescription = await axios.get(`${lbfDescriptionUrl}?${getLbfQueryParams(id)}`)
+    const formationDescription = await getLBFFormationDescription(id)
+
     logger.info(`Call formationDescription. params=${id}`)
-    return removeEmailFromLBFData(formationDescription.data)
+    return removeEmailFromLBFData(formationDescription)
   } catch (error) {
     return manageApiError({
       error,
