@@ -28,7 +28,7 @@ const withoutSensibleFields = (obj: unknown, seen: Set<unknown>) => {
     return Object.fromEntries(
       Object.entries(obj).map(([key, value]) => {
         const lower = key.toLowerCase()
-        if (lower.indexOf("token") !== -1 || ["authorization", "password"].includes(lower)) {
+        if (lower.indexOf("token") !== -1 || ["authorization", "password", "applicant_file_content"].includes(lower)) {
           return [key, null]
         }
 
