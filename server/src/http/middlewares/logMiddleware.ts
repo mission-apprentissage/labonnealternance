@@ -7,7 +7,7 @@ import config from "@/config"
 const withoutSensibleFields = (obj: object | null | undefined) => {
   return omitBy(obj, (value, key) => {
     const lower = key.toLowerCase()
-    return lower.indexOf("token") !== -1 || ["authorization", "password"].includes(lower)
+    return lower.indexOf("token") !== -1 || ["authorization", "password"].includes(lower) || lower === "applicant_file_content"
   })
 }
 
