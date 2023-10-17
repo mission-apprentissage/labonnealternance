@@ -67,7 +67,7 @@ export default (server: Server) => {
 
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
 
-      if (user.status.length) {
+      if (user.status?.length) {
         const status = getUserStatus(user.status)
 
         if ([ENTREPRISE, CFA].includes(user.type)) {

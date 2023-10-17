@@ -9,6 +9,7 @@ export default async function submitCandidature(
     },
     item = {},
     caller = null,
+    jobLabel = null,
   },
   _postCandidature = postCandidature,
   _extractCompanyValues = extractCompanyValues
@@ -17,7 +18,7 @@ export default async function submitCandidature(
   let success = true
   let result = null
   try {
-    result = await _postCandidature(applicantValues, _extractCompanyValues(item), caller)
+    result = await _postCandidature(applicantValues, _extractCompanyValues(item), jobLabel, caller)
     if (result !== "ok") {
       success = false
     }

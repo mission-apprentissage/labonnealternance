@@ -468,6 +468,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:rncp-romes:update"))
 
+program
+  .command("fill-recruiters-raison-sociale")
+  .description("Remplissage des raisons sociales pour les recruiters et userRecruiters qui n'en ont pas")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:raison-sociale:fill"))
+
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }

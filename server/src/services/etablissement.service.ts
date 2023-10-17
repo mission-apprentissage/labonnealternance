@@ -291,23 +291,35 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
     return error
   }
 }
+
+// when in string format: $latitude,$longitude
+export type GeoCoord = {
+  latitude: number
+  longitude: number
+}
+
 /**
  * @description Get the geolocation information from the ADDRESS API for a given address
  * @param {String} adresse
- * @returns {Promise<string>}
  */
-export const getGeoCoordinates = async (adresse: string): Promise<string> => {
+export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
   try {
     const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
-    // eslint-disable-next-line no-unsafe-optional-chaining
-    const [firstFeature] = response.data?.features
+    const firstFeature = response.data?.features.at(0)
     if (!firstFeature) {
-      return "NOT FOUND"
+      throw new Error("pas trouvé")
     }
-    return firstFeature.geometry.coordinates.reverse().join(",")
+    const coords = firstFeature.geometry.coordinates.reverse()
+    const latitude = coords.at(0)
+    const longitude = coords.at(1)
+    if (latitude === undefined || longitude === undefined) {
+      throw Boom.internal("moins de 2 coordonnées", { latitude, longitude })
+    }
+    return { latitude, longitude }
   } catch (error: any) {
-    sentryCaptureException(error)
-    return "NOT FOUND"
+    const newError = Boom.internal(`erreur de récupération des geo coordonnées`, { adresse })
+    newError.cause = error
+    throw newError
   }
 }
 /**
@@ -337,6 +349,18 @@ export const getAllEstablishmentFromLbaCompanyLegacy = async (query: FilterQuery
  */
 export const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
 
+function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undefined {
+  const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
+  const { raison_sociale } = personne_morale_attributs
+  if (raison_sociale) {
+    return raison_sociale
+  }
+  if (personne_physique_attributs) {
+    const { prenom_usuel, nom_naissance, nom_usage } = personne_physique_attributs
+    return `${prenom_usuel} ${nom_usage ?? nom_naissance}`
+  }
+}
+
 /**
  * @description Format Entreprise data
  * @param {IEtablissementGouv} data
@@ -350,7 +374,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
     establishment_enseigne: d.enseigne,
     establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
     establishment_siret: d.siret,
-    establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
+    establishment_raison_sociale: getRaisonSocialeFromGouvResponse(d),
     address_detail: d.adresse,
     address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
     contacts: [], // conserve la coherence avec l'UI
@@ -517,8 +541,10 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   if (!entrepriseData.establishment_raison_sociale) {
     throw Boom.internal("pas de raison sociale trouvée", { siret, cfa_delegated_siret, entrepriseData, apiData: result.data })
   }
-  const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
-  return { ...entrepriseData, geo_coordinates }
+  const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
+  const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
+  const { latitude, longitude } = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
+  return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}` }
 }
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {

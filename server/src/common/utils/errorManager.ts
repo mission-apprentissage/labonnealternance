@@ -12,7 +12,7 @@ export type IApiError = z.input<typeof ZApiError>
  */
 export const manageApiError = ({ error, api_path, caller, errorTitle }: { error: any; api_path?: string; caller?: string | null; errorTitle: string }): IApiError => {
   const errorObj: IApiError = { result: "error", error: "error", message: error.message }
-  const status = error?.response?.status || ""
+  const status = error?.response?.status || error?.status || ""
   error.name = `API error ${status ? status + " " : ""}${errorTitle}`
   if (error?.config) {
     Sentry.setExtra("config", error?.config)
@@ -27,6 +27,8 @@ export const manageApiError = ({ error, api_path, caller, errorTitle }: { error:
     errorObj.status = error.response.status
     errorObj.statusText = error.response.statusText
     errorObj.error = error.response.statusText
+  } else if (error.status) {
+    errorObj.status = status
   }
 
   console.log(`error ${errorTitle}`, errorObj)

@@ -4,6 +4,7 @@ import type { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur } from "shared"
 
+import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getElasticInstance } from "../common/esClient/index"
@@ -17,7 +18,6 @@ import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { ILbaJobEsResult } from "./lbajob.service.types"
 import mailer from "./mailer.service"
-import { getRomeDetailsFromAPI } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
 const esClient = getElasticInstance()
@@ -396,13 +396,9 @@ export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["es
 
 /**
  * @description Update existing formulaire and return updated version
- * @param {IRecruiter["establishment_id"]} id
- * @param {UpdateQuery<IRecruiter>} payload
- * @param {ModelUpdateOptions} [options={new:true}]
- * @returns {Promise<IRecruiter>}
  */
-export const updateFormulaire = async (id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>): Promise<IRecruiter> => {
-  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, payload, { new: true }).lean()
+export const updateFormulaire = async (establishment_id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>): Promise<IRecruiter> => {
+  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id }, payload, { new: true }).lean()
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }

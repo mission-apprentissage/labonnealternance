@@ -1,73 +1,26 @@
 import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
-import axios, { AxiosRequestHeaders } from "axios"
-import { Dayjs } from "dayjs"
+
+import {
+  getPeReferentiels,
+  // getPeJob,
+  // searchForPeJobs,
+} from "@/common/apis/Pe.js"
+import { logger } from "@/common/logger.js"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { roundDistance } from "../common/utils/geolib.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import config from "../config.js"
 
 import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
-import dayjs from "./dayjs.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
 import { ILbaItemCompany, ILbaItemContact, ILbaItemPeJob } from "./lbaitem.shared.service.types.js"
 import { filterJobsByOpco } from "./opco.service.js"
 import { PEJob, PEResponse } from "./pejob.service.types.js"
 
-const accessTokenEndpoint = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"
-const contentType = "application/x-www-form-urlencoded"
-const headers = { headers: { "Content-Type": contentType }, timeout: 3000 }
-const clientId = config.esdClientId === "1234" ? process.env.ESD_CLIENT_ID : config.esdClientId
-const clientSecret = config.esdClientSecret === "1234" ? process.env.ESD_CLIENT_SECRET : config.esdClientSecret
-const scopeApisPE = `application_${clientId}%20`
-const scopePE = "api_offresdemploiv2%20o2dsoffre"
-const paramApisPE = `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}&scope=${scopeApisPE}`
-const paramPE = `${paramApisPE}${scopePE}`
-const peApiHeaders = { "Content-Type": "application/json", Accept: "application/json" } as AxiosRequestHeaders
-type TokenPE = {
-  expiry: Dayjs
-  value: string
-}
-let tokenPE: TokenPE | null = null
-
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
-const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
-const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
-const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
-
-/**
- *  Récupère un token d'accès aux API de Pôle emploi
- *  @return {Promise<string>}
- */
-const getAccessToken = async (): Promise<string> => {
-  try {
-    const now = dayjs()
-
-    if (tokenPE?.expiry.isAfter(now)) {
-      return tokenPE.value
-    } else {
-      const response = await axios.post(accessTokenEndpoint, paramPE, headers)
-
-      if (response.data) {
-        tokenPE = {
-          value: response.data.access_token,
-          expiry: dayjs().add(response.data.expires_in - 10, "s"),
-        }
-        return tokenPE.value
-      } else {
-        return "no_result"
-      }
-    }
-  } catch (error) {
-    console.log(error)
-    return "error"
-  }
-}
-
-const peJobApiEndpointReferentiel = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/referentiel/"
 /**
  * Utilitaire à garder pour interroger les référentiels PE non documentés par ailleurs
  * Liste des référentiels disponible sur https://www.emploi-store-dev.fr/portail-developpeur-cms/home/catalogue-des-api/documentation-des-api/api/api-offres-demploi-v2/referentiels.html
@@ -76,14 +29,7 @@ const peJobApiEndpointReferentiel = "https://api.pole-emploi.io/partenaire/offre
  */
 export const getPeApiReferentiels = async (referentiel: string) => {
   try {
-    const token = await getAccessToken()
-    const headers = peApiHeaders
-    headers.Authorization = `Bearer ${token}`
-
-    const referentiels = await axios.get(`${peJobApiEndpointReferentiel}${referentiel}`, {
-      headers,
-    })
-
+    const referentiels = await getPeReferentiels(referentiel)
     console.log(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
   } catch (error) {
     console.log("error getReferentiel ", error)
@@ -230,57 +176,52 @@ const getPeJobs = async ({
   api: string
 }) => {
   try {
-    /* TODO: remove temporary bypass
-    const token = await getAccessToken()
+    // const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
+    // // TODO: remove temporary bypass
+    // const hasLocation = insee ? true : false
 
-    const hasLocation = insee ? true : false
+    // // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
+    // let codeInsee = insee
+    // if (insee === "75056") codeInsee = "75101"
+    // else if (insee === "13055") codeInsee = "13201"
+    // else if (insee === "69123") codeInsee = "69381"
 
-    const headers = peApiHeaders
-    headers.Authorization = `Bearer ${token}`
+    // const distance = radius || 10
 
-    // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
-    let codeInsee = insee
-    if (insee === "75056") codeInsee = "75101"
-    else if (insee === "13055") codeInsee = "13201"
-    else if (insee === "69123") codeInsee = "69381"
+    // const params: { codeROME: string; commune: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
+    //   codeROME: romes.join(","),
+    //   commune: codeInsee,
+    //   sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
+    //   natureContrat: peContratsAlternances,
+    //   range: `0-${jobLimit - 1}`,
+    // }
 
-    const distance = radius || 10
+    // if (diploma) {
+    //   const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
+    //   if (niveauRequis && niveauRequis !== "NV5") {
+    //     // pas de filtrage sur niveau requis NV5 car pas de résultats
+    //     params.niveauFormation = niveauRequis
+    //   }
+    // }
 
-    const params: { codeROME: string; commune: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
-      codeROME: romes.join(","),
-      commune: codeInsee,
-      sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
-      natureContrat: peContratsAlternances,
-      range: `0-${jobLimit - 1}`,
-    }
+    // if (hasLocation) {
+    //   params.insee = codeInsee
+    //   params.distance = distance
+    // }
 
-    if (diploma) {
-      const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
-      if (niveauRequis && niveauRequis !== "NV5") {
-        // pas de filtrage sur niveau requis NV5 car pas de résultats
-        params.niveauFormation = niveauRequis
-      }
-    }
+    // const jobs = await searchForPeJobs(params)
 
-    if (hasLocation) {
-      params.insee = codeInsee
-      params.distance = distance
-    }
+    // const data: PEResponse | IApiError | "" = jobs
 
-    const jobs = await axios.get(`${peJobsApiEndpoint}`, {
-      params,
-      headers,
-    })
+    // if (data === "") {
+    //   const emptyPeResponse: PEResponse = { resultats: [] }
+    //   return emptyPeResponse
+    // }
 
-    const data: PEResponse | "" = jobs.data
+    // return data
 
-    if (data === "") {
-      const emptyPeResponse: PEResponse = { resultats: [] }
-      return emptyPeResponse
-    }
-
-    return data*/
-    console.log(romes, insee, radius, jobLimit, diploma, NIVEAUX_POUR_OFFRES_PE, peJobsApiEndpoint, peContratsAlternances)
+    console.log(jobLimit, NIVEAUX_POUR_OFFRES_PE)
+    logger.info(`Call getPeJobs. Params : romes=${romes}, insee=${insee}, radius=${radius}, diploma=${diploma}`)
     const emptyPeResponse: PEResponse = { resultats: [] }
     return emptyPeResponse
   } catch (error) {
@@ -354,33 +295,35 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
-    const token = await getAccessToken()
-    const headers = peApiHeaders
-    headers.Authorization = `Bearer ${token}`
+    // // TODO Remove when mistery solved
+    // const job = await getPeJob(id)
 
-    const job = await axios.get(`${peJobApiEndpoint}${id}`, {
-      headers,
-    })
+    // if (job.status === 204 || job.status === 400) {
+    //   if (caller) {
+    //     trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
+    //   }
 
-    if (job.status === 204 || job.status === 400) {
-      if (caller) {
-        trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
-      }
+    //   return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
+    // } else {
+    //   const peJob = transformPeJob({ job })
 
-      return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
-    } else {
-      const peJob = transformPeJob({ job: job.data })
+    //   if (caller) {
+    //     trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
+    //     // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+    //     if (peJob.company) {
+    //       peJob.company.siret = null
+    //     }
+    //   }
 
-      if (caller) {
-        trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
-        // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-        if (peJob.company) {
-          peJob.company.siret = null
-        }
-      }
+    //   return { peJobs: [peJob] }
+    // }
 
-      return { peJobs: [peJob] }
+    console.log(id)
+    logger.info(`Call getPeJobFromId. Params : id=${id}`)
+    if (caller) {
+      trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
     }
+    return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
   } catch (error) {
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
   }
