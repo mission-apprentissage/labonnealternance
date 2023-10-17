@@ -97,8 +97,13 @@ export const ZApplicationUI = ZApplication.extend({
   secret: z.string().nullish(),
   crypted_company_email: z.string().nullish(),
   caller: zCallerParam.nullish(),
-  job_id: ZApplication.shape.job_id.optional(),
-  searched_for_job_label: z.string().nullish(),
+  job_id: ZApplication.shape.job_id.optional().openapi({
+    description: "L'identifiant de l'offre à laquelle le candidat postule.",
+  }),
+  searched_for_job_label: z.string().nullish().openapi({
+    description: "Le métier recherché par le candidat envoyant une candidature spontanée.",
+    example: "Vente de fleurs, végétaux",
+  }),
 })
   .omit({
     applicant_message_to_company: true,
