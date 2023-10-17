@@ -63,8 +63,14 @@ const getLbfQueryParams = (id: string): string => {
  * @param {string} id
  */
 export const getLBFFormationDescription = async (id: string) => {
-  const { data } = await axiosClient.get(`${LBF_API_BASE_URL}/detail?${getLbfQueryParams(id)}`)
-  return data
+  try {
+    const { data } = await axiosClient.get(`${LBF_API_BASE_URL}/detail?${getLbfQueryParams(id)}`)
+
+    return data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw new ApiError("Api LBF", error.message, error.code || error.response?.status, error?.response?.status)
+  }
 }
 
 const ROME_ACESS = querystring.stringify({
@@ -148,7 +154,7 @@ export const searchForPeJobs = async (params: {
     return data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    throw new ApiError("Api PE", error.message, error.code || error.response?.status)
+    throw new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
   }
 }
 
@@ -169,7 +175,7 @@ export const getPeJob = async (id: string) => {
     return data // PEResponse
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    throw new ApiError("Api PE", error.message, error.code || error.response?.status)
+    new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
   }
 }
 

@@ -32,13 +32,15 @@ export class ApiError extends Error {
   apiName: string
   message: string
   reason: string | undefined
+  status: string | undefined
 
-  constructor(apiName: string, message: string, reason?: string) {
+  constructor(apiName: string, message: string, reason?: string, status?: string) {
     super()
     Error.captureStackTrace(this, this.constructor)
     this.name = this.constructor.name
     this.apiName = apiName
     this.message = `[${apiName}] ${message}`
     this.reason = reason
+    this.status = status
   }
 }
