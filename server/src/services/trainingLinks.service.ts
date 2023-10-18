@@ -1,5 +1,9 @@
 import { URL } from "url"
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+import getDistance from "geolib/es/getDistance"
+import { IFormationCatalogue } from "shared/models"
+
 import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index"
 import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"
@@ -27,8 +31,9 @@ interface ILinks {
 
 const utmData = { utm_source: "lba", utm_medium: "email", utm_campaign: "promotion-emploi-jeunes-voeux" }
 
-const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, params }: { baseUrl?: string; params: Record<string, string> }) => {
+const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, params }: { baseUrl?: string; params: Record<string, string | string[]> }) => {
   const url = new URL(baseUrl)
+  // @ts-expect-error
   Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value))
   return url.toString()
 }
@@ -37,7 +42,7 @@ const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, para
  * @description local function to get the formation related to the query
  * @param {Object} query
  * @param {string} filter
- * @returns {Promise<IFormationCatalogue>}
+ * @returns {Promise<IFormationCatalogue[]>}
  */
 const getFormation = (
   query: object,
@@ -46,45 +51,45 @@ const getFormation = (
     rome_codes: 1,
     _id: 0,
   }
-) => FormationCatalogue.findOne(query, filter)
+) => FormationCatalogue.find(query, filter)
 
 /**
  * @description get formation according to the available parameters passed to the API endpoint
  * @param {object} wish wish data
- * @returns {Promise<IFormationCatalogue>}
+ * @returns {Promise<IFormationCatalogue[]>}
  */
-const getTrainingFromParameters = async (wish: IWish) => {
-  let formation
+const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalogue[]> => {
+  let formations
   // search by cle ME
   if (wish.cle_ministere_educatif) {
-    formation = await getFormation({ cle_ministere_educatif: wish.cle_ministere_educatif })
+    formations = await getFormation({ cle_ministere_educatif: wish.cle_ministere_educatif })
   }
 
-  if (!formation) {
+  if (!formations && formations.length) {
     // search by uai_lieu_formation
     if (wish.uai_lieu_formation) {
-      formation = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
+      formations = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
     }
   }
 
-  if (!formation) {
+  if (!formations && formations.length) {
     // search by uai_formateur
     if (wish.uai_formateur) {
-      formation = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
+      formations = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
     }
   }
 
-  if (!formation) {
+  if (!formations && formations.length) {
     // search by uai_formateur_responsable
     if (wish.uai_formateur_responsable) {
-      formation = await getFormation({
+      formations = await getFormation({
         $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }],
         etablissement_gestionnaire_uai: wish.uai_formateur_responsable,
       })
     }
   }
 
-  return formation
+  return formations
 }
 
 /**
@@ -125,76 +130,71 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
  * @returns {Promise<string>} LBA link
  */
 const getLBALink = async (wish: IWish): Promise<string> => {
-  let formation
+  // get related trainings from catalogue
+  const formations = await getTrainingsFromParameters(wish)
 
-  // get related training from catalogue
-  formation = await getTrainingFromParameters(wish)
+  if (formations.length === 0 || !formations) {
+    return buildEmploiUrl({ params: utmData })
+  }
 
-  if (formation) {
-    const [lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
-    return buildEmploiUrl({ params: { romes: formation.rome_codes, lat, lon, radius: "60", ...utmData } })
-  } else {
-    // identify rome codes
-    let romes
-    formation = await FormationCatalogue.find(
-      {
-        $or: [
-          {
-            rncp_code: wish.rncp,
-          },
-          {
-            cfd: wish.cfd ? wish.cfd : undefined,
-          },
-          {
-            "bcn_mefs_10.mef10": wish.mef,
-          },
-        ],
-      },
-      {
-        rome_codes: 1,
-        _id: 0,
+  let [formation] = formations
+  if (formations.length > 1) {
+    const postCode = wish.code_insee || wish.code_postal
+    let wLat, wLon
+    if (postCode) {
+      const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(postCode)
+      if (responseApiAdresse && responseApiAdresse.features.length) {
+        ;[wLon, wLat] = responseApiAdresse.features[0].geometry.coordinates
       }
-    ).limit(5)
 
-    // recover all romes codes into a single array
-    if (formation.length) {
-      romes = [...new Set(formation.flatMap(({ rome_codes }) => rome_codes))]
-    } else {
-      return buildEmploiUrl({ params: utmData })
-    }
-
-    if (!romes.length) {
-      return buildEmploiUrl({ params: utmData })
-    } else {
-      // identify location
-      let lat, lon
-
-      if (wish.uai) {
-        formation = await getFormation(
-          {
-            etablissement_formateur_uai: wish.uai,
-          },
-          {
-            lieu_formation_geo_coordonnees: 1,
-            _id: 0,
-          }
-        )
-
-        const postCode = wish.code_insee || wish.code_postal
-        if (formation) {
-          ;[lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
-        } else if (postCode) {
-          // KBA 20230817 : might be modified using INSEE postcode.
-          const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(postCode)
-          if (responseApiAdresse && responseApiAdresse.features.length) {
-            ;[lon, lat] = responseApiAdresse.features[0].geometry.coordinates
+      let distance = 9999
+      for (const [i, iFormation] of formations.entries()) {
+        if (iFormation.lieu_formation_geo_coordonnees) {
+          const [fLat, fLon] = iFormation.lieu_formation_geo_coordonnees.split(",")
+          const fDist = getDistance({ latitude: wLat, longitude: wLon }, { latitude: fLat, longitude: fLon })
+          if (fDist < distance) {
+            distance = fDist
+            formation = formations[i]
           }
         }
       }
-
-      return buildEmploiUrl({ params: { romes: romes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
     }
   }
+
+  if (formation.lieu_formation_geo_coordonnees) {
+    const [lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
+    if (formation.rome_codes && formation.rome_codes.length) {
+      return buildEmploiUrl({ params: { romes: formation.rome_codes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
+    } else {
+      const tmpFormations = await FormationCatalogue.find(
+        {
+          $or: [
+            {
+              rncp_code: wish.rncp,
+            },
+            {
+              cfd: wish.cfd ? wish.cfd : undefined,
+            },
+            {
+              "bcn_mefs_10.mef10": wish.mef,
+            },
+          ],
+        },
+        {
+          rome_codes: 1,
+          _id: 0,
+        }
+      ).limit(5)
+      if (tmpFormations.length) {
+        const romes = [...new Set(formations.flatMap(({ rome_codes }) => rome_codes))] as string[]
+        if (romes.length) {
+          return buildEmploiUrl({ params: { romes: romes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
+        }
+      }
+    }
+  }
+
+  return buildEmploiUrl({ params: utmData })
 }
 
 /**
