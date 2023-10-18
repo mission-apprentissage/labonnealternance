@@ -36,12 +36,12 @@ import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
 async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, any, any>) {
   const collectionName = model.collection.name
-  const cursor = await model.find({}).lean()
+  const cursor = model.find({}).lean()
 
   let totalCount = 0
   let count = 0
   const errorStats: Record<string, number> = {}
-  for (const doc of cursor) {
+  for await (const doc of cursor) {
     try {
       totalCount++
       z.parse(doc)
