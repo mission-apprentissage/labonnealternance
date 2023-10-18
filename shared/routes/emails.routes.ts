@@ -13,11 +13,7 @@ export const zEmailsRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "api-key",
-        access: null,
-        ressources: {},
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef
