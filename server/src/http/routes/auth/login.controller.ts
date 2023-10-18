@@ -31,17 +31,12 @@ export default (server: Server) => {
           return res.status(400).send({ error: true, reason: "UNKNOWN" })
         }
 
-        const { _id, first_name, last_name, is_email_checked } = user
+        const { is_email_checked } = user
 
         if (is_email_checked) {
           return res.status(400).send({ error: true, reason: "VERIFIED" })
         }
-        await sendUserConfirmationEmail({
-          email,
-          firstName: first_name,
-          lastName: last_name,
-          userRecruteurId: _id,
-        })
+        await sendUserConfirmationEmail(user)
         return res.status(200).send({})
       } catch (error) {
         return res.status(400).send({
@@ -85,12 +80,7 @@ export default (server: Server) => {
       }
 
       if (!is_email_checked) {
-        await sendUserConfirmationEmail({
-          email: userEmail,
-          firstName: first_name,
-          lastName: last_name,
-          userRecruteurId: _id,
-        })
+        await sendUserConfirmationEmail(user)
         return res.status(400).send({
           error: true,
           reason: "VERIFY",

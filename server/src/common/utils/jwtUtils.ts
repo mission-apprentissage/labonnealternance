@@ -46,6 +46,4 @@ const createUserRecruteurToken = (user, options = {}) => {
   return createToken("user", user.email, { payload, ...options })
 }
 
-const createMagicLinkToken = (subject, options = {}) => createToken("magiclink", subject, options)
-
-export { createActivationToken, createPasswordToken, createUserToken, createUserRecruteurToken, createMagicLinkToken }
+export { createActivationToken, createPasswordToken, createUserToken, createUserRecruteurToken }

@@ -49,7 +49,11 @@ export default function ConfirmationValidationEmail() {
     const fetchData = async () => {
       setLoading.on()
       if (token) {
-        const user = (await apiPost("/etablissement/validation", { querystring: { token } })) as IUserRecruteurPublic
+        const user = (await apiPost("/etablissement/validation", {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        })) as IUserRecruteurPublic
         if (user.status_current === ETAT_UTILISATEUR.ATTENTE) {
           setLoading.off()
           setIsInvalid.off()

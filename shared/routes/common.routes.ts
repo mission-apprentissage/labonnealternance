@@ -66,7 +66,7 @@ export const ZReqHeadersAuthorization = z
   })
   .strict()
 
-export type AuthStrategy = "api-key" | "jwt-password" | "jwt-token" | "cookie-session" | "access-token"
+export type AuthStrategy = "api-key" | "jwt-password" | "cookie-session" | "access-token"
 
 export type SecurityScheme = {
   auth: AuthStrategy
