@@ -1,7 +1,7 @@
 import { URL } from "url"
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import getDistance from "geolib/es/getDistance"
+import { getDistance } from "geolib"
 import { IFormationCatalogue } from "shared/models"
 
 import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index"
