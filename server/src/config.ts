@@ -1,7 +1,6 @@
 import env from "env-var"
 
 const config = {
-  appName: "lba",
   version: env.get("PUBLIC_VERSION").required().asString(),
   port: env.get("LBA_SERVER_PORT").required().asPortNumber(),
   env: env.get("LBA_ENV").required().asEnum(["local", "recette", "production", "preview"]),
@@ -9,7 +8,6 @@ const config = {
   outputDir: env.get("LBA_OUTPUT_DIR").required().asString(),
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,
-  elasticSearch: "http://localhost:9200",
   publicEmail: "labonnealternance@apprentissage.beta.gouv.fr",
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
   disable_processors: env.get("LBA_DISABLE_PROCESSORS").required().asBool(),
@@ -26,19 +24,12 @@ const config = {
   },
   laBonneFormationPassword: env.get("LBA_LABONNEFORMATION_PASSWORD").required().asString(),
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
-  matcha: {
-    apiKey: env.get("LBA_MATCHA_ACCESS_KEY").required().asString(),
-  },
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").required().asString(),
   secretUpdateRomesMetiers: env.get("LBA_SECRET_UPDATE_ROMES_METIERS").required().asString(), //TODO: rename
   secret1j1s: env.get("LBA_SECRET_1J1S").required().asString(), //TODO: rearrange
-  secretAkto: env.get("LBA_SECRET_AKTO").required().asString(), //TODO: rearrange
   allowedSources: env.get("LBA_ALLOWED_SOURCES").required().asString(),
   esdClientId: env.get("LBA_ESD_CLIENT_ID").required().asString(),
   esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").required().asString(),
-  lbb: {
-    score50Level: env.get("LBA_LBB_SCORE_50").required().asFloatPositive(), //TODO: rename
-  },
   smtp: {
     host: env.get("LBA_SMTP_HOST").required().asString(),
     port: env.get("LBA_SMTP_PORT").required().asPortNumber(),
@@ -54,18 +45,6 @@ const config = {
     user: {
       jwtSecret: env.get("LBA_AUTH_USER_JWT_SECRET").required().asString(),
       expiresIn: env.get("LBA_AUTH_USER_JWT_SECRET_EXPIRES").required().asString(),
-    },
-    activation: {
-      jwtSecret: env.get("LBA_AUTH_ACTIVATION_JWT_SECRET").required().asString(),
-      expiresIn: env.get("LBA_AUTH_ACTIVATION_JWT_SECRET_EXPIRES").required().asString(),
-    },
-    password: {
-      jwtSecret: env.get("LBA_AUTH_PASSWORD_JWT_SECRET").required().asString(),
-      expiresIn: env.get("LBA_AUTH_PASSWORD_JWT_SECRET_EXPIRES").required().asString(),
-    },
-    magiclink: {
-      jwtSecret: env.get("LBA_AUTH_MAGICLINK_JWT_SECRET").required().asString(),
-      expiresIn: env.get("LBA_MAGICLINK_JWT_SECRET_EXPIRE").required().asString(),
     },
     session: {
       cookieName: "lba_session",
@@ -89,12 +68,6 @@ const config = {
       password: env.get("LBA_FTP_OCAPIAT_PASSWORD").required().asString(),
     },
   },
-  akto: {
-    grantType: env.get("LBA_AKTO_GRANT_TYPE").required().asString(),
-    clientId: env.get("LBA_AKTO_CLIENT_ID").required().asString(),
-    clientSecret: env.get("LBA_AKTO_CLIENT_SECRET").required().asString(),
-    scope: env.get("LBA_AKTO_SCOPE").required().asString(),
-  },
   diagoriente: {
     clientId: env.get("LBA_DIAGORIENTE_CLIENT_ID").required().asString(),
     clientSecret: env.get("LBA_DIAGORIENTE_CLIENT_SECRET").required().asString(),
@@ -110,20 +83,9 @@ const config = {
     password: env.get("LBA_POLE_EMPLOI_DEPOT_OFFRES_PASSWORD").required().asString(),
     nomFlux: "LABONATA",
   },
-  lba: {
-    application: env.get("LBA_APPLICATION_NAME").required().asString(),
-    apiKey: env.get("LBA_APPLICATION_ACCESS_KEY").required().asString(),
-  },
   bal: {
     baseUrl: env.get("LBA_BAL_ENV_URL").required().asString(),
     apiKey: env.get("LBA_BAL_API_KEY").required().asString(),
-  },
-  users: {
-    defaultAdmin: {
-      // name: env.get("LBA_USERS_DEFAULT_ADMIN_NAME").required().asString(),
-      // password: env.get("LBA_USERS_DEFAULT_ADMIN_PASSWORD").required().asString(),
-      // role: env.get("LBA_USERS_DEFAULT_ADMIN_ROLE").required().asString(),
-    },
   },
   catalogueMe: {
     username: env.get("LBA_CATALOGUE_ME_USERNAME").required().asString(),
