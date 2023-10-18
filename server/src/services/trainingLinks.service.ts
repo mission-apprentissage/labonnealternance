@@ -65,21 +65,21 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
     formations = await getFormation({ cle_ministere_educatif: wish.cle_ministere_educatif })
   }
 
-  if (!formations && formations.length) {
+  if (!formations || !formations.length) {
     // search by uai_lieu_formation
     if (wish.uai_lieu_formation) {
       formations = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
     }
   }
 
-  if (!formations && formations.length) {
+  if (!formations || !formations.length) {
     // search by uai_formateur
     if (wish.uai_formateur) {
       formations = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
     }
   }
 
-  if (!formations && formations.length) {
+  if (!formations || !formations.length) {
     // search by uai_formateur_responsable
     if (wish.uai_formateur_responsable) {
       formations = await getFormation({
@@ -133,7 +133,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   // get related trainings from catalogue
   const formations = await getTrainingsFromParameters(wish)
 
-  if (formations.length === 0 || !formations) {
+  if (!formations || !formations.length) {
     return buildEmploiUrl({ params: utmData })
   }
 
