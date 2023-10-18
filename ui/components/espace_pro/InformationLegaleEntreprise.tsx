@@ -1,7 +1,8 @@
 import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
 
+import { useAuth } from "@/context/UserContext"
+
 import { AUTHTYPE } from "../../common/contants"
-import useAuth from "../../common/hooks/useAuth"
 import { InfoCircle } from "../../theme/components/icons"
 
 import InfoPopover from "./InfoPopover"
@@ -13,7 +14,7 @@ import InfoTooltip from "./InfoToolTip"
  * Use the address API for all type of establishment
  */
 export const InformationLegaleEntreprise = (props) => {
-  const [auth] = useAuth()
+  const { user } = useAuth()
   const { establishment_enseigne, establishment_raison_sociale, rue, establishment_siret, commune, code_postal, opco, establishment_size, type, address, is_qualiopi } = props
   const hasDetailedAddress = Boolean(rue)
   const firstLineAddress = rue ?? address
@@ -26,7 +27,7 @@ export const InformationLegaleEntreprise = (props) => {
       <Heading mb={3} fontSize="2xl">
         Informations légales
       </Heading>
-      {RAISON_SOCIALE && auth.type !== AUTHTYPE.OPCO && (
+      {RAISON_SOCIALE && user?.type !== AUTHTYPE.OPCO && (
         <Flex alignItems="flex-start" mb={10}>
           <InfoCircle mr={2} mt={1} />
           <Text>Vérifiez que les informations pré-remplies soient correctes avant de continuer.</Text>

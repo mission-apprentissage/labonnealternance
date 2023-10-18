@@ -1,9 +1,11 @@
-import axios, { AxiosResponse } from "axios"
+import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
 import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getHttpClient } from "@/common/utils/httpUtils"
+import { createMagicLinkToken } from "@/common/utils/jwtUtils"
 
 import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types"
@@ -188,7 +190,7 @@ export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Prom
  */
 export const getOpco = async (siret: string): Promise<ICFADock | null> => {
   try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -203,7 +205,7 @@ export const getOpco = async (siret: string): Promise<ICFADock | null> => {
  */
 export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
   try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -218,19 +220,14 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
   try {
-    const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient().get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
     return data
   } catch (err) {
     sentryCaptureException(err)
     return null
   }
 }
-/**
- * @description Get the establishment validation url for a given SIRET
- * @param {IRecruiter["_id"]} _id
- * @returns {String}
- */
-export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.publicUrl}/espace-pro/authentification/validation/${_id}`
+
 /**
  * @description Validate the establishment email for a given ID
  * @param {IUserRecruteur["_id"]} _id
@@ -248,7 +245,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
     }
-    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
+    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
     return data
@@ -265,7 +262,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
  */
 export const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
   try {
-    const { data } = await axios.get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
+    const { data } = await getHttpClient().get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
     return data
   } catch (error: any) {
     sentryCaptureException(error)
@@ -283,7 +280,7 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
  */
 export const getEtablissementFromCatalogue = async (siret: string): Promise<IEtablissementCatalogue> => {
   try {
-    const result: IEtablissementCatalogue = await axios.get("https://catalogue.apprentissage.beta.gouv.fr/api/v1/entity/etablissements/", {
+    const result: IEtablissementCatalogue = await getHttpClient().get("https://catalogue.apprentissage.beta.gouv.fr/api/v1/entity/etablissements/", {
       params: {
         query: { siret },
       },
@@ -294,23 +291,35 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
     return error
   }
 }
+
+// when in string format: $latitude,$longitude
+export type GeoCoord = {
+  latitude: number
+  longitude: number
+}
+
 /**
  * @description Get the geolocation information from the ADDRESS API for a given address
  * @param {String} adresse
- * @returns {Promise<string>}
  */
-export const getGeoCoordinates = async (adresse: string): Promise<string | null> => {
+export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
   try {
-    const response: AxiosResponse<IAPIAdresse> = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
-    // eslint-disable-next-line no-unsafe-optional-chaining
-    const [firstFeature] = response.data?.features
+    const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
+    const firstFeature = response.data?.features.at(0)
     if (!firstFeature) {
-      return null
+      throw new Error("pas trouvé")
     }
-    return firstFeature.geometry.coordinates.reverse().join(",")
+    const coords = firstFeature.geometry.coordinates.reverse()
+    const latitude = coords.at(0)
+    const longitude = coords.at(1)
+    if (latitude === undefined || longitude === undefined) {
+      throw Boom.internal("moins de 2 coordonnées", { latitude, longitude })
+    }
+    return { latitude, longitude }
   } catch (error: any) {
-    sentryCaptureException(error)
-    return null
+    const newError = Boom.internal(`erreur de récupération des geo coordonnées`, { adresse })
+    newError.cause = error
+    throw newError
   }
 }
 /**
@@ -340,24 +349,41 @@ export const getAllEstablishmentFromLbaCompanyLegacy = async (query: FilterQuery
  */
 export const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
 
+function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undefined {
+  const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
+  const { raison_sociale } = personne_morale_attributs
+  if (raison_sociale) {
+    return raison_sociale
+  }
+  if (personne_physique_attributs) {
+    const { prenom_usuel, nom_naissance, nom_usage } = personne_physique_attributs
+    return `${prenom_usuel} ${nom_usage ?? nom_naissance}`
+  }
+}
+
 /**
  * @description Format Entreprise data
  * @param {IEtablissementGouv} data
  * @returns {IFormatAPIEntreprise}
  */
-export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => ({
-  establishment_enseigne: d.enseigne,
-  establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
-  establishment_siret: d.siret,
-  establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
-  address_detail: d.adresse,
-  address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
-  contacts: [], // conserve la coherence avec l'UI
-  naf_code: d.activite_principale.code,
-  naf_label: d.activite_principale.libelle,
-  establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
-  establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
-})
+export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
+  if (!d.adresse) {
+    throw new Error("erreur dans le format de l'api SIRENE : le champ adresse est vide")
+  }
+  return {
+    establishment_enseigne: d.enseigne,
+    establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
+    establishment_siret: d.siret,
+    establishment_raison_sociale: getRaisonSocialeFromGouvResponse(d),
+    address_detail: d.adresse,
+    address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
+    contacts: [], // conserve la coherence avec l'UI
+    naf_code: d.activite_principale.code,
+    naf_label: d.activite_principale.libelle,
+    establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
+    establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
+  }
+}
 
 /**
  * @description Format Referentiel data
@@ -512,8 +538,13 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
     }
   }
   const entrepriseData = formatEntrepriseData(result.data)
-  const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
-  return { ...entrepriseData, geo_coordinates }
+  if (!entrepriseData.establishment_raison_sociale) {
+    throw Boom.internal("pas de raison sociale trouvée", { siret, cfa_delegated_siret, entrepriseData, apiData: result.data })
+  }
+  const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
+  const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
+  const { latitude, longitude } = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
+  return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}` }
 }
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
@@ -554,7 +585,7 @@ export const entrepriseOnboardingWorkflow = {
       phone?: string
       email: string
       cfa_delegated_siret?: string
-      origin: string
+      origin?: string | null
       opco: string
       idcc?: string
     },
@@ -660,6 +691,17 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
+/**
+ * @description Get the establishment validation url for a given SIRET
+ * @param {IRecruiter["_id"]} _id
+ * @returns {String}
+ */
+const getValidationUrl = (_id: IRecruiter["_id"], email): string => {
+  return `${config.publicUrl}/espace-pro/authentification/validation/${_id}?token=${createMagicLinkToken(email, {
+    expiresIn: "30d",
+  })}`
+}
+
 export const sendUserConfirmationEmail = async ({
   email,
   firstName,
@@ -671,7 +713,7 @@ export const sendUserConfirmationEmail = async ({
   firstName: string
   userRecruteurId: IUserRecruteur["_id"]
 }) => {
-  const url = getValidationUrl(userRecruteurId)
+  const url = getValidationUrl(userRecruteurId, email)
   await mailer.sendEmail({
     to: email,
     subject: "Confirmez votre adresse mail",
@@ -697,7 +739,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && is_delegated === false) {
     // Get user account validation link
-    const url = getValidationUrl(user._id)
+    const url = getValidationUrl(user._id, user.email)
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",

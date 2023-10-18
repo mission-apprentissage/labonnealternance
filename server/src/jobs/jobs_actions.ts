@@ -2,27 +2,22 @@ import { captureException, getCurrentHub, runWithAsyncContext } from "@sentry/no
 import { formatDuration, intervalToDuration } from "date-fns"
 import mongoose from "mongoose"
 
-import { IInternalJobs } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { IInternalJobs, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { db } from "@/common/mongodb"
 import { sleep } from "@/common/utils/asyncUtils"
 
 import { getLoggerWithContext } from "../common/logger"
 
-import { createJob, updateJob } from "./job.actions"
+import { createJobSimple, updateJob } from "./job.actions"
 import { runJob } from "./jobs"
 
 const logger = getLoggerWithContext("script")
 
-export async function addJob({
-  name,
-  type = "simple",
-  payload = {},
-  scheduled_for = new Date(),
-  queued = false,
-}: Pick<IInternalJobs, "name"> & Partial<Pick<IInternalJobs, "type" | "payload" | "scheduled_for">> & { queued?: boolean }): Promise<number> {
-  const job = await createJob({
+type AddJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload"> & Partial<Pick<IInternalJobsSimple, "scheduled_for">> & { queued?: boolean }
+
+export async function addJob({ name, payload, scheduled_for = new Date(), queued = false }: AddJobSimpleParams): Promise<number> {
+  const job = await createJobSimple({
     name,
-    type,
     payload,
     scheduled_for,
     sync: !queued,

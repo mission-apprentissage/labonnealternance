@@ -12,18 +12,18 @@ import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulai
 import { autoValidateUser, deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
 
 const updateUserRecruteursSiretInfosInError = async () => {
-  const query = {
+  const userRecruteurs = await UserRecruteur.find({
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
-  }
-
-  // @ts-expect-error
-  const userRecruteurs = await UserRecruteur.find(query).lean()
+  }).lean()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des user recruteurs en erreur: ${userRecruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(userRecruteurs, async (userRecruteur) => {
     const { establishment_siret, _id, establishment_id, type } = userRecruteur
     try {
+      if (!establishment_id) {
+        throw Boom.internal("unexpected: no establishment_id for userRecruteur of type ENTREPRISE", { userId: userRecruteur._id })
+      }
       let recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur
       const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret: cfa_delegated_siret ?? undefined })

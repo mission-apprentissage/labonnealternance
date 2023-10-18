@@ -8,6 +8,8 @@ export const zUpdateLbaCompanyRoutes = {
   get: {
     // TODO_SECURITY passer en session role is-admin et faire un formulaire (migrer en POST)
     "/updateLBB/updateContactInfo": {
+      method: "get",
+      path: "/updateLBB/updateContactInfo",
       querystring: z
         .object({
           secret: z.string(),

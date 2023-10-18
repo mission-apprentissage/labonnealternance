@@ -47,7 +47,7 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
   }
 
   if (config.env === "local") {
-    return Boom.internal(rawError.message, { rawError })
+    return Boom.internal(rawError.message, { rawError, cause: rawError })
   }
 
   return Boom.internal("Une erreur est survenue")
@@ -65,8 +65,8 @@ export function errorMiddleware(server: Server) {
     }
 
     if (error.output.statusCode >= 500) {
-      server.log.error(error)
-      captureException(error)
+      server.log.error(rawError)
+      captureException(rawError)
     }
 
     return reply.status(payload.statusCode).send(payload)

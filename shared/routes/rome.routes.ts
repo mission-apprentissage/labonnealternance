@@ -7,6 +7,8 @@ import { IRoutesDef } from "./common.routes"
 export const zRomeRoutes = {
   get: {
     "/rome": {
+      method: "get",
+      path: "/rome",
       // TODO à fusionner avec romeLabels dans metiers.route ou supprimer si obsolète
       querystring: z
         .object({
@@ -23,6 +25,8 @@ export const zRomeRoutes = {
       },
     },
     "/rome/detail/:rome": {
+      method: "get",
+      path: "/rome/detail/:rome",
       // TODO filtrer la payload
       params: z
         .object({

@@ -24,4 +24,13 @@ describe("zRoutes", () => {
       }
     }
   })
+
+  it("should method & path be defined correctly", () => {
+    for (const [method, zMethodRoutes] of Object.entries(zRoutes)) {
+      for (const [path, def] of Object.entries(zMethodRoutes)) {
+        assert.equal(def.method, method, `${method} ${path}: have invalid method`)
+        assert.equal(def.path, path, `${method} ${path}: have invalid path`)
+      }
+    }
+  })
 })

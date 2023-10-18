@@ -14,10 +14,13 @@ import { addJob, processor } from "./jobs/jobs_actions"
 
 async function startJobProcessor(signal: AbortSignal) {
   logger.info(`Process jobs queue - start`)
-  await addJob({
-    name: "crons:init",
-    queued: true,
-  })
+  if (config.env !== "local" && config.env !== "preview") {
+    await addJob({
+      name: "crons:init",
+      queued: true,
+      payload: {},
+    })
+  }
 
   await processor(signal)
   logger.info(`Processor shut down`)
@@ -174,6 +177,8 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("migration:get-missing-geocoords"))
 
+// Temporaire, one shot à executer en recette et prod
+program.command("import:rome").description("import référentiel fiche metier rome v3").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import:rome"))
 // Temporaire, one shot à executer en recette et prod
 program
   .command("migration:remove-version-key-from-all-collections")
@@ -475,6 +480,12 @@ program
   .description("Procède à la mise à jour du référentiel RNCP codes ROME")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:rncp-romes:update"))
+
+program
+  .command("fill-recruiters-raison-sociale")
+  .description("Remplissage des raisons sociales pour les recruiters et userRecruiters qui n'en ont pas")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:raison-sociale:fill"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

@@ -14,6 +14,7 @@ import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppoin
 import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema"
 import Etablissement from "./schema/etablissements/etablissement.schema"
+import FicheMetierRomeV3 from "./schema/ficheRomeV3/ficheRomeV3"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema"
 import GeoLocation from "./schema/geolocation/geolocation.schema"
 import InternalJobs from "./schema/internalJobs/internalJobs.schema"
@@ -27,6 +28,7 @@ import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.sche
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
 import ReferentielRome from "./schema/referentielRome/referentielRome.schema"
 import RncpRomes from "./schema/rncpRomes/rncpRomes.schema"
+import Session from "./schema/session/session.schema"
 import UnsubscribedLbaCompany from "./schema/unsubscribedLbaCompany/unsubscribedLbaCompany.schema"
 import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema"
 import User from "./schema/user/user.schema"
@@ -77,6 +79,7 @@ export {
   EligibleTrainingsForAppointment,
   EmailBlacklist,
   Etablissement,
+  FicheMetierRomeV3,
   FormationCatalogue,
   GeoLocation,
   InternalJobs,
@@ -94,5 +97,6 @@ export {
   UnsubscribedLbaCompany,
   User,
   UserRecruteur,
+  Session,
   eligibleTrainingsForAppointmentHistory,
 }

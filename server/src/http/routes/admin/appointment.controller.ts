@@ -10,31 +10,15 @@ import { Server } from "../../server"
  */
 export default (server: Server) => {
   /**
-   * Get all formations getRequests /requests GET
-   * */
-  server.get(
-    "/admin/appointments",
-    {
-      schema: zRoutes.get["/admin/appointments"],
-      preHandler: [server.auth(zRoutes.get["/admin/appointments"].securityScheme)],
-    },
-    async (req, res) => {
-      const appointments = await Appointment.find().sort({ _id: -1 }).lean()
-
-      return res.status(200).send({ appointments })
-    }
-  )
-
-  /**
    * Get all formations getRequests /requests GET (with details)
    * */
   server.get(
     "/admin/appointments/details",
     {
       schema: zRoutes.get["/admin/appointments/details"],
-      preHandler: [server.auth(zRoutes.get["/admin/appointments"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/admin/appointments/details"].securityScheme)],
     },
-    async (req, res) => {
+    async (_req, res) => {
       const allAppointments = await Appointment.find().limit(100).sort({ _id: -1 }).lean()
 
       const cleMinistereEducatifs: Set<string> = new Set()
@@ -57,9 +41,10 @@ export default (server: Server) => {
 
         const formation = formations.find((item) => item.cle_ministere_educatif === appointment.cle_ministere_educatif)
 
-        if (!formation) {
-          throw Boom.internal("Formation non trouvée.")
-        }
+        // TODO do not throw but do something else
+        // if (!formation) {
+        //   throw Boom.internal("Formation non trouvée.")
+        // }
 
         return {
           created_at: appointment.created_at,

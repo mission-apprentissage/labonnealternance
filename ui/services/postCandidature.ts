@@ -7,7 +7,7 @@ import { logError } from "../utils/tools"
 
 import extractCandidatureParams from "./extractCandidatureParams"
 
-export default async function postCandidature(applicant_h, company_h, caller, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) {
+export default async function postCandidature(applicant_h, company_h, jobLabel = null, caller, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) {
   let res = ""
 
   const candidatureApi = _apiEndpoint + "/v1/application"
@@ -16,7 +16,7 @@ export default async function postCandidature(applicant_h, company_h, caller, _a
   let isAxiosError = false
 
   try {
-    response = await _axios.post(candidatureApi, extractCandidatureParams(applicant_h, company_h, caller))
+    response = await _axios.post(candidatureApi, extractCandidatureParams(applicant_h, company_h, jobLabel, caller))
   } catch (error) {
     response = error.response
 

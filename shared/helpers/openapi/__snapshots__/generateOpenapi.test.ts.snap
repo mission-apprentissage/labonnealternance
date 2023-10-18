@@ -157,6 +157,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "searched_for_job_label": {
+            "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
+            "example": "Vente de fleurs, végétaux",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "secret": {
             "type": [
               "string",
@@ -880,12 +888,8 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         },
         "required": [
           "rome_code",
-          "job_update_date",
-          "job_prolongation_count",
-          "relance_mail_sent",
           "job_status",
           "job_type",
-          "job_delegation_count",
           "is_disabled_elligible",
         ],
         "type": "object",
@@ -3101,7 +3105,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                         },
                         "id_rco_formation": {
                           "example": "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-                          "type": "string",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
                         },
                         "intitule_long": {
                           "example": "METIERS D'ART ET DU DESIGN (DN)",
@@ -4051,6 +4058,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     {
                       "$ref": "#/components/schemas/LbacError",
                     },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
                   ],
                 },
               },
@@ -4064,6 +4074,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   "anyOf": [
                     {
                       "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
                     },
                     {
                       "$ref": "#/components/schemas/ApiError",
@@ -4291,6 +4304,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     {
                       "$ref": "#/components/schemas/LbacError",
                     },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
                   ],
                 },
               },
@@ -4308,6 +4324,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     {
                       "$ref": "#/components/schemas/LbacError",
                     },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
                   ],
                 },
               },
@@ -4324,6 +4343,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     },
                     {
                       "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
                     },
                   ],
                 },
@@ -4764,6 +4786,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     {
                       "$ref": "#/components/schemas/LbacError",
                     },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
                   ],
                 },
               },
@@ -4781,6 +4806,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     {
                       "$ref": "#/components/schemas/LbacError",
                     },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
                   ],
                 },
               },
@@ -4797,6 +4825,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     },
                     {
                       "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
                     },
                   ],
                 },
@@ -4879,6 +4910,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     {
                       "$ref": "#/components/schemas/LbacError",
                     },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
                   ],
                 },
               },
@@ -4895,6 +4929,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     },
                     {
                       "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
                     },
                   ],
                 },

@@ -2,6 +2,8 @@ import axios from "axios"
 import Boom from "boom"
 import { IMetiersDavenir } from "shared/models"
 
+import { getHttpClient } from "@/common/utils/httpUtils"
+
 import config from "../config"
 
 import dayjs from "./dayjs.service"
@@ -38,7 +40,7 @@ export const getMetiersDAvenir = async (): Promise<IMetiersDavenir> => {
       Authorization: `Bearer ${token}`,
     }
 
-    const { data } = await axios.post(
+    const { data } = await getHttpClient().post(
       config.diagoriente.queryUrl,
       JSON.stringify({
         query: `{

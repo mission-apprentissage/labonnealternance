@@ -9,6 +9,8 @@ import { IRoutesDef } from "./common.routes"
 export const zRecruiterRoutes = {
   get: {
     "/etablissement/cfas-proches": {
+      method: "get",
+      path: "/etablissement/cfas-proches",
       querystring: z
         .object({
           latitude: z.coerce.number(),
@@ -40,6 +42,8 @@ export const zRecruiterRoutes = {
       },
     },
     "/etablissement/entreprise/:siret": {
+      method: "get",
+      path: "/etablissement/entreprise/:siret",
       // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
       params: z
         .object({
@@ -75,6 +79,8 @@ export const zRecruiterRoutes = {
       },
     },
     "/etablissement/entreprise/:siret/opco": {
+      method: "get",
+      path: "/etablissement/entreprise/:siret/opco",
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         "2xx": z
@@ -90,6 +96,8 @@ export const zRecruiterRoutes = {
       },
     },
     "/etablissement/cfa/:siret": {
+      method: "get",
+      path: "/etablissement/cfa/:siret",
       // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
       params: z.object({ siret: extensions.siret() }).strict(),
@@ -102,18 +110,22 @@ export const zRecruiterRoutes = {
       },
     },
     "/etablissement/cfa/:userRecruteurId/entreprises": {
+      method: "get",
+      path: "/etablissement/cfa/:userRecruteurId/entreprises",
       params: z.object({ userRecruteurId: zObjectId }).strict(),
       response: {
         "200": z.array(ZRecruiter),
       },
       securityScheme: {
-        auth: "jwt-bearer",
+        auth: "cookie-session",
         role: "all",
       },
     },
   },
   post: {
     "/etablissement/creation": {
+      method: "post",
+      path: "/etablissement/creation",
       body: z.union([
         z
           .object({
@@ -176,6 +188,8 @@ export const zRecruiterRoutes = {
       },
     },
     "/etablissement/:establishment_siret/proposition/unsubscribe": {
+      method: "post",
+      path: "/etablissement/:establishment_siret/proposition/unsubscribe",
       // TODO_SECURITY_FIX jwt
       params: z.object({ establishment_siret: extensions.siret() }).strict(),
       response: {
@@ -191,19 +205,24 @@ export const zRecruiterRoutes = {
       },
     },
     "/etablissement/validation": {
-      // TODO_SECURITY_FIX jwt
-      body: z.object({ id: zObjectId }).strict(),
+      method: "post",
+      path: "/etablissement/validation",
+      querystring: z.object({ token: z.string() }).strict(),
       response: {
-        "2xx": z.union([z.object({ token: z.string() }).strict(), z.object({ isUserAwaiting: z.boolean() }).strict()]),
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "2xx": z.union([z.object({ token: z.string() }).strict(), z.object({ isUserAwaiting: z.boolean() }).strict()]),
       },
       securityScheme: {
-        auth: "none",
+        auth: "jwt-token",
         role: "all",
       },
     },
   },
   put: {
     "/etablissement/:id": {
+      method: "put",
+      path: "/etablissement/:id",
       // TODO_SECURITY_FIX jwt en mode session + filtre sur la payload pour réduction
       params: z.object({ id: zObjectId }).strict(),
       body: ZUserRecruteur.pick({
@@ -218,7 +237,7 @@ export const zRecruiterRoutes = {
         "2xx": z.union([ZUserRecruteur, z.null()]),
       },
       securityScheme: {
-        auth: "jwt-bearer",
+        auth: "cookie-session",
         role: "all",
       },
     },

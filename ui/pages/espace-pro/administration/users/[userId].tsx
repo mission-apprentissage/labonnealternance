@@ -23,8 +23,11 @@ import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import * as Yup from "yup"
 
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { useAuth } from "@/context/UserContext"
+import { apiGet } from "@/utils/api.utils"
+
 import { AUTHTYPE, USER_STATUS } from "../../../../common/contants"
-import useAuth from "../../../../common/hooks/useAuth"
 import useUserHistoryUpdate from "../../../../common/hooks/useUserHistoryUpdate"
 import {
   AnimationContainer,
@@ -37,19 +40,19 @@ import {
   UserValidationHistory,
 } from "../../../../components/espace_pro"
 import { OpcoSelect } from "../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
-import withAuth from "../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
-import { getUser, updateEntreprise } from "../../../../utils/api"
+import { updateEntreprise } from "../../../../utils/api"
 
 function DetailEntreprise() {
   const router = useRouter()
-  const { userId } = router.query
+  const { userId } = router.query as { userId: string }
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
 
   const client = useQueryClient()
   const toast = useToast()
-  const [auth] = useAuth()
+  const { user } = useAuth()
 
   const ActivateUserButton = ({ userId }) => {
     const updateUserHistory = useUserHistoryUpdate(userId, USER_STATUS.ACTIVE)
@@ -103,7 +106,7 @@ function DetailEntreprise() {
   }
 
   const getUserNavigationContext = () => {
-    switch (auth.type) {
+    switch (user.type) {
       case AUTHTYPE.ADMIN:
         return "/espace-pro/administration/users"
       case AUTHTYPE.OPCO:
@@ -114,7 +117,7 @@ function DetailEntreprise() {
     }
   }
 
-  const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => getUser(userId), { cacheTime: 0 })
+  const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => apiGet(`/user/:userId`, { params: { userId } }), { cacheTime: 0, enabled: !!userId })
   // @ts-expect-error: TODO
   const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
@@ -122,16 +125,16 @@ function DetailEntreprise() {
     },
   })
 
-  if (isLoading || !data) {
+  if (isLoading || !data || !userId) {
     return <LoadingEmptySpace />
   }
 
-  const [lastUserState] = data.data.status.slice(-1)
-  const establishmentLabel = data.data.establishment_raison_sociale ?? data.data.establishment_siret
+  const [lastUserState] = data.status.slice(-1)
+  const establishmentLabel = data.establishment_raison_sociale ?? data.establishment_siret
 
   return (
     <AnimationContainer>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...data.data} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...data} />
       <Layout displayNavigationMenu={false} header={false} footer={false}>
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>
@@ -155,18 +158,15 @@ function DetailEntreprise() {
                 <Box ml={5}>{getUserBadge(lastUserState)}</Box>
               </Flex>
               <Stack direction={["column", "column", "column", "row"]} spacing="10px">
-                {getActionButtons(lastUserState, data.data._id)}
-                {data.data.type === AUTHTYPE.ENTREPRISE ? (
-                  data.data.jobs.length ? (
+                {getActionButtons(lastUserState, data._id)}
+                {data.type === AUTHTYPE.ENTREPRISE ? (
+                  data.jobs.length ? (
                     lastUserState.status === USER_STATUS.WAITING || lastUserState.status === USER_STATUS.ERROR ? (
                       <Button variant="secondary" isDisabled={true}>
                         Offre en attente de validation
                       </Button>
                     ) : (
-                      <Button
-                        variant="secondary"
-                        onClick={() => router.push(`/espace-pro/administration/opco/entreprise/${data.data.establishment_siret}/${data.data.establishment_id}`)}
-                      >
+                      <Button variant="secondary" onClick={() => router.push(`/espace-pro/administration/opco/entreprise/${data.establishment_siret}/${data.establishment_id}`)}>
                         Voir les offres
                       </Button>
                     )
@@ -183,11 +183,11 @@ function DetailEntreprise() {
             validateOnMount={true}
             enableReinitialize={true}
             initialValues={{
-              last_name: data.data.last_name,
-              first_name: data.data.first_name,
-              phone: data.data.phone,
-              email: data.data.email,
-              opco: data.data.opco,
+              last_name: data.last_name,
+              first_name: data.first_name,
+              phone: data.phone,
+              email: data.email,
+              opco: data.opco,
             }}
             validationSchema={Yup.object().shape({
               last_name: Yup.string().required("champ obligatoire"),
@@ -198,14 +198,14 @@ function DetailEntreprise() {
                 .max(10, "le téléphone est sur 10 chiffres")
                 .required("champ obligatoire"),
               email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
-              type: Yup.string().default(data.data.type),
+              type: Yup.string().default(data.type),
               opco: Yup.string().when("type", { is: (v) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
             })}
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
               // For companies we update the User Collection and the Formulaire collection at the same time
               // @ts-expect-error: TODO
-              userMutation.mutate({ userId: data.data._id, establishment_id: data.data.establishment_id, values })
+              userMutation.mutate({ userId: data._id, establishment_id: data.establishment_id, values })
               toast({
                 title: "Mise à jour enregistrée avec succès",
                 position: "top-right",
@@ -223,7 +223,7 @@ function DetailEntreprise() {
                     {...confirmationModificationOpco}
                     establishment_raison_sociale={establishmentLabel}
                     setFieldValue={setFieldValue}
-                    previousValue={data.data.opco}
+                    previousValue={data.opco}
                     newValue={values.opco}
                   />
                   <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
@@ -237,7 +237,7 @@ function DetailEntreprise() {
                           <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
                           <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                           <CustomInput name="email" label="Email" type="email" value={values.email} />
-                          {data.data.type === AUTHTYPE.ENTREPRISE && (
+                          {data.type === AUTHTYPE.ENTREPRISE && (
                             <FormControl>
                               <FormLabel>OPCO</FormLabel>
                               <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
@@ -261,13 +261,13 @@ function DetailEntreprise() {
                       </Box>
                     </Box>
                     <Box>
-                      <InformationLegaleEntreprise {...data.data} />
+                      <InformationLegaleEntreprise {...data} />
                     </Box>
                   </SimpleGrid>
-                  {(auth.type === AUTHTYPE.OPCO || auth.type === AUTHTYPE.ADMIN) && (
+                  {(user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (
                     <Box mb={12}>
                       {/* @ts-expect-error: TODO */}
-                      <UserValidationHistory histories={data.data.status} />
+                      <UserValidationHistory histories={data.status} />
                     </Box>
                   )}
                 </>
@@ -285,4 +285,7 @@ function DetailEntreprisePage() {
   const { userId } = router.query
   return <Layout footer={false}>{userId && <DetailEntreprise />}</Layout>
 }
-export default withAuth(DetailEntreprisePage, "adminLbaR")
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(DetailEntreprisePage, "adminLbaR"))

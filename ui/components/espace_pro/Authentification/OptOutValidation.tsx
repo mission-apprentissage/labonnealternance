@@ -2,19 +2,14 @@ import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
+import { apiGet } from "@/utils/api.utils"
+
 import { AUTHTYPE } from "../../../common/contants"
-import { validateOptOutToken } from "../../../utils/api"
 
 export default function OptOutValidation() {
   const toast = useToast()
   const router = useRouter()
-  // TODO_AB
-  // const location = useLocation()
 
-  // const { search } = location
-
-  // let params = new URLSearchParams(search)
-  // let token = params.get("token")
   const { token } = router.query
 
   useEffect(() => {
@@ -23,10 +18,13 @@ export default function OptOutValidation() {
     }
 
     // send token to back office
-    validateOptOutToken(token)
-      .then(({ data }) => {
-        // TODO_AB
-        // router.push("/espace-pro/creation/detail", { state: { informationSiret: data, type: AUTHTYPE.CFA, origin: "optout" } })
+
+    apiGet(`/optout/validate`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(({ data }: any) => {
         router.push({
           pathname: "/espace-pro/creation/detail",
           query: { informationSiret: JSON.stringify(data), type: AUTHTYPE.CFA, origin: "optout" },

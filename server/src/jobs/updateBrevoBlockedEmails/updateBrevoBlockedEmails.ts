@@ -38,7 +38,7 @@ const cleanCompany = async (company) => {
   modifiedCompanyCount++
 }
 
-const updateBlockedEmails = async ({ AllAddresses }) => {
+const updateBlockedEmails = async ({ AllAddresses }: { AllAddresses?: boolean }) => {
   logger.info(`Début mise à jour blacklist Brevo`)
 
   const defaultClient = SibApiV3Sdk.ApiClient.instance
@@ -52,7 +52,7 @@ const updateBlockedEmails = async ({ AllAddresses }) => {
 
   const todayStr = `${yesterday.getFullYear()}-${yesterday.getMonth() < 9 ? "0" : ""}${yesterday.getMonth() + 1}-${yesterday.getDate() < 10 ? "0" : ""}${yesterday.getDate()}`
   const limit = 100
-  const senders = ["no-reply@apprentissage.beta.gouv.fr"]
+  const senders = [config.transactionalEmail, config.publicEmail]
   let total = 0
   let offset = 0
   const startDate = AllAddresses ? null : todayStr
@@ -85,7 +85,7 @@ const updateBlockedEmails = async ({ AllAddresses }) => {
 let blacklistedAddressCount = 0
 let modifiedCompanyCount = 0
 
-export default async function ({ AllAddresses }) {
+export default async function ({ AllAddresses }: { AllAddresses?: boolean }) {
   blacklistedAddressCount = 0
   modifiedCompanyCount = 0
 

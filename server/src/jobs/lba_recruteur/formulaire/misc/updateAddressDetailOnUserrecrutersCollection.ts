@@ -1,3 +1,5 @@
+import Boom from "boom"
+
 import { logger } from "../../../../common/logger.js"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
@@ -28,7 +30,11 @@ export const updateAddressDetailOnUserrecrutersCollection = async () => {
         return
       }
 
-      const formulaire = await Recruiter.findOne({ establishment_id: user.establishment_id })
+      const { establishment_id } = user
+      if (!establishment_id) {
+        throw Boom.internal("unexpected: no establishment_id on userRecruteur of type ENTREPRISE", { userId: user._id })
+      }
+      const formulaire = await Recruiter.findOne({ establishment_id })
 
       if (!formulaire) {
         return
@@ -46,7 +52,11 @@ export const updateAddressDetailOnUserrecrutersCollection = async () => {
           errors.includes("Le siret ou siren indiqué n'existe pas, n'est pas connu ou ne comporte aucune information pour cet appel")
         ) {
           console.log(`Invalid siret DELETED : ${user.establishment_siret} - User & Formulaire removed`)
-          await Promise.all([UserRecruteur.findByIdAndDelete(user._id), Recruiter.findOneAndRemove({ establishment_id: user.establishment_id })])
+          const { establishment_id } = user
+          await UserRecruteur.findByIdAndDelete(user._id)
+          if (establishment_id) {
+            await Recruiter.findOneAndRemove({ establishment_id })
+          }
           return
         }
       } else {

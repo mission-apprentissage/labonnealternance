@@ -25,7 +25,6 @@ const config = {
     uri: env.get("LBA_MONGODB_URI").required().asString(),
   },
   laBonneFormationPassword: env.get("LBA_LABONNEFORMATION_PASSWORD").required().asString(),
-  laBonneFormationApiUrl: "https://labonneformation.pole-emploi.fr",
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   matcha: {
     apiKey: env.get("LBA_MATCHA_ACCESS_KEY").required().asString(),
@@ -67,6 +66,16 @@ const config = {
     magiclink: {
       jwtSecret: env.get("LBA_AUTH_MAGICLINK_JWT_SECRET").required().asString(),
       expiresIn: env.get("LBA_MAGICLINK_JWT_SECRET_EXPIRE").required().asString(),
+    },
+    session: {
+      cookieName: "lba_session",
+      cookie: {
+        maxAge: 30 * 24 * 3600000,
+        httpOnly: true,
+        sameSite: "lax" as const,
+        path: "/",
+        secure: true,
+      },
     },
   },
   ftp: {

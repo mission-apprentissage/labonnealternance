@@ -1,3 +1,5 @@
+import Boom from "boom"
+
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
@@ -27,7 +29,11 @@ export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`${entreprises.length} etp à mettre à jour...`)
 
   await asyncForEach(entreprises, async (entreprise) => {
-    const userFormulaire = await getFormulaire({ establishment_id: entreprise.establishment_id })
+    const { establishment_id } = entreprise
+    if (!establishment_id) {
+      throw Boom.internal("unexpected: no establishment_id for userRecruteur of type ENTREPRISE", { userId: entreprise._id })
+    }
+    const userFormulaire = await getFormulaire({ establishment_id })
 
     if (!userFormulaire) {
       await UserRecruteur.findByIdAndDelete(entreprise.establishment_id)
@@ -41,9 +47,10 @@ export const checkAwaitingCompaniesValidation = async () => {
       stat.notFound++
     }
 
-    if (hasBeenValidated) {
+    const firstJob = userFormulaire.jobs.at(0)
+    if (hasBeenValidated && firstJob) {
       // Get job and update its expiration date
-      const job = Object.assign(userFormulaire.jobs[0], { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+      const job = Object.assign(firstJob, { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
       // save job
       await updateOffre(job._id.toString(), job)
 
