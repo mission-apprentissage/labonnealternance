@@ -7,9 +7,9 @@ import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation } from "s
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { UserRecruteur } from "../common/model/index"
-import { createMagicLinkToken } from "../common/utils/jwtUtils"
 import config from "../config"
 
+import { createAuthMagicLink } from "./appLinks.service"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR, ADMIN } from "./constant.service"
 import mailer from "./mailer.service"
 
@@ -203,7 +203,6 @@ export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: str
 
 export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
   const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
-  const magiclink = `${config.publicUrl}/espace-pro/authentification/verification?token=${createMagicLinkToken(email)}`
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
@@ -217,7 +216,7 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
       first_name,
       email,
       is_delegated: type === CFA,
-      url: magiclink,
+      url: createAuthMagicLink(userRecruteur),
     },
   })
 }

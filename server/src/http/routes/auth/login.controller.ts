@@ -3,9 +3,10 @@ import { toPublicUser, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { createAuthMagicLink } from "@/services/appLinks.service"
 import { createSession, deleteSession } from "@/services/sessions.service"
 
-import { createMagicLinkToken, createUserToken } from "../../../common/utils/jwtUtils"
+import { createUserToken } from "../../../common/utils/jwtUtils"
 import config from "../../../config"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service"
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
@@ -95,7 +96,7 @@ export default (server: Server) => {
           reason: "VERIFY",
         })
       }
-      const magiclink = `${config.publicUrl}/espace-pro/authentification/verification?token=${createMagicLinkToken(userEmail)}`
+
       await mailer.sendEmail({
         to: userEmail,
         subject: "Lien de connexion",
@@ -106,7 +107,7 @@ export default (server: Server) => {
           },
           last_name,
           first_name,
-          connexion_url: magiclink,
+          connexion_url: createAuthMagicLink(user),
         },
       })
       return res.status(200).send({})
@@ -122,10 +123,10 @@ export default (server: Server) => {
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/login/verification"]).value
 
-      const token = createUserToken({ email: user.email }, { payload: { email: user.email } })
+      const token = createUserToken({ email: user.identity.email }, { payload: { email: user.identity.email } })
       await createSession({ token })
 
-      const formatedEmail = user.email.toLowerCase()
+      const formatedEmail = user.identity.email.toLowerCase()
       const connectedUser = await registerUser(formatedEmail)
 
       if (!connectedUser) {
