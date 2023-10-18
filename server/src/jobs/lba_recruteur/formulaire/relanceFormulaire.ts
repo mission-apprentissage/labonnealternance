@@ -57,6 +57,7 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
       data: {
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
         },
         last_name: contactCFA?.last_name ?? last_name,
         first_name: contactCFA?.first_name ?? first_name,
@@ -65,8 +66,8 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
         offres: jobsWithRecruiter.map((job) => ({
           libelle: job.rome_appellation_label ?? job.rome_label,
           type: job.job_type,
-          supprimer: `${config.publicUrl}/espace-pro/job/${job._id}/cancel`,
-          pourvue: `${config.publicUrl}/espace-pro/job/${job._id}/provided`,
+          supprimer: `${config.publicUrl}/espace-pro/offre/${job._id}/cancel`,
+          pourvue: `${config.publicUrl}/espace-pro/offre/${job._id}/provided`,
         })),
         threshold,
         url: `${config.publicUrl}/espace-pro/authentification`,
