@@ -149,7 +149,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   }
 
   if (formations.length > 1 && wLat && wLon) {
-    let distance = 9999
+    let distance = 999999999
     for (const [i, iFormation] of formations.entries()) {
       if (iFormation.lieu_formation_geo_coordonnees) {
         const [fLat, fLon] = iFormation.lieu_formation_geo_coordonnees.split(",")
