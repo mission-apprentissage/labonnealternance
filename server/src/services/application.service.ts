@@ -554,19 +554,24 @@ export const sendNotificationToApplicant = async ({
  * @description updates application and triggers action from email webhook
  */
 export const updateApplicationStatus = async ({ payload }: { payload: any }): Promise<void> => {
-  /* Format payload
+  /* Format payload cf. https://developers.brevo.com/docs/how-to-use-webhooks
       {
-        event : "unique_opened",
-        id: 497470,
-        date: "2021-12-27 14:12:54",
-        ts: 1640610774,
-        message-id: "<48ea8e31-715e-d929-58af-ca0c457d2654@apprentissage.beta.gouv.fr>",
-        email:"john.doe@mail.com",
-        ts_event: 1640610774,
-        subject: "Votre candidature chez PARIS BAGUETTE FRANCE CHATELET EN ABREGE",
-        sending_ip: "93.23.252.236",
-        ts_epoch: 1640610774707
-      }*/
+        "event": "delivered",
+        "email": "example@example.com",
+        "id": 26224,
+        "date": "YYYY-MM-DD HH:mm:ss",
+        "ts": 1598634509,
+        "message-id": "<xxxxxxxxxxxx.xxxxxxxxx@domain.com>",
+        "ts_event": 1598034509,
+        "subject": "Subject Line",
+        "tag": "[\"transactionalTag\"]",
+        "sending_ip": "185.41.28.109",
+        "ts_epoch": 1598634509223,
+        "tags": [
+          "myFirstTransactional"
+        ]
+      }
+  */
 
   const event = payload.event
 
