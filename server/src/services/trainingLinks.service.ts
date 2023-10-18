@@ -148,17 +148,15 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     }
   }
 
-  if (formations.length > 1) {
-    if (wLat && wLon) {
-      let distance = 9999
-      for (const [i, iFormation] of formations.entries()) {
-        if (iFormation.lieu_formation_geo_coordonnees) {
-          const [fLat, fLon] = iFormation.lieu_formation_geo_coordonnees.split(",")
-          const fDist = getDistance({ latitude: wLat, longitude: wLon }, { latitude: fLat, longitude: fLon })
-          if (fDist < distance) {
-            distance = fDist
-            formation = formations[i]
-          }
+  if (formations.length > 1 && wLat && wLon) {
+    let distance = 9999
+    for (const [i, iFormation] of formations.entries()) {
+      if (iFormation.lieu_formation_geo_coordonnees) {
+        const [fLat, fLon] = iFormation.lieu_formation_geo_coordonnees.split(",")
+        const fDist = getDistance({ latitude: wLat, longitude: wLon }, { latitude: fLat, longitude: fLon })
+        if (fDist < distance) {
+          distance = fDist
+          formation = formations[i]
         }
       }
     }
@@ -194,7 +192,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     }
   ).limit(5)
   if (tmpFormations.length) {
-    const romes = [...new Set(formations.flatMap(({ rome_codes }) => rome_codes))] as string[]
+    const romes = [...new Set(tmpFormations.flatMap(({ rome_codes }) => rome_codes))] as string[]
     if (romes.length) {
       return buildEmploiUrl({ params: { romes: romes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
     }
