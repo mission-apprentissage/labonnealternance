@@ -1,6 +1,6 @@
 import { testingParameters } from "../utils/testingParameters"
 
-export default function extractCandidatureParams(applicant_h, company_h, caller) {
+export default function extractCandidatureParams(applicant_h, company_h, jobLabel = null, caller) {
   const res = {}
 
   // 8 mandatory fields
@@ -22,6 +22,7 @@ export default function extractCandidatureParams(applicant_h, company_h, caller)
   res["company_naf"] = company_h?.naf || null
   res["job_title"] = company_h?.job_title || null
   res["job_id"] = company_h?.job_id || null
+  res["searched_for_job_label"] = jobLabel
 
   // test field
   if (testingParameters?.secret) {

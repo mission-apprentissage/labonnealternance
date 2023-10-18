@@ -1,19 +1,17 @@
-import { createReadStream, createWriteStream } from "fs"
+import { createWriteStream } from "fs"
 import path from "path"
 import { Readable } from "stream"
 
-import axios from "axios"
-import FormData from "form-data"
 import { pick } from "lodash-es"
 import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 
+import { sendCsvToPE } from "@/common/apis/Pe"
 import { db } from "@/common/mongodb"
 
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
 import { getDepartmentByZipCode } from "../../../../common/territoires"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
-import config from "../../../../config"
 import dayjs from "../../../../services/dayjs.service"
 
 const stat = {
@@ -181,26 +179,6 @@ const formatToPe = async (offre) => {
     Mode_presentation: null,
     Emploi_metier_isco: null,
   }
-}
-
-/**
- * Sends CSV file to Pole Emploi API through a "form data".
- */
-const sendCsvToPE = async (csvPath: string): Promise<void> => {
-  const form = new FormData()
-  form.append("login", config.poleEmploiDepotOffres.login)
-  form.append("password", config.poleEmploiDepotOffres.password)
-  form.append("nomFlux", config.poleEmploiDepotOffres.nomFlux)
-  form.append("fichierAenvoyer", createReadStream(csvPath))
-  form.append("periodeRef", "")
-
-  const { data } = await axios.post("https://portail-partenaire.pole-emploi.fr/partenaire/depotcurl", form, {
-    headers: {
-      ...form.getHeaders(),
-    },
-  })
-
-  return data
 }
 
 /**
