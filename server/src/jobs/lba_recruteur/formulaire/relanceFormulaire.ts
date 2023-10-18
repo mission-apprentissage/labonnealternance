@@ -63,7 +63,8 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
         establishment_raison_sociale,
         is_delegated,
         offres: jobsWithRecruiter.map((job) => ({
-          ...job,
+          libelle: job.rome_appellation_label ?? job.rome_label,
+          type: job.job_type,
           supprimer: `${config.publicUrl}/espace-pro/job/${job._id}/cancel`,
           pourvue: `${config.publicUrl}/espace-pro/job/${job._id}/provided`,
         })),
