@@ -578,14 +578,14 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
     return
   }
 
-  if (subject.startsWith("Réponse") || subject.startsWith("Votre candidature chez")) {
-    // les messages vers le candidat et les messages de notifications intention recruteur -> candidat sont ignorés
+  if (!subject.startsWith("Candidature en alternance") && !subject.startsWith("Candidature spontanée")) {
+    // les messages qui ne sont pas de candidature vers une entreprise sont ignorés
     return
   }
 
   const application = await findApplicationByMessageId({
     messageId: payload["message-id"],
-    email: email,
+    email,
   })
 
   if (!application) {
@@ -593,10 +593,10 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
     return
   }
 
-  await addEmailToBlacklist(payload.email, application.job_origin ?? "unknown")
+  await addEmailToBlacklist(email, application.job_origin ?? "unknown")
 
   if (application.job_origin === "lba") {
-    await removeEmailFromLbaCompanies(payload.email)
+    await removeEmailFromLbaCompanies(email)
   } else if (application.job_origin === "matcha") {
     await warnMatchaTeamAboutBouncedEmail({ application })
   }
