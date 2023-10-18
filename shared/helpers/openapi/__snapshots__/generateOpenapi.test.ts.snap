@@ -44,6 +44,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       "ApplicationUi": {
         "additionalProperties": false,
         "properties": {
+          "_id": {
+            "description": "Identifiant unique",
+          },
           "applicant_email": {
             "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
             "example": "john.smith@mail.com",
@@ -2928,7 +2931,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
     },
     "securitySchemes": {
       "api-key": {
-        "bearerFormat": "bearer",
+        "bearerFormat": "",
         "in": "header",
         "name": "authorization",
         "scheme": "bearer",

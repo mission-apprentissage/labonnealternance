@@ -82,7 +82,7 @@ export function generateOpenApiSchema(version: string, env: string, publicUrl: s
     name: "authorization",
     in: "header",
     scheme: "bearer",
-    bearerFormat: "bearer",
+    bearerFormat: "",
   })
 
   for (const [method, pathRoutes] of Object.entries(zRoutes)) {
