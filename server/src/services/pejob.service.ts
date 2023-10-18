@@ -5,7 +5,7 @@ import distance from "@turf/distance"
 import {
   getPeReferentiels,
   // getPeJob,
-  // searchForPeJobs,
+  searchForPeJobs,
 } from "@/common/apis/Pe.js"
 import { logger } from "@/common/logger.js"
 
@@ -176,54 +176,49 @@ const getPeJobs = async ({
   api: string
 }) => {
   try {
-    // const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
-    // // TODO: remove temporary bypass
-    // const hasLocation = insee ? true : false
+    const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
 
-    // // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
-    // let codeInsee = insee
-    // if (insee === "75056") codeInsee = "75101"
-    // else if (insee === "13055") codeInsee = "13201"
-    // else if (insee === "69123") codeInsee = "69381"
+    const hasLocation = insee ? true : false
 
-    // const distance = radius || 10
+    // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
+    let codeInsee = insee
+    if (insee === "75056") codeInsee = "75101"
+    else if (insee === "13055") codeInsee = "13201"
+    else if (insee === "69123") codeInsee = "69381"
 
-    // const params: { codeROME: string; commune: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
-    //   codeROME: romes.join(","),
-    //   commune: codeInsee,
-    //   sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
-    //   natureContrat: peContratsAlternances,
-    //   range: `0-${jobLimit - 1}`,
-    // }
+    const distance = radius || 10
 
-    // if (diploma) {
-    //   const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
-    //   if (niveauRequis && niveauRequis !== "NV5") {
-    //     // pas de filtrage sur niveau requis NV5 car pas de résultats
-    //     params.niveauFormation = niveauRequis
-    //   }
-    // }
+    const params: { codeROME: string; commune: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
+      codeROME: romes.join(","),
+      commune: codeInsee,
+      sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
+      natureContrat: peContratsAlternances,
+      range: `0-${jobLimit - 1}`,
+    }
 
-    // if (hasLocation) {
-    //   params.insee = codeInsee
-    //   params.distance = distance
-    // }
+    if (diploma) {
+      const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
+      if (niveauRequis && niveauRequis !== "NV5") {
+        // pas de filtrage sur niveau requis NV5 car pas de résultats
+        params.niveauFormation = niveauRequis
+      }
+    }
 
-    // const jobs = await searchForPeJobs(params)
+    if (hasLocation) {
+      params.insee = codeInsee
+      params.distance = distance
+    }
 
-    // const data: PEResponse | IApiError | "" = jobs
+    const jobs = await searchForPeJobs(params)
 
-    // if (data === "") {
-    //   const emptyPeResponse: PEResponse = { resultats: [] }
-    //   return emptyPeResponse
-    // }
+    const data: PEResponse | IApiError | "" = jobs
 
-    // return data
+    if (data === "") {
+      const emptyPeResponse: PEResponse = { resultats: [] }
+      return emptyPeResponse
+    }
 
-    console.log(jobLimit, NIVEAUX_POUR_OFFRES_PE)
-    logger.info(`Call getPeJobs. Params : romes=${romes}, insee=${insee}, radius=${radius}, diploma=${diploma}`)
-    const emptyPeResponse: PEResponse = { resultats: [] }
-    return emptyPeResponse
+    return data
   } catch (error) {
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
   }
