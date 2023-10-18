@@ -67,7 +67,7 @@ export const zApplicationRoutes = {
       securityScheme: null,
     },
     "/application/webhook": {
-      // TODO_SECURITY_FIX    ajouter token sans expiration dans les webhooks brevo
+      // TODO_SECURITY_FIX  ajouter api_key brevo
       path: "/application/webhook",
       method: "post",
       body: extensions.brevoWebhook,
