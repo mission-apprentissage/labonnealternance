@@ -83,12 +83,11 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
 /**
  * @description Get an application by message id
  * @param {string} messageId
- * @param {string} type
  * @param {string} email
  * @returns {Promise<IApplication>}
  */
-const findApplicationByTypeAndMessageId = async ({ messageId, type, email }: { messageId: string; type: string; email: string }) =>
-  Application.findOne(type === "application" ? { company_email: email, to_company_message_id: messageId } : { applicant_email: email, to_applicant_message_id: messageId })
+const findApplicationByTypeAndMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
+  Application.findOne({ company_email: email, to_company_message_id: messageId })
 
 /**
  * @description Remove an email address form all bonnesboites where it is present
@@ -573,38 +572,36 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
       }
   */
 
-  const event = payload.event
+  const { event, subject, email } = payload
 
-  let messageType = "application"
-  if (payload.subject.startsWith("Réponse")) {
-    // les messages de notifications intention recruteur -> candidat sont ignorés
+  if (event !== BrevoEventStatus.HARD_BOUNCE) {
     return
-  } else if (payload.subject.startsWith("Votre candidature chez")) {
-    messageType = "applicationAck"
+  }
+
+  if (subject.startsWith("Réponse") || subject.startsWith("Votre candidature chez")) {
+    // les messages vers le candidat et les messages de notifications intention recruteur -> candidat sont ignorés
+    return
   }
 
   const application = await findApplicationByTypeAndMessageId({
-    type: messageType,
     messageId: payload["message-id"],
-    email: payload.email,
+    email: email,
   })
 
   if (!application) {
-    logger.error(`Application webhook : application not found. message_id=${payload["message-id"]} email=${payload.email} subject=${payload.subject}`)
+    logger.error(`Application webhook : application not found. message_id=${payload["message-id"]} email=${email} subject=${subject}`)
     return
   }
 
-  if (event === BrevoEventStatus.HARD_BOUNCE && messageType === "application") {
-    await addEmailToBlacklist(payload.email, application.job_origin ?? "unknown")
+  await addEmailToBlacklist(payload.email, application.job_origin ?? "unknown")
 
-    if (application.job_origin === "lbb" || application.job_origin === "lba") {
-      await removeEmailFromLbaCompanies(payload.email)
-    } else if (application.job_origin === "matcha") {
-      await warnMatchaTeamAboutBouncedEmail({ application })
-    }
-
-    await notifyHardbounceToApplicant({ application })
+  if (application.job_origin === "lba") {
+    await removeEmailFromLbaCompanies(payload.email)
+  } else if (application.job_origin === "matcha") {
+    await warnMatchaTeamAboutBouncedEmail({ application })
   }
+
+  await notifyHardbounceToApplicant({ application })
 }
 
 /**

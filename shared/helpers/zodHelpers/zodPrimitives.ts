@@ -63,7 +63,7 @@ export const extensions = {
       .object({
         event: z.string(),
         email: z.string(),
-        id: z.string(),
+        id: z.number(),
         date: z.string(),
         ts: z.number(),
         "message-id": z.string(),

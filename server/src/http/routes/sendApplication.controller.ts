@@ -1,13 +1,15 @@
 import mongoose from "mongoose"
 import { zRoutes } from "shared/index"
 
+import config from "@/config"
+
 import { Application } from "../../common/model/index"
 import { decryptWithIV } from "../../common/utils/encryptString"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
 import { Server } from "../server"
 
-const config = {
+const rateLimitConfig = {
   rateLimit: {
     max: 1,
     timeWindow: "5s",
@@ -19,7 +21,7 @@ export default function (server: Server) {
     "/application/intentionComment",
     {
       schema: zRoutes.post["/application/intentionComment"],
-      config,
+      config: rateLimitConfig,
     },
     async (req, res) => {
       // email and phone should appear
@@ -62,6 +64,11 @@ export default function (server: Server) {
       schema: zRoutes.post["/application/webhook"],
     },
     async (req, res) => {
+      const { apikey } = req.query
+      if (apikey !== config.smtp.brevoWebhookApiKey) {
+        return res.status(401).send({ result: "unauthorized" })
+      }
+
       await updateApplicationStatus({ payload: req.body })
       return res.status(200).send({ result: "ok" })
     }
