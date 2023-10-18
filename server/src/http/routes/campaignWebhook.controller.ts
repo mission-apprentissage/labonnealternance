@@ -1,5 +1,7 @@
 import { zRoutes } from "shared/index"
 
+import config from "@/config"
+
 import { addEmailToBlacklist, removeEmailFromLbaCompanies } from "../../services/application.service"
 import { BrevoEventStatus } from "../../services/brevo.service"
 import { Server } from "../server"
@@ -11,12 +13,10 @@ export default function (server: Server) {
       schema: zRoutes.post["/campaign/webhook"],
     },
     async (req, res) => {
-      /* Format payload
-      {
-        req.body.event : "hard_bounce",
-        req.body.email:"john.doe@mail.com",
-        ...
-      }*/
+      const { apikey } = req.query
+      if (apikey !== config.smtp.brevoWebhookApiKey) {
+        return res.status(401).send({ result: "unauthorized" })
+      }
       if (req.body.event === BrevoEventStatus.HARD_BOUNCE) {
         await Promise.all([addEmailToBlacklist(req.body.email, "campaign"), removeEmailFromLbaCompanies(req.body.email)])
       }
