@@ -429,6 +429,12 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
 
 export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
   const { establishment_siret: siret, email, _id } = userRecruteur
+
+  if (!siret) {
+    userRecruteur = await setUserHasToBeManuallyValidated(_id)
+    return { userRecruteur, validated: false }
+  }
+
   const siren = siret.slice(0, 9)
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
   const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
@@ -709,8 +715,8 @@ export const sendUserConfirmationEmail = async ({
   userRecruteurId,
 }: {
   email: string
-  lastName: string
-  firstName: string
+  lastName: string | undefined | null
+  firstName: string | undefined | null
   userRecruteurId: IUserRecruteur["_id"]
 }) => {
   const url = getValidationUrl(userRecruteurId, email)

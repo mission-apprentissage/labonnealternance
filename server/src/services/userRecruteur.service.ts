@@ -122,7 +122,7 @@ export const removeUser = async (id: IUserRecruteur["_id"] | string) => {
  * @param {IUserRecruteur["email"]} email
  * @returns {Promise<IUserRecruteur>}
  */
-export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.findOneAndUpdate({ email: email }, { last_connection: new Date() })
+export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.findOneAndUpdate({ email: email }, { last_connection: new Date() }, { new: true }).lean()
 
 /**
  * @description update user validation status
@@ -143,7 +143,7 @@ export const updateUserValidationHistory = async (
  * @returns {IUserRecruteur["status"]}
  */
 export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
-  const sortedArray = [...stateArray].sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf())
+  const sortedArray = [...stateArray].sort((a, b) => new Date(a?.date ?? 0).valueOf() - new Date(b?.date ?? 0).valueOf())
   const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
   if (!lastValidationEvent) {
     throw Boom.internal("no status found in status array")

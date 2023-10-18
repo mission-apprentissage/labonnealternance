@@ -2,7 +2,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, zReferentielData } from "../models/usersRecruteur.model"
+import { ZUserRecruteur, ZUserRecruteurWritable, zReferentielData } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -124,7 +124,7 @@ export const zRecruiterRoutes = {
           })
           .strict()
           .extend(
-            ZUserRecruteur.pick({
+            ZUserRecruteurWritable.pick({
               last_name: true,
               first_name: true,
               phone: true,
@@ -144,7 +144,7 @@ export const zRecruiterRoutes = {
             cfa_delegated_siret: ZRecruiter.shape.cfa_delegated_siret,
           })
           .extend(
-            ZUserRecruteur.pick({
+            ZUserRecruteurWritable.pick({
               last_name: true,
               first_name: true,
               phone: true,
@@ -211,7 +211,7 @@ export const zRecruiterRoutes = {
       path: "/etablissement/:id",
       // TODO_SECURITY_FIX jwt en mode session + filtre sur la payload pour réduction
       params: z.object({ id: zObjectId }).strict(),
-      body: ZUserRecruteur.pick({
+      body: ZUserRecruteurWritable.pick({
         last_name: true,
         first_name: true,
         phone: true,
