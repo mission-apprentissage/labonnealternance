@@ -33,8 +33,11 @@ const utmData = { utm_source: "lba", utm_medium: "email", utm_campaign: "promoti
 
 const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, params }: { baseUrl?: string; params: Record<string, string | string[]> }) => {
   const url = new URL(baseUrl)
-  // @ts-expect-error
-  Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value))
+
+  Object.entries(params).forEach(([key, value]) => {
+    // @ts-expect-error
+    if (value) url.searchParams.append(key, value)
+  })
   return url.toString()
 }
 
@@ -124,6 +127,33 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
   return ""
 }
 
+const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
+  let romes = [] as string[]
+  const tmpFormations = await FormationCatalogue.find(
+    {
+      $or: [
+        {
+          rncp_code: rncp,
+        },
+        {
+          cfd: cfd ? cfd : undefined,
+        },
+        {
+          "bcn_mefs_10.mef10": mef,
+        },
+      ],
+    },
+    {
+      rome_codes: 1,
+      _id: 0,
+    }
+  ).limit(5)
+  if (tmpFormations.length) {
+    romes = [...new Set(tmpFormations.flatMap(({ rome_codes }) => rome_codes))] as string[]
+  }
+  return romes
+}
+
 /**
  * @description get link LBA for a specific training
  * @param {object} wish wish data
@@ -134,7 +164,8 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   const formations = await getTrainingsFromParameters(wish)
 
   if (!formations || !formations.length) {
-    return buildEmploiUrl({ params: utmData })
+    const romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+    return buildEmploiUrl({ params: { ...(romes.length ? { romes: romes } : {}), ...utmData } })
   }
 
   let [formation] = formations
@@ -169,36 +200,19 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     ;[lat, lon] = [wLat, wLon]
   }
 
-  if (formation.rome_codes && formation.rome_codes.length) {
-    return buildEmploiUrl({ params: { romes: formation.rome_codes, lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
+  if (formations.length > 1 && !postCode) {
+    ;[lat, lon] = [undefined, undefined]
   }
-  const tmpFormations = await FormationCatalogue.find(
-    {
-      $or: [
-        {
-          rncp_code: wish.rncp,
-        },
-        {
-          cfd: wish.cfd ? wish.cfd : undefined,
-        },
-        {
-          "bcn_mefs_10.mef10": wish.mef,
-        },
-      ],
-    },
-    {
-      rome_codes: 1,
-      _id: 0,
-    }
-  ).limit(5)
-  if (tmpFormations.length) {
-    const romes = [...new Set(tmpFormations.flatMap(({ rome_codes }) => rome_codes))] as string[]
-    if (romes.length) {
-      return buildEmploiUrl({ params: { romes: romes, lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
+
+  if (formations.length === 1) {
+    if (formation.rome_codes && formation.rome_codes.length) {
+      return buildEmploiUrl({ params: { romes: formation.rome_codes, lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
     }
   }
 
-  return buildEmploiUrl({ params: utmData })
+  const romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+
+  return buildEmploiUrl({ params: { ...(romes.length ? { romes: romes } : {}), lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
 }
 
 /**
