@@ -1,7 +1,8 @@
 import { CloseIcon } from "@chakra-ui/icons"
 import {
+  Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel,
   Box,
-  Button,
+  Button, Checkbox,
   Flex, FormControl, FormErrorMessage, FormLabel,
   Input, Link,
   Modal, ModalBody,
@@ -16,6 +17,78 @@ import { useFormik } from "formik"
 import React, { useEffect, useState } from "react"
 import * as Yup from "yup"
 
+enum ReasonsKey {
+  MODALITE = "modalite",
+  CONTENU = "contenu",
+  PORTE = "porte",
+  FRAIS = "frais",
+  PLACE = "place",
+  HORAIRE = "horaire",
+  PLUS = "plus",
+  ACCOMPAGNEMENT = "accompagnement",
+  LIEU = "lieu",
+  SUIVI = "suivi",
+  AUTRE = "autre",
+}
+
+
+const reasons = [
+  {
+    key: ReasonsKey.MODALITE,
+    title: "Modalités d'inscription",
+    checked: false,
+  },
+  {
+    key: ReasonsKey.CONTENU,
+    title: "Contenu de la formation",
+    checked: false,
+  },
+  {
+    key: ReasonsKey.PORTE,
+    title: "Portes ouvertes",
+    checked: false,
+  },
+  {
+    key: ReasonsKey.FRAIS,
+    title: "Frais d'inscription",
+    checked: false,
+  },
+  {
+    key: ReasonsKey.PLACE,
+    title: "Places disponibles",
+    checked: false,
+  },
+  {
+    horaire: ReasonsKey.HORAIRE,
+    title: "Horaires / rythme de la formation",
+    checked: false,
+  },
+  {
+    key: ReasonsKey.PLUS,
+    title: "En savoir plus sur l'alternance",
+    checked: false,
+  },
+  {
+    key: ReasonsKey.ACCOMPAGNEMENT,
+    title: "Accompagnement dans la recherche d'entreprise",
+    checked: false,
+  },
+  {
+    key: ReasonsKey.LIEU,
+    title: "Lieu de la formation",
+    checked: false,
+  },
+  {
+    key: ReasonsKey.SUIVI,
+    title: "Suivi de ma candidature",
+    checked: false,
+  },
+  {
+    key: ReasonsKey.AUTRE,
+    title: "Autre :",
+    checked: true,
+  },
+]
 
 /**
  * "Demande de contact" modal.
@@ -23,6 +96,7 @@ import * as Yup from "yup"
 const DemandeDeContact = ({ item }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [suggestedEmails, setSuggestedEmails] = useState([])
+  const [applicantReasons, setApplicantReasons] = useState(reasons)
 
   const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -125,7 +199,7 @@ const DemandeDeContact = ({ item }) => {
                       </Button>
                     </ModalHeader>
                     <form>
-                      <ModalBody data-testid="modalbody-nominal">
+                      <ModalBody data-testid="modalbody-nominal" mx={4}>
                           <Text as="h1" fontWeight={700} fontSize="24px" data-testid="CandidatureSpontaneeTitle">
                             Envoyer une demande de contact
                           </Text>
@@ -194,7 +268,7 @@ const DemandeDeContact = ({ item }) => {
                               <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
                             </FormControl>
                           </Flex>
-                          <Flex direction={["column", "column", "row"]} mt={[null, null, 4]}>
+                          <Flex direction={["column", "column", "row"]}>
                             <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }}>
                               <FormLabel htmlFor="firstname">Prénom *</FormLabel>
                               <Input
@@ -215,6 +289,50 @@ const DemandeDeContact = ({ item }) => {
                               <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
                             </FormControl>
                           </Flex>
+                        <Flex direction={["column", "column", "row"]} mt={4}>
+                          <FormControl data-testid="fieldset-reasons" mt={{ base: 3, md: "0" }}>
+                            <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
+                          <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4}>
+                            <AccordionItem>
+                              <h2>
+                                <AccordionButton sx={{
+                                  borderRadius: 0,
+                                  height: '40px',
+                                  bg: "grey.200",
+                                  color: "grey.800",
+                                  borderBottom: "solid 2px #000",
+                                }}>
+                                  <Box as="span" flex='1' textAlign='left'>
+                                    Sélectionner une ou des options
+                                  </Box>
+                                  <AccordionIcon />
+                                </AccordionButton>
+                              </h2>
+                              <AccordionPanel pb={4}>
+                                <RadioGroup mt={1} ml={1}>
+                                  <Stack direction="column" spacing={3}>
+                                    {applicantReasons.map(({ key, checked, title }) => (
+                                      <Checkbox key={key} size="lg" defaultChecked={checked} value={key}>{title}</Checkbox>))}
+                                  </Stack>
+                                </RadioGroup>
+                              </AccordionPanel>
+                            </AccordionItem>
+                          </Accordion>
+                            {applicantReasons.find(({ key, checked }) => key === ReasonsKey.AUTRE && checked) && (<FormControl data-testid="fieldset-applicantMessageToCfa">
+                              <Input
+                                id="applicantMessageToCfa"
+                                data-testid="applicantMessageToCfa"
+                                name="applicantMessageToCfa"
+                                type="text"
+                                width="98%"
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.lastname}
+                              />
+                              <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
+                            </FormControl>)}
+                          </FormControl>
+                        </Flex>
                           <Box width="95%" my={4}>
                             <Text mb={2} fontSize="14px" color="grey.600" mt={10}>
                               * Champs obligatoires
