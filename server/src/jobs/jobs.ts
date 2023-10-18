@@ -18,6 +18,7 @@ import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
 import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
+import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
@@ -299,6 +300,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateReferentielRncpRomes()
       case "recruiters:raison-sociale:fill":
         return fillRecruiterRaisonSociale()
+      case "recruiters:expiration-date:fix":
+        return fixJobExpirationDate()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
