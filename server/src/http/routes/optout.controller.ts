@@ -1,8 +1,9 @@
-import jwt from "jsonwebtoken"
+import Boom from "boom"
 import { zRoutes } from "shared/index"
 
+import { getUserFromRequest } from "@/security/authenticationService"
+
 import { Optout } from "../../common/model/index"
-import config from "../../config"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -10,18 +11,15 @@ export default (server: Server) => {
     "/optout/validate",
     {
       schema: zRoutes.get["/optout/validate"],
-      preHandler: [server.auth(zRoutes.get["/optout/validate"])],
+      onRequest: [server.auth(zRoutes.get["/optout/validate"])],
     },
     async (req, res) => {
-      const token = req.headers && req.headers.authorization && req.headers.authorization.split(" ")[1]
-
-      if (!token) {
-        return res.status(401).send({ error: true, reason: "TOKEN_NOT_FOUND" })
+      const userIdentity = getUserFromRequest(req, zRoutes.get["/optout/validate"]).value.identity
+      if (userIdentity.type !== "cfa") {
+        throw Boom.forbidden()
       }
 
-      const { siret, email }: any = jwt.verify(token, config.auth["activation"].jwtSecret)
-
-      const user = await Optout.findOne({ siret, "contacts.email": email }).lean()
+      const user = await Optout.findOne({ siret: userIdentity.siret, "contacts.email": userIdentity.email }).lean()
 
       if (!user) {
         return res.status(400).send({ error: true, reason: "USER_NOT_FOUND" })
@@ -29,7 +27,7 @@ export default (server: Server) => {
       return res.status(200).send({
         ...user,
         // Set recipient email for the UI
-        email,
+        email: userIdentity.email,
       })
     }
   )

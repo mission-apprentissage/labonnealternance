@@ -15,10 +15,6 @@ type IScope<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme
 export type IAccessToken<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme = Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme> = {
   identity:
     | {
-        type: "candidat"
-        email: string
-      }
-    | {
         type: "IUserRecruteur"
         _id: string
         email: string
@@ -26,6 +22,7 @@ export type IAccessToken<S extends Pick<IRouteSchema, "method" | "path"> & WithS
     | {
         type: "cfa"
         email: string
+        siret: string
       }
   scopes: ReadonlyArray<IScope<S>>
 }

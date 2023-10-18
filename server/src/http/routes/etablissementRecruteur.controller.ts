@@ -3,11 +3,9 @@ import { IUserRecruteur, toPublicUser, zRoutes } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter, UserRecruteur } from "@/common/model"
-import config from "@/config"
+import { startSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { createSession } from "@/services/sessions.service"
 
-import { createUserToken } from "../../common/utils/jwtUtils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
@@ -280,16 +278,15 @@ export default (server: Server) => {
         await sendWelcomeEmailToUserRecruteur(userRecruteur)
       }
 
-      const token = createUserToken({ email: userRecruteur.email }, { payload: { email: userRecruteur.email } })
-      await createSession({ token })
-
       const connectedUser = await registerUser(userRecruteur.email)
 
       if (!connectedUser) {
         throw Boom.forbidden()
       }
 
-      return res.setCookie(config.auth.session.cookieName, token, config.auth.session.cookie).status(200).send(toPublicUser(connectedUser))
+      await startSession(userRecruteur.email, res)
+
+      return res.status(200).send(toPublicUser(connectedUser))
     }
   )
 }

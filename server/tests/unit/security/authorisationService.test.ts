@@ -1606,7 +1606,7 @@ describe("authorisationService", () => {
         const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
           type: "IAccessToken",
           value: {
-            identity: { type: "candidat", email: "mail@mail.com" },
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
                 method: "post",
@@ -1653,7 +1653,7 @@ describe("authorisationService", () => {
         const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
           type: "IAccessToken",
           value: {
-            identity: { type: "candidat", email: "mail@mail.com" },
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
                 method: "post",
@@ -1718,7 +1718,7 @@ describe("authorisationService", () => {
         const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
           type: "IAccessToken",
           value: {
-            identity: { type: "candidat", email: "mail@mail.com" },
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
                 method: "post",
@@ -1765,7 +1765,7 @@ describe("authorisationService", () => {
         const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
           type: "IAccessToken",
           value: {
-            identity: { type: "candidat", email: "mail@mail.com" },
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
                 method: "post",
@@ -1830,7 +1830,7 @@ describe("authorisationService", () => {
         const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
           type: "IAccessToken",
           value: {
-            identity: { type: "candidat", email: "mail@mail.com" },
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
                 method: "post",
@@ -1877,7 +1877,7 @@ describe("authorisationService", () => {
         const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
           type: "IAccessToken",
           value: {
-            identity: { type: "candidat", email: "mail@mail.com" },
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
                 method: "post",
@@ -1942,7 +1942,7 @@ describe("authorisationService", () => {
         const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
           type: "IAccessToken",
           value: {
-            identity: { type: "candidat", email: "mail@mail.com" },
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
                 method: "post",
@@ -1989,7 +1989,7 @@ describe("authorisationService", () => {
         const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
           type: "IAccessToken",
           value: {
-            identity: { type: "candidat", email: "mail@mail.com" },
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
                 method: "post",
