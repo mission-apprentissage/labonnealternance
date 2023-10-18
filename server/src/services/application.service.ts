@@ -86,7 +86,7 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
  * @param {string} email
  * @returns {Promise<IApplication>}
  */
-const findApplicationByTypeAndMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
+const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
   Application.findOne({ company_email: email, to_company_message_id: messageId })
 
 /**
@@ -583,7 +583,7 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
     return
   }
 
-  const application = await findApplicationByTypeAndMessageId({
+  const application = await findApplicationByMessageId({
     messageId: payload["message-id"],
     email: email,
   })
