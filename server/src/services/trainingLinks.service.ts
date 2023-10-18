@@ -170,7 +170,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   }
 
   if (formation.rome_codes && formation.rome_codes.length) {
-    return buildEmploiUrl({ params: { romes: formation.rome_codes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
+    return buildEmploiUrl({ params: { romes: formation.rome_codes, lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
   }
   const tmpFormations = await FormationCatalogue.find(
     {
@@ -194,7 +194,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   if (tmpFormations.length) {
     const romes = [...new Set(tmpFormations.flatMap(({ rome_codes }) => rome_codes))] as string[]
     if (romes.length) {
-      return buildEmploiUrl({ params: { romes: romes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
+      return buildEmploiUrl({ params: { romes: romes, lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
     }
   }
 
