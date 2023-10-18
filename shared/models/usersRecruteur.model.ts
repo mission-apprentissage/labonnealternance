@@ -49,8 +49,6 @@ export const ZUserRecruteurWritable = z
 
 export const ZUserRecruteur = ZUserRecruteurWritable.omit({
   // Following field are not supposed to be nullish but they are...
-  last_name: true,
-  first_name: true,
   establishment_siret: true,
   phone: true,
   is_qualiopi: true,
@@ -58,8 +56,6 @@ export const ZUserRecruteur = ZUserRecruteurWritable.omit({
   _id: zObjectId,
   createdAt: z.date().describe("Date de creation"),
   updatedAt: z.date().describe("Date de mise à jour"),
-  last_name: ZUserRecruteurWritable.shape.last_name.nullish(),
-  first_name: ZUserRecruteurWritable.shape.first_name.nullish(),
   establishment_siret: ZUserRecruteurWritable.shape.establishment_siret.nullish(),
   phone: ZUserRecruteurWritable.shape.phone.nullish(),
   is_qualiopi: ZUserRecruteurWritable.shape.is_qualiopi.nullish(),

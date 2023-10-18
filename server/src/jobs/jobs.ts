@@ -1,5 +1,6 @@
 import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { ETAT_UTILISATEUR } from "@/services/constant.service"
 
 import { getLoggerWithContext } from "../common/logger"
@@ -305,21 +306,18 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "db:validate":
         return validateModels()
       case "migrations:up": {
-        // await upMigration()
+        await upMigration()
         // Validate all documents after the migration
-        // await addJob({ name: "db:validate", queued: true })
+        await addJob({ name: "db:validate", queued: true, payload: {} })
         return
       }
       case "migrations:status": {
-        // const pendingMigrations = await statusMigration()
-        // console.log(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
-        console.log(`migrations-status=synced`)
+        const pendingMigrations = await statusMigration()
+        console.log(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
         return
       }
       case "migrations:create":
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // createMigration(job.payload )
-        return
+        return createMigration(job.payload as any)
       case "crons:init": {
         await cronsInit()
         return
