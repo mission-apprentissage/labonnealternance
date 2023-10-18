@@ -44,7 +44,7 @@ const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, para
  * @param {string} filter
  * @returns {Promise<IFormationCatalogue[]>}
  */
-const getFormation = (
+const getFormations = (
   query: object,
   filter: object = {
     lieu_formation_geo_coordonnees: 1,
@@ -62,27 +62,27 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
   let formations
   // search by cle ME
   if (wish.cle_ministere_educatif) {
-    formations = await getFormation({ cle_ministere_educatif: wish.cle_ministere_educatif })
+    formations = await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
   }
 
   if (!formations || !formations.length) {
     // search by uai_lieu_formation
     if (wish.uai_lieu_formation) {
-      formations = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
+      formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
     }
   }
 
   if (!formations || !formations.length) {
     // search by uai_formateur
     if (wish.uai_formateur) {
-      formations = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
+      formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
     }
   }
 
   if (!formations || !formations.length) {
     // search by uai_formateur_responsable
     if (wish.uai_formateur_responsable) {
-      formations = await getFormation({
+      formations = await getFormations({
         $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }],
         etablissement_gestionnaire_uai: wish.uai_formateur_responsable,
       })
