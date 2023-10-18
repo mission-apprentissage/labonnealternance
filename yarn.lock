@@ -9575,6 +9575,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"geolib@npm:^3.3.4":
+  version: 3.3.4
+  resolution: "geolib@npm:3.3.4"
+  checksum: b5ca8090effd384fec168a957d89416577a92dcb63aedf361a60794e07051e6f2a98a3c2db64de2dd9114ac22c63fbf9ec67b2f61dbc300292040cbd4387942b
+  languageName: node
+  linkType: hard
+
 "get-caller-file@npm:^2.0.5":
   version: 2.0.5
   resolution: "get-caller-file@npm:2.0.5"
@@ -17430,6 +17437,7 @@ __metadata:
     fastify-type-provider-zod: ^1.1.9
     form-data: ^4.0.0
     fs-extra: ^9.1.0
+    geolib: ^3.3.4
     got: ^12.5.2
     iconv-lite: ^0.6.3
     is-semver: ^1.0.11

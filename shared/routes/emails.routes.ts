@@ -9,15 +9,16 @@ export const zEmailsRoutes = {
     "/emails/webhook": {
       method: "post",
       path: "/emails/webhook",
+      querystring: z
+        .object({
+          apiKey: z.string(),
+        })
+        .passthrough(),
       body: extensions.brevoWebhook,
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "api-key",
-        access: null,
-        ressources: {},
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef
