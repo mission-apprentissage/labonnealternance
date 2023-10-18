@@ -138,15 +138,18 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   }
 
   let [formation] = formations
-  if (formations.length > 1) {
-    const postCode = wish.code_insee || wish.code_postal
-    let wLat, wLon
-    if (postCode) {
-      const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(postCode)
-      if (responseApiAdresse && responseApiAdresse.features.length) {
-        ;[wLon, wLat] = responseApiAdresse.features[0].geometry.coordinates
-      }
 
+  const postCode = wish.code_insee || wish.code_postal
+  let wLat, wLon
+  if (postCode) {
+    const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(postCode)
+    if (responseApiAdresse && responseApiAdresse.features.length) {
+      ;[wLon, wLat] = responseApiAdresse.features[0].geometry.coordinates
+    }
+  }
+
+  if (formations.length > 1) {
+    if (wLat && wLon) {
       let distance = 9999
       for (const [i, iFormation] of formations.entries()) {
         if (iFormation.lieu_formation_geo_coordonnees) {
@@ -161,36 +164,39 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     }
   }
 
+  let lat, lon
   if (formation.lieu_formation_geo_coordonnees) {
-    const [lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
-    if (formation.rome_codes && formation.rome_codes.length) {
-      return buildEmploiUrl({ params: { romes: formation.rome_codes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
-    } else {
-      const tmpFormations = await FormationCatalogue.find(
+    ;[lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
+  } else {
+    ;[lat, lon] = [wLat, wLon]
+  }
+
+  if (formation.rome_codes && formation.rome_codes.length) {
+    return buildEmploiUrl({ params: { romes: formation.rome_codes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
+  }
+  const tmpFormations = await FormationCatalogue.find(
+    {
+      $or: [
         {
-          $or: [
-            {
-              rncp_code: wish.rncp,
-            },
-            {
-              cfd: wish.cfd ? wish.cfd : undefined,
-            },
-            {
-              "bcn_mefs_10.mef10": wish.mef,
-            },
-          ],
+          rncp_code: wish.rncp,
         },
         {
-          rome_codes: 1,
-          _id: 0,
-        }
-      ).limit(5)
-      if (tmpFormations.length) {
-        const romes = [...new Set(formations.flatMap(({ rome_codes }) => rome_codes))] as string[]
-        if (romes.length) {
-          return buildEmploiUrl({ params: { romes: romes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
-        }
-      }
+          cfd: wish.cfd ? wish.cfd : undefined,
+        },
+        {
+          "bcn_mefs_10.mef10": wish.mef,
+        },
+      ],
+    },
+    {
+      rome_codes: 1,
+      _id: 0,
+    }
+  ).limit(5)
+  if (tmpFormations.length) {
+    const romes = [...new Set(formations.flatMap(({ rome_codes }) => rome_codes))] as string[]
+    if (romes.length) {
+      return buildEmploiUrl({ params: { romes: romes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
     }
   }
 
