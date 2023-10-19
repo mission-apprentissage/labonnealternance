@@ -15,7 +15,7 @@ export default function (server: Server) {
     async (req, res) => {
       const { apikey } = req.query
       if (apikey !== config.smtp.brevoWebhookApiKey) {
-        return res.status(401).send({ result: "unauthorized" })
+        throw Boom.forbidden()
       }
       if (req.body.event === BrevoEventStatus.HARD_BOUNCE) {
         await Promise.all([addEmailToBlacklist(req.body.email, "campaign"), removeEmailFromLbaCompanies(req.body.email)])
