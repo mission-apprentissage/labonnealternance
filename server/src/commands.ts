@@ -474,6 +474,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("recruiters:raison-sociale:fill"))
 
+program
+  .command("fix-job-expiration-date")
+  .description("Répare les date d'expiration d'offre qui seraient trop dans le futur")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:expiration-date:fix"))
+
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }
