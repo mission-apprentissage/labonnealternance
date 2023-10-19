@@ -19,9 +19,12 @@ import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
 import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
+import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
+import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
+import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
@@ -183,6 +186,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "recruiters:get-missing-address-detail":
+        return updateAddressDetailOnRecruitersCollection()
+      case "migration:get-missing-geocoords": // Temporaire, doit tourner en recette et production
+        return recoverMissingGeocoordinates()
       case "import:rome":
         return importFicheMetierRomeV3()
       case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
@@ -300,6 +307,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateReferentielRncpRomes()
       case "recruiters:raison-sociale:fill":
         return fillRecruiterRaisonSociale()
+      case "recruiters:expiration-date:fix":
+        return fixJobExpirationDate()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()

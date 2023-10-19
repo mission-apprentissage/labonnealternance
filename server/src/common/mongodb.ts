@@ -37,4 +37,7 @@ export const connectToMongo = (mongoUri = config.mongodb.uri) => {
   })
 }
 
-export const closeMongoConnection = () => mongooseInstance.disconnect()
+export const closeMongoConnection = async () => {
+  logger.info("MongoDB: closing connection")
+  await mongooseInstance.disconnect()
+}

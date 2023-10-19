@@ -66,7 +66,7 @@ export const zRecruiterRoutes = {
             naf_label: z.string().nullish(),
             establishment_size: z.string().nullish(),
             establishment_creation_date: z.date().nullish(),
-            geo_coordinates: z.string(),
+            geo_coordinates: z.string().nullish(),
           })
           .strict(),
       },
