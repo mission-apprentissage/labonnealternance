@@ -1,7 +1,7 @@
 import Boom from "boom"
 import type { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur } from "shared"
+import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 
 import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -12,7 +12,7 @@ import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
-import { ACTIVE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "./constant.service"
+import { ACTIVE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { ILbaJobEsResult } from "./lbajob.service.types"
@@ -638,6 +638,46 @@ export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
     throw Boom.notFound(`job with id=${id} not found`)
   }
   return job
+}
+
+const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
+  const recruiter = await Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
+    {
+      $set: {
+        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).format("YYYY-MM-DD"),
+        "jobs.$.job_status": JOB_STATUS.ACTIVE,
+      },
+    },
+    { new: true }
+  ).lean()
+  if (!recruiter) {
+    throw Boom.notFound(`job with id=${id} not found`)
+  }
+  const job = recruiter.jobs.find((job) => job._id.toString() === id.toString())
+  if (!job) {
+    throw Boom.notFound(`job with id=${id} not found`)
+  }
+  return job
+}
+
+/**
+ * to be called on the 1st activation of the account of a company
+ * @param entrepriseRecruiter entreprise
+ */
+export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecruiter: IRecruiter) => {
+  const firstJob = entrepriseRecruiter.jobs.at(0)
+  if (firstJob) {
+    const job = await activateAndExtendOffre(firstJob._id)
+    // Send delegation if any
+    if (job.delegations?.length) {
+      await Promise.all(
+        job.delegations.map(async (delegation) => {
+          await sendDelegationMailToCFA(delegation.email, job, entrepriseRecruiter, delegation.siret_code)
+        })
+      )
+    }
+  }
 }
 
 /**

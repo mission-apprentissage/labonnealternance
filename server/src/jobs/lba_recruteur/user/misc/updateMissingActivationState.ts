@@ -1,15 +1,13 @@
 import Boom from "boom"
-import { JOB_STATUS } from "shared/models"
 
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service"
-import dayjs from "../../../../services/dayjs.service"
 import { autoValidateCompany } from "../../../../services/etablissement.service"
-import { addExpirationPeriod, getFormulaire, sendDelegationMailToCFA, updateOffre } from "../../../../services/formulaire.service"
-import { updateUser, sendWelcomeEmailToUserRecruteur } from "../../../../services/userRecruteur.service"
+import { activateEntrepriseRecruiterForTheFirstTime, getFormulaire } from "../../../../services/formulaire.service"
+import { sendWelcomeEmailToUserRecruteur, updateUser } from "../../../../services/userRecruteur.service"
 
 export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
@@ -50,19 +48,7 @@ export const checkAwaitingCompaniesValidation = async () => {
 
     const firstJob = userFormulaire.jobs.at(0)
     if (hasBeenValidated && firstJob) {
-      // Get job and update its expiration date
-      const job = Object.assign(firstJob, { job_status: JOB_STATUS.ACTIVE, job_expiration_date: addExpirationPeriod(dayjs()).format("YYYY-MM-DD") })
-      // save job
-      await updateOffre(job._id.toString(), job)
-
-      // Send delegation if any
-      if (job?.delegations?.length) {
-        await Promise.all(
-          job.delegations.map(async (delegation) => {
-            await sendDelegationMailToCFA(delegation.email, job, userFormulaire, delegation.siret_code)
-          })
-        )
-      }
+      await activateEntrepriseRecruiterForTheFirstTime(userFormulaire)
 
       // Validate user email addresse
       await updateUser({ _id: entreprise._id }, { is_email_checked: true })

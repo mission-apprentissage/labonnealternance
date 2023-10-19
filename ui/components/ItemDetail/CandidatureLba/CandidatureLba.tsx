@@ -2,6 +2,7 @@ import { CloseIcon } from "@chakra-ui/icons"
 import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import React, { useEffect, useState, useContext } from "react"
+import { JOB_STATUS } from "shared"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { getItemId } from "../../../utils/getItemId"
@@ -81,7 +82,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
             })}
           </Box>
         ) : (
-          (kind !== "matcha" || item.job.status === "Active") && (
+          (kind !== "matcha" || item.job.status === JOB_STATUS.ACTIVE) && (
             <>
               <Box my={4}>
                 <Button
