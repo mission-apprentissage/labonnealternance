@@ -1,7 +1,7 @@
-import { FastifyReply } from "fastify"
+import { FastifyReply, FastifyRequest } from "fastify"
 import jwt from "jsonwebtoken"
 
-import { createSession } from "@/services/sessions.service"
+import { createSession, deleteSession } from "@/services/sessions.service"
 
 import config from "../../config"
 
@@ -19,4 +19,14 @@ async function startSession(email: string, res: FastifyReply) {
   res.setCookie(config.auth.session.cookieName, token, config.auth.session.cookie)
 }
 
-export { startSession }
+async function stopSession(req: FastifyRequest, res: FastifyReply) {
+  const token = req.cookies[config.auth.session.cookieName]
+
+  if (token) {
+    await deleteSession(token)
+  }
+
+  res.clearCookie(config.auth.session.cookieName, config.auth.session.cookie)
+}
+
+export { startSession, stopSession }
