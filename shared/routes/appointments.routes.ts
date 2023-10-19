@@ -103,7 +103,8 @@ export const zAppointmentsRoute = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
     "/appointment-request/context/recap": {
@@ -127,10 +128,7 @@ export const zAppointmentsRoute = {
         //   })
         //   .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
   post: {
@@ -181,10 +179,7 @@ export const zAppointmentsRoute = {
         "404": z.union([ZResError, z.literal("Formation introuvable")]),
         "400": z.union([ZResError, z.literal("Critère de recherche non conforme.")]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         operationId: "appointmentCreateContext",
         description: "Appointment request",
@@ -217,10 +212,7 @@ export const zAppointmentsRoute = {
         //   })
         //   .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/appointment-request/reply": {
       method: "post",
@@ -244,10 +236,7 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

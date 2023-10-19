@@ -19,21 +19,17 @@ z.setErrorMap(customErrorMap)
 //const phoneRegex = new RegExp(/^0[1-9]\d{8}$/)
 
 export const extensions = {
-  siret: () =>
-    z
-      .string()
-      .trim()
-      .regex(SIRET_REGEX, "SIRET invalide")
-      .refine(validateSIRET, {
-        message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
-      })
-      .openapi({
-        description: "Le numéro de SIRET de l'établissement",
-        param: {
-          description: "Le numéro de SIRET de l'établissement",
-        },
-        example: "78424186100011",
-      }),
+  siret: z
+    .string()
+    .trim()
+    .regex(SIRET_REGEX, "SIRET invalide")
+    .refine(validateSIRET, {
+      message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
+    })
+    .openapi({
+      description: "Le numéro de SIRET de l'établissement",
+      example: "78424186100011",
+    }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
   phone: () => z.string(), //.regex(phoneRegex), TODO refine
   code_naf: () =>

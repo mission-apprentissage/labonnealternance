@@ -1,4 +1,7 @@
+import Boom from "boom"
 import { zRoutes } from "shared/index"
+
+import config from "@/config"
 
 import { logger } from "../../../common/logger"
 import { Etablissement } from "../../../common/model"
@@ -22,9 +25,12 @@ export default (server: Server) => {
     "/emails/webhook",
     {
       schema: zRoutes.post["/emails/webhook"],
-      onRequest: [server.auth(zRoutes.post["/emails/webhook"].securityScheme)],
     },
     async (req, res) => {
+      if (req.query.apiKey !== config.smtp.brevoWebhookApiKey) {
+        throw Boom.forbidden()
+      }
+
       const { date, event } = req.body
       const messageId = req.body["message-id"]
       const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()

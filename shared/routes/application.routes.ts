@@ -28,10 +28,7 @@ export const zApplicationRoutes = {
           description: "Internal Server Error",
         }),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Applications"] as string[],
         description:
@@ -67,10 +64,7 @@ export const zApplicationRoutes = {
             .strict(),
         ]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/application/webhook": {
       path: "/application/webhook",
@@ -88,10 +82,7 @@ export const zApplicationRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

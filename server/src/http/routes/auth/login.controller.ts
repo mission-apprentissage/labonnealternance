@@ -2,10 +2,11 @@ import Boom from "boom"
 import { toPublicUser, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getUserFromRequest } from "@/http/middlewares/authMiddleware"
-import { createSession, deleteSession } from "@/services/sessions.service"
+import { getUserFromRequest } from "@/security/authenticationService"
+import { createAuthMagicLink } from "@/services/appLinks.service"
+import { deleteSession } from "@/services/sessions.service"
 
-import { createMagicLinkToken, createUserToken } from "../../../common/utils/jwtUtils"
+import { startSession } from "../../../common/utils/session.service"
 import config from "../../../config"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service"
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
@@ -30,17 +31,12 @@ export default (server: Server) => {
           return res.status(400).send({ error: true, reason: "UNKNOWN" })
         }
 
-        const { _id, first_name, last_name, is_email_checked } = user
+        const { is_email_checked } = user
 
         if (is_email_checked) {
           return res.status(400).send({ error: true, reason: "VERIFIED" })
         }
-        await sendUserConfirmationEmail({
-          email,
-          firstName: first_name,
-          lastName: last_name,
-          userRecruteurId: _id,
-        })
+        await sendUserConfirmationEmail(user)
         return res.status(200).send({})
       } catch (error) {
         return res.status(400).send({
@@ -71,7 +67,7 @@ export default (server: Server) => {
         const status = getUserStatus(user.status)
 
         if ([ENTREPRISE, CFA].includes(user.type)) {
-          if ([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
+          if (!status || [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
             return res.status(400).send({ error: true, reason: "VALIDATION" })
           }
           if (status === ETAT_UTILISATEUR.DESACTIVE) {
@@ -84,18 +80,13 @@ export default (server: Server) => {
       }
 
       if (!is_email_checked) {
-        await sendUserConfirmationEmail({
-          email: userEmail,
-          firstName: first_name,
-          lastName: last_name,
-          userRecruteurId: _id,
-        })
+        await sendUserConfirmationEmail(user)
         return res.status(400).send({
           error: true,
           reason: "VERIFY",
         })
       }
-      const magiclink = `${config.publicUrl}/espace-pro/authentification/verification?token=${createMagicLinkToken(userEmail)}`
+
       await mailer.sendEmail({
         to: userEmail,
         subject: "Lien de connexion",
@@ -106,7 +97,7 @@ export default (server: Server) => {
           },
           last_name,
           first_name,
-          connexion_url: magiclink,
+          connexion_url: createAuthMagicLink(user),
         },
       })
       return res.status(200).send({})
@@ -117,22 +108,21 @@ export default (server: Server) => {
     "/login/verification",
     {
       schema: zRoutes.post["/login/verification"],
-      onRequest: [server.auth(zRoutes.post["/login/verification"].securityScheme)],
+      onRequest: [server.auth(zRoutes.post["/login/verification"])],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/login/verification"])
+      const user = getUserFromRequest(req, zRoutes.post["/login/verification"]).value
 
-      const token = createUserToken({ email: user.email }, { payload: { email: user.email } })
-      await createSession({ token })
-
-      const formatedEmail = user.email.toLowerCase()
+      const formatedEmail = user.identity.email.toLowerCase()
       const connectedUser = await registerUser(formatedEmail)
 
       if (!connectedUser) {
         throw Boom.forbidden()
       }
 
-      return res.setCookie(config.auth.session.cookieName, token, config.auth.session.cookie).status(200).send(toPublicUser(connectedUser))
+      await startSession(user.identity.email, res)
+
+      return res.status(200).send(toPublicUser(connectedUser))
     }
   )
 
@@ -143,13 +133,13 @@ export default (server: Server) => {
     "/auth/session",
     {
       schema: zRoutes.get["/auth/session"],
-      onRequest: [server.auth(zRoutes.get["/auth/session"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/auth/session"])],
     },
     async (request, response) => {
       if (!request.user) {
         throw Boom.forbidden()
       }
-      const user = getUserFromRequest(request, zRoutes.get["/auth/session"])
+      const user = getUserFromRequest(request, zRoutes.get["/auth/session"]).value
       return response.status(200).send(toPublicUser(user))
     }
   )

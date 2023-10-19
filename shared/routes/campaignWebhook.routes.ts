@@ -21,10 +21,7 @@ export const zCampaignWebhookRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

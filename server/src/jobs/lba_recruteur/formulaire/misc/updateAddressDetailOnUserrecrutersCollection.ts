@@ -5,11 +5,10 @@ import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
 import { CFA, ENTREPRISE } from "../../../../services/constant.service.js"
 import { getEtablissementFromGouv } from "../../../../services/etablissement.service.js"
-import { runScript } from "../../../scriptWrapper.js"
 
-runScript(async () => {
+export const updateAddressDetailOnUserrecrutersCollection = async () => {
   logger.info("Start update user adresse detail")
-  const users = await UserRecruteur.find({ type: { $in: [ENTREPRISE, CFA] }, address_detail: { $eq: null } })
+  const users = await UserRecruteur.find({ type: { $in: [ENTREPRISE, CFA] }, address_detail: null })
 
   logger.info(`${users.length} entries to update...`)
 
@@ -20,7 +19,11 @@ runScript(async () => {
 
     try {
       await delay(500)
-      const etablissement = await getEtablissementFromGouv(user.establishment_siret)
+      const { establishment_siret } = user
+      if (!establishment_siret) {
+        throw Boom.internal("unexpected: no establishment_siret on userRecruteur", { userId: user._id })
+      }
+      const etablissement = await getEtablissementFromGouv(establishment_siret)
 
       if (!etablissement) return
 
@@ -66,4 +69,4 @@ runScript(async () => {
     }
   })
   logger.info("End update user adresse detail")
-})
+}
