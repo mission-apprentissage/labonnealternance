@@ -28,8 +28,9 @@ export const zOptoutRoutes = {
         ]),
       },
       securityScheme: {
-        auth: "jwt-password",
-        role: "all",
+        auth: "access-token",
+        access: null,
+        ressources: {},
       },
     },
   },

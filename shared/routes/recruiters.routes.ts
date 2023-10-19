@@ -2,7 +2,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, zReferentielData } from "../models/usersRecruteur.model"
+import { ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable, zReferentielData } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -36,10 +36,7 @@ export const zRecruiterRoutes = {
         //   })
         //   .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/entreprise/:siret": {
       method: "get",
@@ -47,7 +44,7 @@ export const zRecruiterRoutes = {
       // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
       params: z
         .object({
-          siret: extensions.siret(),
+          siret: extensions.siret,
         })
         .strict(),
       querystring: z
@@ -73,15 +70,12 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/entreprise/:siret/opco": {
       method: "get",
       path: "/etablissement/entreprise/:siret/opco",
-      params: z.object({ siret: extensions.siret() }).strict(),
+      params: z.object({ siret: extensions.siret }).strict(),
       response: {
         "2xx": z
           .object({
@@ -90,24 +84,18 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/cfa/:siret": {
       method: "get",
       path: "/etablissement/cfa/:siret",
       // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
-      params: z.object({ siret: extensions.siret() }).strict(),
+      params: z.object({ siret: extensions.siret }).strict(),
       response: {
         "2xx": zReferentielData,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/cfa/:userRecruteurId/entreprises": {
       method: "get",
@@ -118,7 +106,10 @@ export const zRecruiterRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: "user:manage",
+        ressources: {
+          user: [{ _id: { type: "params", key: "userRecruteurId" } }],
+        },
       },
     },
   },
@@ -133,7 +124,7 @@ export const zRecruiterRoutes = {
           })
           .strict()
           .extend(
-            ZUserRecruteur.pick({
+            ZUserRecruteurWritable.pick({
               last_name: true,
               first_name: true,
               phone: true,
@@ -153,7 +144,7 @@ export const zRecruiterRoutes = {
             cfa_delegated_siret: ZRecruiter.shape.cfa_delegated_siret,
           })
           .extend(
-            ZUserRecruteur.pick({
+            ZUserRecruteurWritable.pick({
               last_name: true,
               first_name: true,
               phone: true,
@@ -182,16 +173,13 @@ export const zRecruiterRoutes = {
         //     .strict(),
         // ]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/:establishment_siret/proposition/unsubscribe": {
       method: "post",
       path: "/etablissement/:establishment_siret/proposition/unsubscribe",
       // TODO_SECURITY_FIX jwt
-      params: z.object({ establishment_siret: extensions.siret() }).strict(),
+      params: z.object({ establishment_siret: extensions.siret }).strict(),
       response: {
         "2xx": z
           .object({
@@ -199,23 +187,18 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/validation": {
       method: "post",
       path: "/etablissement/validation",
-      querystring: z.object({ token: z.string() }).strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "2xx": z.union([z.object({ token: z.string() }).strict(), z.object({ isUserAwaiting: z.boolean() }).strict()]),
+        "2xx": ZUserRecruteurPublic,
       },
       securityScheme: {
-        auth: "jwt-token",
-        role: "all",
+        auth: "access-token",
+        access: null,
+        ressources: {},
       },
     },
   },
@@ -225,7 +208,7 @@ export const zRecruiterRoutes = {
       path: "/etablissement/:id",
       // TODO_SECURITY_FIX jwt en mode session + filtre sur la payload pour réduction
       params: z.object({ id: zObjectId }).strict(),
-      body: ZUserRecruteur.pick({
+      body: ZUserRecruteurWritable.pick({
         last_name: true,
         first_name: true,
         phone: true,
@@ -238,7 +221,10 @@ export const zRecruiterRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: null,
+        ressources: {
+          user: [{ _id: { type: "params", key: "id" } }],
+        },
       },
     },
   },
