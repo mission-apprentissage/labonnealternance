@@ -16,7 +16,7 @@ export default (server: Server) => {
     "/admin/appointments/details",
     {
       schema: zRoutes.get["/admin/appointments/details"],
-      onRequest: [server.auth(zRoutes.get["/admin/appointments/details"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/admin/appointments/details"])],
     },
     async (_req, res) => {
       const allAppointments = await Appointment.find().limit(100).sort({ _id: -1 }).lean()

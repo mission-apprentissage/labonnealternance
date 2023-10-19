@@ -19,7 +19,11 @@ export const updateAddressDetailOnUserrecrutersCollection = async () => {
 
     try {
       await delay(500)
-      const etablissement = await getEtablissementFromGouv(user.establishment_siret)
+      const { establishment_siret } = user
+      if (!establishment_siret) {
+        throw Boom.internal("unexpected: no establishment_siret on userRecruteur", { userId: user._id })
+      }
+      const etablissement = await getEtablissementFromGouv(establishment_siret)
 
       if (!etablissement) return
 

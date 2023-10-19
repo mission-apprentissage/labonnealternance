@@ -138,8 +138,7 @@ const ZLbaItemContact = z
         description: "Le nom du contact de référence",
       })
       .nullish(), // pe -> contact.nom | matcha -> prenom nom
-    phone: extensions
-      .phone()
+    phone: extensions.phone
       .openapi({
         example: "0X XX XX XX XX",
         description: "Le numéro de téléphone du contact de référence",
@@ -160,7 +159,7 @@ export type ILbaItemContact = z.output<typeof ZLbaItemContact>
 
 const ZLbaItemCompanyHQ = z
   .object({
-    siret: extensions.siret().nullable(), // formation -> etablissement_gestionaire_siret
+    siret: extensions.siret.nullable(), // formation -> etablissement_gestionaire_siret
     id: z.string().openapi({ description: "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire" }).nullable(), // formation -> etablissement_gestionnaire_id
     uai: z.string().openapi({ description: "Lieu de formation seulement : l'uai de l'établissement gestionnaire" }).nullable(), // formation -> etablissement_gestionnaire_uai
     type: z.string().openapi({ description: "Lieu de formation seulement : le type de l'établissement gestionnaire" }).nullable(), // formation -> etablissement_gestionnaire_type
@@ -196,7 +195,7 @@ const ZLbaItemCompany = z
         description: "La raison sociale de l'entreprise",
       })
       .nullish(), // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> enseigne / raison_sociale | matcha -> enseigne > raison_sociale
-    siret: extensions.siret().nullish(), // lbb/lba -> siret | formation -> etablissement_formateur_siret | matcha -> siret | pe -> entreprise.siret réservé à notre front
+    siret: extensions.siret.nullish(), // lbb/lba -> siret | formation -> etablissement_formateur_siret | matcha -> siret | pe -> entreprise.siret réservé à notre front
     size: z
       .string()
       .openapi({

@@ -136,12 +136,14 @@ export type IQuery<S extends IRouteSchema> = S["querystring"] extends ZodType ? 
 
 export type IParam<S extends IRouteSchema> = S["params"] extends ZodType ? z.input<S["params"]> : never
 
-export type IHeaders<S extends IRouteSchema> = Omit<S["headers"] extends ZodType ? z.input<S["headers"]> : never, "referrer">
+type IHeadersAuth<S extends IRouteSchema> = S extends { securityScheme: { auth: infer A } } ? (A extends "access-token" ? { authorization: `Bearer ${string}` } : never) : never
+
+export type IHeaders<S extends IRouteSchema> = S["headers"] extends ZodType ? Omit<z.input<S["headers"]>, "referrer"> : never
 
 type IRequestRaw<S extends IRouteSchema> = {
   params: IParam<S>
   querystring: IQuery<S>
-  headers: IHeaders<S>
+  headers: IHeaders<S> & IHeadersAuth<S>
   body: S extends IRouteSchemaWrite ? IBody<S> : never
 }
 
