@@ -45,6 +45,8 @@ fileignoreconfig:
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
   checksum: e9869aceb9bb23877dccf1c6e2de729bfe685f7e40231c465fc40cdcc7c68c14
+- filename: server/tests/unit/security/authorisationService.test.ts
+  checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
@@ -63,8 +65,6 @@ fileignoreconfig:
   checksum: a50177afa593bae5707bdba29ef27b8f2ed0bc58487491bfff580e7e1f422243
 - filename: ui/components/espace_pro/Admin/utilisateurs/infoDetails/InfoDetails.tsx
   checksum: be2ad6ca5c2bd36d26cd7aebb33ab876bd32662be3735fee3b167325c284ccff
-- filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.jsx
-  checksum: 26e08a59fba2fbace721a6109af82b5d0d70bd91ddf590484c69fd34a60db17b
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.tsx
   checksum: 47a40c539f076c13460dbb9d0b6a6e05086289b8bd5a606e64b1ea30fdbf783d
 - filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx

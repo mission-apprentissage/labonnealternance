@@ -14,7 +14,8 @@ export const zFormationRoute = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
   },

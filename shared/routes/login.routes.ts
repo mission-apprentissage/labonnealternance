@@ -1,4 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
+import { ZUserRecruteurPublic } from "../models"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -16,15 +17,11 @@ export const zLoginRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/login/magiclink": {
       method: "post",
       path: "/login/magiclink",
-      // TODO_SECURITY_FIX cf. lien magique ci-dessus
       body: z
         .object({
           email: z.string().email(),
@@ -33,27 +30,18 @@ export const zLoginRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/login/verification": {
       method: "post",
       path: "/login/verification",
-      querystring: z.object({ token: z.string() }).strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "200": z
-        //   .object({
-        //     token: z.string(),
-        //   })
-        //   .strict(),
+        "2xx": ZUserRecruteurPublic,
       },
       securityScheme: {
-        auth: "jwt-token",
-        role: "all",
+        auth: "access-token",
+        access: null,
+        ressources: {},
       },
     },
   },
@@ -67,7 +55,8 @@ export const zLoginRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: null,
+        ressources: {},
       },
     },
     "/auth/logout": {
@@ -77,10 +66,7 @@ export const zLoginRoutes = {
         // TODO ANY TO BE FIXED
         "2xx": z.any(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

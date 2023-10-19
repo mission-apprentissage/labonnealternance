@@ -21,8 +21,8 @@ const updateUserRecruteursSiretInfosInError = async () => {
   await asyncForEach(userRecruteurs, async (userRecruteur) => {
     const { establishment_siret, _id, establishment_id, type } = userRecruteur
     try {
-      if (!establishment_id) {
-        throw Boom.internal("unexpected: no establishment_id for userRecruteur of type ENTREPRISE", { userId: userRecruteur._id })
+      if (!establishment_id || !establishment_siret) {
+        throw Boom.internal("unexpected: no establishment_id and/or establishment_siret for userRecruteur of type ENTREPRISE", { userId: userRecruteur._id })
       }
       let recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur

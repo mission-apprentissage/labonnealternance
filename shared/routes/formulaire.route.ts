@@ -18,10 +18,7 @@ export const zFormulaireRoute = {
         "200": z.any(),
         // "2xx": ZRecruiter,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/formulaire/offre/f/:jobId": {
       method: "get",
@@ -35,10 +32,7 @@ export const zFormulaireRoute = {
         // "200": z.any(),
         "2xx": ZJob,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
   post: {
@@ -64,10 +58,7 @@ export const zFormulaireRoute = {
         // "2xx": ZRecruiter,
         "2xx": z.any(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/formulaire/:establishment_id/offre": {
       method: "post",
@@ -82,10 +73,7 @@ export const zFormulaireRoute = {
         // "2xx": ZRecruiter,
         "200": z.any(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/formulaire/offre/:jobId/delegation": {
       method: "post",
@@ -103,10 +91,7 @@ export const zFormulaireRoute = {
         "2xx": z.any(),
         // "2xx": ZRecruiter,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
   put: {
@@ -124,7 +109,10 @@ export const zFormulaireRoute = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: "recruiter:manage",
+        ressources: {
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
       },
     },
     "/formulaire/offre/:jobId": {
@@ -157,10 +145,7 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZRecruiter,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/formulaire/offre/:jobId/cancel": {
       method: "put",
@@ -172,10 +157,7 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/formulaire/offre/f/:jobId/cancel": {
       method: "put",
@@ -193,10 +175,7 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/formulaire/offre/:jobId/provided": {
       method: "put",
@@ -208,10 +187,7 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/formulaire/offre/:jobId/extend": {
       method: "put",
@@ -223,10 +199,7 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
   patch: {
@@ -243,10 +216,7 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZJob.nullable(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
   delete: {
@@ -259,10 +229,7 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/formulaire/delegated/:establishment_siret": {
       method: "delete",
@@ -273,10 +240,7 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

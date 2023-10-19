@@ -10,7 +10,7 @@ import { ZodTypeProvider, serializerCompiler, validatorCompiler } from "fastify-
 import { Netmask } from "netmask"
 import { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
-import { SecurityScheme } from "shared/routes/common.routes"
+import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 
 import { localOrigin } from "@/common/utils/isOriginLocal"
 
@@ -98,7 +98,7 @@ export async function bind(app: Server) {
 
   app.register(fastifyCookie)
 
-  app.decorate("auth", (strategy: SecurityScheme) => auth(strategy))
+  app.decorate("auth", <S extends IRouteSchema & WithSecurityScheme>(scheme: S) => auth(scheme))
 
   if (config.env === "local") {
     app.register(fastifyCors, {

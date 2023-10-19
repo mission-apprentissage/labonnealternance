@@ -9,8 +9,8 @@ import { zObjectId } from "./common"
 export const ZEtablissement = z
   .object({
     _id: zObjectId,
-    formateur_siret: extensions.siret().nullish(),
-    gestionnaire_siret: extensions.siret().nullish(),
+    formateur_siret: extensions.siret.nullish(),
+    gestionnaire_siret: extensions.siret.nullish(),
     raison_sociale: z.string().nullable().openapi({
       example: "CAMPUS FONDERIE DE L'IMAGE",
     }),

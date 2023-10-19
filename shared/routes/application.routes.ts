@@ -28,10 +28,7 @@ export const zApplicationRoutes = {
           description: "Internal Server Error",
         }),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Applications"] as string[],
         description:
@@ -67,16 +64,13 @@ export const zApplicationRoutes = {
             .strict(),
         ]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/application/webhook": {
-      // TODO_SECURITY_FIX    ajouter token sans expiration dans les webhooks brevo
+      // TODO_SECURITY_FIX  ajouter api_key brevo
       path: "/application/webhook",
       method: "post",
-      body: extensions.brevoWebhook(),
+      body: extensions.brevoWebhook,
       response: {
         "200": z
           .object({
@@ -84,10 +78,7 @@ export const zApplicationRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

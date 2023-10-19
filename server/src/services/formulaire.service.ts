@@ -239,7 +239,7 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
 export const createJob = async ({ job, id }: { job: IJobWritable; id: string }): Promise<IRecruiter> => {
   // get user data
   const user = await getUser({ establishment_id: id })
-  const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
+  const userStatus: ETAT_UTILISATEUR | null = (user ? getUserStatus(user.status) : null) ?? null
   const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
 
   const jobPartial: Partial<IJob> = job
