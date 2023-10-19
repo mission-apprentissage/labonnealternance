@@ -19,7 +19,10 @@ export const stopMongodb = async () => {
   }
 }
 
-export const useMongo = (skipClearBeforeEach: boolean = false) => {
+type MockData = () => Promise<void>
+
+// beforeAll are ran in parallel, we need to wait for clearDb to be done before mocking data
+export const useMongo = (mock: MockData | null = null, step: "beforeAll" | "beforeEach" = "beforeEach") => {
   const clearDb = async () => {
     const collections = mongoose.connection.collections
 
@@ -32,12 +35,20 @@ export const useMongo = (skipClearBeforeEach: boolean = false) => {
 
   beforeAll(async () => {
     await startAndConnectMongodb()
-    if (skipClearBeforeEach) await clearDb()
+    if (step === "beforeAll") {
+      await clearDb()
+      await mock?.()
+    }
   })
 
   afterAll(async () => {
     await stopMongodb()
   })
 
-  if (!skipClearBeforeEach) beforeEach(clearDb)
+  if (step === "beforeEach") {
+    beforeEach(async () => {
+      await clearDb()
+      await mock?.()
+    })
+  }
 }

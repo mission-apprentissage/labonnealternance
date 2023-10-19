@@ -7,9 +7,9 @@ import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation } from "s
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { UserRecruteur } from "../common/model/index"
-import { createMagicLinkToken } from "../common/utils/jwtUtils"
 import config from "../config"
 
+import { createAuthMagicLink } from "./appLinks.service"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR, ADMIN } from "./constant.service"
 import mailer from "./mailer.service"
 
@@ -122,7 +122,7 @@ export const removeUser = async (id: IUserRecruteur["_id"] | string) => {
  * @param {IUserRecruteur["email"]} email
  * @returns {Promise<IUserRecruteur>}
  */
-export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.findOneAndUpdate({ email: email }, { last_connection: new Date() })
+export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.findOneAndUpdate({ email: email }, { last_connection: new Date() }, { new: true }).lean()
 
 /**
  * @description update user validation status
@@ -143,7 +143,7 @@ export const updateUserValidationHistory = async (
  * @returns {IUserRecruteur["status"]}
  */
 export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
-  const sortedArray = [...stateArray].sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf())
+  const sortedArray = [...stateArray].sort((a, b) => new Date(a?.date ?? 0).valueOf() - new Date(b?.date ?? 0).valueOf())
   const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
   if (!lastValidationEvent) {
     throw Boom.internal("no status found in status array")
@@ -203,7 +203,6 @@ export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: str
 
 export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
   const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
-  const magiclink = `${config.publicUrl}/espace-pro/authentification/verification?token=${createMagicLinkToken(email)}`
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
@@ -217,7 +216,7 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
       first_name,
       email,
       is_delegated: type === CFA,
-      url: magiclink,
+      url: createAuthMagicLink(userRecruteur),
     },
   })
 }

@@ -20,7 +20,7 @@ const symbol = Symbol("authStrategy")
 
 export function auth<S extends IRouteSchema & WithSecurityScheme>(schema: S) {
   const authMiddleware = async (req: FastifyRequest) => {
-    await authenticationMiddleware(schema.securityScheme, req)
+    await authenticationMiddleware(schema, req)
     await authorizationnMiddleware(schema, req)
   }
 

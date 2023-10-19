@@ -4,11 +4,12 @@ import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur, ZApplication, ZCredential, ZRecruiter, ZUserRecruteur } from "shared/models"
 import { zObjectId } from "shared/models/common"
 import { SecurityScheme } from "shared/routes/common.routes"
-import { AccessPermission, AccessRessouces, Permission } from "shared/security/permissions"
-import { beforeEach, beforeAll, describe, it, expect } from "vitest"
+import { AccessPermission, AccessRessouces, Permission, UserWithType } from "shared/security/permissions"
+import { beforeEach, describe, it, expect } from "vitest"
 import { Fixture, Generator } from "zod-fixture"
 
 import { Application, Credential, Recruiter, UserRecruteur } from "@/common/model"
+import { IAccessToken } from "@/security/accessTokenService"
 import { authorizationnMiddleware } from "@/security/authorisationService"
 import { useMongo } from "@tests/utils/mongo.utils"
 
@@ -42,6 +43,7 @@ function getFixture() {
 async function createUserRecruteur(data: Partial<IUserRecruteur>) {
   const u = new UserRecruteur({
     ...getFixture().fromSchema(ZUserRecruteur),
+    status: [],
     ...data,
   })
   await u.save()
@@ -82,8 +84,6 @@ async function createApplication(data: Partial<IApplication>) {
 }
 
 describe("authorisationService", () => {
-  useMongo(true)
-
   beforeEach(() => {
     seed = 0
   })
@@ -175,7 +175,7 @@ describe("authorisationService", () => {
     ]
   }
 
-  beforeAll(async () => {
+  const mockData = async () => {
     // Here is the overall relation we will use to test permissions
 
     // OPCO #O1
@@ -326,7 +326,9 @@ describe("authorisationService", () => {
     credentialO1 = await createCredential({
       organisation: "#O1",
     })
-  })
+  }
+
+  useMongo(mockData, "beforeAll")
 
   describe.each<["params" | "query"]>([["params"], ["query"]])("when resources are identified in %s", (location) => {
     describe("as an admin user", () => {
@@ -1589,5 +1591,456 @@ describe("authorisationService", () => {
         }
       )
     ).resolves.toBe(undefined)
+  })
+
+  describe("with access token", () => {
+    describe("when accessing recruiter resource", () => {
+      it("should allow when resource is present in token for same scope", async () => {
+        const securityScheme: SecurityScheme = {
+          auth: "cookie-session",
+          access: "recruiter:manage",
+          ressources: {
+            recruiter: [{ _id: { type: "params", key: "id" } }],
+          },
+        }
+        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+          type: "IAccessToken",
+          value: {
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
+            scopes: [
+              {
+                method: "post",
+                path: "/path/:id",
+                resources: {},
+              },
+              {
+                method: "get",
+                path: "/path/:id",
+                resources: {
+                  recruiter: [recruteurO1E1R1._id.toString()],
+                },
+              },
+            ],
+          },
+        }
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "get",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: recruteurO1E1R1._id.toString(),
+              },
+            }
+          )
+        ).resolves.toBe(undefined)
+      })
+
+      it("should deny when resource is not present in token for same scope", async () => {
+        const securityScheme: SecurityScheme = {
+          auth: "cookie-session",
+          access: "recruiter:manage",
+          ressources: {
+            recruiter: [{ _id: { type: "params", key: "id" } }],
+          },
+        }
+        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+          type: "IAccessToken",
+          value: {
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
+            scopes: [
+              {
+                method: "post",
+                path: "/path/:id",
+                resources: {},
+              },
+              {
+                method: "get",
+                path: "/path/:id",
+                resources: {
+                  recruiter: [recruteurO1E1R1._id.toString()],
+                },
+              },
+            ],
+          },
+        }
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "post",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: recruteurO1E1R1._id.toString(),
+              },
+            }
+          )
+        ).rejects.toThrow("Forbidden")
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "get",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: recruteurO1E1R2._id.toString(),
+              },
+            }
+          )
+        ).rejects.toThrow("Forbidden")
+      })
+    })
+    describe("when accessing job resource", () => {
+      it("should allow when resource is present in token for same scope", async () => {
+        const securityScheme: SecurityScheme = {
+          auth: "cookie-session",
+          access: "job:manage",
+          ressources: {
+            job: [{ _id: { type: "params", key: "id" } }],
+          },
+        }
+        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+          type: "IAccessToken",
+          value: {
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
+            scopes: [
+              {
+                method: "post",
+                path: "/path/:id",
+                resources: {},
+              },
+              {
+                method: "get",
+                path: "/path/:id",
+                resources: {
+                  job: recruteurO1E1R1.jobs.map((j) => j._id.toString()),
+                },
+              },
+            ],
+          },
+        }
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "get",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: recruteurO1E1R1.jobs.map((j) => j._id.toString())[0],
+              },
+            }
+          )
+        ).resolves.toBe(undefined)
+      })
+
+      it("should deny when resource is not present in token for same scope", async () => {
+        const securityScheme: SecurityScheme = {
+          auth: "cookie-session",
+          access: "job:manage",
+          ressources: {
+            job: [{ _id: { type: "params", key: "id" } }],
+          },
+        }
+        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+          type: "IAccessToken",
+          value: {
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
+            scopes: [
+              {
+                method: "post",
+                path: "/path/:id",
+                resources: {},
+              },
+              {
+                method: "get",
+                path: "/path/:id",
+                resources: {
+                  job: recruteurO1E1R1.jobs.map((j) => j._id.toString()),
+                },
+              },
+            ],
+          },
+        }
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "post",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: recruteurO1E1R1.jobs.map((j) => j._id.toString())[0],
+              },
+            }
+          )
+        ).rejects.toThrow("Forbidden")
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "get",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: recruteurO1E1R2.jobs.map((j) => j._id.toString())[0],
+              },
+            }
+          )
+        ).rejects.toThrow("Forbidden")
+      })
+    })
+    describe("when accessing application resource", () => {
+      it("should allow when resource is present in token for same scope", async () => {
+        const securityScheme: SecurityScheme = {
+          auth: "cookie-session",
+          access: "application:manage",
+          ressources: {
+            application: [{ _id: { type: "params", key: "id" } }],
+          },
+        }
+        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+          type: "IAccessToken",
+          value: {
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
+            scopes: [
+              {
+                method: "post",
+                path: "/path/:id",
+                resources: {},
+              },
+              {
+                method: "get",
+                path: "/path/:id",
+                resources: {
+                  application: [applicationO1E1R1J1A1._id.toString()],
+                },
+              },
+            ],
+          },
+        }
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "get",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: applicationO1E1R1J1A1._id.toString(),
+              },
+            }
+          )
+        ).resolves.toBe(undefined)
+      })
+
+      it("should deny when resource is not present in token for same scope", async () => {
+        const securityScheme: SecurityScheme = {
+          auth: "cookie-session",
+          access: "application:manage",
+          ressources: {
+            application: [{ _id: { type: "params", key: "id" } }],
+          },
+        }
+        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+          type: "IAccessToken",
+          value: {
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
+            scopes: [
+              {
+                method: "post",
+                path: "/path/:id",
+                resources: {},
+              },
+              {
+                method: "get",
+                path: "/path/:id",
+                resources: {
+                  application: [applicationO1E1R1J1A1._id.toString()],
+                },
+              },
+            ],
+          },
+        }
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "post",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: applicationO1E1R1J1A1._id.toString(),
+              },
+            }
+          )
+        ).rejects.toThrow("Forbidden")
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "get",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: applicationO1E1R1J1A2._id.toString(),
+              },
+            }
+          )
+        ).rejects.toThrow("Forbidden")
+      })
+    })
+    describe("when accessing user resource", () => {
+      it("should allow when resource is present in token for same scope", async () => {
+        const securityScheme: SecurityScheme = {
+          auth: "cookie-session",
+          access: "user:manage",
+          ressources: {
+            user: [{ _id: { type: "params", key: "id" } }],
+          },
+        }
+        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+          type: "IAccessToken",
+          value: {
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
+            scopes: [
+              {
+                method: "post",
+                path: "/path/:id",
+                resources: {},
+              },
+              {
+                method: "get",
+                path: "/path/:id",
+                resources: {
+                  user: [opcoUserO1U1._id.toString()],
+                },
+              },
+            ],
+          },
+        }
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "get",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: opcoUserO1U1._id.toString(),
+              },
+            }
+          )
+        ).resolves.toBe(undefined)
+      })
+
+      it("should deny when resource is not present in token for same scope", async () => {
+        const securityScheme: SecurityScheme = {
+          auth: "cookie-session",
+          access: "user:manage",
+          ressources: {
+            user: [{ _id: { type: "params", key: "id" } }],
+          },
+        }
+        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+          type: "IAccessToken",
+          value: {
+            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
+            scopes: [
+              {
+                method: "post",
+                path: "/path/:id",
+                resources: {},
+              },
+              {
+                method: "get",
+                path: "/path/:id",
+                resources: {
+                  user: [opcoUserO1U1._id.toString()],
+                },
+              },
+            ],
+          },
+        }
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "post",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: opcoUserO1U1._id.toString(),
+              },
+            }
+          )
+        ).rejects.toThrow("Forbidden")
+
+        await expect(
+          authorizationnMiddleware(
+            {
+              method: "get",
+              path: "/path/:id",
+              securityScheme,
+            },
+            {
+              user: userWithType,
+              query: {},
+              params: {
+                id: opcoUserO1U2._id.toString(),
+              },
+            }
+          )
+        ).rejects.toThrow("Forbidden")
+      })
+    })
   })
 })

@@ -64,6 +64,9 @@ export default (server: Server) => {
       if (!userRecruteurOpt) {
         throw Boom.badRequest("Nous n'avons pas trouvé votre compte utilisateur")
       }
+      if (!userRecruteurOpt.establishment_siret) {
+        throw Boom.internal("unexpected: userRecruteur without establishment_siret")
+      }
       const response = await entrepriseOnboardingWorkflow.createFromCFA({
         email,
         last_name,

@@ -1,3 +1,5 @@
+import Boom from "boom"
+
 import { Recruiter, UserRecruteur } from "../../../../common/model/index"
 import { getEtablissementFromGouv } from "../../../../services/etablissement.service"
 import { runScript } from "../../../scriptWrapper"
@@ -22,6 +24,9 @@ runScript(async () => {
 
   for (const user of users) {
     try {
+      if (!user.establishment_siret) {
+        throw Boom.internal("unexpected: no establishment_siret on userRecruteur", { userId: user._id })
+      }
       const data = await getEtablissementFromGouv(user.establishment_siret)
 
       const enseigneFromApiEntreprise = data?.data.enseigne

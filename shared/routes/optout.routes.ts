@@ -28,7 +28,7 @@ export const zOptoutRoutes = {
         ]),
       },
       securityScheme: {
-        auth: "jwt-password",
+        auth: "access-token",
         access: null,
         ressources: {},
       },

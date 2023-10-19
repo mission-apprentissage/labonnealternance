@@ -66,7 +66,7 @@ export const ZReqHeadersAuthorization = z
   })
   .strict()
 
-export type AuthStrategy = "api-key" | "jwt-password" | "jwt-token" | "cookie-session" | "none"
+export type AuthStrategy = "api-key" | "cookie-session" | "access-token"
 
 export type SecurityScheme = {
   auth: AuthStrategy
@@ -98,6 +98,7 @@ export type WithSecurityScheme = {
 }
 
 export type IRouteSchema = IRouteSchemaGet | IRouteSchemaWrite
+export type ISecuredRouteSchema = IRouteSchema & WithSecurityScheme
 
 export type IRoutesDef = {
   get?: Record<string, IRouteSchemaGet>

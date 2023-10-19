@@ -146,7 +146,7 @@ export const zUserRecruteurRoutes = {
       path: "/user/:userId",
       // TODO_SECURITY_FIX session et cookie + permissions
       params: z.object({ userId: zObjectId }).strict(),
-      body: ZUserRecruteur.pick({
+      body: ZUserRecruteurWritable.pick({
         last_name: true,
         first_name: true,
         phone: true,
