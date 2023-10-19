@@ -52,7 +52,7 @@ const updateBlockedEmails = async ({ AllAddresses }: { AllAddresses?: boolean })
 
   const todayStr = `${yesterday.getFullYear()}-${yesterday.getMonth() < 9 ? "0" : ""}${yesterday.getMonth() + 1}-${yesterday.getDate() < 10 ? "0" : ""}${yesterday.getDate()}`
   const limit = 100
-  const senders = ["no-reply@apprentissage.beta.gouv.fr"]
+  const senders = [config.transactionalEmail, config.publicEmail]
   let total = 0
   let offset = 0
   const startDate = AllAddresses ? null : todayStr

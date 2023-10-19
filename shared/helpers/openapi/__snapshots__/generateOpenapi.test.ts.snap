@@ -44,6 +44,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       "ApplicationUi": {
         "additionalProperties": false,
         "properties": {
+          "_id": {
+            "description": "Identifiant unique",
+          },
           "applicant_email": {
             "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
             "example": "john.smith@mail.com",
@@ -152,6 +155,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "message": {
             "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
             "example": "Madame, monsieur...",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "searched_for_job_label": {
+            "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
+            "example": "Vente de fleurs, végétaux",
             "type": [
               "string",
               "null",
@@ -2920,7 +2931,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
     },
     "securitySchemes": {
       "api-key": {
-        "bearerFormat": "bearer",
+        "bearerFormat": "",
         "in": "header",
         "name": "authorization",
         "scheme": "bearer",

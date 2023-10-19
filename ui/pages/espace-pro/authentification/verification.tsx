@@ -14,7 +14,11 @@ export default function AuthValidation() {
   useEffect(() => {
     const fetchData = async () => {
       if (token) {
-        const user = await apiPost("/login/verification", { querystring: { token } })
+        const user = await apiPost("/login/verification", {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        })
         setUser(user)
         router.push("/espace-pro/authentification/validation")
       }

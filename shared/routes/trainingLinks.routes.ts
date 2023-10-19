@@ -19,7 +19,6 @@ export const zTrainingLinksRoutes = {
               cfd: z.string().nullable().optional(),
               rncp: z.string().nullable().optional(),
               code_postal: z.string().nullable().optional(),
-              uai: z.string().nullable().optional(),
               uai_lieu_formation: z.string().nullable().optional(),
               uai_formateur: z.string().nullable().optional(),
               uai_formateur_responsable: z.string().nullable().optional(),
@@ -43,10 +42,7 @@ export const zTrainingLinksRoutes = {
             .strict()
         ),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

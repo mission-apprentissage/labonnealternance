@@ -25,7 +25,6 @@ const config = {
     uri: env.get("LBA_MONGODB_URI").required().asString(),
   },
   laBonneFormationPassword: env.get("LBA_LABONNEFORMATION_PASSWORD").required().asString(),
-  laBonneFormationApiUrl: "https://labonneformation.pole-emploi.fr",
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   matcha: {
     apiKey: env.get("LBA_MATCHA_ACCESS_KEY").required().asString(),

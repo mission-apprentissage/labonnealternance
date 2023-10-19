@@ -2,8 +2,11 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zCallerParam } from "../routes/_params"
 
+import { zObjectId } from "./common"
+
 export const ZApplication = z
   .object({
+    _id: zObjectId,
     applicant_email: z.string().email().openapi({
       description: "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
       example: "john.smith@mail.com",
@@ -16,7 +19,7 @@ export const ZApplication = z
       description: "Le nom du candidat.",
       example: "Dupont",
     }),
-    applicant_phone: extensions.phone().openapi({
+    applicant_phone: extensions.phone.openapi({
       description: "Le numéro de téléphone du candidat.",
       example: "0101010101",
     }),
@@ -34,7 +37,7 @@ export const ZApplication = z
     company_recruitment_intention: z.string().nullable().describe("L'intention de la société vis à vis du candidat"),
     company_feedback: z.string().nullable().describe("L'avis donné par la société"),
     company_feedback_date: z.date().nullable().describe("Date d'intention/avis donnée"),
-    company_siret: extensions.siret().openapi({
+    company_siret: extensions.siret.openapi({
       description: "Le siret de l'entreprise. Fourni par La bonne alternance. ",
       example: "00004993900000",
     }),
@@ -98,6 +101,10 @@ export const ZApplicationUI = ZApplication.extend({
   crypted_company_email: z.string().nullish(),
   caller: zCallerParam.nullish(),
   job_id: ZApplication.shape.job_id.optional(),
+  searched_for_job_label: z.string().nullish().openapi({
+    description: "Le métier recherché par le candidat envoyant une candidature spontanée.",
+    example: "Vente de fleurs, végétaux",
+  }),
 })
   .omit({
     applicant_message_to_company: true,

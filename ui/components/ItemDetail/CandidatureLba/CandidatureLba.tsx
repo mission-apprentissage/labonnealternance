@@ -1,8 +1,9 @@
 import { CloseIcon } from "@chakra-ui/icons"
 import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 
+import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
@@ -18,12 +19,15 @@ import useLocalStorage from "./services/useLocalStorage"
 const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [sendingState, setSendingState] = useState("not_sent")
+  const { formValues } = useContext(DisplayContext)
   const kind = item?.ideaType || ""
 
   const onModalClose = () => {
     setSendingState("not_sent")
     onClose()
   }
+
+  console.log("formValues : ", formValues)
 
   const uniqId = `candidaturespontanee-${kind}-${getItemId(item)}`
 
@@ -57,7 +61,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
     initialValues: getInitialSchemaValues(),
     validationSchema: getValidationSchema(),
     onSubmit: async (applicantValues) => {
-      const success = await submitCandidature({ applicantValues, setSendingState, item })
+      const success = await submitCandidature({ applicantValues, setSendingState, item, jobLabel: formValues?.job?.label })
       if (success) {
         setApplied(Date.now().toString())
       }

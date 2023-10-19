@@ -4,6 +4,7 @@ import type { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur } from "shared"
 
+import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getElasticInstance } from "../common/esClient/index"
@@ -17,7 +18,6 @@ import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { ILbaJobEsResult } from "./lbajob.service.types"
 import mailer from "./mailer.service"
-import { getRomeDetailsFromAPI } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
 const esClient = getElasticInstance()
@@ -239,7 +239,7 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
 export const createJob = async ({ job, id }: { job: IJobWritable; id: string }): Promise<IRecruiter> => {
   // get user data
   const user = await getUser({ establishment_id: id })
-  const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
+  const userStatus: ETAT_UTILISATEUR | null = (user ? getUserStatus(user.status) : null) ?? null
   const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
 
   const jobPartial: Partial<IJob> = job
@@ -256,7 +256,7 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
     job_start_date,
     rome_detail: romeData,
     job_creation_date: creationDate,
-    job_expiration_date: dayjs(job_start_date).add(1, "month").toDate(),
+    job_expiration_date: dayjs(creationDate).add(1, "month").toDate(),
     job_update_date: creationDate,
   })
   // insert job

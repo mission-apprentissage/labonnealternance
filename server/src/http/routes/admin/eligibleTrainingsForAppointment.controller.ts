@@ -16,7 +16,7 @@ export default (server: Server) => {
     "/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret",
     {
       schema: zRoutes.get["/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"],
-      onRequest: [server.auth(zRoutes.get["/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"])],
     },
     async (req, res) => {
       const { siret } = req.params
@@ -65,7 +65,7 @@ export default (server: Server) => {
     "/admin/eligible-trainings-for-appointment/:id",
     {
       schema: zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"],
-      onRequest: [server.auth(zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"].securityScheme)],
+      onRequest: [server.auth(zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"])],
     },
     async ({ body, params }, res) => {
       const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id.toString(), body).lean()

@@ -1,7 +1,8 @@
+import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
+
 import { logger } from "../../../common/logger"
 import { FicheMetierRomeV3 } from "../../../common/model"
 import { asyncForEach, delay } from "../../../common/utils/asyncUtils"
-import { getRomeDetailsFromAPI } from "../../../services/rome.service"
 
 import { romes } from "./romeCodeList"
 
