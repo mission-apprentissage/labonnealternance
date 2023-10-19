@@ -4242,6 +4242,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         "operationId": "getCompany",
         "parameters": [
           {
+            "description": "Le numéro de SIRET de l'établissement",
             "in": "path",
             "name": "siret",
             "required": true,
@@ -4533,6 +4534,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         "description": "Get existing establishment id from siret & email",
         "parameters": [
           {
+            "description": "Le numéro de SIRET de l'établissement",
             "in": "query",
             "name": "establishment_siret",
             "required": true,
@@ -5790,6 +5792,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         "operationId": "getMetiersParEtablissement",
         "parameters": [
           {
+            "description": "Le numéro de SIRET de l'établissement",
             "in": "path",
             "name": "siret",
             "required": true,
