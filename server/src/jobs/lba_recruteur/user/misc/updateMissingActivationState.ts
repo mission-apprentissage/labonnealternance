@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { JOB_STATUS } from "shared/models"
 
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
@@ -50,7 +51,7 @@ export const checkAwaitingCompaniesValidation = async () => {
     const firstJob = userFormulaire.jobs.at(0)
     if (hasBeenValidated && firstJob) {
       // Get job and update its expiration date
-      const job = Object.assign(firstJob, { job_status: "Active", job_expiration_date: addExpirationPeriod(dayjs()).format("YYYY-MM-DD") })
+      const job = Object.assign(firstJob, { job_status: JOB_STATUS.ACTIVE, job_expiration_date: addExpirationPeriod(dayjs()).format("YYYY-MM-DD") })
       // save job
       await updateOffre(job._id.toString(), job)
 

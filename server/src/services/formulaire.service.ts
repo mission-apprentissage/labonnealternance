@@ -162,7 +162,7 @@ export const getJobsFromElasticSearch = async ({
       }
 
       x._source.jobs.forEach((o) => {
-        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === "Active") {
+        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === JOB_STATUS.ACTIVE) {
           o.rome_label = o.rome_appellation_label ?? o.rome_label
           if (!niveau || niveau === "Indifférent" || niveau === o.job_level_label) {
             jobs.push(o)
