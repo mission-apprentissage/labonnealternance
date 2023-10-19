@@ -218,40 +218,45 @@ const SatisfactionForm = ({ formType }) => {
                 {getFieldError()}
 
                 {readIntention() !== "refus" && (
-                  <Flex direction={{ base: "column", md: "row" }}>
-                    <Box data-testid="fieldset-email" mt={{ base: 1, md: 0 }} mr={{ base: 0, md: 4 }}>
-                      <FormLabel htmlFor="email">E-mail *</FormLabel>
-                      <Input
-                        id="email"
-                        data-testid="email"
-                        name="email"
-                        type="email"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.email || ""}
-                        {...inputProperties}
-                        borderBottomColor={getFieldColor(emailFieldStatus)}
-                      />
-                      {getErrorForMessage(formik.errors.email)}
-                      {testingParameters?.simulatedRecipient ? <div>Les emails seront envoyés à {testingParameters.simulatedRecipient}</div> : ""}
-                    </Box>
-                    <Spacer minWidth={4} />
-                    <Box data-testid="fieldset-phone" mt={{ base: 1, md: 0 }} mr={{ base: 0, md: 4 }}>
-                      <FormLabel htmlFor="phone">Téléphone *</FormLabel>
-                      <Input
-                        id="phone"
-                        data-testid="phone"
-                        name="phone"
-                        type="text"
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        value={formik.values.phone || ""}
-                        {...inputProperties}
-                        borderBottomColor={getFieldColor(phoneFieldStatus)}
-                      />
-                      {getErrorForMessage(formik.errors.phone)}
-                    </Box>
-                  </Flex>
+                  <>
+                    <Text mt={6} mb={4}>
+                      Indiquez au candidat <strong>vos coordonnées</strong>, afin qu'il puisse vous recontacter.
+                    </Text>
+                    <Flex direction={{ base: "column", md: "row" }}>
+                      <Box data-testid="fieldset-email" mt={{ base: 1, md: 0 }} mr={{ base: 0, md: 4 }}>
+                        <FormLabel htmlFor="email">E-mail *</FormLabel>
+                        <Input
+                          id="email"
+                          data-testid="email"
+                          name="email"
+                          type="email"
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          value={formik.values.email || ""}
+                          {...inputProperties}
+                          borderBottomColor={getFieldColor(emailFieldStatus)}
+                        />
+                        {getErrorForMessage(formik.errors.email)}
+                        {testingParameters?.simulatedRecipient ? <div>Les emails seront envoyés à {testingParameters.simulatedRecipient}</div> : ""}
+                      </Box>
+                      <Spacer minWidth={4} />
+                      <Box data-testid="fieldset-phone" mt={{ base: 1, md: 0 }} mr={{ base: 0, md: 4 }}>
+                        <FormLabel htmlFor="phone">Téléphone *</FormLabel>
+                        <Input
+                          id="phone"
+                          data-testid="phone"
+                          name="phone"
+                          type="text"
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          value={formik.values.phone || ""}
+                          {...inputProperties}
+                          borderBottomColor={getFieldColor(phoneFieldStatus)}
+                        />
+                        {getErrorForMessage(formik.errors.phone)}
+                      </Box>
+                    </Flex>
+                  </>
                 )}
 
                 <Flex direction="row-reverse">

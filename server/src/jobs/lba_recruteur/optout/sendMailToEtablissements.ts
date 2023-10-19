@@ -2,11 +2,11 @@ import Joi from "joi"
 import { differenceBy } from "lodash-es"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { createOptoutValidateMagicLink } from "@/services/appLinks.service"
 
 import { logger } from "../../../common/logger"
 import { Optout, UserRecruteur } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
-import { createActivationToken } from "../../../common/utils/jwtUtils"
 import config from "../../../config"
 import mailer from "../../../services/mailer.service"
 import { runScript } from "../../scriptWrapper"
@@ -44,13 +44,6 @@ runScript(async () => {
       return
     }
 
-    const token = createActivationToken(email, {
-      payload: { email, siret: etablissement.siret },
-      expiresIn: "45d",
-    })
-
-    const accessLink = `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${token}`
-
     logger.info(`---- Sending mail for ${etablissement.siret} — ${email} ----`)
 
     let data
@@ -65,7 +58,7 @@ runScript(async () => {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           raison_sociale: etablissement.raison_sociale,
-          url: accessLink,
+          url: createOptoutValidateMagicLink(email, etablissement.siret),
         },
       })
     } catch (errror) {

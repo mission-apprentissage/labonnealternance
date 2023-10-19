@@ -256,7 +256,7 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
     job_start_date,
     rome_detail: romeData,
     job_creation_date: creationDate,
-    job_expiration_date: dayjs(job_start_date).add(1, "month").toDate(),
+    job_expiration_date: dayjs(creationDate).add(1, "month").toDate(),
     job_update_date: creationDate,
   })
   // insert job

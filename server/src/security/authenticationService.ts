@@ -22,7 +22,7 @@ declare module "fastify" {
   }
 }
 
-type AuthenticatedUser<AuthScheme extends WithSecurityScheme["securityScheme"]["auth"]> = AuthScheme extends "jwt-token" | "cookie-session" | "jwt-password"
+type AuthenticatedUser<AuthScheme extends WithSecurityScheme["securityScheme"]["auth"]> = AuthScheme extends "cookie-session"
   ? UserWithType<"IUserRecruteur", IUserRecruteur>
   : AuthScheme extends "api-key"
   ? UserWithType<"ICredential", ICredential>
@@ -35,40 +35,6 @@ export const getUserFromRequest = <S extends WithSecurityScheme>(req: Pick<Fasti
     throw Boom.internal("User should be authenticated")
   }
   return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
-}
-
-function extractFieldFrom(source: unknown, field: string): null | string {
-  if (source === null || typeof source !== "object") {
-    return null
-  }
-
-  return field in source && typeof source[field] === "string" ? source[field] : null
-}
-
-async function authJwtPassword(req: FastifyRequest): Promise<UserWithType<"IUserRecruteur", IUserRecruteur> | null> {
-  const passwordToken = extractFieldFrom(req.body, "passwordToken")
-
-  if (passwordToken === null) {
-    return null
-  }
-
-  const payload = jwt.verify(passwordToken, config.auth.password.jwtSecret) as JwtPayload
-
-  const user = payload.sub ? await getUserRecruteur({ email: payload.sub }) : null
-  return user ? { type: "IUserRecruteur", value: user } : null
-}
-
-async function authJwtToken(req: FastifyRequest): Promise<UserWithType<"IUserRecruteur", IUserRecruteur> | null> {
-  const token = extractFieldFrom(req.query, "token")
-
-  if (token === null) {
-    return null
-  }
-
-  const payload = jwt.verify(token, config.auth.magiclink.jwtSecret) as JwtPayload
-
-  const user = payload.sub ? await getUserRecruteur({ email: payload.sub.toLowerCase() }) : null
-  return user ? { type: "IUserRecruteur", value: user } : null
 }
 
 async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUserRecruteur", IUserRecruteur> | null> {
@@ -143,12 +109,6 @@ export async function authenticationMiddleware<S extends ISecuredRouteSchema>(sc
   const securityScheme = schema.securityScheme
 
   switch (securityScheme.auth) {
-    case "jwt-password":
-      req.user = await authJwtPassword(req)
-      break
-    case "jwt-token":
-      req.user = await authJwtToken(req)
-      break
     case "cookie-session":
       req.user = await authCookieSession(req)
       break

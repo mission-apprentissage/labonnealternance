@@ -4,9 +4,9 @@ import { toPublicUser, zRoutes } from "shared/index"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
-import { createSession, deleteSession } from "@/services/sessions.service"
+import { deleteSession } from "@/services/sessions.service"
 
-import { createUserToken } from "../../../common/utils/jwtUtils"
+import { startSession } from "../../../common/utils/session.service"
 import config from "../../../config"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service"
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
@@ -31,17 +31,12 @@ export default (server: Server) => {
           return res.status(400).send({ error: true, reason: "UNKNOWN" })
         }
 
-        const { _id, first_name, last_name, is_email_checked } = user
+        const { is_email_checked } = user
 
         if (is_email_checked) {
           return res.status(400).send({ error: true, reason: "VERIFIED" })
         }
-        await sendUserConfirmationEmail({
-          email,
-          firstName: first_name,
-          lastName: last_name,
-          userRecruteurId: _id,
-        })
+        await sendUserConfirmationEmail(user)
         return res.status(200).send({})
       } catch (error) {
         return res.status(400).send({
@@ -85,12 +80,7 @@ export default (server: Server) => {
       }
 
       if (!is_email_checked) {
-        await sendUserConfirmationEmail({
-          email: userEmail,
-          firstName: first_name,
-          lastName: last_name,
-          userRecruteurId: _id,
-        })
+        await sendUserConfirmationEmail(user)
         return res.status(400).send({
           error: true,
           reason: "VERIFY",
@@ -123,9 +113,6 @@ export default (server: Server) => {
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/login/verification"]).value
 
-      const token = createUserToken({ email: user.identity.email }, { payload: { email: user.identity.email } })
-      await createSession({ token })
-
       const formatedEmail = user.identity.email.toLowerCase()
       const connectedUser = await registerUser(formatedEmail)
 
@@ -133,7 +120,9 @@ export default (server: Server) => {
         throw Boom.forbidden()
       }
 
-      return res.setCookie(config.auth.session.cookieName, token, config.auth.session.cookie).status(200).send(toPublicUser(connectedUser))
+      await startSession(user.identity.email, res)
+
+      return res.status(200).send(toPublicUser(connectedUser))
     }
   )
 

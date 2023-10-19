@@ -15,10 +15,6 @@ type IScope<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme
 export type IAccessToken<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme = Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme> = {
   identity:
     | {
-        type: "candidat"
-        email: string
-      }
-    | {
         type: "IUserRecruteur"
         _id: string
         email: string
@@ -26,6 +22,7 @@ export type IAccessToken<S extends Pick<IRouteSchema, "method" | "path"> & WithS
     | {
         type: "cfa"
         email: string
+        siret: string
       }
   scopes: ReadonlyArray<IScope<S>>
 }
@@ -40,7 +37,8 @@ type RouteResources<S extends ISecuredRouteSchema> = {
 
 export function generateAccessToken<S extends ISecuredRouteSchema>(
   user: IUserRecruteur | IAccessToken["identity"],
-  routes: ReadonlyArray<{ route: S; resources: RouteResources<S> }>
+  routes: ReadonlyArray<{ route: S; resources: RouteResources<S> }>,
+  options: { expiresIn?: string } = {}
 ): string {
   const audience = getAudience(routes.map((r) => r.route))
 
@@ -59,7 +57,7 @@ export function generateAccessToken<S extends ISecuredRouteSchema>(
 
   return jwt.sign(data, config.auth.user.jwtSecret, {
     audience,
-    expiresIn: config.auth.user.expiresIn,
+    expiresIn: options.expiresIn ?? config.auth.user.expiresIn,
     issuer: config.publicUrl,
   })
 }

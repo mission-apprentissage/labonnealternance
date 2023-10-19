@@ -5,7 +5,6 @@ import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IUserRecrute
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
-import { createMagicLinkToken } from "@/common/utils/jwtUtils"
 
 import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types"
@@ -13,6 +12,7 @@ import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/ma
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
+import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
@@ -233,7 +233,8 @@ export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
  * @param {IUserRecruteur["_id"]} _id
  * @returns {Promise<void>}
  */
-export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Promise<IUserRecruteur | null> => UserRecruteur.findByIdAndUpdate(_id, { is_email_checked: true })
+export const validateEtablissementEmail = async (email: IUserRecruteur["email"]): Promise<IUserRecruteur | null> =>
+  UserRecruteur.findOneAndUpdate({ email }, { is_email_checked: true })
 
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
@@ -697,39 +698,18 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
-/**
- * @description Get the establishment validation url for a given SIRET
- * @param {IRecruiter["_id"]} _id
- * @returns {String}
- */
-const getValidationUrl = (_id: IRecruiter["_id"], email): string => {
-  return `${config.publicUrl}/espace-pro/authentification/validation/${_id}?token=${createMagicLinkToken(email, {
-    expiresIn: "30d",
-  })}`
-}
-
-export const sendUserConfirmationEmail = async ({
-  email,
-  firstName,
-  lastName,
-  userRecruteurId,
-}: {
-  email: string
-  lastName: string | undefined | null
-  firstName: string | undefined | null
-  userRecruteurId: IUserRecruteur["_id"]
-}) => {
-  const url = getValidationUrl(userRecruteurId, email)
+export const sendUserConfirmationEmail = async (user: IUserRecruteur) => {
+  const url = createValidationMagicLink(user)
   await mailer.sendEmail({
-    to: email,
+    to: user.email,
     subject: "Confirmez votre adresse mail",
     template: getStaticFilePath("./templates/mail-confirmation-email.mjml.ejs"),
     data: {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      last_name: lastName,
-      first_name: firstName,
+      last_name: user.last_name,
+      first_name: user.first_name,
       confirmation_url: url,
     },
   })
@@ -745,7 +725,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && is_delegated === false) {
     // Get user account validation link
-    const url = getValidationUrl(user._id, user.email)
+    const url = createValidationMagicLink(user)
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",
@@ -768,11 +748,6 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
       },
     })
   } else {
-    await sendUserConfirmationEmail({
-      email: user.email,
-      firstName: user.first_name,
-      lastName: user.last_name,
-      userRecruteurId: user._id,
-    })
+    await sendUserConfirmationEmail(user)
   }
 }

@@ -18,3 +18,37 @@ export function createAuthMagicLink(user: IUserRecruteur) {
 
   return `${config.publicUrl}/espace-pro/authentification/verification?token=${token}`
 }
+
+export function createValidationMagicLink(user: IUserRecruteur) {
+  const token = generateAccessToken(
+    user,
+    [
+      {
+        route: zRoutes.post["/etablissement/validation"],
+        resources: {
+          user: [user._id.toString()],
+        },
+      },
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+  return `${config.publicUrl}/espace-pro/authentification/validation/${user._id}?token=${token}`
+}
+
+export function createOptoutValidateMagicLink(email: string, siret: string) {
+  const token = generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      {
+        route: zRoutes.get["/optout/validate"],
+        resources: {},
+      },
+    ],
+    {
+      expiresIn: "45d",
+    }
+  )
+  return `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${token}`
+}

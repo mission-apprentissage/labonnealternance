@@ -2,7 +2,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, ZUserRecruteurWritable, zReferentielData } from "../models/usersRecruteur.model"
+import { ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable, zReferentielData } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -66,7 +66,7 @@ export const zRecruiterRoutes = {
             naf_label: z.string().nullish(),
             establishment_size: z.string().nullish(),
             establishment_creation_date: z.date().nullish(),
-            geo_coordinates: z.string(),
+            geo_coordinates: z.string().nullish(),
           })
           .strict(),
       },
@@ -192,14 +192,11 @@ export const zRecruiterRoutes = {
     "/etablissement/validation": {
       method: "post",
       path: "/etablissement/validation",
-      querystring: z.object({ token: z.string() }).strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "2xx": z.union([z.object({ token: z.string() }).strict(), z.object({ isUserAwaiting: z.boolean() }).strict()]),
+        "2xx": ZUserRecruteurPublic,
       },
       securityScheme: {
-        auth: "jwt-token",
+        auth: "access-token",
         access: null,
         ressources: {},
       },
