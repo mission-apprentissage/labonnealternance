@@ -138,7 +138,8 @@ const ZLbaItemContact = z
         description: "Le nom du contact de référence",
       })
       .nullish(), // pe -> contact.nom | matcha -> prenom nom
-    phone: extensions.phone
+    phone: extensions
+      .phone()
       .openapi({
         example: "0X XX XX XX XX",
         description: "Le numéro de téléphone du contact de référence",
