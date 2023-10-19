@@ -14,7 +14,7 @@ export default (server: Server) => {
     "/admin/formations",
     {
       schema: zRoutes.get["/admin/formations"],
-      onRequest: [server.auth(zRoutes.get["/admin/formations"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/admin/formations"])],
     },
     async (req, res) => {
       const { search_item } = req.query

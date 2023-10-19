@@ -47,6 +47,9 @@ const fillUserRecruiters = async () => {
   await asyncForEach(userRecruiters, async (userRecruiter) => {
     const { establishment_siret } = userRecruiter
     try {
+      if (!establishment_siret) {
+        throw Boom.internal("Missing establishment_siret", { _id: userRecruiter._id })
+      }
       const siretResponse = await getEtablissementFromGouv(establishment_siret)
       if (!siretResponse) {
         throw Boom.internal("Pas de réponse")

@@ -19,10 +19,7 @@ export const zRomeRoutes = {
       response: {
         "200": ZMetiersEnrichis,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/rome/detail/:rome": {
       method: "get",
@@ -36,10 +33,7 @@ export const zRomeRoutes = {
       response: {
         "200": ZRomeDetail,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

@@ -55,7 +55,7 @@ export const ZAdresseCFA = z
   .strict()
   .openapi("AdresseCFA")
 
-const ZAdresseV2 = ZAdresseCFA.extend({
+const ZAdresseV2 = ZAcheminementPostal.extend({
   numero_voie: z.string(),
   type_voie: z.string(),
   nom_voie: z.string(),

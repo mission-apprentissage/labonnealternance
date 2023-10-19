@@ -3,10 +3,9 @@ import { IUserRecruteur, toPublicUser, zRoutes } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter, UserRecruteur } from "@/common/model"
-import config from "@/config"
-import { createSession } from "@/services/sessions.service"
+import { startSession } from "@/common/utils/session.service"
+import { getUserFromRequest } from "@/security/authenticationService"
 
-import { createUserToken } from "../../common/utils/jwtUtils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
@@ -31,7 +30,6 @@ import {
   setUserHasToBeManuallyValidated,
   updateUser,
 } from "../../services/userRecruteur.service"
-import { getUserFromRequest } from "../middlewares/authMiddleware"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -135,7 +133,7 @@ export default (server: Server) => {
     "/etablissement/cfa/:userRecruteurId/entreprises",
     {
       schema: zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"],
-      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"])],
     },
     async (req, res) => {
       const { userRecruteurId } = req.params
@@ -196,13 +194,7 @@ export default (server: Server) => {
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
             newCfa = await autoValidateUser(newCfa._id)
-            const { email, _id, last_name, first_name } = newCfa
-            await sendUserConfirmationEmail({
-              email,
-              firstName: first_name,
-              lastName: last_name,
-              userRecruteurId: _id,
-            })
+            await sendUserConfirmationEmail(newCfa)
             // Keep the same structure as ENTREPRISE
             return res.status(200).send({ user: newCfa })
           }
@@ -212,13 +204,7 @@ export default (server: Server) => {
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
               newCfa = await autoValidateUser(newCfa._id)
-              const { email, _id, last_name, first_name } = newCfa
-              await sendUserConfirmationEmail({
-                email,
-                firstName: first_name,
-                lastName: last_name,
-                userRecruteurId: _id,
-              })
+              await sendUserConfirmationEmail(newCfa)
               // Keep the same structure as ENTREPRISE
               return res.status(200).send({ user: newCfa })
             }
@@ -262,7 +248,7 @@ export default (server: Server) => {
     "/etablissement/:id",
     {
       schema: zRoutes.put["/etablissement/:id"],
-      onRequest: [server.auth(zRoutes.put["/etablissement/:id"].securityScheme)],
+      onRequest: [server.auth(zRoutes.put["/etablissement/:id"])],
     },
     async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)
@@ -274,34 +260,33 @@ export default (server: Server) => {
     "/etablissement/validation",
     {
       schema: zRoutes.post["/etablissement/validation"],
-      onRequest: [server.auth(zRoutes.post["/etablissement/validation"].securityScheme)],
+      onRequest: [server.auth(zRoutes.post["/etablissement/validation"])],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"])
+      const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
 
       // Validate email
-      const validation = await validateEtablissementEmail(user._id)
+      const userRecruteur = await validateEtablissementEmail(user.identity.email)
 
-      if (!validation) {
+      if (!userRecruteur) {
         throw Boom.badRequest("La validation de l'adresse mail à échoué. Merci de contacter le support La bonne alternance.")
       }
 
-      const isUserAwaiting = getUserStatus(user.status) === ETAT_UTILISATEUR.ATTENTE
+      const isUserAwaiting = getUserStatus(userRecruteur.status) === ETAT_UTILISATEUR.ATTENTE
 
       if (!isUserAwaiting) {
-        await sendWelcomeEmailToUserRecruteur(user)
+        await sendWelcomeEmailToUserRecruteur(userRecruteur)
       }
 
-      const token = createUserToken({ email: user.email }, { payload: { email: user.email } })
-      await createSession({ token })
-
-      const connectedUser = await registerUser(user.email)
+      const connectedUser = await registerUser(userRecruteur.email)
 
       if (!connectedUser) {
         throw Boom.forbidden()
       }
 
-      return res.setCookie(config.auth.session.cookieName, token, config.auth.session.cookie).status(200).send(toPublicUser(connectedUser))
+      await startSession(userRecruteur.email, res)
+
+      return res.status(200).send(toPublicUser(connectedUser))
     }
   )
 }

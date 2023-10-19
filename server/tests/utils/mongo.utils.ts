@@ -1,4 +1,4 @@
-import mongoose, { STATES } from "mongoose"
+import mongoose from "mongoose"
 import { afterAll, beforeAll, beforeEach } from "vitest"
 
 import { connectToMongo } from "@/common/mongodb"
@@ -11,22 +11,19 @@ export const startAndConnectMongodb = async () => {
 }
 
 export const stopMongodb = async () => {
-  if (mongoose.connection.readyState === STATES.connected) {
+  try {
     await mongoose.connection.dropDatabase()
     await mongoose.disconnect()
+  } catch (err) {
+    // no-op
   }
 }
 
-export const useMongo = () => {
-  beforeAll(async () => {
-    await startAndConnectMongodb()
-  })
+type MockData = () => Promise<void>
 
-  afterAll(async () => {
-    await stopMongodb()
-  })
-
-  beforeEach(async () => {
+// beforeAll are ran in parallel, we need to wait for clearDb to be done before mocking data
+export const useMongo = (mock: MockData | null = null, step: "beforeAll" | "beforeEach" = "beforeEach") => {
+  const clearDb = async () => {
     const collections = mongoose.connection.collections
 
     await Promise.all(
@@ -34,5 +31,24 @@ export const useMongo = () => {
         await collection.deleteMany({})
       })
     )
+  }
+
+  beforeAll(async () => {
+    await startAndConnectMongodb()
+    if (step === "beforeAll") {
+      await clearDb()
+      await mock?.()
+    }
   })
+
+  afterAll(async () => {
+    await stopMongodb()
+  })
+
+  if (step === "beforeEach") {
+    beforeEach(async () => {
+      await clearDb()
+      await mock?.()
+    })
+  }
 }
