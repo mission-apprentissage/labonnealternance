@@ -44,7 +44,11 @@ export const up = async (db: Db) => {
           },
         },
       },
-    ]
+    ],
+    {
+      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
+      bypassDocumentValidation: true,
+    }
   )
 
   logger.info("20231018202702-user-recruiter-first-last-name", stats)
