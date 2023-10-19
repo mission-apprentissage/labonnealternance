@@ -10,7 +10,7 @@ export const zApplicationRoutes = {
     "/v1/application": {
       path: "/v1/application",
       method: "post",
-      body: ZApplicationUI,
+      body: ZApplicationUI.omit({ _id: true }),
       response: {
         "200": z
           .object({
