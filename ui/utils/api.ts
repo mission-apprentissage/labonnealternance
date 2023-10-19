@@ -33,7 +33,7 @@ export const getOffre = (jobId) => API.get(`/formulaire/offre/f/${jobId}`)
 export const patchOffre = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}`, data, config).catch(errorHandler)
 export const cancelOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/cancel`)
 export const cancelOffreFromAdmin = (jobId, data) => API.put(`/formulaire/offre/f/${jobId}/cancel`, data)
-export const extendOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/extend`)
+export const extendOffre = (jobId) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
 export const fillOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/provided`)
 export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/formulaire/offre/${jobId}/delegation`, data)
 

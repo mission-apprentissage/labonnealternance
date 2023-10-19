@@ -6,7 +6,7 @@ import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
 import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
-import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
+import { addExpirationPeriod, deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
 import mailer from "../../services/mailer.service"
 import { getUserAndRecruitersDataForOpcoUser } from "../../services/user.service"
 import {
@@ -269,7 +269,7 @@ export default (server: Server) => {
         } else {
           // le compte se trouve validé et on procède à l'activation de la première offre et à la notification aux CFAs
           if (userFormulaire?.jobs?.length) {
-            const job: IJob = Object.assign(userFormulaire.jobs[0], { job_status: JOB_STATUS.ACTIVE, job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+            const job: IJob = Object.assign(userFormulaire.jobs[0], { job_status: JOB_STATUS.ACTIVE, job_expiration_date: addExpirationPeriod(dayjs()).format("YYYY-MM-DD") })
             await updateOffre(job._id.toString(), job)
 
             if (job?.delegations && job?.delegations.length) {

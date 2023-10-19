@@ -1,5 +1,4 @@
 import Boom from "boom"
-import moment from "moment"
 import type { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur } from "shared"
@@ -256,7 +255,7 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
     job_start_date,
     rome_detail: romeData,
     job_creation_date: creationDate,
-    job_expiration_date: dayjs(creationDate).add(1, "month").toDate(),
+    job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
   })
   // insert job
@@ -618,19 +617,27 @@ export const cancelOffreFromAdminInterface = async (id: IJob["_id"], { job_statu
  * @param {IJob["_id"]} id
  * @returns {Promise<boolean>}
  */
-export const extendOffre = async (id: IJob["_id"]): Promise<boolean> => {
-  await Recruiter.findOneAndUpdate(
+export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
+  const recruiter = await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_expiration_date": moment().add(1, "months").format("YYYY-MM-DD"),
+        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).format("YYYY-MM-DD"),
         "jobs.$.job_last_prolongation_date": Date.now(),
         "jobs.$.job_update_date": Date.now(),
       },
       $inc: { "jobs.$.job_prolongation_count": 1 },
-    }
-  )
-  return true
+    },
+    { new: true }
+  ).lean()
+  if (!recruiter) {
+    throw Boom.notFound(`job with id=${id} not found`)
+  }
+  const job = recruiter.jobs.find((job) => job._id.toString() === id.toString())
+  if (!job) {
+    throw Boom.notFound(`job with id=${id} not found`)
+  }
+  return job
 }
 
 /**
@@ -699,4 +706,8 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
       lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
     },
   })
+}
+
+export function addExpirationPeriod(fromDate: Date | dayjs.Dayjs): dayjs.Dayjs {
+  return dayjs(fromDate).add(2, "months")
 }

@@ -7,7 +7,7 @@ import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service"
 import dayjs from "../../../../services/dayjs.service"
 import { autoValidateCompany } from "../../../../services/etablissement.service"
-import { getFormulaire, sendDelegationMailToCFA, updateOffre } from "../../../../services/formulaire.service"
+import { addExpirationPeriod, getFormulaire, sendDelegationMailToCFA, updateOffre } from "../../../../services/formulaire.service"
 import { updateUser, sendWelcomeEmailToUserRecruteur } from "../../../../services/userRecruteur.service"
 
 export const checkAwaitingCompaniesValidation = async () => {
@@ -50,7 +50,7 @@ export const checkAwaitingCompaniesValidation = async () => {
     const firstJob = userFormulaire.jobs.at(0)
     if (hasBeenValidated && firstJob) {
       // Get job and update its expiration date
-      const job = Object.assign(firstJob, { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+      const job = Object.assign(firstJob, { job_status: "Active", job_expiration_date: addExpirationPeriod(dayjs()).format("YYYY-MM-DD") })
       // save job
       await updateOffre(job._id.toString(), job)
 

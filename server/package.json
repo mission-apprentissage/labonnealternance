@@ -70,7 +70,6 @@
     "memoizee": "^0.4.15",
     "miniget": "^4.2.3",
     "mjml": "^4.14.1",
-    "moment": "^2.29.4",
     "mongodb": "^3.7.4",
     "mongoose": "^5.13.20",
     "netmask": "^2.0.2",
