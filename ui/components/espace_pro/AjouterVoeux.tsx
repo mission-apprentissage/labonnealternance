@@ -29,7 +29,7 @@ import { Formik } from "formik"
 import omit from "lodash/omit"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
-import { JOB_STATUS } from "shared"
+import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
 import { useAuth } from "@/context/UserContext"
