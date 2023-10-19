@@ -1,3 +1,4 @@
+import { NIVEAUX_POUR_LBA } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 
 export const zDiplomaParam = z
@@ -106,8 +107,10 @@ export const zSourcesParams = z
     },
   })
 
+const diplomaLevels = Object.keys(NIVEAUX_POUR_LBA)
+
 export const zDiplomaParams = z
-  .string()
+  .enum([diplomaLevels[0], ...diplomaLevels.slice(1)])
   .optional()
   .openapi({
     param: {

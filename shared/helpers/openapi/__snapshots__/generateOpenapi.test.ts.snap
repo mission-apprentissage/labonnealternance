@@ -3922,6 +3922,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "name": "diploma",
             "required": false,
             "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
@@ -5379,6 +5386,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "name": "diploma",
             "required": false,
             "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
