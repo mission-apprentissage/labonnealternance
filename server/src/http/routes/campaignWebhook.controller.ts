@@ -1,3 +1,4 @@
+import Boom from "boom"
 import { zRoutes } from "shared/index"
 
 import config from "@/config"
@@ -15,7 +16,7 @@ export default function (server: Server) {
     async (req, res) => {
       const { apikey } = req.query
       if (apikey !== config.smtp.brevoWebhookApiKey) {
-        throw Boom.forbidden()
+        throw Boom.unauthorized()
       }
       if (req.body.event === BrevoEventStatus.HARD_BOUNCE) {
         await Promise.all([addEmailToBlacklist(req.body.email, "campaign"), removeEmailFromLbaCompanies(req.body.email)])

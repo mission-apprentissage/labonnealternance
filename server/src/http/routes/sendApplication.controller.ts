@@ -1,3 +1,4 @@
+import Boom from "boom"
 import mongoose from "mongoose"
 import { zRoutes } from "shared/index"
 
@@ -66,7 +67,7 @@ export default function (server: Server) {
     async (req, res) => {
       const { apikey } = req.query
       if (apikey !== config.smtp.brevoWebhookApiKey) {
-        throw Boom.forbidden()
+        throw Boom.unauthorized()
       }
 
       await updateApplicationStatus({ payload: req.body })

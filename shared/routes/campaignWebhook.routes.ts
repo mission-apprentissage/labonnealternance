@@ -20,11 +20,6 @@ export const zCampaignWebhookRoutes = {
             result: z.literal("ok"),
           })
           .strict(),
-        "401": z
-          .object({
-            result: z.literal("unauthorized"),
-          })
-          .strict(),
       },
       securityScheme: {
         auth: "none",
