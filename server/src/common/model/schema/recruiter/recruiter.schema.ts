@@ -117,6 +117,7 @@ export const recruiterSchema = new Schema<IRecruiter>(
   }
 )
 
+recruiterSchema.index({ "jobs._id": 1 })
 recruiterSchema.plugin(mongoosePagination)
 recruiterSchema.plugin(mongoosastic, { index: "recruiters" })
 
