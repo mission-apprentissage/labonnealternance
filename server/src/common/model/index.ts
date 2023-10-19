@@ -37,18 +37,18 @@ import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema"
 export async function createMongoDBIndexes() {
   const results = await Promise.allSettled(
     mongooseInstance.modelNames().map(async (name) => {
-      mongooseInstance
-        .model(name)
-        .createIndexes({ background: true })
-        .catch(async (e) => {
-          if (e.codeName === "IndexOptionsConflict") {
-            const err = new Error(`Conflict in indexes for ${name}`, { cause: e })
-            logger.error(err)
-            captureException(err)
-            await mongooseInstance.connection.collection(name).dropIndexes()
-            await mongooseInstance.model(name).createIndexes({ background: true })
-          }
-        })
+      const model = mongooseInstance.model(name)
+      return model.createIndexes({ background: true }).catch(async (e) => {
+        if (e.codeName === "IndexOptionsConflict") {
+          const err = new Error(`Conflict in indexes for ${name}`, { cause: e })
+          logger.error(err)
+          captureException(err)
+          await mongooseInstance.connection.collection(model.collection.name).dropIndexes()
+          await model.createIndexes({ background: true })
+        } else {
+          throw e
+        }
+      })
     })
   )
 
