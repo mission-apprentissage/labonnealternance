@@ -66,7 +66,7 @@ export default function (server: Server) {
     async (req, res) => {
       const { apikey } = req.query
       if (apikey !== config.smtp.brevoWebhookApiKey) {
-        return res.status(401).send({ result: "unauthorized" })
+        throw Boom.forbidden()
       }
 
       await updateApplicationStatus({ payload: req.body })
