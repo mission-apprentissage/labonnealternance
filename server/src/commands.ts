@@ -164,6 +164,19 @@ program.command("migrations:status").description("Check migrations status").acti
 
 program.command("migrations:create").description("Run migrations create").requiredOption("-d, --description <string>", "description").action(createJobAction("migrations:create"))
 
+program
+  .command("recruiters:get-missing-address-detail")
+  .description("Récupération des address_detail manquauts dans la collection Recruiters")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:get-missing-address-detail"))
+
+// Temporaire, one shot à executer en recette et prod
+program
+  .command("migration:get-missing-geocoords")
+  .description("Récupération des geocoordonnées manquautes")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("migration:get-missing-geocoords"))
+
 // Temporaire, one shot à executer en recette et prod
 program.command("import:rome").description("import référentiel fiche metier rome v3").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import:rome"))
 // Temporaire, one shot à executer en recette et prod
