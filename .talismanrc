@@ -41,6 +41,10 @@ fileignoreconfig:
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
 - filename: server/src/services/application.service.ts
   checksum: 33503cd813a530c16e4cec58dfd52a4d78204063bf1c69989b84950393a4a9e6
+- filename: server/static/templates/mail-bienvenue.mjml.ejs
+  checksum: 5e828d6b18ac0796553603ca40b7714e3122b32a62fe6a3aec05e6216b95e30f
+- filename: server/static/templates/mail-relance-opco.mjml.ejs
+  checksum: 8b370cff8b7ab07f75ae03d8a7ae51a185a247349d21f19e55c4f32af74c6807
 - filename: server/tests/integration/http/formationV1.test.ts
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
