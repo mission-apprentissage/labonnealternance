@@ -92,10 +92,7 @@ export const zV1JobsEtFormationsRoutes = {
         "400": z.union([ZResError, ZLbacError.strict()]),
         "500": z.union([ZResError, ZLbacError.strict()]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Jobs et formations"] as string[],
         operationId: "getJobsEtFormations",

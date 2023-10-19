@@ -3,6 +3,7 @@ import { Jsonify } from "type-fest"
 import { AnyZodObject, ZodType } from "zod"
 
 import { z } from "../helpers/zodWithOpenApi"
+import { AccessPermission, AccessRessouces } from "../security/permissions"
 
 export const ZResError = z
   .object({
@@ -65,11 +66,12 @@ export const ZReqHeadersAuthorization = z
   })
   .strict()
 
-export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" | "jwt-token" | "cookie-session" | "none"
+export type AuthStrategy = "api-key" | "cookie-session" | "access-token"
 
 export type SecurityScheme = {
   auth: AuthStrategy
-  role: "all" | "administrator"
+  access: AccessPermission | null
+  ressources: AccessRessouces
 }
 
 interface IRouteSchemaCommon {
@@ -79,7 +81,7 @@ interface IRouteSchemaCommon {
   params?: AnyZodObject
   response: { [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]: ZodType }
   openapi?: null | Omit<OpenAPIV3.OperationObject, "parameters" | "requestBody" | "requestParams" | "responses">
-  securityScheme: SecurityScheme
+  securityScheme: SecurityScheme | null
 }
 
 export interface IRouteSchemaGet extends IRouteSchemaCommon {
@@ -91,7 +93,12 @@ export interface IRouteSchemaWrite extends IRouteSchemaCommon {
   body?: ZodType
 }
 
+export type WithSecurityScheme = {
+  securityScheme: SecurityScheme
+}
+
 export type IRouteSchema = IRouteSchemaGet | IRouteSchemaWrite
+export type ISecuredRouteSchema = IRouteSchema & WithSecurityScheme
 
 export type IRoutesDef = {
   get?: Record<string, IRouteSchemaGet>

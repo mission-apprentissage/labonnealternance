@@ -7574,6 +7574,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"drange@npm:^1.0.2":
+  version: 1.1.1
+  resolution: "drange@npm:1.1.1"
+  checksum: 7e6ed639f9ab4d826e79717e2b0685a7ab02ecd39dac6483305dcc43ea2a27dc78b538e10adaba35c086efab216ef1f53f22bc402abfd0d29454b1c5f48fecd1
+  languageName: node
+  linkType: hard
+
 "dtrace-provider@npm:~0.8":
   version: 0.8.8
   resolution: "dtrace-provider@npm:0.8.8"
@@ -15809,6 +15816,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"randexp@npm:^0.5.3":
+  version: 0.5.3
+  resolution: "randexp@npm:0.5.3"
+  dependencies:
+    drange: ^1.0.2
+    ret: ^0.2.0
+  checksum: 9a4011b4b012debea545fc379a18208876fffc1179d2ac211351caf7626a3956efc4bc41e329bc5b241a671553eda58e0703933a9bcfdf90dde501ba1a2cf40a
+  languageName: node
+  linkType: hard
+
 "range-parser@npm:~1.2.1":
   version: 1.2.1
   resolution: "range-parser@npm:1.2.1"
@@ -16990,7 +17007,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ret@npm:~0.2.0":
+"ret@npm:^0.2.0, ret@npm:~0.2.0":
   version: 0.2.2
   resolution: "ret@npm:0.2.2"
   checksum: 774964bb413a3525e687bca92d81c1cd75555ec33147c32ecca22f3d06409e35df87952cfe3d57afff7650a0f7e42139cf60cb44e94c29dde390243bc1941f16
@@ -17457,6 +17474,7 @@ __metadata:
     xlsx: ^0.18.5
     xml2js: ^0.6.2
     zod: ^3.22.2
+    zod-fixture: ^2.5.0
   languageName: unknown
   linkType: soft
 
@@ -20157,6 +20175,17 @@ __metadata:
     property-expr: ^2.0.4
     toposort: ^2.0.2
   checksum: 43a16786b47cc910fed4891cebdd89df6d6e31702e9462e8f969c73eac88551ce750732608012201ea6b93802c8847cb0aa27b5d57370640f4ecf30f9f97d4b0
+  languageName: node
+  linkType: hard
+
+"zod-fixture@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "zod-fixture@npm:2.5.0"
+  dependencies:
+    randexp: ^0.5.3
+  peerDependencies:
+    zod: ">=3.0.0"
+  checksum: e0315496b583609180de3fc57a85a4d2f381a95fb5a921799dd2dd44b86046021a415235ac35f896b66b3bdfc649115da18e6640f448ffa5f825aabd4cef115e
   languageName: node
   linkType: hard
 

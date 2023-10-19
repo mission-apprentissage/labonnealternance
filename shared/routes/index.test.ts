@@ -33,4 +33,20 @@ describe("zRoutes", () => {
       }
     }
   })
+
+  it("should access ressources be defined correctly", () => {
+    for (const [method, zMethodRoutes] of Object.entries(zRoutes)) {
+      for (const [path, def] of Object.entries(zMethodRoutes)) {
+        if (def.securityScheme) {
+          for (const [resourceType, resourceAccesses] of Object.entries(def.securityScheme.ressources)) {
+            for (const resourceAccess of resourceAccesses as any) {
+              for (const [, access] of Object.entries(resourceAccess) as any) {
+                assert.notEqual(def[access.type]?.shape?.[access.key], undefined, `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`)
+              }
+            }
+          }
+        }
+      }
+    }
+  })
 })
