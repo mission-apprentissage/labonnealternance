@@ -2,9 +2,10 @@ import Boom from "boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 
+import { DiplomesMetiers, DomainesMetiers } from "@/common/model"
 import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
 
-import { getElasticInstance } from "../common/esClient/index"
+import { search } from "../common/esClient/index"
 
 import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
@@ -100,22 +101,23 @@ export const getMetiers = async ({ title, romes, rncps }: { title: string; romes
         })
       }
 
-      const esClient = getElasticInstance()
-
-      const response = await esClient.search({
-        index: "domainesmetiers",
-        size: 20,
-        _source_includes: ["sous_domaine", "codes_romes", "codes_rncps"],
-        body: {
-          query: {
-            bool: {
-              must: terms,
+      const response = await search(
+        {
+          index: "domainesmetiers",
+          size: 20,
+          _source_includes: ["sous_domaine", "codes_romes", "codes_rncps"],
+          body: {
+            query: {
+              bool: {
+                must: terms,
+              },
             },
           },
         },
-      })
+        DomainesMetiers
+      )
 
-      const labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] = response.body.hits.hits.map((labelAndRome) => ({
+      const labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] = response.map((labelAndRome) => ({
         label: labelAndRome._source.sous_domaine,
         romes: labelAndRome._source.codes_romes,
         rncps: labelAndRome._source.codes_rncps,
@@ -146,29 +148,30 @@ const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: boolean): 
       }
     })
 
-    const esClient = getElasticInstance()
-
     const sources = ["sous_domaine", "codes_romes", "codes_rncps"]
     if (withRomeLabels) {
       sources.push("couples_romes_metiers")
     }
 
-    const response = await esClient.search({
-      index: "domainesmetiers",
-      size: 20,
-      _source_includes: sources,
-      body: {
-        query: {
-          bool: {
-            should: terms,
+    const response = await search(
+      {
+        index: "domainesmetiers",
+        size: 20,
+        _source_includes: sources,
+        body: {
+          query: {
+            bool: {
+              should: terms,
+            },
           },
         },
       },
-    })
+      DomainesMetiers
+    )
 
     const labelsAndRomes: any[] = []
 
-    response.body.hits.hits.forEach((labelAndRome) => {
+    response.forEach((labelAndRome) => {
       const metier: IMetierEnrichi = {
         label: labelAndRome._source.sous_domaine,
         romes: labelAndRome._source.codes_romes,
@@ -197,8 +200,6 @@ const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: boolean): 
  */
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
   try {
-    const esClient = getElasticInstance()
-
     const body = {
       query: {
         bool: {
@@ -228,9 +229,9 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
       },
     }
 
-    const response = await esClient.search({ index: "domainesmetiers", body })
+    const response = await search({ index: "domainesmetiers", body }, DomainesMetiers)
 
-    const domaineMetiers: IDomainesMetiers[] = response.body.hits.hits.map(({ _source }) => _source)
+    const domaineMetiers: IDomainesMetiers[] = response.map(({ _source }) => _source)
     const coupleAppellationRomeMetier = domaineMetiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
     const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
     const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
@@ -259,24 +260,25 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
       }
     })
 
-    const esClient = getElasticInstance()
-
-    const response = await esClient.search({
-      index: "diplomesmetiers",
-      size: 20,
-      _source_includes: ["intitule_long", "codes_romes", "codes_rncps"],
-      body: {
-        query: {
-          bool: {
-            should: terms,
+    const response = await search(
+      {
+        index: "diplomesmetiers",
+        size: 20,
+        _source_includes: ["intitule_long", "codes_romes", "codes_rncps"],
+        body: {
+          query: {
+            bool: {
+              should: terms,
+            },
           },
         },
       },
-    })
+      DiplomesMetiers
+    )
 
     let labelsAndRomesForDiplomas: IMetierEnrichi[] = []
 
-    response.body.hits.hits.forEach((labelAndRomeForDiploma) => {
+    response.forEach((labelAndRomeForDiploma) => {
       labelsAndRomesForDiplomas.push({
         label: labelAndRomeForDiploma._source.intitule_long,
         romes: labelAndRomeForDiploma._source.codes_romes,
@@ -341,20 +343,22 @@ export const getMetiersPourEtablissement = async ({ siret }: { siret: string }):
  * @returns {IMetiers}
  */
 const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
-  const esClient = getElasticInstance()
-  const response = await esClient.search({
-    index: "domainesmetiers",
-    size: 20,
-    _source_includes: ["sous_domaine"],
-    body: {
-      query: {
-        match: {
-          codes_romes: romes.join(","),
+  const response = await search(
+    {
+      index: "domainesmetiers",
+      size: 20,
+      _source_includes: ["sous_domaine"],
+      body: {
+        query: {
+          match: {
+            codes_romes: romes.join(","),
+          },
         },
       },
     },
-  })
-  const metiers: string[] = response.body.hits.hits.map((metier) => {
+    DomainesMetiers
+  )
+  const metiers: string[] = response.map((metier) => {
     return metier._source.sous_domaine
   })
   return { metiers }
@@ -366,22 +370,23 @@ const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
  */
 export const getTousLesMetiers = async (): Promise<IMetiers> => {
   try {
-    const esClient = getElasticInstance()
-
-    const response = await esClient.search({
-      index: "domainesmetiers",
-      size: 200,
-      _source_includes: ["sous_domaine"],
-      body: {
-        query: {
-          match_all: {},
+    const response = await search(
+      {
+        index: "domainesmetiers",
+        size: 200,
+        _source_includes: ["sous_domaine"],
+        body: {
+          query: {
+            match_all: {},
+          },
         },
       },
-    })
+      DomainesMetiers
+    )
 
     const metiers: string[] = []
 
-    response.body.hits.hits.forEach((metier) => {
+    response.forEach((metier) => {
       metiers.push(metier._source.sous_domaine)
     })
 
