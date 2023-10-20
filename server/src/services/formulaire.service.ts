@@ -622,7 +622,7 @@ export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).format("YYYY-MM-DD"),
+        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
         "jobs.$.job_last_prolongation_date": Date.now(),
         "jobs.$.job_update_date": Date.now(),
       },
@@ -645,7 +645,7 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).format("YYYY-MM-DD"),
+        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
         "jobs.$.job_status": JOB_STATUS.ACTIVE,
       },
     },
