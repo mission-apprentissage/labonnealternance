@@ -2,12 +2,7 @@ import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
 
-import {
-  getPeReferentiels,
-  // getPeJob,
-  searchForPeJobs,
-} from "@/common/apis/Pe.js"
-import { logger } from "@/common/logger.js"
+import { getPeReferentiels, getPeJob, searchForPeJobs } from "@/common/apis/Pe.js"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { roundDistance } from "../common/utils/geolib.js"
@@ -290,35 +285,27 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
-    // // TODO Remove when mistery solved
-    // const job = await getPeJob(id)
+    const job = await getPeJob(id)
 
-    // if (job.status === 204 || job.status === 400) {
-    //   if (caller) {
-    //     trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
-    //   }
+    if (job.status === 204 || job.status === 400) {
+      if (caller) {
+        trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
+      }
 
-    //   return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
-    // } else {
-    //   const peJob = transformPeJob({ job })
+      return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
+    } else {
+      const peJob = transformPeJob({ job })
 
-    //   if (caller) {
-    //     trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
-    //     // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-    //     if (peJob.company) {
-    //       peJob.company.siret = null
-    //     }
-    //   }
+      if (caller) {
+        trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
+        // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+        if (peJob.company) {
+          peJob.company.siret = null
+        }
+      }
 
-    //   return { peJobs: [peJob] }
-    // }
-
-    console.log(id)
-    logger.info(`Call getPeJobFromId. Params : id=${id}`)
-    if (caller) {
-      trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
+      return { peJobs: [peJob] }
     }
-    return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
   } catch (error) {
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
   }

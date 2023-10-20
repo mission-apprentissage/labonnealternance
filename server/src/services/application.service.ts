@@ -2,7 +2,8 @@ import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
-import { IApplication, IApplicationUI, ILbaCompany } from "shared"
+import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS } from "shared"
+import { RECRUITER_STATUS } from "shared/constants/recruteur.js"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -16,7 +17,6 @@ import config from "../config.js"
 
 import { BrevoEventStatus } from "./brevo.service.js"
 import { scan } from "./clamav.service"
-import { JOB_STATUS, RECRUITER_STATUS } from "./constant.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer from "./mailer.service.js"
 import { validateCaller } from "./queryValidator.service.js"
