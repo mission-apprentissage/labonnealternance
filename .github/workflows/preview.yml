@@ -19,6 +19,6 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            To deploy this PR just add a :rocket: reaction to this comment
-          comment_tag: execution
-          mode: recreate
+            To deploy this PR just add a comment with a simple :rocket:
+          comment_tag: deployment_instructions
+          mode: upsert
