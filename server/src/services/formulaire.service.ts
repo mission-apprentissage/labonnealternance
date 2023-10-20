@@ -635,7 +635,7 @@ export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
   }
   const job = recruiter.jobs.find((job) => job._id.toString() === id.toString())
   if (!job) {
-    throw Boom.notFound(`job with id=${id} not found`)
+    throw Boom.internal(`unexpected: job with id=${id} not found`)
   }
   return job
 }
