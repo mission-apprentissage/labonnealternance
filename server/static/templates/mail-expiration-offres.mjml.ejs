@@ -1,3 +1,4 @@
+<% var dansXjours = data.threshold === 1 ? 'demain' : 'dans '+data.threshold+' jours' %>
 <mjml>
   <mj-head>
     <mj-title>Expiration prochaine de vos offres</mj-title>
@@ -18,38 +19,39 @@
     <mj-section padding-top="0">
       <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
         <mj-text> Bonjour <%= data.first_name %> <%= data.last_name %>, </mj-text>
-        <% if(!data.is_delegated && data.threshold === 7){ %>
-        <mj-text> La diffusion de votre offre d'alternance expire dans 7 jours et ne sera bientôt plus visible par les jeunes. </mj-text>
-        <% } %> <% if(!data.is_delegated && data.threshold === 1){ %>
-        <mj-text>La diffusion de votre offre d'alternance expire demain et ne sera bientôt plus visible par les jeunes.</mj-text>
-        <% } %> <% if(data.is_delegated && data.threshold === 7){ %>
-        <mj-text>L'offre d'alternance que vous avez publié pour <%= data.establishment_raison_sociale %> expire dans 7 jours</mj-text>
-        <% } %> <% if(data.is_delegated && data.threshold === 1){ %>
-        <mj-text>L'offre d'alternance que vous avez publié pour <%= data.establishment_raison_sociale %> expire demain</mj-text>
+        <% if(!data.is_delegated){ %>
+        <mj-text> La diffusion de votre offre d'alternance expire <%= dansXjours %> et ne sera bientôt plus visible par les jeunes. </mj-text>
+        <% } else { %>
+        <mj-text>L'offre d'alternance que vous avez publiée pour <%= data.establishment_raison_sociale %> expire <%= dansXjours %></mj-text>
         <% } %>
 
-        <mj-text>Connectez-vous à votre espace afin de gérer vos offres ou sélectionnez l'une des actions ci-dessous.</mj-text>
+        <mj-text>Dîtes-nous où vous en êtes de votre recrutement.</mj-text>
 
-        <mj-button color="#ffffff" background-color="#000091" href="<%= data.url %>"> Se connecter </mj-button>
+        <mj-text font-weight="700" padding-bottom="24px">Rappel de vos offres :</mj-text>
 
-        <mj-text font-weight="700">Rappel de vos offres :</mj-text>
-        <mj-table>
-          <tr style="border-bottom: 1px solid #ecedee; text-align: left; padding: 15px 0">
-            <th style="padding: 0 15px 0 0">Métier</th>
-            <th style="padding: 0 15px">Type</th>
-            <th style="padding: 0 0 0 15px" colspan="2">Actions</th>
-          </tr>
-          <% data.offres.forEach((offre) => { %>
-          <tr>
-            <td style="padding: 0 15px 0 0" rowspan="2"><%= offre.libelle %></td>
-            <td style="padding: 0 15px" rowspan="2"><%= offre.type %></td>
-            <td style="padding: 0 0 0 15px"><a href="<%= offre.supprimer %>">Supprimer</a></td>
-          </tr>
-          <tr style="border-bottom: 1px dotted #000091">
-            <td style="padding: 0 0 0 15px"><a href="<%= offre.pourvue %>">Pourvue</a></td>
-          </tr>
-          <% }); %>
-        </mj-table>
+        <% data.offres.forEach((offre) => { %>
+
+        <mj-wrapper padding="0px 0px 12px 0px">
+          <mj-column width="548px" padding="10px 0px" background-color="#F6F6F6">
+            <mj-text padding-bottom="0px">Métier: <b><%= offre.rome_appellation_label %></b> </mj-text>
+            <mj-text padding-bottom="0px" padding-top="0px">Type de contrat: <b><%= offre.job_type %></b> </mj-text>
+            <mj-text padding-bottom="0px" padding-top="0px">Niveau de formation: <b><%= offre.job_level_label %></b> </mj-text>
+            <mj-text padding-top="0px">Date de début: <b><%= offre.job_start_date %></b> </mj-text>
+            <mj-text padding-top="0" padding-bottom="0"><a href="<%= offre.supprimer %>">Supprimer</a></mj-text>
+            <mj-text padding-top="0"><a href="<%= offre.pourvue %>">Pourvue</a></mj-text>
+          </mj-column>
+        </mj-wrapper>
+
+        <% }); %>
+
+        <mj-text padding-top="24px">Connectez-vous à votre espace pour gérer l’intégralité de vos offres :</mj-text>
+        <mj-button color="#ffffff" background-color="#000091" href="<%= data.url %>" padding-bottom="24px"> Se connecter </mj-button>
+
+        <mj-section padding="0px">
+          <mj-column>
+            <mj-divider border-width="1px" border-color="#E3E3FD" />
+          </mj-column>
+        </mj-section>
         <mj-text>
           L'équipe La bonne alternance, <br />
           Mission interministérielle pour l'apprentissage
