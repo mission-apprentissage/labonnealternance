@@ -27,6 +27,7 @@ const Breadcrumb = ({ pages }) => {
           return (
             <BreadcrumbItem key={page.title}>
               <BreadcrumbLink
+                legacyBehavior
                 as={NavLink}
                 href={page.to}
                 color={"grey.600"}

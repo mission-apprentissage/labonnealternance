@@ -58,7 +58,7 @@ const Footer = () => {
                   borderRightColor={{ base: "none", lg: "grey.300" }}
                   paddingRight={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/mentions-legales">
+                  <NextLink legacyBehavior passHref href="/mentions-legales">
                     <Link aria-label="Accès aux mentions légales">Mentions légales</Link>
                   </NextLink>
                 </ListItem>
@@ -70,7 +70,7 @@ const Footer = () => {
                   paddingRight={{ base: 0, lg: 4 }}
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/cgu">
+                  <NextLink legacyBehavior passHref href="/cgu">
                     <Link aria-label="Accès aux conditions générales d'utilisation">CGU</Link>
                   </NextLink>
                 </ListItem>
@@ -82,7 +82,7 @@ const Footer = () => {
                   paddingRight={{ base: 0, lg: 4 }}
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/politique-de-confidentialite">
+                  <NextLink legacyBehavior passHref href="/politique-de-confidentialite">
                     <Link aria-label="Accès à la page Politique de confidentialité">Politique de confidentialité</Link>
                   </NextLink>
                 </ListItem>
@@ -94,7 +94,7 @@ const Footer = () => {
                   paddingRight={{ base: 0, lg: 4 }}
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/stats">
+                  <NextLink legacyBehavior passHref href="/stats">
                     <Link aria-label="Accès aux statistiques du service">Statistiques</Link>
                   </NextLink>
                 </ListItem>
@@ -106,7 +106,7 @@ const Footer = () => {
                   paddingRight={{ base: 0, lg: 4 }}
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/faq">
+                  <NextLink legacyBehavior passHref href="/faq">
                     <Link aria-label="Accès à la foire aux questions">FAQ</Link>
                   </NextLink>
                 </ListItem>
@@ -118,7 +118,7 @@ const Footer = () => {
                   paddingRight={{ base: 0, lg: 4 }}
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/contact">
+                  <NextLink legacyBehavior passHref href="/contact">
                     <Link aria-label="Accès à la page Contact">Contact</Link>
                   </NextLink>
                 </ListItem>
@@ -130,7 +130,7 @@ const Footer = () => {
                   paddingRight={{ base: 0, lg: 4 }}
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/metiers">
+                  <NextLink legacyBehavior passHref href="/metiers">
                     <Link aria-label="Accès à la page Métiers">Métiers</Link>
                   </NextLink>
                 </ListItem>
@@ -142,7 +142,7 @@ const Footer = () => {
                   paddingRight={{ base: 0, lg: 4 }}
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/a-propos">
+                  <NextLink legacyBehavior passHref href="/a-propos">
                     <Link aria-label="Accès à la page A propos">A propos</Link>
                   </NextLink>
                 </ListItem>
@@ -154,7 +154,7 @@ const Footer = () => {
                   paddingRight={{ base: 0, lg: 4 }}
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/developpeurs">
+                  <NextLink legacyBehavior passHref href="/developpeurs">
                     <Link aria-label="Accès à la page Développeurs">Développeurs</Link>
                   </NextLink>
                 </ListItem>

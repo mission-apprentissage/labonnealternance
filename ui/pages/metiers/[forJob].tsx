@@ -58,7 +58,7 @@ export default function ForJob(props) {
 
           <Text marginTop="0px" mb={[2, 2, 2, 0]}>
             <Text as="span">Emploi en alternance et formation en alternance en </Text>
-            <NextLink href={buildLinkForTownAndJob({ name: "France" }, currentJob)} passHref>
+            <NextLink legacyBehavior href={buildLinkForTownAndJob({ name: "France" }, currentJob)} passHref>
               <Link
                 title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} sur l'ensemble du territoire`}
                 textDecoration="underline"
@@ -73,7 +73,7 @@ export default function ForJob(props) {
             return (
               <Text key={index} marginTop="0px" mb={[2, 2, 2, 0]}>
                 <Text as="span">Emploi en alternance et formation en alternance en </Text>
-                <NextLink href={buildLinkForTownAndJob(currentTown, currentJob)} passHref>
+                <NextLink legacyBehavior href={buildLinkForTownAndJob(currentTown, currentJob)} passHref>
                   <Link
                     title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} à ${currentTown.name}`}
                     textDecoration="underline"

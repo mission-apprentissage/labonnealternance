@@ -32,7 +32,9 @@ RUN --mount=type=cache,target=/app/.yarn/cache yarn workspaces focus --all --pro
 # Production image, copy all the files and run next
 FROM node:20-alpine AS server
 WORKDIR /app
-RUN --mount=type=cache,target=/var/cache/apk apk add --update curl
+RUN --mount=type=cache,target=/var/cache/apk apk add --update \
+  curl \
+  && rm -rf /var/cache/apk/*
 
 ENV NODE_ENV production
 ARG PUBLIC_VERSION
@@ -69,7 +71,8 @@ ENV NEXT_PUBLIC_VERSION=$PUBLIC_VERSION
 ARG PUBLIC_ENV
 ENV NEXT_PUBLIC_ENV=$PUBLIC_ENV
 
-RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
+RUN yarn --cwd ui build
+# RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
 
 # Production image, copy all the files and run next
 FROM node:20-alpine AS ui
@@ -101,5 +104,7 @@ COPY --from=builder_ui --chown=nextjs:nodejs /app/ui/.next/static /app/ui/.next/
 USER nextjs
 
 EXPOSE 3000
+
 ENV PORT 3000
-CMD ["node", "ui/server.js"]
+
+CMD ["node", "ui/server"]

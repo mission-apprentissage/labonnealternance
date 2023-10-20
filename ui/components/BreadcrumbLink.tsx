@@ -3,7 +3,7 @@ import NavLink from "next/link"
 
 const BreadcrumbLink = ({ children, href, shallow = false, ...rest }) => {
   return (
-    <NavLink href={href} passHref shallow={shallow}>
+    <NavLink legacyBehavior href={href} passHref shallow={shallow}>
       <ChakraBreadcrumbLink {...rest}>{children}</ChakraBreadcrumbLink>
     </NavLink>
   )
