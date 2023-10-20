@@ -46,7 +46,7 @@ const StartupCard = ({ logoUrl, url, title }) => {
 const ServiceLink = ({ url, text, title }) => {
   return (
     <Grid templateColumns="repeat(12, 1fr)">
-      <GridItem sx={{ "margin-top": "-7px" }} pr={4} colSpan={1} fontSize="25px">
+      <GridItem sx={{ marginTop: "-7px" }} pr={4} colSpan={1} fontSize="25px">
         •
       </GridItem>
       <GridItem ml={4} colSpan={[11, 11, 4]}>

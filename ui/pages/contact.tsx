@@ -29,7 +29,7 @@ const Contact = () => (
           <Text as="p">Vous avez une question sur nos outils ? Consultez notre foire aux questions. </Text>
           {/* @ts-expect-error: TODO */}
           <Box align="center" my={12}>
-            <NextLink href="/faq" passHref>
+            <NextLink legacyBehavior href="/faq" passHref>
               <Button as="a" variant="editorialPrimary" aria-label="Accès à la Foire aux questions">
                 Consulter la FAQ
               </Button>
