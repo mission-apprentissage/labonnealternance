@@ -4,12 +4,16 @@ import { z } from "../helpers/zodWithOpenApi"
 import { IRoutesDef } from "./common.routes"
 
 export const zCampaignWebhookRoutes = {
-  // TODO_SECURITY_FIX cf. webhook brevo dans application.routes.ts
   post: {
     "/campaign/webhook": {
       method: "post",
       path: "/campaign/webhook",
-      body: extensions.brevoWebhook,
+      querystring: z
+        .object({
+          apikey: z.string(),
+        })
+        .strict(),
+      body: extensions.brevoWebhook(),
       response: {
         "200": z
           .object({

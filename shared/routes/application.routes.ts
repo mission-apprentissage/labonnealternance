@@ -67,10 +67,14 @@ export const zApplicationRoutes = {
       securityScheme: null,
     },
     "/application/webhook": {
-      // TODO_SECURITY_FIX  ajouter api_key brevo
       path: "/application/webhook",
       method: "post",
-      body: extensions.brevoWebhook,
+      querystring: z
+        .object({
+          apikey: z.string(),
+        })
+        .strict(),
+      body: extensions.brevoWebhook(),
       response: {
         "200": z
           .object({
