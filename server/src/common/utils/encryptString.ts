@@ -3,7 +3,6 @@ import crypto from "crypto"
 import config from "../../config"
 
 const secretLba = Buffer.alloc(32, config.secretUpdateRomesMetiers)
-const secret1j1s = Buffer.alloc(32, config.secret1j1s)
 
 const algo = "aes-256-ctr"
 const inputEncoding = "utf8"
@@ -17,14 +16,12 @@ const encrypt = ({ value, iv, secret }) => {
 }
 
 // caller est un paramètre optionnel passé aux appels apis pour identifier la source
-const encryptMailWithIV = ({ value, caller }): { email: string; iv?: string } => {
+const encryptMailWithIV = ({ value }): { email: string; iv?: string } => {
   const iv = crypto.randomBytes(16)
-
-  const secret = caller === "1jeune1solution" ? secret1j1s : secretLba
 
   if (value) {
     return {
-      email: encrypt({ value, iv, secret }),
+      email: encrypt({ value, iv, secret: secretLba }),
       iv: iv.toString(outputEncoding),
     }
   } else return { email: "" }

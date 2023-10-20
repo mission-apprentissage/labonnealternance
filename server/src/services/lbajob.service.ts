@@ -64,7 +64,7 @@ export const getLbaJobs = async ({
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
-    const matchas = transformLbaJobs({ jobs, caller, applicationCountByJob })
+    const matchas = transformLbaJobs({ jobs, applicationCountByJob })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
@@ -84,7 +84,7 @@ export const getLbaJobs = async ({
 /**
  * Converti les offres issues de l'elasticsearch ou de la mongo en objet de type ILbaItem
  */
-function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string | null; applicationCountByJob: IApplicationCount[] }): {
+function transformLbaJobs({ jobs, applicationCountByJob }: { jobs: ILbaJobEsResult[]; applicationCountByJob: IApplicationCount[] }): {
   results: ILbaItemLbaJob[]
 } {
   return {
@@ -93,7 +93,6 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
         recruiter: job._source,
         distance: job.sort ? job.sort[0] : undefined,
         applicationCountByJob,
-        caller,
       })
     ),
   }
@@ -114,7 +113,6 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
     const job = transformLbaJob({
       recruiter: rawJob,
-      caller,
       applicationCountByJob,
     })
 
@@ -134,12 +132,10 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 function transformLbaJob({
   recruiter,
   distance,
-  caller,
   applicationCountByJob,
 }: {
   recruiter: Partial<IRecruiter>
   distance?: number
-  caller?: string | null
   applicationCountByJob: IApplicationCount[]
 }): ILbaItemLbaJob[] {
   if (!recruiter.jobs) {
@@ -147,7 +143,7 @@ function transformLbaJob({
   }
 
   return recruiter.jobs.map((offre, idx): ILbaItemLbaJob => {
-    const email = encryptMailWithIV({ value: recruiter.email, caller })
+    const email = encryptMailWithIV({ value: recruiter.email })
     const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
     const romes = offre.rome_code.map((code) => ({ code, label: null }))
 
