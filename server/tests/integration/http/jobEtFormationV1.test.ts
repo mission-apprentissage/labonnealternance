@@ -254,11 +254,7 @@ describe("jobEtFormationV1", () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/V1/jobsEtFormations?romes=F1603,I1308&radius=0&longitude=180&latitude=90&diploma=lba,lbc" })
 
     expect(response.statusCode).toBe(400)
-    assert.deepStrictEqual(JSON.parse(response.body).error, "wrong_parameters")
-    assert.ok(
-      JSON.parse(response.body).error_messages.indexOf(
-        'diploma : Optional diploma argument used with wrong value. Should contains only one of "3xxx","4xxx","5xxx","6xxx","7xxx". xxx maybe any value'
-      ) >= 0
-    )
+    assert.deepStrictEqual(JSON.parse(response.body).error, "Bad Request")
+    assert.ok(JSON.parse(response.body).error_messages.indexOf("diploma : Optional diploma argument used with wrong value") >= 0)
   })
 })
