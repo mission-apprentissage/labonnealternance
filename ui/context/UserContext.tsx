@@ -50,7 +50,7 @@ export const UserContext: FC<Props> = ({ children, initialUser }) => {
     const handler = (response) => {
       if (response.status === 401) {
         //Auto logout user when token is invalid
-        setUser(undefined)
+        setUser(null)
       }
     }
     emitter.on("http:error", handler)

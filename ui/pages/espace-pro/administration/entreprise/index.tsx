@@ -140,7 +140,7 @@ function CreationEntreprise() {
         <Box mb={5}>
           <Breadcrumb spacing="4px" textStyle="xs">
             <BreadcrumbItem isCurrentPage>
-              <NavLink href="/espace-pro/administration" passHref>
+              <NavLink legacyBehavior href="/espace-pro/administration" passHref>
                 <BreadcrumbLink textStyle="xs"> Administration des offres</BreadcrumbLink>
               </NavLink>
             </BreadcrumbItem>

@@ -106,7 +106,7 @@ function CreationEntrepriseDetail() {
         <Box mb={5}>
           <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} spacing="4px" textStyle="xs">
             <BreadcrumbItem>
-              <NavLink href="/espace-pro/administration" passHref>
+              <NavLink legacyBehavior href="/espace-pro/administration" passHref>
                 <BreadcrumbLink textStyle="xs"> Administration des offres</BreadcrumbLink>
               </NavLink>
             </BreadcrumbItem>
