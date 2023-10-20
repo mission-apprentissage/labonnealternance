@@ -255,6 +255,6 @@ describe("jobEtFormationV1", () => {
 
     expect(response.statusCode).toBe(400)
     assert.deepStrictEqual(JSON.parse(response.body).error, "Bad Request")
-    assert.ok(JSON.parse(response.body).error_messages.indexOf("diploma : Optional diploma argument used with wrong value") >= 0)
+    assert.ok(JSON.parse(response.body).message.indexOf("querystring.diploma: Invalid enum value") >= 0)
   })
 })
