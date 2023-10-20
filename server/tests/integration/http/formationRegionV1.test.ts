@@ -16,15 +16,8 @@ describe.skipIf(process.env.CI)("formationRegionV1", () => {
     expect(res.statusCode).toBe(400)
   })
 
-  it("Vérifie que la recherche répond", async () => {
-    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&region=01&caller=a" })
-
-    expect(res.statusCode).toBe(200)
-    expect(JSON.parse(res.body).results).not.toHaveLength(0)
-  })
-
   it("Vérifie que la recherche avec Rome et region répond avec des résultats", async () => {
-    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&region=01&caller=a" })
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&region=11&caller=a" })
 
     expect(res.statusCode).toBe(200)
     expect(JSON.parse(res.body).results).not.toHaveLength(0)
@@ -119,8 +112,6 @@ describe.skipIf(process.env.CI)("formationRegionV1", () => {
 
     expect(res.statusCode).toBe(400)
     expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
-    expect(JSON.parse(res.body).error_messages).toContain(
-      'diploma : Optional diploma argument used with wrong value. Should contains only one of "3xxx","4xxx","5xxx","6xxx","7xxx". xxx maybe any value'
-    )
+    expect(JSON.parse(res.body).error_messages).toContain("diploma : Optional diploma argument used with wrong value")
   })
 })

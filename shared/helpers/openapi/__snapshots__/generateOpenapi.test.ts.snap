@@ -778,7 +778,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_level_label": {
-            "description": "Niveau de formation requis",
+            "description": "Niveau de formation visé en fin de stage",
             "type": [
               "string",
               "null",
@@ -3914,11 +3914,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "targeted diploma",
+            "description": "Le niveau de diplôme visé en fin de stage",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
@@ -5202,7 +5209,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "job_level_label": {
-                    "description": "Niveau de formation requis",
+                    "description": "Niveau de formation visé en fin de stage",
                     "type": [
                       "string",
                       "null",
@@ -5371,11 +5378,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "targeted diploma",
+            "description": "Le niveau de diplôme visé en fin de stage",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
