@@ -10,7 +10,7 @@ jobs:
       - uses: hmarr/debug-action@v2
 
   deploy_preview:
-    if: github.event.comment.body == ':rocket:' && github.event.issue.pull_request
+    if: startsWith(github.event.comment.body, '🚀') && github.event.issue.pull_request
     concurrency:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}
       cancel-in-progress: true
