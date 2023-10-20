@@ -83,12 +83,11 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
 /**
  * @description Get an application by message id
  * @param {string} messageId
- * @param {string} type
  * @param {string} email
  * @returns {Promise<IApplication>}
  */
-const findApplicationByTypeAndMessageId = async ({ messageId, type, email }: { messageId: string; type: string; email: string }) =>
-  Application.findOne(type === "application" ? { company_email: email, to_company_message_id: messageId } : { applicant_email: email, to_applicant_message_id: messageId })
+const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
+  Application.findOne({ company_email: email, to_company_message_id: messageId })
 
 /**
  * @description Remove an email address form all bonnesboites where it is present
@@ -554,52 +553,55 @@ export const sendNotificationToApplicant = async ({
  * @description updates application and triggers action from email webhook
  */
 export const updateApplicationStatus = async ({ payload }: { payload: any }): Promise<void> => {
-  /* Format payload
+  /* Format payload cf. https://developers.brevo.com/docs/how-to-use-webhooks
       {
-        event : "unique_opened",
-        id: 497470,
-        date: "2021-12-27 14:12:54",
-        ts: 1640610774,
-        message-id: "<48ea8e31-715e-d929-58af-ca0c457d2654@apprentissage.beta.gouv.fr>",
-        email:"john.doe@mail.com",
-        ts_event: 1640610774,
-        subject: "Votre candidature chez PARIS BAGUETTE FRANCE CHATELET EN ABREGE",
-        sending_ip: "93.23.252.236",
-        ts_epoch: 1640610774707
-      }*/
+        "event": "delivered",
+        "email": "example@example.com",
+        "id": 26224,
+        "date": "YYYY-MM-DD HH:mm:ss",
+        "ts": 1598634509,
+        "message-id": "<xxxxxxxxxxxx.xxxxxxxxx@domain.com>",
+        "ts_event": 1598034509,
+        "subject": "Subject Line",
+        "tag": "[\"transactionalTag\"]",
+        "sending_ip": "185.41.28.109",
+        "ts_epoch": 1598634509223,
+        "tags": [
+          "myFirstTransactional"
+        ]
+      }
+  */
 
-  const event = payload.event
+  const { event, subject, email } = payload
 
-  let messageType = "application"
-  if (payload.subject.startsWith("Réponse")) {
-    // les messages de notifications intention recruteur -> candidat sont ignorés
+  if (event !== BrevoEventStatus.HARD_BOUNCE) {
     return
-  } else if (payload.subject.startsWith("Votre candidature chez")) {
-    messageType = "applicationAck"
   }
 
-  const application = await findApplicationByTypeAndMessageId({
-    type: messageType,
+  if (!subject.startsWith("Candidature en alternance") && !subject.startsWith("Candidature spontanée")) {
+    // les messages qui ne sont pas de candidature vers une entreprise sont ignorés
+    return
+  }
+
+  const application = await findApplicationByMessageId({
     messageId: payload["message-id"],
-    email: payload.email,
+    email,
   })
 
   if (!application) {
-    logger.error(`Application webhook : application not found. message_id=${payload["message-id"]} email=${payload.email} subject=${payload.subject}`)
+    logger.error(`Application webhook : application not found. message_id=${payload["message-id"]} email=${email} subject=${subject}`)
     return
   }
 
-  if (event === BrevoEventStatus.HARD_BOUNCE && messageType === "application") {
-    await addEmailToBlacklist(payload.email, application.job_origin ?? "unknown")
+  await addEmailToBlacklist(email, application.job_origin ?? "unknown")
 
-    if (application.job_origin === "lbb" || application.job_origin === "lba") {
-      await removeEmailFromLbaCompanies(payload.email)
-    } else if (application.job_origin === "matcha") {
-      await warnMatchaTeamAboutBouncedEmail({ application })
-    }
-
-    await notifyHardbounceToApplicant({ application })
+  if (application.job_origin === "lba") {
+    await removeEmailFromLbaCompanies(email)
+  } else if (application.job_origin === "matcha") {
+    await warnMatchaTeamAboutBouncedEmail({ application })
   }
+
+  await notifyHardbounceToApplicant({ application })
 }
 
 /**
