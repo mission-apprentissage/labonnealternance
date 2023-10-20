@@ -44,9 +44,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       "ApplicationUi": {
         "additionalProperties": false,
         "properties": {
-          "_id": {
-            "description": "Identifiant unique",
-          },
           "applicant_email": {
             "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
             "example": "john.smith@mail.com",
@@ -781,7 +778,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_level_label": {
-            "description": "Niveau de formation requis",
+            "description": "Niveau de formation visé en fin de stage",
             "type": [
               "string",
               "null",
@@ -3363,12 +3360,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées",
+            "description": "Le niveau de diplôme visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
-              "example": "3",
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
@@ -3722,12 +3725,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées",
+            "description": "Le niveau de diplôme visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
-              "example": "3",
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
@@ -3917,11 +3926,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "targeted diploma",
+            "description": "Le niveau de diplôme visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
@@ -5205,7 +5221,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "job_level_label": {
-                    "description": "Niveau de formation requis",
+                    "description": "Niveau de formation visé en fin de stage",
                     "type": [
                       "string",
                       "null",
@@ -5374,11 +5390,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "targeted diploma",
+            "description": "Le niveau de diplôme visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },

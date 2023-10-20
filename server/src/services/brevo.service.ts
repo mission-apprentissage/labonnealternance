@@ -18,8 +18,8 @@ export const enum BrevoEventStatus {
 
 applicationStatusWebhook = {
   description: "Changements d'états des emails de candidatures",
-  url: `${config.publicUrl.indexOf("local") >= 0 ? "https://labonnealternance-recette.apprentissage.beta.gouv.fr" : config.publicUrl}/api/application/webhook`,
-  events: ["delivered", "hardBounce", "blocked", "invalid", "click", "uniqueOpened"],
+  url: `${config.publicUrl}/api/application/webhook?apikey=${config.smtp.brevoWebhookApiKey}`,
+  events: ["hardBounce"],
   type: "transactional",
 }
 
@@ -27,7 +27,7 @@ let campaignHarbounceWebhook = new SibApiV3Sdk.CreateWebhook()
 
 campaignHarbounceWebhook = {
   description: "Traitement des harbounces des emails des campagnes",
-  url: `${config.publicUrl.indexOf("local") >= 0 ? "https://labonnealternance-recette.apprentissage.beta.gouv.fr" : config.publicUrl}/api/campaign/webhook`,
+  url: `${config.publicUrl}/api/campaign/webhook?apikey=${config.smtp.brevoWebhookApiKey}`,
   events: ["hardBounce"],
   type: "marketing",
 }

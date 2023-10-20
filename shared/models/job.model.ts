@@ -27,7 +27,7 @@ const ZJobFields = z
   .object({
     rome_label: z.string().nullish().describe("Libellé du métier concerné"),
     rome_appellation_label: z.string().nullish().describe("Libellé de l'appelation ROME"),
-    job_level_label: z.string().nullish().describe("Niveau de formation requis"),
+    job_level_label: z.string().nullish().describe("Niveau de formation visé en fin de stage"),
     job_start_date: z.coerce.date().nullish().describe("Date de début de l'alternance"),
     job_description: z.string().nullish().describe("Description de l'offre d'alternance"),
     job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance"),
