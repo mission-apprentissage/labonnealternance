@@ -17,8 +17,15 @@ jobs:
     name: Deploy Preview ${{ github.event.issue.number }}
     runs-on: ubuntu-latest
     steps:
+      - name: React to comment
+        uses: dkershner6/reaction-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commentId: ${{ github.event.comment.id }}
+          reaction: "+1"
+
       - id: "get-branch"
-        run: echo ::set-output name=branch::$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName')
+        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName')" >> $GITHUB_OUTPUT
         env:
           REPO: ${{ github.repository }}
           PR_NO: ${{ github.event.issue.number }}
@@ -110,6 +117,20 @@ jobs:
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
             You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`
+
+            To re-deploy just add a comment with :rocket:
+          comment_tag: deployment
+          mode: recreate
+          pr_number: ${{ github.event.issue.number }}
+
+      - name: Comment PR Preview when cancelled
+        if: cancelled() && github.event.issue.state != 'closed'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ### :ambulance: Prévisualisation cancelled
+
+            https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
             To re-deploy just add a comment with :rocket:
           comment_tag: deployment
