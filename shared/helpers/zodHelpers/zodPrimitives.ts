@@ -33,39 +33,45 @@ export const extensions = {
       },
       example: "78424186100011",
     }),
-  uai: z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
-  phone: z.string(), //.regex(phoneRegex), TODO refine
-  code_naf: z.preprocess(
-    (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point
-    z.string().trim().toUpperCase().regex(CODE_NAF_REGEX, "NAF invalide") // e.g 1071D
-  ),
-  iso8601Date: z.preprocess(
-    (v: unknown) => (typeof v === "string" && v.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/) ? new Date(v.trim()) : v),
-    z.date({
-      invalid_type_error: "Date invalide",
-      required_error: "Champ obligatoire",
-    })
-  ),
-  iso8601Datetime: z.preprocess(
-    (v: unknown) => (typeof v === "string" && v.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/) ? new Date(v.trim()) : v),
-    z.date({
-      invalid_type_error: "Date invalide",
-      required_error: "Champ obligatoire",
-    })
-  ),
-  codeCommuneInsee: z.string().regex(/^([0-9]{2}|2A|2B)[0-9]{3}$/, "Format invalide"),
-  brevoWebhook: z
-    .object({
-      event: z.string(),
-      id: z.string(),
-      date: z.string(),
-      ts: z.number(),
-      "message-id": z.string(),
-      email: z.string(),
-      ts_event: z.number(),
-      subject: z.string(),
-      sending_ip: z.string(),
-      ts_epoch: z.number(),
-    })
-    .strict(),
+  uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
+  phone: () => z.string(), //.regex(phoneRegex), TODO refine
+  code_naf: () =>
+    z.preprocess(
+      (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point
+      z.string().trim().toUpperCase().regex(CODE_NAF_REGEX, "NAF invalide") // e.g 1071D
+    ),
+  iso8601Date: () =>
+    z.preprocess(
+      (v: unknown) => (typeof v === "string" && v.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/) ? new Date(v.trim()) : v),
+      z.date({
+        invalid_type_error: "Date invalide",
+        required_error: "Champ obligatoire",
+      })
+    ),
+  iso8601Datetime: () =>
+    z.preprocess(
+      (v: unknown) => (typeof v === "string" && v.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/) ? new Date(v.trim()) : v),
+      z.date({
+        invalid_type_error: "Date invalide",
+        required_error: "Champ obligatoire",
+      })
+    ),
+  codeCommuneInsee: () => z.string().regex(/^([0-9]{2}|2A|2B)[0-9]{3}$/, "Format invalide"),
+  brevoWebhook: () =>
+    z
+      .object({
+        event: z.string(),
+        email: z.string(),
+        id: z.number(),
+        date: z.string(),
+        ts: z.number(),
+        "message-id": z.string(),
+        ts_event: z.number(),
+        subject: z.string(),
+        tag: z.string().nullish(),
+        sending_ip: z.string(),
+        ts_epoch: z.number(),
+        tags: z.array(z.string()).nullish(),
+      })
+      .strict(),
 }

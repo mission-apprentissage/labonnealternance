@@ -91,7 +91,8 @@ describe("authorisationService", () => {
   let adminUser: IUserRecruteur
   let opcoUserO1U1: IUserRecruteur
   let opcoUserO1U2: IUserRecruteur
-  let cfaUserO1U3: IUserRecruteur
+  let cfaUser1: IUserRecruteur
+  let cfaUser2: IUserRecruteur
   let recruteurUserO1E1R1: IUserRecruteur
   let recruteurO1E1R1: IRecruiter
   let recruteurUserO1E1R2: IUserRecruteur
@@ -99,7 +100,6 @@ describe("authorisationService", () => {
   let recruteurUserO1E2R1: IUserRecruteur
   let recruteurO1E2R1: IRecruiter
   let opcoUserO2U1: IUserRecruteur
-  let cfaUserO2U2: IUserRecruteur
   let recruteurUserO2E1R1: IUserRecruteur
   let recruteurO2E1R1: IRecruiter
   let credentialO1: ICredential
@@ -178,10 +178,11 @@ describe("authorisationService", () => {
   const mockData = async () => {
     // Here is the overall relation we will use to test permissions
 
+    // CfaUser  #1
+    // CfaUser  #2
     // OPCO #O1
     //  |--- OpcoUser #O1#U1
     //  |--- OpcoUser #O1#U2
-    //  |--- CfaUser  #01#U3
     //  |--- Entreprise #O1#E1
     //       --> Recruteur #O1#E1#R1 --> Delegated #01#U3
     //           --> Job #O1#E1#R1#J1
@@ -201,7 +202,6 @@ describe("authorisationService", () => {
     //       --> Recruteur #O2#E1#R1
     //           --> Job #O2#E1#R1#J1
     //  |--- OpcoUser #O2#U1
-    //  |--- CfaUser  #02#U2
 
     const CFA_SIRET = "80300515600044"
     const O1E1R1J1Id = new ObjectId()
@@ -224,9 +224,9 @@ describe("authorisationService", () => {
       scope: "#O1",
       first_name: "O1U2",
     })
-    cfaUserO1U3 = await createUserRecruteur({
+    cfaUser1 = await createUserRecruteur({
       type: "CFA",
-      first_name: "O1U3",
+      first_name: "O1",
       establishment_siret: CFA_SIRET,
     })
 
@@ -304,10 +304,10 @@ describe("authorisationService", () => {
       scope: "#O2",
       first_name: "O2U1",
     })
-    cfaUserO2U2 = await createUserRecruteur({
+    cfaUser2 = await createUserRecruteur({
       type: "CFA",
       scope: "#O2",
-      first_name: "O2U2",
+      first_name: "O2",
     })
 
     recruteurUserO2E1R1 = await createUserRecruteur({
@@ -349,7 +349,7 @@ describe("authorisationService", () => {
               adminUser,
               opcoUserO1U1,
               opcoUserO1U2,
-              cfaUserO1U3,
+              cfaUser2,
               recruteurUserO1E1R1,
               recruteurO1E1R1,
               ...recruteurO1E1R1.jobs,
@@ -360,7 +360,7 @@ describe("authorisationService", () => {
               recruteurO1E2R1,
               ...recruteurO1E2R1.jobs,
               opcoUserO2U1,
-              cfaUserO2U2,
+              cfaUser1,
               recruteurUserO2E1R1,
               recruteurO2E1R1,
               ...recruteurO2E1R1.jobs,
@@ -499,8 +499,8 @@ describe("authorisationService", () => {
       })
 
       describe.each<[Permission]>([["school:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on school from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUserO1U3], location)
+        it("on school", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
             authorizationnMiddleware(
               {
@@ -587,8 +587,8 @@ describe("authorisationService", () => {
       })
 
       describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on user CFA from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUserO1U3], location)
+        it("on user CFA", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
             authorizationnMiddleware(
               {
@@ -740,8 +740,8 @@ describe("authorisationService", () => {
       })
 
       describe.each<[Permission]>([["school:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on school from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUserO1U3], location)
+        it("on school", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
             authorizationnMiddleware(
               {
@@ -828,8 +828,8 @@ describe("authorisationService", () => {
       })
 
       describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on user CFA from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUserO1U3], location)
+        it("on user CFA", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
             authorizationnMiddleware(
               {
@@ -908,7 +908,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -929,7 +929,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -939,7 +939,7 @@ describe("authorisationService", () => {
       })
       describe.each<[Permission]>([["user:manage"], ["school:manage"]])("I have %s permission", (permission) => {
         it("on myself", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUserO1U3], location)
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
             authorizationnMiddleware(
               {
@@ -950,7 +950,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -972,7 +972,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -994,7 +994,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -1015,7 +1015,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -1026,7 +1026,7 @@ describe("authorisationService", () => {
 
       describe.each<[Permission]>([["school:manage"], ["admin"]])("I do not have %s permission", (permission) => {
         it("on other schools", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUserO2U2], location)
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser2], location)
           await expect(
             authorizationnMiddleware(
               {
@@ -1037,7 +1037,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -1059,7 +1059,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -1081,7 +1081,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -1103,7 +1103,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -1125,7 +1125,7 @@ describe("authorisationService", () => {
               {
                 user: {
                   type: "IUserRecruteur",
-                  value: cfaUserO1U3,
+                  value: cfaUser1,
                 },
                 ...req,
               }
@@ -1310,8 +1310,8 @@ describe("authorisationService", () => {
       })
 
       describe.each<[Permission]>([["user:manage"], ["school:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on schools", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUserO1U3], location)
+        it("on school", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
             authorizationnMiddleware(
               {
