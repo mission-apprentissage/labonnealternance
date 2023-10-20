@@ -1,14 +1,10 @@
 name: Deploy Preview
 on:
   issue_comment:
-    types: [edited]
+    types: [created, edited, deleted]
 
 jobs:
   deploy_preview:
-    if: github.event.comment.reactions.rocket > 0
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.event.issue.id }}
-      cancel-in-progress: true
     name: Deploy Preview ${{ github.event.issue.number }}
     runs-on: ubuntu-latest
     steps:
