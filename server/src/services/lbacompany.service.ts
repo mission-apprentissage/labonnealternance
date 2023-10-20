@@ -20,7 +20,6 @@ const esClient = getElasticInstance()
  */
 const transformCompany = ({
   company,
-  caller,
   contactAllowedOrigin,
   applicationCountByCompany,
 }: {
@@ -34,7 +33,7 @@ const transformCompany = ({
     iv?: string
     phone?: string | null
   } = {
-    ...encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller }),
+    ...encryptMailWithIV({ value: company.email !== "null" ? company.email : "" }),
   }
 
   if (contactAllowedOrigin) {
