@@ -1,5 +1,26 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, VStack, useToast } from "@chakra-ui/react"
+import {
+  Box,
+  Button,
+  Checkbox,
+  Editable,
+  EditableInput,
+  EditablePreview,
+  Flex,
+  HStack,
+  Heading,
+  Link,
+  Spinner,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  VStack,
+  useToast,
+} from "@chakra-ui/react"
 import emailValidator from "email-validator"
 import Head from "next/head"
 import { useRouter } from "next/router"
@@ -205,37 +226,21 @@ function EditPage() {
               <Table bg="white">
                 <Thead color="#ADB2BC">
                   <Tr>
-                    <Th textStyle="sm" fontSize="0.8em">
-                      CLE MINISTERE EDUCATIF
+                    <Th textStyle="sm" fontSize="0.8em" p="1px">
+                      FORMATION
                     </Th>
-                    <Th textStyle="sm" fontSize="0.8em">
-                      INTITULE
-                    </Th>
-                    <Th textStyle="sm" fontSize="0.8em">
-                      CODE POSTAL
-                    </Th>
-                    <Th textStyle="sm" fontSize="0.8em">
+                    <Th textStyle="sm" fontSize="0.8em" p="1px">
                       ADRESSE
                     </Th>
-                    <Th textStyle="sm" fontSize="0.8em">
+                    <Th textStyle="sm" fontSize="0.8em" p="1px">
                       LIEU FORMATION EMAIL
                     </Th>
-                    <Th textStyle="sm" fontSize="0.8em">
-                      DESACTIVER
-                      <InfoPopover>DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</InfoPopover>
+
+                    <Th textStyle="sm" fontSize="0.8em" p="1px">
+                      CATALOGUE
                     </Th>
-                    <Th textStyle="sm" fontSize="0.8em">
-                      PUBLIE
-                      <InfoPopover> PUBLIE SUR LE CATALOGUE</InfoPopover>
-                    </Th>
-                    <Th textStyle="sm" fontSize="0.8em">
-                      PARCOURSUP ID
-                    </Th>
-                    <Th textStyle="sm" fontSize="0.8em">
-                      DERNIERE SYNCHRO
-                      <InfoPopover>DERNIERE SYNCHRONISATION CATALOGUE</InfoPopover>
-                    </Th>
-                    <Th textStyle="sm" fontSize="0.8em">
+
+                    <Th textStyle="sm" fontSize="0.8em" p="1px">
                       SOURCE
                     </Th>
                   </Tr>
@@ -246,25 +251,38 @@ function EditPage() {
                     const emailFocusRef = createRef()
 
                     return (
-                      <Tr key={i} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s">
-                        <Td fontSize="0.8em">
+                      <Tr key={i} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s" my={10}>
+                        <Td fontSize="0.8em" px="1px">
                           <VStack alignItems="flex-start">
-                            <Text> {parameter?.cle_ministere_educatif}</Text>
-                            <a
+                            <Box>
+                              <Text fontWeight="bold">Clé ministere educatif</Text> {parameter?.cle_ministere_educatif}
+                            </Box>
+                            <Box>
+                              <Text fontWeight="bold">Id parcoursup </Text> {parameter?.parcoursup_id || "N/C"}
+                            </Box>
+                            <Box>
+                              <Text fontWeight="bold">Intitulé</Text> {parameter?.training_intitule_long}
+                            </Box>
+                            <Link
                               href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
                               title="Lien vers la formation du Catalogue"
                               target="_blank"
                               rel="noreferrer"
+                              fontWeight="bold"
                             >
                               Lien catalogue <ExternalLinkIcon w={6} h={6} />
-                            </a>
+                            </Link>
                           </VStack>
                         </Td>
-                        <Td fontSize="0.8em">{parameter.training_intitule_long}</Td>
-                        <Td fontSize="0.8em">{parameter.etablissement_formateur_zip_code}</Td>
-                        <Td fontSize="0.8em">{parameter.etablissement_formateur_street}</Td>
+
+                        <Td fontSize="0.8em" px="1px">
+                          <VStack w={150} spacing={0}>
+                            <Text>{parameter.etablissement_formateur_street}</Text>
+                            <Text mt={2}>{parameter.etablissement_formateur_zip_code}</Text>
+                          </VStack>
+                        </Td>
                         {/* @ts-expect-error: TODO */}
-                        <Td onClick={() => emailFocusRef.current.focus()} fontSize="0.8em">
+                        <Td onClick={() => emailFocusRef.current.focus()} fontSize="0.8em" px="1px">
                           <Editable
                             defaultValue={parameter?.lieu_formation_email}
                             style={{
@@ -285,17 +303,35 @@ function EditPage() {
                             OK
                           </Button>
                         </Td>
-                        <Td align="center" fontSize="0.8em">
-                          <Checkbox
-                            isChecked={parameter?.is_lieu_formation_email_customized}
-                            defaultChecked={parameter?.is_lieu_formation_email_customized}
-                            onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
-                          />
+                        <Td align="center" fontSize="0.8em" px="1px">
+                          <HStack spacing={0}>
+                            <HStack w={150} spacing={0}>
+                              <InfoPopover>DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</InfoPopover>
+                              <Text w={80}>DESACTIVER</Text>
+                            </HStack>
+                            <Checkbox
+                              isChecked={parameter?.is_lieu_formation_email_customized}
+                              defaultChecked={parameter?.is_lieu_formation_email_customized}
+                              onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
+                            />
+                          </HStack>
+                          <HStack spacing={0}>
+                            <HStack w={150} spacing={0}>
+                              <InfoPopover>PUBLIE SUR LE CATALOGUE</InfoPopover>
+                              <Text w={80}>PUBLIÉ</Text>
+                            </HStack>
+                            <Text>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Text>
+                          </HStack>
+                          <HStack spacing={0}>
+                            <HStack w={150} spacing={0}>
+                              <InfoPopover>DERNIERE SYNCHRONISATION CATALOGUE</InfoPopover>
+                              <Text w={80}>SYNCHRO</Text>
+                            </HStack>
+                            <Text>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Text>
+                          </HStack>
                         </Td>
-                        <Td fontSize="0.8em">{parameter?.is_catalogue_published ? "Oui" : "Non"}</Td>
-                        <Td fontSize="0.8em">{parameter?.parcoursup_id || "N/C"}</Td>
-                        <Td fontSize="0.8em">{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Td>
-                        <Td fontSize="0.8em">
+
+                        <Td fontSize="0.8em" px="1px">
                           {Object.values(referrers).map((referrer, i) => {
                             const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
                             return (
@@ -313,7 +349,7 @@ function EditPage() {
                                     })
                                   }
                                 >
-                                  <Text ml={2}>{referrer.name}</Text>
+                                  <Text fontSize="0.8em">{referrer.name}</Text>
                                 </Checkbox>
                               </Flex>
                             )
