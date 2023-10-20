@@ -156,8 +156,7 @@ const validateLongitude = (longitude: number | undefined, error_messages: string
 }
 
 const validateDiploma = (diploma: string | undefined, error_messages: string[]) => {
-  if (diploma && ["3", "4", "5", "6", "7"].indexOf(diploma[0]) < 0)
-    error_messages.push('diploma : Optional diploma argument used with wrong value. Should contains only one of "3xxx","4xxx","5xxx","6xxx","7xxx". xxx maybe any value')
+  if (diploma && ["3", "4", "5", "6", "7"].indexOf(diploma[0]) < 0) error_messages.push("diploma : Optional diploma argument used with wrong value")
 }
 
 const validateInsee = (insee: string | undefined, error_messages: string[]) => {

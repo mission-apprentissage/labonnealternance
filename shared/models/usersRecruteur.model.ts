@@ -34,7 +34,7 @@ export const ZUserRecruteurWritable = z
     address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
     address: z.string().nullish().describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
-    phone: extensions.phone.describe("Téléphone de l'établissement"),
+    phone: extensions.phone().describe("Téléphone de l'établissement"),
     email: z.string().email().describe("L'email de l'utilisateur"),
     scope: z.string().nullish().describe("Scope accessible par l'utilisateur"),
     is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),

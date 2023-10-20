@@ -19,7 +19,7 @@ export const ZApplication = z
       description: "Le nom du candidat.",
       example: "Dupont",
     }),
-    applicant_phone: extensions.phone.openapi({
+    applicant_phone: extensions.phone().openapi({
       description: "Le numéro de téléphone du candidat.",
       example: "0101010101",
     }),
@@ -107,6 +107,7 @@ export const ZApplicationUI = ZApplication.extend({
   }),
 })
   .omit({
+    _id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,

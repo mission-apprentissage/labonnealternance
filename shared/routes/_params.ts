@@ -1,14 +1,5 @@
+import { NIVEAUX_POUR_LBA } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
-
-export const zDiplomaParam = z
-  .union([z.string().startsWith("3"), z.string().startsWith("4"), z.string().startsWith("5"), z.string().startsWith("6"), z.string().startsWith("7")])
-  .openapi({
-    param: {
-      description: "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées",
-    },
-    type: "string",
-    example: "3",
-  })
 
 export const zCallerParam = z
   .string()
@@ -106,12 +97,14 @@ export const zSourcesParams = z
     },
   })
 
-export const zDiplomaParams = z
-  .string()
+const diplomaLevels = Object.keys(NIVEAUX_POUR_LBA)
+
+export const zDiplomaParam = z
+  .enum([diplomaLevels[0], ...diplomaLevels.slice(1)])
   .optional()
   .openapi({
     param: {
-      description: "targeted diploma",
+      description: "Le niveau de diplôme visé en fin d'études",
     },
   })
 

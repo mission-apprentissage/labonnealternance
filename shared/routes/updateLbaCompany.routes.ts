@@ -15,7 +15,7 @@ export const zUpdateLbaCompanyRoutes = {
           secret: z.string(),
           siret: extensions.siret,
           email: z.string().email().or(z.literal("")).optional(),
-          phone: extensions.phone.or(z.literal("")).optional(),
+          phone: extensions.phone().or(z.literal("")).optional(),
         })
         .strict(),
       response: {
