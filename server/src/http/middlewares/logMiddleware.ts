@@ -6,7 +6,7 @@ import config from "@/config"
 const withoutSensibleFields = (obj: unknown, seen: Set<unknown>) => {
   if (obj == null) return obj
 
-  if (typeof seen === "object") {
+  if (typeof obj === "object") {
     if (seen.has(obj)) {
       return "(ref)"
     }
