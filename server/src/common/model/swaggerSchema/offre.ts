@@ -1,3 +1,5 @@
+import { JOB_STATUS } from "shared/models"
+
 export default {
   offre: {
     type: "array",
@@ -52,8 +54,8 @@ export default {
         },
         statut: {
           type: "string",
-          default: "Active",
-          enum: ["Active", "Annulée", "Pourvue"],
+          default: JOB_STATUS.ACTIVE,
+          enum: [Object.values(JOB_STATUS)],
           description: "Statut de l'offre",
         },
         type: {

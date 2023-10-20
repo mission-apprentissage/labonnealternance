@@ -197,7 +197,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        "2xx": z.object({}).strict(),
+        "200": ZJob.strict(),
       },
       securityScheme: null,
     },

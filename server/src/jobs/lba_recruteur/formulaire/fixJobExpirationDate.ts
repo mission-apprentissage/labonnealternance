@@ -5,10 +5,10 @@ import { Recruiter } from "@/common/model"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { updateOffre } from "@/services/formulaire.service"
+import { addExpirationPeriod, updateOffre } from "@/services/formulaire.service"
 
 export const fixJobExpirationDate = async () => {
-  const latestExpirationDate = dayjs().add(1, "month")
+  const latestExpirationDate = addExpirationPeriod(dayjs())
   const recruiters = await Recruiter.find({
     "jobs.job_expiration_date": { $gt: latestExpirationDate.toDate() },
   }).lean()

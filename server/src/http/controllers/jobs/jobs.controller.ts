@@ -1,15 +1,16 @@
 import Boom from "boom"
-import { IJob, zRoutes } from "shared"
+import { IJob, JOB_STATUS, zRoutes } from "shared"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
 
 import { Recruiter } from "../../../common/model/index"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service"
-import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service"
+import { ACTIVE, ANNULEE, POURVUE } from "../../../services/constant.service"
 import dayjs from "../../../services/dayjs.service"
 import { entrepriseOnboardingWorkflow } from "../../../services/etablissement.service"
 import {
+  addExpirationPeriod,
   cancelOffre,
   createJobDelegations,
   createOffre,
@@ -165,7 +166,7 @@ export default (server: Server) => {
         job_start_date: body.job_start_date,
         job_description: body.job_description,
         job_creation_date: dayjs().toDate(),
-        job_expiration_date: dayjs().add(1, "month").toDate(),
+        job_expiration_date: addExpirationPeriod(dayjs()).toDate(),
         job_status: JOB_STATUS.ACTIVE,
         job_type: body.job_type,
         rome_detail: romeDetails.fiche_metier,
@@ -343,7 +344,7 @@ export default (server: Server) => {
         return res.send({ error: true, message: "Job does not exists" })
       }
 
-      if (dayjs().add(1, "month").isSame(dayjs(job.job_expiration_date), "day")) {
+      if (addExpirationPeriod(dayjs()).isSame(dayjs(job.job_expiration_date), "day")) {
         res.status(400)
         return res.send({ error: true, message: "Job is already extended up to a month" })
       }
