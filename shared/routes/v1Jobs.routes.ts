@@ -8,7 +8,7 @@ import { ZRecruiter } from "../models/recruiter.model"
 
 import {
   zCallerParam,
-  zDiplomaParams,
+  zDiplomaParam,
   zInseeParams,
   ZLatitudeParam,
   ZLongitudeParam,
@@ -174,7 +174,7 @@ export const zV1JobsRoutes = {
           radius: ZRadiusParam,
           insee: zInseeParams,
           sources: zSourcesParams,
-          diploma: zDiplomaParams,
+          diploma: zDiplomaParam,
           opco: zOpcoParams,
           opcoUrl: zOpcoUrlParams,
         })

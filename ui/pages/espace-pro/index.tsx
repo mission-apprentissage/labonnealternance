@@ -1,5 +1,18 @@
-import { Box } from "@chakra-ui/react"
+import { useRouter } from "next/router"
+import { useEffect } from "react"
 
-export default function EspacePro() {
-  return <Box>RedirectToLba</Box>
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { authProvider, withAuth } from "@/components/espace_pro/withAuth"
+
+function EspacePro() {
+  const router = useRouter()
+  useEffect(() => {
+    router.push("/espace-pro/administration/users")
+  }, [])
+
+  return <></>
 }
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(EspacePro))

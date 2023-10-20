@@ -4,7 +4,7 @@ import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } 
 
 import {
   zCallerParam,
-  zDiplomaParams,
+  zDiplomaParam,
   zInseeParams,
   ZLatitudeParam,
   ZLongitudeParam,
@@ -33,7 +33,7 @@ export const zV1JobsEtFormationsRoutes = {
           radius: ZRadiusParam,
           insee: zInseeParams,
           sources: zSourcesParams,
-          diploma: zDiplomaParams,
+          diploma: zDiplomaParam,
           opco: zOpcoParams,
           opcoUrl: zOpcoUrlParams,
           options: z.literal("with_description").optional(), // hidden

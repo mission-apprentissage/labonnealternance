@@ -151,7 +151,7 @@ const EtablissementComponent = ({ id }) => {
           </Text>
         </Box>
       </Grid>
-      <Grid templateColumns="repeat(3, 1fr)" gap={5} p="5" pt="10">
+      <Grid templateColumns="repeat(3, 1fr)" gap={5} p="5" pt="10" mt={10}>
         <Box w="100%" h="10">
           <Text textStyle="sm" fontWeight="600">
             Adresse

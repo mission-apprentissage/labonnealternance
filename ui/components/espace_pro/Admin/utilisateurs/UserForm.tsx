@@ -10,11 +10,17 @@ import { apiDelete, apiPost, apiPut } from "@/utils/api.utils"
 
 import ConfirmationDesactivationUtilisateur from "../../ConfirmationDesactivationUtilisateur"
 
-const ActivateUserButton = ({ userId }) => {
+const ActivateUserButton = ({ userId, onUpdate }) => {
   const updateUserHistory = useUserHistoryUpdate(userId, USER_STATUS.ACTIVE)
 
   return (
-    <Button variant="primary" onClick={() => updateUserHistory()}>
+    <Button
+      variant="primary"
+      onClick={() => {
+        updateUserHistory()
+        onUpdate?.()
+      }}
+    >
       Activer le compte
     </Button>
   )
@@ -28,19 +34,19 @@ const DisableUserButton = ({ confirmationDesactivationUtilisateur }) => {
   )
 }
 
-const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisateur) => {
+const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisateur, onUpdate) => {
   switch (userHistory.status) {
     case USER_STATUS.WAITING:
       return (
         <>
-          <ActivateUserButton userId={userId} />
+          <ActivateUserButton userId={userId} onUpdate={onUpdate} />
           <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
         </>
       )
     case USER_STATUS.ACTIVE:
       return <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
     case USER_STATUS.DISABLED:
-      return <ActivateUserButton userId={userId} />
+      return <ActivateUserButton userId={userId} onUpdate={onUpdate} />
 
     default:
       return <></>
@@ -187,7 +193,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
 
   return (
     <>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...user} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...user} onUpdate={onUpdate} />
       {user && (
         <>
           <HStack mb={4} alignItems="baseline">
@@ -197,7 +203,12 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
           <HStack mb={4} alignItems="baseline">
             <Box w="300px">Statut du compte </Box>=
             <HStack spacing={6}>
-              <Box> {lastUserState.status}</Box> {getActionButtons(lastUserState, user._id, confirmationDesactivationUtilisateur)}{" "}
+              <Box> {lastUserState.status}</Box> {getActionButtons(lastUserState, user._id, confirmationDesactivationUtilisateur, onUpdate)}{" "}
+              <Box>
+                <Button variant="outline" colorScheme="red" borderRadius="none" onClick={onDeleteClicked}>
+                  Supprimer l&apos;utilisateur
+                </Button>
+              </Box>
             </HStack>
           </HStack>
         </>
@@ -210,15 +221,15 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
               <Input type="text" id="id" name="id" value={user._id} disabled />
             </FormControl>
           )}
-          <FormControl py={2} isInvalid={!!errors.last_name}>
-            <FormLabel>Nom</FormLabel>
-            <Input type="text" id="last_name" name="last_name" value={values.last_name} onChange={handleChange} />
-            {errors.last_name && touched.last_name && <FormErrorMessage>{errors.last_name as string}</FormErrorMessage>}
-          </FormControl>
           <FormControl py={2} isInvalid={!!errors.first_name}>
             <FormLabel>Prénom</FormLabel>
             <Input type="text" id="first_name" name="first_name" value={values.first_name} onChange={handleChange} />
             {errors.first_name && touched.first_name && <FormErrorMessage>{errors.first_name as string}</FormErrorMessage>}
+          </FormControl>
+          <FormControl py={2} isInvalid={!!errors.last_name}>
+            <FormLabel>Nom</FormLabel>
+            <Input type="text" id="last_name" name="last_name" value={values.last_name} onChange={handleChange} />
+            {errors.last_name && touched.last_name && <FormErrorMessage>{errors.last_name as string}</FormErrorMessage>}
           </FormControl>
           <FormControl py={2} isInvalid={!!errors.email} isRequired>
             <FormLabel>Email</FormLabel>
@@ -267,9 +278,6 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
             <Box paddingTop={10}>
               <Button type="submit" variant="primary" mr={5} isDisabled={!dirty}>
                 Enregistrer
-              </Button>
-              <Button variant="outline" colorScheme="red" borderRadius="none" onClick={onDeleteClicked}>
-                Supprimer l&apos;utilisateur
               </Button>
             </Box>
           ) : (
