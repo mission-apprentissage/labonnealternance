@@ -1,0 +1,16 @@
+name: Deploy Preview
+on:
+  issue_comment:
+    types: [edited]
+
+jobs:
+  deploy_preview:
+    if: github.event.comment.reactions.rocket > 0
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.issue.id }}
+      cancel-in-progress: true
+    name: Deploy Preview ${{ github.event.issue.number }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preview Summary
+        run: echo 'https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/ 🚀' >> $GITHUB_STEP_SUMMARY
