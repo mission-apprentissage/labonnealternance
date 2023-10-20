@@ -104,7 +104,7 @@ export const zDiplomaParam = z
   .optional()
   .openapi({
     param: {
-      description: "Le niveau visé en fin d'études",
+      description: "Le niveau de diplôme visé en fin d'études",
     },
   })
 
