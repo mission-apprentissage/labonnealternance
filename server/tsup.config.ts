@@ -1,13 +1,22 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import fs from "node:fs"
+import { basename } from "node:path"
+
 import { defineConfig } from "tsup"
 
 export default defineConfig((options) => {
   const isDev = options.env?.NODE_ENV !== "production"
   const isWatched = options.env?.TSUP_WATCH === "true"
+  const migrationFiles = fs.readdirSync("./src/db/migrations")
 
   const entry: Record<string, string> = {
     index: isDev ? "src/dev.ts" : "src/main.ts",
   }
+
+  for (const file of migrationFiles) {
+    entry[`db/migrations/${basename(file, ".ts")}`] = `src/db/migrations/${file}`
+  }
+
   return {
     entry,
     watch: isWatched ? ["./src", "../shared"] : false,

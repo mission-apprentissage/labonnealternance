@@ -4,9 +4,8 @@ import { toPublicUser, zRoutes } from "shared/index"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
-import { deleteSession } from "@/services/sessions.service"
 
-import { startSession } from "../../../common/utils/session.service"
+import { startSession, stopSession } from "../../../common/utils/session.service"
 import config from "../../../config"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service"
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
@@ -150,13 +149,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/auth/logout"],
     },
     async (request, response) => {
-      const token = request.cookies[config.auth.session.cookieName]
-
-      if (token) {
-        await deleteSession(token)
-
-        return response.clearCookie(config.auth.session.cookieName, config.auth.session.cookie).status(200).send({})
-      }
+      await stopSession(request, response)
 
       return response.status(200).send({})
     }

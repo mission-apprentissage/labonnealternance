@@ -2,7 +2,8 @@ import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
-import { IApplication, IApplicationUI, ILbaCompany } from "shared"
+import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS } from "shared"
+import { RECRUITER_STATUS } from "shared/constants/recruteur.js"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -16,7 +17,6 @@ import config from "../config.js"
 
 import { BrevoEventStatus } from "./brevo.service.js"
 import { scan } from "./clamav.service"
-import { JOB_STATUS, RECRUITER_STATUS } from "./constant.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer from "./mailer.service.js"
 import { validateCaller } from "./queryValidator.service.js"
@@ -117,7 +117,7 @@ export const sendApplication = async ({
   referer,
   shouldCheckSecret,
 }: {
-  query: IApplicationUI
+  query: Omit<IApplicationUI, "_id">
   referer: string | undefined
   shouldCheckSecret: boolean
 }): Promise<{ error: string } | { result: "ok"; message: "messages sent" }> => {
@@ -263,7 +263,7 @@ export const sendApplication = async ({
 /**
  * Build url to access item detail on LBA ui
  */
-const buildUrlOfDetail = (publicUrl: string, query: IApplicationUI): string => {
+const buildUrlOfDetail = (publicUrl: string, query: Pick<IApplicationUI, "job_id" | "company_type" | "company_siret">): string => {
   const itemId = ((aCompanyType) => {
     if (aCompanyType === "peJob") {
       return query.job_id
@@ -311,7 +311,7 @@ const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }: { publ
 /**
  * Initialize application object from query parameters
  */
-const initApplication = (params: IApplicationUI, company_email: string): EnforceDocument<IApplication, any> => {
+const initApplication = (params: Omit<IApplicationUI, "_id">, company_email: string): EnforceDocument<IApplication, any> => {
   const res = new Application({
     ...params,
     applicant_attachment_name: params.applicant_file_name,
@@ -396,7 +396,7 @@ export const validateCompany = async (validable: Partial<IApplicationUI>, compan
  * @param {Partial<IApplicationUI>} validable
  * @return {Promise<string>}
  */
-const scanFileContent = async (validable: IApplicationUI): Promise<string> => {
+const scanFileContent = async (validable: Pick<IApplicationUI, "applicant_file_content">): Promise<string> => {
   return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
