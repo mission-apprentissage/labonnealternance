@@ -1,7 +1,7 @@
 name: Deploy Preview
 on:
   issue_comment:
-    types: [edited]
+    types: [created, edited]
 
 jobs:
   deploy_preview:
