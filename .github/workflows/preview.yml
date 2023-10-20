@@ -20,5 +20,5 @@ jobs:
         with:
           message: |
             To deploy this PR just add a comment with a simple :rocket:
-          comment_tag: deployment
-          mode: recreate
+          comment_tag: deployment_instructions
+          mode: upsert
