@@ -40,7 +40,7 @@ fileignoreconfig:
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
 - filename: server/src/services/application.service.ts
-  checksum: 91d403aca6cd4ff6c7fa46654a8f09b483711101a3f715eb47fde46092484746
+  checksum: 935cd8f213565ba7bcc2925fca149aaa6cbe9bb5e393a13ab3525dff6ad17234
 - filename: server/tests/integration/http/formationV1.test.ts
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
@@ -49,6 +49,8 @@ fileignoreconfig:
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
+- filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
+  checksum: 9358c7f8155efcfc5687be3f01ae3516a05988118304c124a3358094aa966363
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
