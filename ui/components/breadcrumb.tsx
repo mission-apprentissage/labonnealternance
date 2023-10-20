@@ -7,7 +7,7 @@ const BreadcrumbLinks = (props) => {
   return props.items.map((item, index) => {
     return (
       <BreadcrumbItem key={index} {...props}>
-        <NextLink passHref href={{ pathname: `/${item.path}` }}>
+        <NextLink legacyBehavior passHref href={{ pathname: `/${item.path}` }}>
           <BreadcrumbLink>{item.title}</BreadcrumbLink>
         </NextLink>
         {index < props.items.length - 1 ? <BreadcrumbSeparator /> : ""}
@@ -22,14 +22,14 @@ const BreadcrumbComponent = ({ forPage = "", label = "", items = null }) => {
       <Container fontSize="12px" variant="responsiveContainer" pl={0} pt={4} pb={4} display="flex">
         <Breadcrumb separator={<ChevronRightIcon fontSize="1.25rem" color="grey.800" />}>
           <BreadcrumbItem>
-            <NextLink href={{ pathname: "/" }} passHref>
+            <NextLink legacyBehavior href={{ pathname: "/" }} passHref>
               <Link>Accueil</Link>
             </NextLink>
           </BreadcrumbItem>
 
           {!items ? (
             <BreadcrumbItem isCurrentPage>
-              <NextLink href={{ pathname: `/${forPage}` }} passHref>
+              <NextLink legacyBehavior href={{ pathname: `/${forPage}` }} passHref>
                 <BreadcrumbLink>{label}</BreadcrumbLink>
               </NextLink>
             </BreadcrumbItem>
