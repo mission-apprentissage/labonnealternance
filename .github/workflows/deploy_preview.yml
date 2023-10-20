@@ -94,6 +94,8 @@ jobs:
           message: |
             ### :rocket: Prévisualisation
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
+
+            To re-deploy just add a comment with :rocket:
           comment_tag: deployment
           mode: recreate
           pr_number: ${{ github.event.issue.number }}
@@ -108,6 +110,8 @@ jobs:
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
             You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`
+
+            To re-deploy just add a comment with :rocket:
           comment_tag: deployment
           mode: recreate
           pr_number: ${{ github.event.issue.number }}
