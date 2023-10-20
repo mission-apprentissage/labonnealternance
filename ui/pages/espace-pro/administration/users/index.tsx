@@ -227,7 +227,7 @@ function Users() {
       <Container maxW="container.xl" mt={5}>
         <Flex align="center" justify="space-between" mb={12}>
           <Text fontSize="2rem" fontWeight={700}>
-            Gestion des utilisateurs
+            Gestion des recruiteurs
           </Text>
         </Flex>
 

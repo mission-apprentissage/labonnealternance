@@ -10,14 +10,14 @@ export const withAuth = (Component, scope = null) => {
     const { user } = useAuth()
     if (!user) {
       if (typeof window !== "undefined") {
-        router.push("/")
+        router.push("/espace-pro/authentification")
       }
       return <></>
     }
 
     if (scope && scope === "adminLbaR" && user.type !== AUTHTYPE.ADMIN) {
       if (typeof window !== "undefined") {
-        router.push("/")
+        router.push("/espace-pro/authentification")
       }
       return <></>
     }

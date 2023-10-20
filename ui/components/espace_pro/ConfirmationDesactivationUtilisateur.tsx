@@ -22,7 +22,7 @@ import { Close } from "../../theme/components/icons"
 import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from "../../utils/api"
 
 export const ConfirmationDesactivationUtilisateur = (props) => {
-  const { isOpen, onClose, establishment_raison_sociale, _id, type, establishment_id, siret } = props
+  const { isOpen, onClose, establishment_raison_sociale, _id, type, establishment_id, siret, onUpdate } = props
   const [reason, setReason] = useState()
   const reasonComment = useDisclosure()
   const disableUser = useUserHistoryUpdate(_id, USER_STATUS.DISABLED, reason)
@@ -50,9 +50,13 @@ export const ConfirmationDesactivationUtilisateur = (props) => {
       case AUTHTYPE.CFA:
         await Promise.all([archiveDelegatedFormulaire(siret), disableUser()])
         break
+      case AUTHTYPE.ADMIN:
+        await disableUser()
+        break
       default:
         throw new Error(`unsupported type: ${type}`)
     }
+    onUpdate?.()
     onClose()
     reasonComment.onClose()
   }
