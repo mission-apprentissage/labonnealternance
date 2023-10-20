@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useToast } from "@chakra-ui/react"
+import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, VStack, useToast } from "@chakra-ui/react"
 import emailValidator from "email-validator"
 import Head from "next/head"
 import { useRouter } from "next/router"
@@ -9,7 +9,7 @@ import { referrers } from "shared/constants/referers"
 import { IEligibleTrainingsForAppointmentJson } from "shared/models/elligibleTraining.model"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
-import { Layout } from "@/components/espace_pro"
+import { InfoPopover, Layout } from "@/components/espace_pro"
 import { apiGet, apiPatch } from "@/utils/api.utils"
 
 import { formatDate } from "../../../../../common/dayjs"
@@ -202,20 +202,42 @@ function EditPage() {
               </Text>
             </Flex>
             <Box border="1px solid #E0E5ED" overflow="auto" cursor="pointer">
-              <Table w="150rem" bg="white">
+              <Table bg="white">
                 <Thead color="#ADB2BC">
                   <Tr>
-                    <Th textStyle="sm">Catalogue</Th>
-                    <Th textStyle="sm">CLE MINISTERE EDUCATIF</Th>
-                    <Th textStyle="sm">INTITULE</Th>
-                    <Th textStyle="sm">CODE POSTAL</Th>
-                    <Th textStyle="sm">ADRESSE</Th>
-                    <Th textStyle="sm">LIEU FORMATION EMAIL</Th>
-                    <Th textStyle="sm">DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</Th>
-                    <Th textStyle="sm">PUBLIE SUR LE CATALOGUE</Th>
-                    <Th textStyle="sm">PARCOURSUP ID</Th>
-                    <Th textStyle="sm">DERNIERE SYNCHRONISATION CATALOGUE</Th>
-                    <Th textStyle="sm">SOURCE</Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      CLE MINISTERE EDUCATIF
+                    </Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      INTITULE
+                    </Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      CODE POSTAL
+                    </Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      ADRESSE
+                    </Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      LIEU FORMATION EMAIL
+                    </Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      DESACTIVER
+                      <InfoPopover>DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</InfoPopover>
+                    </Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      PUBLIE
+                      <InfoPopover> PUBLIE SUR LE CATALOGUE</InfoPopover>
+                    </Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      PARCOURSUP ID
+                    </Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      DERNIERE SYNCHRO
+                      <InfoPopover>DERNIERE SYNCHRONISATION CATALOGUE</InfoPopover>
+                    </Th>
+                    <Th textStyle="sm" fontSize="0.8em">
+                      SOURCE
+                    </Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -225,22 +247,24 @@ function EditPage() {
 
                     return (
                       <Tr key={i} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s">
-                        <Td>
-                          <a
-                            href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
-                            title="Lien vers la formation du Catalogue"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            <ExternalLinkIcon w={6} h={6} />
-                          </a>
+                        <Td fontSize="0.8em">
+                          <VStack alignItems="flex-start">
+                            <Text> {parameter?.cle_ministere_educatif}</Text>
+                            <a
+                              href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
+                              title="Lien vers la formation du Catalogue"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Lien catalogue <ExternalLinkIcon w={6} h={6} />
+                            </a>
+                          </VStack>
                         </Td>
-                        <Td>{parameter?.cle_ministere_educatif}</Td>
-                        <Td>{parameter.training_intitule_long}</Td>
-                        <Td>{parameter.etablissement_formateur_zip_code}</Td>
-                        <Td>{parameter.etablissement_formateur_street}</Td>
+                        <Td fontSize="0.8em">{parameter.training_intitule_long}</Td>
+                        <Td fontSize="0.8em">{parameter.etablissement_formateur_zip_code}</Td>
+                        <Td fontSize="0.8em">{parameter.etablissement_formateur_street}</Td>
                         {/* @ts-expect-error: TODO */}
-                        <Td onClick={() => emailFocusRef.current.focus()}>
+                        <Td onClick={() => emailFocusRef.current.focus()} fontSize="0.8em">
                           <Editable
                             defaultValue={parameter?.lieu_formation_email}
                             style={{
@@ -248,7 +272,7 @@ function EditPage() {
                               padding: 5,
                               marginRight: 10,
                               borderRadius: 4,
-                              minWidth: 350,
+                              minWidth: 225,
                             }}
                           >
                             {/* @ts-expect-error: TODO */}
@@ -261,17 +285,17 @@ function EditPage() {
                             OK
                           </Button>
                         </Td>
-                        <Td align="center">
+                        <Td align="center" fontSize="0.8em">
                           <Checkbox
                             isChecked={parameter?.is_lieu_formation_email_customized}
                             defaultChecked={parameter?.is_lieu_formation_email_customized}
                             onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
                           />
                         </Td>
-                        <Td>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Td>
-                        <Td>{parameter?.parcoursup_id || "N/C"}</Td>
-                        <Td>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Td>
-                        <Td>
+                        <Td fontSize="0.8em">{parameter?.is_catalogue_published ? "Oui" : "Non"}</Td>
+                        <Td fontSize="0.8em">{parameter?.parcoursup_id || "N/C"}</Td>
+                        <Td fontSize="0.8em">{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Td>
+                        <Td fontSize="0.8em">
                           {Object.values(referrers).map((referrer, i) => {
                             const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
                             return (
