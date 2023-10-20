@@ -3360,12 +3360,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées",
+            "description": "Le niveau de diplôme visé en fin de stage",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
-              "example": "3",
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
@@ -3719,12 +3725,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées",
+            "description": "Le niveau de diplôme visé en fin de stage",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
-              "example": "3",
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
