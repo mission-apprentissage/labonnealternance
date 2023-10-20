@@ -1,4 +1,4 @@
-import { IJob, IRecruiter } from "shared"
+import { IJob, IRecruiter, JOB_STATUS } from "shared"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -7,7 +7,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
-import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
+import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
 import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import type { ILbaJobEsResult } from "./lbajob.service.types"

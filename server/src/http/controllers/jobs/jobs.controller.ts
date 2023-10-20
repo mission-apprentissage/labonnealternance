@@ -1,12 +1,12 @@
 import Boom from "boom"
-import { IJob, zRoutes } from "shared"
+import { IJob, JOB_STATUS, zRoutes } from "shared"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
 
 import { Recruiter } from "../../../common/model/index"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service"
-import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service"
+import { ACTIVE, ANNULEE, POURVUE } from "../../../services/constant.service"
 import dayjs from "../../../services/dayjs.service"
 import { entrepriseOnboardingWorkflow } from "../../../services/etablissement.service"
 import {
