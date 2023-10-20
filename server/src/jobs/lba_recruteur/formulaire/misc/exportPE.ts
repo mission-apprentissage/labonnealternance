@@ -4,6 +4,8 @@ import { Readable } from "stream"
 
 import { pick } from "lodash-es"
 import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { JOB_STATUS } from "shared/models"
 
 import { sendCsvToPE } from "@/common/apis/Pe"
 import { db } from "@/common/mongodb"
@@ -189,7 +191,7 @@ export const exportPE = async (): Promise<void> => {
   const buffer: any[] = []
 
   // Retrieve only active offers
-  const offres: any[] = await db.collection("jobs").find({ job_status: "Active", recruiterStatus: "Actif" }).toArray()
+  const offres: any[] = await db.collection("jobs").find({ job_status: JOB_STATUS.ACTIVE, recruiterStatus: RECRUITER_STATUS.ACTIF }).toArray()
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {

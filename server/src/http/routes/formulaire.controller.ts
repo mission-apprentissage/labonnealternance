@@ -321,21 +321,14 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Permet de passer une offre en statut POURVUE (mail transactionnel)
-   */
   server.put(
     "/formulaire/offre/:jobId/extend",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/extend"],
     },
     async (req, res) => {
-      const exists = await checkOffreExists(req.params.jobId)
-      if (!exists) {
-        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
-      }
-      await extendOffre(req.params.jobId)
-      return res.status(200).send({})
+      const job = await extendOffre(req.params.jobId)
+      return res.status(200).send(job)
     }
   )
 }

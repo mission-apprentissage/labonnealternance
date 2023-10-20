@@ -29,6 +29,7 @@ import { Formik } from "formik"
 import omit from "lodash/omit"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
+import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
 import { useAuth } from "@/context/UserContext"
@@ -191,8 +192,8 @@ const AjouterVoeuxForm = (props) => {
         job_start_date: props.job_start_date ? dayjs(props.job_start_date).format(DATE_FORMAT) : "",
         job_description: props.job_description ?? undefined,
         job_creation_date: props.job_creation_date ?? dayjs().format(DATE_FORMAT),
-        job_expiration_date: props.job_expiration_date ?? dayjs().add(1, "month").format(DATE_FORMAT),
-        job_status: props.job_status ?? "Active",
+        job_expiration_date: props.job_expiration_date ?? dayjs().add(2, "month").format(DATE_FORMAT),
+        job_status: props.job_status ?? JOB_STATUS.ACTIVE,
         job_type: props.job_type ?? ["Apprentissage"],
         is_multi_published: props.is_multi_published ?? undefined,
         delegations: props.delegations ?? undefined,
