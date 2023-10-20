@@ -250,7 +250,7 @@ const ZLbaItemTrainingSession = z
     isPermanentEntry: z.boolean(),
   })
   .strict()
-  .openapi("TrainingSession")
+  .openapi("Session de formation")
 
 export type ILbaItemTrainingSession = z.output<typeof ZLbaItemTrainingSession>
 
@@ -259,6 +259,7 @@ const ZLbaItemTraining = z
     description: z.string().nullable(),
     objectif: z.string().nullable(),
     sessions: z.array(ZLbaItemTrainingSession).nullish(),
+    duration: z.number().nullable().openapi("Durée de session en jours"),
   })
   .strict()
   .openapi("Training")
