@@ -3360,7 +3360,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme visé en fin de stage",
+            "description": "Le niveau visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
@@ -3725,7 +3725,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme visé en fin de stage",
+            "description": "Le niveau visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
@@ -3926,7 +3926,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme visé en fin de stage",
+            "description": "Le niveau visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
@@ -5390,7 +5390,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme visé en fin de stage",
+            "description": "Le niveau visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
