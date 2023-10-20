@@ -35,7 +35,7 @@ const AlgoRecruiter = ({ withLinks }) => {
               </ListItem>
             </UnorderedList>
             {withLinks && (
-              <NextLink passHref href="/desinscription">
+              <NextLink legacyBehavior passHref href="/desinscription">
                 <Link variant="editorialContentLink" as="a" aria-label="Accès au formulaire de désinscription au service d'envoi de candidatures spontanées">
                   Je ne souhaite plus recevoir de candidature spontanée
                   <Image ml={1} display="inline" src="/images/icons/arrow_right.svg" alt="" />

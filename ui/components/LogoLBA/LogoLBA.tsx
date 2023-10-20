@@ -28,7 +28,7 @@ const LogoLBA = () => {
 
   return (
     <Flex display={{ base: "none", lg: "flex" }} alignItems="center" mr={8}>
-      <NextLink passHref href="/">
+      <NextLink legacyBehavior passHref href="/">
         <Link as="a" onClick={goToLbaHome} ml={4}>
           <Image
             // @ts-expect-error: TODO
