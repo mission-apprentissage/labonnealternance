@@ -83,7 +83,7 @@ const Footer = () => {
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
                   <NextLink legacyBehavior passHref href="/politique-de-confidentialite">
-                    <Link aria-label="Accès à la page Politique de confidentialité">Politique de confidentialité</Link>
+                    <Link aria-label="Accès à la politique de confidentialité">Politique de confidentialité</Link>
                   </NextLink>
                 </ListItem>
                 <ListItem
