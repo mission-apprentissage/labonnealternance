@@ -1,4 +1,5 @@
 import { groupBy } from "lodash-es"
+import { JOB_STATUS } from "shared/models"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -13,13 +14,13 @@ import mailer from "../../../services/mailer.service"
 export const relanceFormulaire = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
   const recruiters = await Recruiter.find({
     $nor: [{ jobs: { $exists: false } }, { jobs: { $size: 0 } }],
-    "jobs.job_status": "Active",
+    "jobs.job_status": JOB_STATUS.ACTIVE,
   }).lean()
 
   const jobsWithRecruteurs = recruiters.flatMap((recruiter) => {
     return recruiter.jobs.flatMap((job) => {
       const remainingDays = dayjs(job.job_expiration_date).diff(dayjs(), "days")
-      if (job.job_status === "Active" && remainingDays === threshold) {
+      if (job.job_status === JOB_STATUS.ACTIVE && remainingDays === threshold) {
         return [{ ...job, recruiter }]
       } else {
         return []

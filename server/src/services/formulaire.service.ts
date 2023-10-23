@@ -1,8 +1,7 @@
 import Boom from "boom"
-import moment from "moment"
 import type { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur } from "shared"
+import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 
 import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -13,7 +12,7 @@ import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
-import { ACTIVE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "./constant.service"
+import { ACTIVE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { ILbaJobEsResult } from "./lbajob.service.types"
@@ -163,7 +162,7 @@ export const getJobsFromElasticSearch = async ({
       }
 
       x._source.jobs.forEach((o) => {
-        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === "Active") {
+        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === JOB_STATUS.ACTIVE) {
           o.rome_label = o.rome_appellation_label ?? o.rome_label
           if (!niveau || niveau === "Indifférent" || niveau === o.job_level_label) {
             jobs.push(o)
@@ -256,7 +255,7 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
     job_start_date,
     rome_detail: romeData,
     job_creation_date: creationDate,
-    job_expiration_date: dayjs(creationDate).add(1, "month").toDate(),
+    job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
   })
   // insert job
@@ -618,19 +617,67 @@ export const cancelOffreFromAdminInterface = async (id: IJob["_id"], { job_statu
  * @param {IJob["_id"]} id
  * @returns {Promise<boolean>}
  */
-export const extendOffre = async (id: IJob["_id"]): Promise<boolean> => {
-  await Recruiter.findOneAndUpdate(
+export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
+  const recruiter = await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_expiration_date": moment().add(1, "months").format("YYYY-MM-DD"),
+        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
         "jobs.$.job_last_prolongation_date": Date.now(),
         "jobs.$.job_update_date": Date.now(),
       },
       $inc: { "jobs.$.job_prolongation_count": 1 },
+    },
+    { new: true }
+  ).lean()
+  if (!recruiter) {
+    throw Boom.notFound(`job with id=${id} not found`)
+  }
+  const job = recruiter.jobs.find((job) => job._id.toString() === id.toString())
+  if (!job) {
+    throw Boom.internal(`unexpected: job with id=${id} not found`)
+  }
+  return job
+}
+
+const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
+  const recruiter = await Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
+    {
+      $set: {
+        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
+        "jobs.$.job_status": JOB_STATUS.ACTIVE,
+      },
+    },
+    { new: true }
+  ).lean()
+  if (!recruiter) {
+    throw Boom.notFound(`job with id=${id} not found`)
+  }
+  const job = recruiter.jobs.find((job) => job._id.toString() === id.toString())
+  if (!job) {
+    throw Boom.internal(`unexpected: job with id=${id} not found`)
+  }
+  return job
+}
+
+/**
+ * to be called on the 1st activation of the account of a company
+ * @param entrepriseRecruiter entreprise
+ */
+export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecruiter: IRecruiter) => {
+  const firstJob = entrepriseRecruiter.jobs.at(0)
+  if (firstJob) {
+    const job = await activateAndExtendOffre(firstJob._id)
+    // Send delegation if any
+    if (job.delegations?.length) {
+      await Promise.all(
+        job.delegations.map(async (delegation) => {
+          await sendDelegationMailToCFA(delegation.email, job, entrepriseRecruiter, delegation.siret_code)
+        })
+      )
     }
-  )
-  return true
+  }
 }
 
 /**
@@ -699,4 +746,8 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
       lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
     },
   })
+}
+
+export function addExpirationPeriod(fromDate: Date | dayjs.Dayjs): dayjs.Dayjs {
+  return dayjs(fromDate).add(2, "months")
 }

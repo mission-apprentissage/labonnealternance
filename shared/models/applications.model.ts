@@ -107,7 +107,6 @@ export const ZApplicationUI = ZApplication.extend({
   }),
 })
   .omit({
-    _id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,

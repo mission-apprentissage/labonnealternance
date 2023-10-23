@@ -1,12 +1,11 @@
 import Boom from "boom"
-import { IJob, zRoutes } from "shared/index"
+import { IJob, getUserStatus, zRoutes } from "shared/index"
 
 import { Recruiter, UserRecruteur } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
-import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service"
-import dayjs from "../../services/dayjs.service"
-import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
+import { ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "../../services/constant.service"
+import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaire, reactivateRecruiter } from "../../services/formulaire.service"
 import mailer from "../../services/mailer.service"
 import { getUserAndRecruitersDataForOpcoUser } from "../../services/user.service"
 import {
@@ -176,10 +175,8 @@ export default (server: Server) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
 
       if (!user) throw Boom.notFound("User not found")
-      if (!user.status || user.status.length === 0) throw Boom.internal("User doesn't have status")
-
-      // @ts-expect-error: TODO
-      const status_current = user.status.pop().status
+      const status_current = getUserStatus(user.status)
+      if (!status_current) throw Boom.internal("User doesn't have status")
 
       return res.status(200).send({ status_current })
     }
@@ -269,18 +266,7 @@ export default (server: Server) => {
         } else {
           // le compte se trouve validé et on procède à l'activation de la première offre et à la notification aux CFAs
           if (userFormulaire?.jobs?.length) {
-            const job: IJob = Object.assign(userFormulaire.jobs[0], { job_status: JOB_STATUS.ACTIVE, job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
-            await updateOffre(job._id.toString(), job)
-
-            if (job?.delegations && job?.delegations.length) {
-              await Promise.all(
-                job.delegations.map(
-                  async (delegation) =>
-                    // TODO NIMP
-                    await sendDelegationMailToCFA(delegation.email as string, job, userFormulaire as any, delegation.siret_code as string)
-                )
-              )
-            }
+            await activateEntrepriseRecruiterForTheFirstTime(userFormulaire)
           }
         }
       }
