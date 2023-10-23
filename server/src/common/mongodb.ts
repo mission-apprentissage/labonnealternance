@@ -20,6 +20,7 @@ export const connectToMongo = (mongoUri = config.mongodb.uri) => {
       useFindAndModify: false,
       keepAlive: true,
       autoIndex: false,
+      poolSize: 1_000,
     })
     mongooseInstance.Promise = global.Promise // Get the default connection
     db = mongooseInstance.connection
