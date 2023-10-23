@@ -6,7 +6,7 @@
     <mj-style inline="inline"> .grey {color: #1E1E1E;} </mj-style>
     <mj-attributes>
       <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
-      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans, Marianne, Arial" height="40px" />
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans, Arial" height="40px" />
     </mj-attributes>
   </mj-head>
   <mj-body background-color="#E5E5E5">
@@ -37,8 +37,8 @@
             <mj-text padding-bottom="0px" padding-top="0px">Type de contrat: <b><%= offre.job_type %></b> </mj-text>
             <mj-text padding-bottom="0px" padding-top="0px">Niveau de formation: <b><%= offre.job_level_label %></b> </mj-text>
             <mj-text padding-top="0px">Date de début: <b><%= offre.job_start_date %></b> </mj-text>
-            <mj-text padding-top="0" padding-bottom="0"><a href="<%= offre.supprimer %>">Supprimer</a></mj-text>
-            <mj-text padding-top="0"><a href="<%= offre.pourvue %>">Pourvue</a></mj-text>
+            <mj-text padding-top="0" padding-bottom="0"><a href="<%= offre.pourvue %>">L'offre est pourvue</a></mj-text>
+            <mj-text padding-top="0"><a href="<%= offre.supprimer %>">Supprimer l'offre</a></mj-text>
           </mj-column>
         </mj-wrapper>
 
