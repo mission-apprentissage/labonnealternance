@@ -6,7 +6,7 @@ import type { IFormationCatalogue } from "shared"
 import { getLBFFormationDescription } from "@/common/apis/Pe"
 import { logger } from "@/common/logger"
 
-import { getElasticInstance } from "../common/esClient/index"
+import { search } from "../common/esClient/index"
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -20,8 +20,6 @@ import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.share
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
 const formationResultLimit = 500
-
-const esClient = getElasticInstance()
 
 const diplomaMap = {
   3: "3 (CAP...)",
@@ -136,17 +134,20 @@ export const getFormations = async ({
 
     const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit, options)
 
-    const responseFormations = await esClient.search({
-      ...esQueryIndexFragment,
-      body: {
-        ...esQuery,
-        ...esQuerySort,
+    const responseFormations = await search(
+      {
+        ...esQueryIndexFragment,
+        body: {
+          ...esQuery,
+          ...esQuerySort,
+        },
       },
-    })
+      FormationCatalogue
+    )
 
     const formations: any[] = []
 
-    responseFormations.body.hits.hits.forEach((formation) => {
+    responseFormations.forEach((formation) => {
       formations.push({ source: formation._source, sort: formation.sort, id: formation._id })
     })
 
@@ -254,18 +255,21 @@ const getRegionFormations = async ({
 
   const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit, options)
 
-  const responseFormations = await esClient.search({
-    ...esQueryIndexFragment,
-    body: {
-      query: {
-        bool: {
-          must: mustTerm,
+  const responseFormations = await search(
+    {
+      ...esQueryIndexFragment,
+      body: {
+        query: {
+          bool: {
+            must: mustTerm,
+          },
         },
       },
     },
-  })
+    FormationCatalogue
+  )
 
-  const formations: IFormationEsResult[] = responseFormations.body.hits.hits.map((formation) => ({ source: formation._source, sort: formation.sort, id: formation._id }))
+  const formations: IFormationEsResult[] = responseFormations.map((formation) => ({ source: formation._source, sort: formation.sort, id: formation._id }))
   if (formations.length === 0 && !caller) {
     await notifyToSlack({ subject: "FORMATION", message: `Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.` })
   }
