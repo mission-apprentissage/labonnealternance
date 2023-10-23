@@ -53,7 +53,7 @@ export const zRecruiterRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             establishment_enseigne: z.string().nullish(),
             establishment_state: z.string(), // F pour fermé ou A pour actif

@@ -140,7 +140,7 @@ type TReturnedType = {
   disable: Array<IUserRecruterPicked & { jobs_count: number; origin: string }>
 }
 
-const getUserAndRecruitersDataForOpcoUser = async (opco): Promise<TReturnedType> => {
+const getUserAndRecruitersDataForOpcoUser = async (opco: string): Promise<TReturnedType> => {
   const [users, recruiters]: [Array<IUserRecruterPicked & { status: IUserRecruteur["status"] }>, Pick<IRecruiter, "establishment_id" | "origin" | "jobs" | "_id">[]] =
     await Promise.all([
       UserRecruteur.find({
