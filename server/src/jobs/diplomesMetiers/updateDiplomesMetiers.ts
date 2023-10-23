@@ -1,6 +1,6 @@
-import { getElasticInstance } from "../../common/esClient/index"
+import { search } from "../../common/esClient/index"
 import { logger } from "../../common/logger"
-import { DiplomesMetiers } from "../../common/model/index"
+import { DiplomesMetiers, FormationCatalogue } from "../../common/model/index"
 import { resetIndexAndDb } from "../../common/utils/esUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 
@@ -8,8 +8,6 @@ const motsIgnores = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", 
 const diplomesMetiers = {}
 let shouldStop = false
 let lastIdToSearchAfter = null
-
-const esClient = getElasticInstance()
 
 const buildAcronyms = (intitule) => {
   let acronymeLong = ""
@@ -73,14 +71,17 @@ const getIntitulesFormations = async () => {
     /**
      * KBA 30/11/2022 : TODO : use _scroll method from ES to get all data
      */
-    const responseIntitulesFormations = await esClient.search({
-      index: "formationcatalogues",
-      size,
-      _source_includes: ["_id", "intitule_long", "rome_codes", "rncp_code"],
-      body,
-    })
+    const responseIntitulesFormations = await search(
+      {
+        index: "formationcatalogues",
+        size,
+        _source_includes: ["_id", "intitule_long", "rome_codes", "rncp_code"],
+        body,
+      },
+      FormationCatalogue
+    )
 
-    responseIntitulesFormations.body.hits.hits.map((formation) => {
+    responseIntitulesFormations.map((formation) => {
       if (!diplomesMetiers[formation._source.intitule_long]) {
         diplomesMetiers[formation._source.intitule_long] = {
           intitule_long: formation._source.intitule_long,
@@ -97,7 +98,7 @@ const getIntitulesFormations = async () => {
       lastIdToSearchAfter = formation._id
     })
 
-    if (responseIntitulesFormations.body.hits.hits.length < size) {
+    if (responseIntitulesFormations.length < size) {
       shouldStop = true
     }
 
