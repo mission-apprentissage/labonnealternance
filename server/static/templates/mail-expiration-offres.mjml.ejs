@@ -19,10 +19,10 @@
     <mj-section padding-top="0">
       <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
         <mj-text> Bonjour <%= data.first_name %> <%= data.last_name %>, </mj-text>
-        <% if(!data.is_delegated){ %>
-        <mj-text> La diffusion de votre offre d'alternance expire <%= dansXjours %> et ne sera bientôt plus visible par les jeunes. </mj-text>
-        <% } else { %>
+        <% if(data.is_delegated){ %>
         <mj-text>L'offre d'alternance que vous avez publiée pour <%= data.establishment_raison_sociale %> expire <%= dansXjours %></mj-text>
+        <% } else { %>
+        <mj-text> La diffusion de votre offre d'alternance expire <%= dansXjours %> et ne sera bientôt plus visible par les jeunes. </mj-text>
         <% } %>
 
         <mj-text>Dîtes-nous où vous en êtes de votre recrutement.</mj-text>
