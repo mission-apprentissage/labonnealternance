@@ -6,7 +6,7 @@ import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS
 import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { getElasticInstance } from "../common/esClient/index"
+import { search } from "../common/esClient/index"
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
@@ -18,8 +18,6 @@ import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablisseme
 import { ILbaJobEsResult } from "./lbajob.service.types"
 import mailer from "./mailer.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
-
-const esClient = getElasticInstance()
 
 const JOB_SEARCH_LIMIT = 250
 
@@ -138,10 +136,10 @@ export const getJobsFromElasticSearch = async ({
     ],
   }
 
-  const result = await esClient.search({ size: JOB_SEARCH_LIMIT, index: "recruiters", body })
+  const result = await search({ size: JOB_SEARCH_LIMIT, index: "recruiters", body }, Recruiter)
 
   const filteredJobs = await Promise.all(
-    result.body.hits.hits.map(async (x) => {
+    result.map(async (x) => {
       const jobs: any[] = []
 
       if (x._source.jobs.length === 0) {
