@@ -7,6 +7,8 @@ fileignoreconfig:
   checksum: 07d6f55138a3c607cb3a51a4978a4061073ebd9c651148f44c9f9f2844dae8d5
 - filename: .github/workflows/_deploy.yml
   checksum: 62e09b5f606f4aaebbd1802c7c6b1d985099f92b9a759afcbcef6a1426f9cf71
+- filename: .github/workflows/deploy_preview.yml
+  checksum: abfaba9d51239129f2556f7edefcace958243ffbca3dd7b437b699e9d321bc01
 - filename: .github/workflows/preview.yml
   checksum: 27c013968ca215a23c43c1d5474ea384a162363d39e7abe215f302d86b97b6ca
 - filename: .github/workflows/release.yml
@@ -18,7 +20,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 3cb836a5c356c64ac6634c8aeb03b9737950a66ed61d9ae8f6b1528ad7b17434
 - filename: .infra/vault/vault.yml
-  checksum: 5ed00742881d79dceb3e12b37d07a26aed7b3ae21cfbbf37f3567d43c544f3a1
+  checksum: 78d87ca6c740ffa7527e50b08ba96f5beea2e8987a872cf3bd8d1949f2e5c89c
 - filename: server/.env.test
   checksum: a01fb129758d140e8c76f5f17184be514db29fea969872ef93d1dc25a7f5dbe2
 - filename: server/src/common/apis/Pe.ts

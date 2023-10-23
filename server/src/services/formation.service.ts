@@ -1,4 +1,5 @@
 import Boom from "boom"
+import dayjs from "dayjs"
 import { groupBy, maxBy } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
 
@@ -384,6 +385,8 @@ const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILba
 const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFormation => {
   const geoSource = rawFormation.source.lieu_formation_geo_coordonnees
   const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
+  const sessions = setSessions(rawFormation.source)
+  const duration = getDurationFromSessions(sessions)
 
   const resultFormation: ILbaItemFormation = {
     ideaType: "formation",
@@ -454,10 +457,10 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFo
     training: {
       objectif: rawFormation.source?.objectif?.trim() ?? null,
       description: rawFormation.source?.contenu?.trim() ?? null,
-      sessions: setSessions(rawFormation.source),
+      sessions,
+      duration,
     },
   }
-
   return resultFormation
 }
 
@@ -477,6 +480,20 @@ const setSessions = (formation: Partial<IFormationCatalogue>): ILbaItemTrainingS
   } else {
     return []
   }
+}
+
+/**
+ * Calcule la durée d'une formation en jour sur la base
+ * des dates de début et de fin de la première session à venir
+ */
+const getDurationFromSessions = (sessions: ILbaItemTrainingSession[]): number | null => {
+  const session = sessions.at(0)
+  let duration: number | null = null
+  if (session) {
+    duration = dayjs(session.endDate).diff(dayjs(session.startDate), "day")
+  }
+
+  return duration
 }
 
 /**

@@ -1,7 +1,3 @@
-export const POURVUE = "Pourvue"
-export const ANNULEE = "Annulée"
-export const ACTIVE = "Active"
-
 export enum JOB_STATUS {
   ACTIVE = "Active",
   POURVUE = "Pourvue",

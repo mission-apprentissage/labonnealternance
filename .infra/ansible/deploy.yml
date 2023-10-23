@@ -34,7 +34,7 @@
     - name: "Shutdown processor"
       shell:
         chdir: /opt/app
-        cmd: "sudo docker service scale lba_queue_processor=0 lba_jobs_processor=0"
+        cmd: "sudo docker service scale lba_jobs_processor=0"
       when:
         - stack_status.stdout != ""
         - '"migrations-status=synced" not in migration_status_output.stdout_lines'
