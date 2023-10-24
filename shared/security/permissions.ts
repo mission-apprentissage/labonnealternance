@@ -42,6 +42,9 @@ export type AccessRessouces = {
     | {
         establishment_id: AccessResourcePath
       }
+    | {
+        establishment_siret: AccessResourcePath
+      }
   >
   job?: ReadonlyArray<{
     _id: AccessResourcePath

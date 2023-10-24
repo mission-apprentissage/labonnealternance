@@ -51,7 +51,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: null,
-        ressources: {},
+        ressources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -128,7 +128,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/delegations/:jobId": {
       method: "get",
       path: "/v1/jobs/delegations/:jobId",
-      // TODO_SECURITY_FIX scoper le retour aux seules offres de l'utilisateur (permissions jobid pour l'utilisateur connecté)
       params: z
         .object({
           jobId: zObjectId,
@@ -153,7 +152,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: null,
-        ressources: {},
+        ressources: { job: [{ _id: { type: "params", key: "jobId" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
