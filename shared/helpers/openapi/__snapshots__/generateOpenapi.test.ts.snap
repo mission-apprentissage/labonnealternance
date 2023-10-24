@@ -110,6 +110,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
         "type": "object",
       },
+      "Durée de session en jours": {
+        "type": [
+          "number",
+          "null",
+        ],
+      },
       "Error": {
         "additionalProperties": false,
         "properties": {
@@ -2703,41 +2709,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
         "type": "object",
       },
-      "Training": {
-        "additionalProperties": false,
-        "properties": {
-          "description": {
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "objectif": {
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "sessions": {
-            "items": {
-              "$ref": "#/components/schemas/TrainingSession",
-            },
-            "type": [
-              "array",
-              "null",
-            ],
-          },
-        },
-        "required": [
-          "description",
-          "objectif",
-        ],
-        "type": [
-          "object",
-          "null",
-        ],
-      },
-      "TrainingSession": {
+      "Session de formation": {
         "additionalProperties": false,
         "properties": {
           "endDate": {
@@ -2760,6 +2732,44 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "isPermanentEntry",
         ],
         "type": "object",
+      },
+      "Training": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "duration": {
+            "$ref": "#/components/schemas/Durée de session en jours",
+          },
+          "objectif": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/Session de formation",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "description",
+          "objectif",
+          "duration",
+        ],
+        "type": [
+          "object",
+          "null",
+        ],
       },
       "ZLbarError": {
         "additionalProperties": false,

@@ -1,0 +1,138 @@
+name: Deploy Preview
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: hmarr/debug-action@v2
+
+  deploy_preview:
+    if: startsWith(github.event.comment.body, '🚀') && github.event.issue.pull_request
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.issue.id }}
+      cancel-in-progress: true
+    name: Deploy Preview ${{ github.event.issue.number }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: React to comment
+        uses: dkershner6/reaction-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commentId: ${{ github.event.comment.id }}
+          reaction: "+1"
+
+      - id: "get-branch"
+        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName')" >> $GITHUB_OUTPUT
+        env:
+          REPO: ${{ github.repository }}
+          PR_NO: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.get-branch.outputs.branch }}
+
+      - name: Create LFS file list
+        run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
+
+      - name: LFS Cache
+        uses: actions/cache@v3
+        with:
+          path: .git/lfs/objects
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+          restore-keys: |
+            ${{ runner.os }}-lfs-
+
+      - name: Git LFS Pull
+        run: git lfs pull
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          name: github_actions
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ vars.SSH_KNOWN_HOSTS }}
+          config: |
+            Host *
+              IdentityFile ~/.ssh/github_actions
+
+      - name: Create vault pwd file
+        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
+
+      - name: Install jmespath
+        run: |
+          sudo pipx inject ansible-core jmespath
+
+      - name: Run playbook
+        run: .bin/mna-lba deploy preview "${{ github.event.issue.number }}"
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+          ANSIBLE_REMOTE_USER: deploy
+          ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
+
+      - name: Encrypt Error log on failure
+        run: .bin/mna-lba deploy:log:encrypt
+        if: failure()
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+
+      - name: Upload failure artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: error-logs
+          path: /tmp/deploy_error.log.gpg
+
+      - name: Preview Summary when failed
+        if: failure()
+        run: echo 'You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`' >> $GITHUB_STEP_SUMMARY
+
+      - name: Preview Summary
+        run: echo 'https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/ 🚀' >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment PR Preview
+        if: github.event.issue.state != 'closed'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ### :rocket: Prévisualisation
+            https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
+
+            To re-deploy just add a comment with :rocket:
+          comment_tag: deployment
+          mode: recreate
+          pr_number: ${{ github.event.issue.number }}
+
+      - name: Comment PR Preview when failed
+        if: failure() && github.event.issue.state != 'closed'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ### :ambulance: Prévisualisation failed
+
+            https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
+
+            You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`
+
+            To re-deploy just add a comment with :rocket:
+          comment_tag: deployment
+          mode: recreate
+          pr_number: ${{ github.event.issue.number }}
+
+      - name: Comment PR Preview when cancelled
+        if: cancelled() && github.event.issue.state != 'closed'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ### :ambulance: Prévisualisation cancelled
+
+            https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
+
+            To re-deploy just add a comment with :rocket:
+          comment_tag: deployment
+          mode: recreate
+          pr_number: ${{ github.event.issue.number }}

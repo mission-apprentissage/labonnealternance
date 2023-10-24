@@ -7,7 +7,7 @@ import * as _ from "lodash-es"
 import { sortBy } from "lodash-es"
 import { compose } from "oleoduc"
 
-import { getElasticInstance } from "../common/esClient/index"
+import { search } from "../common/esClient/index"
 import { logger } from "../common/logger"
 import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
 import { getDistanceInKm } from "../common/utils/geolib"
@@ -324,8 +324,6 @@ export const getFormationsFromCatalogueMe = async ({
   }
 }
 
-const esClient = getElasticInstance()
-
 export type IRomeResult = {
   romes: string[]
 }
@@ -366,20 +364,23 @@ export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; sire
 
     const esQueryIndexFragment = getFormationEsQueryIndexFragment()
 
-    const responseFormations = await esClient.search({
-      ...esQueryIndexFragment,
-      body: {
-        query: {
-          bool: {
-            must: mustTerm,
+    const responseFormations = await search(
+      {
+        ...esQueryIndexFragment,
+        body: {
+          query: {
+            bool: {
+              must: mustTerm,
+            },
           },
         },
       },
-    })
+      FormationCatalogue
+    )
 
     const romes: Set<string> = new Set()
 
-    responseFormations.body.hits.hits.forEach((formation) => {
+    responseFormations.forEach((formation) => {
       formation._source.rome_codes.forEach((rome) => romes.add(rome))
     })
 
