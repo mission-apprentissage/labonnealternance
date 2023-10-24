@@ -46,6 +46,11 @@ enum ReasonsKey {
   AUTRE = "autre",
 }
 
+enum EApplicantType {
+  PARENT = "parent",
+  ETUDIANT = "etudiant",
+}
+
 const reasons = [
   {
     key: ReasonsKey.MODALITE,
@@ -111,6 +116,7 @@ const DemandeDeContact = ({ item }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [applicantReasons, setApplicantReasons] = useState(reasons)
+  const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.PARENT)
 
   const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -154,7 +160,7 @@ const DemandeDeContact = ({ item }) => {
       phone: "",
       email: "",
       applicantMessageToCfa: "",
-      applicantType: "parent",
+      applicantType,
     },
     validationSchema: Yup.object({
       ...yupInputs,
@@ -236,12 +242,12 @@ const DemandeDeContact = ({ item }) => {
                       </Text>{" "}
                       :
                     </Text>
-                    <RadioGroup mt={7} ml={10} data-testid="fieldset-who-type">
+                    <RadioGroup mt={7} ml={10} data-testid="fieldset-who-type" value={applicantType} onChange={(value) => setApplicantType(value as EApplicantType)}>
                       <Stack direction="row" spacing={3}>
-                        <Radio size="lg" value="parent">
+                        <Radio size="lg" value={EApplicantType.PARENT}>
                           Le parent
                         </Radio>
-                        <Radio size="lg" value="etudiant">
+                        <Radio size="lg" value={EApplicantType.ETUDIANT}>
                           L'étudiant
                         </Radio>
                       </Stack>
