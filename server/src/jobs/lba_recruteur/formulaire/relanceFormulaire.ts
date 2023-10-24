@@ -65,8 +65,10 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
         establishment_raison_sociale,
         is_delegated,
         offres: jobsWithRecruiter.map((job) => ({
-          libelle: job.rome_appellation_label ?? job.rome_label,
-          type: job.job_type,
+          rome_appellation_label: job.rome_appellation_label ?? job.rome_label,
+          job_type: job.job_type,
+          job_level_label: job.job_level_label,
+          job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
           supprimer: `${config.publicUrl}/espace-pro/offre/${job._id}/cancel`,
           pourvue: `${config.publicUrl}/espace-pro/offre/${job._id}/provided`,
         })),

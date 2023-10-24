@@ -135,11 +135,18 @@ function getTransation() {
   return Sentry.getCurrentHub()?.getScope()?.getSpan()
 }
 
-function startSentryPerfRecording(category: string, operation: string): () => void {
+export function startSentryPerfRecording(
+  category: string,
+  operation: string,
+  data?: {
+    [key: string]: any
+  }
+): () => void {
   const childTransaction =
     getTransation()?.startChild({
       op: category,
       description: operation,
+      data,
     }) ?? null
 
   return () => {
