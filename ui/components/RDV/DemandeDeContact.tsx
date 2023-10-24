@@ -338,8 +338,13 @@ const DemandeDeContact = ({ item }) => {
                                 borderBottom: "solid 2px #000",
                               }}
                             >
-                              <Box as="span" flex="1" textAlign="left">
-                                Sélectionner une ou des options
+                              <Box as="span" flex="1" textAlign="left" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                                {applicantReasons.filter(({ checked }) => checked).length
+                                  ? applicantReasons
+                                      .filter(({ checked }) => checked)
+                                      .map(({ title }) => title)
+                                      .join(", ")
+                                  : "Sélectionner une ou des options"}
                               </Box>
                               <AccordionIcon />
                             </AccordionButton>
