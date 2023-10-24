@@ -28,10 +28,12 @@ import dayjs from "dayjs"
 import { Formik } from "formik"
 import omit from "lodash/omit"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
+import { useQuery } from "react-query"
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
+import { useSingleValueQueryParams } from "@/common/hooks/useSingleValueQueryParams"
 import { useAuth } from "@/context/UserContext"
 import { apiPost } from "@/utils/api.utils"
 
@@ -69,13 +71,16 @@ const ChampNombre = ({ value, max, name, handleChange, label }) => {
 
 const AjouterVoeuxForm = (props) => {
   const [inputJobItems, setInputJobItems] = useState([])
-  const [formulaire, setFormulaire] = useState(null)
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
+  const { establishment_id, email, userId, type } = useSingleValueQueryParams()
+
+  const { data: formulaire } = useQuery("get-formulaire", {
+    enabled: Boolean(establishment_id),
+    queryFn: () => getFormulaire(establishment_id),
+  })
 
   const { user } = useAuth()
-
-  const { establishment_id, email, userId, type } = router.query as { establishment_id: string; email: string; userId: string; type: string }
 
   const minDate = dayjs().format(DATE_FORMAT)
 
@@ -146,7 +151,6 @@ const AjouterVoeuxForm = (props) => {
    */
   const submitFromDepotRapide = async (values) => {
     const formulaire = (await apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: values })) as any
-    formulaire.jobs.slice(-1)
     const [job] = formulaire.jobs.slice(-1)
     await handleRedirectionAfterSubmit(formulaire, job, false)
   }
@@ -169,16 +173,6 @@ const AjouterVoeuxForm = (props) => {
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
-
-  useEffect(() => {
-    async function fetchData() {
-      if (establishment_id) {
-        const { data: formulaire } = (await getFormulaire(establishment_id)) as any
-        setFormulaire(formulaire)
-      }
-    }
-    fetchData()
-  }, [establishment_id])
 
   return (
     <Formik

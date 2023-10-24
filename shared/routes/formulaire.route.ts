@@ -30,7 +30,7 @@ export const zFormulaireRoute = {
       response: {
         // TODO ANY TO BE FIXED
         // "200": z.any(),
-        "2xx": ZJob,
+        "200": ZJob,
       },
       securityScheme: null,
     },

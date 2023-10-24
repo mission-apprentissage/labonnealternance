@@ -1,5 +1,4 @@
 import AdresseAutocomplete from "./AdresseAutocomplete"
-import AjouterVoeux from "./AjouterVoeux"
 import AnimationContainer from "./AnimationContainer"
 import AuthentificationLayout from "./AuthentificationLayout"
 import Bandeau from "./Bandeau"
@@ -30,7 +29,6 @@ import UserValidationHistory from "./UserValidationHistory"
 export {
   Pagination,
   Layout,
-  AjouterVoeux,
   DropdownCombobox,
   AdresseAutocomplete,
   AnimationContainer,

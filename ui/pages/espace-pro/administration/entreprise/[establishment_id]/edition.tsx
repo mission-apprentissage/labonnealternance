@@ -4,6 +4,7 @@ import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import * as Yup from "yup"
 
+import { useSingleValueQueryParams } from "@/common/hooks/useSingleValueQueryParams"
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
 import { apiPut } from "@/utils/api.utils"
@@ -145,11 +146,12 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
 
 function EditionEntrepriseContact() {
   const router = useRouter()
+  const { establishment_id } = useSingleValueQueryParams()
   const { user } = useAuth()
 
-  const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(router.query.establishment_id), { cacheTime: 0, enabled: !!router.query.establishment_id })
+  const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(establishment_id), { cacheTime: 0, enabled: Boolean(establishment_id) })
 
-  if (isLoading || !router.query.establishment_id) {
+  if (isLoading || !establishment_id) {
     return <LoadingEmptySpace />
   }
 

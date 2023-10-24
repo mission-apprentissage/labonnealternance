@@ -31,6 +31,7 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 
+import { useSingleValueQueryParams } from "@/common/hooks/useSingleValueQueryParams"
 import { useAuth } from "@/context/UserContext"
 
 import { AUTHTYPE } from "../../common/contants"
@@ -69,6 +70,7 @@ const NumberCell = ({ children }) => {
 
 export default function ListeOffres() {
   const router = useRouter()
+  const { establishment_id } = useSingleValueQueryParams()
   const confirmationSuppression = useDisclosure()
   const [currentOffre, setCurrentOffre] = useState()
   const { user } = useAuth()
@@ -78,15 +80,15 @@ export default function ListeOffres() {
   dayjs.extend(relativeTime)
 
   const { data, isLoading } = useQuery("offre-liste", {
-    enabled: !!router.query.establishment_id,
-    queryFn: () => getFormulaire(router.query.establishment_id),
+    enabled: Boolean(establishment_id),
+    queryFn: () => getFormulaire(establishment_id),
   })
 
-  if (isLoading || !router.query.establishment_id) {
+  if (isLoading || !establishment_id) {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  const { jobs = [], establishment_raison_sociale, establishment_siret, establishment_id, geo_coordinates, _id: dataId } = data.data ?? {}
+  const { jobs = [], establishment_raison_sociale, establishment_siret, geo_coordinates, _id: dataId } = data.data ?? {}
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreCreationUrl = () => {

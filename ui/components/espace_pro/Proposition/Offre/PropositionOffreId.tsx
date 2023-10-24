@@ -1,6 +1,7 @@
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
-import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+
+import { useSingleValueQueryParams } from "@/common/hooks/useSingleValueQueryParams"
 
 import { LoadingEmptySpace } from "../.."
 import { dayjs } from "../../../../common/dayjs"
@@ -9,8 +10,7 @@ import { Copy, InfoCircle, Minus, Plus } from "../../../../theme/components/icon
 import { getFormulaire, patchOffre } from "../../../../utils/api"
 
 export default function PropositionOffreId() {
-  const router = useRouter()
-  const { idFormulaire, jobId, siretFormateur } = router.query
+  const { idFormulaire, jobId, siretFormateur } = useSingleValueQueryParams()
   const toast = useToast()
 
   const [job, setJob]: [any, (t: any) => void] = useState()

@@ -1,11 +1,13 @@
 import { Box } from "@chakra-ui/react"
-import { useRouter } from "next/router"
 
-import { AjouterVoeux, AuthentificationLayout, Bandeau } from "../../../components/espace_pro"
+import { useSingleValueQueryParams } from "@/common/hooks/useSingleValueQueryParams"
+import AjouterVoeux from "@/components/espace_pro/AjouterVoeux"
+
+import { AuthentificationLayout, Bandeau } from "../../../components/espace_pro"
 
 export default function DepotRapideAjouterVoeux(props) {
-  const router = useRouter()
-  const { displayBanner } = router.query
+  console.log("DepotRapideAjouterVoeux", props)
+  const { displayBanner } = useSingleValueQueryParams()
 
   return (
     <AuthentificationLayout>
