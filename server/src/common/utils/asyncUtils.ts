@@ -4,6 +4,13 @@ export const asyncForEach = async <T>(array: T[], callback: (item: T, index: num
   }
 }
 
+export const asyncForEachGrouped = async <T>(array: T[], groupSize: number, callback: (item: T, index: number) => Promise<void>) => {
+  for (let index = 0; index < array.length; index += groupSize) {
+    const group = array.slice(index, index + groupSize)
+    await Promise.all(group.map((item, itemIndex) => callback(item, index + itemIndex)))
+  }
+}
+
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export function timeout(promise, millis) {

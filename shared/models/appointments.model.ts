@@ -1,8 +1,10 @@
 import { Jsonify } from "type-fest"
 
+import { AppointmentUserType } from "../constants/appointment"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
+import { enumToZod } from "./enumToZod"
 
 export const ZMailing = z
   .object({
@@ -34,6 +36,7 @@ export const ZAppointment = z
     created_at: z.date().default(() => new Date()),
     cfa_recipient_email: z.string(),
     is_anonymized: z.boolean().default(false),
+    applicant_user_type: enumToZod(AppointmentUserType).nullish(),
   })
   .strict()
   .openapi("Appointment")
