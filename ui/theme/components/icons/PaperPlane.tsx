@@ -1,12 +1,17 @@
 import { Icon } from "@chakra-ui/react"
 import React from "react"
 
+type Props = {
+  width: string;
+  height: string;
+}
+
 /**
  * Icon PaperPlane
  */
-export function PaperPlane() {
+export function PaperPlane(props: Props) {
   return (
-    <Icon width="56" height="57" viewBox="0 0 56 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <Icon viewBox="0 0 56 57" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <g clip-path="url(#clip0_15123_79014)">
         <path
           d="M27.8529 32.532L20.1879 29.326C19.7189 29.1347 19.1846 29.1837 18.7599 29.4637C18.3376 29.7437 18.0833 30.2197 18.0833 30.7284V42.3717C18.0833 42.9994 18.4683 43.5617 19.0539 43.788C19.2313 43.858 19.4179 43.8907 19.6023 43.8907C20.0223 43.8907 20.4329 43.7157 20.7269 43.3914L28.3919 34.954C28.7233 34.59 28.8586 34.086 28.7489 33.603C28.6416 33.1224 28.3079 32.7234 27.8529 32.532Z"
