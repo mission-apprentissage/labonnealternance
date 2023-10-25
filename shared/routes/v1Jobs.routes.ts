@@ -50,8 +50,8 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        access: null,
-        ressources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" } }] },
+        access: "recruiter:manage",
+        ressources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -151,7 +151,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        access: null,
+        access: "job:manage",
         ressources: { job: [{ _id: { type: "params", key: "jobId" } }] },
       },
       openapi: {

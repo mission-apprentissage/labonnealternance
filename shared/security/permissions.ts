@@ -44,6 +44,7 @@ export type AccessRessouces = {
       }
     | {
         establishment_siret: AccessResourcePath
+        email: AccessResourcePath
       }
   >
   job?: ReadonlyArray<{
