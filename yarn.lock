@@ -2154,6 +2154,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/one-line-logger@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@fastify/one-line-logger@npm:1.2.0"
+  dependencies:
+    pino-pretty: ^10.0.0
+  checksum: 411ef10f24f49f4ae57521e1bf02ca7fd7f01d10e725ccc455311fcae52865d141cf45d5c670e37d5a93f2544493f08b9ee6acd3dda2475ff288fdf73bd8d62f
+  languageName: node
+  linkType: hard
+
 "@fastify/rate-limit@npm:^8.0.3":
   version: 8.0.3
   resolution: "@fastify/rate-limit@npm:8.0.3"
@@ -15362,6 +15371,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pino-pretty@npm:^10.0.0":
+  version: 10.2.3
+  resolution: "pino-pretty@npm:10.2.3"
+  dependencies:
+    colorette: ^2.0.7
+    dateformat: ^4.6.3
+    fast-copy: ^3.0.0
+    fast-safe-stringify: ^2.1.1
+    help-me: ^4.0.1
+    joycon: ^3.1.1
+    minimist: ^1.2.6
+    on-exit-leak-free: ^2.1.0
+    pino-abstract-transport: ^1.0.0
+    pump: ^3.0.0
+    readable-stream: ^4.0.0
+    secure-json-parse: ^2.4.0
+    sonic-boom: ^3.0.0
+    strip-json-comments: ^3.1.1
+  bin:
+    pino-pretty: bin.js
+  checksum: 9182886855515000df2ef381762c69fc29dbdd9014a76839cc3d8a7a94ac96d4ce17423adb9ddd61eae78986bb0ff3a1d9e6e7aa55476c096a3dd4a0c89440e8
+  languageName: node
+  linkType: hard
+
 "pino-pretty@npm:^10.2.0":
   version: 10.2.0
   resolution: "pino-pretty@npm:10.2.0"
@@ -17431,6 +17464,7 @@ __metadata:
     "@elastic/elasticsearch": ^7.17.13
     "@fastify/cookie": ^9.1.0
     "@fastify/cors": ^8.4.0
+    "@fastify/one-line-logger": ^1.2.0
     "@fastify/rate-limit": ^8.0.3
     "@fastify/swagger": ^8.10.1
     "@fastify/swagger-ui": ^1.9.3

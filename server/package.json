@@ -111,7 +111,8 @@
     "tsup": "^7.2.0",
     "typescript": "^5.2.2",
     "vitest": "^0.34.5",
-    "zod-fixture": "^2.5.0"
+    "zod-fixture": "^2.5.0",
+    "@fastify/one-line-logger": "^1.2.0"
   },
   "files": [
     "src/**/*"
