@@ -12,7 +12,6 @@ export const startAndConnectMongodb = async () => {
 
 export const stopMongodb = async () => {
   try {
-    await mongoose.connection.dropDatabase()
     await mongoose.disconnect()
   } catch (err) {
     // no-op
