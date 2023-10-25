@@ -1,9 +1,9 @@
 import { referrers } from "../constants/referers"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment, ZEtablissement, ZUserRecruteur } from "../models"
+import { ZAppointment, ZEtablissement } from "../models"
+import { zObjectId } from "../models/common"
 
 import { IRoutesDef, ZResError } from "./common.routes"
-import { zObjectId } from "../models/common"
 
 const zContextCreateSchemaParcoursup = z
   .object({
@@ -175,7 +175,7 @@ export const zAppointmentsRoute = {
                   applicant_reasons: ZAppointment.shape.applicant_reasons,
                   cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
                   applicant_id: ZAppointment.shape.applicant_id,
-                }),
+                }).strict(),
               user: z
                 .object({
                   _id: zObjectId,
@@ -184,7 +184,7 @@ export const zAppointmentsRoute = {
                   phone: z.string(),
                   email: z.string(),
                   type: z.string(),
-                }),
+                }).strict(),
               etablissement: z
                 .object({
                   _id: ZEtablissement.shape._id,
@@ -193,7 +193,7 @@ export const zAppointmentsRoute = {
                   lieu_formation_street: z.string().nullish(),
                   lieu_formation_city: z.string().nullish(),
                   lieu_formation_zip_code: z.string().nullish(),
-                }),
+                }).strict(),
             })
             .strict(),
       },
