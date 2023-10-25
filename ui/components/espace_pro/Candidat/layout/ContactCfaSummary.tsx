@@ -3,11 +3,11 @@ import { Box, Text } from "@chakra-ui/react"
 import { MapPin2Fill } from "../../../../theme/components/icons"
 
 type Props = {
-  entrepriseRaisonSociale: string;
-  intitule: string;
-  adresse: string;
-  codePostal: string;
-  ville: string;
+  entrepriseRaisonSociale: string
+  intitule: string
+  adresse: string
+  codePostal: string
+  ville: string
 }
 
 /**

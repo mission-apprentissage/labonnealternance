@@ -1,10 +1,7 @@
 import { Box, Spinner, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import {
-  IAppointmentRequestContextCreateResponseSchema,
-  IAppointmentRequestContextCreateFormAvailableResponseSchema
-} from "shared/routes/appointments.routes"
+import { IAppointmentRequestContextCreateResponseSchema, IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
@@ -18,7 +15,7 @@ import { FormLayoutComponent } from "../../../components/espace_pro/Candidat/lay
 export default function FormCreatePage() {
   const router = useRouter()
 
-  const [data, setData] = useState<IAppointmentRequestContextCreateFormAvailableResponseSchema|null>(null)
+  const [data, setData] = useState<IAppointmentRequestContextCreateFormAvailableResponseSchema | null>(null)
   const [error, setError] = useState()
   const [loading, setLoading] = useState(false)
 
@@ -33,9 +30,9 @@ export default function FormCreatePage() {
 
         const response = (await apiPost("/appointment-request/context/create", {
           body: { idCleMinistereEducatif: cleMinistereEducatif, referrer },
-        })) as IAppointmentRequestContextCreateResponseSchema;
+        })) as IAppointmentRequestContextCreateResponseSchema
 
-        if('error' in response) {
+        if ("error" in response) {
           throw new Error(response?.error)
         }
 
@@ -68,15 +65,18 @@ export default function FormCreatePage() {
           {error}
         </Box>
       )}
-      {data && (<>
-        <ContactCfaSummary
-          entrepriseRaisonSociale={data?.etablissement_formateur_entreprise_raison_sociale}
-          intitule={data?.intitule_long}
-          adresse={data?.lieu_formation_adresse}
-          codePostal={data?.code_postal}
-          ville={data?.localite}
-        />
-        <DemandeDeContact context={data} referrer={referrer} showInModal={false}/></>)}
+      {data && (
+        <>
+          <ContactCfaSummary
+            entrepriseRaisonSociale={data?.etablissement_formateur_entreprise_raison_sociale}
+            intitule={data?.intitule_long}
+            adresse={data?.lieu_formation_adresse}
+            codePostal={data?.code_postal}
+            ville={data?.localite}
+          />
+          <DemandeDeContact context={data} referrer={referrer} showInModal={false} />
+        </>
+      )}
     </FormLayoutComponent>
   )
 }

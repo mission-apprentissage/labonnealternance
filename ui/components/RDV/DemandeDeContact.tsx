@@ -29,9 +29,7 @@ import {
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import React, { useState } from "react"
-import {
-  IAppointmentRequestContextCreateFormAvailableResponseSchema,
-} from "shared/routes/appointments.routes"
+import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 import * as Yup from "yup"
 
 import { EApplicantType, EReasonsKey, IAppointmentRequestRecapResponse, reasons } from "@/components/RDV/types"
@@ -40,9 +38,9 @@ import { PaperPlane } from "@/theme/components/icons/PaperPlane"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
 type Props = {
-  context: IAppointmentRequestContextCreateFormAvailableResponseSchema,
-  referrer: string;
-  showInModal: boolean;
+  context: IAppointmentRequestContextCreateFormAvailableResponseSchema
+  referrer: string
+  showInModal: boolean
 }
 
 /**
@@ -146,7 +144,8 @@ const DemandeDeContact = (props: Props) => {
     formik.resetForm()
   }
 
-  const formElement = () => <form>
+  const formElement = () => (
+    <form>
       <Flex direction={["column", "column", "row"]}>
         <Text mt={7} pb={2}>
           Vous êtes{" "}
@@ -193,16 +192,7 @@ const DemandeDeContact = (props: Props) => {
               *
             </Text>
           </FormLabel>
-          <Input
-            id="email"
-            data-testid="email"
-            name="email"
-            type="text"
-            width="95%"
-            onChange={onEmailChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-          />
+          <Input id="email" data-testid="email" name="email" type="text" width="95%" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
           {suggestedEmails.length > 0 && (
             <Box mt={2} fontSize="12px" color="grey.600">
               <Text as="span" mr={2}>
@@ -258,16 +248,7 @@ const DemandeDeContact = (props: Props) => {
               *
             </Text>
           </FormLabel>
-          <Input
-            id="phone"
-            data-testid="phone"
-            name="phone"
-            type="text"
-            width="95%"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.phone}
-          />
+          <Input id="phone" data-testid="phone" name="phone" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phone} />
           <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
         </FormControl>
       </Flex>
@@ -294,9 +275,9 @@ const DemandeDeContact = (props: Props) => {
                   <Box as="span" flex="1" textAlign="left" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {applicantReasons.filter(({ checked }) => checked).length
                       ? applicantReasons
-                        .filter(({ checked }) => checked)
-                        .map(({ title }) => title)
-                        .join(", ")
+                          .filter(({ checked }) => checked)
+                          .map(({ title }) => title)
+                          .join(", ")
                       : "Sélectionner une ou des options"}
                   </Box>
                   <AccordionIcon />
@@ -355,63 +336,66 @@ const DemandeDeContact = (props: Props) => {
           <Text color="redmarianne">{error}</Text>
         </Box>
       )}
-    <Box mb={8}>
-      <Button aria-label="Envoyer la demande de cntact" variant="blackButton" type="submit" onClick={submitForm} isDisabled={!formik.isValid}>
-        J'envoie ma demande
-      </Button>
-    </Box>
-  </form>
+      <Box mb={8}>
+        <Button aria-label="Envoyer la demande de cntact" variant="blackButton" type="submit" onClick={submitForm} isDisabled={!formik.isValid}>
+          J'envoie ma demande
+        </Button>
+      </Box>
+    </form>
+  )
 
-  const formConfirmed = () => <Box>
-    <Text as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
-      <PaperPlane width="56px" height="56px" /> Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
-    </Text>
-    <Box mt={6}>
-      <Text fontWeight="700" color="grey.750">
-        {onSuccessSubmitResponse.etablissement.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
-        <Text color="bluefrance.500" as="span">
-          {onSuccessSubmitResponse.user.phone.match(/.{1,2}/g).join(".")}
-        </Text>{" "}
-        ou sur{" "}
-        <Text color="bluefrance.500" as="span">
-          {onSuccessSubmitResponse.user.email}
-        </Text>{" "}
-        pour répondre à vos questions.
+  const formConfirmed = () => (
+    <Box>
+      <Text as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
+        <PaperPlane width="56px" height="56px" /> Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
       </Text>
-      <Text mt={6}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
-    </Box>
-    <Flex bg="#F9F8F6" mt="32px">
-      <Box w="100px" px="40px" py="16px">
-        <BarberGuy w="34px" h="38px" />
+      <Box mt={6}>
+        <Text fontWeight="700" color="grey.750">
+          {onSuccessSubmitResponse.etablissement.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
+          <Text color="bluefrance.500" as="span">
+            {onSuccessSubmitResponse.user.phone.match(/.{1,2}/g).join(".")}
+          </Text>{" "}
+          ou sur{" "}
+          <Text color="bluefrance.500" as="span">
+            {onSuccessSubmitResponse.user.email}
+          </Text>{" "}
+          pour répondre à vos questions.
+        </Text>
+        <Text mt={6}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
       </Box>
-      <Box mt="12px" pb="24px" pr="10px">
-        <Text fontSize="20px" fontWeight="700" mt="6px">
-          Psst, nous avons une{" "}
-          <Box as="span" color="bluefrance.500">
-            info pour vous !
-          </Box>
-        </Text>
-        <Text fontSize="16px" mt="12px">
-          <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
-          <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" target="_blank">
-            <u>Prendre contact avec une école</u> <ExternalLinkIcon mt="-5px" />
-          </Link>
-        </Text>
+      <Flex bg="#F9F8F6" mt="32px">
+        <Box w="100px" px="40px" py="16px">
+          <BarberGuy w="34px" h="38px" />
+        </Box>
+        <Box mt="12px" pb="24px" pr="10px">
+          <Text fontSize="20px" fontWeight="700" mt="6px">
+            Psst, nous avons une{" "}
+            <Box as="span" color="bluefrance.500">
+              info pour vous !
+            </Box>
+          </Text>
+          <Text fontSize="16px" mt="12px">
+            <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
+            <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" target="_blank">
+              <u>Prendre contact avec une école</u> <ExternalLinkIcon mt="-5px" />
+            </Link>
+          </Text>
+        </Box>
+      </Flex>
+      <Box borderBottom="1px solid #D0C9C4" mt={10} />
+      <Box mt={10}>
+        {onSuccessSubmitResponse.etablissement?.lieu_formation_email && (
+          <Text fontSize="14px">
+            Vous souhaitez modifier ou annuler cette demande ? <br />
+            Envoyez un email à{" "}
+            <u>
+              <a href={`mailto:${onSuccessSubmitResponse.etablissement.lieu_formation_email}`}>{onSuccessSubmitResponse.etablissement.lieu_formation_email}</a>
+            </u>
+          </Text>
+        )}
       </Box>
-    </Flex>
-    <Box borderBottom="1px solid #D0C9C4" mt={10} />
-    <Box mt={10}>
-      {onSuccessSubmitResponse.etablissement?.lieu_formation_email && (
-        <Text fontSize="14px">
-          Vous souhaitez modifier ou annuler cette demande ? <br />
-          Envoyez un email à{" "}
-          <u>
-            <a href={`mailto:${onSuccessSubmitResponse.etablissement.lieu_formation_email}`}>{onSuccessSubmitResponse.etablissement.lieu_formation_email}</a>
-          </u>
-        </Text>
-      )}
     </Box>
-  </Box>
+  )
 
   return props.showInModal ? (
     <Box data-testid="DemandeDeContact">
@@ -461,17 +445,25 @@ const DemandeDeContact = (props: Props) => {
                 </Button>
               </ModalHeader>
               <ModalBody data-testid="modalbody-contact-confirmation" mx={onSuccessSubmitResponse ? 12 : 4}>
-                {onSuccessSubmitResponse ? formConfirmed() : (<><Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle" mb={4}>
-                  Contact {props.context.intitule_long}
-                </Text>{formElement()}</>)}
+                {onSuccessSubmitResponse ? (
+                  formConfirmed()
+                ) : (
+                  <>
+                    <Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle" mb={4}>
+                      Contact {props.context.intitule_long}
+                    </Text>
+                    {formElement()}
+                  </>
+                )}
               </ModalBody>
             </ModalContent>
           </Modal>
         </Box>
       </Box>
     </Box>
-  ) :
+  ) : (
     <Box>{onSuccessSubmitResponse ? formConfirmed() : formElement()}</Box>
+  )
 }
 
 export default DemandeDeContact

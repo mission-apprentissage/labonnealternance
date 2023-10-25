@@ -2,8 +2,8 @@ import { Icon } from "@chakra-ui/react"
 import React from "react"
 
 type Props = {
-  width: string;
-  height: string;
+  width: string
+  height: string
 }
 
 /**

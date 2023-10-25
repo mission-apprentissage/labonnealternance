@@ -157,7 +157,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           {kind === "formation" && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
               <Divider my={2} />
-              <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal/>
+              <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
             </>
           )}
         </Box>

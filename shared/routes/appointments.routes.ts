@@ -66,45 +66,43 @@ const zContextCreateSchema = z.union([
   zContextCreateSchemaCleMinistereEducatif,
 ])
 
-const zAppointmentRequestContextCreateFormAvailableResponseSchema =  z
-    .object({
-      etablissement_formateur_entreprise_raison_sociale: ZEtablissement.shape.raison_sociale,
-      intitule_long: z.string().openapi({
-        example: "METIERS D'ART ET DU DESIGN (DN)",
-      }),
-      lieu_formation_adresse: z.string().openapi({
-        example: "80 Rue Jules Ferry",
-      }),
-      code_postal: z.string().openapi({
-        example: "93170",
-      }),
-      etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,
-      cfd: z.string().openapi({
-        example: "24113401",
-      }),
-      localite: z.string().openapi({ example: "Bagnolet" }),
-      id_rco_formation: z
-        .string()
-        .openapi({
-          example: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-        })
-        .nullable(),
-      cle_ministere_educatif: z.string().openapi({
-        example: "101249P01313538697790003635386977900036-93006#L01",
-      }),
-      form_url: z.string().openapi({
-        example:
-          "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
-      }),
-    })
-    .strict()
+const zAppointmentRequestContextCreateFormAvailableResponseSchema = z
+  .object({
+    etablissement_formateur_entreprise_raison_sociale: ZEtablissement.shape.raison_sociale,
+    intitule_long: z.string().openapi({
+      example: "METIERS D'ART ET DU DESIGN (DN)",
+    }),
+    lieu_formation_adresse: z.string().openapi({
+      example: "80 Rue Jules Ferry",
+    }),
+    code_postal: z.string().openapi({
+      example: "93170",
+    }),
+    etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,
+    cfd: z.string().openapi({
+      example: "24113401",
+    }),
+    localite: z.string().openapi({ example: "Bagnolet" }),
+    id_rco_formation: z
+      .string()
+      .openapi({
+        example: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
+      })
+      .nullable(),
+    cle_ministere_educatif: z.string().openapi({
+      example: "101249P01313538697790003635386977900036-93006#L01",
+    }),
+    form_url: z.string().openapi({
+      example: "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
+    }),
+  })
+  .strict()
 
-const zAppointmentRequestContextCreateFormUnavailableResponseSchema =
-  z
-    .object({
-      error: z.literal("Prise de rendez-vous non disponible."),
-    })
-    .strict()
+const zAppointmentRequestContextCreateFormUnavailableResponseSchema = z
+  .object({
+    error: z.literal("Prise de rendez-vous non disponible."),
+  })
+  .strict()
 
 const zAppointmentRequestContextCreateResponseSchema = z.union([
   zAppointmentRequestContextCreateFormAvailableResponseSchema,
@@ -163,40 +161,42 @@ export const zAppointmentsRoute = {
       // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
-        "2xx":
-          z
-            .object({
-              appointment: z
-                .object({
-                  _id: ZAppointment.shape._id,
-                  cfa_intention_to_applicant: ZAppointment.shape.cfa_intention_to_applicant,
-                  cfa_message_to_applicant_date: ZAppointment.shape.cfa_message_to_applicant_date,
-                  cfa_message_to_applicant: ZAppointment.shape.cfa_message_to_applicant,
-                  applicant_message_to_cfa: ZAppointment.shape.applicant_message_to_cfa,
-                  applicant_reasons: ZAppointment.shape.applicant_reasons,
-                  cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
-                  applicant_id: ZAppointment.shape.applicant_id,
-                }).strict(),
-              user: z
-                .object({
-                  _id: zObjectId,
-                  firstname: z.string(),
-                  lastname: z.string(),
-                  phone: z.string(),
-                  email: z.string(),
-                  type: z.string(),
-                }).strict(),
-              etablissement: z
-                .object({
-                  _id: ZEtablissement.shape._id,
-                  training_intitule_long: z.string().nullish(),
-                  etablissement_formateur_raison_sociale: z.string().nullish(),
-                  lieu_formation_street: z.string().nullish(),
-                  lieu_formation_city: z.string().nullish(),
-                  lieu_formation_zip_code: z.string().nullish(),
-                }).strict(),
-            })
-            .strict(),
+        "2xx": z
+          .object({
+            appointment: z
+              .object({
+                _id: ZAppointment.shape._id,
+                cfa_intention_to_applicant: ZAppointment.shape.cfa_intention_to_applicant,
+                cfa_message_to_applicant_date: ZAppointment.shape.cfa_message_to_applicant_date,
+                cfa_message_to_applicant: ZAppointment.shape.cfa_message_to_applicant,
+                applicant_message_to_cfa: ZAppointment.shape.applicant_message_to_cfa,
+                applicant_reasons: ZAppointment.shape.applicant_reasons,
+                cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
+                applicant_id: ZAppointment.shape.applicant_id,
+              })
+              .strict(),
+            user: z
+              .object({
+                _id: zObjectId,
+                firstname: z.string(),
+                lastname: z.string(),
+                phone: z.string(),
+                email: z.string(),
+                type: z.string(),
+              })
+              .strict(),
+            etablissement: z
+              .object({
+                _id: ZEtablissement.shape._id,
+                training_intitule_long: z.string().nullish(),
+                etablissement_formateur_raison_sociale: z.string().nullish(),
+                lieu_formation_street: z.string().nullish(),
+                lieu_formation_city: z.string().nullish(),
+                lieu_formation_zip_code: z.string().nullish(),
+              })
+              .strict(),
+          })
+          .strict(),
       },
       securityScheme: null,
     },

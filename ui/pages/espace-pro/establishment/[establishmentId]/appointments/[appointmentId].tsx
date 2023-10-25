@@ -151,7 +151,7 @@ export default function CfaCandidatInformationPage() {
             <Text as="p" my="2">
               <UnorderedList>
                 {(data.appointment?.applicant_reasons || []).map((reason, i) => {
-                  return <ListItem key={i}>{reasons.find(item => item.key === reason).title}</ListItem>
+                  return <ListItem key={i}>{reasons.find((item) => item.key === reason).title}</ListItem>
                 })}
               </UnorderedList>
             </Text>
