@@ -242,8 +242,16 @@ export default (server: Server) => {
           firstname: 1,
           phone: 1,
           email: 1,
-        }),
+        }).lean(),
       ])
+
+      if (!etablissement) {
+        throw Boom.internal("Etablissment not found")
+      }
+
+      if (!user) {
+        throw Boom.internal("User not found")
+      }
 
       res.status(200).send({
         appointment,
