@@ -1,8 +1,9 @@
 import { referrers } from "../constants/referers"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZEtablissement } from "../models"
+import { ZAppointment, ZEtablissement, ZUserRecruteur } from "../models"
 
 import { IRoutesDef, ZResError } from "./common.routes"
+import { zObjectId } from "../models/common"
 
 const zContextCreateSchemaParcoursup = z
   .object({
@@ -112,20 +113,40 @@ export const zAppointmentsRoute = {
       // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
-        // TODO ANY TO BE FIXED  __v
-        "2xx": z.any(),
-        // "2xx": z
-        //   .object({
-        //     appointment: z
-        //       .object({
-        //         appointment: z.any(),
-        //         appointment_origin_detailed: z.string(),
-        //       })
-        //       .strict(),
-        //     user: z.any(),
-        //     etablissement: z.union([ZEligibleTrainingsForAppointmentSchema, z.object({}).strict()]),
-        //   })
-        //   .strict(),
+        "2xx":
+          z
+            .object({
+              appointment: z
+                .object({
+                  _id: ZAppointment.shape._id,
+                  cfa_intention_to_applicant: ZAppointment.shape.cfa_intention_to_applicant,
+                  cfa_message_to_applicant_date: ZAppointment.shape.cfa_message_to_applicant_date,
+                  cfa_message_to_applicant: ZAppointment.shape.cfa_message_to_applicant,
+                  applicant_message_to_cfa: ZAppointment.shape.applicant_message_to_cfa,
+                  applicant_reasons: ZAppointment.shape.applicant_reasons,
+                  cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
+                  applicant_id: ZAppointment.shape.applicant_id,
+                }),
+              user: z
+                .object({
+                  _id: zObjectId,
+                  firstname: z.string(),
+                  lastname: z.string(),
+                  phone: z.string(),
+                  email: z.string(),
+                  type: z.string(),
+                }),
+              etablissement: z
+                .object({
+                  _id: ZEtablissement.shape._id,
+                  training_intitule_long: z.string().nullish(),
+                  etablissement_formateur_raison_sociale: z.string().nullish(),
+                  lieu_formation_street: z.string().nullish(),
+                  lieu_formation_city: z.string().nullish(),
+                  lieu_formation_zip_code: z.string().nullish(),
+                }),
+            })
+            .strict(),
       },
       securityScheme: {
         auth: "none",
