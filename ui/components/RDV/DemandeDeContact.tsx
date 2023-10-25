@@ -38,10 +38,25 @@ import { BarberGuy } from "@/theme/components/icons"
 import { PaperPlane } from "@/theme/components/icons/PaperPlane"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
+type Props = {
+  context: {
+    etablissement_formateur_entreprise_raison_sociale: string;
+    intitule_long: string;
+    lieu_formation_adresse: string;
+    code_postal: string;
+    etablissement_formateur_siret: string;
+    cfd: string;
+    localite: string;
+    id_rco_formation: string;
+    cle_ministere_educatif: string;
+    form_url: string;
+  }
+}
+
 /**
  * "Demande de contact" modal.
  */
-const DemandeDeContact = ({ item }) => {
+const DemandeDeContact = (props: Props) => {
   const router = useRouter()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [suggestedEmails, setSuggestedEmails] = useState([])
@@ -107,7 +122,7 @@ const DemandeDeContact = ({ item }) => {
             email: values.email,
             type: values.applicantType,
             applicantMessageToCfa: values.applicantMessageToCfa,
-            cleMinistereEducatif: item.cleMinistereEducatif,
+            cleMinistereEducatif: props.context.cle_ministere_educatif,
             applicantReasons: applicantReasons.filter(({ checked }) => checked).map(({ key }) => key),
             appointmentOrigin: referrer,
           },
@@ -250,7 +265,7 @@ const DemandeDeContact = ({ item }) => {
                 <form>
                   <ModalBody data-testid="modalbody-contact-form" mx={4}>
                     <Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle">
-                      Contact {item.title}
+                      Contact {props.context.intitule_long}
                     </Text>
                     <Flex direction={["column", "column", "row"]} mt={3}>
                       <Text mt={7} pb={2}>
