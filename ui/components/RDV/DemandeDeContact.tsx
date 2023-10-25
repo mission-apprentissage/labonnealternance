@@ -18,7 +18,6 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Radio,
@@ -29,8 +28,10 @@ import {
 } from "@chakra-ui/react"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
-import { useRouter } from "next/router"
 import React, { useState } from "react"
+import {
+  IAppointmentRequestContextCreateFormAvailableResponseSchema,
+} from "shared/routes/appointments.routes"
 import * as Yup from "yup"
 
 import { EApplicantType, EReasonsKey, IAppointmentRequestRecapResponse, reasons } from "@/components/RDV/types"
@@ -39,36 +40,21 @@ import { PaperPlane } from "@/theme/components/icons/PaperPlane"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
 type Props = {
-  context: {
-    etablissement_formateur_entreprise_raison_sociale: string;
-    intitule_long: string;
-    lieu_formation_adresse: string;
-    code_postal: string;
-    etablissement_formateur_siret: string;
-    cfd: string;
-    localite: string;
-    id_rco_formation: string;
-    cle_ministere_educatif: string;
-    form_url: string;
-  }
+  context: IAppointmentRequestContextCreateFormAvailableResponseSchema,
+  referrer: string;
+  showInModal: boolean;
 }
 
 /**
  * "Demande de contact" modal.
  */
 const DemandeDeContact = (props: Props) => {
-  const router = useRouter()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.PARENT)
   const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState<IAppointmentRequestRecapResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [referrer, setReferrer] = useState<string>("LBA")
-
-  if (typeof router.query?.referrer === "string") {
-    setReferrer(router.query?.referrer.toUpperCase())
-  }
 
   const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -124,7 +110,7 @@ const DemandeDeContact = (props: Props) => {
             applicantMessageToCfa: values.applicantMessageToCfa,
             cleMinistereEducatif: props.context.cle_ministere_educatif,
             applicantReasons: applicantReasons.filter(({ checked }) => checked).map(({ key }) => key),
-            appointmentOrigin: referrer,
+            appointmentOrigin: props.referrer,
           },
         })) as unknown as { appointment: { _id: string } }
 
@@ -160,7 +146,274 @@ const DemandeDeContact = (props: Props) => {
     formik.resetForm()
   }
 
-  return (
+  const formElement = () => <form>
+      <Flex direction={["column", "column", "row"]}>
+        <Text mt={7} pb={2}>
+          Vous êtes{" "}
+          <Text color="redmarianne" as="span">
+            *
+          </Text>{" "}
+          :
+        </Text>
+        <RadioGroup mt={7} ml={10} data-testid="fieldset-who-type" value={applicantType} onChange={(value) => setApplicantType(value as EApplicantType)}>
+          <Stack direction="row" spacing={3}>
+            <Radio size="lg" value={EApplicantType.PARENT}>
+              Le parent
+            </Radio>
+            <Radio size="lg" value={EApplicantType.ETUDIANT}>
+              L'étudiant
+            </Radio>
+          </Stack>
+        </RadioGroup>
+      </Flex>
+      <Flex direction={["column", "column", "row"]} mt={6}>
+        <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.lastname && formik.errors.lastname)}>
+          <FormLabel htmlFor="lastname">
+            Nom{" "}
+            <Text color="redmarianne" as="span">
+              *
+            </Text>
+          </FormLabel>
+          <Input
+            id="lastname"
+            data-testid="lastname"
+            name="lastname"
+            type="text"
+            width="95%"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.lastname}
+          />
+          <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
+        </FormControl>
+        <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.email && formik.errors.email)}>
+          <FormLabel htmlFor="email">
+            E-mail{" "}
+            <Text color="redmarianne" as="span">
+              *
+            </Text>
+          </FormLabel>
+          <Input
+            id="email"
+            data-testid="email"
+            name="email"
+            type="text"
+            width="95%"
+            onChange={onEmailChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.email}
+          />
+          {suggestedEmails.length > 0 && (
+            <Box mt={2} fontSize="12px" color="grey.600">
+              <Text as="span" mr={2}>
+                Voulez vous dire ?
+              </Text>
+              {suggestedEmails.map((suggestedEmail) => (
+                <Button
+                  key={suggestedEmail.corrected}
+                  onClick={onClickEmailSuggestion}
+                  textAlign="center"
+                  fontSize="12px"
+                  width="fit-content"
+                  px="5px"
+                  pb="3px"
+                  mr="5px"
+                  mt="3px"
+                  color="bluefrance.500"
+                  bg="#e3e3fd"
+                  borderRadius="40px"
+                >
+                  {suggestedEmail.corrected}
+                </Button>
+              ))}
+            </Box>
+          )}
+          <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
+        </FormControl>
+      </Flex>
+      <Flex direction={["column", "column", "row"]} mt={4}>
+        <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.firstname && formik.errors.firstname)}>
+          <FormLabel htmlFor="firstname">
+            Prénom{" "}
+            <Text color="redmarianne" as="span">
+              *
+            </Text>
+          </FormLabel>
+          <Input
+            id="firstname"
+            data-testid="firstname"
+            name="firstname"
+            type="text"
+            width="95%"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.firstname}
+          />
+          <FormErrorMessage>{formik.errors.firstname}</FormErrorMessage>
+        </FormControl>
+        <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.phone && formik.errors.phone)}>
+          <FormLabel htmlFor="email">
+            Téléphone{" "}
+            <Text color="redmarianne" as="span">
+              *
+            </Text>
+          </FormLabel>
+          <Input
+            id="phone"
+            data-testid="phone"
+            name="phone"
+            type="text"
+            width="95%"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.phone}
+          />
+          <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
+        </FormControl>
+      </Flex>
+      <Flex direction={["column", "column", "row"]} mt={4}>
+        <FormControl data-testid="fieldset-reasons" mt={{ base: 3, md: "0" }}>
+          <FormLabel htmlFor="reasons">
+            Quel(s) sujet(s) souhaitez-vous aborder ?{" "}
+            <Text color="redmarianne" as="span">
+              *
+            </Text>
+          </FormLabel>
+          <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4}>
+            <AccordionItem>
+              <h2>
+                <AccordionButton
+                  sx={{
+                    borderRadius: 0,
+                    height: "40px",
+                    bg: "grey.200",
+                    color: "grey.800",
+                    borderBottom: "solid 2px #000",
+                  }}
+                >
+                  <Box as="span" flex="1" textAlign="left" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {applicantReasons.filter(({ checked }) => checked).length
+                      ? applicantReasons
+                        .filter(({ checked }) => checked)
+                        .map(({ title }) => title)
+                        .join(", ")
+                      : "Sélectionner une ou des options"}
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>
+                <CheckboxGroup onChange={onChangeApplicantReasons}>
+                  <Stack direction="column" spacing={3} mt={1} ml={1}>
+                    {applicantReasons.map(({ key, checked, title }) => (
+                      <Checkbox key={key} size="lg" defaultChecked={checked} value={key}>
+                        {title}
+                      </Checkbox>
+                    ))}
+                  </Stack>
+                </CheckboxGroup>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+          {applicantReasons.find(({ key, checked }) => key === EReasonsKey.AUTRE && checked) && (
+            <FormControl data-testid="fieldset-applicantMessageToCfa">
+              <Input
+                id="applicantMessageToCfa"
+                data-testid="applicantMessageToCfa"
+                name="applicantMessageToCfa"
+                type="text"
+                width="98%"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.applicantMessageToCfa}
+              />
+              <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
+            </FormControl>
+          )}
+        </FormControl>
+      </Flex>
+      <Box width="95%" my={4}>
+        <Text mb={2} fontSize="14px" color="grey.600" mt={10}>
+          * Champs obligatoires
+        </Text>
+        <Text mt={4}>
+          En remplissant ce formulaire, vous acceptez les{" "}
+          <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank">
+            Conditions générales d&apos;utilisation
+          </Link>{" "}
+          du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement .
+          <br />
+          Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
+          <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank">
+            Politique de confidentialité
+          </Link>{" "}
+          de La bonne alternance.
+        </Text>
+      </Box>
+      {error && (
+        <Box pt={4}>
+          <Text color="redmarianne">{error}</Text>
+        </Box>
+      )}
+    <Box mb={8}>
+      <Button aria-label="Envoyer la demande de cntact" variant="blackButton" type="submit" onClick={submitForm} isDisabled={!formik.isValid}>
+        J'envoie ma demande
+      </Button>
+    </Box>
+  </form>
+
+  const formConfirmed = () => <Box>
+    <Text as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
+      <PaperPlane width="56px" height="56px" /> Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
+    </Text>
+    <Box mt={6}>
+      <Text fontWeight="700" color="grey.750">
+        {onSuccessSubmitResponse.etablissement.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
+        <Text color="bluefrance.500" as="span">
+          {onSuccessSubmitResponse.user.phone.match(/.{1,2}/g).join(".")}
+        </Text>{" "}
+        ou sur{" "}
+        <Text color="bluefrance.500" as="span">
+          {onSuccessSubmitResponse.user.email}
+        </Text>{" "}
+        pour répondre à vos questions.
+      </Text>
+      <Text mt={6}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
+    </Box>
+    <Flex bg="#F9F8F6" mt="32px">
+      <Box w="100px" px="40px" py="16px">
+        <BarberGuy w="34px" h="38px" />
+      </Box>
+      <Box mt="12px" pb="24px" pr="10px">
+        <Text fontSize="20px" fontWeight="700" mt="6px">
+          Psst, nous avons une{" "}
+          <Box as="span" color="bluefrance.500">
+            info pour vous !
+          </Box>
+        </Text>
+        <Text fontSize="16px" mt="12px">
+          <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
+          <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" target="_blank">
+            <u>Prendre contact avec une école</u> <ExternalLinkIcon mt="-5px" />
+          </Link>
+        </Text>
+      </Box>
+    </Flex>
+    <Box borderBottom="1px solid #D0C9C4" mt={10} />
+    <Box mt={10}>
+      {onSuccessSubmitResponse.etablissement?.lieu_formation_email && (
+        <Text fontSize="14px">
+          Vous souhaitez modifier ou annuler cette demande ? <br />
+          Envoyez un email à{" "}
+          <u>
+            <a href={`mailto:${onSuccessSubmitResponse.etablissement.lieu_formation_email}`}>{onSuccessSubmitResponse.etablissement.lieu_formation_email}</a>
+          </u>
+        </Text>
+      )}
+    </Box>
+  </Box>
+
+  return props.showInModal ? (
     <Box data-testid="DemandeDeContact">
       Formulaire prise de RDV
       <Box>
@@ -207,288 +460,18 @@ const DemandeDeContact = (props: Props) => {
                   Fermer <CloseIcon w={2} h={2} ml={2} />
                 </Button>
               </ModalHeader>
-              {onSuccessSubmitResponse ? (
-                <ModalBody data-testid="modalbody-contact-confirmation" mx={12}>
-                  <Box>
-                    <Text as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
-                      <PaperPlane width="56px" height="56px" /> Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
-                    </Text>
-                    <Box mt={6}>
-                      <Text fontWeight="700" color="grey.750">
-                        {onSuccessSubmitResponse.etablissement.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
-                        <Text color="bluefrance.500" as="span">
-                          {onSuccessSubmitResponse.user.phone.match(/.{1,2}/g).join(".")}
-                        </Text>{" "}
-                        ou sur{" "}
-                        <Text color="bluefrance.500" as="span">
-                          {onSuccessSubmitResponse.user.email}
-                        </Text>{" "}
-                        pour répondre à vos questions.
-                      </Text>
-                      <Text mt={6}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
-                    </Box>
-
-                    <Flex bg="#F9F8F6" mt="32px">
-                      <Box w="100px" px="40px" py="16px">
-                        <BarberGuy w="34px" h="38px" />
-                      </Box>
-                      <Box mt="12px" pb="24px" pr="10px">
-                        <Text fontSize="20px" fontWeight="700" mt="6px">
-                          Psst, nous avons une{" "}
-                          <Box as="span" color="bluefrance.500">
-                            info pour vous !
-                          </Box>
-                        </Text>
-                        <Text fontSize="16px" mt="12px">
-                          <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
-                          <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" target="_blank">
-                            <u>Prendre contact avec une école</u> <ExternalLinkIcon mt="-5px" />
-                          </Link>
-                        </Text>
-                      </Box>
-                    </Flex>
-                    <Box borderBottom="1px solid #D0C9C4" mt={10} />
-                    <Box mt={10}>
-                      {onSuccessSubmitResponse.etablissement?.lieu_formation_email && (
-                        <Text fontSize="14px">
-                          Vous souhaitez modifier ou annuler cette demande ? <br />
-                          Envoyez un email à{" "}
-                          <u>
-                            <a href={`mailto:${onSuccessSubmitResponse.etablissement.lieu_formation_email}`}>{onSuccessSubmitResponse.etablissement.lieu_formation_email}</a>
-                          </u>
-                        </Text>
-                      )}
-                    </Box>
-                  </Box>
-                </ModalBody>
-              ) : (
-                <form>
-                  <ModalBody data-testid="modalbody-contact-form" mx={4}>
-                    <Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle">
-                      Contact {props.context.intitule_long}
-                    </Text>
-                    <Flex direction={["column", "column", "row"]} mt={3}>
-                      <Text mt={7} pb={2}>
-                        Vous êtes{" "}
-                        <Text color="redmarianne" as="span">
-                          *
-                        </Text>{" "}
-                        :
-                      </Text>
-                      <RadioGroup mt={7} ml={10} data-testid="fieldset-who-type" value={applicantType} onChange={(value) => setApplicantType(value as EApplicantType)}>
-                        <Stack direction="row" spacing={3}>
-                          <Radio size="lg" value={EApplicantType.PARENT}>
-                            Le parent
-                          </Radio>
-                          <Radio size="lg" value={EApplicantType.ETUDIANT}>
-                            L'étudiant
-                          </Radio>
-                        </Stack>
-                      </RadioGroup>
-                    </Flex>
-                    <Flex direction={["column", "column", "row"]} mt={6}>
-                      <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.lastname && formik.errors.lastname)}>
-                        <FormLabel htmlFor="lastname">
-                          Nom{" "}
-                          <Text color="redmarianne" as="span">
-                            *
-                          </Text>
-                        </FormLabel>
-                        <Input
-                          id="lastname"
-                          data-testid="lastname"
-                          name="lastname"
-                          type="text"
-                          width="95%"
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          value={formik.values.lastname}
-                        />
-                        <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.email && formik.errors.email)}>
-                        <FormLabel htmlFor="email">
-                          E-mail{" "}
-                          <Text color="redmarianne" as="span">
-                            *
-                          </Text>
-                        </FormLabel>
-                        <Input
-                          id="email"
-                          data-testid="email"
-                          name="email"
-                          type="text"
-                          width="95%"
-                          onChange={onEmailChange}
-                          onBlur={formik.handleBlur}
-                          value={formik.values.email}
-                        />
-                        {suggestedEmails.length > 0 && (
-                          <Box mt={2} fontSize="12px" color="grey.600">
-                            <Text as="span" mr={2}>
-                              Voulez vous dire ?
-                            </Text>
-                            {suggestedEmails.map((suggestedEmail) => (
-                              <Button
-                                key={suggestedEmail.corrected}
-                                onClick={onClickEmailSuggestion}
-                                textAlign="center"
-                                fontSize="12px"
-                                width="fit-content"
-                                px="5px"
-                                pb="3px"
-                                mr="5px"
-                                mt="3px"
-                                color="bluefrance.500"
-                                bg="#e3e3fd"
-                                borderRadius="40px"
-                              >
-                                {suggestedEmail.corrected}
-                              </Button>
-                            ))}
-                          </Box>
-                        )}
-                        <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
-                      </FormControl>
-                    </Flex>
-                    <Flex direction={["column", "column", "row"]} mt={4}>
-                      <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.firstname && formik.errors.firstname)}>
-                        <FormLabel htmlFor="firstname">
-                          Prénom{" "}
-                          <Text color="redmarianne" as="span">
-                            *
-                          </Text>
-                        </FormLabel>
-                        <Input
-                          id="firstname"
-                          data-testid="firstname"
-                          name="firstname"
-                          type="text"
-                          width="95%"
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          value={formik.values.firstname}
-                        />
-                        <FormErrorMessage>{formik.errors.firstname}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.phone && formik.errors.phone)}>
-                        <FormLabel htmlFor="email">
-                          Téléphone{" "}
-                          <Text color="redmarianne" as="span">
-                            *
-                          </Text>
-                        </FormLabel>
-                        <Input
-                          id="phone"
-                          data-testid="phone"
-                          name="phone"
-                          type="text"
-                          width="95%"
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          value={formik.values.phone}
-                        />
-                        <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
-                      </FormControl>
-                    </Flex>
-                    <Flex direction={["column", "column", "row"]} mt={4}>
-                      <FormControl data-testid="fieldset-reasons" mt={{ base: 3, md: "0" }}>
-                        <FormLabel htmlFor="reasons">
-                          Quel(s) sujet(s) souhaitez-vous aborder ?{" "}
-                          <Text color="redmarianne" as="span">
-                            *
-                          </Text>
-                        </FormLabel>
-                        <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4}>
-                          <AccordionItem>
-                            <h2>
-                              <AccordionButton
-                                sx={{
-                                  borderRadius: 0,
-                                  height: "40px",
-                                  bg: "grey.200",
-                                  color: "grey.800",
-                                  borderBottom: "solid 2px #000",
-                                }}
-                              >
-                                <Box as="span" flex="1" textAlign="left" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                                  {applicantReasons.filter(({ checked }) => checked).length
-                                    ? applicantReasons
-                                        .filter(({ checked }) => checked)
-                                        .map(({ title }) => title)
-                                        .join(", ")
-                                    : "Sélectionner une ou des options"}
-                                </Box>
-                                <AccordionIcon />
-                              </AccordionButton>
-                            </h2>
-                            <AccordionPanel pb={4}>
-                              <CheckboxGroup onChange={onChangeApplicantReasons}>
-                                <Stack direction="column" spacing={3} mt={1} ml={1}>
-                                  {applicantReasons.map(({ key, checked, title }) => (
-                                    <Checkbox key={key} size="lg" defaultChecked={checked} value={key}>
-                                      {title}
-                                    </Checkbox>
-                                  ))}
-                                </Stack>
-                              </CheckboxGroup>
-                            </AccordionPanel>
-                          </AccordionItem>
-                        </Accordion>
-                        {applicantReasons.find(({ key, checked }) => key === EReasonsKey.AUTRE && checked) && (
-                          <FormControl data-testid="fieldset-applicantMessageToCfa">
-                            <Input
-                              id="applicantMessageToCfa"
-                              data-testid="applicantMessageToCfa"
-                              name="applicantMessageToCfa"
-                              type="text"
-                              width="98%"
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                              value={formik.values.applicantMessageToCfa}
-                            />
-                            <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
-                          </FormControl>
-                        )}
-                      </FormControl>
-                    </Flex>
-                    <Box width="95%" my={4}>
-                      <Text mb={2} fontSize="14px" color="grey.600" mt={10}>
-                        * Champs obligatoires
-                      </Text>
-                      <Text mt={4}>
-                        En remplissant ce formulaire, vous acceptez les{" "}
-                        <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank">
-                          Conditions générales d&apos;utilisation
-                        </Link>{" "}
-                        du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement .
-                        <br />
-                        Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-                        <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank">
-                          Politique de confidentialité
-                        </Link>{" "}
-                        de La bonne alternance.
-                      </Text>
-                    </Box>
-                    {error && (
-                      <Box pt={4}>
-                        <Text color="redmarianne">{error}</Text>
-                      </Box>
-                    )}
-                  </ModalBody>
-                  <ModalFooter mb={8}>
-                    <Button aria-label="Envoyer la demande de cntact" variant="blackButton" type="submit" onClick={submitForm} isDisabled={!formik.isValid}>
-                      J'envoie ma demande
-                    </Button>
-                  </ModalFooter>
-                </form>
-              )}
+              <ModalBody data-testid="modalbody-contact-confirmation" mx={onSuccessSubmitResponse ? 12 : 4}>
+                {onSuccessSubmitResponse ? formConfirmed() : (<><Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle" mb={4}>
+                  Contact {props.context.intitule_long}
+                </Text>{formElement()}</>)}
+              </ModalBody>
             </ModalContent>
           </Modal>
         </Box>
       </Box>
     </Box>
-  )
+  ) :
+    <Box>{onSuccessSubmitResponse ? formConfirmed() : formElement()}</Box>
 }
 
 export default DemandeDeContact
