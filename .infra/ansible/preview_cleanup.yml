@@ -21,3 +21,15 @@
         docker_images:
           - mna_lba_ui
           - mna_lba_server
+
+    - name: Prune Docker Containers
+      shell:
+        cmd: docker container prune --force
+
+    - name: Prune Docker Images
+      shell:
+        cmd: docker image prune --force
+
+    - name: Prune Docker Volumes
+      shell:
+        cmd: docker volume prune
