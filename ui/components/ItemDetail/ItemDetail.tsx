@@ -18,7 +18,7 @@ import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
-import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonPRDVShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
+import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getCurrentList from "./ItemDetailServices/getCurrentList"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
@@ -154,10 +154,10 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             </>
           )}
 
-          {kind === "formation" && buttonPRDVShouldBeDisplayed(selectedItem) && (
+          {kind === "formation" && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
               <Divider my={2} />
-              <DemandeDeContact item={selectedItem} />
+              <DemandeDeContact context={selectedItem.rdvContext}/>
             </>
           )}
         </Box>
@@ -224,7 +224,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           )}
         </>
       )}
-      {kind === "formation" && !buttonPRDVShouldBeDisplayed(selectedItem) && (
+      {kind === "formation" && !buttonRdvShouldBeDisplayed(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
       {(kind === "lbb" || kind === "lba") && !isCandidatureLba(selectedItem) && (
