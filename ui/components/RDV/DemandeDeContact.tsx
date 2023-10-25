@@ -250,7 +250,7 @@ const DemandeDeContact = ({ item }) => {
                 <form>
                   <ModalBody data-testid="modalbody-contact-form" mx={4}>
                     <Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle">
-                      Envoyer une demande de contact
+                      Contact {item.title}
                     </Text>
                     <Flex direction={["column", "column", "row"]} mt={3}>
                       <Text mt={7} pb={2}>
