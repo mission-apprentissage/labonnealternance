@@ -64,6 +64,9 @@ export default (server: Server) => {
       if (!userRecruteurOpt) {
         throw Boom.badRequest("Nous n'avons pas trouvé votre compte utilisateur")
       }
+      if (!userRecruteurOpt.establishment_siret) {
+        throw Boom.internal("unexpected: userRecruteur without establishment_siret")
+      }
       const response = await entrepriseOnboardingWorkflow.createFromCFA({
         email,
         last_name,
@@ -90,7 +93,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id",
     {
       schema: zRoutes.put["/formulaire/:establishment_id"],
-      onRequest: [server.auth(zRoutes.put["/formulaire/:establishment_id"].securityScheme)],
+      onRequest: [server.auth(zRoutes.put["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
       const result = await updateFormulaire(req.params.establishment_id, req.body)
@@ -146,7 +149,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id/offre",
     {
       schema: zRoutes.post["/formulaire/:establishment_id/offre"],
-      // preHandler: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre"].securityScheme)],
+      // preHandler: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre"])],
       bodyLimit: 5 * 1024 ** 2, // 5MB
     },
     async (req, res) => {
@@ -318,21 +321,14 @@ export default (server: Server) => {
     }
   )
 
-  /**
-   * Permet de passer une offre en statut POURVUE (mail transactionnel)
-   */
   server.put(
     "/formulaire/offre/:jobId/extend",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/extend"],
     },
     async (req, res) => {
-      const exists = await checkOffreExists(req.params.jobId)
-      if (!exists) {
-        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
-      }
-      await extendOffre(req.params.jobId)
-      return res.status(200).send({})
+      const job = await extendOffre(req.params.jobId)
+      return res.status(200).send(job)
     }
   )
 }

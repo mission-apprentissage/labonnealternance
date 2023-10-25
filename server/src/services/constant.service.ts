@@ -2,13 +2,6 @@ export const POURVUE = "Pourvue"
 export const ANNULEE = "Annulée"
 export const ACTIVE = "Active"
 
-export enum JOB_STATUS {
-  ACTIVE = "Active",
-  POURVUE = "Pourvue",
-  ANNULEE = "Annulée",
-  EN_ATTENTE = "En attente",
-}
-
 export enum RECRUITER_STATUS {
   ACTIF = "Actif",
   ARCHIVE = "Archivé",
@@ -69,6 +62,9 @@ export const NIVEAUX_POUR_LBA = {
   "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveau (Bac+5)",
 }
 
+// Note: notre moteur de recherche demande le niveau visé ce qui matche avec les offres lba.
+// en revanche pour l'api offres de Pôle emploi le filtre sur le niveau est le niveau
+// requis en entrée.
 export const NIVEAUX_POUR_OFFRES_PE = {
   "4 (BAC...)": "NV5",
   "5 (BTS, DEUST...)": "NV4",

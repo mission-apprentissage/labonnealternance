@@ -224,11 +224,10 @@ export default function ListeOffres() {
                     <MenuItem>
                       <Link
                         onClick={() => {
-                          const newExpirationDate = dayjs().add(1, "month")
                           extendOffre(row._id)
-                            .then(() =>
+                            .then((job) =>
                               toast({
-                                title: `Date d'expiration : ${newExpirationDate.format("DD/MM/YYYY")}`,
+                                title: `Date d'expiration : ${dayjs(job.job_expiration_date).format("DD/MM/YYYY")}`,
                                 position: "top-right",
                                 status: "success",
                                 duration: 2000,

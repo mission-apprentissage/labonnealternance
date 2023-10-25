@@ -1,13 +1,12 @@
-import crypto from "crypto"
-
-import axios from "axios"
 import Boom from "boom"
+import dayjs from "dayjs"
 import { groupBy, maxBy } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
 
+import { getLBFFormationDescription } from "@/common/apis/Pe"
 import { logger } from "@/common/logger"
 
-import { getElasticInstance } from "../common/esClient/index"
+import { search } from "../common/esClient/index"
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -15,17 +14,12 @@ import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { notifyToSlack } from "../common/utils/slackUtils"
-import config from "../config"
 
 import type { IFormationEsResult } from "./formation.service.types"
 import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
 const formationResultLimit = 500
-
-const lbfDescriptionUrl = `${config.laBonneFormationApiUrl}/api/v1/detail`
-
-const esClient = getElasticInstance()
 
 const diplomaMap = {
   3: "3 (CAP...)",
@@ -140,17 +134,20 @@ export const getFormations = async ({
 
     const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit, options)
 
-    const responseFormations = await esClient.search({
-      ...esQueryIndexFragment,
-      body: {
-        ...esQuery,
-        ...esQuerySort,
+    const responseFormations = await search(
+      {
+        ...esQueryIndexFragment,
+        body: {
+          ...esQuery,
+          ...esQuerySort,
+        },
       },
-    })
+      FormationCatalogue
+    )
 
     const formations: any[] = []
 
-    responseFormations.body.hits.hits.forEach((formation) => {
+    responseFormations.forEach((formation) => {
       formations.push({ source: formation._source, sort: formation.sort, id: formation._id })
     })
 
@@ -258,18 +255,21 @@ const getRegionFormations = async ({
 
   const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit, options)
 
-  const responseFormations = await esClient.search({
-    ...esQueryIndexFragment,
-    body: {
-      query: {
-        bool: {
-          must: mustTerm,
+  const responseFormations = await search(
+    {
+      ...esQueryIndexFragment,
+      body: {
+        query: {
+          bool: {
+            must: mustTerm,
+          },
         },
       },
     },
-  })
+    FormationCatalogue
+  )
 
-  const formations: IFormationEsResult[] = responseFormations.body.hits.hits.map((formation) => ({ source: formation._source, sort: formation.sort, id: formation._id }))
+  const formations: IFormationEsResult[] = responseFormations.map((formation) => ({ source: formation._source, sort: formation.sort, id: formation._id }))
   if (formations.length === 0 && !caller) {
     await notifyToSlack({ subject: "FORMATION", message: `Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.` })
   }
@@ -385,6 +385,8 @@ const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILba
 const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFormation => {
   const geoSource = rawFormation.source.lieu_formation_geo_coordonnees
   const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
+  const sessions = setSessions(rawFormation.source)
+  const duration = getDurationFromSessions(sessions)
 
   const resultFormation: ILbaItemFormation = {
     ideaType: "formation",
@@ -455,10 +457,10 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFo
     training: {
       objectif: rawFormation.source?.objectif?.trim() ?? null,
       description: rawFormation.source?.contenu?.trim() ?? null,
-      sessions: setSessions(rawFormation.source),
+      sessions,
+      duration,
     },
   }
-
   return resultFormation
 }
 
@@ -478,6 +480,20 @@ const setSessions = (formation: Partial<IFormationCatalogue>): ILbaItemTrainingS
   } else {
     return []
   }
+}
+
+/**
+ * Calcule la durée d'une formation en jour sur la base
+ * des dates de début et de fin de la première session à venir
+ */
+const getDurationFromSessions = (sessions: ILbaItemTrainingSession[]): number | null => {
+  const session = sessions.at(0)
+  let duration: number | null = null
+  if (session) {
+    duration = dayjs(session.endDate).diff(dayjs(session.startDate), "day")
+  }
+
+  return duration
 }
 
 /**
@@ -599,28 +615,6 @@ export const getFormationQuery = async ({ id, caller }: { id: string; caller?: s
 }
 
 /**
- * Construit et retourne les paramètres de la requête vers LBF
- * @param {string} id L'id RCO de la formation dont on veut récupérer les données sur LBF
- * @returns {string}
- */
-const getLbfQueryParams = (id: string): string => {
-  // le timestamp doit être uriencodé avec le format ISO sans les millis
-  let date = new Date().toISOString()
-  date = encodeURIComponent(date.substring(0, date.lastIndexOf(".")))
-
-  let queryParams = `user=LBA&uid=${id}&timestamp=${date}`
-
-  const hmac = crypto.createHmac("md5", config.laBonneFormationPassword)
-  const data = hmac.update(queryParams)
-  const signature = data.digest("hex")
-
-  // le param signature doit contenir un hash des autres params chiffré avec le mdp attribué à LBA
-  queryParams += "&signature=" + signature
-
-  return queryParams
-}
-
-/**
  * Supprime les adresses emails de la payload provenant de l'api La Bonne Formation
  * @param {any} data la payload issue de LBF
  * @return {any}
@@ -647,9 +641,10 @@ const removeEmailFromLBFData = (data: any): any => {
  */
 export const getFormationDescriptionQuery = async ({ id }: { id: string }): Promise<IApiError | any> => {
   try {
-    const formationDescription = await axios.get(`${lbfDescriptionUrl}?${getLbfQueryParams(id)}`)
+    const formationDescription = await getLBFFormationDescription(id)
+
     logger.info(`Call formationDescription. params=${id}`)
-    return removeEmailFromLBFData(formationDescription.data)
+    return removeEmailFromLBFData(formationDescription)
   } catch (error) {
     return manageApiError({
       error,

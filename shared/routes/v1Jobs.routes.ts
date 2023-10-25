@@ -8,7 +8,7 @@ import { ZRecruiter } from "../models/recruiter.model"
 
 import {
   zCallerParam,
-  zDiplomaParams,
+  zDiplomaParam,
   zInseeParams,
   ZLatitudeParam,
   ZLongitudeParam,
@@ -29,7 +29,7 @@ export const zV1JobsRoutes = {
       path: "/v1/jobs/establishment",
       querystring: z
         .object({
-          establishment_siret: extensions.siret(),
+          establishment_siret: extensions.siret,
           email: z
             .string()
             .email()
@@ -50,7 +50,8 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: "recruiter:manage",
+        ressources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -115,7 +116,8 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: null,
+        ressources: {},
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -126,7 +128,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/delegations/:jobId": {
       method: "get",
       path: "/v1/jobs/delegations/:jobId",
-      // TODO_SECURITY_FIX scoper le retour aux seules offres de l'utilisateur (permissions jobid pour l'utilisateur connecté)
       params: z
         .object({
           jobId: zObjectId,
@@ -150,7 +151,8 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: "job:manage",
+        ressources: { job: [{ _id: { type: "params", key: "jobId" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -171,7 +173,7 @@ export const zV1JobsRoutes = {
           radius: ZRadiusParam,
           insee: zInseeParams,
           sources: zSourcesParams,
-          diploma: zDiplomaParams,
+          diploma: zDiplomaParam,
           opco: zOpcoParams,
           opcoUrl: zOpcoUrlParams,
         })
@@ -214,10 +216,7 @@ export const zV1JobsRoutes = {
         "400": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "getJobOpportunities",
@@ -229,7 +228,7 @@ export const zV1JobsRoutes = {
       path: "/v1/jobs/company/:siret",
       params: z
         .object({
-          siret: extensions.siret(),
+          siret: extensions.siret,
         })
         .strict(),
       querystring: z
@@ -249,10 +248,7 @@ export const zV1JobsRoutes = {
         "404": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "getCompany",
@@ -288,10 +284,7 @@ export const zV1JobsRoutes = {
         "400": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "getLbaJob",
@@ -323,10 +316,7 @@ export const zV1JobsRoutes = {
         "404": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "getPeJob",
@@ -340,7 +330,7 @@ export const zV1JobsRoutes = {
       path: "/v1/jobs/establishment",
       body: z
         .object({
-          establishment_siret: extensions.siret(),
+          establishment_siret: extensions.siret,
           first_name: z.string(),
           last_name: z.string(),
           phone: extensions.phone().optional(),
@@ -359,7 +349,8 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: { every: ["recruiter:validate", "recruiter:manage"] },
+        ressources: {},
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -397,7 +388,14 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: "recruiter:add_job",
+        ressources: {
+          recruiter: [
+            {
+              establishment_id: { type: "params", key: "establishmentId" },
+            },
+          ],
+        },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -424,7 +422,10 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -446,7 +447,10 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -468,7 +472,10 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -490,7 +497,10 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -509,10 +519,7 @@ export const zV1JobsRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "statsViewLbaJob",
@@ -549,7 +556,10 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
       },
       openapi: {
         tags: ["Jobs"] as string[],

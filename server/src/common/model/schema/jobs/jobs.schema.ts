@@ -1,6 +1,5 @@
-import { IJob } from "shared"
+import { IJob, JOB_STATUS } from "shared"
 
-import { JOB_STATUS } from "../../../../services/constant.service"
 import { model, Schema } from "../../../mongodb"
 
 export const jobsSchema = new Schema<IJob>(
@@ -10,7 +9,7 @@ export const jobsSchema = new Schema<IJob>(
     job_level_label: {
       type: String,
       default: null,
-      description: "Niveau de formation requis",
+      description: "Niveau de formation visé en fin de stage",
     },
     job_start_date: {
       type: Date,

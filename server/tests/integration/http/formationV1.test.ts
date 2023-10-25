@@ -243,45 +243,6 @@ describe("formationV1", () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/V1/formations?romes=F1603,I1308&radius=0&longitude=180&latitude=90&diploma=lba,lbc" })
 
     expect(response.statusCode).toBe(400)
-    expect(JSON.parse(response.body)).toEqual({
-      data: {
-        validationError: {
-          code: "FST_ERR_VALIDATION",
-          issues: [
-            {
-              code: "invalid_string",
-              message: 'Invalid input: must start with "3"',
-              path: ["diploma"],
-              validation: {
-                startsWith: "3",
-              },
-            },
-          ],
-          name: "ZodError",
-          statusCode: 400,
-          validationContext: "querystring",
-        },
-      },
-      error: "Bad Request",
-      message: 'querystring.diploma: Invalid input: must start with "3"',
-      statusCode: 400,
-    })
+    assert.ok(JSON.parse(response.body).message.indexOf("querystring.diploma: Invalid enum value. Expected '3 (CAP...)") >= 0)
   })
-
-  /*it("Vérifie que la route formation répond", async () => {
- ;
-
-    const response = await httpClient().inject({ method: 'GET', path: "/api/V1/formations/formation/a" });;
-
-    expect(response.statusCode).toBe(200);
-    assert.ok(response.body.results.length === 0);
-  });*/
-
-  /*it("Vérifie que la recherche formation répond", async () => {
- ;
-
-    const response = await httpClient().inject({ method: 'GET', path: "/api/V1/formations/formation/5fd25112c67da3c3e6bc7ef0" });;
-
-    expect(response.statusCode).toBe(200);
-  });*/
 })

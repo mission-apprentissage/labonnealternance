@@ -1,14 +1,14 @@
 import Boom from "boom"
-import type { IUserRecruteur } from "shared"
+import { JOB_STATUS, type IUserRecruteur } from "shared"
 
 import { logger } from "../../../../common/logger"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../../../services/constant.service"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "../../../../services/constant.service"
 import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
-import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire, updateOffre } from "../../../../services/formulaire.service"
+import { activateEntrepriseRecruiterForTheFirstTime, archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
 import { autoValidateUser, deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
 
 const updateUserRecruteursSiretInfosInError = async () => {
@@ -21,8 +21,8 @@ const updateUserRecruteursSiretInfosInError = async () => {
   await asyncForEach(userRecruteurs, async (userRecruteur) => {
     const { establishment_siret, _id, establishment_id, type } = userRecruteur
     try {
-      if (!establishment_id) {
-        throw Boom.internal("unexpected: no establishment_id for userRecruteur of type ENTREPRISE", { userId: userRecruteur._id })
+      if (!establishment_id || !establishment_siret) {
+        throw Boom.internal("unexpected: no establishment_id and/or establishment_siret for userRecruteur of type ENTREPRISE", { userId: userRecruteur._id })
       }
       let recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur
@@ -38,11 +38,7 @@ const updateUserRecruteursSiretInfosInError = async () => {
           const result = await autoValidateCompany(updatedUserRecruteur)
           updatedUserRecruteur = result.userRecruteur
           if (result.validated) {
-            await Promise.all(
-              recruteur.jobs.map(async (job) => {
-                await updateOffre(job._id.toString(), { ...job, job_status: JOB_STATUS.ACTIVE })
-              })
-            )
+            await activateEntrepriseRecruiterForTheFirstTime(recruteur)
             await sendEmailConfirmationEntreprise(updatedUserRecruteur, recruteur)
           }
         } else {

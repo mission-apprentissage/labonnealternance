@@ -64,10 +64,7 @@ export const zV1FormationsParRegion = {
           description: "Internal Server Error",
         }),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         description: "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
         tags: ["Formations par région"] as string[],

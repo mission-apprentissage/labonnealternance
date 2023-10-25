@@ -41,146 +41,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
         "type": "object",
       },
-      "ApplicationUi": {
-        "additionalProperties": false,
-        "properties": {
-          "applicant_email": {
-            "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
-            "example": "john.smith@mail.com",
-            "format": "email",
-            "type": "string",
-          },
-          "applicant_file_content": {
-            "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
-            "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
-            "maxLength": 4215276,
-            "type": "string",
-          },
-          "applicant_file_name": {
-            "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
-            "example": "cv.pdf",
-            "pattern": "((.*?))(\\\\.)+(docx|pdf)$",
-            "type": "string",
-          },
-          "applicant_first_name": {
-            "description": "Le prénom du candidat.",
-            "example": "Jean",
-            "maxLength": 50,
-            "type": "string",
-          },
-          "applicant_last_name": {
-            "description": "Le nom du candidat.",
-            "example": "Dupont",
-            "maxLength": 50,
-            "type": "string",
-          },
-          "applicant_phone": {
-            "description": "Le numéro de téléphone du candidat.",
-            "example": "0101010101",
-            "type": "string",
-          },
-          "caller": {
-            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-            "example": "contact@domaine nom_de_societe",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "company_address": {
-            "description": "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
-            "example": "38 RUE DES HAMECONS, 75021 PARIS-21",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "company_email": {
-            "description": "L'adresse email de la société pour postuler. Vous devez impérativement utiliser les valeurs émises par l'API LBA avec le vecteur d'initialisation correspondant à l'adresse.",
-            "example": "...f936e4352b5ae5...",
-            "type": "string",
-          },
-          "company_naf": {
-            "description": "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
-            "example": "Boulangerie et boulangerie-pâtisserie",
-            "type": "string",
-          },
-          "company_name": {
-            "description": "Le nom de la société. Fourni par La bonne alternance. ",
-            "example": "Au bon pain d'antan",
-            "type": "string",
-          },
-          "company_siret": {
-            "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
-            "example": "00004993900000",
-            "pattern": "^[0-9]{14}$",
-            "type": "string",
-          },
-          "company_type": {
-            "description": "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-            "enum": [
-              "matcha",
-              "lba",
-            ],
-            "example": "lba",
-            "type": "string",
-          },
-          "crypted_company_email": {
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "iv": {
-            "description": "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
-            "example": "...59c24c059b...",
-            "type": "string",
-          },
-          "job_id": {
-            "description": "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \\"matcha\\" . La valeur est fournie par La bonne alternance. ",
-            "example": "...59c24c059b...",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "job_title": {
-            "description": "Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \\"matcha\\" . La valeur est fournie par La bonne alternance. ",
-            "example": "Téléconseil, vente à distance",
-            "type": "string",
-          },
-          "message": {
-            "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
-            "example": "Madame, monsieur...",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "secret": {
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-        },
-        "required": [
-          "applicant_email",
-          "applicant_first_name",
-          "applicant_last_name",
-          "applicant_phone",
-          "company_siret",
-          "company_email",
-          "company_name",
-          "company_naf",
-          "job_title",
-          "applicant_file_name",
-          "applicant_file_content",
-          "company_type",
-          "iv",
-        ],
-        "type": "object",
-      },
       "Contact": {
         "additionalProperties": false,
         "description": "Informations de contact",
@@ -249,6 +109,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "email",
         ],
         "type": "object",
+      },
+      "Durée de session en jours": {
+        "type": [
+          "number",
+          "null",
+        ],
       },
       "Error": {
         "additionalProperties": false,
@@ -770,7 +636,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_level_label": {
-            "description": "Niveau de formation requis",
+            "description": "Niveau de formation visé en fin de stage",
             "type": [
               "string",
               "null",
@@ -2843,41 +2709,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
         "type": "object",
       },
-      "Training": {
-        "additionalProperties": false,
-        "properties": {
-          "description": {
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "objectif": {
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "sessions": {
-            "items": {
-              "$ref": "#/components/schemas/TrainingSession",
-            },
-            "type": [
-              "array",
-              "null",
-            ],
-          },
-        },
-        "required": [
-          "description",
-          "objectif",
-        ],
-        "type": [
-          "object",
-          "null",
-        ],
-      },
-      "TrainingSession": {
+      "Session de formation": {
         "additionalProperties": false,
         "properties": {
           "endDate": {
@@ -2901,6 +2733,44 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
         "type": "object",
       },
+      "Training": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "duration": {
+            "$ref": "#/components/schemas/Durée de session en jours",
+          },
+          "objectif": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/Session de formation",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "description",
+          "objectif",
+          "duration",
+        ],
+        "type": [
+          "object",
+          "null",
+        ],
+      },
       "ZLbarError": {
         "additionalProperties": false,
         "properties": {
@@ -2920,7 +2790,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
     },
     "securitySchemes": {
       "api-key": {
-        "bearerFormat": "bearer",
+        "bearerFormat": "",
         "in": "header",
         "name": "authorization",
         "scheme": "bearer",
@@ -3205,7 +3075,152 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ApplicationUi",
+                "additionalProperties": false,
+                "properties": {
+                  "applicant_email": {
+                    "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
+                    "example": "john.smith@mail.com",
+                    "format": "email",
+                    "type": "string",
+                  },
+                  "applicant_file_content": {
+                    "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+                    "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
+                    "maxLength": 4215276,
+                    "type": "string",
+                  },
+                  "applicant_file_name": {
+                    "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
+                    "example": "cv.pdf",
+                    "pattern": "((.*?))(\\\\.)+(docx|pdf)$",
+                    "type": "string",
+                  },
+                  "applicant_first_name": {
+                    "description": "Le prénom du candidat.",
+                    "example": "Jean",
+                    "maxLength": 50,
+                    "type": "string",
+                  },
+                  "applicant_last_name": {
+                    "description": "Le nom du candidat.",
+                    "example": "Dupont",
+                    "maxLength": 50,
+                    "type": "string",
+                  },
+                  "applicant_phone": {
+                    "description": "Le numéro de téléphone du candidat.",
+                    "example": "0101010101",
+                    "type": "string",
+                  },
+                  "caller": {
+                    "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+                    "example": "contact@domaine nom_de_societe",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "company_address": {
+                    "description": "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
+                    "example": "38 RUE DES HAMECONS, 75021 PARIS-21",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "company_email": {
+                    "description": "L'adresse email de la société pour postuler. Vous devez impérativement utiliser les valeurs émises par l'API LBA avec le vecteur d'initialisation correspondant à l'adresse.",
+                    "example": "...f936e4352b5ae5...",
+                    "type": "string",
+                  },
+                  "company_naf": {
+                    "description": "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
+                    "example": "Boulangerie et boulangerie-pâtisserie",
+                    "type": "string",
+                  },
+                  "company_name": {
+                    "description": "Le nom de la société. Fourni par La bonne alternance. ",
+                    "example": "Au bon pain d'antan",
+                    "type": "string",
+                  },
+                  "company_siret": {
+                    "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
+                    "example": "00004993900000",
+                    "pattern": "^[0-9]{14}$",
+                    "type": "string",
+                  },
+                  "company_type": {
+                    "description": "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
+                    "enum": [
+                      "matcha",
+                      "lba",
+                    ],
+                    "example": "lba",
+                    "type": "string",
+                  },
+                  "crypted_company_email": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "iv": {
+                    "description": "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
+                    "example": "...59c24c059b...",
+                    "type": "string",
+                  },
+                  "job_id": {
+                    "description": "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \\"matcha\\" . La valeur est fournie par La bonne alternance. ",
+                    "example": "...59c24c059b...",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_title": {
+                    "description": "Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \\"matcha\\" . La valeur est fournie par La bonne alternance. ",
+                    "example": "Téléconseil, vente à distance",
+                    "type": "string",
+                  },
+                  "message": {
+                    "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
+                    "example": "Madame, monsieur...",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "searched_for_job_label": {
+                    "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
+                    "example": "Vente de fleurs, végétaux",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "secret": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "applicant_email",
+                  "applicant_first_name",
+                  "applicant_last_name",
+                  "applicant_phone",
+                  "company_siret",
+                  "company_email",
+                  "company_name",
+                  "company_naf",
+                  "job_title",
+                  "applicant_file_name",
+                  "applicant_file_content",
+                  "company_type",
+                  "iv",
+                ],
+                "type": "object",
               },
             },
           },
@@ -3352,12 +3367,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées",
+            "description": "Le niveau de diplôme visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
-              "example": "3",
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
@@ -3711,12 +3732,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées",
+            "description": "Le niveau de diplôme visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
-              "example": "3",
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
@@ -3906,11 +3933,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "targeted diploma",
+            "description": "Le niveau de diplôme visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },
@@ -5194,7 +5228,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "job_level_label": {
-                    "description": "Niveau de formation requis",
+                    "description": "Niveau de formation visé en fin de stage",
                     "type": [
                       "string",
                       "null",
@@ -5363,11 +5397,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "targeted diploma",
+            "description": "Le niveau de diplôme visé en fin d'études",
             "in": "query",
             "name": "diploma",
             "required": false,
             "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
               "type": "string",
             },
           },

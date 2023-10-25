@@ -1,4 +1,5 @@
-import { IRecruiter } from "shared"
+import { groupBy } from "lodash-es"
+import { JOB_STATUS } from "shared/models"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -10,55 +11,40 @@ import config from "../../../config"
 import dayjs from "../../../services/dayjs.service"
 import mailer from "../../../services/mailer.service"
 
-export const relanceFormulaire = async (threshold) => {
-  // number of days to expiration for the reminder email to be sent
-
-  const forms = await Recruiter.find({
+export const relanceFormulaire = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
+  const recruiters = await Recruiter.find({
     $nor: [{ jobs: { $exists: false } }, { jobs: { $size: 0 } }],
-    "jobs.job_status": "Active",
+    "jobs.job_status": JOB_STATUS.ACTIVE,
   }).lean()
 
-  // reduce formulaire with eligible offers
-  const format = forms.reduce((acc, formulaire) => {
-    acc[`${formulaire._id}`] = { ...formulaire, offres: [] }
+  const jobsWithRecruteurs = recruiters.flatMap((recruiter) => {
+    return recruiter.jobs.flatMap((job) => {
+      const remainingDays = dayjs(job.job_expiration_date).diff(dayjs(), "days")
+      if (job.job_status === JOB_STATUS.ACTIVE && remainingDays === threshold) {
+        return [{ ...job, recruiter }]
+      } else {
+        return []
+      }
+    })
+  })
 
-    formulaire.jobs
-      // The query returns all offers included in the form, regardless of the status filter in the query.
-      // The payload is smaller than not filtering it.
-      .filter((x) => x.job_status === "Active")
-      .forEach((job) => {
-        const remainingDays = dayjs(job.job_expiration_date).diff(dayjs(), "days")
-
-        // if the number of days to the expiration date is strictly above the threshold, do nothing
-        if (remainingDays !== threshold) return
-
-        acc[`${formulaire._id}`].jobs.push({
-          ...job,
-          supprimer: `${config.publicUrl}/espace-pro/job/${job._id}/cancel`,
-          pourvue: `${config.publicUrl}/espace-pro/job/${job._id}/provided`,
-        })
-      })
-    return acc
-  }, {})
-
-  // format array and remove formulaire without offers
-  const formulaireToExpire = Object.values<IRecruiter>(format).filter((x: any) => x.jobs.length !== 0)
-
-  if (formulaireToExpire.length === 0) {
+  const nbOffres = jobsWithRecruteurs.length
+  if (nbOffres === 0) {
     logger.info("Aucune offre à relancer aujourd'hui.")
     await notifyToSlack({ subject: `RELANCE J+${threshold}`, message: `Aucune relance à effectuer.` })
     return
   }
 
-  const nbOffres = formulaireToExpire.reduce((acc: number, formulaire: any) => (acc += formulaire.jobs.length), 0)
+  const groupByRecruiterOffres = groupBy(jobsWithRecruteurs, (job) => job.recruiter._id.toString())
 
   if (nbOffres > 0) {
     logger.info(`${nbOffres} offres relancé aujourd'hui.`)
-    await notifyToSlack({ subject: `RELANCE J+${threshold}`, message: `*${nbOffres} offres* (${formulaireToExpire.length} formulaires) ont été relancés.` })
+    await notifyToSlack({ subject: `RELANCE J+${threshold}`, message: `*${nbOffres} offres* (${Object.keys(groupByRecruiterOffres).length} formulaires) ont été relancés.` })
   }
 
-  await asyncForEach(formulaireToExpire, async (formulaire: IRecruiter) => {
-    const { email, establishment_raison_sociale, last_name, first_name, jobs, is_delegated, cfa_delegated_siret } = formulaire
+  await asyncForEach(Object.values(groupByRecruiterOffres), async (jobsWithRecruiter) => {
+    const recruiter = jobsWithRecruiter[0].recruiter
+    const { email, establishment_raison_sociale, last_name, first_name, is_delegated, cfa_delegated_siret } = recruiter
     let contactCFA
     // get CFA informations if formulaire is handled by a CFA
     if (is_delegated && cfa_delegated_siret) {
@@ -72,12 +58,20 @@ export const relanceFormulaire = async (threshold) => {
       data: {
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
         },
         last_name: contactCFA?.last_name ?? last_name,
         first_name: contactCFA?.first_name ?? first_name,
         establishment_raison_sociale,
         is_delegated,
-        offres: jobs,
+        offres: jobsWithRecruiter.map((job) => ({
+          rome_appellation_label: job.rome_appellation_label ?? job.rome_label,
+          job_type: job.job_type,
+          job_level_label: job.job_level_label,
+          job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
+          supprimer: `${config.publicUrl}/espace-pro/offre/${job._id}/cancel`,
+          pourvue: `${config.publicUrl}/espace-pro/offre/${job._id}/provided`,
+        })),
         threshold,
         url: `${config.publicUrl}/espace-pro/authentification`,
       },

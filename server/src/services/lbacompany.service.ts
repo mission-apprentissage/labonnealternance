@@ -1,6 +1,6 @@
 import { ILbaCompany } from "shared"
 
-import { getElasticInstance } from "../common/esClient/index.js"
+import { search } from "../common/esClient/index.js"
 import { LbaCompany } from "../common/model/index.js"
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
@@ -13,14 +13,11 @@ import { getApplicationByCompanyCount, IApplicationCount } from "./application.s
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
 import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types.js"
 
-const esClient = getElasticInstance()
-
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo
  */
 const transformCompany = ({
   company,
-  caller,
   contactAllowedOrigin,
   applicationCountByCompany,
 }: {
@@ -34,7 +31,7 @@ const transformCompany = ({
     iv?: string
     phone?: string | null
   } = {
-    ...encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller }),
+    ...encryptMailWithIV({ value: company.email !== "null" ? company.email : "" }),
   }
 
   if (contactAllowedOrigin) {
@@ -241,17 +238,20 @@ const getCompanies = async ({
       }
     }
 
-    const responseCompanies = await esClient.search({
-      ...esQueryIndexFragment,
-      body: {
-        ...esQuery,
-        ...esQuerySort,
+    const responseCompanies = await search(
+      {
+        ...esQueryIndexFragment,
+        body: {
+          ...esQuery,
+          ...esQuerySort,
+        },
       },
-    })
+      LbaCompany
+    )
 
     const companies: ILbaCompany[] = []
 
-    responseCompanies.body.hits.hits.forEach((company) => {
+    responseCompanies.forEach((company) => {
       companies.push({ ...company._source, distance: latitude ? company.sort : null })
     })
 

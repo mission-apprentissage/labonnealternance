@@ -2,7 +2,7 @@ import assert from "node:assert"
 
 import { describe, it } from "vitest"
 
-import { IRouteSchema, ZResError } from "./common.routes"
+import { IRouteSchema, IRouteSchemaGet, IRouteSchemaWrite, IRoutesDef, ZResError } from "./common.routes"
 
 import { zRoutes } from "."
 
@@ -30,6 +30,24 @@ describe("zRoutes", () => {
       for (const [path, def] of Object.entries(zMethodRoutes)) {
         assert.equal(def.method, method, `${method} ${path}: have invalid method`)
         assert.equal(def.path, path, `${method} ${path}: have invalid path`)
+      }
+    }
+  })
+
+  it("should access ressources be defined correctly", () => {
+    for (const [method, zMethodRoutes] of Object.entries(zRoutes as IRoutesDef)) {
+      for (const [path, def] of Object.entries(zMethodRoutes)) {
+        const typedDef = def as IRouteSchemaWrite | IRouteSchemaGet
+        if (typedDef.securityScheme) {
+          for (const [resourceType, resourceAccesses] of Object.entries(typedDef.securityScheme.ressources)) {
+            for (const resourceAccess of resourceAccesses) {
+              for (const [, access] of Object.entries(resourceAccess)) {
+                const zodInputShape = access.type === "params" ? typedDef.params : typedDef.querystring
+                assert.notEqual(zodInputShape?.shape?.[access.key], undefined, `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`)
+              }
+            }
+          }
+        }
       }
     }
   })

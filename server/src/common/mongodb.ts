@@ -9,8 +9,6 @@ export const { model, Schema } = mongoose
 // @ts-expect-error
 export let db: ReturnType<typeof mongoose.Connection> // eslint-disable-line import/no-mutable-exports
 
-export async function createMongoIndexes() {}
-
 export const connectToMongo = (mongoUri = config.mongodb.uri) => {
   return new Promise((resolve, reject) => {
     logger.info(`MongoDB: Connection to ${mongoUri}`)
@@ -22,6 +20,7 @@ export const connectToMongo = (mongoUri = config.mongodb.uri) => {
       useFindAndModify: false,
       keepAlive: true,
       autoIndex: false,
+      poolSize: 1_000,
     })
     mongooseInstance.Promise = global.Promise // Get the default connection
     db = mongooseInstance.connection
@@ -39,4 +38,7 @@ export const connectToMongo = (mongoUri = config.mongodb.uri) => {
   })
 }
 
-export const closeMongoConnection = () => mongooseInstance.disconnect()
+export const closeMongoConnection = async () => {
+  logger.info("MongoDB: closing connection")
+  await mongooseInstance.disconnect()
+}

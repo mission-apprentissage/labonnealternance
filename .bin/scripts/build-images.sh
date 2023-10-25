@@ -37,4 +37,5 @@ export CHANNEL=$(get_channel $VERSION)
 
 # "$@" is the list of environements
 docker buildx bake --builder mna-lba --${mode} "$@"
+docker builder prune --builder mna-lba --keep-storage 20GB --force
 docker buildx stop --builder mna-lba

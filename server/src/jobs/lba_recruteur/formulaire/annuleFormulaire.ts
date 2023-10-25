@@ -1,3 +1,5 @@
+import { JOB_STATUS } from "shared/models"
+
 import { logger } from "../../../common/logger"
 import { Recruiter } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
@@ -8,7 +10,7 @@ export const annuleFormulaire = async () => {
   const today = dayjs().startOf("day").utc(true)
 
   const formulaires = await Recruiter.find({
-    "jobs.job_status": "Active",
+    "jobs.job_status": JOB_STATUS.ACTIVE,
     "jobs.job_expiration_date": { $lte: today },
   }).lean()
 
@@ -17,7 +19,7 @@ export const annuleFormulaire = async () => {
     formulaire.jobs
       // The query returns all offers included in the form, regardless of the status filter in the query.
       // The payload is smaller than not filtering it.
-      .filter((x) => x.job_status === "Active")
+      .filter((x) => x.job_status === JOB_STATUS.ACTIVE)
       .forEach((offre) => {
         // if the expiration date is not equal or above today's date, do nothing
         if (!dayjs(offre.job_expiration_date).isSameOrBefore(today)) return
@@ -33,7 +35,7 @@ export const annuleFormulaire = async () => {
   }
 
   await asyncForEach(offersToCancel, async (job) => {
-    await Recruiter.findOneAndUpdate({ "jobs._id": job._id }, { $set: { "jobs.$.job_status": "Annulée" } })
+    await Recruiter.findOneAndUpdate({ "jobs._id": job._id }, { $set: { "jobs.$.job_status": JOB_STATUS.ANNULEE } })
   })
 
   logger.info(`${offersToCancel.length} offres expirés`)

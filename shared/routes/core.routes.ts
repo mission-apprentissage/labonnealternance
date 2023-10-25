@@ -22,10 +22,7 @@ export const zCoreRoutes = {
         "200": zResponse,
         "500": z.union([ZResError, zResponse]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/healthcheck": {
       method: "get",
@@ -34,10 +31,7 @@ export const zCoreRoutes = {
         "200": zResponse,
         "500": z.union([ZResError, zResponse]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/version": {
       method: "get",
@@ -49,10 +43,7 @@ export const zCoreRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

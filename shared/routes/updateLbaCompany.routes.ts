@@ -13,7 +13,7 @@ export const zUpdateLbaCompanyRoutes = {
       querystring: z
         .object({
           secret: z.string(),
-          siret: extensions.siret(),
+          siret: extensions.siret,
           email: z.string().email().or(z.literal("")).optional(),
           phone: extensions.phone().or(z.literal("")).optional(),
         })
@@ -21,10 +21,7 @@ export const zUpdateLbaCompanyRoutes = {
       response: {
         "200": z.union([ZLbaCompany, z.string()]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

@@ -12,10 +12,13 @@ const etatUtilisateurValues = Object.values(ETAT_UTILISATEUR)
 export const ZUserStatusValidation = z
   .object({
     validation_type: z.enum(["AUTOMATIQUE", "MANUELLE"]).describe("Processus de validation lors de l'inscription de l'utilisateur"),
-    status: z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).describe("Statut de l'utilisateur"),
+    status: z
+      .enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)])
+      .nullish()
+      .describe("Statut de l'utilisateur"),
     reason: z.string().nullish().describe("Raison du changement de statut"),
     user: z.string().describe("Utilisateur ayant effectué la modification | SERVEUR si le compte a été validé automatiquement"),
-    date: z.date().describe("Date de l'évènement"),
+    date: z.date().nullish().describe("Date de l'évènement"),
   })
   .strict()
 
@@ -27,7 +30,7 @@ export const ZUserRecruteurWritable = z
     idcc: z.string().nullish().describe("Identifiant convention collective de l'entreprise"),
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
-    establishment_siret: extensions.siret().describe("Siret de l'établissement"),
+    establishment_siret: extensions.siret.describe("Siret de l'établissement"),
     address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
     address: z.string().nullish().describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
@@ -44,10 +47,18 @@ export const ZUserRecruteurWritable = z
   })
   .strict()
 
-export const ZUserRecruteur = ZUserRecruteurWritable.extend({
+export const ZUserRecruteur = ZUserRecruteurWritable.omit({
+  // Following field are not supposed to be nullish but they are...
+  establishment_siret: true,
+  phone: true,
+  is_qualiopi: true,
+}).extend({
   _id: zObjectId,
   createdAt: z.date().describe("Date de creation"),
   updatedAt: z.date().describe("Date de mise à jour"),
+  establishment_siret: ZUserRecruteurWritable.shape.establishment_siret.nullish(),
+  phone: ZUserRecruteurWritable.shape.phone.nullish(),
+  is_qualiopi: ZUserRecruteurWritable.shape.is_qualiopi.nullish(),
 })
 
 export const zReferentielData = z
@@ -93,13 +104,18 @@ export const ZUserRecruteurPublic = ZUserRecruteur.pick({
   establishment_id: true,
 }).extend({
   is_delegated: z.boolean(),
-  cfa_delegated_siret: extensions.siret().optional(),
-  status_current: z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).nullable(),
+  cfa_delegated_siret: extensions.siret.nullish(),
+  status_current: z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).nullish(),
 })
 export type IUserRecruteurPublic = Jsonify<z.output<typeof ZUserRecruteurPublic>>
 
 export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
-  const sortedArray = [...stateArray].sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf())
+  if (!stateArray) {
+    return null
+  }
+  const sortedArray = [...stateArray].sort((a, b) => {
+    return new Date(a?.date ?? 0).valueOf() - new Date(b?.date ?? 0).valueOf()
+  })
   const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
   if (!lastValidationEvent) {
     return null

@@ -2,11 +2,10 @@ import { logger } from "../../../../common/logger.js"
 import { Recruiter } from "../../../../common/model/index.js"
 import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
 import { getEtablissementFromGouv } from "../../../../services/etablissement.service.js"
-import { runScript } from "../../../scriptWrapper.js"
 
-runScript(async () => {
+export const updateAddressDetailOnRecruitersCollection = async () => {
   logger.info("Start update user adresse detail")
-  const etablissements = await Recruiter.find({ address_detail: { $eq: null } })
+  const etablissements = await Recruiter.find({ address_detail: null })
 
   logger.info(`${etablissements.length} entries to update...`)
 
@@ -41,4 +40,4 @@ runScript(async () => {
     }
   })
   logger.info("End update user adresse detail")
-})
+}

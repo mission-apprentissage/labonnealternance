@@ -1,5 +1,6 @@
 import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { ETAT_UTILISATEUR } from "@/services/constant.service"
 
 import { getLoggerWithContext } from "../common/logger"
@@ -18,9 +19,12 @@ import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
 import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
+import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
+import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
+import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
@@ -76,10 +80,10 @@ export const CronsMap = {
     cron_string: "30 0 * * 1,3,5",
     handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
   },
-  /*"Send CSV offers to Pôle emploi": {
+  "Send CSV offers to Pôle emploi": {
     cron_string: "30 5 * * *",
     handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" } }),
-  },*/
+  },
   "Check companies validation state": {
     cron_string: "30 6 * * *",
     handler: () => addJob({ name: "user:validate", payload: { threshold: "1" } }),
@@ -182,6 +186,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "recruiters:get-missing-address-detail":
+        return updateAddressDetailOnRecruitersCollection()
+      case "migration:get-missing-geocoords": // Temporaire, doit tourner en recette et production
+        return recoverMissingGeocoordinates()
       case "import:rome":
         return importFicheMetierRomeV3()
       case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
@@ -299,27 +307,26 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateReferentielRncpRomes()
       case "recruiters:raison-sociale:fill":
         return fillRecruiterRaisonSociale()
+      case "recruiters:expiration-date:fix":
+        return fixJobExpirationDate()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
       case "db:validate":
         return validateModels()
       case "migrations:up": {
-        // await upMigration()
+        await upMigration()
         // Validate all documents after the migration
-        // await addJob({ name: "db:validate", queued: true })
+        await addJob({ name: "db:validate", queued: true, payload: {} })
         return
       }
       case "migrations:status": {
-        // const pendingMigrations = await statusMigration()
-        // console.log(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
-        console.log(`migrations-status=synced`)
+        const pendingMigrations = await statusMigration()
+        console.log(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
         return
       }
       case "migrations:create":
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // createMigration(job.payload )
-        return
+        return createMigration(job.payload as any)
       case "crons:init": {
         await cronsInit()
         return

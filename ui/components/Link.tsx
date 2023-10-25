@@ -4,7 +4,7 @@ import React from "react"
 
 const Link = ({ children, href, shallow = false, ...rest }) => {
   return (
-    <NavLink href={href} passHref shallow={shallow}>
+    <NavLink legacyBehavior href={href} passHref shallow={shallow}>
       <ChakraLink {...rest}>{children}</ChakraLink>
     </NavLink>
   )

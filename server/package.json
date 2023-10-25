@@ -58,6 +58,7 @@
     "fastify-type-provider-zod": "^1.1.9",
     "form-data": "^4.0.0",
     "fs-extra": "^9.1.0",
+    "geolib": "^3.3.4",
     "got": "^12.5.2",
     "iconv-lite": "^0.6.3",
     "is-semver": "^1.0.11",
@@ -67,9 +68,9 @@
     "lodash-es": "^4.17.21",
     "match-sorter": "^6.3.1",
     "memoizee": "^0.4.15",
+    "migrate-mongo": "^11.0.0",
     "miniget": "^4.2.3",
     "mjml": "^4.14.1",
-    "moment": "^2.29.4",
     "mongodb": "^3.7.4",
     "mongoose": "^5.13.20",
     "netmask": "^2.0.2",
@@ -109,7 +110,8 @@
     "supertest": "^6.3.3",
     "tsup": "^7.2.0",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.5"
+    "vitest": "^0.34.5",
+    "zod-fixture": "^2.5.0"
   },
   "files": [
     "src/**/*"

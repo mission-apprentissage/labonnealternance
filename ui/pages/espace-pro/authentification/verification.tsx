@@ -1,4 +1,4 @@
-import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
+import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
@@ -8,19 +8,31 @@ import { apiPost } from "@/utils/api.utils"
 export default function AuthValidation() {
   const router = useRouter()
   const { setUser } = useAuth()
+  const toast = useToast()
 
   const { token } = router.query as { token: string | undefined }
 
   useEffect(() => {
     const fetchData = async () => {
       if (token) {
-        const user = await apiPost("/login/verification", { querystring: { token } })
+        const user = await apiPost("/login/verification", {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        })
         setUser(user)
         router.push("/espace-pro/authentification/validation")
       }
     }
     fetchData().catch(() => {
-      router.push("/")
+      toast({
+        title: "Votre lien d'authentification a expiré.",
+        status: "error",
+        isClosable: true,
+        duration: 7_000,
+        description: " Merci de réessayer de vous connecter",
+      })
+      router.push("/espace-pro/administration/users")
     })
   }, [token])
 
