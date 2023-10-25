@@ -2,7 +2,7 @@ import assert from "node:assert"
 
 import { describe, it } from "vitest"
 
-import { IRouteSchema, ZResError } from "./common.routes"
+import { IRouteSchema, IRouteSchemaGet, IRouteSchemaWrite, IRoutesDef, ZResError } from "./common.routes"
 
 import { zRoutes } from "."
 
@@ -35,13 +35,15 @@ describe("zRoutes", () => {
   })
 
   it("should access ressources be defined correctly", () => {
-    for (const [method, zMethodRoutes] of Object.entries(zRoutes)) {
+    for (const [method, zMethodRoutes] of Object.entries(zRoutes as IRoutesDef)) {
       for (const [path, def] of Object.entries(zMethodRoutes)) {
-        if (def.securityScheme) {
-          for (const [resourceType, resourceAccesses] of Object.entries(def.securityScheme.ressources)) {
-            for (const resourceAccess of resourceAccesses as any) {
-              for (const [, access] of Object.entries(resourceAccess) as any) {
-                assert.notEqual(def[access.type]?.shape?.[access.key], undefined, `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`)
+        const typedDef = def as IRouteSchemaWrite | IRouteSchemaGet
+        if (typedDef.securityScheme) {
+          for (const [resourceType, resourceAccesses] of Object.entries(typedDef.securityScheme.ressources)) {
+            for (const resourceAccess of resourceAccesses) {
+              for (const [, access] of Object.entries(resourceAccess)) {
+                const zodInputShape = access.type === "params" ? typedDef.params : typedDef.querystring
+                assert.notEqual(zodInputShape?.shape?.[access.key], undefined, `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`)
               }
             }
           }
