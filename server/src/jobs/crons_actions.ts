@@ -7,7 +7,7 @@ import config from "@/config"
 
 import { getLoggerWithContext } from "../common/logger"
 
-import { createJobCron, createJobCronTask, createJobSimple, findJob, findJobs, updateJob } from "./job.actions"
+import { createJobCron, createJobCronTask, createJobSimple, findJob, findJobs, updateJob, updateJobCron } from "./job.actions"
 import { CRONS } from "./jobs"
 import { addJob } from "./jobs_actions"
 
@@ -26,26 +26,46 @@ export async function cronsInit() {
   }
 
   logger.info(`Crons - initialise crons in DB`)
-  await db.collection("internalJobs").deleteMany({ type: "cron" })
   await db.collection("internalJobs").deleteMany({
+    name: { $nin: CRONS.map((c) => c.name) },
+    type: "cron",
+  })
+  await db.collection("internalJobs").deleteMany({
+    name: { $nin: CRONS.map((c) => c.name) },
     status: { $in: ["pending", "will_start"] },
     type: "cron_task",
   })
 
-  if (!CRONS.length) {
-    return
-  }
+  let schedulerRequired = false
 
   for (const cron of CRONS) {
-    await createJobCron({
+    const cronJob = await findJob({
       name: cron.name,
-      cron_string: cron.cron_string,
-      scheduled_for: new Date(),
-      sync: true,
+      type: "cron",
     })
+
+    if (!cronJob) {
+      await createJobCron({
+        name: cron.name,
+        cron_string: cron.cron_string,
+        scheduled_for: new Date(),
+        sync: true,
+      })
+      schedulerRequired = true
+    } else if (cronJob.type === "cron" && cronJob.cron_string !== cron.cron_string) {
+      await updateJobCron(cronJob._id, cron.cron_string)
+      await db.collection("internalJobs").deleteMany({
+        name: cronJob.name,
+        status: { $in: ["pending", "will_start"] },
+        type: "cron_task",
+      })
+      schedulerRequired = true
+    }
   }
 
-  await addJob({ name: "crons:scheduler", queued: true, payload: {} })
+  if (schedulerRequired) {
+    await addJob({ name: "crons:scheduler", queued: true, payload: {} })
+  }
 }
 
 export async function cronsScheduler(): Promise<void> {

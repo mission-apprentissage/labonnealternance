@@ -1,3 +1,4 @@
+import Boom from "boom"
 import type { ObjectId, MatchKeysAndValues, FilterQuery, FindOneOptions } from "mongodb"
 
 import { IInternalJobs, IInternalJobsCron, IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
@@ -18,6 +19,19 @@ export const createJobSimple = async ({ name, payload, scheduled_for = new Date(
   }
   const { insertedId: _id } = await db.collection("internalJobs").insertOne(job)
   return { ...job, _id } as IInternalJobsSimple
+}
+
+export const updateJobCron = async (id: ObjectId, cron_string: IInternalJobsCron["cron_string"]): Promise<IInternalJobsCron> => {
+  const data = {
+    status: "pending",
+    cron_string,
+    updated_at: new Date(),
+  }
+  const job = await db.collection("internalJobs").findOneAndUpdate(id, data, { returnDocument: "after" })
+  if (!job.value || job.value.type !== "cron") {
+    throw Boom.internal("Not found")
+  }
+  return job.value
 }
 
 type CreateJobCronParams = Pick<IInternalJobsCron, "name" | "cron_string" | "scheduled_for" | "sync">
