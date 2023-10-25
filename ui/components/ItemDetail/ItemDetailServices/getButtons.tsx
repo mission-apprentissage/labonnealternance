@@ -24,10 +24,10 @@ export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
   return oneKind === "peJob" && oneItem?.url
 }
 
-export const buttonPRDVShouldBeDisplayed = (oneItem) => {
-  const res = !!oneItem?.prdvUrl
-  return res
-}
+/**
+ * Display RDV button if "rdvContext" is present in the item.
+ */
+export const buttonRdvShouldBeDisplayed = (item) => !!item?.rdvContext;
 
 export const buildPrdvButton = (training) => {
   const onClickPrdv = () => {
