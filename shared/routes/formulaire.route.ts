@@ -18,7 +18,13 @@ export const zFormulaireRoute = {
         "200": z.any(),
         // "2xx": ZRecruiter,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        ressources: {
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
     },
     "/formulaire/offre/f/:jobId": {
       method: "get",

@@ -3,7 +3,7 @@ import Axios from "axios"
 
 import { publicConfig } from "../config.public"
 
-import { apiPut } from "./api.utils"
+import { apiGet, apiPut } from "./api.utils"
 
 const API = Axios.create({
   baseURL: publicConfig.apiEndpoint,
@@ -19,7 +19,7 @@ const errorHandler = (error: any): undefined => {
  * Formulaire API
  */
 
-export const getFormulaire = (establishment_id) => API.get(`/formulaire/${establishment_id}`).catch(errorHandler)
+export const getFormulaire = (establishment_id: string) => apiGet("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
 export const postFormulaire = (form) => API.post(`/formulaire`, form)
 
 export const archiveFormulaire = (establishment_id) => API.delete(`/formulaire/${establishment_id}`).catch(errorHandler)

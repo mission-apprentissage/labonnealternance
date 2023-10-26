@@ -10,7 +10,7 @@ import { getFormulaire, patchOffre } from "../../../../utils/api"
 
 export default function PropositionOffreId() {
   const router = useRouter()
-  const { idFormulaire, jobId, siretFormateur } = router.query
+  const { idFormulaire, jobId, siretFormateur } = router.query as { idFormulaire: string; jobId: string; siretFormateur: string }
   const toast = useToast()
 
   const [job, setJob]: [any, (t: any) => void] = useState()

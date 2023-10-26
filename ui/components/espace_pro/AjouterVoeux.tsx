@@ -28,7 +28,8 @@ import dayjs from "dayjs"
 import { Formik } from "formik"
 import omit from "lodash/omit"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
+import { useQuery } from "react-query"
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
@@ -69,13 +70,16 @@ const ChampNombre = ({ value, max, name, handleChange, label }) => {
 
 const AjouterVoeuxForm = (props) => {
   const [inputJobItems, setInputJobItems] = useState([])
-  const [formulaire, setFormulaire] = useState(null)
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
 
-  const { user } = useAuth()
-
   const { establishment_id, email, userId, type } = router.query as { establishment_id: string; email: string; userId: string; type: string }
+  const { data: formulaire } = useQuery("offre-liste", {
+    enabled: !!establishment_id,
+    queryFn: () => getFormulaire(establishment_id),
+  })
+
+  const { user } = useAuth()
 
   const minDate = dayjs().format(DATE_FORMAT)
 
@@ -169,16 +173,6 @@ const AjouterVoeuxForm = (props) => {
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
-
-  useEffect(() => {
-    async function fetchData() {
-      if (establishment_id) {
-        const { data: formulaire } = (await getFormulaire(establishment_id)) as any
-        setFormulaire(formulaire)
-      }
-    }
-    fetchData()
-  }, [establishment_id])
 
   return (
     <Formik
