@@ -1,6 +1,6 @@
 export class OneLinerLogger {
   constructor(
-    public readonly options: { showReqStart: boolean } = { showReqStart: true },
+    public readonly options: { showRequestStart: boolean },
     public path: string[] = [],
     public level: string = "info"
   ) {}
@@ -14,11 +14,11 @@ export class OneLinerLogger {
       } else if ("res" in firstArg && secondArg === "request completed") {
         const response = firstArg.res.raw
         const request = firstArg.res.request
-        printedArgs = [`${response.statusCode} ${request.url}`]
+        printedArgs = [`${response.statusCode} ${request.method} ${request.url}`]
       } else if ("req" in firstArg) {
-        if (this.options.showReqStart) {
+        if (this.options.showRequestStart) {
           const request = firstArg.req
-          printedArgs = [`starting ${request.url}`]
+          printedArgs = [`starting ${request.method} ${request.url}`]
         } else {
           return
         }

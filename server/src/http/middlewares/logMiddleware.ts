@@ -88,7 +88,7 @@ export function logMiddleware(): FastifyLoggerOptions | PinoLoggerOptions | fals
 
   if (config.env === "local") {
     if (config.log.format === "one-line") {
-      return new OneLinerLogger()
+      return new OneLinerLogger({ showRequestStart: true })
     }
     return {
       transport: {
