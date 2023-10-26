@@ -42,6 +42,7 @@ async function optionsToFetchParams(method: RequestInit["method"], options: IReq
     signal: timeout ? AbortSignal.timeout(timeout) : undefined,
     body,
     method,
+    headers,
   }
   return { requestInit, headers }
 }
