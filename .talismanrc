@@ -11,18 +11,22 @@ fileignoreconfig:
   checksum: abfaba9d51239129f2556f7edefcace958243ffbca3dd7b437b699e9d321bc01
 - filename: .github/workflows/preview.yml
   checksum: 27c013968ca215a23c43c1d5474ea384a162363d39e7abe215f302d86b97b6ca
+- filename: .github/workflows/preview_cleanup.yml
+  checksum: 7529ad8e9959f77c6ed70c6b35eabdcad0183b172a5e6b27fec652f9797a834f
 - filename: .github/workflows/release.yml
   checksum: 04cd4e69c67ffb0baa69892cb715aab8221d10587af0b2f27af38b2d4a968b93
 - filename: .infra/.env_server
   checksum: 59746bdaeaeb88dcf84012f225a8db08e0ddb0225300ab9c806140f25f3c3140
 - filename: .infra/env.ini
   checksum: 55332a5edf8c13ed6f12346993579eac23d07d6c499d9a9b5b9b42c289d09823
+- filename: .infra/files/configs/mailpit/auth
+  checksum: 0c02db6c367747bfd696e8c93ed78c456fe311452e7a4ee1d7d5acc88f3b2189
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 3cb836a5c356c64ac6634c8aeb03b9737950a66ed61d9ae8f6b1528ad7b17434
 - filename: .infra/vault/vault.yml
-  checksum: 78d87ca6c740ffa7527e50b08ba96f5beea2e8987a872cf3bd8d1949f2e5c89c
+  checksum: 79d20ec114e953644833773cca4abb2ac3d65c7a9b526d742486a5120c12038e
 - filename: server/.env.test
-  checksum: a01fb129758d140e8c76f5f17184be514db29fea969872ef93d1dc25a7f5dbe2
+  checksum: 870b319418d2bd31728a0925d70ae4b6ef0ac6980ddf3feeb2702e32f868115d
 - filename: server/src/common/apis/Pe.ts
   checksum: 58fe86588f1bc61c01124025e46bb363e2b6ace3d18521862fa8f10b03663369
 - filename: server/src/common/model/constants/referrers.ts
@@ -79,8 +83,6 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-- filename: .infra/files/configs/mailpit/auth
-  checksum: 0c02db6c367747bfd696e8c93ed78c456fe311452e7a4ee1d7d5acc88f3b2189
 scopeconfig:
 - scope: node
 custom_patterns:
