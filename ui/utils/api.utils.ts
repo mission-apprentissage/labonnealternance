@@ -1,4 +1,4 @@
-import { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IResponse } from "shared"
+import { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IRequestAddedOptions, IResponse } from "shared"
 import { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
 import z, { ZodType } from "zod"
 
@@ -19,7 +19,34 @@ type OptionsWrite = {
   [Prop in keyof Pick<IRouteSchemaWrite, "params" | "querystring" | "headers" | "body">]: IRouteSchemaWrite[Prop] extends ZodType ? z.input<IRouteSchemaWrite[Prop]> : undefined
 }
 
-async function getHeaders(options: OptionsGet | OptionsWrite) {
+type IRequestOptions = (OptionsGet | OptionsWrite) & IRequestAddedOptions
+
+async function optionsToFetchParams(method: RequestInit["method"], options: IRequestOptions) {
+  const { timeout } = options
+
+  const headers = await getHeaders(options)
+
+  let body: BodyInit | undefined = undefined
+  if ("body" in options && method !== "GET") {
+    if (options.body instanceof FormData) {
+      body = options.body
+    } else {
+      body = JSON.stringify(options.body)
+      headers.append("Content-Type", "application/json")
+    }
+  }
+
+  const requestInit: RequestInit = {
+    mode: publicConfig.env === "local" ? "cors" : "same-origin",
+    credentials: publicConfig.env === "local" ? "include" : "same-origin",
+    signal: timeout ? AbortSignal.timeout(timeout) : undefined,
+    body,
+    method,
+  }
+  return { requestInit, headers }
+}
+
+async function getHeaders(options: IRequestOptions) {
   const headers = new Headers()
 
   if (options.headers) {
@@ -184,119 +211,46 @@ export class ApiError extends Error {
 }
 
 export async function apiPost<P extends keyof IPostRoutes, S extends IPostRoutes[P] = IPostRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  const headers = await getHeaders(options)
-
-  let body: BodyInit | null = null
-  if ("body" in options) {
-    if (options.body instanceof FormData) {
-      body = options.body
-    } else {
-      body = JSON.stringify(options.body)
-      headers.append("Content-Type", "application/json")
-    }
-  }
-
-  const res = await fetch(generateUrl(path, options), {
-    method: "POST",
-    mode: publicConfig.env === "local" ? "cors" : "same-origin",
-    credentials: publicConfig.env === "local" ? "include" : "same-origin",
-    body,
-    headers,
-  })
-
+  const { requestInit, headers } = await optionsToFetchParams("POST", options)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }
-
   return res.json()
 }
 
 export async function apiGet<P extends keyof IGetRoutes, S extends IGetRoutes[P] = IGetRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  const headers = await getHeaders(options)
-
-  const res = await fetch(generateUrl(path, options), {
-    method: "GET",
-    mode: publicConfig.env === "local" ? "cors" : "same-origin",
-    credentials: publicConfig.env === "local" ? "include" : "same-origin",
-    headers,
-  })
-
+  const { requestInit, headers } = await optionsToFetchParams("GET", options)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }
-
   return res.json()
 }
 
 export async function apiPut<P extends keyof IPutRoutes, S extends IPutRoutes[P] = IPutRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  const headers = await getHeaders(options)
-
-  let body: BodyInit | null = null
-  if ("body" in options) {
-    if (options.body instanceof FormData) {
-      body = options.body
-    } else {
-      body = JSON.stringify(options.body)
-      headers.append("Content-Type", "application/json")
-    }
-  }
-
-  const res = await fetch(generateUrl(path, options), {
-    method: "PUT",
-    mode: publicConfig.env === "local" ? "cors" : "same-origin",
-    credentials: publicConfig.env === "local" ? "include" : "same-origin",
-    body,
-    headers,
-  })
-
+  const { requestInit, headers } = await optionsToFetchParams("PUT", options)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }
-
   return res.json()
 }
 
 export async function apiPatch<P extends keyof IPatchRoutes, S extends IPatchRoutes[P] = IPatchRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  const headers = await getHeaders(options)
-
-  let body: BodyInit | null = null
-  if ("body" in options) {
-    if (options.body instanceof FormData) {
-      body = options.body
-    } else {
-      body = JSON.stringify(options.body)
-      headers.append("Content-Type", "application/json")
-    }
-  }
-
-  const res = await fetch(generateUrl(path, options), {
-    method: "PATCH",
-    mode: publicConfig.env === "local" ? "cors" : "same-origin",
-    credentials: publicConfig.env === "local" ? "include" : "same-origin",
-    body,
-    headers,
-  })
-
+  const { requestInit, headers } = await optionsToFetchParams("PATCH", options)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }
-
   return res.json()
 }
 
 export async function apiDelete<P extends keyof IDeleteRoutes, S extends IDeleteRoutes[P] = IDeleteRoutes[P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
-  const headers = await getHeaders(options)
-
-  const res = await fetch(generateUrl(path, options), {
-    method: "DELETE",
-    mode: publicConfig.env === "local" ? "cors" : "same-origin",
-    credentials: publicConfig.env === "local" ? "include" : "same-origin",
-    headers,
-  })
-
+  const { requestInit, headers } = await optionsToFetchParams("DELETE", options)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
     throw await ApiError.build(path, headers, options, res)
   }
-
   return res.json()
 }

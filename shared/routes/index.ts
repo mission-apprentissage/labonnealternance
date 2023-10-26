@@ -140,11 +140,15 @@ type IHeadersAuth<S extends IRouteSchema> = S extends { securityScheme: { auth: 
 
 export type IHeaders<S extends IRouteSchema> = S["headers"] extends ZodType ? Omit<z.input<S["headers"]>, "referrer"> : never
 
-type IRequestRaw<S extends IRouteSchema> = {
+type IRequestRaw<S extends IRouteSchema> = IRequestAddedOptions & {
   params: IParam<S>
   querystring: IQuery<S>
   headers: IHeaders<S> & IHeadersAuth<S>
   body: S extends IRouteSchemaWrite ? IBody<S> : never
+}
+
+export type IRequestAddedOptions = {
+  timeout?: number
 }
 
 export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never | EmptyObject>

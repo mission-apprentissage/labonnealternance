@@ -3,7 +3,7 @@ import Axios from "axios"
 
 import { publicConfig } from "../config.public"
 
-import { apiPut } from "./api.utils"
+import { apiGet, apiPut } from "./api.utils"
 
 const API = Axios.create({
   baseURL: publicConfig.apiEndpoint,
@@ -68,7 +68,7 @@ export const getCfaInformation = async (siret) => await API.get(`/etablissement/
 
 export const getEntrepriseInformation = async (siret: string, options: { cfa_delegated_siret: string | undefined } = { cfa_delegated_siret: undefined }) => {
   try {
-    const { data } = await API.get(`/etablissement/entreprise/${siret}`, { params: options, timeout: 7000 })
+    const data = await apiGet("/etablissement/entreprise/:siret", { params: { siret }, querystring: options, timeout: 7000 })
     return data
   } catch (error: any) {
     captureException(error)
@@ -80,9 +80,9 @@ export const getEntrepriseInformation = async (siret: string, options: { cfa_del
     }
   }
 }
-export const getEntrepriseOpco = async (siret) => {
+export const getEntrepriseOpco = async (siret: string) => {
   try {
-    const { data } = await API.get(`/etablissement/entreprise/${siret}/opco`, { timeout: 7000 })
+    const data = await apiGet("/etablissement/entreprise/:siret/opco", { params: { siret }, timeout: 7000 })
     return data
   } catch (error) {
     captureException(error)

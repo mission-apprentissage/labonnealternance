@@ -77,7 +77,7 @@ export const zRecruiterRoutes = {
       path: "/etablissement/entreprise/:siret/opco",
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             opco: z.string(),
             idcc: z.string().nullish(),
