@@ -20,6 +20,7 @@ export default function OptOutValidation() {
     // send token to back office
 
     apiGet(`/optout/validate`, {
+      // @ts-expect-error TODO
       headers: {
         Authorization: `Bearer ${token}`,
       },
