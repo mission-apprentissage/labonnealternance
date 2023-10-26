@@ -4,6 +4,7 @@ import { create as createMigration, status as statusMigration, up as upMigration
 import { ETAT_UTILISATEUR } from "@/services/constant.service"
 
 import { getLoggerWithContext } from "../common/logger"
+import config from "../config"
 
 import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
@@ -82,7 +83,7 @@ export const CronsMap = {
   },
   "Send CSV offers to Pôle emploi": {
     cron_string: "30 5 * * *",
-    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" } }),
+    handler: () => (config.env === "production" ? addJob({ name: "pe:offre:export", payload: { threshold: "1" } }) : Promise.resolve(0)),
   },
   "Check companies validation state": {
     cron_string: "30 6 * * *",
