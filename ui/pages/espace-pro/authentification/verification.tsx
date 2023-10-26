@@ -16,7 +16,6 @@ export default function AuthValidation() {
     const fetchData = async () => {
       if (token) {
         const user = await apiPost("/login/verification", {
-          // @ts-expect-error TODO
           headers: {
             authorization: `Bearer ${token}`,
           },

@@ -9,10 +9,13 @@ export const getAuthServerSideProps = async (context) => {
     return {}
   }
   try {
-    const session: IUserRecruteurPublic = await apiGet(`/auth/session`, {
-      // @ts-expect-error TODO
-      headers: context.req.headers,
-    })
+    const session: IUserRecruteurPublic = await apiGet(
+      `/auth/session`,
+      {},
+      {
+        headers: context.req.headers,
+      }
+    )
     return { auth: session }
   } catch (e) {
     return { auth: null }

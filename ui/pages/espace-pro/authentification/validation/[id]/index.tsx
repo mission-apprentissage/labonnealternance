@@ -50,7 +50,6 @@ export default function ConfirmationValidationEmail() {
       setLoading.on()
       if (token) {
         const user = (await apiPost("/etablissement/validation", {
-          // @ts-expect-error TODO
           headers: {
             authorization: `Bearer ${token}`,
           },

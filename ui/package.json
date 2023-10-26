@@ -60,6 +60,7 @@
     "eslint": "^8.50.0",
     "eslint-config-next": "latest",
     "nock": "^13.3.3",
+    "type-fest": "^4.6.0",
     "typescript": "^5.2.2",
     "vitest": "^0.34.5"
   }
