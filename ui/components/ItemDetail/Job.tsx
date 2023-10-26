@@ -149,7 +149,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
             {job.company && job.company.name ? job.company.name : ReactHtmlParser("<i>Offre anonyme</i>")}
           </Box>
           <Box pt={2} fontWeight={500} fontSize="12px">
-            {job.place.fullAddress}
+            {job?.company?.mandataire ? job.place.city : job.place.fullAddress}
           </Box>
 
           <Box fontSize="12px" color="grey.600" as="span" pt={1}>
