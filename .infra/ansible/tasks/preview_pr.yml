@@ -81,7 +81,7 @@
     - name: "[{{ pr_number }}] Trigger ACME companion"
       shell:
         chdir: /opt/app
-        cmd: docker exec nginx-proxy-acme /app/force_renew
+        cmd: docker exec nginx-proxy-acme /app/signal_le_service
 
     - name: "[{{ pr_number }}] Seed database"
       shell:

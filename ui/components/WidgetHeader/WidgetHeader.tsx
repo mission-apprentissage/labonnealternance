@@ -36,7 +36,7 @@ const WidgetHeader = ({
             {isHome && (
               <Text mb={3} as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
                 <Text as="span" display={{ base: "block", md: "inline" }}>
-                  Emplois et formations{" "}
+                  Trouvez emploi et formation{" "}
                 </Text>
                 <Text as="span" color="info" display={{ base: "block", md: "inline" }}>
                   en alternance
