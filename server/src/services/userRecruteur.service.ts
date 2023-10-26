@@ -146,7 +146,7 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
   const sortedArray = [...stateArray].sort((a, b) => new Date(a?.date ?? 0).valueOf() - new Date(b?.date ?? 0).valueOf())
   const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
   if (!lastValidationEvent) {
-    throw Boom.internal("no status found in status array")
+    return null
   }
   return lastValidationEvent.status
 }
