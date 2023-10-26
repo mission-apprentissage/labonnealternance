@@ -24,7 +24,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 3cb836a5c356c64ac6634c8aeb03b9737950a66ed61d9ae8f6b1528ad7b17434
 - filename: .infra/vault/vault.yml
-  checksum: 78d87ca6c740ffa7527e50b08ba96f5beea2e8987a872cf3bd8d1949f2e5c89c
+  checksum: 79d20ec114e953644833773cca4abb2ac3d65c7a9b526d742486a5120c12038e
 - filename: server/.env.test
   checksum: 870b319418d2bd31728a0925d70ae4b6ef0ac6980ddf3feeb2702e32f868115d
 - filename: server/src/common/apis/Pe.ts
