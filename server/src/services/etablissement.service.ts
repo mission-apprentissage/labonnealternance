@@ -463,7 +463,9 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
     if (balControl.is_valid) {
       userRecruteur = await autoValidateUser(_id)
     } else {
-      userRecruteur = await setUserHasToBeManuallyValidated(_id)
+      if (getUserStatus(userRecruteur.status) !== ETAT_UTILISATEUR.ATTENTE) {
+        userRecruteur = await setUserHasToBeManuallyValidated(_id)
+      }
     }
   }
   return { userRecruteur, validated: isValid }
