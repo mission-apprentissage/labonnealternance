@@ -21,19 +21,6 @@ const PE_IO_API_OFFRES_BASE_URL = "https://api.pole-emploi.io/partenaire/offresd
 const PE_AUTH_BASE_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2"
 const PE_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
 
-// @kevin ?
-// const getApiClient = (options = {}) =>
-//   setupCache(
-//     axios.create({
-//       httpAgent: new http.Agent({ keepAlive: true }),
-//       httpsAgent: new https.Agent({ keepAlive: true }),
-//       ...options,
-//     }),
-//     {
-//       ttl: 2000 * 60 * 10, // 20 Minutes
-//     }
-//   )
-
 const axiosClient = getApiClient({})
 
 /**
@@ -75,17 +62,16 @@ export const getLBFFormationDescription = async (id: string) => {
 
 const ROME_ACESS = querystring.stringify({
   grant_type: "client_credentials",
-  client_id: config.poleEmploi.clientId,
-  client_secret: config.poleEmploi.clientSecret,
-  scope: `application_${config.poleEmploi.clientId} api_romev1 nomenclatureRome`,
+  client_id: config.esdClientId,
+  client_secret: config.esdClientSecret,
+  scope: `application_${config.esdClientId} api_romev1 nomenclatureRome`,
 })
 
-const clientIdOffres = config.esdClientId === "1234" ? process.env.ESD_CLIENT_ID : config.esdClientId
 const OFFRES_ACESS = querystring.stringify({
   grant_type: "client_credentials",
-  client_id: clientIdOffres,
-  client_secret: config.esdClientSecret === "1234" ? process.env.ESD_CLIENT_SECRET : config.esdClientSecret,
-  scope: `application_${clientIdOffres} api_offresdemploiv2 o2dsoffre`,
+  client_id: config.esdClientId,
+  client_secret: config.esdClientSecret,
+  scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
 })
 
 let tokenOffrePE: IPEAPIToken = {
@@ -113,7 +99,6 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
   try {
     const response = await axiosClient.post(`${PE_AUTH_BASE_URL}/access_token?realm=%2Fpartenaire`, access === "OFFRE" ? OFFRES_ACESS : ROME_ACESS, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      //Authorization: `Bearer ${config.poleEmploi.clientSecret}`, ?
       timeout: 3000,
     })
 

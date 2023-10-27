@@ -10,13 +10,24 @@ jobs:
       - uses: hmarr/debug-action@v2
 
   deploy_preview:
-    if: startsWith(github.event.comment.body, '🚀') && github.event.issue.pull_request
+    if: (startsWith(github.event.comment.body, '🚀') || startsWith(github.event.comment.body, ':rocket:')) && github.event.issue.pull_request
     concurrency:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}
       cancel-in-progress: true
     name: Deploy Preview ${{ github.event.issue.number }}
     runs-on: ubuntu-latest
     steps:
+      - name: Comment PR Preview
+        if: github.event.issue.state != 'closed'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ### :rocket: Prévisualisation
+            Deploying a new preview, follow progress in ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}
+          comment_tag: deployment
+          mode: recreate
+          pr_number: ${{ github.event.issue.number }}
+
       - name: React to comment
         uses: dkershner6/reaction-action@v1
         with:
@@ -102,6 +113,8 @@ jobs:
             ### :rocket: Prévisualisation
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
+            You can access runner logs in ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}
+
             To re-deploy just add a comment with :rocket:
           comment_tag: deployment
           mode: recreate
@@ -117,6 +130,7 @@ jobs:
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
             You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`
+            You can access runner logs in ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}
 
             To re-deploy just add a comment with :rocket:
           comment_tag: deployment
@@ -131,6 +145,8 @@ jobs:
             ### :ambulance: Prévisualisation cancelled
 
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
+
+            You can access runner logs in ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}
 
             To re-deploy just add a comment with :rocket:
           comment_tag: deployment

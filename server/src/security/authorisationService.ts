@@ -39,18 +39,25 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
   }
 
   return Promise.all(
-    schema.securityScheme.ressources.recruiter.map(async (r): Promise<IRecruiter | null> => {
-      if ("_id" in r) {
-        return await Recruiter.findById(getAccessResourcePathValue(r._id, req)).lean()
+    schema.securityScheme.ressources.recruiter.map(async (recruiterDef): Promise<IRecruiter | null> => {
+      if ("_id" in recruiterDef) {
+        return await Recruiter.findById(getAccessResourcePathValue(recruiterDef._id, req)).lean()
       }
 
-      if ("establishment_id" in r) {
+      if ("establishment_id" in recruiterDef) {
         return await Recruiter.findOne({
-          establishment_id: getAccessResourcePathValue(r.establishment_id, req),
+          establishment_id: getAccessResourcePathValue(recruiterDef.establishment_id, req),
         }).lean()
       }
 
-      assertUnreachable(r)
+      if ("email" in recruiterDef && "establishment_siret" in recruiterDef) {
+        return await Recruiter.findOne({
+          email: getAccessResourcePathValue(recruiterDef.email, req),
+          establishment_siret: getAccessResourcePathValue(recruiterDef.establishment_siret, req),
+        }).lean()
+      }
+
+      assertUnreachable(recruiterDef)
     })
   )
 }

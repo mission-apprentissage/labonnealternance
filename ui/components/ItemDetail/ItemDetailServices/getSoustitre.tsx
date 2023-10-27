@@ -12,7 +12,7 @@ export default function getSoustitre({ selectedItem }) {
           />
         </svg>
         <Text as="span">&nbsp;Entreprise :&nbsp;</Text>
-        <Text as="span">{selectedItem?.company?.place?.city || "lieu non déterminé"}</Text>
+        <Text as="span">{selectedItem?.place?.city || "lieu non déterminé"}</Text>
       </Flex>
       <Flex alignItems="center" mb={4} mt={2}>
         <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,8 +22,7 @@ export default function getSoustitre({ selectedItem }) {
           />
         </svg>
         <Text as="span">&nbsp;Formation :&nbsp;</Text>
-        <Text as="span">{selectedItem?.place?.zipCode}</Text>
-        <Text as="span">&nbsp;{selectedItem?.place?.city || selectedItem?.place?.address}</Text>
+        <Text as="span">&nbsp;{selectedItem?.company?.place?.address}</Text>
       </Flex>
     </Box>
   ) : (
