@@ -54,7 +54,7 @@ function prettyPrintStream(outputName) {
 
 function sendLogsToConsole(outputName) {
   const { level, format } = config.log
-  return format === "pretty"
+  return format === "pretty" || format === "one-line"
     ? {
         type: "raw",
         name: outputName,

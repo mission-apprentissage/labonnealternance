@@ -4,13 +4,13 @@ import { defineWorkspace } from "vitest/config"
 
 export default defineWorkspace([
   {
-    // @ts-expect-error
     plugins: [tsconfigPaths()],
     test: {
       name: "server",
       root: "./server",
       include: ["./tests/**/*.test.ts"],
       setupFiles: ["./tests/utils/setup.ts"],
+      globalSetup: ["./server/tests/utils/globalSetup.ts"],
       threads: true,
       // Isolate doesn't work with Mongoose
       isolate: false,

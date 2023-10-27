@@ -73,10 +73,6 @@ const config = {
     queryUrl: env.get("LBA_DIAGORIENTE_QUERY_URL").required().asString(),
     realm: env.get("LBA_DIAGORIENTE_REALM").required().asString(),
   },
-  poleEmploi: {
-    clientId: env.get("LBA_POLE_EMPLOI_CLIENT_ID").required().asString(),
-    clientSecret: env.get("LBA_POLE_EMPOI_CLIENT_SECRET").required().asString(),
-  },
   poleEmploiDepotOffres: {
     login: env.get("LBA_POLE_EMPLOI_DEPOT_OFFRES_LOGIN").required().asString(),
     password: env.get("LBA_POLE_EMPLOI_DEPOT_OFFRES_PASSWORD").required().asString(),
