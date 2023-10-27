@@ -84,18 +84,17 @@ export function logMiddleware(): FastifyLoggerOptions | PinoLoggerOptions | fals
     },
   }
 
-  if (config.env !== "local") {
-    return defaultSettings
-  }
-
-  return {
-    ...defaultSettings,
-    transport: {
-      target: "pino-pretty",
-      options: {
-        translateTime: "HH:MM:ss Z",
-        ignore: "pid,hostname",
+  if (config.env === "local") {
+    return {
+      transport: {
+        target: config.log.format === "one-line" ? "@fastify/one-line-logger" : "pino-pretty",
+        options: {
+          translateTime: "HH:MM:ss Z",
+          ignore: "pid,hostname",
+        },
       },
-    },
+    }
+  } else {
+    return defaultSettings
   }
 }

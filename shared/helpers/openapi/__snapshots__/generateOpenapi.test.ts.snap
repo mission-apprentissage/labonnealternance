@@ -2790,11 +2790,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
     },
     "securitySchemes": {
       "api-key": {
-        "bearerFormat": "",
         "in": "header",
         "name": "authorization",
-        "scheme": "bearer",
-        "type": "http",
+        "type": "apiKey",
       },
     },
   },
