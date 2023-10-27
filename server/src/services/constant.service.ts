@@ -55,6 +55,7 @@ export const OPCOS = {
 }
 
 export const NIVEAUX_POUR_LBA = {
+  INDIFFERENT: "Indifférent",
   "3 (CAP...)": "Cap, autres formations niveau (Infrabac)",
   "4 (BAC...)": "BP, Bac, autres formations niveau (Bac)",
   "5 (BTS, DEUST...)": "BTS, DEUST, autres formations niveau (Bac+2)",
