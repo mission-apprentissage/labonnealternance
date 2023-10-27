@@ -36,12 +36,11 @@ export const zApplicationRoutes = {
       },
     },
     "/application/intentionComment": {
-      // TODO_SECURITY_FIX
       path: "/application/intentionComment",
       method: "post",
       body: z
         .object({
-          id: z.string(), // inutile de chiffrer l'id, rajouter un champ token qui contiendra l'id
+          id: z.string(),
           iv: z.string(),
           comment: z.string(),
           intention: z.string(),
