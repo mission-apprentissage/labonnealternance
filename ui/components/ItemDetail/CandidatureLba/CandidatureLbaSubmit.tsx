@@ -10,9 +10,9 @@ const CandidatureLbaSubmit = (props) => {
   switch (sendingState) {
     case "not_sent": {
       return (
-        <Button class="tracking-postuler-entreprise" aria-label="Envoyer la candidature spontanée" variant="blackButton" type="submit" data-testid="candidature-not-sent">
-          {amongst(kind, ["lbb", "lba"]) ? "J'envoie ma candidature spontanée" : "J'envoie ma candidature"}
-        </Button>
+        
+          {amongst(kind, ["lbb", "lba"]) ? <Button data-tracking-id="tracking-postuler-entreprise-algo" aria-label="Envoyer la candidature spontanée" variant="blackButton" type="submit" data-testid="candidature-not-sent">J'envoie ma candidature spontanée</Button> : <Button data-trackingid="tracking-postuler-offre-lba" aria-label="Envoyer la candidature spontanée" variant="blackButton" type="submit" data-testid="candidature-not-sent">J'envoie ma candidature</Button>}
+        
       )
     }
     case "currently_sending": {
