@@ -1,0 +1,41 @@
+name: Clean Previews
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  cleanup:
+    name: Clean Previews
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          name: github_actions
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ vars.SSH_KNOWN_HOSTS }}
+          config: |
+            Host *
+              IdentityFile ~/.ssh/github_actions
+
+      - name: Create vault pwd file
+        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
+
+      - name: Install jmespath
+        run: |
+          sudo pipx inject ansible-core jmespath
+
+      - name: Run playbook
+        run: .bin/mna-lba preview:cleanup
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+          ANSIBLE_REMOTE_USER: deploy
+          ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}

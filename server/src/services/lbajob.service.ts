@@ -282,6 +282,20 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
   }
 }
 
+const getCity = (recruiter) => {
+  let city = ""
+  if (recruiter.establishment_location) {
+    // cas mandataire
+    city = recruiter.establishment_location
+  } else if ("localite" in recruiter.address_detail) {
+    city = recruiter.address_detail.localite
+  } else if ("libelle_commune" in recruiter.address_detail) {
+    city = recruiter.address_detail.libelle_commune
+  }
+
+  return city
+}
+
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
@@ -316,19 +330,28 @@ function transformLbaJob({
         phone: recruiter.phone,
       },
       place: {
+        //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
         distance: distance !== undefined ? roundDistance(distance) : null,
-        fullAddress: recruiter.address,
-        address: recruiter.address,
+        fullAddress: recruiter.is_delegated ? null : recruiter.address,
+        address: recruiter.is_delegated ? null : recruiter.address,
         latitude,
         longitude,
-        city: recruiter.address_detail && "localite" in recruiter.address_detail ? recruiter.address_detail.localite : null,
+        city: getCity(recruiter),
       },
       company: {
+        // si mandataire contient les données du CFA
         siret: recruiter.establishment_siret,
         name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
         size: recruiter.establishment_size,
         mandataire: recruiter.is_delegated,
         creationDate: recruiter.establishment_creation_date ? new Date(recruiter.establishment_creation_date) : null,
+        place: recruiter.is_delegated
+          ? {
+              // contient infos d'adresse du cfa mandataire
+              address: recruiter.address,
+              fullAddress: recruiter.address,
+            }
+          : null,
       },
       nafs: [{ label: recruiter.naf_label }],
       diplomaLevel: offre.job_level_label || null,
