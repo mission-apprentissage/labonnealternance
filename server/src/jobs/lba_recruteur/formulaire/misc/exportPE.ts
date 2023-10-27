@@ -9,6 +9,7 @@ import { JOB_STATUS } from "shared/models"
 
 import { sendCsvToPE } from "@/common/apis/Pe"
 import { db } from "@/common/mongodb"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
@@ -187,39 +188,51 @@ const formatToPe = async (offre) => {
  * @description Generate a CSV with eligible offers for Pole Emploi integration
  */
 export const exportPE = async (): Promise<void> => {
-  const csvPath = new URL("./exportPE.csv", import.meta.url)
-  const buffer: any[] = []
+  try {
+    const csvPath = new URL("./exportPE.csv", import.meta.url)
+    const buffer: any[] = []
 
-  // Retrieve only active offers
-  const offres: any[] = await db.collection("jobs").find({ job_status: JOB_STATUS.ACTIVE, recruiterStatus: RECRUITER_STATUS.ACTIF }).toArray()
+    // Retrieve only active offers
+    const offres: any[] = await db.collection("jobs").find({ job_status: JOB_STATUS.ACTIVE, recruiterStatus: RECRUITER_STATUS.ACTIF }).toArray()
 
-  logger.info("get info from user...")
-  await asyncForEach(offres, async (offre) => {
-    const user = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
+    logger.info("get info from user...")
+    await asyncForEach(offres, async (offre) => {
+      const user = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
 
-    if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
-      offre.job_type.map(async (type) => {
-        if (offre.rome_detail && typeof offre.rome_detail !== "string") {
-          buffer.push({ ...offre, type: type, cfa: user ? pick(user, ["address_detail", "establishment_raison_sociale"]) : null })
-        } else {
-          stat.ko++
-        }
-      })
-    }
-  })
+      if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
+        offre.job_type.map(async (type) => {
+          if (offre.rome_detail && typeof offre.rome_detail !== "string") {
+            buffer.push({ ...offre, type: type, cfa: user ? pick(user, ["address_detail", "establishment_raison_sociale"]) : null })
+          } else {
+            stat.ko++
+          }
+        })
+      }
+    })
 
-  logger.info("Start stream to CSV...")
-  await oleoduc(
-    Readable.from(buffer),
-    transformData((value) => formatToPe(value)),
-    transformIntoCSV({ separator: "|" }),
-    createWriteStream(csvPath)
-  )
+    logger.info("Start stream to CSV...")
+    await oleoduc(
+      Readable.from(buffer),
+      transformData((value) => formatToPe(value)),
+      transformIntoCSV({ separator: "|" }),
+      createWriteStream(csvPath)
+    )
 
-  logger.info("Stats: ", stat)
-  logger.info("Send CSV...")
+    logger.info("Stats: ", stat)
+    logger.info("Send CSV...")
 
-  const response = await sendCsvToPE(path.resolve(csvPath.pathname))
+    const response = await sendCsvToPE(path.resolve(csvPath.pathname))
 
-  logger.info(`CSV sent (${response})`)
+    logger.info(`CSV sent (${response})`)
+    await notifyToSlack({
+      subject: "EXPORT PE OK",
+      message: `${buffer.length} offres transmises à Pôle emploi`,
+    })
+  } catch (err) {
+    await notifyToSlack({
+      subject: "EXPORT PE KO",
+      message: `Echec de l'export des offres Pôle emploi. ${err}`,
+    })
+    throw err
+  }
 }
