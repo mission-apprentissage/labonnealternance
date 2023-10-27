@@ -139,7 +139,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
           {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
             <Box my={4}>
-              <Link data-trackingid="postuler-offre-partenaire" variant="postuler" href={selectedItem.url} target="poleemploi" onClick={postuleSurPoleEmploi}>
+              <Link data-tracking-id="postuler-offre-partenaire" variant="postuler" href={selectedItem.url} target="poleemploi" onClick={postuleSurPoleEmploi}>
                 Je postule sur Pôle emploi
               </Link>
             </Box>
