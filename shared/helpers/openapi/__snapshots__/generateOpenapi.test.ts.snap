@@ -5110,7 +5110,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   "job_level_label",
                   "job_duration",
                   "job_type",
-                  "is_disabled_elligible",
                   "job_start_date",
                   "appellation_code",
                 ],
