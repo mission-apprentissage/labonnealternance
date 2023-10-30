@@ -436,7 +436,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/provided/:jobId": {
       method: "post",
       path: "/v1/jobs/provided/:jobId",
-      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
@@ -461,7 +460,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/canceled/:jobId": {
       method: "post",
       path: "/v1/jobs/canceled/:jobId",
-      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
@@ -486,7 +484,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/extend/:jobId": {
       method: "post",
       path: "/v1/jobs/extend/:jobId",
-      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
