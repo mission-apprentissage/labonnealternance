@@ -7,14 +7,14 @@ import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models"
 
-import { sendCsvToPE } from "@/common/apis/Pe"
 import { db } from "@/common/mongodb"
-import { notifyToSlack } from "@/common/utils/slackUtils"
 
+import { sendCsvToPE } from "../../../../common/apis/Pe"
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
 import { getDepartmentByZipCode } from "../../../../common/territoires"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import dayjs from "../../../../services/dayjs.service"
 
 const stat = {
@@ -131,7 +131,7 @@ const formatToPe = async (offre) => {
     COM_libelle: null,
     DEP_cle: adresse.code_postal.slice(0, 2),
     DEP_libelle: null,
-    REG_cle: getDepartmentByZipCode(adresse.code_postal)?.region.code,
+    REG_cle: getDepartmentByZipCode(adresse.code_postal)?.region.code ?? "",
     REG_libelle: null,
     Pay_cle: null,
     Pay_libelle: adresse.l7,
@@ -193,9 +193,12 @@ export const exportPE = async (): Promise<void> => {
     const buffer: any[] = []
 
     // Retrieve only active offers
-    const offres: any[] = await db.collection("jobs").find({ job_status: JOB_STATUS.ACTIVE, recruiterStatus: RECRUITER_STATUS.ACTIF }).toArray()
+    const offres: any[] = await db
+      .collection("jobs")
+      .find({ job_status: JOB_STATUS.ACTIVE, recruiterStatus: RECRUITER_STATUS.ACTIF, geo_coordinates: { $nin: ["NOT FOUND", null] } })
+      .toArray()
 
-    logger.info("get info from user...")
+    logger.info(`get info from ${offres.length} offers...`)
     await asyncForEach(offres, async (offre) => {
       const user = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
 
@@ -226,7 +229,7 @@ export const exportPE = async (): Promise<void> => {
     logger.info(`CSV sent (${response})`)
     await notifyToSlack({
       subject: "EXPORT PE OK",
-      message: `${buffer.length} offres transmises à Pôle emploi`,
+      message: `${buffer.length} offres transmises à Pôle emploi - reponse API PE : ${response}`,
     })
   } catch (err) {
     await notifyToSlack({
