@@ -38,7 +38,6 @@ export default function DepotRapideFin() {
   const fromDash = fromDashboardString === "true"
   const withDelegationBoolean = withDelegation === "true"
 
-  console.log("getUserStatus", { userId })
   /**
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
@@ -72,8 +71,8 @@ export default function DepotRapideFin() {
     return <LoadingEmptySpace />
   }
 
-  const resendMail = (email) => {
-    sendValidationLink({ email })
+  const resendMail = () => {
+    sendValidationLink(userId)
       .then(() => {
         toast({
           title: "Email envoyé.",
@@ -138,10 +137,10 @@ export default function DepotRapideFin() {
             </Text>
           </Box>
         </Flex>
-        {userIsInError && (
+        {!userIsInError && (
           <Stack direction="row" align="center" spacing={4} mt={4} ml={6}>
             <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-            <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+            <Button variant="popover" textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
               Renvoyer le mail
             </Button>
           </Stack>
@@ -163,10 +162,10 @@ export default function DepotRapideFin() {
               Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
               l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
-            {userIsInError && (
+            {!userIsInError && (
               <Stack direction="row" align="center" spacing={4} mt={4}>
                 <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-                <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+                <Button variant="popover" textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
                   Renvoyer le mail
                 </Button>
               </Stack>
