@@ -7,7 +7,8 @@
       inherit; text-decoration: none; font-size: 28px } .link-nostyle:hover { color: inherit; text-decoration: none } .form-row { font-size: 16px; padding-bottom: 15px;}
       .form-value { background: #F9F8F6; font-weight: 500; padding: 3px 15px } .form-msg { background: #F9F8F6; font-weight: 400; padding: 3px 15px } .nom-societe { font-size:
       14px; color: #F07F87; font-weight: bold; } .gras { font-weight: bold; } .link-black { color: #000; text-decoration: underline; } .link-black:hover { color: #000;
-      text-decoration: underline; } .intention-link:hover td, .intention-link:hover a { background-color: #000091 !important; color: #fff !important; }
+      text-decoration: underline; } .intention-link:hover td, .intention-link:hover a { background-color: #000091 !important; color: #fff !important; } .poll-link:hover a {
+      background-color: #000091 !important; color: #fff !important; }
     </mj-style>
     <mj-attributes>
       <mj-text padding="0px" font-family="Roboto,Arial,sans-serif" color="#232E3C" font-size="16px" line-height="23px" />
@@ -105,6 +106,34 @@
           >
           <mj-text font-size="16px" padding-bottom="15px">Message du candidat : </mj-text>
           <mj-text font-size="16px" padding-bottom="32px"><div class="form-msg" width="100%"><%- data.applicant_message_to_company %></div> </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+
+    <mj-section padding-bottom="30px"></mj-section>
+    <mj-wrapper background-color="#E3E3FD" padding="10px 0 10px" border-radius="10px">
+      <mj-section padding="15px">
+        <mj-column>
+          <mj-text font-style="normal" padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#000000">
+            Rencontrez-vous des difficultés de recrutement?
+          </mj-text>
+          <mj-text font-size="16px" line-height="24px" color="#000000">
+            Répondez à nos 3 questions et partagez-nous vos difficultés en tant que recruteur. Nous animerons un webinar prochainement afin de vous apporter nos réponses.
+          </mj-text>
+          <mj-button
+            href="https://tally.so/r/mO49pM"
+            css-class="poll-link"
+            width="250px"
+            color="#000091"
+            font-family="Roboto,Arial,sans-serif"
+            border="1px solid #000091"
+            font-size="16px"
+            font-weight="400"
+            background-color="#E3E3FD"
+            align="center"
+          >
+            &nbsp;Participer à l'enquête
+          </mj-button>
         </mj-column>
       </mj-section>
     </mj-wrapper>
