@@ -15,6 +15,8 @@ fileignoreconfig:
   checksum: 7529ad8e9959f77c6ed70c6b35eabdcad0183b172a5e6b27fec652f9797a834f
 - filename: .github/workflows/release.yml
   checksum: 04cd4e69c67ffb0baa69892cb715aab8221d10587af0b2f27af38b2d4a968b93
+- filename: .github/workflows/release_recette.yml
+  checksum: 29e3f1044ff1312651f8d4d555ef8306d8ef727f2edb03d021fb3746b34b358c
 - filename: .infra/.env_server
   checksum: 59746bdaeaeb88dcf84012f225a8db08e0ddb0225300ab9c806140f25f3c3140
 - filename: .infra/env.ini
