@@ -23,7 +23,7 @@ jobs:
         with:
           message: |
             ### :rocket: Prévisualisation
-            Deploying a new preview, follow progress in ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}
+            Deploying a new preview, follow progress in ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
           comment_tag: deployment
           mode: recreate
           pr_number: ${{ github.event.issue.number }}
@@ -113,7 +113,7 @@ jobs:
             ### :rocket: Prévisualisation
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
-            You can access runner logs in ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}
+            You can access runner logs in ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
 
             To re-deploy just add a comment with :rocket:
           comment_tag: deployment
@@ -130,7 +130,7 @@ jobs:
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
             You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`
-            You can access runner logs in ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}
+            You can access runner logs in ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
 
             To re-deploy just add a comment with :rocket:
           comment_tag: deployment
@@ -146,7 +146,7 @@ jobs:
 
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
-            You can access runner logs in ${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}
+            You can access runner logs in ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
 
             To re-deploy just add a comment with :rocket:
           comment_tag: deployment
