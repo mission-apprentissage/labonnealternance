@@ -6,9 +6,9 @@ import { IRoutesDef } from "./common.routes"
 
 export const zLoginRoutes = {
   post: {
-    "/login/:userId/confirmation-email": {
+    "/login/:userId/resend-confirmation-email": {
       method: "post",
-      path: "/login/:userId/confirmation-email",
+      path: "/login/:userId/resend-confirmation-email",
       params: z
         .object({
           userId: zObjectId,

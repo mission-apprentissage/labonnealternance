@@ -15,10 +15,10 @@ import { Server } from "../../server"
 
 export default (server: Server) => {
   server.post(
-    "/login/:userId/confirmation-email",
+    "/login/:userId/resend-confirmation-email",
     {
-      schema: zRoutes.post["/login/:userId/confirmation-email"],
-      onRequest: server.auth(zRoutes.post["/login/:userId/confirmation-email"]),
+      schema: zRoutes.post["/login/:userId/resend-confirmation-email"],
+      onRequest: server.auth(zRoutes.post["/login/:userId/resend-confirmation-email"]),
     },
     async (req, res) => {
       const { userId } = req.params

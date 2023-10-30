@@ -62,7 +62,7 @@ export const updateEntreprise = async (userId: string, establishment_id, user) =
  * Auth API
  */
 export const sendMagiclink = async (email) => await API.post(`/login/magiclink`, email)
-export const sendValidationLink = async (userId: string) => await apiPost("/login/:userId/confirmation-email", { params: { userId } })
+export const sendValidationLink = async (userId: string) => await apiPost("/login/:userId/resend-confirmation-email", { params: { userId } })
 
 /**
  * Etablissement API
