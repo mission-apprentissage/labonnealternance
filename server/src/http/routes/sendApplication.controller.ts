@@ -60,6 +60,25 @@ export default function (server: Server) {
   )
 
   server.post(
+    "/application/intention",
+    {
+      schema: zRoutes.post["/application/intention"],
+      config: rateLimitConfig,
+    },
+    async (req, res) => {
+      const decryptedId = decryptWithIV(req.body.id, req.body.iv)
+
+      const application = await Application.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(decryptedId) },
+        { company_recruitment_intention: req.body.intention, company_feedback_date: new Date() }
+      )
+      if (!application) throw new Error("application not found")
+
+      return res.status(200).send({ result: "ok" })
+    }
+  )
+
+  server.post(
     "/application/webhook",
     {
       schema: zRoutes.post["/application/webhook"],
