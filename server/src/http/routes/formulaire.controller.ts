@@ -31,7 +31,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id",
     {
       schema: zRoutes.get["/formulaire/:establishment_id"],
-      onRequest: [server.auth(zRoutes.put["/formulaire/:establishment_id"])],
+      onRequest: [server.auth(zRoutes.get["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
       const result = await getFormulaire({ establishment_id: req.params.establishment_id })
@@ -150,7 +150,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id/offre",
     {
       schema: zRoutes.post["/formulaire/:establishment_id/offre"],
-      // preHandler: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre"])],
+      onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre"])],
       bodyLimit: 5 * 1024 ** 2, // 5MB
     },
     async (req, res) => {
@@ -196,6 +196,7 @@ export default (server: Server) => {
     "/formulaire/offre/:jobId/delegation",
     {
       schema: zRoutes.post["/formulaire/offre/:jobId/delegation"],
+      onRequest: [server.auth(zRoutes.post["/formulaire/offre/:jobId/delegation"])],
     },
     async (req, res) => {
       const { etablissementCatalogueIds } = req.body

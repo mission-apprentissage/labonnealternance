@@ -285,7 +285,7 @@ export default (server: Server) => {
     "/user",
     {
       schema: zRoutes.delete["/user"],
-      preHandler: [],
+      onRequest: [server.auth(zRoutes.delete["/user"])],
     },
     async (req, res) => {
       const { userId, recruiterId } = req.query
