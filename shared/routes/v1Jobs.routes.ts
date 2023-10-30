@@ -528,7 +528,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/:jobId": {
       method: "patch",
       path: "/v1/jobs/:jobId",
-      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
