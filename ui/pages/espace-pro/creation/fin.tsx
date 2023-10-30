@@ -4,13 +4,11 @@ import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 
-import { apiGet } from "@/utils/api.utils"
-
 import { AuthentificationLayout, LoadingEmptySpace } from "../../../components/espace_pro"
 import { WidgetContext } from "../../../context/contextWidget"
 import { InfoCircle } from "../../../theme/components/icons"
 import { MailCloud } from "../../../theme/components/logos"
-import { sendValidationLink } from "../../../utils/api"
+import { getUserStatus, sendValidationLink } from "../../../utils/api"
 
 function parseQueryString(value: string | string[]): string {
   return Array.isArray(value) ? value[0] : value
@@ -40,11 +38,12 @@ export default function DepotRapideFin() {
   const fromDash = fromDashboardString === "true"
   const withDelegationBoolean = withDelegation === "true"
 
+  console.log("getUserStatus", { userId })
   /**
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isFetched } = useQuery("userdetail", () => apiGet("/user/status/:userId", { params: { userId } }), {
+  const { isFetched } = useQuery("userdetail", () => (userId ? getUserStatus(userId) : Promise.reject()), {
     retry: userId ? true : false,
     onSettled: (data) => {
       if (data?.status_current === "ERROR") {

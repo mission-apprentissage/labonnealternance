@@ -165,6 +165,7 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message)
             else throw Boom.badRequest(result.message)
           }
+          await startSession(req.body.email, res)
           return res.status(200).send(result)
         }
         case CFA: {

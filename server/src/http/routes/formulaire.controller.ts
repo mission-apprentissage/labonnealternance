@@ -31,6 +31,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id",
     {
       schema: zRoutes.get["/formulaire/:establishment_id"],
+      onRequest: [server.auth(zRoutes.put["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
       const result = await getFormulaire({ establishment_id: req.params.establishment_id })

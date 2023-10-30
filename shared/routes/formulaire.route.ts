@@ -10,8 +10,6 @@ export const zFormulaireRoute = {
     "/formulaire/:establishment_id": {
       method: "get",
       path: "/formulaire/:establishment_id",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
         // TODO ANY TO BE FIXED
@@ -69,7 +67,6 @@ export const zFormulaireRoute = {
     "/formulaire/:establishment_id/offre": {
       method: "post",
       path: "/formulaire/:establishment_id/offre",
-      // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
       // TODO nonstrict TO BE FIXED on the frontend
@@ -79,13 +76,17 @@ export const zFormulaireRoute = {
         // "2xx": ZRecruiter,
         "200": z.any(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:add_job",
+        ressources: {
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
     },
     "/formulaire/offre/:jobId/delegation": {
       method: "post",
       path: "/formulaire/offre/:jobId/delegation",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ jobId: zObjectId }).strict(),
       body: z
         .object({
@@ -94,10 +95,16 @@ export const zFormulaireRoute = {
         .strict(),
       response: {
         // TODO ANY TO BE FIXED
-        "2xx": z.any(),
+        "200": z.any(),
         // "2xx": ZRecruiter,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
   },
   put: {

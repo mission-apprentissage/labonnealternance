@@ -1,6 +1,8 @@
 import Boom from "boom"
 import { IJob, getUserStatus, zRoutes } from "shared/index"
 
+import { stopSession } from "@/common/utils/session.service"
+
 import { Recruiter, UserRecruteur } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
@@ -170,6 +172,7 @@ export default (server: Server) => {
     "/user/status/:userId",
     {
       schema: zRoutes.get["/user/status/:userId"],
+      onRequest: [server.auth(zRoutes.get["/user/status/:userId"])],
     },
     async (req, res) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
@@ -292,7 +295,7 @@ export default (server: Server) => {
       if (recruiterId) {
         await deleteFormulaire(recruiterId)
       }
-
+      await stopSession(req, res)
       return res.status(200).send({})
     }
   )

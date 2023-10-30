@@ -34,7 +34,6 @@ import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
 import { useAuth } from "@/context/UserContext"
-import { apiPost } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../common/contants"
 import { publicConfig } from "../../config.public"
@@ -42,7 +41,7 @@ import { LogoContext } from "../../context/contextLogo"
 import { WidgetContext } from "../../context/contextWidget"
 import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../../theme/components/icons"
 import { J1S, Parcoursup } from "../../theme/components/logos_pro"
-import { getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
+import { createOffre, getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
 
 import DropdownCombobox from "./DropdownCombobox"
 
@@ -149,7 +148,7 @@ const AjouterVoeuxForm = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDepotRapide = async (values) => {
-    const formulaire = (await apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: values })) as any
+    const formulaire = await createOffre(establishment_id, values)
     formulaire.jobs.slice(-1)
     const [job] = formulaire.jobs.slice(-1)
     await handleRedirectionAfterSubmit(formulaire, job, false)

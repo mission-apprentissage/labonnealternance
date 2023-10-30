@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
+import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -115,10 +115,19 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
+        "200": z
+          .object({
+            status_current: ZEtatUtilisateur,
+          })
+          .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        ressources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
     },
   },
   post: {
@@ -205,8 +214,6 @@ export const zUserRecruteurRoutes = {
     "/user": {
       method: "delete",
       path: "/user",
-      // TODO_SECURITY_FIX session et cookie + permissions
-      // TODO return json format
       querystring: z
         .object({
           userId: zObjectId,
@@ -216,7 +223,22 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        ressources: {
+          user: [
+            {
+              _id: { type: "query", key: "userId" },
+            },
+          ],
+          recruiter: [
+            {
+              _id: { type: "query", key: "recruiterId" },
+            },
+          ],
+        },
+      },
     },
     "/admin/users/:userId": {
       method: "delete",
