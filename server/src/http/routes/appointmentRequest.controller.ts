@@ -233,6 +233,7 @@ export default (server: Server) => {
             etablissement_formateur_raison_sociale: 1,
             lieu_formation_street: 1,
             lieu_formation_zip_code: 1,
+            lieu_formation_email: 1,
             lieu_formation_city: 1,
           }
         ).lean(),

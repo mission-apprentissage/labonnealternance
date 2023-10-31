@@ -193,6 +193,7 @@ export const zAppointmentsRoute = {
                 lieu_formation_street: z.string().nullish(),
                 lieu_formation_city: z.string().nullish(),
                 lieu_formation_zip_code: z.string().nullish(),
+                lieu_formation_email: z.string().nullish(),
               })
               .strict(),
           })

@@ -313,8 +313,8 @@ const DemandeDeContact = (props: Props) => {
           )}
         </FormControl>
       </Flex>
-      <Box width="95%" my={4}>
-        <Text mb={2} fontSize="14px" color="grey.600" mt={10}>
+      <Box width="95%" my={4} fontSize="12px">
+        <Text mb={2} color="grey.600" mt={10}>
           * Champs obligatoires
         </Text>
         <Text mt={4}>
@@ -322,7 +322,7 @@ const DemandeDeContact = (props: Props) => {
           <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank">
             Conditions générales d&apos;utilisation
           </Link>{" "}
-          du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement .
+          du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {props.context.etablissement_formateur_entreprise_raison_sociale}.
           <br />
           Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
           <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank">
@@ -336,8 +336,8 @@ const DemandeDeContact = (props: Props) => {
           <Text color="redmarianne">{error}</Text>
         </Box>
       )}
-      <Box mb={8}>
-        <Button aria-label="Envoyer la demande de cntact" variant="blackButton" type="submit" onClick={submitForm} isDisabled={!formik.isValid}>
+      <Box mb={8} textAlign="right" mr={4}>
+        <Button aria-label="Envoyer la demande de cntact" variant="blackButton" type="submit" fontWeight="700" onClick={submitForm} isDisabled={!formik.isValid}>
           J'envoie ma demande
         </Button>
       </Box>
@@ -345,7 +345,7 @@ const DemandeDeContact = (props: Props) => {
   )
 
   const formConfirmed = () => (
-    <Box>
+    <Box mt={2}>
       <Text as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
         <PaperPlane width="56px" height="56px" /> Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
       </Text>
@@ -383,7 +383,7 @@ const DemandeDeContact = (props: Props) => {
         </Box>
       </Flex>
       <Box borderBottom="1px solid #D0C9C4" mt={10} />
-      <Box mt={10}>
+      <Box my={10}>
         {onSuccessSubmitResponse.etablissement?.lieu_formation_email && (
           <Text fontSize="14px">
             Vous souhaitez modifier ou annuler cette demande ? <br />
@@ -399,7 +399,6 @@ const DemandeDeContact = (props: Props) => {
 
   return props.showInModal ? (
     <Box data-testid="DemandeDeContact">
-      Formulaire prise de RDV
       <Box>
         <Box my={4}>
           <Button
