@@ -385,7 +385,7 @@ export const zV1JobsRoutes = {
             .enum(["Indifférent", "2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines", "Non renseigné"])
             .optional()
             .default("Non renseigné"),
-          job_start_date: z.string().regex(/\d{4}-[01]\d-[0-3]\d/, "date must be a valid ISO date"),
+          job_start_date: z.string().regex(/\d{4}-[01]\d-[0-3]\d/, "expecting a date with format YYYY-MM-DD"),
           job_employer_description: z.string().optional(),
           job_description: z.string().optional(),
           custom_address: z.string().optional(),
