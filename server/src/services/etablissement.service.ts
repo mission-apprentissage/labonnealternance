@@ -190,7 +190,7 @@ export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Prom
  */
 export const getOpco = async (siret: string): Promise<ICFADock | null> => {
   try {
-    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -205,7 +205,7 @@ export const getOpco = async (siret: string): Promise<ICFADock | null> => {
  */
 export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
   try {
-    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+    const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -220,7 +220,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
   try {
-    const { data } = await getHttpClient().get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient({ timeout: 5000 }).get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
     return data
   } catch (err) {
     sentryCaptureException(err)
