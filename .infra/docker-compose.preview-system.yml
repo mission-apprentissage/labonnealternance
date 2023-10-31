@@ -4,7 +4,7 @@ x-default: &default
   deploy:
     resources:
       limits:
-        memory: 256m
+        memory: 1g
   restart: always
   networks:
     - mna_network
@@ -47,6 +47,10 @@ services:
     container_name: lba_mongodb
     ports:
       - "127.0.0.1:27017:27017"
+    deploy:
+      resources:
+        limits:
+          memory: 2g
     volumes:
       - /opt/app/data/mongodb/db:/data/db
     healthcheck:
