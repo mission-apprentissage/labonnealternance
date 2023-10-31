@@ -69,23 +69,26 @@ export const sendValidationLink = async (userId: string) => await apiPost("/logi
  */
 export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
 
-export const getEntrepriseInformation = async (siret, options: { cfa_delegated_siret: string | undefined } = { cfa_delegated_siret: undefined }) => {
+export const getEntrepriseInformation = async (siret: string, options: { cfa_delegated_siret: string | undefined } = { cfa_delegated_siret: undefined }) => {
   try {
-    const { data } = await API.get(`/etablissement/entreprise/${siret}`, { params: options })
+    const data = await apiGet("/etablissement/entreprise/:siret", { params: { siret }, querystring: options }, { timeout: 7000 })
     return data
   } catch (error: any) {
-    const payload: { data: object | undefined; error: string; statusCode: number; message: string } = error.response.data
-    return payload
+    captureException(error)
+    if (error && typeof error === "object" && "response" in error) {
+      const payload: { data?: { isCfa?: boolean }; error: boolean; statusCode: number; message: string } = error.response.data
+      return payload
+    } else {
+      return { statusCode: 500, message: "unkown error", error: true }
+    }
   }
 }
-export const getEntrepriseOpco = async (siret) => {
+export const getEntrepriseOpco = async (siret: string) => {
   try {
-    const { data } = await API.get(`/etablissement/entreprise/${siret}/opco`)
+    const data = await apiGet("/etablissement/entreprise/:siret/opco", { params: { siret } }, { timeout: 7000 })
     return data
   } catch (error) {
-    const payload: { data: object | undefined; error: string; statusCode: number; message: string } = error.response.data
     captureException(error)
-    console.log(payload)
     return null
   }
 }

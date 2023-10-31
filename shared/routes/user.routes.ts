@@ -134,8 +134,8 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      // TODO ANY TO BE FIXED
-      body: z.any(),
+      // TODO TO BE FIXED
+      body: z.object({}).passthrough(),
       // body: ZUserRecruteur.extend({
       //   scope: z.string().optional(),
       // }).strict(),
@@ -180,7 +180,6 @@ export const zUserRecruteurRoutes = {
       method: "put",
       path: "/admin/users/:userId",
       params: z.object({ userId: zObjectId }).strict(),
-      // TODO ANY TO BE FIXED
       body: ZUserRecruteurWritable.partial(),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
