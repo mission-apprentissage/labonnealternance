@@ -87,7 +87,7 @@ export const UNSUBSCRIBE_EMAIL_ERRORS = {
 
 export const TRAINING_CONTRACT_TYPE = {
   APPRENTISSAGE: "Apprentissage",
-  PROFESSIONALISATION: "Professionalisation",
+  PROFESSIONNALISATION: "Professionnalisation",
 } as const
 
 export const TRAINING_RYTHM = {

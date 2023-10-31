@@ -1,5 +1,6 @@
 import { Jsonify } from "type-fest"
 
+import { TRAINING_CONTRACT_TYPE } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
@@ -13,6 +14,8 @@ export enum JOB_STATUS {
 }
 
 const allJobStatus = Object.values(JOB_STATUS)
+const allJobType = Object.values(TRAINING_CONTRACT_TYPE)
+export const ZJobType = z.array(z.enum([allJobType[0], ...allJobType.slice(1)])).describe("Type de contrat")
 
 export const ZDelegation = z
   .object({
@@ -41,7 +44,7 @@ const ZJobFields = z
     relance_mail_sent: z.boolean().nullish().describe("Statut de l'envoi du mail de relance avant expiration"),
     job_status: z.enum([allJobStatus[0], ...allJobStatus.slice(1)]).describe("Statut de l'offre"),
     job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
-    job_type: z.array(z.enum(["Apprentissage", "Professionnalisation"])).describe("Type de contrat"),
+    job_type: ZJobType,
     is_multi_published: z.boolean().nullish().describe("Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance"),
     job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
     delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),

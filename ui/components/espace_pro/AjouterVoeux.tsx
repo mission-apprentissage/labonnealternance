@@ -30,6 +30,7 @@ import omit from "lodash/omit"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
@@ -257,8 +258,11 @@ const AjouterVoeuxForm = (props) => {
                 defaultValue={["Apprentissage"]}
               >
                 <Stack direction="row" spacing={5}>
-                  <Checkbox value="Apprentissage">Apprentissage</Checkbox>
-                  <Checkbox value="Professionnalisation">Professionnalisation</Checkbox>
+                  {Object.values(TRAINING_CONTRACT_TYPE).map((label) => (
+                    <Checkbox key={label} value={label}>
+                      {label}
+                    </Checkbox>
+                  ))}
                 </Stack>
               </CheckboxGroup>
             </FormControl>
