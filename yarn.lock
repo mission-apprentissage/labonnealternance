@@ -2154,15 +2154,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/one-line-logger@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@fastify/one-line-logger@npm:1.2.0"
-  dependencies:
-    pino-pretty: ^10.0.0
-  checksum: 411ef10f24f49f4ae57521e1bf02ca7fd7f01d10e725ccc455311fcae52865d141cf45d5c670e37d5a93f2544493f08b9ee6acd3dda2475ff288fdf73bd8d62f
-  languageName: node
-  linkType: hard
-
 "@fastify/rate-limit@npm:^8.0.3":
   version: 8.0.3
   resolution: "@fastify/rate-limit@npm:8.0.3"
@@ -15371,7 +15362,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino-pretty@npm:^10.0.0, pino-pretty@npm:^10.2.0":
+"pino-pretty@npm:^10.2.0":
   version: 10.2.3
   resolution: "pino-pretty@npm:10.2.3"
   dependencies:
@@ -17440,7 +17431,6 @@ __metadata:
     "@elastic/elasticsearch": ^7.17.13
     "@fastify/cookie": ^9.1.0
     "@fastify/cors": ^8.4.0
-    "@fastify/one-line-logger": ^1.2.0
     "@fastify/rate-limit": ^8.0.3
     "@fastify/swagger": ^8.10.1
     "@fastify/swagger-ui": ^1.9.3

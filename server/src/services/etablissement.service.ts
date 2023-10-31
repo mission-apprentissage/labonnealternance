@@ -429,11 +429,22 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
 }
 
 export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
+  const validated = await isCompanyValid(userRecruteur)
+  if (validated) {
+    userRecruteur = await autoValidateUser(userRecruteur._id)
+  } else {
+    if (!(userRecruteur.status.length && getUserStatus(userRecruteur.status) === ETAT_UTILISATEUR.ATTENTE)) {
+      userRecruteur = await setUserHasToBeManuallyValidated(userRecruteur._id)
+    }
+  }
+  return { userRecruteur, validated }
+}
+
+export const isCompanyValid = async (userRecruteur: IUserRecruteur) => {
   const { establishment_siret: siret, email, _id } = userRecruteur
 
   if (!siret) {
-    userRecruteur = await setUserHasToBeManuallyValidated(_id)
-    return { userRecruteur, validated: false }
+    return false
   }
 
   const siren = siret.slice(0, 9)
@@ -454,19 +465,13 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 
   // Check BAL API for validation
 
-  let isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
+  const isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
   if (isValid) {
-    userRecruteur = await autoValidateUser(_id)
+    return true
   } else {
     const balControl = await validationOrganisation(siret, email)
-    isValid = balControl.is_valid
-    if (balControl.is_valid) {
-      userRecruteur = await autoValidateUser(_id)
-    } else {
-      userRecruteur = await setUserHasToBeManuallyValidated(_id)
-    }
+    return balControl.is_valid
   }
-  return { userRecruteur, validated: isValid }
 }
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })

@@ -4,6 +4,7 @@ import { create as createMigration, status as statusMigration, up as upMigration
 import { ETAT_UTILISATEUR } from "@/services/constant.service"
 
 import { getLoggerWithContext } from "../common/logger"
+import config from "../config"
 
 import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
@@ -24,6 +25,7 @@ import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
+import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
@@ -82,7 +84,7 @@ export const CronsMap = {
   },
   "Send CSV offers to Pôle emploi": {
     cron_string: "30 5 * * *",
-    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" } }),
+    handler: () => (config.env === "production" ? addJob({ name: "pe:offre:export", payload: { threshold: "1" } }) : Promise.resolve(0)),
   },
   "Check companies validation state": {
     cron_string: "30 6 * * *",
@@ -186,6 +188,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "recruiters:get-missing-geocoordinates":
+        return repiseGeocoordinates()
       case "recruiters:get-missing-address-detail":
         return updateAddressDetailOnRecruitersCollection()
       case "migration:get-missing-geocoords": // Temporaire, doit tourner en recette et production

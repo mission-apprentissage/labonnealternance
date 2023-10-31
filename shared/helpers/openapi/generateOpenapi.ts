@@ -78,11 +78,9 @@ export function generateOpenApiSchema(version: string, env: string, publicUrl: s
   const registry = new OpenAPIRegistry()
 
   registry.registerComponent("securitySchemes", "api-key", {
-    type: "http",
+    type: "apiKey",
     name: "authorization",
     in: "header",
-    scheme: "bearer",
-    bearerFormat: "",
   })
 
   for (const [method, pathRoutes] of Object.entries(zRoutes)) {
