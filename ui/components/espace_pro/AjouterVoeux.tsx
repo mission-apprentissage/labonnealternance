@@ -265,8 +265,8 @@ const AjouterVoeuxForm = (props) => {
                 defaultValue={["Apprentissage"]}
               >
                 <Stack direction="row" spacing={5}>
-                  {Object.entries(TRAINING_CONTRACT_TYPE).map(([value, label]) => (
-                    <Checkbox key={value} value={value}>
+                  {Object.entries(TRAINING_CONTRACT_TYPE).map(([_, label]) => (
+                    <Checkbox key={value} value={label}>
                       {label}
                     </Checkbox>
                   ))}
