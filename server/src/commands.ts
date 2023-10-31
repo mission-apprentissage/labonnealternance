@@ -500,6 +500,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("recruiters:expiration-date:fix"))
 
+program
+  .command("fix-job-type")
+  .description("Répare les job_type d'offre qui contiennent la valeur enum 'Professionalisation' mal orthographiée")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:job-type:fix"))
+
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }

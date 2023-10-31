@@ -1,6 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob } from "../models"
+import { ZJob, ZJobType } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
@@ -370,7 +370,7 @@ export const zV1JobsRoutes = {
         .object({
           job_level_label: z.string(),
           job_duration: z.number(),
-          job_type: z.array(z.enum(["Apprentissage", "Professionnalisation"])),
+          job_type: ZJobType,
           is_disabled_elligible: z.boolean().optional(),
           job_count: z.number().optional(),
           job_rythm: z.string().optional(),
