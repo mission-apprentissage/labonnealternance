@@ -21,6 +21,7 @@ import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
+import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
@@ -313,6 +314,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fillRecruiterRaisonSociale()
       case "recruiters:expiration-date:fix":
         return fixJobExpirationDate()
+      case "recruiters:job-type:fix":
+        return fixJobType()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()

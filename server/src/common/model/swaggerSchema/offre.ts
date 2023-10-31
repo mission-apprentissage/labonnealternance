@@ -1,3 +1,4 @@
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models"
 
 export default {
@@ -63,8 +64,8 @@ export default {
           items: {
             type: "string",
           },
-          default: "Apprentissage",
-          enum: ["Apprentissage", "Professionnalisation"],
+          default: TRAINING_CONTRACT_TYPE.APPRENTISSAGE,
+          enum: Object.values(TRAINING_CONTRACT_TYPE),
           description: "Type de contrat",
         },
         multi_diffuser: {

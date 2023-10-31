@@ -88,11 +88,6 @@ export enum UNSUBSCRIBE_EMAIL_ERRORS {
   ETABLISSEMENTS_MULTIPLES = "ETABLISSEMENTS_MULTIPLES",
 }
 
-export const TRAINING_CONTRACT_TYPE = {
-  APPRENTISSAGE: "Apprentissage",
-  PROFESSIONALISATION: "Professionalisation",
-}
-
 export const TRAINING_RYTHM = {
   INDIFFERENT: "Indifférent",
   "2J3J": "2 jours / 3 jours",
