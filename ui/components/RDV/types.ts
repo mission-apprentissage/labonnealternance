@@ -1,21 +1,4 @@
-enum EReasonsKey {
-  MODALITE = "modalite",
-  CONTENU = "contenu",
-  PORTE = "porte",
-  FRAIS = "frais",
-  PLACE = "place",
-  HORAIRE = "horaire",
-  PLUS = "plus",
-  ACCOMPAGNEMENT = "accompagnement",
-  LIEU = "lieu",
-  SUIVI = "suivi",
-  AUTRE = "autre",
-}
-
-enum EApplicantType {
-  PARENT = "parent",
-  ETUDIANT = "etudiant",
-}
+import { EReasonsKey } from "shared"
 
 type IAppointmentRequestRecapResponse = {
   appointment: {
@@ -107,4 +90,4 @@ const reasons = [
 
 export type { IAppointmentRequestRecapResponse }
 
-export { reasons, EReasonsKey, EApplicantType }
+export { reasons }

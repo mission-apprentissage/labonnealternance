@@ -29,10 +29,11 @@ import {
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import React, { useState } from "react"
+import { EApplicantType, EReasonsKey } from "shared"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 import * as Yup from "yup"
 
-import { EApplicantType, EReasonsKey, IAppointmentRequestRecapResponse, reasons } from "@/components/RDV/types"
+import { IAppointmentRequestRecapResponse, reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
 import { PaperPlane } from "@/theme/components/icons/PaperPlane"
 import { apiGet, apiPost } from "@/utils/api.utils"
