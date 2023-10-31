@@ -28,9 +28,11 @@ async function optionsToFetchParams(method: RequestInit["method"], options: IReq
   const { timeout, headers: addedHeaders } = fetchOptions
 
   const headers = await getHeaders(options)
-  Object.entries(addedHeaders).forEach(([key, value]) => {
-    headers.append(key, value)
-  })
+  if (addedHeaders) {
+    Object.entries(addedHeaders).forEach(([key, value]) => {
+      headers.append(key, value)
+    })
+  }
 
   let body: BodyInit | undefined = undefined
   if ("body" in options && method !== "GET") {
