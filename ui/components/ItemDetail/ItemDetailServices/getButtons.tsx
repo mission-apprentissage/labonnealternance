@@ -27,7 +27,7 @@ export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
 /**
  * Display RDV button if "rdvContext" is present in the item.
  */
-export const buttonRdvShouldBeDisplayed = (item) => !!item?.rdvContext
+export const buttonRdvShouldBeDisplayed = (item) => !!item?.rdvContext?.form_url
 
 export const buildPrdvButton = (training) => {
   const onClickPrdv = () => {
