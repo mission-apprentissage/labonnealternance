@@ -85,24 +85,8 @@ export const zV1FormationsRoutes = {
         })
         .strict(),
       response: {
-        // Strip souhaité. Appel à une API décommissionnée en attente de remplacement
         // eslint-disable-next-line zod/require-strict
         "200": z.any(),
-        // .object({
-        //   // eslint-disable-next-line zod/require-strict
-        //   organisme: z
-        //     .object({
-        //       // eslint-disable-next-line zod/require-strict
-        //       contact: z
-        //         .object({
-        //           tel: z.string().nullish(),
-        //           url: z.string().nullish(),
-        //         })
-        //         .strip(),
-        //     })
-        //     .strip(),
-        // })
-        // .strip(),
         "400": z.union([ZResError, ZLbacError]).openapi({
           description: "Bad Request",
         }),

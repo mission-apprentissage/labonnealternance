@@ -217,7 +217,7 @@ export default function DepotRapideFin() {
               <Text>
                 Date de début d'apprentissage souhaitée : <span style={{ fontWeight: "700" }}>{dayjs(job.job_start_date).format("DD/MM/YYYY")}</span>
               </Text>
-              <Text fontSize="14px">Votre offre expirera après 30 jours à compter de sa publication</Text>
+              <Text fontSize="14px">Votre offre expirera 2 mois après sa date de publication</Text>
             </Stack>
           </Box>
         </Box>
