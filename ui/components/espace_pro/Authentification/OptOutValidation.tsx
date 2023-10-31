@@ -21,7 +21,7 @@ export default function OptOutValidation() {
 
     apiGet(`/optout/validate`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        authorization: `Bearer ${token}`,
       },
     })
       .then(({ data }: any) => {

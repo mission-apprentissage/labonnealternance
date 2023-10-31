@@ -21,9 +21,7 @@ interface Props extends PropsWithChildren {
 
 export async function getSession(): Promise<IUserRecruteurPublic | undefined> {
   try {
-    const session: IUserRecruteurPublic = await apiGet(`/auth/session`, {
-      headers: {},
-    })
+    const session: IUserRecruteurPublic = await apiGet(`/auth/session`, {})
     return session
   } catch (error) {
     return null
