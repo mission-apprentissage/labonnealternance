@@ -29,6 +29,7 @@ import { Formik } from "formik"
 import omit from "lodash/omit"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
@@ -264,8 +265,11 @@ const AjouterVoeuxForm = (props) => {
                 defaultValue={["Apprentissage"]}
               >
                 <Stack direction="row" spacing={5}>
-                  <Checkbox value="Apprentissage">Apprentissage</Checkbox>
-                  <Checkbox value="Professionnalisation">Professionnalisation</Checkbox>
+                  {Object.entries(TRAINING_CONTRACT_TYPE).map(([value, label]) => (
+                    <Checkbox key={value} value={value}>
+                      {label}
+                    </Checkbox>
+                  ))}
                 </Stack>
               </CheckboxGroup>
             </FormControl>
