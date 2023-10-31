@@ -190,7 +190,7 @@ export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Prom
  */
 export const getOpco = async (siret: string): Promise<ICFADock | null> => {
   try {
-    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -205,7 +205,7 @@ export const getOpco = async (siret: string): Promise<ICFADock | null> => {
  */
 export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
   try {
-    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+    const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -220,7 +220,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
   try {
-    const { data } = await getHttpClient().get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient({ timeout: 5000 }).get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
     return data
   } catch (err) {
     sentryCaptureException(err)
@@ -429,11 +429,22 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
 }
 
 export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
+  const validated = await isCompanyValid(userRecruteur)
+  if (validated) {
+    userRecruteur = await autoValidateUser(userRecruteur._id)
+  } else {
+    if (!(userRecruteur.status.length && getUserStatus(userRecruteur.status) === ETAT_UTILISATEUR.ATTENTE)) {
+      userRecruteur = await setUserHasToBeManuallyValidated(userRecruteur._id)
+    }
+  }
+  return { userRecruteur, validated }
+}
+
+export const isCompanyValid = async (userRecruteur: IUserRecruteur) => {
   const { establishment_siret: siret, email, _id } = userRecruteur
 
   if (!siret) {
-    userRecruteur = await setUserHasToBeManuallyValidated(_id)
-    return { userRecruteur, validated: false }
+    return false
   }
 
   const siren = siret.slice(0, 9)
@@ -454,19 +465,13 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 
   // Check BAL API for validation
 
-  let isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
+  const isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
   if (isValid) {
-    userRecruteur = await autoValidateUser(_id)
+    return true
   } else {
     const balControl = await validationOrganisation(siret, email)
-    isValid = balControl.is_valid
-    if (balControl.is_valid) {
-      userRecruteur = await autoValidateUser(_id)
-    } else {
-      userRecruteur = await setUserHasToBeManuallyValidated(_id)
-    }
+    return balControl.is_valid
   }
-  return { userRecruteur, validated: isValid }
 }
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })

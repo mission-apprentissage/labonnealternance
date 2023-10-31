@@ -18,5 +18,6 @@ export const ficheMetierRomeV3Schema = new Schema<IFicheMeterRomeV3>({
 })
 
 ficheMetierRomeV3Schema.index({ code: 1 })
+ficheMetierRomeV3Schema.index({ "fiche_metier.appellations.code": 1 })
 
 export default model<IFicheMeterRomeV3>("ficheMetierRomeV3", ficheMetierRomeV3Schema)

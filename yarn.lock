@@ -15363,8 +15363,8 @@ __metadata:
   linkType: hard
 
 "pino-pretty@npm:^10.2.0":
-  version: 10.2.0
-  resolution: "pino-pretty@npm:10.2.0"
+  version: 10.2.3
+  resolution: "pino-pretty@npm:10.2.3"
   dependencies:
     colorette: ^2.0.7
     dateformat: ^4.6.3
@@ -15382,7 +15382,7 @@ __metadata:
     strip-json-comments: ^3.1.1
   bin:
     pino-pretty: bin.js
-  checksum: 8e8220ab647d11e05349adde37aac116dab1a96ce479297820475b7e2246ea5e56e3764b625c5877821ae66dcea62bdda563cc49eccbd4628c80952998068f48
+  checksum: 9182886855515000df2ef381762c69fc29dbdd9014a76839cc3d8a7a94ac96d4ce17423adb9ddd61eae78986bb0ff3a1d9e6e7aa55476c096a3dd4a0c89440e8
   languageName: node
   linkType: hard
 
@@ -19052,10 +19052,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.2.0, type-fest@npm:^4.3.1, type-fest@npm:^4.3.3":
-  version: 4.3.3
-  resolution: "type-fest@npm:4.3.3"
-  checksum: 843c1bb3c2c185594a3a3d67bd92e8194dfa31ca0d88c078371efdd8d2150ea278a624cb260c91824e1f486ff06759c96bc03a134af7f0575e2d06eaa8be1c32
+"type-fest@npm:^4.2.0, type-fest@npm:^4.3.1, type-fest@npm:^4.3.3, type-fest@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "type-fest@npm:4.6.0"
+  checksum: e38f2b4b35e912bf60dbe7d4350653fb76b241a456e849fab85002ba08e938a26a7c44a330dd5620dd48ce57566be7c97e997064dc0d5066d5b6949b8c444430
   languageName: node
   linkType: hard
 
@@ -19222,6 +19222,7 @@ __metadata:
     react-swipeable: ^6.2.2
     react-table: ^7.8.0
     shared: "workspace:*"
+    type-fest: ^4.6.0
     typescript: ^5.2.2
     vitest: ^0.34.5
     yup: ^0.32.11

@@ -3,6 +3,8 @@ import { PinoLoggerOptions, ResSerializerReply } from "fastify/types/logger"
 
 import config from "@/config"
 
+import { OneLinerLogger } from "./OneLinerLogger"
+
 const withoutSensibleFields = (obj: unknown, seen: Set<unknown>) => {
   if (obj == null) return obj
 
@@ -84,18 +86,20 @@ export function logMiddleware(): FastifyLoggerOptions | PinoLoggerOptions | fals
     },
   }
 
-  if (config.env !== "local") {
-    return defaultSettings
-  }
-
-  return {
-    ...defaultSettings,
-    transport: {
-      target: "pino-pretty",
-      options: {
-        translateTime: "HH:MM:ss Z",
-        ignore: "pid,hostname",
+  if (config.env === "local") {
+    if (config.log.format === "one-line") {
+      return new OneLinerLogger({ showRequestStart: true })
+    }
+    return {
+      transport: {
+        target: "pino-pretty",
+        options: {
+          translateTime: "HH:MM:ss Z",
+          ignore: "pid,hostname",
+        },
       },
-    },
+    }
+  } else {
+    return defaultSettings
   }
 }

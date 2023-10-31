@@ -1,6 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob } from "../models"
+import { ZJob, ZJobType } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
@@ -50,8 +50,8 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        access: null,
-        ressources: {},
+        access: "recruiter:manage",
+        ressources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -128,7 +128,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/delegations/:jobId": {
       method: "get",
       path: "/v1/jobs/delegations/:jobId",
-      // TODO_SECURITY_FIX scoper le retour aux seules offres de l'utilisateur (permissions jobid pour l'utilisateur connecté)
       params: z
         .object({
           jobId: zObjectId,
@@ -152,8 +151,8 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        access: null,
-        ressources: {},
+        access: "job:manage",
+        ressources: { job: [{ _id: { type: "params", key: "jobId" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -371,8 +370,8 @@ export const zV1JobsRoutes = {
         .object({
           job_level_label: z.string(),
           job_duration: z.number(),
-          job_type: z.array(z.enum(["Apprentissage", "Professionnalisation"])),
-          is_disabled_elligible: z.boolean(),
+          job_type: ZJobType,
+          is_disabled_elligible: z.boolean().optional(),
           job_count: z.number().optional(),
           job_rythm: z.string().optional(),
           job_start_date: z.date(),

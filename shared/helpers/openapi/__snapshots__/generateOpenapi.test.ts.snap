@@ -2790,11 +2790,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
     },
     "securitySchemes": {
       "api-key": {
-        "bearerFormat": "",
         "in": "header",
         "name": "authorization",
-        "scheme": "bearer",
-        "type": "http",
+        "type": "apiKey",
       },
     },
   },
@@ -5098,6 +5096,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "job_type": {
+                    "description": "Type de contrat",
                     "items": {
                       "enum": [
                         "Apprentissage",
@@ -5112,7 +5111,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   "job_level_label",
                   "job_duration",
                   "job_type",
-                  "is_disabled_elligible",
                   "job_start_date",
                   "appellation_code",
                 ],

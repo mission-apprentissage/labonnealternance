@@ -73,7 +73,7 @@
     - name: Lancement de l'application {{env_type}}
       shell:
         chdir: /opt/app
-        cmd: 'sudo docker stack deploy $(for file in $(ls docker-compose.*.yml); do echo -n "-c $file "; done) lba'
+        cmd: "/opt/app/tools/update-stack.sh"
       register: docker_deploy_output
 
     - debug:
@@ -82,7 +82,7 @@
     - name: Attente du deploiement
       shell:
         chdir: /opt/app
-        cmd: "sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait:v0.2.3 lba"
+        cmd: "/opt/app/tools/wait-deployment.sh"
       async: 1800
       poll: 10
 

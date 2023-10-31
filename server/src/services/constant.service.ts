@@ -55,6 +55,7 @@ export enum OPCOS {
 }
 
 export const NIVEAUX_POUR_LBA = {
+  INDIFFERENT: "Indifférent",
   "3 (CAP...)": "Cap, autres formations niveau (Infrabac)",
   "4 (BAC...)": "BP, Bac, autres formations niveau (Bac)",
   "5 (BTS, DEUST...)": "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -85,11 +86,6 @@ export const UNSUBSCRIBE_REASON = {
 export enum UNSUBSCRIBE_EMAIL_ERRORS {
   NON_RECONNU = "NON_RECONNU",
   ETABLISSEMENTS_MULTIPLES = "ETABLISSEMENTS_MULTIPLES",
-}
-
-export const TRAINING_CONTRACT_TYPE = {
-  APPRENTISSAGE: "Apprentissage",
-  PROFESSIONALISATION: "Professionalisation",
 }
 
 export const TRAINING_RYTHM = {
