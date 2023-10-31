@@ -1,9 +1,7 @@
-import { Box, Button, Image, Link } from "@chakra-ui/react"
+import { Box, Button, Image } from "@chakra-ui/react"
 import { findIndex } from "lodash"
 import React from "react"
 import { useSwipeable } from "react-swipeable"
-
-import { SendPlausibleEvent } from "../../../utils/plausible"
 
 const navigationButtonProperties = {
   background: "white",
