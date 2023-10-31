@@ -29,20 +29,6 @@ export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
  */
 export const buttonRdvShouldBeDisplayed = (item) => !!item?.rdvContext?.form_url
 
-export const buildPrdvButton = (training) => {
-  const onClickPrdv = () => {
-    SendPlausibleEvent("Clic Prendre RDV - Fiche formation", { info_fiche: training.cleMinistereEducatif })
-  }
-
-  return (
-    <Box onClick={onClickPrdv}>
-      <Link variant="postuler" data-testid="prdvButton" isExternal href={training.prdvUrl}>
-        Je prends rendez-vous
-      </Link>
-    </Box>
-  )
-}
-
 export const BuildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
   // See https://www.npmjs.com/package/react-swipeable
   const swipeHandlers = useSwipeable({
