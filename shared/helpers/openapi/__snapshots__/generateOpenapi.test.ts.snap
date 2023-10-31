@@ -5096,6 +5096,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "job_type": {
+                    "description": "Type de contrat",
                     "items": {
                       "enum": [
                         "Apprentissage",
