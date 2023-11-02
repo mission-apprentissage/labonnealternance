@@ -29,8 +29,6 @@ import { getPeJobFromId } from "../../../services/pejob.service"
 import { getFicheMetierRomeV3FromDB } from "../../../services/rome.service"
 import { Server } from "../../server"
 
-import { createDelegationSchema, createEstablishmentSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators"
-
 const config = {
   rateLimit: {
     max: 5,
@@ -45,11 +43,9 @@ export default (server: Server) => {
       schema: zRoutes.get["/v1/jobs/establishment"],
       config,
       onRequest: server.auth(zRoutes.get["/v1/jobs/establishment"]),
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { establishment_siret, email } = req.query
-      await getEstablishmentEntitySchema.validateAsync({ establishment_siret, email }, { abortEarly: false })
 
       const establishment = await Recruiter.findOne({ establishment_siret, email }).lean()
 
@@ -95,8 +91,6 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { body } = req
-      // Validate establishment parameters
-      await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
       const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
       const user = getUserFromRequest(req, zRoutes.post["/v1/jobs/establishment"]).value
@@ -196,8 +190,6 @@ export default (server: Server) => {
         return res.status(400).send({ error: true, message: "Job does not exists" })
       }
 
-      await updateJobSchema.validateAsync(req.body, { abortEarly: false })
-
       const updatedRecruiter = await patchOffre(jobId, req.body)
 
       return res.status(200).send(updatedRecruiter)
@@ -259,8 +251,6 @@ export default (server: Server) => {
       if (!jobExists) {
         return res.status(400).send({ error: true, message: "Job does not exists" })
       }
-
-      await createDelegationSchema.validateAsync(req.body)
 
       const updatedRecruiter = await createJobDelegations({ jobId: jobId.toString(), etablissementCatalogueIds: req.body.establishmentIds })
 
