@@ -1,10 +1,3 @@
-export enum JOB_STATUS {
-  ACTIVE = "Active",
-  POURVUE = "Pourvue",
-  ANNULEE = "Annulée",
-  EN_ATTENTE = "En attente",
-}
-
 export enum RECRUITER_STATUS {
   ACTIF = "Actif",
   ARCHIVE = "Archivé",

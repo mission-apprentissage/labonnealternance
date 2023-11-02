@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations } from "shared"
+import { IJobWritable, INewDelegations, IRoutes } from "shared"
 
 import { publicConfig } from "../config.public"
 
@@ -34,8 +34,9 @@ export const getOffre = (jobId) => API.get(`/formulaire/offre/f/${jobId}`)
 export const createOffre = (establishment_id: string, newOffre: IJobWritable) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
 export const patchOffre = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}`, data, config).catch(errorHandler)
 export const cancelOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/cancel`)
-export const cancelOffreFromAdmin = (jobId, data) => API.put(`/formulaire/offre/f/${jobId}/cancel`, data)
-export const extendOffre = (jobId) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
+export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formulaire/offre/f/:jobId/cancel"]["body"]["_input"]) =>
+  apiPut("/formulaire/offre/f/:jobId/cancel", { params: { jobId }, body: data })
+export const extendOffre = (jobId: string) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
 export const fillOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/provided`)
 export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; data: INewDelegations }) =>
   apiPost(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, body: data })

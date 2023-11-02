@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
-import { ZJob, ZJobWrite } from "../models/job.model"
+import { JOB_STATUS, ZJob, ZJobWrite } from "../models/job.model"
 import { ZRecruiter, ZRecruiterWritable } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -177,20 +177,24 @@ export const zFormulaireRoute = {
     "/formulaire/offre/f/:jobId/cancel": {
       method: "put",
       path: "/formulaire/offre/f/:jobId/cancel",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       body: z
         .object({
-          job_status: z.string(),
+          job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
           job_status_comment: z.string(),
         })
         .strict(),
       response: {
-        "2xx": z.object({}).strict(),
+        "200": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
     "/formulaire/offre/:jobId/provided": {
       method: "put",
