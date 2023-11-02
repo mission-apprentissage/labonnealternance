@@ -238,13 +238,17 @@ export const zFormulaireRoute = {
     "/formulaire/:establishment_id": {
       method: "delete",
       path: "/formulaire/:establishment_id",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "2xx": z.object({}).strict(),
+        "200": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        ressources: {
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
     },
     "/formulaire/delegated/:establishment_siret": {
       method: "delete",
