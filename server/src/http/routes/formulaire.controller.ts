@@ -330,6 +330,7 @@ export default (server: Server) => {
     "/formulaire/offre/:jobId/extend",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/extend"],
+      onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/extend"])],
     },
     async (req, res) => {
       const job = await extendOffre(req.params.jobId)
