@@ -155,6 +155,7 @@ export default (server: Server) => {
         job_level_label: body.job_level_label,
         job_start_date: new Date(body.job_start_date),
         job_description: body.job_description,
+        job_employer_description: body.job_employer_description,
         job_creation_date: dayjs().toDate(),
         job_expiration_date: addExpirationPeriod(dayjs()).toDate(),
         job_status: JOB_STATUS.ACTIVE,
