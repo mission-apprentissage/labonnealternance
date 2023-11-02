@@ -40,14 +40,12 @@ export const zFormulaireRoute = {
     },
   },
   post: {
-    "/formulaire": {
+    "/user/:userId/formulaire": {
       method: "post",
-      path: "/formulaire",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
+      path: "/user/:userId/formulaire",
+      params: z.object({ userId: zObjectId }).strict(),
       body: z
         .object({
-          userRecruteurId: zObjectId,
           establishment_siret: z.string(),
           email: z.string(),
           last_name: z.string(),
@@ -58,11 +56,15 @@ export const zFormulaireRoute = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        // "2xx": ZRecruiter,
-        "2xx": z.any(),
+        "200": ZRecruiter,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        ressources: {
+          user: [{ _id: { key: "userId", type: "params" } }],
+        },
+      },
     },
     "/formulaire/:establishment_id/offre": {
       method: "post",
