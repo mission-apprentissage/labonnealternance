@@ -43,6 +43,8 @@ export default (server: Server) => {
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
 
+      console.log(JSON.stringify(etablissement, null, 2))
+
       if (!etablissement) {
         throw Boom.notFound()
       }
