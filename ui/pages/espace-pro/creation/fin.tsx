@@ -43,7 +43,7 @@ export default function DepotRapideFin() {
    * - To be changed with userID in URL params
    */
   const { isFetched } = useQuery("userdetail", () => (userId ? getUserStatus(userId) : Promise.reject()), {
-    retry: userId ? true : false,
+    enabled: Boolean(userId),
     onSettled: (data) => {
       if (data?.status_current === "ERROR") {
         setUserIsInError(true)
