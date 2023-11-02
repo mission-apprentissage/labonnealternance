@@ -42,7 +42,7 @@ export default function DepotRapideFin() {
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isFetched } = useQuery("userdetail", () => (userId ? getUserStatus(userId) : Promise.reject()), {
+  const { isFetched } = useQuery("userdetail", () => getUserStatus(userId), {
     enabled: Boolean(userId),
     onSettled: (data) => {
       if (data?.status_current === "ERROR") {
