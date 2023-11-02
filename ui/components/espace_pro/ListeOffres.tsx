@@ -87,7 +87,7 @@ export default function ListeOffres() {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  const { jobs = [], establishment_raison_sociale, establishment_siret, geo_coordinates, _id: dataId } = data.data ?? {}
+  const { jobs = [], establishment_raison_sociale, establishment_siret, geo_coordinates, _id: dataId } = data ?? {}
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreCreationUrl = () => {

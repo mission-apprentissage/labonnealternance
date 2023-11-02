@@ -155,7 +155,7 @@ function EditionEntrepriseContact() {
   }
 
   // add type ENTREPRISE for legale information
-  const entreprise = { ...data.data, type: AUTHTYPE.ENTREPRISE }
+  const entreprise = { ...data, type: AUTHTYPE.ENTREPRISE }
 
   return (
     <AnimationContainer>
@@ -169,7 +169,7 @@ function EditionEntrepriseContact() {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{entreprise.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           </Breadcrumb>
