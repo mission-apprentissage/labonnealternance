@@ -28,6 +28,7 @@ import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/remov
 import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
+import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
@@ -189,6 +190,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "recruiters:set-missing-job-start-date":
+        return updateMissingStartDate()
       case "recruiters:get-missing-geocoordinates":
         return repiseGeocoordinates()
       case "recruiters:get-missing-address-detail":
