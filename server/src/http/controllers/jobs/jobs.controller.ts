@@ -29,7 +29,7 @@ import { getPeJobFromId } from "../../../services/pejob.service"
 import { getFicheMetierRomeV3FromDB } from "../../../services/rome.service"
 import { Server } from "../../server"
 
-import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators"
+import { createDelegationSchema, createEstablishmentSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators"
 
 const config = {
   rateLimit: {
@@ -131,7 +131,6 @@ export default (server: Server) => {
       schema: zRoutes.post["/v1/jobs/:establishmentId"],
       config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/:establishmentId"]),
-      attachValidation: true,
     },
     async (req, res) => {
       const { establishmentId } = req.params
@@ -142,9 +141,6 @@ export default (server: Server) => {
       if (!establishmentExists) {
         return res.status(400).send({ error: true, message: "Establishment does not exist" })
       }
-
-      // Validate job parameters
-      await createJobSchema.validateAsync(body, { abortEarly: false })
 
       const romeDetails = await getFicheMetierRomeV3FromDB({
         query: {
@@ -163,7 +159,7 @@ export default (server: Server) => {
         rome_appellation_label: appellation.libelle,
         rome_code: [romeDetails.code],
         job_level_label: body.job_level_label,
-        job_start_date: body.job_start_date,
+        job_start_date: new Date(body.job_start_date),
         job_description: body.job_description,
         job_creation_date: dayjs().toDate(),
         job_expiration_date: addExpirationPeriod(dayjs()).toDate(),

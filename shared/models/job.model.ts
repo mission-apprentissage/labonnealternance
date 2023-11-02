@@ -48,7 +48,7 @@ const ZJobFields = z
     is_multi_published: z.boolean().nullish().describe("Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance"),
     job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
     delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
-    is_disabled_elligible: z.boolean().describe("Poste ouvert aux personnes en situation de handicap"),
+    is_disabled_elligible: z.boolean().nullish().describe("Poste ouvert aux personnes en situation de handicap"),
     job_count: z.number().nullish().describe("Nombre de poste(s) ouvert(s) pour cette offre"),
     job_duration: z.number().nullish().describe("Durée du contrat en année"),
     job_rythm: z.string().nullish().describe("Répartition de la présence de l'alternant en formation/entreprise"),

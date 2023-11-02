@@ -156,14 +156,9 @@ export function generateQueryString(query: QueryString = {}): string {
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
 export function generateUrl(path: string, options: WithQueryStringAndPathParam = {}): string {
-  let normalisedEndpoint = removeAtEnd(publicConfig.apiEndpoint, "/")
-  if ("params" in options) {
-    normalisedEndpoint += generatePath(path, options.params)
-  }
-  if ("querystring" in options) {
-    normalisedEndpoint += generateQueryString(options.querystring)
-  }
-  return normalisedEndpoint
+  const params = "params" in options ? options.params : {}
+  const querystring = "querystring" in options ? options.querystring : {}
+  return removeAtEnd(publicConfig.apiEndpoint, "/") + generatePath(path, params) + generateQueryString(querystring)
 }
 
 export interface ApiErrorContext {
