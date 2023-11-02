@@ -22,8 +22,9 @@ const errorHandler = (error: any): undefined => {
 
 export const getFormulaire = (establishment_id: string) => apiGet("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
 export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/formulaire", { params: { userId }, body: form })
+export const updateFormulaire = (establishment_id: string, values) => apiPut("/formulaire/:establishment_id", { params: { establishment_id }, body: values })
 
-export const archiveFormulaire = (establishment_id) => API.delete(`/formulaire/${establishment_id}`).catch(errorHandler)
+export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
 export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
 
 /**
@@ -55,7 +56,7 @@ export const updateEntreprise = async (userId: string, establishment_id, user) =
   await Promise.all([
     apiPut(`/user/:userId`, { params: { userId }, body: user }),
     //
-    apiPut(`/formulaire/:establishment_id`, { params: { establishment_id }, body: user }),
+    updateFormulaire(establishment_id, user),
   ])
 
 /**

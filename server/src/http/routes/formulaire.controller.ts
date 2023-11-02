@@ -108,6 +108,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id",
     {
       schema: zRoutes.delete["/formulaire/:establishment_id"],
+      onRequest: [server.auth(zRoutes.delete["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
       await archiveFormulaire(req.params.establishment_id)
