@@ -450,7 +450,7 @@ const DemandeDeContact = (props: Props) => {
                 ) : (
                   <>
                     <Text as="h1" fontWeight={700} fontSize="24px" data-testid="DemandeDeContactFormTitle" mb={4}>
-                      Contact {props.context.intitule_long}
+                      Contacter {props.context.etablissement_formateur_entreprise_raison_sociale}
                     </Text>
                     {formElement()}
                   </>
