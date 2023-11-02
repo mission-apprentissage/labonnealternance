@@ -570,7 +570,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "is_disabled_elligible": {
             "description": "Poste ouvert aux personnes en situation de handicap",
-            "type": "boolean",
+            "type": [
+              "boolean",
+              "null",
+            ],
           },
           "is_multi_published": {
             "description": "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
@@ -748,7 +751,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "rome_code",
           "job_status",
           "job_type",
-          "is_disabled_elligible",
         ],
         "type": "object",
       },
@@ -5063,6 +5065,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                 "additionalProperties": false,
                 "properties": {
                   "appellation_code": {
+                    "pattern": "^[0-9]+$",
                     "type": "string",
                   },
                   "custom_address": {
@@ -5072,31 +5075,52 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "is_disabled_elligible": {
+                    "default": false,
                     "type": "boolean",
                   },
                   "job_count": {
+                    "default": 1,
                     "type": "number",
                   },
                   "job_description": {
                     "type": "string",
                   },
                   "job_duration": {
+                    "maximum": 36,
+                    "minimum": 6,
                     "type": "number",
                   },
                   "job_employer_description": {
                     "type": "string",
                   },
                   "job_level_label": {
+                    "enum": [
+                      "Indifférent",
+                      "Cap, autres formations niveau (Infrabac)",
+                      "BP, Bac, autres formations niveau (Bac)",
+                      "BTS, DEUST, autres formations niveau (Bac+2)",
+                      "Licence, autres formations niveau (Bac+3)",
+                      "Master, titre ingénieur, autres formations niveau (Bac+5)",
+                    ],
                     "type": "string",
                   },
                   "job_rythm": {
+                    "default": "Non renseigné",
+                    "enum": [
+                      "Indifférent",
+                      "2 jours / 3 jours",
+                      "1 semaine / 1 semaine",
+                      "2 semaines / 3 semaines",
+                      "6 semaines / 6 semaines",
+                      "Non renseigné",
+                    ],
                     "type": "string",
                   },
                   "job_start_date": {
+                    "pattern": "\\\\d{4}-[01]\\\\d-[0-3]\\\\d",
                     "type": "string",
                   },
                   "job_type": {
-                    "description": "Type de contrat",
                     "items": {
                       "enum": [
                         "Apprentissage",
@@ -5108,11 +5132,11 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                 },
                 "required": [
+                  "appellation_code",
                   "job_level_label",
                   "job_duration",
                   "job_type",
                   "job_start_date",
-                  "appellation_code",
                 ],
                 "type": "object",
               },
@@ -5195,7 +5219,10 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                   "is_disabled_elligible": {
                     "description": "Poste ouvert aux personnes en situation de handicap",
-                    "type": "boolean",
+                    "type": [
+                      "boolean",
+                      "null",
+                    ],
                   },
                   "job_count": {
                     "description": "Nombre de poste(s) ouvert(s) pour cette offre",

@@ -34,36 +34,6 @@ export const createEstablishmentSchema = Joi.object({
   origin: Joi.string(),
 })
 
-export const createJobSchema = Joi.object({
-  appellation_code: Joi.string()
-    .pattern(/^[0-9]+$/)
-    .min(5)
-    .max(6)
-    .required(),
-  job_level_label: Joi.string()
-    .valid(
-      "Indifférent",
-      "Cap, autres formations niveau (Infrabac)",
-      "BP, Bac, autres formations niveau (Bac)",
-      "BTS, DEUST, autres formations niveau (Bac+2)",
-      "Licence, autres formations niveau (Bac+3)",
-      "Master, titre ingénieur, autres formations niveau (Bac+5)"
-    )
-    .required(),
-  job_start_date: Joi.date().greater("now").iso().required(),
-  job_type: Joi.array().items(Joi.string().valid("Apprentissage", "Professionalisation").required()),
-  is_disabled_elligible: Joi.boolean().default(false),
-  job_count: Joi.number().default(1),
-  job_rythm: Joi.string()
-    .valid("Indifférent", "2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines", "Non renseigné")
-    .default("Non renseigné"),
-  job_duration: Joi.number().min(6).max(36).required(),
-  job_description: Joi.string(),
-  job_employer_description: Joi.string(),
-  custom_address: Joi.string(),
-  custom_geo_coordinates: Joi.string().when("custom_address", { is: Joi.exist(), then: Joi.required() }),
-})
-
 export const updateJobSchema = Joi.object({
   job_level_label: Joi.string().valid(
     "Indifférent",
