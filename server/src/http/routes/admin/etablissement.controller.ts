@@ -38,7 +38,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/admin/etablissements/:id"])],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id).lean()
 
       if (!etablissement) {
         throw Boom.notFound()
