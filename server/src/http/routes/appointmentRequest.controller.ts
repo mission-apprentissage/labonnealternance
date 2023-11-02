@@ -16,18 +16,6 @@ import mailer from "../../services/mailer.service"
 import * as users from "../../services/user.service"
 import { Server } from "../server"
 
-const userRequestSchema = Joi.object({
-  firstname: Joi.string().required(),
-  lastname: Joi.string().required(),
-  phone: Joi.string().required(),
-  email: Joi.string().required(),
-  type: Joi.string(),
-  applicantMessageToCfa: Joi.string().allow(null, ""),
-  applicantReasons: Joi.array().items(Joi.string().valid("modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre")),
-  cleMinistereEducatif: Joi.string().required(),
-  appointmentOrigin: Joi.string().required(),
-})
-
 const appointmentReplySchema = Joi.object({
   appointment_id: Joi.string().required(),
   cfa_intention_to_applicant: Joi.string().required(),
@@ -42,8 +30,6 @@ export default (server: Server) => {
       schema: zRoutes.post["/appointment-request/validate"],
     },
     async (req, res) => {
-      await userRequestSchema.validateAsync(req.body, { abortEarly: false })
-
       const { firstname, lastname, phone, applicantMessageToCfa, applicantReasons, type, appointmentOrigin, cleMinistereEducatif } = req.body
       const email = req.body.email.toLowerCase()
 

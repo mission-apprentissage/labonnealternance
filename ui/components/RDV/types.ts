@@ -57,7 +57,7 @@ const reasons = [
     checked: false,
   },
   {
-    horaire: EReasonsKey.HORAIRE,
+    key: EReasonsKey.HORAIRE,
     title: "Horaires / rythme de la formation",
     checked: false,
   },

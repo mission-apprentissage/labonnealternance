@@ -4,7 +4,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
 
-export enum EReasonsKey {
+export const enum EReasonsKey {
   MODALITE = "modalite",
   CONTENU = "contenu",
   PORTE = "porte",
