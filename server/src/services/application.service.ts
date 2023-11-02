@@ -193,17 +193,17 @@ export const sendApplication = async ({
         encryptedId,
       })
 
+      const searched_for_job_label = query.searched_for_job_label || ""
+
       const buildTopic = (aCompanyType, aJobTitle) => {
         let res = "Candidature"
         if (aCompanyType === "matcha") {
           res = `Candidature en alternance - ${aJobTitle}`
         } else {
-          res = `Candidature spontanée en alternance`
+          res = `Candidature spontanée en alternance ${searched_for_job_label ? "- " + searched_for_job_label : ""}`
         }
         return res
       }
-
-      const searched_for_job_label = query.searched_for_job_label || ""
 
       // Sends acknowledge email to "candidate" and application email to "company"
       const [emailCandidat, emailCompany] = await Promise.all([
@@ -339,7 +339,7 @@ interface IApplicationTemplates {
 }
 /**
  * @description Return template file path for given type
- * @param {string} type
+ * @param {string} applicationType
  * @return {IApplicationTemplates}
  */
 const getEmailTemplates = (applicationType: string): IApplicationTemplates => {
