@@ -75,9 +75,8 @@ export const getEntrepriseInformation = async (siret: string, options: { cfa_del
     return data
   } catch (error: any) {
     captureException(error)
-    if (error && typeof error === "object" && "response" in error) {
-      const payload: { data?: { isCfa?: boolean }; error: boolean; statusCode: number; message: string } = error.response.data
-      return payload
+    if (error.context?.statusCode === 400) {
+      return error.context.errorData
     } else {
       return { statusCode: 500, message: "unkown error", error: true }
     }
