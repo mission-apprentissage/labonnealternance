@@ -1,4 +1,5 @@
 import { createWriteStream } from "fs"
+import path from "path"
 import { Readable } from "stream"
 
 import { pick } from "lodash-es"
@@ -8,10 +9,12 @@ import { JOB_STATUS } from "shared/models"
 
 import { db } from "@/common/mongodb"
 
+import { sendCsvToPE } from "../../../../common/apis/Pe"
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
 import { getDepartmentByZipCode } from "../../../../common/territoires"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import dayjs from "../../../../services/dayjs.service"
 
 const stat = {
@@ -222,19 +225,18 @@ export const exportPE = async (): Promise<void> => {
     logger.info("Stats: ", stat)
     logger.info("Send CSV...")
 
-    // const response = await sendCsvToPE(path.resolve(csvPath.pathname))
+    const response = await sendCsvToPE(path.resolve(csvPath.pathname))
 
-    // logger.info(`CSV sent (${response})`)
-    // await notifyToSlack({
-    //   subject: "EXPORT PE OK",
-    //   message: `${buffer.length} offres transmises à Pôle emploi - reponse API PE : ${response}`,
-    // })
+    logger.info(`CSV sent (${response})`)
+    await notifyToSlack({
+      subject: "EXPORT PE OK",
+      message: `${buffer.length} offres transmises à Pôle emploi - reponse API PE : ${response}`,
+    })
   } catch (err) {
-    console.log(" ")
-    // await notifyToSlack({
-    //   subject: "EXPORT PE KO",
-    //   message: `Echec de l'export des offres Pôle emploi. ${err}`,
-    // })
+    await notifyToSlack({
+      subject: "EXPORT PE KO",
+      message: `Echec de l'export des offres Pôle emploi. ${err}`,
+    })
     throw err
   }
 }
