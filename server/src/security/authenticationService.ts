@@ -53,9 +53,11 @@ async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUs
 
     const { email } = jwt.verify(token, config.auth.user.jwtSecret) as JwtPayload
 
-    const user = await getUserRecruteur({ email })
-
-    return user ? { type: "IUserRecruteur", value: user } : null
+    const user = await getUserRecruteur({ email: email.toLowerCase() })
+    if (!user) {
+      return null
+    }
+    return { type: "IUserRecruteur", value: user }
   } catch (error) {
     captureException(error)
     return null

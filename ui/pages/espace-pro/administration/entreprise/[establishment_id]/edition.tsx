@@ -147,14 +147,15 @@ function EditionEntrepriseContact() {
   const router = useRouter()
   const { user } = useAuth()
 
-  const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(router.query.establishment_id), { cacheTime: 0, enabled: !!router.query.establishment_id })
+  const { establishment_id } = router.query as { establishment_id: string }
+  const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(establishment_id), { cacheTime: 0, enabled: !!establishment_id })
 
-  if (isLoading || !router.query.establishment_id) {
+  if (isLoading || !establishment_id) {
     return <LoadingEmptySpace />
   }
 
   // add type ENTREPRISE for legale information
-  const entreprise = { ...data.data, type: AUTHTYPE.ENTREPRISE }
+  const entreprise = { ...data, type: AUTHTYPE.ENTREPRISE }
 
   return (
     <AnimationContainer>
@@ -168,7 +169,7 @@ function EditionEntrepriseContact() {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{entreprise.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           </Breadcrumb>
