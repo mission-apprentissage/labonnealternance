@@ -61,19 +61,27 @@ const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP
   ...zRoutesGetP3,
 } as const
 
-const zRoutesPost = {
+const zRoutesPost1 = {
   ...zApplicationRoutes.post,
   ...zLoginRoutes.post,
   ...zTrainingLinksRoutes.post,
   ...zUnsubscribeRoute.post,
   ...zUserRecruteurRoutes.post,
   ...zV1JobsRoutes.post,
+} as const
+
+const zRoutesPost2 = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
   ...zCampaignWebhookRoutes.post,
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
+}
+
+const zRoutesPost = {
+  ...zRoutesPost1,
+  ...zRoutesPost2,
 } as const
 
 const zRoutesPut = {

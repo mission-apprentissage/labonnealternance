@@ -100,3 +100,11 @@ export type IDelegation = z.output<typeof ZDelegation>
 export type IJob = z.output<typeof ZJob>
 export type IJobWritable = z.output<typeof ZJobWrite>
 export type IJobJson = Jsonify<z.input<typeof ZJob>>
+
+export const ZNewDelegations = z
+  .object({
+    etablissementCatalogueIds: z.array(z.string()),
+  })
+  .strict()
+
+export type INewDelegations = z.input<typeof ZNewDelegations>
