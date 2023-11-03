@@ -166,6 +166,12 @@ program.command("migrations:create").description("Run migrations create").requir
 
 // Temporaire, one shot à executer en recette et prod
 program
+  .command("recruiters:set-missing-job-start-date")
+  .description("Récupération des geo_coordinates manquants dans la collection Recruiters")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:set-missing-job-start-date"))
+// Temporaire, one shot à executer en recette et prod
+program
   .command("recruiters:get-missing-geocoordinates")
   .description("Récupération des geo_coordinates manquants dans la collection Recruiters")
   .option("-q, --queued", "Run job asynchronously", false)
