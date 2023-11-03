@@ -2,22 +2,27 @@ import { Box, Text } from "@chakra-ui/react"
 
 import { MapPin2Fill } from "../../../../theme/components/icons"
 
+type Props = {
+  entrepriseRaisonSociale: string
+  intitule: string
+  adresse: string
+  codePostal: string
+  ville: string
+}
+
 /**
- * @description Etablissement information.
- * @param {Object} props
- * @param {String} props.entreprise_raison_sociale
- * @param {String} props.intitule
- * @param {String} props.adresse
- * @param {String} props.code_postal
- * @returns {JSX.Element}
+ * Etablissement information.
  */
-export const ContactCfaComponent = (props) => {
-  const { adresse, codePostal, entrepriseRaisonSociale, ville } = props
+export const ContactCfaSummary = (props: Props) => {
+  const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule } = props
 
   return (
     <Box py={[0, 7]} mt={2}>
       <Text fontWeight="700" color="grey.750">
         {entrepriseRaisonSociale}
+      </Text>
+      <Text fontWeight="400" color="grey.750">
+        {intitule}
       </Text>
       {adresse && codePostal && (
         <Box mt={1}>

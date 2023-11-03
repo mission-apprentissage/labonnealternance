@@ -15,34 +15,23 @@ import { Server } from "../../server"
 
 export default (server: Server) => {
   server.post(
-    "/login/confirmation-email",
+    "/login/:userId/resend-confirmation-email",
     {
-      schema: zRoutes.post["/login/confirmation-email"],
-      preHandler: [],
+      schema: zRoutes.post["/login/:userId/resend-confirmation-email"],
+      onRequest: server.auth(zRoutes.post["/login/:userId/resend-confirmation-email"]),
     },
     async (req, res) => {
-      try {
-        const { email } = req.body
-        const formatedEmail = email.toLowerCase()
-        const user = await getUser({ email: formatedEmail })
-
-        if (!user) {
-          return res.status(400).send({ error: true, reason: "UNKNOWN" })
-        }
-
-        const { is_email_checked } = user
-
-        if (is_email_checked) {
-          return res.status(400).send({ error: true, reason: "VERIFIED" })
-        }
-        await sendUserConfirmationEmail(user)
-        return res.status(200).send({})
-      } catch (error) {
-        return res.status(400).send({
-          errorMessage: "l'adresse mail n'est pas valide.",
-          details: error,
-        })
+      const { userId } = req.params
+      const user = await getUser({ _id: userId })
+      if (!user) {
+        return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
+      const { is_email_checked } = user
+      if (is_email_checked) {
+        return res.status(400).send({ error: true, reason: "VERIFIED" })
+      }
+      await sendUserConfirmationEmail(user)
+      return res.status(200).send({})
     }
   )
 

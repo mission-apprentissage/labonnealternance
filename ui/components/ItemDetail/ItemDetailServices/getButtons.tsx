@@ -1,9 +1,7 @@
-import { Box, Button, Image, Link } from "@chakra-ui/react"
+import { Box, Button, Image } from "@chakra-ui/react"
 import { findIndex } from "lodash"
 import React from "react"
 import { useSwipeable } from "react-swipeable"
-
-import { SendPlausibleEvent } from "../../../utils/plausible"
 
 const navigationButtonProperties = {
   background: "white",
@@ -24,24 +22,10 @@ export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
   return oneKind === "peJob" && oneItem?.url
 }
 
-export const buttonPRDVShouldBeDisplayed = (oneItem) => {
-  const res = !!oneItem?.prdvUrl
-  return res
-}
-
-export const buildPrdvButton = (training) => {
-  const onClickPrdv = () => {
-    SendPlausibleEvent("Clic Prendre RDV - Fiche formation", { info_fiche: training.cleMinistereEducatif })
-  }
-
-  return (
-    <Box onClick={onClickPrdv}>
-      <Link variant="postuler" data-testid="prdvButton" isExternal href={training.prdvUrl}>
-        Je prends rendez-vous
-      </Link>
-    </Box>
-  )
-}
+/**
+ * Display RDV button if "rdvContext" is present in the item.
+ */
+export const buttonRdvShouldBeDisplayed = (item) => !!item?.rdvContext?.form_url
 
 export const BuildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
   // See https://www.npmjs.com/package/react-swipeable

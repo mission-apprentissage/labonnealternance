@@ -160,7 +160,7 @@ export const InformationCreationCompte = () => {
       delete payload.opco
     }
     createEtablissement(payload)
-      .then(({ data }) => {
+      .then((data) => {
         if (data.user.status[0].status === "VALIDÉ") {
           if (data.user.type === AUTHTYPE.ENTREPRISE) {
             // Dépot simplifié
@@ -180,9 +180,10 @@ export const InformationCreationCompte = () => {
         }
         setSubmitting(false)
       })
-      .catch(({ response }) => {
+      .catch((error) => {
+        console.error(error)
+        const { response } = error
         const payload: { error: string; statusCode: number; message: string } = response.data
-        console.error(payload.error)
         setFieldError("email", payload.message)
         setSubmitting(false)
       })
