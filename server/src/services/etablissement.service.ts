@@ -535,15 +535,18 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
 
 export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
   const result = await getEtablissementFromGouv(siret)
+
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
   }
+
   const { etat_administratif, activite_principale } = result.data
+
   if (etat_administratif === "F") {
-    return errorFactory("Cette entreprise est considérée comme fermée.")
+    return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
   }
   // Check if a CFA already has the company as partenaire
-  if (!cfa_delegated_siret) {
+  if (cfa_delegated_siret === "undefined") {
     // Allow cfa to add themselves as a company
     if (activite_principale.code.startsWith("85")) {
       return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)

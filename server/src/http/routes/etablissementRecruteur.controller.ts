@@ -70,17 +70,9 @@ export default (server: Server) => {
       }
 
       const result = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+
       if ("error" in result) {
-        switch (result.errorCode) {
-          case BusinessErrorCodes.IS_CFA: {
-            throw Boom.badRequest(result.message, {
-              isCfa: true,
-            })
-          }
-          default: {
-            throw Boom.badRequest(result.message)
-          }
-        }
+        throw Boom.badRequest(result.message, result)
       } else {
         return res.status(200).send(result)
       }
