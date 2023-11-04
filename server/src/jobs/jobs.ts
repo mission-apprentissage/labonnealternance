@@ -21,11 +21,14 @@ import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
+import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
+import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
+import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
@@ -187,6 +190,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "recruiters:set-missing-job-start-date":
+        return updateMissingStartDate()
+      case "recruiters:get-missing-geocoordinates":
+        return repiseGeocoordinates()
       case "recruiters:get-missing-address-detail":
         return updateAddressDetailOnRecruitersCollection()
       case "migration:get-missing-geocoords": // Temporaire, doit tourner en recette et production
@@ -310,6 +317,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fillRecruiterRaisonSociale()
       case "recruiters:expiration-date:fix":
         return fixJobExpirationDate()
+      case "recruiters:job-type:fix":
+        return fixJobType()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()

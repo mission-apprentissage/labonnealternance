@@ -1,23 +1,29 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZUserRecruteurPublic } from "../models"
+import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
 
 export const zLoginRoutes = {
   post: {
-    "/login/confirmation-email": {
+    "/login/:userId/resend-confirmation-email": {
       method: "post",
-      path: "/login/confirmation-email",
-      // TODO_SECURITY_FIX faire en sorte que le lien magique ne soit pas human readable. Rename en /resend-confirmation-email
-      body: z
+      path: "/login/:userId/resend-confirmation-email",
+      params: z
         .object({
-          email: z.string().email(),
+          userId: zObjectId,
         })
         .strict(),
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        ressources: {
+          user: [{ _id: { key: "userId", type: "params" } }],
+        },
+      },
     },
     "/login/magiclink": {
       method: "post",

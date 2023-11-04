@@ -51,7 +51,7 @@ export const searchForTrainingsFunction = async ({
     setHasSearch(true)
     setIsFormVisible(false)
 
-    if (response.results.length) {
+    if (response.results?.length) {
       setTrainingMarkers({
         trainingList: factorTrainingsForMap(response.results),
         options: {

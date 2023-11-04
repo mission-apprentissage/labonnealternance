@@ -1,4 +1,5 @@
 import { IJob, JOB_STATUS } from "shared"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 
 import { model, Schema } from "../../../mongodb"
 
@@ -78,8 +79,8 @@ export const jobsSchema = new Schema<IJob>(
     },
     job_type: {
       type: [String],
-      default: "Apprentissage",
-      enum: ["Apprentissage", "Professionnalisation"],
+      default: TRAINING_CONTRACT_TYPE.APPRENTISSAGE,
+      enum: Object.values(TRAINING_CONTRACT_TYPE),
       description: "Type de contrat",
     },
     is_multi_published: {

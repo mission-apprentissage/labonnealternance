@@ -28,12 +28,13 @@ import dayjs from "dayjs"
 import { Formik } from "formik"
 import omit from "lodash/omit"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
+import { useQuery } from "react-query"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
 import { useAuth } from "@/context/UserContext"
-import { apiPost } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../common/contants"
 import { publicConfig } from "../../config.public"
@@ -41,7 +42,7 @@ import { LogoContext } from "../../context/contextLogo"
 import { WidgetContext } from "../../context/contextWidget"
 import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../../theme/components/icons"
 import { J1S, Parcoursup } from "../../theme/components/logos_pro"
-import { getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
+import { createOffre, getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
 
 import DropdownCombobox from "./DropdownCombobox"
 
@@ -69,13 +70,16 @@ const ChampNombre = ({ value, max, name, handleChange, label }) => {
 
 const AjouterVoeuxForm = (props) => {
   const [inputJobItems, setInputJobItems] = useState([])
-  const [formulaire, setFormulaire] = useState(null)
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
 
-  const { user } = useAuth()
-
   const { establishment_id, email, userId, type } = router.query as { establishment_id: string; email: string; userId: string; type: string }
+  const { data: formulaire } = useQuery("offre-liste", {
+    enabled: !!establishment_id,
+    queryFn: () => getFormulaire(establishment_id),
+  })
+
+  const { user } = useAuth()
 
   const minDate = dayjs().format(DATE_FORMAT)
 
@@ -145,7 +149,7 @@ const AjouterVoeuxForm = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDepotRapide = async (values) => {
-    const formulaire = (await apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: values })) as any
+    const formulaire = await createOffre(establishment_id, values)
     formulaire.jobs.slice(-1)
     const [job] = formulaire.jobs.slice(-1)
     await handleRedirectionAfterSubmit(formulaire, job, false)
@@ -169,16 +173,6 @@ const AjouterVoeuxForm = (props) => {
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
-
-  useEffect(() => {
-    async function fetchData() {
-      if (establishment_id) {
-        const { data: formulaire } = (await getFormulaire(establishment_id)) as any
-        setFormulaire(formulaire)
-      }
-    }
-    fetchData()
-  }, [establishment_id])
 
   return (
     <Formik
@@ -264,8 +258,11 @@ const AjouterVoeuxForm = (props) => {
                 defaultValue={["Apprentissage"]}
               >
                 <Stack direction="row" spacing={5}>
-                  <Checkbox value="Apprentissage">Apprentissage</Checkbox>
-                  <Checkbox value="Professionnalisation">Professionnalisation</Checkbox>
+                  {Object.values(TRAINING_CONTRACT_TYPE).map((label) => (
+                    <Checkbox key={label} value={label}>
+                      {label}
+                    </Checkbox>
+                  ))}
                 </Stack>
               </CheckboxGroup>
             </FormControl>

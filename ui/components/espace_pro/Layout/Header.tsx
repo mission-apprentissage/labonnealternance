@@ -68,9 +68,9 @@ const Header = () => {
                   )}
                   {user.type === AUTHTYPE.ADMIN && (
                     <>
-                      <MenuItem onClick={() => router.push("/espace-pro/administration/users")}>Gestion des recruiteurs</MenuItem>
+                      <MenuItem onClick={() => router.push("/espace-pro/administration/users")}>Gestion des recruteurs</MenuItem>
                       <MenuItem onClick={() => router.push("/espace-pro/admin/utilisateurs")}>Gestion des administrateurs</MenuItem>
-                      <MenuItem onClick={() => router.push("/espace-pro/admin")}>Rendez-vous Apprenttisage</MenuItem>
+                      <MenuItem onClick={() => router.push("/espace-pro/admin")}>Rendez-vous Apprentissage</MenuItem>
                       <MenuDivider />
                     </>
                   )}

@@ -70,17 +70,9 @@ export default (server: Server) => {
       }
 
       const result = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+
       if ("error" in result) {
-        switch (result.errorCode) {
-          case BusinessErrorCodes.IS_CFA: {
-            throw Boom.badRequest(result.message, {
-              isCfa: true,
-            })
-          }
-          default: {
-            throw Boom.badRequest(result.message)
-          }
-        }
+        throw Boom.badRequest(result.message, result)
       } else {
         return res.status(200).send(result)
       }
@@ -104,7 +96,7 @@ export default (server: Server) => {
       if (!result) {
         throw Boom.notFound("aucune données OPCO trouvées")
       }
-      return res.status(200).send(result as { opco: string; idcc: string })
+      return res.status(200).send(result)
     }
   )
 
@@ -165,6 +157,7 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message)
             else throw Boom.badRequest(result.message)
           }
+          await startSession(req.body.email, res)
           return res.status(200).send(result)
         }
         case CFA: {

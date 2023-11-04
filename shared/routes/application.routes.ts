@@ -35,6 +35,26 @@ export const zApplicationRoutes = {
           "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique \"Ne pas répondre\" de La bonne alternance.\n",
       },
     },
+    "/application/intention": {
+      // TODO_SECURITY_FIX
+      path: "/application/intention",
+      method: "post",
+      body: z
+        .object({
+          id: z.string(), // inutile de chiffrer l'id, rajouter un champ token qui contiendra l'id
+          iv: z.string(),
+          intention: z.string(),
+        })
+        .strict(),
+      response: {
+        "200": z
+          .object({
+            result: z.literal("ok"),
+          })
+          .strict(),
+      },
+      securityScheme: null,
+    },
     "/application/intentionComment": {
       path: "/application/intentionComment",
       method: "post",

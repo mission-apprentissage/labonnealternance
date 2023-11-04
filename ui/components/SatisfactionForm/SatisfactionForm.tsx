@@ -10,6 +10,7 @@ import { getValueFromPath } from "../../utils/tools"
 
 import SatisfactionFormNavigation from "./SatisfactionFormNavigation"
 import SatisfactionFormSuccess from "./SatisfactionFormSuccess"
+import postIntention from "./services/postIntention"
 import submitCommentaire from "./services/submitCommentaire"
 
 let iv = null
@@ -102,9 +103,18 @@ const SatisfactionForm = ({ formType }) => {
     return text
   }
 
+  const sendIntention = async () => {
+    await postIntention({
+      id,
+      intention,
+      iv,
+    })
+  }
+
   useEffect(() => {
     // enregistrement en state des params provenant du path
     initParametersFromPath()
+    sendIntention()
   }, [])
 
   const [sendingState, setSendingState] = useState("not_sent")

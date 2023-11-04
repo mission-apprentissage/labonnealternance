@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
+import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -115,18 +115,27 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
+        "200": z
+          .object({
+            status_current: ZEtatUtilisateur,
+          })
+          .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        ressources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
     },
   },
   post: {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      // TODO ANY TO BE FIXED
-      body: z.any(),
+      // TODO TO BE FIXED
+      body: z.object({}).passthrough(),
       // body: ZUserRecruteur.extend({
       //   scope: z.string().optional(),
       // }).strict(),
@@ -171,7 +180,6 @@ export const zUserRecruteurRoutes = {
       method: "put",
       path: "/admin/users/:userId",
       params: z.object({ userId: zObjectId }).strict(),
-      // TODO ANY TO BE FIXED
       body: ZUserRecruteurWritable.partial(),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
@@ -205,8 +213,6 @@ export const zUserRecruteurRoutes = {
     "/user": {
       method: "delete",
       path: "/user",
-      // TODO_SECURITY_FIX session et cookie + permissions
-      // TODO return json format
       querystring: z
         .object({
           userId: zObjectId,
@@ -216,7 +222,22 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        ressources: {
+          user: [
+            {
+              _id: { type: "query", key: "userId" },
+            },
+          ],
+          recruiter: [
+            {
+              _id: { type: "query", key: "recruiterId" },
+            },
+          ],
+        },
+      },
     },
     "/admin/users/:userId": {
       method: "delete",

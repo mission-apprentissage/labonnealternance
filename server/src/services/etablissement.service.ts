@@ -190,7 +190,7 @@ export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Prom
  */
 export const getOpco = async (siret: string): Promise<ICFADock | null> => {
   try {
-    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -205,7 +205,7 @@ export const getOpco = async (siret: string): Promise<ICFADock | null> => {
  */
 export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
   try {
-    const { data } = await getHttpClient().get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+    const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
     return data
   } catch (err: any) {
     sentryCaptureException(err)
@@ -220,7 +220,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
   try {
-    const { data } = await getHttpClient().get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
+    const { data } = await getHttpClient({ timeout: 5000 }).get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
     return data
   } catch (err) {
     sentryCaptureException(err)
@@ -535,15 +535,18 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
 
 export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
   const result = await getEtablissementFromGouv(siret)
+
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
   }
+
   const { etat_administratif, activite_principale } = result.data
+
   if (etat_administratif === "F") {
-    return errorFactory("Cette entreprise est considérée comme fermée.")
+    return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
   }
   // Check if a CFA already has the company as partenaire
-  if (!cfa_delegated_siret) {
+  if (cfa_delegated_siret === "undefined") {
     // Allow cfa to add themselves as a company
     if (activite_principale.code.startsWith("85")) {
       return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)

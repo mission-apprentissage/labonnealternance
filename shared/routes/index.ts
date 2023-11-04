@@ -61,19 +61,27 @@ const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP
   ...zRoutesGetP3,
 } as const
 
-const zRoutesPost = {
+const zRoutesPost1 = {
   ...zApplicationRoutes.post,
   ...zLoginRoutes.post,
   ...zTrainingLinksRoutes.post,
   ...zUnsubscribeRoute.post,
   ...zUserRecruteurRoutes.post,
   ...zV1JobsRoutes.post,
+} as const
+
+const zRoutesPost2 = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
   ...zCampaignWebhookRoutes.post,
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
+}
+
+const zRoutesPost = {
+  ...zRoutesPost1,
+  ...zRoutesPost2,
 } as const
 
 const zRoutesPut = {
@@ -136,15 +144,22 @@ export type IQuery<S extends IRouteSchema> = S["querystring"] extends ZodType ? 
 
 export type IParam<S extends IRouteSchema> = S["params"] extends ZodType ? z.input<S["params"]> : never
 
-type IHeadersAuth<S extends IRouteSchema> = S extends { securityScheme: { auth: infer A } } ? (A extends "access-token" ? { authorization: `Bearer ${string}` } : never) : never
+type IHeadersAuth<S extends IRouteSchema> = S extends { securityScheme: { auth: infer A } } ? (A extends "access-token" ? { authorization: `Bearer ${string}` } : object) : object
 
-export type IHeaders<S extends IRouteSchema> = S["headers"] extends ZodType ? Omit<z.input<S["headers"]>, "referrer"> : never
+type IHeaders<S extends IRouteSchema> = S["headers"] extends ZodType ? Omit<z.input<S["headers"]>, "referrer"> : object
 
 type IRequestRaw<S extends IRouteSchema> = {
   params: IParam<S>
   querystring: IQuery<S>
-  headers: IHeaders<S> & IHeadersAuth<S>
+  headers: IHeaders<S> & IHeadersAuth<S> extends EmptyObject ? never : IHeaders<S> & IHeadersAuth<S>
   body: S extends IRouteSchemaWrite ? IBody<S> : never
 }
 
-export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never | EmptyObject>
+export type IRequestFetchOptions = {
+  timeout?: number
+  headers?: Record<string, string>
+}
+
+export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never | EmptyObject> extends EmptyObject
+  ? EmptyObject
+  : ConditionalExcept<IRequestRaw<S>, never | EmptyObject>

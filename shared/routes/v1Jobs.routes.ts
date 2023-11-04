@@ -1,3 +1,4 @@
+import dayjs from "../helpers/dayjs"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob } from "../models"
@@ -368,20 +369,39 @@ export const zV1JobsRoutes = {
         .strict(),
       body: z
         .object({
-          job_level_label: z.string(),
-          job_duration: z.number(),
+          appellation_code: z.string().regex(/^[0-9]+$/, "appelation code must contains only numbers"),
+          job_level_label: z.enum([
+            "Indifférent",
+            "Cap, autres formations niveau (Infrabac)",
+            "BP, Bac, autres formations niveau (Bac)",
+            "BTS, DEUST, autres formations niveau (Bac+2)",
+            "Licence, autres formations niveau (Bac+3)",
+            "Master, titre ingénieur, autres formations niveau (Bac+5)",
+          ]),
+          job_duration: z.number().min(6).max(36),
           job_type: z.array(z.enum(["Apprentissage", "Professionnalisation"])),
-          is_disabled_elligible: z.boolean(),
-          job_count: z.number().optional(),
-          job_rythm: z.string().optional(),
-          job_start_date: z.date(),
+          is_disabled_elligible: z.boolean().optional().default(false),
+          job_count: z.number().optional().default(1),
+          job_rythm: z
+            .enum(["Indifférent", "2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines", "Non renseigné"])
+            .optional()
+            .default("Non renseigné"),
+          job_start_date: z.coerce.date().refine((date) => dayjs(date).isSameOrAfter(dayjs().utc()), { message: "job_start_date must be greater or equal to today's date" }),
           job_employer_description: z.string().optional(),
           job_description: z.string().optional(),
           custom_address: z.string().optional(),
           custom_geo_coordinates: z.string().optional(),
-          appellation_code: z.string(),
         })
-        .strict(),
+        .strict()
+        .refine(
+          ({ custom_address, custom_geo_coordinates }) => {
+            if ((custom_address !== undefined && custom_geo_coordinates === undefined) || (custom_address === undefined && custom_geo_coordinates !== undefined)) {
+              return false
+            }
+            return true
+          },
+          { message: "custom_geo_coordinates must be filled if a custom_address is passed" }
+        ),
       response: {
         "201": ZRecruiter,
         "400": z.union([ZResError, ZLbarError]),

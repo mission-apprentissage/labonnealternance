@@ -24,7 +24,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
     // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
       Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
-        if (entrepriseData.error) {
+        if ("error" in entrepriseData && entrepriseData.error) {
           if (entrepriseData.statusCode >= 500) {
             router.push({
               pathname: "/espace-pro/creation/detail",
@@ -32,7 +32,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
             })
           } else {
             setFieldError("establishment_siret", entrepriseData.message)
-            setIsCfa(entrepriseData?.data?.isCfa)
+            setIsCfa(entrepriseData?.errorCode === "IS_CFA")
             setSubmitting(false)
           }
         } else {

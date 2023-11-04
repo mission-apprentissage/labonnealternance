@@ -55,6 +55,7 @@ export const OPCOS = {
 }
 
 export const NIVEAUX_POUR_LBA = {
+  INDIFFERENT: "Indifférent",
   "3 (CAP...)": "Cap, autres formations niveau (Infrabac)",
   "4 (BAC...)": "BP, Bac, autres formations niveau (Bac)",
   "5 (BTS, DEUST...)": "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -87,11 +88,6 @@ export enum UNSUBSCRIBE_EMAIL_ERRORS {
   ETABLISSEMENTS_MULTIPLES = "ETABLISSEMENTS_MULTIPLES",
 }
 
-export const TRAINING_CONTRACT_TYPE = {
-  APPRENTISSAGE: "Apprentissage",
-  PROFESSIONALISATION: "Professionalisation",
-}
-
 export const TRAINING_RYTHM = {
   INDIFFERENT: "Indifférent",
   "2J3J": "2 jours / 3 jours",
@@ -113,4 +109,5 @@ export type IRole = IRoles[keyof IRoles]
 export enum BusinessErrorCodes {
   IS_CFA = "IS_CFA",
   ALREADY_EXISTS = "ALREADY_EXISTS",
+  CLOSED = "CLOSED",
 }

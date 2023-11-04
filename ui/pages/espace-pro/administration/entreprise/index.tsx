@@ -39,7 +39,7 @@ const CreationCompte = () => {
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
     Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret })]).then(
       ([opcoInfos, entrepriseData]) => {
-        if (entrepriseData.error) {
+        if ("error" in entrepriseData && entrepriseData.error) {
           if (entrepriseData.statusCode >= 500) {
             router.push({
               pathname: "/espace-pro/administration/entreprise/detail",
@@ -47,7 +47,7 @@ const CreationCompte = () => {
             })
           } else {
             setFieldError("establishment_siret", entrepriseData.message)
-            setIsCfa(Boolean(entrepriseData.data?.isCfa))
+            setIsCfa(entrepriseData?.data?.isCfa)
             setSubmitting(false)
           }
         } else {

@@ -53,7 +53,7 @@ export const zRecruiterRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             establishment_enseigne: z.string().nullish(),
             establishment_state: z.string(), // F pour fermé ou A pour actif
@@ -77,7 +77,7 @@ export const zRecruiterRoutes = {
       path: "/etablissement/entreprise/:siret/opco",
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             opco: z.string(),
             idcc: z.string().nullish(),
@@ -156,7 +156,7 @@ export const zRecruiterRoutes = {
       ]),
       response: {
         // TODO ANY TO BE FIXED
-        "2xx": z.any(),
+        "200": z.any(),
         // "2xx": z.union([
         //   z
         //     .object({
