@@ -4,6 +4,25 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
 
+export const enum EReasonsKey {
+  MODALITE = "modalite",
+  CONTENU = "contenu",
+  PORTE = "porte",
+  FRAIS = "frais",
+  PLACE = "place",
+  HORAIRE = "horaire",
+  PLUS = "plus",
+  ACCOMPAGNEMENT = "accompagnement",
+  LIEU = "lieu",
+  SUIVI = "suivi",
+  AUTRE = "autre",
+}
+
+export enum EApplicantType {
+  PARENT = "parent",
+  ETUDIANT = "etudiant",
+}
+
 export const ZMailing = z
   .object({
     campaign: z.string(),

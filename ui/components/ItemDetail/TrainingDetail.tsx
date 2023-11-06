@@ -53,7 +53,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
     if (!training.prdvLoaded) {
       fetchPrdv(training, hasAlsoJob).then((result) => {
         if (result) {
-          applyDataFromPrdv(result.error === "indisponible" ? "" : result.form_url)
+          applyDataFromRdvA(result.error === "indisponible" ? "" : result)
         }
       })
     }
@@ -86,13 +86,13 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
     })
   }
 
-  const applyDataFromPrdv = (url) => {
+  const applyDataFromRdvA = (appointmentContextResponse) => {
     const updatedTrainings = trainings
     updatedTrainings.forEach(async (v) => {
       if (v.id === training.id) {
         if (!v.prdvLoaded) {
           v.prdvLoaded = true
-          v.prdvUrl = url
+          v.rdvContext = appointmentContextResponse
           setTrainingsAndSelectedItem(updatedTrainings, v)
         }
         setLoading(false)

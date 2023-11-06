@@ -18,6 +18,7 @@
     "@asteasolutions/zod-to-openapi": "^5.5.0",
     "@fastify/swagger": "^8.11.0",
     "bson": "^1.1.4",
+    "dayjs": "^1.11.10",
     "lodash-es": "^4.17.21",
     "luhn": "^2.4.1",
     "type-fest": "^4.3.1",

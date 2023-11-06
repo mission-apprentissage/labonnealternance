@@ -8,14 +8,12 @@ import { ZGlobalAddress } from "./address.model"
 import { zObjectId } from "./common"
 
 const etatUtilisateurValues = Object.values(ETAT_UTILISATEUR)
+export const ZEtatUtilisateur = z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).describe("Statut de l'utilisateur")
 
 export const ZUserStatusValidation = z
   .object({
     validation_type: z.enum(["AUTOMATIQUE", "MANUELLE"]).describe("Processus de validation lors de l'inscription de l'utilisateur"),
-    status: z
-      .enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)])
-      .nullish()
-      .describe("Statut de l'utilisateur"),
+    status: ZEtatUtilisateur.nullish(),
     reason: z.string().nullish().describe("Raison du changement de statut"),
     user: z.string().describe("Utilisateur ayant effectué la modification | SERVEUR si le compte a été validé automatiquement"),
     date: z.date().nullish().describe("Date de l'évènement"),

@@ -3,6 +3,8 @@ import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { defaultTo } from "lodash"
 import React, { useContext, useEffect, useState } from "react"
 
+import DemandeDeContact from "@/components/RDV/DemandeDeContact"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
@@ -16,7 +18,7 @@ import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
-import { BuildSwipe, buildPrdvButton, buttonJePostuleShouldBeDisplayed, buttonPRDVShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
+import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getCurrentList from "./ItemDetailServices/getCurrentList"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
@@ -152,12 +154,10 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             </>
           )}
 
-          {kind === "formation" && buttonPRDVShouldBeDisplayed(selectedItem) && (
+          {kind === "formation" && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
               <Divider my={2} />
-              <Box mt={4} pb={6}>
-                {buildPrdvButton(selectedItem)}
-              </Box>
+              <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
             </>
           )}
         </Box>
@@ -224,7 +224,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           )}
         </>
       )}
-      {kind === "formation" && !buttonPRDVShouldBeDisplayed(selectedItem) && (
+      {kind === "formation" && !buttonRdvShouldBeDisplayed(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
       {(kind === "lbb" || kind === "lba") && !isCandidatureLba(selectedItem) && (
