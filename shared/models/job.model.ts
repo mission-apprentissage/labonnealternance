@@ -1,6 +1,7 @@
 import { Jsonify } from "type-fest"
 
-import { TRAINING_CONTRACT_TYPE } from "../constants/recruteur"
+import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur"
+import dayjs from "../helpers/dayjs"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
@@ -13,6 +14,8 @@ export enum JOB_STATUS {
   EN_ATTENTE = "En attente",
 }
 
+const allJobRythm = Object.values(TRAINING_RYTHM)
+const allJobLevel = [...Object.values(NIVEAUX_POUR_LBA), "Indifférent"]
 const allJobStatus = Object.values(JOB_STATUS)
 const allJobType = Object.values(TRAINING_CONTRACT_TYPE)
 export const ZJobType = z.array(z.enum([allJobType[0], ...allJobType.slice(1)])).describe("Type de contrat")
@@ -30,8 +33,11 @@ const ZJobFields = z
   .object({
     rome_label: z.string().nullish().describe("Libellé du métier concerné"),
     rome_appellation_label: z.string().nullish().describe("Libellé de l'appelation ROME"),
-    job_level_label: z.string().nullish().describe("Niveau de formation visé en fin de stage"),
-    job_start_date: z.coerce.date().nullish().describe("Date de début de l'alternance"),
+    job_level_label: z
+      .enum([allJobLevel[0], ...allJobLevel.slice(1)])
+      .nullish()
+      .describe("Niveau de formation visé en fin de stage"),
+    job_start_date: z.coerce.date().describe("Date de début de l'alternance"),
     job_description: z.string().nullish().describe("Description de l'offre d'alternance"),
     job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
@@ -51,7 +57,10 @@ const ZJobFields = z
     is_disabled_elligible: z.boolean().nullish().describe("Poste ouvert aux personnes en situation de handicap"),
     job_count: z.number().nullish().describe("Nombre de poste(s) ouvert(s) pour cette offre"),
     job_duration: z.number().nullish().describe("Durée du contrat en année"),
-    job_rythm: z.string().nullish().describe("Répartition de la présence de l'alternant en formation/entreprise"),
+    job_rythm: z
+      .enum([allJobRythm[0], ...allJobRythm.slice(1)])
+      .nullish()
+      .describe("Répartition de la présence de l'alternant en formation/entreprise"),
     custom_address: z.string().nullish().describe("Adresse personnalisée de l'entreprise"),
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
     stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
@@ -72,7 +81,6 @@ export const ZJobWrite = ZJobFields.pick({
   rome_label: true,
   job_type: true,
   job_level_label: true,
-  job_start_date: true,
   is_disabled_elligible: true,
   job_count: true,
   job_duration: true,
@@ -80,6 +88,11 @@ export const ZJobWrite = ZJobFields.pick({
   job_description: true,
   delegations: true,
 })
+  .extend({
+    job_start_date: ZJobFields.shape.job_start_date.refine((date) => dayjs(date).isSameOrAfter(dayjs().utc().startOf("days")), {
+      message: "job_start_date must be greater or equal to today's date",
+    }),
+  })
   .strict()
   .openapi("JobWrite")
 

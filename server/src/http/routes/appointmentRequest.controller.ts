@@ -137,7 +137,7 @@ export default (server: Server) => {
       const [emailCandidat, emailCfa] = await Promise.all([
         mailer.sendEmail({
           to: user.email,
-          subject: `Le centre de formation a bien reçu votre demande de contact !`,
+          subject: `Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
           template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
           data: mailData,
         }),

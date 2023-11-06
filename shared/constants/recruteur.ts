@@ -89,6 +89,7 @@ export const TRAINING_RYTHM = {
   "1S1S": "1 semaine / 1 semaine",
   "2S3S": "2 semaines / 3 semaines",
   "6S6S": "6 semaines / 6 semaines",
+  NONRENSEIGNE: "Non renseigné",
 }
 
 export const ROLES = {
@@ -100,4 +101,5 @@ export const ROLES = {
 export enum BusinessErrorCodes {
   IS_CFA = "IS_CFA",
   ALREADY_EXISTS = "ALREADY_EXISTS",
+  CLOSED = "CLOSED",
 }
