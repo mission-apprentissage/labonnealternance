@@ -314,7 +314,7 @@ const AjouterVoeuxForm = (props) => {
                 </Flex>
               </FormErrorMessage>
             </FormControl>
-            {(user && user.type !== AUTHTYPE.ENTREPRISE) || type !== AUTHTYPE.ENTREPRISE ? (
+            {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
               <FormControl mt={6}>
                 <FormLabel>Rythme de l'alternance (formation / entreprise)</FormLabel>
                 <FormHelperText pb={2}>Facultatif</FormHelperText>
@@ -330,7 +330,7 @@ const AjouterVoeuxForm = (props) => {
                 </Select>
                 {errors.job_rythm && touched.job_rythm && <FormErrorMessage>{errors.job_rythm as string}</FormErrorMessage>}
               </FormControl>
-            ) : null}
+            )}
             <Divider mt={5} />
             {(values.job_description || organisation?.includes("akto")) && (
               <FormControl mt={6}>
