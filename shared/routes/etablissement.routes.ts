@@ -17,7 +17,13 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        ressources: {
+          eligibleTrainingsForAppointment: [
+            {
+              etablissement_formateur_siret: { type: "params", key: "siret" },
+            },
+          ],
+        },
       },
     },
     "/admin/etablissements/:id": {
@@ -30,7 +36,13 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        ressources: {
+          etablissement: [
+            {
+              _id: { type: "params", key: "id" },
+            },
+          ],
+        },
       },
     },
     "/etablissements/:id": {
@@ -123,7 +135,13 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        ressources: {
+          etablissement: [
+            {
+              _id: { type: "params", key: "id" },
+            },
+          ],
+        },
       },
     },
     "/etablissements/:id/appointments/:appointmentId": {
