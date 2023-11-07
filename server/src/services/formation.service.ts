@@ -3,12 +3,9 @@ import dayjs from "dayjs"
 import { groupBy, maxBy } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
 
-import { getLBFFormationDescription } from "@/common/apis/Pe"
-import { logger } from "@/common/logger"
-
 import { search } from "../common/esClient/index"
 import { FormationCatalogue } from "../common/model/index"
-import { IApiError, manageApiError } from "../common/utils/errorManager"
+import { IApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
@@ -613,45 +610,6 @@ export const getFormationQuery = async ({ id, caller }: { id: string; caller?: s
     }
 
     return { error: "internal_error" }
-  }
-}
-
-/**
- * Supprime les adresses emails de la payload provenant de l'api La Bonne Formation
- * @param {any} data la payload issue de LBF
- * @return {any}
- */
-const removeEmailFromLBFData = (data: any): any => {
-  if (data?.organisme?.contact?.email) {
-    data.organisme.contact.email = ""
-  }
-
-  if (data?.sessions?.length) {
-    data.sessions.forEach((_, idx) => {
-      if (data.sessions[idx]?.contact?.email) {
-        data.sessions[idx].contact.email = ""
-      }
-    })
-  }
-
-  return data
-}
-
-/**
- * Récupère depuis l'api LBF des éléments de description indisponibles depuis le catalogue
- * @returns {Promise<IApiError | any>}
- */
-export const getFormationDescriptionQuery = async ({ id }: { id: string }): Promise<IApiError | any> => {
-  try {
-    const formationDescription = await getLBFFormationDescription(id)
-
-    logger.info(`Call formationDescription. params=${id}`)
-    return removeEmailFromLBFData(formationDescription)
-  } catch (error) {
-    return manageApiError({
-      error,
-      errorTitle: `getting training description from Labonneformation`,
-    })
   }
 }
 
