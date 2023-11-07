@@ -37,10 +37,7 @@ const ZJobFields = z
       .enum([allJobLevel[0], ...allJobLevel.slice(1)])
       .nullish()
       .describe("Niveau de formation visé en fin de stage"),
-    job_start_date: z.coerce
-      .date()
-      .describe("Date de début de l'alternance")
-      .refine((date) => dayjs(date).isSameOrAfter(dayjs().utc()), { message: "job_start_date must be greater or equal to today's date" }),
+    job_start_date: z.coerce.date().describe("Date de début de l'alternance"),
     job_description: z.string().nullish().describe("Description de l'offre d'alternance"),
     job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
@@ -84,7 +81,6 @@ export const ZJobWrite = ZJobFields.pick({
   rome_label: true,
   job_type: true,
   job_level_label: true,
-  job_start_date: true,
   is_disabled_elligible: true,
   job_count: true,
   job_duration: true,
@@ -92,6 +88,11 @@ export const ZJobWrite = ZJobFields.pick({
   job_description: true,
   delegations: true,
 })
+  .extend({
+    job_start_date: ZJobFields.shape.job_start_date.refine((date) => dayjs(date).isSameOrAfter(dayjs().utc().startOf("days")), {
+      message: "job_start_date must be greater or equal to today's date",
+    }),
+  })
   .strict()
   .openapi("JobWrite")
 

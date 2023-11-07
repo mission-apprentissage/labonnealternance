@@ -677,7 +677,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "job_start_date": {
             "description": "Date de début de l'alternance",
-            "type": "string",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "job_status": {
             "description": "Statut de l'offre",
@@ -5297,7 +5300,10 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
-                    "type": "string",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_type": {
                     "description": "Type de contrat",
