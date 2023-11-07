@@ -36,13 +36,7 @@ export const zFormulaireRoute = {
         // "200": z.any(),
         "2xx": ZJob,
       },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "recruiter:manage",
-        ressources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
+      securityScheme: null,
     },
   },
   post: {
@@ -164,13 +158,7 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZRecruiter,
       },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "recruiter:manage",
-        ressources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
+      securityScheme: null,
     },
     "/formulaire/offre/:jobId/cancel": {
       method: "put",
