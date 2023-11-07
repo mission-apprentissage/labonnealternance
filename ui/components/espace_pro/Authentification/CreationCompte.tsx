@@ -32,7 +32,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
             })
           } else {
             setFieldError("establishment_siret", entrepriseData.message)
-            setIsCfa(entrepriseData?.data?.isCfa)
+            setIsCfa(entrepriseData?.errorCode === "IS_CFA")
             setSubmitting(false)
           }
         } else {

@@ -156,7 +156,7 @@ export const zRecruiterRoutes = {
       ]),
       response: {
         // TODO ANY TO BE FIXED
-        "2xx": z.any(),
+        "200": z.any(),
         // "2xx": z.union([
         //   z
         //     .object({

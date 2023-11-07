@@ -3,11 +3,11 @@ import { useRouter } from "next/router"
 import { useQuery, useQueryClient } from "react-query"
 
 import { useAuth } from "@/context/UserContext"
-import { apiPost, apiPut } from "@/utils/api.utils"
+import { apiPut } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../common/contants"
 import { ArrowDropRightLine } from "../../theme/components/icons"
-import { getOffre } from "../../utils/api"
+import { createOffre, getOffre } from "../../utils/api"
 
 import { AjouterVoeux, LoadingEmptySpace } from "."
 
@@ -40,7 +40,7 @@ export default function CreationOffre() {
         })
         .finally(() => router.push(`/espace-pro/administration/entreprise/${establishment_id}`))
     } else {
-      const formulaire = (await apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: values })) as any
+      const formulaire = await createOffre(establishment_id, values)
       if (user.type === AUTHTYPE.ENTREPRISE) {
         // Create the offer and return the form with the related offer created
         return {

@@ -640,6 +640,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "job_level_label": {
             "description": "Niveau de formation visé en fin de stage",
+            "enum": [
+              "Cap, autres formations niveau (Infrabac)",
+              "BP, Bac, autres formations niveau (Bac)",
+              "BTS, DEUST, autres formations niveau (Bac+2)",
+              "Licence, autres formations niveau (Bac+3)",
+              "Master, titre ingénieur, autres formations niveau (Bac+5)",
+              "Indifférent",
+            ],
             "type": [
               "string",
               "null",
@@ -654,6 +662,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "job_rythm": {
             "description": "Répartition de la présence de l'alternant en formation/entreprise",
+            "enum": [
+              "Indifférent",
+              "2 jours / 3 jours",
+              "1 semaine / 1 semaine",
+              "2 semaines / 3 semaines",
+              "6 semaines / 6 semaines",
+              "Non renseigné",
+            ],
             "type": [
               "string",
               "null",
@@ -748,6 +764,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
         },
         "required": [
+          "job_start_date",
           "rome_code",
           "job_status",
           "job_type",
@@ -5117,7 +5134,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "job_start_date": {
-                    "pattern": "\\\\d{4}-[01]\\\\d-[0-3]\\\\d",
                     "type": "string",
                   },
                   "job_type": {
@@ -5254,6 +5270,14 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
+                    "enum": [
+                      "Cap, autres formations niveau (Infrabac)",
+                      "BP, Bac, autres formations niveau (Bac)",
+                      "BTS, DEUST, autres formations niveau (Bac+2)",
+                      "Licence, autres formations niveau (Bac+3)",
+                      "Master, titre ingénieur, autres formations niveau (Bac+5)",
+                      "Indifférent",
+                    ],
                     "type": [
                       "string",
                       "null",
@@ -5261,6 +5285,14 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                   "job_rythm": {
                     "description": "Répartition de la présence de l'alternant en formation/entreprise",
+                    "enum": [
+                      "Indifférent",
+                      "2 jours / 3 jours",
+                      "1 semaine / 1 semaine",
+                      "2 semaines / 3 semaines",
+                      "6 semaines / 6 semaines",
+                      "Non renseigné",
+                    ],
                     "type": [
                       "string",
                       "null",

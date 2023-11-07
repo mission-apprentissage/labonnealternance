@@ -4,10 +4,10 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import * as Yup from "yup"
 
+import { reasons } from "@/components/RDV/types"
 import { apiGet, apiPatch, apiPost } from "@/utils/api.utils"
 
 import { formatDate } from "../../../../../common/utils/dateUtils"
-import { getReasonText } from "../../../../../common/utils/reasonsUtils"
 import { FormLayoutComponent } from "../../../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
 import { CfaCandidatInformationAnswered } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationAnswered"
 import { CfaCandidatInformationForm } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationForm"
@@ -151,7 +151,7 @@ export default function CfaCandidatInformationPage() {
             <Text as="p" my="2">
               <UnorderedList>
                 {(data.appointment?.applicant_reasons || []).map((reason, i) => {
-                  return <ListItem key={i}>{getReasonText(reason)}</ListItem>
+                  return <ListItem key={i}>{reasons.find((item) => item.key === reason).title}</ListItem>
                 })}
               </UnorderedList>
             </Text>

@@ -17578,6 +17578,7 @@ __metadata:
     "@fastify/swagger": ^8.11.0
     "@types/boom": ^7.3.3
     bson: ^1.1.4
+    dayjs: ^1.11.10
     eslint-plugin-zod: ^1.4.0
     lodash-es: ^4.17.21
     luhn: ^2.4.1

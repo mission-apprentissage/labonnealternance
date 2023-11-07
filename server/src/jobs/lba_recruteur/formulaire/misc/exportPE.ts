@@ -191,11 +191,12 @@ export const exportPE = async (): Promise<void> => {
   try {
     const csvPath = new URL("./exportPE.csv", import.meta.url)
     const buffer: any[] = []
+    const threshold = dayjs().subtract(30, "days").toDate()
 
     // Retrieve only active offers
     const offres: any[] = await db
       .collection("jobs")
-      .find({ job_status: JOB_STATUS.ACTIVE, recruiterStatus: RECRUITER_STATUS.ACTIF, geo_coordinates: { $nin: ["NOT FOUND", null] } })
+      .find({ job_status: JOB_STATUS.ACTIVE, recruiterStatus: RECRUITER_STATUS.ACTIF, geo_coordinates: { $nin: ["NOT FOUND", null] }, job_update_date: { $gte: threshold } })
       .toArray()
 
     logger.info(`get info from ${offres.length} offers...`)
