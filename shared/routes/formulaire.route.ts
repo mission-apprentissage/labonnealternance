@@ -60,7 +60,7 @@ export const zFormulaireRoute = {
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "recruiter:manage",
+        access: "user:manage",
         ressources: {
           user: [{ _id: { key: "userId", type: "params" } }],
         },
