@@ -1,4 +1,4 @@
-import { IAnonymizedApplication } from "shared"
+import { IAnonymizedApplication } from "shared/models/anonymizedApplications.model"
 
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
