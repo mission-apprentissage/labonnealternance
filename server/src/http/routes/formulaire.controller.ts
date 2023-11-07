@@ -297,6 +297,7 @@ export default (server: Server) => {
     "/formulaire/offre/f/:jobId/cancel",
     {
       schema: zRoutes.put["/formulaire/offre/f/:jobId/cancel"],
+      onRequest: server.auth(zRoutes.put["/formulaire/offre/f/:jobId/cancel"]),
     },
     async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
