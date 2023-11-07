@@ -163,14 +163,18 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/cancel": {
       method: "put",
       path: "/formulaire/offre/:jobId/cancel",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
-      // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
+      querystring: z.object({ token: z.string() }).strict(),
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
     "/formulaire/offre/f/:jobId/cancel": {
       method: "put",
@@ -193,14 +197,18 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/provided": {
       method: "put",
       path: "/formulaire/offre/:jobId/provided",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
-      // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
+      querystring: z.object({ token: z.string() }).strict(),
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
     "/formulaire/offre/:jobId/extend": {
       method: "put",

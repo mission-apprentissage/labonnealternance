@@ -53,7 +53,7 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
   return `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${token}`
 }
 
-export function createUpdateJobLink(user: IUserRecruteur, jobId: string, suffix: "provided" | "cancel") {
+export function createCancelJobLink({ user, jobId }: { user: IUserRecruteur; jobId: string }) {
   const token = generateAccessToken(user, [
     {
       route: zRoutes.put["/formulaire/offre/:jobId/cancel"],
@@ -61,6 +61,13 @@ export function createUpdateJobLink(user: IUserRecruteur, jobId: string, suffix:
         job: [jobId],
       },
     },
+  ])
+
+  return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?token=${token}`
+}
+
+export function createProvidedJobLink({ user, jobId }: { user: IUserRecruteur; jobId: string }) {
+  const token = generateAccessToken(user, [
     {
       route: zRoutes.put["/formulaire/offre/:jobId/provided"],
       resources: {
@@ -69,5 +76,5 @@ export function createUpdateJobLink(user: IUserRecruteur, jobId: string, suffix:
     },
   ])
 
-  return `${config.publicUrl}/espace-pro/offre/${suffix}?token=${token}`
+  return `${config.publicUrl}/espace-pro/offre/${jobId}/provided?token=${token}`
 }
