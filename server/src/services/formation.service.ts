@@ -396,7 +396,9 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFo
     idRco: rawFormation.source.id_formation ?? null,
     idRcoFormation: rawFormation.source.id_rco_formation ?? null,
 
-    contact: null,
+    contact: {
+      phone: rawFormation.source.num_tel ?? null,
+    },
 
     place: {
       distance: rawFormation.sort ? roundDistance(rawFormation.sort[0]) : null,
