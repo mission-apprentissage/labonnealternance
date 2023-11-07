@@ -41,7 +41,7 @@ export default function PropositionOffreId() {
       const job = data.jobs.find((job) => job._id === jobId)
 
       if (siretFormateur) {
-        await patchOffre(job._id, { cfa_read_company_detail_at: new Date() }, { params: { siret_formateur: siretFormateur } })
+        await patchOffre(job._id, null, { params: { siret_formateur: siretFormateur } })
       }
 
       setFormulaire(data)
