@@ -12,12 +12,11 @@ export default async function fetchTrainingDetails(training, errorCallbackFn = _
   }
 
   const trainingsApi = `${_apiEndpoint}/v1/formations/formation/${encodeURIComponent(training.id)}`
-  const lbfApi = `${_apiEndpoint}/v1/formations/formationDescription/${training.idRco}`
 
-  const [response, lbfResponse] = await Promise.all([_axios.get(trainingsApi), _axios.get(lbfApi)])
+  const response = await _axios.get(trainingsApi)
 
   const isSimulatedError = _.includes(_.get(_window, "location.href", ""), "trainingDetailError=true")
-  const isAxiosError = !!_.get(response, "data.error") || !!_.get(lbfResponse, "data.error")
+  const isAxiosError = !!_.get(response, "data.error")
 
   const isError = isAxiosError || isSimulatedError
 
@@ -30,13 +29,6 @@ export default async function fetchTrainingDetails(training, errorCallbackFn = _
     }
   } else if (response.data?.results?.length) {
     res = response.data.results[0]
-
-    // remplacement des coordonnées de contact catalogue par celles de lbf
-    const contactLbf = lbfResponse.data.organisme.contact
-
-    res.contact = res.contact || {}
-    res.contact.phone = contactLbf?.tel || res.contact.phone
-    res.company.url = contactLbf?.url || res.company.url
   }
 
   return res
