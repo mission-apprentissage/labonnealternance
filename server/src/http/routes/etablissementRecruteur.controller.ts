@@ -154,8 +154,8 @@ export default (server: Server) => {
           const cfa_delegated_siret = req.body.cfa_delegated_siret ?? undefined
           const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret, cfa_delegated_siret })
           if ("error" in result) {
-            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message)
-            else throw Boom.badRequest(result.message)
+            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
+            else throw Boom.badRequest(result.message, result)
           }
           await startSession(req.body.email, res)
           return res.status(200).send(result)
