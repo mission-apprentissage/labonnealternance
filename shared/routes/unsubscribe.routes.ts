@@ -5,7 +5,6 @@ import { IRoutesDef } from "./common.routes"
 
 export const zUnsubscribeRoute = {
   post: {
-    // TODO_SECURITY AB Vs. Marion + Abdellah + Léo !! fight !!
     "/unsubscribe": {
       method: "post",
       path: "/unsubscribe",

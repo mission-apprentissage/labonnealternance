@@ -4,7 +4,7 @@ import { IJobWritable, INewDelegations, IRoutes } from "shared"
 
 import { publicConfig } from "../config.public"
 
-import { apiDelete, apiGet, apiPost, apiPut } from "./api.utils"
+import { ApiError, apiDelete, apiGet, apiPost, apiPut } from "./api.utils"
 
 const API = Axios.create({
   baseURL: publicConfig.apiEndpoint,
@@ -76,9 +76,9 @@ export const getEntrepriseInformation = async (siret: string, options: { cfa_del
   try {
     const data = await apiGet("/etablissement/entreprise/:siret", { params: { siret }, querystring: options }, { timeout: 7000 })
     return data
-  } catch (error: any) {
+  } catch (error: unknown) {
     captureException(error)
-    if (error.context?.statusCode === 400) {
+    if (error instanceof ApiError && error.context?.statusCode === 400) {
       return error.context.errorData
     } else {
       return { statusCode: 500, message: "unkown error", error: true }
