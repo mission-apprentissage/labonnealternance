@@ -4,6 +4,8 @@ import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import * as Yup from "yup"
 
+import { ApiError } from "@/utils/api.utils"
+
 import { AUTHTYPE } from "../../../common/contants"
 import { phoneValidation } from "../../../common/validation/fieldValidations"
 import { WidgetContext } from "../../../context/contextWidget"
@@ -182,10 +184,11 @@ export const InformationCreationCompte = () => {
       })
       .catch((error) => {
         console.error(error)
-        const { response } = error
-        const payload: { error: string; statusCode: number; message: string } = response.data
-        setFieldError("email", payload.message)
-        setSubmitting(false)
+        if (error instanceof ApiError) {
+          const payload: { error: string; statusCode: number; message: string } = error.context.errorData
+          setFieldError("email", payload.message)
+          setSubmitting(false)
+        }
       })
   }
 
