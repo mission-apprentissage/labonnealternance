@@ -53,7 +53,7 @@ const StatsInserJeunes = ({ stats }) => {
           </Box>
         </Flex>
         <Text mt={3} color="grey.425" fontSize="12px">
-          *Données issues du dispositif InserJeunes promotion {stats.millesime.replace("_", "/")}
+          *Données issues du <Link href="https://documentation.exposition.inserjeunes.beta.gouv.fr/" textDecoration="underline" isExternal>dispositif InserJeunes promotion {stats.millesime.replace("_", "/")}</Link>
         </Text>
       </Box>
     )
