@@ -727,6 +727,7 @@ const getFormationEsQueryIndexFragment = (limit: number, options: "with_descript
       "id_rco_formation",
       "id_formation",
       "cle_ministere_educatif",
+      "num_tel",
     ].concat(options.indexOf("with_description") >= 0 ? ["objectif", "contenu"] : []),
   }
 }
