@@ -1,10 +1,12 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
 import { IJobWritable, INewDelegations, IRoutes } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
 import { publicConfig } from "../config.public"
 
-import { ApiError, apiDelete, apiGet, apiPost, apiPut } from "./api.utils"
+import { ApiError, apiDelete, apiGet, apiPost, apiPut, removeUndefinedFields } from "./api.utils"
 
 const API = Axios.create({
   baseURL: publicConfig.apiEndpoint,
@@ -72,14 +74,18 @@ export const sendValidationLink = async (userId: string) => await apiPost("/logi
 export const getEntreprisesManagedByCfa = (userId: string) => apiGet("/etablissement/cfa/:userRecruteurId/entreprises", { params: { userRecruteurId: userId } })
 export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
 
-export const getEntrepriseInformation = async (siret: string, options: { cfa_delegated_siret: string | undefined } = { cfa_delegated_siret: undefined }) => {
+export const getEntrepriseInformation = async (
+  siret: string,
+  options: { cfa_delegated_siret?: string } = {}
+): Promise<{ statusCode: 200; data: IEntrepriseInformations; error: false } | { statusCode: number; message: string; data?: { errorCode?: BusinessErrorCodes }; error: true }> => {
   try {
-    const data = await apiGet("/etablissement/entreprise/:siret", { params: { siret }, querystring: options }, { timeout: 7000 })
-    return data
+    const data = await apiGet("/etablissement/entreprise/:siret", { params: { siret }, querystring: removeUndefinedFields(options) }, { timeout: 7000 })
+    return { statusCode: 200, data, error: false }
   } catch (error: unknown) {
     captureException(error)
-    if (error instanceof ApiError && error.context?.statusCode === 400) {
-      return error.context.errorData
+    if (error instanceof ApiError && error.context?.statusCode >= 400) {
+      const { errorData, statusCode, message } = error.context
+      return { statusCode, message, data: errorData, error: true }
     } else {
       return { statusCode: 500, message: "unkown error", error: true }
     }
@@ -107,4 +113,4 @@ export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) =>
  * Administration OPCO
  */
 
-export const getOpcoUsers = (opco) => API.get("/user/opco", { params: { opco } })
+export const getOpcoUsers = (opco: string) => apiGet("/user/opco", { querystring: { opco } })
