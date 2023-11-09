@@ -9,9 +9,6 @@ export const zUserRecruteurRoutes = {
     "/user/opco": {
       method: "get",
       path: "/user/opco",
-      // TODO_SECURITY_FIX supprimer  les mongo query
-      // TODO_SECURITY_FIX session cookie plus permission
-      // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
       querystring: z
         .object({
           opco: z.string(),
@@ -26,7 +23,14 @@ export const zUserRecruteurRoutes = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        ressources: {
+          user: [{ opco: { type: "query", key: "opco" } }],
+          recruiter: [{ opco: { type: "query", key: "opco" } }],
+        },
+      },
     },
     "/user": {
       method: "get",

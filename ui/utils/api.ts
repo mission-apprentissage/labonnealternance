@@ -115,4 +115,4 @@ export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) =>
  * Administration OPCO
  */
 
-export const getOpcoUsers = (opco) => API.get("/user/opco", { params: { opco } })
+export const getOpcoUsers = (opco: string) => apiGet("/user/opco", { querystring: { opco } })
