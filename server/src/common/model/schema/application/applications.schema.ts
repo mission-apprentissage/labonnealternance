@@ -111,6 +111,11 @@ export const applicationSchema = new Schema<IApplication>(
       default: null,
       description: "L'identification de la source d'émission de la candidature (pour widget et api)",
     },
+    is_anonymized: {
+      type: Boolean,
+      default: false,
+      description: "Indique si la candidature a été anonymisée",
+    },
     created_at: {
       type: Date,
       default: Date.now,
