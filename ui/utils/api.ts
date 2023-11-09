@@ -57,7 +57,7 @@ export const deleteEntreprise = (userId: string, recruiterId: string) => apiDele
 /**
  * KBA 20230511 : (migration db) : casting des valueurs coté collection recruiter, car les champs ne sont plus identiques avec la collection userRecruteur.
  */
-export const updateEntreprise = async (userId: string, establishment_id, user) =>
+export const updateEntreprise = async (userId: string, establishment_id: string, user: any) =>
   await Promise.all([
     updateUser(userId, user),
     //
