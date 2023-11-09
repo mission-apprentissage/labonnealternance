@@ -1,10 +1,3 @@
-export enum JOB_STATUS {
-  ACTIVE = "Active",
-  POURVUE = "Pourvue",
-  ANNULEE = "Annulée",
-  EN_ATTENTE = "En attente",
-}
-
 export enum RECRUITER_STATUS {
   ACTIF = "Actif",
   ARCHIVE = "Archivé",
@@ -103,10 +96,4 @@ export const ROLES = {
   candidat: "candidat",
   cfa: "cfa",
   administrator: "administrator",
-}
-
-export enum BusinessErrorCodes {
-  IS_CFA = "IS_CFA",
-  ALREADY_EXISTS = "ALREADY_EXISTS",
-  CLOSED = "CLOSED",
 }
