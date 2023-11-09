@@ -27,8 +27,8 @@ const Formulaire = () => {
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     // save info if not trusted from source
-    postFormulaire({ ...values, establishment_siret, opco, idcc, userRecruteurId: user._id })
-      .then(({ data }: any) => {
+    postFormulaire(user._id.toString(), { ...values, establishment_siret, opco, idcc })
+      .then((data) => {
         setSubmitting(false)
         toast({
           title: "Entreprise créée avec succès.",
