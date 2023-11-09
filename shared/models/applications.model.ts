@@ -75,7 +75,6 @@ export const ZApplication = z
     to_applicant_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé au candidat"),
     to_company_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé à l'entreprise"),
     caller: z.string().nullable().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
-    is_anonymized: z.boolean().nullable().describe("Indique si la candidature a été anonymisée"),
     created_at: z.date().nullable().describe("La date création de la demande"),
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
   })
@@ -112,7 +111,6 @@ export const ZApplicationUI = ZApplication.extend({
     job_origin: true,
     to_applicant_message_id: true,
     to_company_message_id: true,
-    is_anonymized: true,
     company_recruitment_intention: true,
     company_feedback: true,
     company_feedback_date: true,
