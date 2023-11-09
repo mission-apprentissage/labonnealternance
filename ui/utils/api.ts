@@ -47,6 +47,7 @@ export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; 
  * User API
  */
 export const getUser = (userId: string) => apiGet("/user/:userId", { params: { userId } })
+const updateUser = (userId: string, user) => apiPut("/user/:userId", { params: { userId }, body: user })
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
 export const updateUserValidationHistory = async (userId, state) => await API.put(`user/${userId}/history`, state).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
@@ -58,7 +59,7 @@ export const deleteEntreprise = (userId: string, recruiterId: string) => apiDele
  */
 export const updateEntreprise = async (userId: string, establishment_id, user) =>
   await Promise.all([
-    apiPut(`/user/:userId`, { params: { userId }, body: user }),
+    updateUser(userId, user),
     //
     updateFormulaire(establishment_id, user),
   ])

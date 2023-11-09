@@ -153,7 +153,6 @@ export const zUserRecruteurRoutes = {
     "/user/:userId": {
       method: "put",
       path: "/user/:userId",
-      // TODO_SECURITY_FIX session et cookie + permissions
       params: z.object({ userId: zObjectId }).strict(),
       body: ZUserRecruteurWritable.pick({
         last_name: true,
@@ -170,7 +169,7 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "recruiter:manage",
+        access: "user:manage",
         ressources: {
           user: [{ _id: { type: "params", key: "userId" } }],
         },
