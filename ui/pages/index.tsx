@@ -6,7 +6,6 @@ import Footer from "../components/footer"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
 import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
 import MetiersDAvenir from "../components/HomeComponents/MetiersDAvenir"
-import TestezConnaissancesQuiz from "../components/HomeComponents/TestezConnaissancesQuiz"
 import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
@@ -63,10 +62,6 @@ const Home = () => {
       {/* @ts-expect-error: TODO */}
       <Box {...blockCssProperties} pt={12} pb={0}>
         <MetiersDAvenir />
-      </Box>
-      {/* @ts-expect-error: TODO */}
-      <Box {...blockCssProperties} pt={12} pb={0}>
-        <TestezConnaissancesQuiz />
       </Box>
       {/* @ts-expect-error: TODO */}
       <Box {...blockCssProperties} py={12}>
