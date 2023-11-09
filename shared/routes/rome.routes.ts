@@ -24,7 +24,6 @@ export const zRomeRoutes = {
     "/rome/detail/:rome": {
       method: "get",
       path: "/rome/detail/:rome",
-      // TODO filtrer la payload
       params: z
         .object({
           rome: z.string(),

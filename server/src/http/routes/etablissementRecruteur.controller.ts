@@ -1,5 +1,6 @@
 import Boom from "boom"
 import { IUserRecruteur, toPublicUser, zRoutes } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter, UserRecruteur } from "@/common/model"
@@ -9,7 +10,7 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
-import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
@@ -154,8 +155,8 @@ export default (server: Server) => {
           const cfa_delegated_siret = req.body.cfa_delegated_siret ?? undefined
           const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret, cfa_delegated_siret })
           if ("error" in result) {
-            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message)
-            else throw Boom.badRequest(result.message)
+            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
+            else throw Boom.badRequest(result.message, result)
           }
           await startSession(req.body.email, res)
           return res.status(200).send(result)
