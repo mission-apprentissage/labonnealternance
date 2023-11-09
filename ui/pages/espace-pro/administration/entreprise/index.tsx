@@ -40,7 +40,6 @@ const CreationCompte = () => {
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
     Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret })]).then(
       ([opcoInfos, entrepriseData]) => {
-        console.log(entrepriseData)
         if (entrepriseData.error === true) {
           if (entrepriseData.statusCode >= 500) {
             router.push({
