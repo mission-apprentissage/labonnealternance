@@ -116,7 +116,7 @@ function DetailEntreprise() {
     }
   }
 
-  const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
+  const { data, isLoading } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
   // @ts-expect-error: TODO
   const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
@@ -265,7 +265,6 @@ function DetailEntreprise() {
                   </SimpleGrid>
                   {(user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (
                     <Box mb={12}>
-                      {/* @ts-expect-error: TODO */}
                       <UserValidationHistory histories={data.status} />
                     </Box>
                   )}

@@ -41,7 +41,7 @@ import {
 import { OpcoSelect } from "../../../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
 import { authProvider, withAuth } from "../../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../../theme/components/icons"
-import { updateEntreprise } from "../../../../../../utils/api"
+import { getUser, updateEntreprise } from "../../../../../../utils/api"
 
 function DetailEntreprise() {
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -267,7 +267,6 @@ function DetailEntreprise() {
                   </SimpleGrid>
                   {(user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (
                     <Box mb={12}>
-                      {/* @ts-expect-error: TODO */}
                       <UserValidationHistory histories={data.status} />
                     </Box>
                   )}
