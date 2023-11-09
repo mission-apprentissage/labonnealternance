@@ -149,8 +149,8 @@ export function generateQueryString(query: QueryString = {}): string {
       searchParams.append(key, value)
     }
   }
-
-  return `?${searchParams.toString()}`
+  const searchString = searchParams.toString()
+  return searchString ? `?${searchString}` : ""
 }
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
@@ -282,4 +282,8 @@ export async function apiDelete<P extends keyof IDeleteRoutes, S extends IDelete
     throw await ApiError.build(path, headers, options, res)
   }
   return res.json()
+}
+
+export function removeUndefinedFields<T extends Record<string, any>>(obj: T): T {
+  return Object.fromEntries(Object.entries(obj).filter(([_, value]) => value !== undefined)) as T
 }
