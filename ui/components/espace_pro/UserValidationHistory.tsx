@@ -2,7 +2,7 @@ import { Badge, Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } fro
 import dayjs from "dayjs"
 import { memo, useCallback, useEffect, useState } from "react"
 
-import { apiGet } from "@/utils/api.utils"
+import { getUser } from "@/utils/api"
 
 import LoadingEmptySpace from "./LoadingEmptySpace"
 
@@ -19,7 +19,7 @@ export default memo(
         histories.map(async (user) => {
           if (user.user !== "SERVEUR") {
             try {
-              const result = await apiGet(`/user/:userId`, { params: { userId: user.user } })
+              const result = await getUser(user.user)
               user.first_name = result.first_name
               user.last_name = result.last_name
               return user

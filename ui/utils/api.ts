@@ -46,6 +46,7 @@ export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; 
 /**
  * User API
  */
+export const getUser = (userId: string) => apiGet("/user/:userId", { params: { userId } })
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
 export const updateUserValidationHistory = async (userId, state) => await API.put(`user/${userId}/history`, state).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)

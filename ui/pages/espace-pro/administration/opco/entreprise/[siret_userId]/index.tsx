@@ -25,7 +25,6 @@ import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
-import { apiGet } from "@/utils/api.utils"
 
 import { AUTHTYPE, USER_STATUS } from "../../../../../../common/contants"
 import useUserHistoryUpdate from "../../../../../../common/hooks/useUserHistoryUpdate"
@@ -51,11 +50,11 @@ function DetailEntreprise() {
   const toast = useToast()
   const { user } = useAuth()
   const router = useRouter()
-  const { siret_userId } = router.query as { siret_userId: string } // Here userId
+  const { siret_userId } = router.query as { siret_userId: string }
 
   const { data, isLoading } = useQuery("user", {
     enabled: !!siret_userId,
-    queryFn: () => apiGet(`/user/:userId`, { params: { userId: siret_userId } }),
+    queryFn: () => getUser(siret_userId),
     cacheTime: 0,
   })
 
