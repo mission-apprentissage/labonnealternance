@@ -1,8 +1,5 @@
-import { get } from "lodash-es"
-
 import { logger } from "../../common/logger"
 import { Application } from "../../common/model/index"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymizeApplications = async () => {
@@ -11,57 +8,47 @@ const anonymizeApplications = async () => {
   const lastYear = new Date()
   lastYear.setFullYear(lastYear.getFullYear() - 1)
 
-  const res = await Application.updateMany(
-    { created_at: { $lte: lastYear }, is_anonymized: { $ne: true } },
+  await Application.aggregate([
     {
-      $set: {
-        is_anonymized: true,
-        last_update_at: new Date(),
-        applicant_email: null,
-        applicant_first_name: null,
-        applicant_last_name: null,
-        applicant_phone: null,
-        applicant_attachment_name: null,
-        applicant_message_to_company: null,
-        company_feedback: null,
-        company_email: null,
-        company_name: null,
-        company_siret: null,
-        company_address: null,
-        job_title: null,
-        job_id: null,
-        to_applicant_message_id: null,
-        to_company_message_id: null,
+      $match: { created_at: { $lte: lastYear } },
+    },
+    {
+      $project: {
+        company_recruitment_intention: 1,
+        company_feedback_date: 1,
+        company_siret: 1,
+        company_naf: 1,
+        job_origin: 1,
+        job_id: 1,
+        caller: 1,
+        created_at: 1,
       },
-    }
-  )
+    },
+    {
+      $merge: "anonymizedapplications",
+    },
+  ])
 
-  return res.upserted
+  const res = await Application.deleteMany({ created_at: { $lte: lastYear } })
+
+  return res.deletedCount
 }
 
 export default async function () {
   try {
     logger.info(" -- Anonymisation des candidatures de plus de un (1) an -- ")
 
-    const anonymizedResult = await anonymizeApplications()
-    const nModified = anonymizedResult?.length ?? 0
+    const anonymizedApplicationCount = await anonymizeApplications()
 
-    logger.info(`Fin traitement ${nModified}`)
+    logger.info(`Fin traitement ${anonymizedApplicationCount}`)
 
     await notifyToSlack({
       subject: "ANONYMISATION CANDIDATURES",
-      message: `Anonymisation des candidatures de plus de un an terminée. ${nModified} candidature(s) anonymisée(s).`,
+      message: `Anonymisation des candidatures de plus de un an terminée. ${anonymizedApplicationCount} candidature(s) anonymisée(s).`,
       error: false,
     })
-
-    return {
-      result: "Anonymisation des candidatures terminée",
-    }
   } catch (err: any) {
-    sentryCaptureException(err)
-    logger.error(err)
-    const error_msg = get(err, "meta.body") ?? err.message
-    await notifyToSlack({ subject: "ANONYMISATION CANDIDATURES", message: `ECHEC anonymisation des candidatures ${error_msg}`, error: true })
-    return { error: error_msg }
+    await notifyToSlack({ subject: "ANONYMISATION CANDIDATURES", message: `ECHEC anonymisation des candidatures`, error: true })
+    throw err
   }
 }
