@@ -228,9 +228,9 @@ function AdministrationOpco() {
         <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
           <Box mx={8}>
             <TabList>
-              <Tab width="300px">En attente de vérification ({data.data.awaiting.length})</Tab>
-              <Tab width="300px">Actives ({data.data.active.length})</Tab>
-              <Tab width="300px">Désactivées ({data.data.disable.length})</Tab>
+              <Tab width="300px">En attente de vérification ({data.awaiting.length})</Tab>
+              <Tab width="300px">Actives ({data.active.length})</Tab>
+              <Tab width="300px">Désactivées ({data.disable.length})</Tab>
             </TabList>
           </Box>
           <TabPanels mt={3}>
@@ -238,13 +238,13 @@ function AdministrationOpco() {
               {/* @ts-expect-error: TODO */}
               <TableNew
                 columns={columns}
-                data={data.data.awaiting}
+                data={data.awaiting}
                 description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
               />
             </TabPanel>
-            <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.data.active} exportable />}</TabPanel>
+            <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.active} exportable />}</TabPanel>
             {/* @ts-expect-error: TODO */}
-            <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.data.disable} />}</TabPanel>
+            <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.disable} />}</TabPanel>
           </TabPanels>
         </Tabs>
       </Container>
