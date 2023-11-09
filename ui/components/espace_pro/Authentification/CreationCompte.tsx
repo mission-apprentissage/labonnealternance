@@ -2,6 +2,7 @@ import { Alert, AlertIcon, Box, Button, Flex, Heading, Link, SimpleGrid, Text } 
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import * as Yup from "yup"
 
 import { AUTHTYPE } from "../../../common/contants"
@@ -24,7 +25,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
     // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
       Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
-        if ("error" in entrepriseData && entrepriseData.error) {
+        if (entrepriseData.error === true) {
           if (entrepriseData.statusCode >= 500) {
             router.push({
               pathname: "/espace-pro/creation/detail",
@@ -32,14 +33,14 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
             })
           } else {
             setFieldError("establishment_siret", entrepriseData.message)
-            setIsCfa(entrepriseData?.errorCode === "IS_CFA")
+            setIsCfa(entrepriseData?.data?.errorCode === BusinessErrorCodes.IS_CFA)
             setSubmitting(false)
           }
-        } else {
+        } else if (entrepriseData.error === false) {
           setSubmitting(true)
           router.push({
             pathname: "/espace-pro/creation/detail",
-            query: { informationSiret: JSON.stringify({ ...entrepriseData, ...opcoInfos }), type, origin },
+            query: { informationSiret: JSON.stringify({ ...entrepriseData.data, ...opcoInfos }), type, origin },
           })
         }
       })

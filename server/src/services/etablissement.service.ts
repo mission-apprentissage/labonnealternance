@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
 import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IUserRecruteur } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
@@ -15,7 +16,7 @@ import config from "../config"
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
-import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import {
   IAPIAdresse,
@@ -546,7 +547,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
     return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
   }
   // Check if a CFA already has the company as partenaire
-  if (cfa_delegated_siret === "undefined") {
+  if (!cfa_delegated_siret) {
     // Allow cfa to add themselves as a company
     if (activite_principale.code.startsWith("85")) {
       return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
