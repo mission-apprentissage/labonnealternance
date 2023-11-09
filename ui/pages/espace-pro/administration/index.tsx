@@ -25,7 +25,7 @@ import { useQuery } from "react-query"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
-import { apiGet } from "@/utils/api.utils"
+import { getEntreprisesManagedByCfa } from "@/utils/api"
 
 import { sortReactTableDate, sortReactTableString } from "../../../common/utils/dateUtils"
 import BreadcrumbLink from "../../../components/BreadcrumbLink"
@@ -73,13 +73,7 @@ function ListeEntreprise() {
     }
   }, [])
 
-  const { data, isLoading } = useQuery("listeEntreprise", () =>
-    apiGet("/etablissement/cfa/:userRecruteurId/entreprises", {
-      params: {
-        userRecruteurId: user._id.toString(),
-      },
-    })
-  )
+  const { data, isLoading } = useQuery("listeEntreprise", () => getEntreprisesManagedByCfa(user._id.toString()))
 
   if (isLoading) {
     return <LoadingEmptySpace />
