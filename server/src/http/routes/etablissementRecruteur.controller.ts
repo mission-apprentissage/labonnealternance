@@ -134,6 +134,9 @@ export default (server: Server) => {
         throw Boom.notFound(`Aucun CFA ayant pour id ${userRecruteurId.toString()}`)
       }
       const cfa_delegated_siret = cfa.establishment_siret
+      if (!cfa_delegated_siret) {
+        throw Boom.internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
+      }
       const entreprises = await Recruiter.find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret }).lean()
       return res.status(200).send(entreprises)
     }

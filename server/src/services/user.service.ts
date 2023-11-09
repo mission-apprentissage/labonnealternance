@@ -145,7 +145,7 @@ const getUserAndRecruitersDataForOpcoUser = async (opco: string): Promise<TRetur
     await Promise.all([
       UserRecruteur.find({
         $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
-        opco: opco,
+        opco,
       })
         .select({
           _id: 1,
@@ -160,7 +160,7 @@ const getUserAndRecruitersDataForOpcoUser = async (opco: string): Promise<TRetur
           status: 1,
         })
         .lean(),
-      Recruiter.find({ opco: opco }).select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 }).lean(),
+      Recruiter.find({ opco }).select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 }).lean(),
     ])
 
   const recruiterPerEtablissement = new Map()
