@@ -115,8 +115,6 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   <Select
                     {...selectProperties}
                     onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
-                    // @ts-expect-error: TODO
-                    type="select"
                     value={locationRadius}
                     name="locationRadius"
                     data-testid="locationRadius"
