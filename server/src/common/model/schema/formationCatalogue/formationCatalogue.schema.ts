@@ -127,7 +127,6 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       type: String,
       description: "Domaine et sous domaine ONISEP (séparateur ;)",
     },
-
     rncp_code: {
       index: true,
       type: String,
@@ -347,19 +346,16 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       type: String,
       description: "Qui a réalisé la derniere modification",
     },
-
     // Flags
     to_update: {
       index: true,
       type: Boolean,
       description: "Formation à mette à jour lors du script d'enrichissement",
     },
-
     update_error: {
       type: String,
       description: "Erreur lors de la mise à jour de la formation",
     },
-
     lieu_formation_geo_coordonnees: {
       type: String,
       implicit_type: "geo_point",
@@ -467,6 +463,11 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     objectif: {
       type: String,
       description: "Les objectifs de la formation",
+    },
+    num_tel: {
+      type: String,
+      default: null,
+      description: "Numéro de téléphone de contact de la formation",
     },
     ...etablissementGestionnaireInfo,
     ...etablissementFormateurInfo,

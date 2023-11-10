@@ -76,33 +76,5 @@ export const zV1FormationsRoutes = {
         description: "Get one formation identified by it's clé ministère éducatif",
       },
     },
-    "/v1/formations/formationDescription/:id": {
-      method: "get",
-      path: "/v1/formations/formationDescription/:id",
-      params: z
-        .object({
-          id: z.string(),
-        })
-        .strict(),
-      response: {
-        // eslint-disable-next-line zod/require-strict
-        "200": z.any(),
-        "400": z.union([ZResError, ZLbacError]).openapi({
-          description: "Bad Request",
-        }),
-        "404": z.union([ZResError, ZLbacError]).openapi({
-          description: "Not Found",
-        }),
-        "500": z.union([ZResError, ZLbacError]).openapi({
-          description: "Internal Server Error",
-        }),
-      },
-      securityScheme: null,
-      openapi: {
-        tags: ["Formations"] as string[],
-        operationId: "getFormationDescription",
-        description: "Get details for one formation identified by it's clé ministère éducatif",
-      },
-    },
   },
 } as const satisfies IRoutesDef

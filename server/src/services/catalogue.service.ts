@@ -102,6 +102,7 @@ const neededFieldsFromCatalogue = {
   date_fin: 1,
   modalites_entrees_sorties: 1,
   bcn_mefs_10: 1,
+  num_tel: 1,
 }
 
 /**
