@@ -249,13 +249,7 @@ export const zFormulaireRoute = {
         "2xx": ZJob.nullable(),
       },
       // KBA Il faut que le user soit connecté lorsqu'il arrive sur la page de visualisation de la délégation /!\ à voir avec l'équipe
-      securityScheme: {
-        auth: "cookie-session",
-        access: "job:manage",
-        ressources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
+      securityScheme: null,
     },
   },
   delete: {
@@ -265,13 +259,6 @@ export const zFormulaireRoute = {
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
         "200": z.object({}).strict(),
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "recruiter:manage",
-        ressources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
-        },
       },
       securityScheme: {
         auth: "cookie-session",
