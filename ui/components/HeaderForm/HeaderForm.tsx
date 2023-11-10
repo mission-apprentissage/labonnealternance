@@ -142,8 +142,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 </Box>
               </Box>
               <Box ml={[1, 1, 1, 3]}>
-                {/* @ts-expect-error: TODO */}
-                <Button type="submit" variant="blackButton" borderRadius="unset" disabled={isSubmitting} alt="Lancer la recherche" height="57px" paddingTop="3px">
+                <Button type="submit" variant="blackButton" borderRadius="unset" disabled={isSubmitting} height="57px" paddingTop="3px">
                   <Image maxWidth="unset" alt="Lancer la recherche" src="/images/glass_white.svg" />
                   {isHome && (
                     <Box fontSize="18px" mx={3} display={{ base: "none", xl: "inline-block" }}>
