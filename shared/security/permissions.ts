@@ -47,8 +47,11 @@ export type AccessRessouces = {
         email: AccessResourcePath
       }
     | {
-        cfa_delegated_siret: AccessResourcePath
+        opco: AccessResourcePath
       }
+    | {
+       cfa_delegated_siret: AccessResourcePath
+    }
   >
   job?: ReadonlyArray<{
     _id: AccessResourcePath
@@ -56,9 +59,14 @@ export type AccessRessouces = {
   application?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
-  user?: ReadonlyArray<{
-    _id: AccessResourcePath
-  }>
+  user?: ReadonlyArray<
+    | {
+        _id: AccessResourcePath
+      }
+    | {
+        opco: AccessResourcePath
+      }
+  >
 }
 
 export type UserWithType<T, V> = Readonly<{

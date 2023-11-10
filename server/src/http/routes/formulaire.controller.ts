@@ -55,12 +55,14 @@ export default (server: Server) => {
    * Post form
    */
   server.post(
-    "/formulaire",
+    "/user/:userId/formulaire",
     {
-      schema: zRoutes.post["/formulaire"],
+      schema: zRoutes.post["/user/:userId/formulaire"],
+      onRequest: [server.auth(zRoutes.post["/user/:userId/formulaire"])],
     },
     async (req, res) => {
-      const { userRecruteurId, establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
+      const { userId: userRecruteurId } = req.params
+      const { establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
       const userRecruteurOpt = await getUser({ _id: userRecruteurId })
       if (!userRecruteurOpt) {
         throw Boom.badRequest("Nous n'avons pas trouvé votre compte utilisateur")
@@ -300,6 +302,7 @@ export default (server: Server) => {
     "/formulaire/offre/f/:jobId/cancel",
     {
       schema: zRoutes.put["/formulaire/offre/f/:jobId/cancel"],
+      onRequest: server.auth(zRoutes.put["/formulaire/offre/f/:jobId/cancel"]),
     },
     async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
