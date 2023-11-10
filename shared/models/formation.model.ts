@@ -1,3 +1,4 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZAppointment } from "./appointments.model"
@@ -180,6 +181,7 @@ export const zFormationCatalogueSchema = z
     date_debut: z.array(z.string()).nullish(),
     date_fin: z.array(z.string()).nullish(),
     modalites_entrees_sorties: z.array(z.boolean()).nullish(),
+    num_tel: extensions.phone().nullable().describe("Numéro de téléphone de contact"),
   })
   .strict()
   .extend(etablissementFormateurSchema.shape)
