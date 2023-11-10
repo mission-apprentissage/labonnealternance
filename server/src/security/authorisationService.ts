@@ -5,7 +5,7 @@ import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, RecruiterRole, Role } from "shared/security/permissions"
 import { Primitive } from "type-fest"
 
-import { Recruiter, UserRecruteur, Application } from "@/common/model"
+import { Application, Recruiter, UserRecruteur } from "@/common/model"
 
 import { getAccessTokenScope } from "./accessTokenService"
 import { IUserWithType, getUserFromRequest } from "./authenticationService"
@@ -45,13 +45,11 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
           const recruiterOpt = await Recruiter.findById(getAccessResourcePathValue(recruiterDef._id, req)).lean()
           return recruiterOpt ? [recruiterOpt] : []
         }
-
         if ("establishment_id" in recruiterDef) {
           return Recruiter.find({
             establishment_id: getAccessResourcePathValue(recruiterDef.establishment_id, req),
           }).lean()
         }
-
         if ("email" in recruiterDef && "establishment_siret" in recruiterDef) {
           return Recruiter.find({
             email: getAccessResourcePathValue(recruiterDef.email, req),
@@ -60,6 +58,9 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
         }
         if ("opco" in recruiterDef) {
           return Recruiter.find({ opco: getAccessResourcePathValue(recruiterDef.opco, req) }).lean()
+        }
+        if ("cfa_delegated_siret" in recruiterDef) {
+          return Recruiter.find({ cfa_delegated_siret: getAccessResourcePathValue(recruiterDef.cfa_delegated_siret, req) }).lean()
         }
 
         assertUnreachable(recruiterDef)
