@@ -183,8 +183,6 @@ const SearchForm = (props) => {
                     variant="blackButton"
                     borderRadius="unset"
                     disabled={isSubmitting}
-                    // @ts-expect-error: TODO
-                    alt="Lancer la recherche"
                   >
                     C&apos;est parti
                   </Button>
