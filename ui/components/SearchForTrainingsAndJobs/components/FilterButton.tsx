@@ -33,7 +33,6 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
     fontWeight: "400",
     paddingY: "0.3rem",
     borderRadius: "40px",
-    whiteSpace: "pre-wrap",
     _hover: {
       background: "none",
     },
@@ -47,7 +46,6 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
 
   return (
     <Checkbox spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
-      {/* @ts-expect-error: TODO */}
       <Button px="0" {...buttonProperties} onClick={handleClick}>
         {getText()}
       </Button>
