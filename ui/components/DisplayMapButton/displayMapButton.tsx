@@ -38,7 +38,7 @@ const DisplayMapButton = (props) => {
     <Flex flex="1 auto" mt={[0, 0, 2]} alignItems="center" justifyContent="flex-end" display={["none", "none", "flex"]}>
       <FormControl flex="0" justifyContent="flex-end" alignItems="center">
         <Button
-          aria-label={`Cliquer pour ${displayMap ? "masquer" : "afficher"} la carte`}
+          aria-checked={displayMap}
           role="switch"
           mr={[4, 4, 4, 12]}
           mt={0}
