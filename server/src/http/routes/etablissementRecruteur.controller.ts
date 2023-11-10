@@ -230,6 +230,7 @@ export default (server: Server) => {
     "/etablissement/:establishment_siret/proposition/unsubscribe",
     {
       schema: zRoutes.post["/etablissement/:establishment_siret/proposition/unsubscribe"],
+      onRequest: [server.auth(zRoutes.post["/etablissement/:establishment_siret/proposition/unsubscribe"])],
     },
     async (req, res) => {
       await etablissementUnsubscribeDemandeDelegation(req.params.establishment_siret)
