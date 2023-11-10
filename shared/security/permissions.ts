@@ -46,6 +46,9 @@ export type AccessRessouces = {
         establishment_siret: AccessResourcePath
         email: AccessResourcePath
       }
+    | {
+        cfa_delegated_siret: AccessResourcePath
+      }
   >
   job?: ReadonlyArray<{
     _id: AccessResourcePath

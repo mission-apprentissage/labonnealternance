@@ -158,7 +158,13 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZRecruiter,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
     "/formulaire/offre/:jobId/cancel": {
       method: "put",
@@ -220,37 +226,49 @@ export const zFormulaireRoute = {
       response: {
         "200": ZJob.strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
   },
   patch: {
-    // KBA 20230922 to be checked, description is false and it only updates delegations
-    // TODO_SECURITY_FIX gestion des permissions
-    // TODO_SECURITY_FIX session gérée par cookie server
-    // TODO_PAS_SECURITY faut la corriger cette route !!!!! (un certain "KB" circa 2023)
-    "/formulaire/offre/:jobId": {
+    "/formulaire/offre/:jobId/delegation": {
       method: "patch",
-      path: "/formulaire/offre/:jobId",
+      path: "/formulaire/offre/:jobId/delegation",
       params: z.object({ jobId: zObjectId }).strict(),
       querystring: z.object({ siret_formateur: z.string() }).strict(),
-      body: z.object({ cfa_read_company_detail_at: z.string() }).strict(),
       response: {
         "2xx": ZJob.nullable(),
       },
-      securityScheme: null,
+      // KBA Il faut que le user soit connecté lorsqu'il arrive sur la page de visualisation de la délégation /!\ à voir avec l'équipe
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
   },
   delete: {
     "/formulaire/:establishment_id": {
       method: "delete",
       path: "/formulaire/:establishment_id",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        ressources: {
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
     },
     "/formulaire/delegated/:establishment_siret": {
       method: "delete",
@@ -261,7 +279,13 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        ressources: {
+          recruiter: [{ cfa_delegated_siret: { type: "params", key: "establishment_siret" } }],
+        },
+      },
     },
   },
 } as const satisfies IRoutesDef

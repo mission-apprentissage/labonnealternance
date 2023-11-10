@@ -106,6 +106,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id",
     {
       schema: zRoutes.delete["/formulaire/:establishment_id"],
+      onRequest: [server.auth(zRoutes.delete["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
       await archiveFormulaire(req.params.establishment_id)
@@ -117,6 +118,7 @@ export default (server: Server) => {
     "/formulaire/delegated/:establishment_siret",
     {
       schema: zRoutes.delete["/formulaire/delegated/:establishment_siret"],
+      onRequest: [server.auth(zRoutes.delete["/formulaire/delegated/:establishment_siret"])],
     },
     async (req, res) => {
       await archiveDelegatedFormulaire(req.params.establishment_siret)
@@ -213,7 +215,7 @@ export default (server: Server) => {
     "/formulaire/offre/:jobId",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId"],
-      // TODO no security ?
+      onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId"])],
     },
     async (req, res) => {
       const result = await updateOffre(req.params.jobId.toString(), req.body)
@@ -225,9 +227,10 @@ export default (server: Server) => {
    * Met à jour la date de lecture de la delegation d'une offre
    */
   server.patch(
-    "/formulaire/offre/:jobId",
+    "/formulaire/offre/:jobId/delegation",
     {
-      schema: zRoutes.patch["/formulaire/offre/:jobId"],
+      schema: zRoutes.patch["/formulaire/offre/:jobId/delegation"],
+      // KBA : missing auth
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -331,6 +334,7 @@ export default (server: Server) => {
     "/formulaire/offre/:jobId/extend",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/extend"],
+      onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/extend"])],
     },
     async (req, res) => {
       const job = await extendOffre(req.params.jobId)

@@ -6,7 +6,7 @@ import { LoadingEmptySpace } from "../.."
 import { dayjs } from "../../../../common/dayjs"
 import { publicConfig } from "../../../../config.public"
 import { Copy, InfoCircle, Minus, Plus } from "../../../../theme/components/icons"
-import { getFormulaire, patchOffre } from "../../../../utils/api"
+import { getFormulaire, patchOffreDelegation } from "../../../../utils/api"
 
 export default function PropositionOffreId() {
   const router = useRouter()
@@ -41,7 +41,7 @@ export default function PropositionOffreId() {
       const job = data.jobs.find((job) => job._id === jobId)
 
       if (siretFormateur) {
-        await patchOffre(job._id, null, { params: { siret_formateur: siretFormateur } })
+        await patchOffreDelegation(job._id, null, { params: { siret_formateur: siretFormateur } })
       }
 
       setFormulaire(data)
