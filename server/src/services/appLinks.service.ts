@@ -8,8 +8,10 @@ export function createAuthMagicLinkToken(user: IUserRecruteur) {
   return generateAccessToken(user, [
     {
       schema: zRoutes.post["/login/verification"],
-      params: undefined,
-      querystring: undefined,
+      options: {
+        params: undefined,
+        querystring: undefined,
+      },
       resources: {},
     },
   ])
@@ -27,8 +29,10 @@ export function createValidationMagicLink(user: IUserRecruteur) {
     [
       {
         schema: zRoutes.post["/etablissement/validation"],
-        params: undefined,
-        querystring: undefined,
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
         resources: {
           user: [user._id.toString()],
         },
@@ -47,8 +51,10 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
     [
       {
         schema: zRoutes.get["/optout/validate"],
-        params: undefined,
-        querystring: undefined,
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
         resources: {},
       },
     ],
