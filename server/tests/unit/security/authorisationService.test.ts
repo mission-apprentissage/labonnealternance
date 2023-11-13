@@ -5,7 +5,7 @@ import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur, ZApplicati
 import { zObjectId } from "shared/models/common"
 import { SecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessRessouces, Permission, UserWithType } from "shared/security/permissions"
-import { beforeEach, describe, it, expect } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 import { Fixture, Generator } from "zod-fixture"
 
 import { Application, Credential, Recruiter, UserRecruteur } from "@/common/model"
@@ -1609,13 +1609,29 @@ describe("authorisationService", () => {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
-                method: "post",
-                path: "/path/:id",
+                schema: {
+                  method: "post",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {},
               },
               {
-                method: "get",
-                path: "/path/:id",
+                schema: {
+                  method: "get",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {
                   recruiter: [recruteurO1E1R1._id.toString()],
                 },
@@ -1656,13 +1672,29 @@ describe("authorisationService", () => {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
-                method: "post",
-                path: "/path/:id",
+                schema: {
+                  method: "post",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {},
               },
               {
-                method: "get",
-                path: "/path/:id",
+                schema: {
+                  method: "get",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {
                   recruiter: [recruteurO1E1R1._id.toString()],
                 },
@@ -1721,13 +1753,29 @@ describe("authorisationService", () => {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
-                method: "post",
-                path: "/path/:id",
+                schema: {
+                  method: "post",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {},
               },
               {
-                method: "get",
-                path: "/path/:id",
+                schema: {
+                  method: "get",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {
                   job: recruteurO1E1R1.jobs.map((j) => j._id.toString()),
                 },
@@ -1768,13 +1816,29 @@ describe("authorisationService", () => {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
-                method: "post",
-                path: "/path/:id",
+                schema: {
+                  method: "post",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {},
               },
               {
-                method: "get",
-                path: "/path/:id",
+                schema: {
+                  method: "get",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {
                   job: recruteurO1E1R1.jobs.map((j) => j._id.toString()),
                 },
@@ -1833,13 +1897,29 @@ describe("authorisationService", () => {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
-                method: "post",
-                path: "/path/:id",
+                schema: {
+                  method: "post",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {},
               },
               {
-                method: "get",
-                path: "/path/:id",
+                schema: {
+                  method: "get",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {
                   application: [applicationO1E1R1J1A1._id.toString()],
                 },
@@ -1880,13 +1960,29 @@ describe("authorisationService", () => {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
-                method: "post",
-                path: "/path/:id",
+                schema: {
+                  method: "post",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {},
               },
               {
-                method: "get",
-                path: "/path/:id",
+                schema: {
+                  method: "get",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {
                   application: [applicationO1E1R1J1A1._id.toString()],
                 },
@@ -1945,13 +2041,29 @@ describe("authorisationService", () => {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
-                method: "post",
-                path: "/path/:id",
+                schema: {
+                  method: "post",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {},
               },
               {
-                method: "get",
-                path: "/path/:id",
+                schema: {
+                  method: "get",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {
                   user: [opcoUserO1U1._id.toString()],
                 },
@@ -1992,13 +2104,29 @@ describe("authorisationService", () => {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
               {
-                method: "post",
-                path: "/path/:id",
+                schema: {
+                  method: "post",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {},
               },
               {
-                method: "get",
-                path: "/path/:id",
+                schema: {
+                  method: "get",
+                  path: "/path/:id",
+                  securityScheme: {
+                    auth: "access-token",
+                    access: null,
+                    ressources: {},
+                  },
+                },
+                options: "all",
                 resources: {
                   user: [opcoUserO1U1._id.toString()],
                 },
