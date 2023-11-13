@@ -78,8 +78,21 @@ async function getHeaders(options: IRequestOptions) {
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
+const getAccessToken = () => {
+  if (typeof window !== "undefined") {
+    const token = new URLSearchParams(window.location.search).get("token")
+    return token
+  }
+}
+
 export function generateUrl(path: string, options: WithQueryStringAndPathParam = {}): string {
-  return removeAtEnd(publicConfig.apiEndpoint, "/") + generateUri(path, options)
+  const params = "params" in options ? options.params : {}
+  const querystring = "querystring" in options ? options.querystring : {}
+  const accessToken = getAccessToken()
+  if (accessToken) {
+    querystring.token = accessToken
+  }
+  return removeAtEnd(publicConfig.apiEndpoint, "/") + generateUri(path, { params, querystring })
 }
 
 export interface ApiErrorContext {
