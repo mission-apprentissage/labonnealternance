@@ -89,7 +89,7 @@ export function generateUrl(path: string, options: WithQueryStringAndPathParam =
   const params = "params" in options ? options.params : {}
   const querystring = "querystring" in options ? options.querystring : {}
   const accessToken = getAccessToken()
-  if (accessToken) {
+  if (accessToken && "querystring" in options) {
     querystring.token = accessToken
   }
   return removeAtEnd(publicConfig.apiEndpoint, "/") + generateUri(path, { params, querystring })
