@@ -29,7 +29,7 @@ export default (server: Server) => {
     "/user/opco",
     {
       schema: zRoutes.get["/user/opco"],
-      onRequest: [server.auth(zRoutes.get["/user/opco"])],
+      // onRequest: [server.auth(zRoutes.get["/user/opco"])],
     },
     async (req, res) => {
       const { opco } = req.query

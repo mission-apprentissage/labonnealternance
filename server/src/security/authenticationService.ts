@@ -90,7 +90,7 @@ function extractBearerTokenFromHeader(req: FastifyRequest): null | string {
 }
 
 async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyRequest, schema: S): Promise<UserWithType<"IAccessToken", IAccessToken> | null> {
-  const token = parseAccessToken(extractBearerTokenFromHeader(req), schema)
+  const token = parseAccessToken(extractBearerTokenFromHeader(req), schema, req)
 
   if (token === null) {
     return null
