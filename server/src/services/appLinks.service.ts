@@ -42,6 +42,7 @@ export function createValidationMagicLink(user: IUserRecruteur) {
       expiresIn: "30d",
     }
   )
+
   return `${config.publicUrl}/espace-pro/authentification/validation/${user._id}?token=${token}`
 }
 

@@ -1,5 +1,4 @@
 import Boom from "boom"
-import { FastifyRequest } from "fastify"
 import jwt from "jsonwebtoken"
 import { PathParam, QueryString, WithQueryStringAndPathParam, generateUri } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
@@ -66,7 +65,12 @@ export function getAccessTokenScope<Schema extends SchemaWithSecurity>(token: IA
   return token?.scopes.find((s) => s.schema.path === schema.path && s.schema.method === schema.method) ?? null
 }
 
-export function parseAccessToken<Schema extends SchemaWithSecurity>(accessToken: null | string, schema: Schema, req: FastifyRequest): IAccessToken<Schema> | null {
+export function parseAccessToken<Schema extends SchemaWithSecurity>(
+  accessToken: null | string,
+  schema: Schema,
+  params: PathParam | undefined,
+  querystring: QueryString | undefined
+): IAccessToken<Schema> | null {
   if (!accessToken) {
     return null
   }
@@ -79,8 +83,8 @@ export function parseAccessToken<Schema extends SchemaWithSecurity>(accessToken:
     method: schema.method,
     path: schema.path,
     options: {
-      params: req.params as PathParam,
-      querystring: req.query as QueryString,
+      params,
+      querystring,
     },
   })
   const genericAudience = getAudience({
