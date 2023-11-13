@@ -23,16 +23,14 @@ export const zUserRecruteurRoutes = {
           })
           .strict(),
       },
-      securityScheme: null,
-      // KBA hotfix: not working
-      // securityScheme: {
-      //   auth: "cookie-session",
-      //   access: "user:manage",
-      //   ressources: {
-      //     user: [{ opco: { type: "query", key: "opco" } }],
-      //     recruiter: [{ opco: { type: "query", key: "opco" } }],
-      //   },
-      // },
+      securityScheme: {
+        auth: "cookie-session",
+        access: { every: ["user:manage", "recruiter:manage"] },
+        ressources: {
+          user: [{ opco: { type: "query", key: "opco" } }],
+          recruiter: [{ opco: { type: "query", key: "opco" } }],
+        },
+      },
     },
     "/user": {
       method: "get",
