@@ -73,7 +73,9 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
       {
         schema: zRoutes.post["/etablissement/:establishment_siret/proposition/unsubscribe"],
         options: {
-          params: undefined,
+          params: {
+            establishment_siret: siret,
+          },
           querystring: undefined,
         },
         resources: {},

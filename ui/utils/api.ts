@@ -107,7 +107,12 @@ export const getRomeDetail = (rome: string) => API.get(`/rome/detail/${rome}`)
 export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) =>
   API.get(`/etablissement/cfas-proches?rome=${rome}&latitude=${latitude}&longitude=${longitude}`)
 
-export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) => API.post(`/etablissement/${establishmentSiret}/proposition/unsubscribe`)
+export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret, token) =>
+  API.post(`/etablissement/${establishmentSiret}/proposition/unsubscribe`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  })
 
 /**
  * Administration OPCO
