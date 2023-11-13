@@ -132,14 +132,14 @@ const SearchForm = (props) => {
                 </Box>
                 <Box mb={4}>
                   <Box display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
-                    <Text as="label" htmlFor="locationRadius" variant="defaultAutocomplete">
+                    <Text as="label" htmlFor="locationRadius-search" variant="defaultAutocomplete">
                       Rayon
                     </Text>
                     <Box>
                       <Select
                         onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
                         value={locationRadius}
-                        name="locationRadius"
+                        id="locationRadius-search"
                         data-testid="locationRadius"
                         {...selectProperties}
                       >
@@ -156,10 +156,10 @@ const SearchForm = (props) => {
                 </Box>
                 <Box mb={10}>
                   <Box display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
-                    <Text as="label" htmlFor="diploma" variant="defaultAutocomplete">
+                    <Text as="label" htmlFor="diploma-search" variant="defaultAutocomplete">
                       Niveau d&apos;études visé
                     </Text>
-                    <Select onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")} value={diploma} name="diploma" {...selectProperties}>
+                    <Select onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")} value={diploma} id="diploma-search" {...selectProperties}>
                       {buildAvailableDiplomasOptions(diplomas)}
                     </Select>
                   </Box>

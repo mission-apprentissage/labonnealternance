@@ -108,7 +108,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 </Box>
               </Box>
               <Box ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
-                <Text as="label" htmlFor="locationRadius" variant="defaultAutocomplete">
+                <Text as="label" htmlFor="locationRadius-header" variant="defaultAutocomplete">
                   Rayon
                 </Text>
                 <Box>
@@ -116,7 +116,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                     {...selectProperties}
                     onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
                     value={locationRadius}
-                    name="locationRadius"
+                    id="locationRadius-header"
                     data-testid="locationRadius"
                   >
                     {buildRayonsOptions()}
@@ -124,7 +124,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 </Box>
               </Box>
               <Box ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
-                <Text as="label" htmlFor="diploma" variant="defaultAutocomplete">
+                <Text as="label" htmlFor="diploma-header" variant="defaultAutocomplete">
                   Niveau d&apos;études visé
                 </Text>
                 <Box>
@@ -132,7 +132,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                     {...selectProperties}
                     onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")}
                     value={diploma}
-                    name="diploma"
+                    id="diploma-header"
                     data-testid="diploma"
                   >
                     {buildAvailableDiplomasOptions(diplomas)}
