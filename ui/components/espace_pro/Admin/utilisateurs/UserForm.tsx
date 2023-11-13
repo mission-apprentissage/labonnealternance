@@ -1,9 +1,7 @@
-import { Box, Button, FormControl, FormLabel, FormErrorMessage, HStack, Input, VStack, useToast, Checkbox, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Checkbox, FormControl, FormErrorMessage, FormLabel, HStack, Input, VStack, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFormik } from "formik"
-import React from "react"
 import * as Yup from "yup"
 
-import { USER_STATUS } from "@/common/contants"
 import useUserHistoryUpdate from "@/common/hooks/useUserHistoryUpdate"
 import { useAuth } from "@/context/UserContext"
 import { apiDelete, apiPost, apiPut } from "@/utils/api.utils"
@@ -11,7 +9,7 @@ import { apiDelete, apiPost, apiPut } from "@/utils/api.utils"
 import ConfirmationDesactivationUtilisateur from "../../ConfirmationDesactivationUtilisateur"
 
 const ActivateUserButton = ({ userId, onUpdate }) => {
-  const updateUserHistory = useUserHistoryUpdate(userId, USER_STATUS.ACTIVE)
+  const updateUserHistory = useUserHistoryUpdate(userId, ETAT_UTILISATEUR.VALIDE)
 
   return (
     <Button
@@ -36,16 +34,16 @@ const DisableUserButton = ({ confirmationDesactivationUtilisateur }) => {
 
 const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisateur, onUpdate) => {
   switch (userHistory.status) {
-    case USER_STATUS.WAITING:
+    case ETAT_UTILISATEUR.ATTENTE:
       return (
         <>
           <ActivateUserButton userId={userId} onUpdate={onUpdate} />
           <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
         </>
       )
-    case USER_STATUS.ACTIVE:
+    case ETAT_UTILISATEUR.VALIDE:
       return <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
-    case USER_STATUS.DISABLED:
+    case ETAT_UTILISATEUR.DESACTIVE:
       return <ActivateUserButton userId={userId} onUpdate={onUpdate} />
 
     default:

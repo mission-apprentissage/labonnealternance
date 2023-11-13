@@ -21,13 +21,14 @@ import {
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
 import { apiGet } from "@/utils/api.utils"
 
-import { AUTHTYPE, USER_STATUS } from "../../../../../../common/contants"
+import { AUTHTYPE } from "../../../../../../common/contants"
 import useUserHistoryUpdate from "../../../../../../common/hooks/useUserHistoryUpdate"
 import {
   AnimationContainer,
@@ -66,7 +67,7 @@ function DetailEntreprise() {
   })
 
   const ActivateUserButton = ({ userId }) => {
-    const updateUserHistory = useUserHistoryUpdate(userId, USER_STATUS.ACTIVE)
+    const updateUserHistory = useUserHistoryUpdate(userId, ETAT_UTILISATEUR.VALIDE)
 
     return (
       <Button variant="primary" onClick={() => updateUserHistory()}>
@@ -85,16 +86,16 @@ function DetailEntreprise() {
 
   const getActionButtons = (userHistory, userId) => {
     switch (userHistory.status) {
-      case USER_STATUS.WAITING:
+      case ETAT_UTILISATEUR.ATTENTE:
         return (
           <>
             <ActivateUserButton userId={userId} />
             <DisableUserButton />
           </>
         )
-      case USER_STATUS.ACTIVE:
+      case ETAT_UTILISATEUR.VALIDE:
         return <DisableUserButton />
-      case USER_STATUS.DISABLED:
+      case ETAT_UTILISATEUR.DESACTIVE:
         return <ActivateUserButton userId={userId} />
 
       default:
@@ -104,11 +105,11 @@ function DetailEntreprise() {
 
   const getUserBadge = (userHistory) => {
     switch (userHistory.status) {
-      case USER_STATUS.WAITING:
+      case ETAT_UTILISATEUR.ATTENTE:
         return <Badge variant="awaiting">À VERIFIER</Badge>
-      case USER_STATUS.ACTIVE:
+      case ETAT_UTILISATEUR.VALIDE:
         return <Badge variant="active">ACTIF</Badge>
-      case USER_STATUS.DISABLED:
+      case ETAT_UTILISATEUR.DESACTIVE:
         return <Badge variant="inactive">INACTIF</Badge>
 
       default:
@@ -164,7 +165,7 @@ function DetailEntreprise() {
                 {getActionButtons(lastUserState, data._id)}
                 {data.type === AUTHTYPE.ENTREPRISE ? (
                   data.jobs.length ? (
-                    lastUserState.status === USER_STATUS.WAITING || lastUserState.status === USER_STATUS.ERROR ? (
+                    lastUserState.status === ETAT_UTILISATEUR.ATTENTE || lastUserState.status === ETAT_UTILISATEUR.ERROR ? (
                       <Button variant="secondary" isDisabled={true}>
                         Offre en attente de validation
                       </Button>
