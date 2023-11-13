@@ -1,6 +1,7 @@
+import { generatePath, generateQueryString } from "shared/helpers/generateUri"
 import { describe, expect, expectTypeOf, it } from "vitest"
 
-import { apiGet, generatePath, generateQueryString, generateUrl } from "./api.utils"
+import { apiGet, generateUrl } from "./api.utils"
 
 /*
  * The following tests are inspired from https://github.com/remix-run/react-router/blob/868e5157bbb72fb77f827f264a2b7f6f6106147d/packages/react-router/__tests__/generatePath-test.tsx#L3C1-L182
