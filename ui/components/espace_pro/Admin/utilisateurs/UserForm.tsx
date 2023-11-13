@@ -1,5 +1,6 @@
 import { Box, Button, Checkbox, FormControl, FormErrorMessage, FormLabel, HStack, Input, VStack, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFormik } from "formik"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import useUserHistoryUpdate from "@/common/hooks/useUserHistoryUpdate"

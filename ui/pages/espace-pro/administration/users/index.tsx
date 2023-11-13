@@ -22,6 +22,7 @@ import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { apiGet } from "@/utils/api.utils"

@@ -1,11 +1,10 @@
 import type { FilterQuery } from "mongoose"
 import { IRecruiter, IUserRecruteur } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { Recruiter, User, UserRecruteur } from "../common/model/index"
 import { IUser } from "../common/model/schema/user/user.types"
 import * as sha512Utils from "../common/utils/sha512Utils"
-
-import { ETAT_UTILISATEUR } from "./constant.service"
 
 /**
  * @description Hash password
