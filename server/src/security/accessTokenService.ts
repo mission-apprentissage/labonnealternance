@@ -1,5 +1,4 @@
 import Boom from "boom"
-import { FastifyRequest } from "fastify"
 import jwt from "jsonwebtoken"
 import { PathParam, QueryString, WithQueryStringAndPathParam, generateUri } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
@@ -39,8 +38,18 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
   scopes: ReadonlyArray<IScope<Schema>>
 }
 
-function getAudience(scope: { method: string; path: string; options: WithQueryStringAndPathParam }): string {
-  return `${scope.method} ${generateUri(scope.path, scope.options)}`.toLowerCase()
+function getAudience({
+  method,
+  path,
+  options,
+  skipParamsReplacement,
+}: {
+  method: string
+  path: string
+  options: WithQueryStringAndPathParam
+  skipParamsReplacement: boolean
+}): string {
+  return `${method} ${generateUri(path, options, skipParamsReplacement)}`.toLowerCase()
 }
 
 export function generateAccessToken<Schema extends ISecuredRouteSchema>(
@@ -66,7 +75,12 @@ export function getAccessTokenScope<Schema extends SchemaWithSecurity>(token: IA
   return token?.scopes.find((s) => s.schema.path === schema.path && s.schema.method === schema.method) ?? null
 }
 
-export function parseAccessToken<Schema extends SchemaWithSecurity>(accessToken: null | string, schema: Schema, req: FastifyRequest): IAccessToken<Schema> | null {
+export function parseAccessToken<Schema extends SchemaWithSecurity>(
+  accessToken: null | string,
+  schema: Schema,
+  params: PathParam | undefined,
+  querystring: QueryString | undefined
+): IAccessToken<Schema> | null {
   if (!accessToken) {
     return null
   }
@@ -79,14 +93,16 @@ export function parseAccessToken<Schema extends SchemaWithSecurity>(accessToken:
     method: schema.method,
     path: schema.path,
     options: {
-      params: req.params as PathParam,
-      querystring: req.query as QueryString,
+      params,
+      querystring,
     },
+    skipParamsReplacement: false,
   })
   const genericAudience = getAudience({
     method: schema.method,
     path: schema.path,
     options: {},
+    skipParamsReplacement: true,
   })
   const tokenAudiences: string[] = scopesToAudiences(token.scopes)
   const isAuthorized = tokenAudiences.includes(specificAudience) || tokenAudiences.includes(genericAudience)
@@ -108,6 +124,7 @@ function scopesToAudiences<Schema extends SchemaWithSecurity>(scopes: ReadonlyAr
               params: scope.options.params,
               querystring: scope.options.querystring,
             },
+      skipParamsReplacement: scope.options === "all",
     })
   )
 }

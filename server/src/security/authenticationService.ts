@@ -3,6 +3,7 @@ import Boom from "boom"
 import { FastifyRequest } from "fastify"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { ICredential } from "shared"
+import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { UserWithType } from "shared/security/permissions"
@@ -90,7 +91,7 @@ function extractBearerTokenFromHeader(req: FastifyRequest): null | string {
 }
 
 async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyRequest, schema: S): Promise<UserWithType<"IAccessToken", IAccessToken> | null> {
-  const token = parseAccessToken(extractBearerTokenFromHeader(req), schema, req)
+  const token = parseAccessToken(extractBearerTokenFromHeader(req), schema, req.params as PathParam, req.query as QueryString)
 
   if (token === null) {
     return null

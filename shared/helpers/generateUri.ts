@@ -78,8 +78,8 @@ export function generateQueryString(query: QueryString = {}): string {
   return searchString ? `?${searchString}` : ""
 }
 
-export function generateUri(path: string, options: WithQueryStringAndPathParam = {}): string {
+export function generateUri(path: string, options: WithQueryStringAndPathParam = {}, skipParamsReplacement = false): string {
   const params = "params" in options ? options.params : {}
   const querystring = "querystring" in options ? options.querystring : {}
-  return generatePath(path, params) + generateQueryString(querystring)
+  return skipParamsReplacement ? path : generatePath(path, params) + generateQueryString(querystring)
 }
