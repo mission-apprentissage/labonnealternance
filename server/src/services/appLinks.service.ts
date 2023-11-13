@@ -65,3 +65,22 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
   )
   return `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${token}`
 }
+
+export function createCfaUnsubscribeToken(email: string, siret: string) {
+  return generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      {
+        schema: zRoutes.post["/etablissement/:establishment_siret/proposition/unsubscribe"],
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
+        resources: {},
+      },
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+}
