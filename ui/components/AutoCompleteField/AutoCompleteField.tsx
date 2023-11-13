@@ -224,7 +224,7 @@ export const AutoCompleteField = ({
 
   return (
     <Box>
-      <Flex {...containerChakraProps} {...getComboboxProps()}>
+      <Flex {...containerChakraProps} {...getComboboxProps()} aria-expanded={isOpen ? true : false}>
         <Text variant={labelVariant} as="label">
           {kind}
         </Text>
