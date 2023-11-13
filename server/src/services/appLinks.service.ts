@@ -69,7 +69,13 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
 export function createCancelJobLink({ user, jobId }: { user: IUserRecruteur; jobId: string }) {
   const token = generateAccessToken(user, [
     {
-      route: zRoutes.put["/formulaire/offre/:jobId/cancel"],
+      schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
+      options: {
+        params: {
+          jobId: jobId,
+        },
+        querystring: undefined,
+      },
       resources: {
         job: [jobId],
       },
@@ -82,7 +88,13 @@ export function createCancelJobLink({ user, jobId }: { user: IUserRecruteur; job
 export function createProvidedJobLink({ user, jobId }: { user: IUserRecruteur; jobId: string }) {
   const token = generateAccessToken(user, [
     {
-      route: zRoutes.put["/formulaire/offre/:jobId/provided"],
+      schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
+      options: {
+        params: {
+          jobId: jobId,
+        },
+        querystring: undefined,
+      },
       resources: {
         job: [jobId],
       },
