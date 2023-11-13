@@ -172,7 +172,6 @@ export const zFormulaireRoute = {
       method: "put",
       path: "/formulaire/offre/:jobId/cancel",
       params: z.object({ jobId: zObjectId }).strict(),
-      querystring: z.object({ token: z.string() }).strict(),
       response: {
         "2xx": z.object({}).strict(),
       },
@@ -210,7 +209,6 @@ export const zFormulaireRoute = {
       method: "put",
       path: "/formulaire/offre/:jobId/provided",
       params: z.object({ jobId: zObjectId }).strict(),
-      querystring: z.object({ token: z.string() }).strict(),
       response: {
         "2xx": z.object({}).strict(),
       },
