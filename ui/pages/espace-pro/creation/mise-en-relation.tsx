@@ -32,7 +32,7 @@ export default function CreationMiseEnRelation() {
   }
 
   const goToEndStep = ({ withDelegation }) => {
-    router.push({
+    router.replace({
       pathname: "/espace-pro/creation/fin",
       query: { job: JSON.stringify(job), email, withDelegation, fromDashboard, userId, establishment_id },
     })
