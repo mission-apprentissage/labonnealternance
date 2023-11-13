@@ -24,6 +24,21 @@ export const zFormulaireRoute = {
         },
       },
     },
+    "/formulaire/delegation/:establishment_id": {
+      method: "get",
+      path: "/formulaire/delegation/:establishment_id",
+      params: z.object({ establishment_id: z.string() }).strict(),
+      response: {
+        "200": ZRecruiter,
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
+    },
     "/formulaire/offre/f/:jobId": {
       method: "get",
       path: "/formulaire/offre/f/:jobId",

@@ -51,6 +51,26 @@ export default (server: Server) => {
   )
 
   /**
+   * Get form from id
+   */
+  server.get(
+    "/formulaire/delegation/:establishment_id",
+    {
+      schema: zRoutes.get["/formulaire/delegation/:establishment_id"],
+      onRequest: [server.auth(zRoutes.get["/formulaire/delegation/:establishment_id"])],
+    },
+    async (req, res) => {
+      const result = await getFormulaire({ establishment_id: req.params.establishment_id })
+
+      if (!result) {
+        throw Boom.badRequest()
+      }
+
+      return res.status(200).send(result)
+    }
+  )
+
+  /**
    * Post form
    */
   server.post(
