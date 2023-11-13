@@ -108,13 +108,13 @@ const AjouterVoeuxForm = (props) => {
    */
   const handleRedirectionAfterSubmit = (form, job, fromDashboard) => {
     if (haveProposals) {
-      return router.push({
+      return router.replace({
         pathname: "/espace-pro/creation/mise-en-relation",
         query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId, establishment_id },
       })
     }
 
-    router.push({
+    router.replace({
       pathname: "/espace-pro/creation/fin",
       query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId, establishment_id },
     })
@@ -196,6 +196,7 @@ const AjouterVoeuxForm = (props) => {
         job_count: props.job_count ?? 1,
         job_duration: props.job_duration ?? 6,
         job_rythm: props.job_rythm ?? undefined,
+        job_delegation_count: props.job_delegation_count ?? 0,
       }}
       validationSchema={Yup.object().shape({
         rome_label: Yup.string().required("Champ obligatoire"),
