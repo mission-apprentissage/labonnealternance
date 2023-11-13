@@ -38,8 +38,18 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
   scopes: ReadonlyArray<IScope<Schema>>
 }
 
-function getAudience(scope: { method: string; path: string; options: WithQueryStringAndPathParam }): string {
-  return `${scope.method} ${generateUri(scope.path, scope.options)}`.toLowerCase()
+function getAudience({
+  method,
+  path,
+  options,
+  skipParamsReplacement,
+}: {
+  method: string
+  path: string
+  options: WithQueryStringAndPathParam
+  skipParamsReplacement: boolean
+}): string {
+  return `${method} ${generateUri(path, options, skipParamsReplacement)}`.toLowerCase()
 }
 
 export function generateAccessToken<Schema extends ISecuredRouteSchema>(
@@ -86,11 +96,13 @@ export function parseAccessToken<Schema extends SchemaWithSecurity>(
       params,
       querystring,
     },
+    skipParamsReplacement: false,
   })
   const genericAudience = getAudience({
     method: schema.method,
     path: schema.path,
     options: {},
+    skipParamsReplacement: true,
   })
   const tokenAudiences: string[] = scopesToAudiences(token.scopes)
   const isAuthorized = tokenAudiences.includes(specificAudience) || tokenAudiences.includes(genericAudience)
@@ -112,6 +124,7 @@ function scopesToAudiences<Schema extends SchemaWithSecurity>(scopes: ReadonlyAr
               params: scope.options.params,
               querystring: scope.options.querystring,
             },
+      skipParamsReplacement: scope.options === "all",
     })
   )
 }

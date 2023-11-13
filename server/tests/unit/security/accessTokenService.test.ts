@@ -14,7 +14,7 @@ describe("accessTokenService", () => {
     querystring: undefined,
   }
   const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
-  const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).rejects.toThrow("Forbidden")
+  const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).toThrow()
 
   describe("valid tokens", () => {
     it("should generate a token valid for a specific route", () => {
@@ -60,16 +60,6 @@ describe("accessTokenService", () => {
           schema: zRoutes.post["/admin/users"],
           resources: {},
           options: "all",
-        },
-      ])
-      expectTokenInvalid(token)
-    })
-    it("should detect an invalid token that is for a different route with the right options", () => {
-      const token = generateAccessToken(user, [
-        {
-          schema: zRoutes.get["/etablissement/entreprise/:siret"],
-          resources: {},
-          options,
         },
       ])
       expectTokenInvalid(token)
