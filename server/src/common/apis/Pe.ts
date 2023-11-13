@@ -1,4 +1,3 @@
-import crypto from "crypto"
 import { createReadStream } from "fs"
 import querystring from "querystring"
 
@@ -15,50 +14,12 @@ import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
 
-const LBF_API_BASE_URL = `https://labonneformation.pole-emploi.fr/api/v1`
 const PE_IO_API_ROME_V1_BASE_URL = "https://api.pole-emploi.io/partenaire/rome/v1"
 const PE_IO_API_OFFRES_BASE_URL = "https://api.pole-emploi.io/partenaire/offresdemploi/v2"
 const PE_AUTH_BASE_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2"
 const PE_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
 
 const axiosClient = getApiClient({})
-
-/**
- * Construit et retourne les paramètres de la requête vers LBF
- * @param {string} id L'id RCO de la formation dont on veut récupérer les données sur LBF
- * @returns {string}
- */
-const getLbfQueryParams = (id: string): string => {
-  // le timestamp doit être uriencodé avec le format ISO sans les millis
-  let date = new Date().toISOString()
-  date = encodeURIComponent(date.substring(0, date.lastIndexOf(".")))
-
-  let queryParams = `user=LBA&uid=${id}&timestamp=${date}`
-
-  const hmac = crypto.createHmac("md5", config.laBonneFormationPassword)
-  const data = hmac.update(queryParams)
-  const signature = data.digest("hex")
-
-  // le param signature doit contenir un hash des autres params chiffré avec le mdp attribué à LBA
-  queryParams += "&signature=" + signature
-
-  return queryParams
-}
-
-/**
- * @description Get LBF formation description
- * @param {string} id
- */
-export const getLBFFormationDescription = async (id: string) => {
-  try {
-    const { data } = await axiosClient.get(`${LBF_API_BASE_URL}/detail?${getLbfQueryParams(id)}`)
-
-    return data
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    throw new ApiError("Api LBF", error.message, error.code || error.response?.status, error?.response?.status)
-  }
-}
 
 const ROME_ACESS = querystring.stringify({
   grant_type: "client_credentials",

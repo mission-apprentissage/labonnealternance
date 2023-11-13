@@ -22,7 +22,6 @@ const config = {
   mongodb: {
     uri: env.get("LBA_MONGODB_URI").required().asString(),
   },
-  laBonneFormationPassword: env.get("LBA_LABONNEFORMATION_PASSWORD").required().asString(),
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").required().asString(),
   secretUpdateRomesMetiers: env.get("LBA_SECRET_UPDATE_ROMES_METIERS").required().asString(), //TODO: rename
