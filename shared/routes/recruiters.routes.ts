@@ -193,7 +193,11 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
     "/etablissement/validation": {
       method: "post",
