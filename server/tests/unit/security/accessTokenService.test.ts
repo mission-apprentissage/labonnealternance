@@ -6,10 +6,10 @@ import { generateAccessToken, parseAccessToken } from "../../../src/security/acc
 describe("accessTokenService", () => {
   // called route
   const user = { type: "cfa" as const, email: "plop@gmail.com", siret: "12343154300012" }
-  const schema = zRoutes.get["/admin/etablissements/siret-formateur/:siret"]
+  const schema = zRoutes.post["/etablissement/:establishment_siret/proposition/unsubscribe"]
   const options = {
     params: {
-      siret: "12343154300012",
+      establishment_siret: "12343154300012",
     },
     querystring: undefined,
   }
@@ -46,7 +46,7 @@ describe("accessTokenService", () => {
           resources: {},
           options: {
             params: {
-              siret: "not the right siret",
+              establishment_siret: "not the right siret",
             },
             querystring: undefined,
           },
