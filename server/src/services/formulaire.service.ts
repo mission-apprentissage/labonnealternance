@@ -560,7 +560,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
       startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
       duration: offre.job_duration,
       rhythm: offre.job_rythm,
-      offerButton: createViewDelegationLink("TBD", recruiter.establishment_id, offre._id, siret_code),
+      offerButton: createViewDelegationLink(email, recruiter.establishment_id, offre._id.toString(), siret_code),
       createAccountButton: `${config.publicUrl}/espace-pro/creation/cfa`,
       unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe`,
     },
