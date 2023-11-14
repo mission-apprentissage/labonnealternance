@@ -20,6 +20,10 @@ async function optionsToFetchParams(method: RequestInit["method"], options: IReq
   const { timeout, headers: addedHeaders } = fetchOptions
 
   const headers = await getHeaders(options)
+  const accessToken = getAccessToken()
+  if (accessToken) {
+    headers.append("authorization", `bearer ${accessToken}`)
+  }
   if (addedHeaders) {
     Object.entries(addedHeaders).forEach(([key, value]) => {
       headers.append(key, value)
@@ -88,10 +92,6 @@ const getAccessToken = () => {
 export function generateUrl(path: string, options: WithQueryStringAndPathParam = {}): string {
   const params = "params" in options ? options.params : {}
   const querystring = "querystring" in options ? options.querystring : {}
-  const accessToken = getAccessToken()
-  if (accessToken) {
-    querystring.token = accessToken
-  }
   return removeAtEnd(publicConfig.apiEndpoint, "/") + generateUri(path, { params, querystring })
 }
 
