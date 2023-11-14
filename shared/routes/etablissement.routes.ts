@@ -12,14 +12,18 @@ export const zEtablissementRoutes = {
       path: "/admin/etablissements/siret-formateur/:siret",
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "2xx": ZEtablissement,
+        "2xx": ZEtablissement.strict(),
       },
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        ressources: {
+          eligibleTrainingsForAppointment: [
+            {
+              etablissement_formateur_siret: { type: "params", key: "siret" },
+            },
+          ],
+        },
       },
     },
     "/admin/etablissements/:id": {
@@ -27,14 +31,18 @@ export const zEtablissementRoutes = {
       path: "/admin/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "2xx": ZEtablissement,
+        "2xx": ZEtablissement.strict(),
       },
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        ressources: {
+          etablissement: [
+            {
+              _id: { type: "params", key: "id" },
+            },
+          ],
+        },
       },
     },
     "/etablissements/:id": {
@@ -127,7 +135,13 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        ressources: {
+          etablissement: [
+            {
+              _id: { type: "params", key: "id" },
+            },
+          ],
+        },
       },
     },
     "/etablissements/:id/appointments/:appointmentId": {
