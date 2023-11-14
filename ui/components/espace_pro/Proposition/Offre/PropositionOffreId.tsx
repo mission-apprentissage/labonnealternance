@@ -37,7 +37,6 @@ export default function PropositionOffreId() {
   useEffect(() => {
     const fetchData = async () => {
       const data: any = await getDelegationDetails(idFormulaire, token)
-
       const job = data.jobs.find((job) => job._id === jobId)
 
       if (siretFormateur) {

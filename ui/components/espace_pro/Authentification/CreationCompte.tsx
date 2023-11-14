@@ -5,6 +5,8 @@ import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import * as Yup from "yup"
 
+import { ApiError } from "@/utils/api.utils"
+
 import { AUTHTYPE } from "../../../common/contants"
 import { SIRETValidation } from "../../../common/validation/fieldValidations"
 import { LogoContext } from "../../../context/contextLogo"
@@ -46,45 +48,45 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
       })
     } else {
       getCfaInformation(formattedSiret)
-        .then(({ data }) => {
+        .then((data) => {
           setSubmitting(false)
           router.push({
             pathname: "/espace-pro/creation/detail",
             query: { informationSiret: JSON.stringify(data), type, origin },
           })
         })
-        .catch(({ response }) => {
-          const payload: { data: { reason: string; data?: unknown } | undefined; error: string; statusCode: number; message: string } = response.data
-          if (payload.error) {
-            if (payload.data.reason === "EXIST") {
-              setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
-            }
-            if (payload.data.reason === "QUALIOPI") {
-              setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
-              setQualiopi(payload.data.data)
-              setBandeau({
-                type: "error",
-                header: "Votre centre de formation n’est pas certifié Qualiopi.",
-                description: "Pour obtenir la certification, faites la démarche auprès d’un organisme certificateur : ",
-                lien: "https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs",
-              })
-            }
-            if (payload.data.reason === "CLOSED") {
-              setFieldError("establishment_siret", "Le numéro siret indique un établissement fermé.")
-              setBandeau({
-                type: "error",
-                header: "Votre centre de formation est renseigné comme fermé.",
-                description: "Pour modifier les caractéristiques de votre organisme, vous pouvez vous rapprocher de l’INSEE afin de réaliser les modifications à la source.",
-              })
-            }
-            if (payload.data.reason === "UNKNOWN") {
-              setFieldError("establishment_siret", "Le numéro siret n'est pas référencé comme centre de formation.")
-              setBandeau({
-                type: "error",
-                header: "Votre centre de formation n’est pas référencé dans notre catalogue.",
-                description: "Pour ajouter une offre de formation au catalogue, renseignez-vous auprès du Carif-Oref de votre région : ",
-                lien: "https://reseau.intercariforef.org/referencer-son-offre-de-formation",
-              })
+        .catch((error) => {
+          if (error instanceof ApiError) {
+            const { statusCode, errorData } = error.context
+            if (statusCode >= 400 && statusCode < 500) {
+              const { reason, data } = errorData
+              if (reason === "EXIST") {
+                setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
+              } else if (reason === "QUALIOPI") {
+                setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
+                setQualiopi(data)
+                setBandeau({
+                  type: "error",
+                  header: "Votre centre de formation n’est pas certifié Qualiopi.",
+                  description: "Pour obtenir la certification, faites la démarche auprès d’un organisme certificateur : ",
+                  lien: "https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs",
+                })
+              } else if (reason === "CLOSED") {
+                setFieldError("establishment_siret", "Le numéro siret indique un établissement fermé.")
+                setBandeau({
+                  type: "error",
+                  header: "Votre centre de formation est renseigné comme fermé.",
+                  description: "Pour modifier les caractéristiques de votre organisme, vous pouvez vous rapprocher de l’INSEE afin de réaliser les modifications à la source.",
+                })
+              } else if (reason === "UNKNOWN") {
+                setFieldError("establishment_siret", "Le numéro siret n'est pas référencé comme centre de formation.")
+                setBandeau({
+                  type: "error",
+                  header: "Votre centre de formation n’est pas référencé dans notre catalogue.",
+                  description: "Pour ajouter une offre de formation au catalogue, renseignez-vous auprès du Carif-Oref de votre région : ",
+                  lien: "https://reseau.intercariforef.org/referencer-son-offre-de-formation",
+                })
+              }
             }
           }
 
