@@ -6,11 +6,11 @@ import { LoadingEmptySpace } from "../.."
 import { dayjs } from "../../../../common/dayjs"
 import { publicConfig } from "../../../../config.public"
 import { Copy, InfoCircle, Minus, Plus } from "../../../../theme/components/icons"
-import { getFormulaire, patchOffreDelegation } from "../../../../utils/api"
+import { getDelegationDetails, patchOffreDelegation } from "../../../../utils/api"
 
 export default function PropositionOffreId() {
   const router = useRouter()
-  const { idFormulaire, jobId, siretFormateur } = router.query as { idFormulaire: string; jobId: string; siretFormateur: string }
+  const { idFormulaire, jobId, siretFormateur, token } = router.query as { idFormulaire: string; jobId: string; siretFormateur: string; token: string }
   const toast = useToast()
 
   const [job, setJob]: [any, (t: any) => void] = useState()
@@ -36,7 +36,7 @@ export default function PropositionOffreId() {
    */
   useEffect(() => {
     const fetchData = async () => {
-      const { data }: any = await getFormulaire(idFormulaire)
+      const data: any = await getDelegationDetails(idFormulaire, token)
 
       const job = data.jobs.find((job) => job._id === jobId)
 
