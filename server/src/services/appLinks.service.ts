@@ -20,7 +20,7 @@ export function createAuthMagicLinkToken(user: IUserRecruteur) {
 export function createAuthMagicLink(user: IUserRecruteur) {
   const token = createAuthMagicLinkToken(user)
 
-  return `${config.publicUrl}/espace-pro/authentification/verification?token=${token}`
+  return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
 }
 
 export function createValidationMagicLink(user: IUserRecruteur) {
@@ -42,8 +42,7 @@ export function createValidationMagicLink(user: IUserRecruteur) {
       expiresIn: "30d",
     }
   )
-
-  return `${config.publicUrl}/espace-pro/authentification/validation/${user._id}?token=${token}`
+  return `${config.publicUrl}/espace-pro/authentification/validation/${user._id}?token=${encodeURIComponent(token)}`
 }
 
 export function createOptoutValidateMagicLink(email: string, siret: string) {
@@ -63,7 +62,7 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
       expiresIn: "45d",
     }
   )
-  return `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${token}`
+  return `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${encodeURIComponent(token)}`
 }
 
 export function createCancelJobLink({ user, jobId }: { user: IUserRecruteur; jobId: string }) {

@@ -25,6 +25,10 @@ async function optionsToFetchParams(method: RequestInit["method"], options: IReq
       headers.append(key, value)
     })
   }
+  const accessToken = getAccessToken()
+  if (accessToken && !headers.has("authorization")) {
+    headers.append("authorization", `bearer ${accessToken}`)
+  }
 
   let body: BodyInit | undefined = undefined
   if ("body" in options && method !== "GET") {
@@ -88,10 +92,6 @@ const getAccessToken = () => {
 export function generateUrl(path: string, options: WithQueryStringAndPathParam = {}): string {
   const params = "params" in options ? options.params : {}
   const querystring = "querystring" in options ? options.querystring : {}
-  const accessToken = getAccessToken()
-  if (accessToken) {
-    querystring.token = accessToken
-  }
   return removeAtEnd(publicConfig.apiEndpoint, "/") + generateUri(path, { params, querystring })
 }
 

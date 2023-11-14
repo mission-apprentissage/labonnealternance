@@ -17,7 +17,6 @@ import {
   patchOffre,
   provideOffre,
   updateFormulaire,
-  updateOffre,
 } from "../../services/formulaire.service"
 import { getUser } from "../../services/userRecruteur.service"
 import { Server } from "../server"
@@ -239,7 +238,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId"])],
     },
     async (req, res) => {
-      const result = await updateOffre(req.params.jobId.toString(), req.body)
+      const result = await patchOffre(req.params.jobId, req.body)
       return res.status(200).send(result)
     }
   )

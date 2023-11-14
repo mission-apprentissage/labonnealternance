@@ -18,7 +18,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/admin/etablissements/siret-formateur/:siret"])],
     },
     async ({ params }, res) => {
-      const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
+      const etablissement = await Etablissement.findOne({ formateur_siret: params.siret }).lean()
 
       if (!etablissement) {
         throw Boom.notFound()
@@ -38,7 +38,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/admin/etablissements/:id"])],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id).lean()
 
       if (!etablissement) {
         throw Boom.notFound()
