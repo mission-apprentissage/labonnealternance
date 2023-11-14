@@ -9,6 +9,7 @@ import { Copy, InfoCircle, Minus, Plus } from "../../../../theme/components/icon
 import { getFormulaire, patchOffre } from "../../../../utils/api"
 
 export default function PropositionOffreId() {
+  console.log("render")
   const router = useRouter()
   const { idFormulaire, jobId, siretFormateur } = router.query as { idFormulaire: string; jobId: string; siretFormateur: string }
   const toast = useToast()
@@ -39,6 +40,7 @@ export default function PropositionOffreId() {
       const data = await getFormulaire(idFormulaire)
 
       const job = data.jobs.find((job) => job._id === jobId)
+      console.log({ formulaire: data, job })
 
       if (siretFormateur) {
         await patchOffre(job._id, { cfa_read_company_detail_at: new Date() }, { params: { siret_formateur: siretFormateur } })

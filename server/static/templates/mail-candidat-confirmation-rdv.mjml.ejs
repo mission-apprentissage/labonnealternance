@@ -1,84 +1,80 @@
 <mjml>
-    <mj-head>
-        <mj-title>Le centre de formation a bien reçu votre demande de contact !</mj-title>
-        <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
-        <mj-style inline="inline">
-            .grey {color: #1E1E1E;}
-        </mj-style>
-        <mj-attributes>
-            <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
-            <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
-        </mj-attributes>
-    </mj-head>
-    <mj-body background-color="#E5E5E5">
-        <mj-section>
-            <mj-column>
-                <mj-image src="<%= data.images.logoLba %>" width="150px"  alt="Logo du site La bonne alternance" />
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="0">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text>
-                    Bonjour <%= data.user.firstname %> <%= data.user.lastname %>,
-                </mj-text>
-                <mj-text>
-                    Merci de votre intérêt pour la formation <b><%= data.formation.intitule %> :</b>
-                </mj-text>
-                <mj-text>
-                    <ul>
-                        <li>dispensée par : <b><%= data.etablissement.name %></b></li>
-                        <li>localisée au : <b><%= data.etablissement.formateur_address %>, <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %></b></li>
-                    </ul>
-                </mj-text>
-                <mj-text>L'établissement prendra contact avec vous très prochainement au <a class="grey" href="tel:<%= data.user.phone %>"><%= data.user.phone %></a> ou sur <a class="grey" href="mailto:<%= data.user.email %>"><%= data.user.email %></a></mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="30px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text>
-                    Vous avez fait cette demande sur le site <a class="grey" href="<%= data.appointment.referrerLink %>"><%= data.appointment.appointment_origin %></a>.<br/><b>Vous souhaitez modifier ou annuler votre demande ?</b><br/> Envoyez un email à <a class="grey" href="mailto:<%= data.etablissement.email %>">
-                        <%= data.etablissement.email %>
-                    </a>
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="30px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text>
-                    Cordialement,<br/>
-                    L'équipe <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr">La bonne alternance</a>,<br/>
-                    <a class="grey" href="https://mission-apprentissage.gitbook.io/general/">Mission interministérielle pour l'apprentissage</a>
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="30px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text font-size="12px">
-                    « La bonne alternance » est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l'Etat,
-                    conformément aux missions d'intérêt public du ministère du Travail.
-                </mj-text>
-                <mj-text font-size="12px">
-                    Nous souhaitons vous mettre en relation avec un centre de formation d'apprentis. Par ailleurs, nous ne faisons aucune utilisation commerciale de votre
-                    donnée.
-                </mj-text>
-                <mj-text font-size="12px">
-                    Conformément à l'article L.34-5 du code des postes et communications électroniques, vous bénéficiez d'un droit
-                    d'opposition que vous pouvez utiliser à tout moment via l'adresse <a class="grey" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition%20-%20RDVA">labonnealternance@apprentissage.beta.gouv.fr</a>. Votre
-                    adresse e-mail sera dès lors supprimée de notre base de données et vous ne serez plus contacté.
-                </mj-text>
-                <mj-text font-size="12px">
-                    Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
-                </mj-text>
-                <mj-text font-size="12px">
-                    Pour plus d'informations sur le traitement de vos données, vous pouvez vous rendre sur la <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">politique de confidentialité</a> de La bonne
-                    alternance.
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="5px" text-align="left">
-            <mj-column width="200px">
-                <mj-image padding="0" src="<%= data.images.logoFooter %>"></mj-image>
-            </mj-column>
-        </mj-section>
-    </mj-body>
+  <mj-head>
+    <mj-title>Le centre de formation a bien reçu votre demande de contact !</mj-title>
+    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+    <mj-style inline="inline"> .grey {color: #1E1E1E;} </mj-style>
+    <mj-attributes>
+      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#E5E5E5">
+    <mj-section>
+      <mj-column>
+        <mj-image src="<%= data.images.logoLba %>" width="150px" alt="Logo du site La bonne alternance" />
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="0">
+      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+        <mj-text> Bonjour <%= data.user.firstname %> <%= data.user.lastname %>, </mj-text>
+        <mj-text> Merci de votre intérêt pour la formation <b><%= data.formation.intitule %> :</b> </mj-text>
+        <mj-text>
+          <ul>
+            <li>dispensée par : <b><%= data.etablissement.name %></b></li>
+            <li>localisée au : <b><%= data.etablissement.formateur_address %>, <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %></b></li>
+          </ul>
+        </mj-text>
+        <mj-text
+          >L'établissement prendra contact avec vous très prochainement au <a class="grey" href="tel:<%= data.user.phone %>"><%= data.user.phone %></a> ou sur
+          <a class="grey" href="mailto:<%= data.user.email %>"><%= data.user.email %></a></mj-text
+        >
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="30px">
+      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+        <mj-text>
+          Vous avez fait cette demande sur le site <a class="grey" href="<%= data.appointment.referrerLink %>"><%= data.appointment.appointment_origin %></a>.<br /><b
+            >Vous souhaitez modifier ou annuler votre demande ?</b
+          ><br />
+          Envoyez un email à <a class="grey" href="mailto:<%= data.etablissement.email %>"> <%= data.etablissement.email %> </a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="30px">
+      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+        <mj-text>
+          Cordialement,<br />
+          L'équipe <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr">La bonne alternance</a>,<br />
+          <a class="grey" href="https://mission-apprentissage.gitbook.io/general/">Mission interministérielle pour l'apprentissage</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="30px">
+      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+        <mj-text font-size="12px">
+          « La bonne alternance » est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l'Etat, conformément aux missions d'intérêt public du
+          ministère du Travail.
+        </mj-text>
+        <mj-text font-size="12px">
+          Nous souhaitons vous mettre en relation avec un centre de formation d'apprentis. Par ailleurs, nous ne faisons aucune utilisation commerciale de votre donnée.
+        </mj-text>
+        <mj-text font-size="12px">
+          Conformément à l'article L.34-5 du code des postes et communications électroniques, vous bénéficiez d'un droit d'opposition que vous pouvez utiliser à tout moment via
+          l'adresse
+          <a class="grey" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition%20-%20RDVA">labonnealternance@apprentissage.beta.gouv.fr</a>. Votre
+          adresse e-mail sera dès lors supprimée de notre base de données et vous ne serez plus contacté.
+        </mj-text>
+        <mj-text font-size="12px"> Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. </mj-text>
+        <mj-text font-size="12px">
+          Pour plus d'informations sur le traitement de vos données, vous pouvez vous rendre sur la
+          <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">politique de confidentialité</a> de La bonne alternance.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="5px" text-align="left">
+      <mj-column width="200px">
+        <mj-image padding="0" src="<%= data.images.logoFooter %>"></mj-image>
+      </mj-column>
+    </mj-section>
+  </mj-body>
 </mjml>
