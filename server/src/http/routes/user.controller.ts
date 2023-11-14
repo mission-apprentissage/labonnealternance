@@ -212,7 +212,7 @@ export default (server: Server) => {
     "/user/:userId/history",
     {
       schema: zRoutes.put["/user/:userId/history"],
-      preHandler: [],
+      onRequest: [server.auth(zRoutes.put["/user/:userId/history"])],
     },
     async (req, res) => {
       const history = req.body

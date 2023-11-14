@@ -28,13 +28,15 @@ export const ConfirmationDesactivationUtilisateur = ({
   onClose,
   isOpen,
   onUpdate,
-}: { userRecruteur: IUserRecruteurJson; onUpdate?: () => void } & ReturnType<typeof useDisclosure>) => {
-  const { establishment_raison_sociale, _id: _idObject, type, establishment_id, establishment_siret } = userRecruteur
-  const _id = _idObject.toString()
+}: { userRecruteur?: IUserRecruteurJson; onUpdate?: () => void } & ReturnType<typeof useDisclosure>) => {
+  const { establishment_raison_sociale, _id: _idObject, type, establishment_id, establishment_siret } = userRecruteur ?? {}
+  const _id = (_idObject ?? "").toString()
   const [reason, setReason] = useState()
   const reasonComment = useDisclosure()
   const disableUser = useUserHistoryUpdate(_id, ETAT_UTILISATEUR.DESACTIVE, reason)
   const reassignUserToAdmin = useUserHistoryUpdate(_id, ETAT_UTILISATEUR.ATTENTE, reason)
+
+  if (!userRecruteur) return null
 
   const handleReason = (value) => {
     if (value === "Autre") {
