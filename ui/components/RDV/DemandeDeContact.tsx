@@ -51,7 +51,7 @@ const DemandeDeContact = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
-  const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.PARENT)
+  const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
   const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState<IAppointmentRequestRecapResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -149,19 +149,15 @@ const DemandeDeContact = (props: Props) => {
     <form>
       <Flex direction={["column", "column", "row"]}>
         <Text mt={7} pb={2}>
-          Vous êtes{" "}
-          <Text color="redmarianne" as="span">
-            *
-          </Text>{" "}
-          :
+          Vous êtes * :
         </Text>
         <RadioGroup mt={7} ml={10} data-testid="fieldset-who-type" value={applicantType} onChange={(value) => setApplicantType(value as EApplicantType)}>
           <Stack direction="row" spacing={3}>
-            <Radio size="lg" value={EApplicantType.PARENT}>
-              Le parent
-            </Radio>
             <Radio size="lg" value={EApplicantType.ETUDIANT}>
               L'étudiant
+            </Radio>
+            <Radio size="lg" value={EApplicantType.PARENT}>
+              Le parent
             </Radio>
           </Stack>
         </RadioGroup>
@@ -169,10 +165,7 @@ const DemandeDeContact = (props: Props) => {
       <Flex direction={["column", "column", "row"]} mt={6}>
         <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.lastname && formik.errors.lastname)}>
           <FormLabel htmlFor="lastname">
-            Nom{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
+            Nom *
           </FormLabel>
           <Input
             id="lastname"
@@ -186,12 +179,27 @@ const DemandeDeContact = (props: Props) => {
           />
           <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
         </FormControl>
+        <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.firstname && formik.errors.firstname)}>
+          <FormLabel htmlFor="firstname">
+            Prénom *
+          </FormLabel>
+          <Input
+            id="firstname"
+            data-testid="firstname"
+            name="firstname"
+            type="text"
+            width="95%"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.firstname}
+          />
+          <FormErrorMessage>{formik.errors.firstname}</FormErrorMessage>
+        </FormControl>
+      </Flex>
+      <Flex direction={["column", "column", "row"]} mt={4}>
         <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.email && formik.errors.email)}>
           <FormLabel htmlFor="email">
-            E-mail{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
+            E-mail *
           </FormLabel>
           <Input id="email" data-testid="email" name="email" type="text" width="95%" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
           {suggestedEmails.length > 0 && (
@@ -221,33 +229,9 @@ const DemandeDeContact = (props: Props) => {
           )}
           <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
         </FormControl>
-      </Flex>
-      <Flex direction={["column", "column", "row"]} mt={4}>
-        <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.firstname && formik.errors.firstname)}>
-          <FormLabel htmlFor="firstname">
-            Prénom{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
-          </FormLabel>
-          <Input
-            id="firstname"
-            data-testid="firstname"
-            name="firstname"
-            type="text"
-            width="95%"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.firstname}
-          />
-          <FormErrorMessage>{formik.errors.firstname}</FormErrorMessage>
-        </FormControl>
         <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.phone && formik.errors.phone)}>
           <FormLabel htmlFor="email">
-            Téléphone{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
+            Téléphone *
           </FormLabel>
           <Input id="phone" data-testid="phone" name="phone" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phone} />
           <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
@@ -256,10 +240,7 @@ const DemandeDeContact = (props: Props) => {
       <Flex direction={["column", "column", "row"]} mt={4}>
         <FormControl data-testid="fieldset-reasons" mt={{ base: 3, md: "0" }}>
           <FormLabel htmlFor="reasons">
-            Quel(s) sujet(s) souhaitez-vous aborder ?{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
+            Quel(s) sujet(s) souhaitez-vous aborder ?
           </FormLabel>
           <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4}>
             <AccordionItem>
