@@ -19,7 +19,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:manage",
-        ressources: {
+        resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
@@ -34,7 +34,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {
+        resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
@@ -76,7 +76,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "user:manage",
-        ressources: {
+        resources: {
           user: [{ _id: { key: "userId", type: "params" } }],
         },
       },
@@ -96,7 +96,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:add_job",
-        ressources: {
+        resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
@@ -118,7 +118,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -140,7 +140,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:manage",
-        ressources: {
+        resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
@@ -179,7 +179,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -194,7 +194,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "access-token",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -216,7 +216,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -231,7 +231,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "access-token",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -247,7 +247,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -277,7 +277,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:manage",
-        ressources: {
+        resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
@@ -294,7 +294,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:manage",
-        ressources: {
+        resources: {
           recruiter: [{ cfa_delegated_siret: { type: "params", key: "establishment_siret" } }],
         },
       },

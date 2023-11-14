@@ -71,7 +71,7 @@ export type AuthStrategy = "api-key" | "cookie-session" | "access-token"
 export type SecurityScheme = {
   auth: AuthStrategy
   access: AccessPermission | null
-  ressources: AccessRessouces
+  resources: AccessRessouces
 }
 
 interface IRouteSchemaCommon {

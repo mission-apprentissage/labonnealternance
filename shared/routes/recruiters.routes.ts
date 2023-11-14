@@ -113,7 +113,7 @@ export const zRecruiterRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "user:manage",
-        ressources: {
+        resources: {
           user: [{ _id: { type: "params", key: "userRecruteurId" } }],
         },
       },
@@ -196,7 +196,7 @@ export const zRecruiterRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
     "/etablissement/validation": {
@@ -208,7 +208,7 @@ export const zRecruiterRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },
@@ -232,7 +232,7 @@ export const zRecruiterRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: null,
-        ressources: {
+        resources: {
           user: [{ _id: { type: "params", key: "id" } }],
         },
       },
