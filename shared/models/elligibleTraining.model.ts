@@ -14,7 +14,7 @@ export const ZEligibleTrainingsForAppointmentSchema = z
     etablissement_formateur_zip_code: ZEtablissement.shape.formateur_zip_code,
     training_code_formation_diplome: z.string(),
     lieu_formation_email: z.string().nullable(),
-    is_lieu_formation_email_customized: z.boolean().nullable(),
+    is_lieu_formation_email_customized: z.boolean().nullish(),
     referrers: z.array(z.string()).default([]),
     rco_formation_id: z.string().nullable(),
     is_catalogue_published: z.boolean(),
