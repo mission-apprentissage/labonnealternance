@@ -130,7 +130,7 @@ const changePassword = async (username: string, newPassword: string) => {
 
 type IUserRecruterPicked = Pick<
   IUserRecruteur,
-  "_id" | "first_name" | "last_name" | "establishment_id" | "establishment_raison_sociale" | "establishment_siret" | "createdAt" | "email" | "phone"
+  "_id" | "first_name" | "last_name" | "establishment_id" | "establishment_raison_sociale" | "establishment_siret" | "createdAt" | "email" | "phone" | "type"
 >
 
 type TReturnedType = {
@@ -157,6 +157,7 @@ const getUserAndRecruitersDataForOpcoUser = async (opco: string): Promise<TRetur
           email: 1,
           phone: 1,
           status: 1,
+          type: 1,
         })
         .lean(),
       Recruiter.find({ opco }).select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 }).lean(),
