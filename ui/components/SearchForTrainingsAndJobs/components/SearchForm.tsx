@@ -3,6 +3,8 @@ import { ErrorMessage, Form, Formik } from "formik"
 import { partialRight } from "lodash"
 import React, { useContext, useEffect, useState } from "react"
 
+import { focusWithin } from "@/theme/theme-lba-tools"
+
 import { DomainError } from "../.."
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ParameterContext } from "../../../context/ParameterContextProvider"
@@ -88,31 +90,33 @@ const SearchForm = (props) => {
                   <Text as="p" my={2} fontWeight={700}>
                     Votre recherche
                   </Text>
-                  <AutoCompleteField
-                    id="searchFormJobField"
-                    kind="Métier ou diplôme *"
-                    items={[]}
-                    hasError={errors.job}
-                    initialSelectedItem={contextFormValues?.job || null}
-                    itemToStringFunction={autoCompleteToStringFunction}
-                    onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
-                    compareItemFunction={compareAutoCompleteValues}
-                    onInputValueChangeFunction={jobChanged}
-                    name="jobField"
-                    placeholder="Indiquez un métier ou diplôme"
-                    inputVariant="homeAutocomplete"
-                    searchPlaceholder="Indiquez un métier ou diplôme ci-dessus"
-                    // @ts-expect-error: TODO
-                    isDisabled={widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob}
-                    splitItemsByTypes={[
-                      { type: "job", typeLabel: "Métiers", size: 4 },
-                      { type: "diploma", typeLabel: "Diplômes", size: 4 },
-                      { typeLabel: "...autres métiers et diplômes" },
-                    ]}
-                  />
-                  <ErrorMessage name="job" className="onErrorFieldColumn" component="div" />
+                  <Box {...focusWithin}>
+                    <AutoCompleteField
+                      id="searchFormJobField"
+                      kind="Métier ou diplôme *"
+                      items={[]}
+                      hasError={errors.job}
+                      initialSelectedItem={contextFormValues?.job || null}
+                      itemToStringFunction={autoCompleteToStringFunction}
+                      onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
+                      compareItemFunction={compareAutoCompleteValues}
+                      onInputValueChangeFunction={jobChanged}
+                      name="jobField"
+                      placeholder="Indiquez un métier ou diplôme"
+                      inputVariant="homeAutocomplete"
+                      searchPlaceholder="Indiquez un métier ou diplôme ci-dessus"
+                      // @ts-expect-error: TODO
+                      isDisabled={widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob}
+                      splitItemsByTypes={[
+                        { type: "job", typeLabel: "Métiers", size: 4 },
+                        { type: "diploma", typeLabel: "Diplômes", size: 4 },
+                        { typeLabel: "...autres métiers et diplômes" },
+                      ]}
+                    />
+                    <ErrorMessage name="job" className="onErrorFieldColumn" component="div" />
+                  </Box>
                 </Box>
-                <Box mb={4}>
+                <Box mb={4} {...focusWithin}>
                   <AutoCompleteField
                     id="searchFormPlaceField"
                     kind="Lieu"
@@ -130,8 +134,8 @@ const SearchForm = (props) => {
                   />
                   <ErrorMessage name="location" className="onErrorFieldColumn" component="div" />
                 </Box>
-                <Box mb={4}>
-                  <Box display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
+                <Box mb={4} {...focusWithin}>
+                  <Box {...focusWithin} display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
                     <Text as="label" htmlFor="locationRadius-search" variant="defaultAutocomplete">
                       Rayon
                     </Text>
@@ -155,7 +159,7 @@ const SearchForm = (props) => {
                   </Box>
                 </Box>
                 <Box mb={10}>
-                  <Box display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
+                  <Box {...focusWithin} display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
                     <Text as="label" htmlFor="diploma-search" variant="defaultAutocomplete">
                       Niveau d&apos;études visé
                     </Text>

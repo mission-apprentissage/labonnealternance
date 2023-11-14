@@ -3,6 +3,8 @@ import { Form, Formik } from "formik"
 import { partialRight } from "lodash"
 import React, { useEffect, useState } from "react"
 
+import { focusWithin } from "@/theme/theme-lba-tools"
+
 import { AutoCompleteField, DomainError } from ".."
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
@@ -66,7 +68,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
         {({ isSubmitting, setFieldValue, errors }) => (
           <Form data-testid="widget-form">
             <Flex>
-              <Box>
+              <Box {...focusWithin}>
                 <AutoCompleteField
                   kind="Métier ou diplôme *"
                   id="headerFormJobField"
@@ -90,7 +92,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 />
               </Box>
               <Box ml={3}>
-                <Box>
+                <Box {...focusWithin}>
                   <AutoCompleteField
                     id="headerFormPlaceField"
                     kind="Lieu"
@@ -107,7 +109,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   />
                 </Box>
               </Box>
-              <Box ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
+              <Box {...focusWithin} ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
                 <Text as="label" htmlFor="locationRadius-header" variant="defaultAutocomplete">
                   Rayon
                 </Text>
@@ -123,7 +125,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   </Select>
                 </Box>
               </Box>
-              <Box ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
+              <Box {...focusWithin} ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
                 <Text as="label" htmlFor="diploma-header" variant="defaultAutocomplete">
                   Niveau d&apos;études visé
                 </Text>
