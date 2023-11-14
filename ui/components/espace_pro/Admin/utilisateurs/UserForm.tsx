@@ -193,7 +193,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
 
   return (
     <>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...user} onUpdate={onUpdate} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={user} onUpdate={onUpdate} />
       {user && (
         <>
           <HStack mb={4} alignItems="baseline">

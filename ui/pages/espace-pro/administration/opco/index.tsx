@@ -207,7 +207,7 @@ function AdministrationOpco() {
 
   return (
     <AnimationContainer>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...currentEntreprise} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
       <ConfirmationActivationUtilsateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
 
       <Container maxW="container.xl" mt={5}>

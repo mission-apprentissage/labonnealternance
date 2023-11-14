@@ -27,7 +27,7 @@ export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/f
 export const updateFormulaire = (establishment_id: string, values) => apiPut("/formulaire/:establishment_id", { params: { establishment_id }, body: values })
 
 export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
-export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
+export const archiveDelegatedFormulaire = (siret: string) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
 
 /**
  * Offre API
