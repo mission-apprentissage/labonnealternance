@@ -38,14 +38,21 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
     },
     _focus: {
       background: "none",
+      outline: "none !important",
+      boxShadow: "none",
     },
     _active: {
       background: "none",
     },
   }
 
+  const focusWithin = {
+    borderRadius: "0.375rem",
+    _focusWithin: { boxShadow: "0 0 0 3px rgba(66, 153, 225, 0.6)" },
+  }
+
   return (
-    <Checkbox as="div" spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
+    <Checkbox as="div" tabIndex={-1} {...focusWithin} spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
       <Button px="0" {...buttonProperties} onClick={handleClick}>
         {getText()}
       </Button>
