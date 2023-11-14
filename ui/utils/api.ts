@@ -108,6 +108,7 @@ export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }: 
   API.get(`/etablissement/cfas-proches?rome=${rome}&latitude=${latitude}&longitude=${longitude}`)
 
 export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: any) =>
+  // @ts-ignore
   apiPost("/etablissement/:establishment_siret/proposition/unsubscribe", { params: { establishment_siret } })
 
 /**
