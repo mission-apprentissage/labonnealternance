@@ -454,6 +454,27 @@ describe("authorisationService", () => {
           ).resolves.toBe(undefined)
         })
       })
+      describe.each<[Permission]>([["user:manage"]])("I have %s permission", (permission) => {
+        it("on user recruiter from my Opco", async () => {
+          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
+          await expect(
+            authorizationnMiddleware(
+              {
+                method: "get",
+                path: "/path",
+                securityScheme,
+              },
+              {
+                user: {
+                  type: "IUserRecruteur",
+                  value: opcoUserO1U1,
+                },
+                ...req,
+              }
+            )
+          ).resolves.toBe(undefined)
+        })
+      })
 
       describe.each<[Permission]>([["recruiter:manage"], ["recruiter:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
         it("on recruiter from other Opco", async () => {
@@ -542,7 +563,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["admin"]])("I do not have %s permission", (permission) => {
         it("on user recruiter from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
           await expect(

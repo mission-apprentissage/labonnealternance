@@ -50,6 +50,20 @@ export type AccessRessouces = {
         opco: AccessResourcePath
       }
   >
+  eligibleTrainingsForAppointment?: ReadonlyArray<
+    | {
+        _id: AccessResourcePath
+      }
+    | {
+        etablissement_formateur_siret: AccessResourcePath
+      }
+  >
+  etablissement?: ReadonlyArray<{
+    _id: AccessResourcePath
+  }>
+  formationCatalogue?: ReadonlyArray<{
+    cle_ministere_educatif: AccessResourcePath
+  }>
   job?: ReadonlyArray<{
     _id: AccessResourcePath
   }>

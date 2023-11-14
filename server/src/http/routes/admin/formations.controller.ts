@@ -1,3 +1,4 @@
+import Boom from "boom"
 import { zRoutes } from "shared/index"
 
 import { getCatalogueFormations } from "../../../services/catalogue.service"
@@ -19,12 +20,18 @@ export default (server: Server) => {
     async (req, res) => {
       const { search_item } = req.query
 
+      if (!search_item) {
+        throw Boom.badRequest("Invalid search_item.")
+      }
+
+      const searchItemDecoded = decodeURIComponent(search_item)
+
       const response = await getCatalogueFormations({
         $or: [
-          { etablissement_formateur_siret: search_item },
-          { etablissement_formateur_uai: search_item },
-          { id_rco_formation: search_item },
-          { cle_ministere_educatif: search_item },
+          { etablissement_formateur_siret: searchItemDecoded },
+          { etablissement_formateur_uai: searchItemDecoded },
+          { id_rco_formation: searchItemDecoded },
+          { cle_ministere_educatif: searchItemDecoded },
         ],
       })
 
