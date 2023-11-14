@@ -18,6 +18,7 @@ import { Form, Formik } from "formik"
 import NavLink from "next/link"
 import { useRouter } from "next/router"
 import { useState } from "react"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
@@ -39,7 +40,7 @@ const CreationCompte = () => {
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
     Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret })]).then(
       ([opcoInfos, entrepriseData]) => {
-        if ("error" in entrepriseData && entrepriseData.error) {
+        if (entrepriseData.error === true) {
           if (entrepriseData.statusCode >= 500) {
             router.push({
               pathname: "/espace-pro/administration/entreprise/detail",
@@ -47,14 +48,14 @@ const CreationCompte = () => {
             })
           } else {
             setFieldError("establishment_siret", entrepriseData.message)
-            setIsCfa(entrepriseData?.errorCode === "IS_CFA")
+            setIsCfa(entrepriseData?.data?.errorCode === BusinessErrorCodes.IS_CFA)
             setSubmitting(false)
           }
-        } else {
+        } else if (entrepriseData.error === false) {
           setSubmitting(true)
           router.push({
             pathname: "/espace-pro/administration/entreprise/detail",
-            query: { informationSiret: JSON.stringify({ ...entrepriseData, ...opcoInfos }) },
+            query: { informationSiret: JSON.stringify({ ...entrepriseData.data, ...opcoInfos }) },
           })
         }
       }

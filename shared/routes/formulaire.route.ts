@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
-import { ZJob, ZJobWrite } from "../models/job.model"
+import { JOB_STATUS, ZJob, ZJobWrite } from "../models/job.model"
 import { ZRecruiter, ZRecruiterWritable } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -40,14 +40,12 @@ export const zFormulaireRoute = {
     },
   },
   post: {
-    "/formulaire": {
+    "/user/:userId/formulaire": {
       method: "post",
-      path: "/formulaire",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
+      path: "/user/:userId/formulaire",
+      params: z.object({ userId: zObjectId }).strict(),
       body: z
         .object({
-          userRecruteurId: zObjectId,
           establishment_siret: z.string(),
           email: z.string(),
           last_name: z.string(),
@@ -58,11 +56,15 @@ export const zFormulaireRoute = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        // "2xx": ZRecruiter,
-        "2xx": z.any(),
+        "200": ZRecruiter,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        ressources: {
+          user: [{ _id: { key: "userId", type: "params" } }],
+        },
+      },
     },
     "/formulaire/:establishment_id/offre": {
       method: "post",
@@ -149,6 +151,7 @@ export const zFormulaireRoute = {
         job_count: true,
         job_duration: true,
         job_rythm: true,
+        job_delegation_count: true,
       }).extend({
         job_start_date: z.coerce.date(),
         job_update_date: z.coerce.date(),
@@ -175,20 +178,24 @@ export const zFormulaireRoute = {
     "/formulaire/offre/f/:jobId/cancel": {
       method: "put",
       path: "/formulaire/offre/f/:jobId/cancel",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       body: z
         .object({
-          job_status: z.string(),
+          job_status: z.enum([JOB_STATUS.POURVUE, JOB_STATUS.ANNULEE]),
           job_status_comment: z.string(),
         })
         .strict(),
       response: {
-        "2xx": z.object({}).strict(),
+        "200": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
     "/formulaire/offre/:jobId/provided": {
       method: "put",
@@ -205,14 +212,18 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/extend": {
       method: "put",
       path: "/formulaire/offre/:jobId/extend",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
         "200": ZJob.strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        ressources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
   },
   patch: {
@@ -236,13 +247,17 @@ export const zFormulaireRoute = {
     "/formulaire/:establishment_id": {
       method: "delete",
       path: "/formulaire/:establishment_id",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "2xx": z.object({}).strict(),
+        "200": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        ressources: {
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
     },
     "/formulaire/delegated/:establishment_siret": {
       method: "delete",

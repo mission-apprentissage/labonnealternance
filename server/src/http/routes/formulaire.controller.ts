@@ -18,7 +18,6 @@ import {
   patchOffre,
   provideOffre,
   updateFormulaire,
-  updateOffre,
 } from "../../services/formulaire.service"
 import { getUser } from "../../services/userRecruteur.service"
 import { Server } from "../server"
@@ -55,12 +54,14 @@ export default (server: Server) => {
    * Post form
    */
   server.post(
-    "/formulaire",
+    "/user/:userId/formulaire",
     {
-      schema: zRoutes.post["/formulaire"],
+      schema: zRoutes.post["/user/:userId/formulaire"],
+      onRequest: [server.auth(zRoutes.post["/user/:userId/formulaire"])],
     },
     async (req, res) => {
-      const { userRecruteurId, establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
+      const { userId: userRecruteurId } = req.params
+      const { establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
       const userRecruteurOpt = await getUser({ _id: userRecruteurId })
       if (!userRecruteurOpt) {
         throw Boom.badRequest("Nous n'avons pas trouvé votre compte utilisateur")
@@ -106,6 +107,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id",
     {
       schema: zRoutes.delete["/formulaire/:establishment_id"],
+      onRequest: [server.auth(zRoutes.delete["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
       await archiveFormulaire(req.params.establishment_id)
@@ -216,7 +218,7 @@ export default (server: Server) => {
       // TODO no security ?
     },
     async (req, res) => {
-      const result = await updateOffre(req.params.jobId.toString(), req.body)
+      const result = await patchOffre(req.params.jobId, req.body)
       return res.status(200).send(result)
     }
   )
@@ -294,6 +296,7 @@ export default (server: Server) => {
     "/formulaire/offre/f/:jobId/cancel",
     {
       schema: zRoutes.put["/formulaire/offre/f/:jobId/cancel"],
+      onRequest: server.auth(zRoutes.put["/formulaire/offre/f/:jobId/cancel"]),
     },
     async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
@@ -327,6 +330,7 @@ export default (server: Server) => {
     "/formulaire/offre/:jobId/extend",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/extend"],
+      onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/extend"])],
     },
     async (req, res) => {
       const job = await extendOffre(req.params.jobId)

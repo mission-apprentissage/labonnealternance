@@ -10,10 +10,10 @@ import { Recruiter, UserRecruteur, Application } from "@/common/model"
 import { getAccessTokenScope } from "./accessTokenService"
 import { IUserWithType, getUserFromRequest } from "./authenticationService"
 
-type Ressouces = {
-  recruiters: Array<IRecruiter | null>
+type Ressources = {
+  recruiters: Array<IRecruiter>
   jobs: Array<{ job: IJob; recruiter: IRecruiter } | null>
-  users: Array<IUserRecruteur | null>
+  users: Array<IUserRecruteur>
   applications: Array<{ application: IApplication; job: IJob; recruiter: IRecruiter } | null>
 }
 
@@ -33,36 +33,42 @@ function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): an
   return obj[path.key]
 }
 
-async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces["recruiters"]> {
+async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["recruiters"]> {
   if (!schema.securityScheme.ressources.recruiter) {
     return []
   }
 
-  return Promise.all(
-    schema.securityScheme.ressources.recruiter.map(async (recruiterDef): Promise<IRecruiter | null> => {
-      if ("_id" in recruiterDef) {
-        return await Recruiter.findById(getAccessResourcePathValue(recruiterDef._id, req)).lean()
-      }
+  return (
+    await Promise.all(
+      schema.securityScheme.ressources.recruiter.map(async (recruiterDef): Promise<IRecruiter[]> => {
+        if ("_id" in recruiterDef) {
+          const recruiterOpt = await Recruiter.findById(getAccessResourcePathValue(recruiterDef._id, req)).lean()
+          return recruiterOpt ? [recruiterOpt] : []
+        }
 
-      if ("establishment_id" in recruiterDef) {
-        return await Recruiter.findOne({
-          establishment_id: getAccessResourcePathValue(recruiterDef.establishment_id, req),
-        }).lean()
-      }
+        if ("establishment_id" in recruiterDef) {
+          return Recruiter.find({
+            establishment_id: getAccessResourcePathValue(recruiterDef.establishment_id, req),
+          }).lean()
+        }
 
-      if ("email" in recruiterDef && "establishment_siret" in recruiterDef) {
-        return await Recruiter.findOne({
-          email: getAccessResourcePathValue(recruiterDef.email, req),
-          establishment_siret: getAccessResourcePathValue(recruiterDef.establishment_siret, req),
-        }).lean()
-      }
+        if ("email" in recruiterDef && "establishment_siret" in recruiterDef) {
+          return Recruiter.find({
+            email: getAccessResourcePathValue(recruiterDef.email, req),
+            establishment_siret: getAccessResourcePathValue(recruiterDef.establishment_siret, req),
+          }).lean()
+        }
+        if ("opco" in recruiterDef) {
+          return Recruiter.find({ opco: getAccessResourcePathValue(recruiterDef.opco, req) }).lean()
+        }
 
-      assertUnreachable(recruiterDef)
-    })
-  )
+        assertUnreachable(recruiterDef)
+      })
+    )
+  ).flatMap((_) => _)
 }
 
-async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces["jobs"]> {
+async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["jobs"]> {
   if (!schema.securityScheme.ressources.job) {
     return []
   }
@@ -91,24 +97,29 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
   )
 }
 
-async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces["users"]> {
+async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["users"]> {
   if (!schema.securityScheme.ressources.user) {
     return []
   }
 
-  return Promise.all(
-    schema.securityScheme.ressources.user.map(async (u) => {
-      if ("_id" in u) {
-        const id = getAccessResourcePathValue(u._id, req)
-        return await UserRecruteur.findById(id).lean()
-      }
+  return (
+    await Promise.all(
+      schema.securityScheme.ressources.user.map(async (userDef) => {
+        if ("_id" in userDef) {
+          const userOpt = await UserRecruteur.findById(getAccessResourcePathValue(userDef._id, req)).lean()
+          return userOpt ? [userOpt] : []
+        }
+        if ("opco" in userDef) {
+          return UserRecruteur.find({ opco: getAccessResourcePathValue(userDef.opco, req) }).lean()
+        }
 
-      assertUnreachable(u)
-    })
-  )
+        assertUnreachable(userDef)
+      })
+    )
+  ).flatMap((_) => _)
 }
 
-async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces["applications"]> {
+async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["applications"]> {
   if (!schema.securityScheme.ressources.application) {
     return []
   }
@@ -143,7 +154,7 @@ async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, re
   )
 }
 
-export async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressouces> {
+export async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources> {
   const [recruiters, jobs, users, applications] = await Promise.all([
     getRecruitersResource(schema, req),
     getJobsResource(schema, req),
@@ -184,7 +195,7 @@ export function getUserRole(userWithType: IUserWithType): Role | null {
 
 function canAccessRecruiter<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(
   userWithType: IUserWithType,
-  resource: Ressouces["recruiters"][number],
+  resource: Ressources["recruiters"][number],
   schema: S
 ): boolean {
   if (resource === null) {
@@ -215,7 +226,7 @@ function canAccessRecruiter<S extends Pick<IRouteSchema, "method" | "path"> & Wi
   }
 }
 
-function canAccessJob<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(userWithType: IUserWithType, resource: Ressouces["jobs"][number], schema: S): boolean {
+function canAccessJob<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(userWithType: IUserWithType, resource: Ressources["jobs"][number], schema: S): boolean {
   if (resource === null) {
     return true
   }
@@ -246,7 +257,7 @@ function canAccessJob<S extends Pick<IRouteSchema, "method" | "path"> & WithSecu
 
 function canAccessUser<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(
   userWithType: IUserWithType,
-  resource: Ressouces["users"][number],
+  resource: Ressources["users"][number],
   schema: S
 ): boolean {
   if (resource === null) {
@@ -275,7 +286,7 @@ function canAccessUser<S extends Pick<IRouteSchema, "method" | "path"> & WithSec
     case "CFA":
       return resource._id.toString() === user._id.toString()
     case "OPCO":
-      return resource.type === "OPCO" && resource.scope === user.opco
+      return (resource.type === "OPCO" && resource._id === user._id) || (resource.type === "ENTREPRISE" && resource.opco === user.scope)
     default:
       assertUnreachable(user.type)
   }
@@ -283,7 +294,7 @@ function canAccessUser<S extends Pick<IRouteSchema, "method" | "path"> & WithSec
 
 function canAccessApplication<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(
   userWithType: IUserWithType,
-  resource: Ressouces["applications"][number],
+  resource: Ressources["applications"][number],
   schema: S
 ): boolean {
   if (resource === null) {
@@ -323,7 +334,7 @@ export function isAuthorized<S extends Pick<IRouteSchema, "method" | "path"> & W
   access: AccessPermission,
   userWithType: IUserWithType,
   role: Role | null,
-  resources: Ressouces,
+  resources: Ressources,
   schema: S
 ): boolean {
   if (typeof access === "object") {
