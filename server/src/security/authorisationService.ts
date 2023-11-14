@@ -286,7 +286,7 @@ function canAccessUser<S extends Pick<IRouteSchema, "method" | "path"> & WithSec
     case "CFA":
       return resource._id.toString() === user._id.toString()
     case "OPCO":
-      return resource.type === "OPCO" && resource.scope === user.opco
+      return (resource.type === "OPCO" && resource._id === user._id) || (resource.type === "ENTREPRISE" && resource.opco === user.scope)
     default:
       assertUnreachable(user.type)
   }
