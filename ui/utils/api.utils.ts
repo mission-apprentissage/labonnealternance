@@ -21,13 +21,14 @@ async function optionsToFetchParams(method: RequestInit["method"], options: IReq
 
   const headers = await getHeaders(options)
   const accessToken = getAccessToken()
-  if (accessToken) {
-    headers.append("authorization", `bearer ${accessToken}`)
-  }
+
   if (addedHeaders) {
     Object.entries(addedHeaders).forEach(([key, value]) => {
       headers.append(key, value)
     })
+  }
+  if (accessToken && !headers.has("authorization")) {
+    headers.append("authorization", `Bearer ${accessToken}`)
   }
 
   let body: BodyInit | undefined = undefined
