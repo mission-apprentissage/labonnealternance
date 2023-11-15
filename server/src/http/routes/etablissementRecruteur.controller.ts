@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { IUserRecruteur, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter, UserRecruteur } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
@@ -10,7 +10,7 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service"
+import { CFA, ENTREPRISE } from "../../services/constant.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,

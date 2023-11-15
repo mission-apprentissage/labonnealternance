@@ -1,7 +1,9 @@
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+
 import { logger } from "../../../../common/logger"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
-import { ETAT_UTILISATEUR, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "../../../../services/constant.service"
+import { RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "../../../../services/constant.service"
 import { runScript } from "../../../scriptWrapper"
 
 function hasUpperCase(str) {

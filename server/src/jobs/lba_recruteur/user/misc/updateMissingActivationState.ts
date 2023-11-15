@@ -1,10 +1,11 @@
 import Boom from "boom"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
-import { ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service"
+import { ENTREPRISE } from "../../../../services/constant.service"
 import { autoValidateCompany } from "../../../../services/etablissement.service"
 import { activateEntrepriseRecruiterForTheFirstTime, getFormulaire } from "../../../../services/formulaire.service"
 import { sendWelcomeEmailToUserRecruteur, updateUser } from "../../../../services/userRecruteur.service"
