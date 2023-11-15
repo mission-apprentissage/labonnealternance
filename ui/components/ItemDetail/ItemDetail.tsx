@@ -4,6 +4,7 @@ import { defaultTo } from "lodash"
 import React, { useContext, useEffect, useState } from "react"
 
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
+import { focusWithin } from "@/theme/theme-lba-tools"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
@@ -141,7 +142,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
           {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
             <Box my={4}>
-              <Link variant="postuler" href={selectedItem.url} target="poleemploi" onClick={postuleSurPoleEmploi}>
+              <Link {...focusWithin} variant="postuler" href={selectedItem.url} target="poleemploi" onClick={postuleSurPoleEmploi}>
                 Je postule sur Pôle emploi
               </Link>
             </Box>
