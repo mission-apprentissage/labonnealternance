@@ -1,5 +1,4 @@
-import { ChakraProvider, createStylesContext, CSSReset } from "@chakra-ui/react"
-import { ThemeProvider } from "@emotion/react"
+import { ChakraProvider } from "@chakra-ui/react"
 import PlausibleProvider from "next-plausible"
 import React from "react"
 import { QueryClient, QueryClientProvider } from "react-query"
@@ -20,34 +19,27 @@ const queryClient = new QueryClient({
   },
 })
 
-const [StylesProvider] = createStylesContext("Component")
-
 const Providers = ({ env, children }) => {
   return (
     <ChakraProvider theme={theme}>
-      <StylesProvider value={{}}>
-        <ThemeProvider theme={theme}>
-          <CSSReset />
-          <PlausibleProvider
-            domain={env !== "production" ? "labonnealternance-recette2.apprentissage.beta.gouv.fr" : "labonnealternance.apprentissage.beta.gouv.fr"}
-            trackOutboundLinks={true}
-            trackLocalhost={true}
-            enabled={true}
-          >
-            <SearchResultContextProvider>
-              <ParameterContextProvider>
-                <DisplayContextProvider>
-                  <WidgetProvider>
-                    <LogoProvider>
-                      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-                    </LogoProvider>
-                  </WidgetProvider>
-                </DisplayContextProvider>
-              </ParameterContextProvider>
-            </SearchResultContextProvider>
-          </PlausibleProvider>
-        </ThemeProvider>
-      </StylesProvider>
+      <PlausibleProvider
+        domain={env !== "production" ? "labonnealternance-recette2.apprentissage.beta.gouv.fr" : "labonnealternance.apprentissage.beta.gouv.fr"}
+        trackOutboundLinks={true}
+        trackLocalhost={true}
+        enabled={true}
+      >
+        <SearchResultContextProvider>
+          <ParameterContextProvider>
+            <DisplayContextProvider>
+              <WidgetProvider>
+                <LogoProvider>
+                  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+                </LogoProvider>
+              </WidgetProvider>
+            </DisplayContextProvider>
+          </ParameterContextProvider>
+        </SearchResultContextProvider>
+      </PlausibleProvider>
     </ChakraProvider>
   )
 }
