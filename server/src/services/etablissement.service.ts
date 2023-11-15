@@ -3,6 +3,7 @@ import Boom from "boom"
 import type { FilterQuery } from "mongoose"
 import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IUserRecruteur } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
@@ -16,7 +17,7 @@ import config from "../config"
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
+import { CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import {
   IAPIAdresse,

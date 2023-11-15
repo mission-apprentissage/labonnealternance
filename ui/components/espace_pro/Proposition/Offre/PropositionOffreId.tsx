@@ -36,7 +36,7 @@ export default function PropositionOffreId() {
    */
   useEffect(() => {
     const fetchData = async () => {
-      const { data }: any = await getFormulaire(idFormulaire)
+      const data = await getFormulaire(idFormulaire)
 
       const job = data.jobs.find((job) => job._id === jobId)
 

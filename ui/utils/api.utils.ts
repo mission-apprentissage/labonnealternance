@@ -20,14 +20,16 @@ async function optionsToFetchParams(method: RequestInit["method"], options: IReq
   const { timeout, headers: addedHeaders } = fetchOptions
 
   const headers = await getHeaders(options)
+
   if (addedHeaders) {
     Object.entries(addedHeaders).forEach(([key, value]) => {
       headers.append(key, value)
     })
   }
+
   const accessToken = getAccessToken()
   if (accessToken && !headers.has("authorization")) {
-    headers.append("authorization", `bearer ${accessToken}`)
+    headers.append("authorization", `Bearer ${accessToken}`)
   }
 
   let body: BodyInit | undefined = undefined

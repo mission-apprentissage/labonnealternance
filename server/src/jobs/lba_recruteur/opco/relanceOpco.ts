@@ -1,11 +1,11 @@
 import { IUserRecruteur } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { UserRecruteur } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import config from "../../../config"
-import { ETAT_UTILISATEUR } from "../../../services/constant.service"
 import mailer from "../../../services/mailer.service"
 
 /**

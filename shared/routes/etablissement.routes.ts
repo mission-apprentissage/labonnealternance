@@ -64,13 +64,11 @@ export const zEtablissementRoutes = {
           premium_refusal_date: true,
         }).strict(),
       },
-      // TODO SHOULD HAVE AUTH ???? Jwt at least
       securityScheme: null,
     },
   },
   post: {
     "/etablissements/:id/premium/affelnet/accept": {
-      // TODO_SECURITY_FIX ajouter un jwt
       method: "post",
       path: "/etablissements/:id/premium/affelnet/accept",
       params: z.object({ id: zObjectId }).strict(),
@@ -82,7 +80,6 @@ export const zEtablissementRoutes = {
     "/etablissements/:id/premium/accept": {
       method: "post",
       path: "/etablissements/:id/premium/accept",
-      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -92,7 +89,6 @@ export const zEtablissementRoutes = {
     "/etablissements/:id/premium/affelnet/refuse": {
       method: "post",
       path: "/etablissements/:id/premium/affelnet/refuse",
-      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -102,7 +98,6 @@ export const zEtablissementRoutes = {
     "/etablissements/:id/premium/refuse": {
       method: "post",
       path: "/etablissements/:id/premium/refuse",
-      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,

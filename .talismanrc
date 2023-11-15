@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: .bin/scripts/deploy-log-decrypt.sh
-  checksum: b9c969e31cc620084c9a3d97637d509a821c542dba236f96dc799beff4b66648
-- filename: .bin/scripts/deploy-log-encrypt.sh
+- filename: shared/routes/user.routes.ts
+  checksum: 9c972cfd3950e5a3ab026fe54ba05448af4c0a9362888d5107d3b3ab76311c41
+version: ""
+name: .bin/scripts/deploy-log-encrypt.sh
   checksum: 8ebe245e2a3719defc295d0de3d02c42e2cb82cb2ecc9507ce0dd4273a428e5e
 - filename: .bin/scripts/setup-local-env.sh
   checksum: d0d72057a483d2988bc7fefec7f7a7e16abdb2db058b1df2d186e34459c4ba23
