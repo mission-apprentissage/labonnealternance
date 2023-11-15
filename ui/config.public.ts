@@ -11,6 +11,7 @@ export interface PublicConfig {
   inserJeuneApiUrl: string
   apiEndpoint: string
   version: string
+  plausibleUrl: string
 }
 
 const SENTRY_DSN = "https://d04df44068da41a19f478822fe1d58ea@sentry.apprentissage.beta.gouv.fr/8"
@@ -31,6 +32,7 @@ function getProductionPublicConfig(): PublicConfig {
     inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
+    plausibleUrl: "labonnealternance.apprentissage.beta.gouv.fr",
   }
 }
 
@@ -50,6 +52,7 @@ function getRecettePublicConfig(): PublicConfig {
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
+    plausibleUrl: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
   }
 }
 
@@ -76,6 +79,7 @@ function getPreviewPublicConfig(): PublicConfig {
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version,
+    plausibleUrl: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
   }
 }
 
@@ -95,6 +99,7 @@ function getLocalPublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     version: getVersion(),
+    plausibleUrl: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
   }
 }
 
