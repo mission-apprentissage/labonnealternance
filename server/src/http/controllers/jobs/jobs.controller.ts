@@ -84,10 +84,8 @@ export default (server: Server) => {
     "/v1/jobs/establishment",
     {
       schema: zRoutes.post["/v1/jobs/establishment"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/establishment"]),
-      attachValidation: true,
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { body } = req
@@ -123,8 +121,8 @@ export default (server: Server) => {
     "/v1/jobs/:establishmentId",
     {
       schema: zRoutes.post["/v1/jobs/:establishmentId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/:establishmentId"]),
+      config,
     },
     async (req, res) => {
       const { establishmentId } = req.params
@@ -179,9 +177,8 @@ export default (server: Server) => {
     "/v1/jobs/:jobId",
     {
       schema: zRoutes.patch["/v1/jobs/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.patch["/v1/jobs/:jobId"]),
-      attachValidation: true,
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -201,10 +198,8 @@ export default (server: Server) => {
     "/v1/jobs/delegations/:jobId",
     {
       schema: zRoutes.get["/v1/jobs/delegations/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.get["/v1/jobs/delegations/:jobId"]),
-      attachValidation: true,
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -240,10 +235,7 @@ export default (server: Server) => {
     "/v1/jobs/delegations/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/delegations/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/delegations/:jobId"]),
-      attachValidation: true,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -264,9 +256,8 @@ export default (server: Server) => {
     "/v1/jobs/provided/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/provided/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/provided/:jobId"]),
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -290,9 +281,8 @@ export default (server: Server) => {
     "/v1/jobs/canceled/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/canceled/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/canceled/:jobId"]),
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -318,9 +308,8 @@ export default (server: Server) => {
     "/v1/jobs/extend/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/extend/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/extend/:jobId"]),
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -352,7 +341,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/v1/jobs"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { referer } = req.headers
@@ -378,7 +366,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/v1/jobs/company/:siret"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { siret } = req.params
@@ -409,7 +396,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/v1/jobs/matcha/:id"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { id } = req.params
@@ -449,7 +435,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/v1/jobs/matcha/:id/stats/view-details"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { id } = req.params
@@ -463,7 +448,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/v1/jobs/job/:id"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { id } = req.params
