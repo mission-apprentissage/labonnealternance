@@ -1,18 +1,29 @@
+import Boom from "boom"
 import jwt from "jsonwebtoken"
+import { PathParam, QueryString, WithQueryStringAndPathParam, generateUri } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
 import { IRouteSchema, ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import { Jsonify } from "type-fest"
+import { AnyZodObject, z } from "zod"
 
 import config from "@/config"
 
-type IScope<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme> = {
-  path: S["path"]
-  method: S["method"]
+type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
+
+type IScope<Schema extends SchemaWithSecurity> = {
+  schema: Schema
+  options:
+    | "all"
+    | {
+        params: Schema["params"] extends AnyZodObject ? Jsonify<z.input<Schema["params"]>> : undefined
+        querystring: Schema["querystring"] extends AnyZodObject ? Jsonify<z.input<Schema["querystring"]>> : undefined
+      }
   resources: {
-    [key in keyof S["securityScheme"]["ressources"]]: ReadonlyArray<string>
+    [key in keyof Schema["securityScheme"]["ressources"]]: ReadonlyArray<string>
   }
 }
 
-export type IAccessToken<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme = Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme> = {
+export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity> = {
   identity:
     | {
         type: "IUserRecruteur"
@@ -24,66 +35,96 @@ export type IAccessToken<S extends Pick<IRouteSchema, "method" | "path"> & WithS
         email: string
         siret: string
       }
-  scopes: ReadonlyArray<IScope<S>>
+  scopes: ReadonlyArray<IScope<Schema>>
 }
 
-function getAudience<S extends Pick<IRouteSchema, "method" | "path">>(scopes: ReadonlyArray<S>): string[] {
-  return scopes.map((scope) => `${scope.method} ${scope.path}`.toLowerCase())
+function getAudience({
+  method,
+  path,
+  options,
+  skipParamsReplacement,
+}: {
+  method: string
+  path: string
+  options: WithQueryStringAndPathParam
+  skipParamsReplacement: boolean
+}): string {
+  return `${method} ${generateUri(path, options, skipParamsReplacement)}`.toLowerCase()
 }
 
-type RouteResources<S extends ISecuredRouteSchema> = {
-  [key in keyof S["securityScheme"]["ressources"]]: ReadonlyArray<string>
-}
-
-export function generateAccessToken<S extends ISecuredRouteSchema>(
+export function generateAccessToken<Schema extends ISecuredRouteSchema>(
   user: IUserRecruteur | IAccessToken["identity"],
-  routes: ReadonlyArray<{ route: S; resources: RouteResources<S> }>,
+  scopes: ReadonlyArray<IScope<Schema>>,
   options: { expiresIn?: string } = {}
 ): string {
-  const audience = getAudience(routes.map((r) => r.route))
-
+  const audiences = scopesToAudiences(scopes)
   const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUserRecruteur", _id: user._id.toString(), email: user.email.toLowerCase() } : user
-
-  const data: IAccessToken<S> = {
+  const data: IAccessToken<Schema> = {
     identity,
-    scopes: routes.map((route) => {
-      return {
-        path: route.route.path,
-        method: route.route.method,
-        resources: route.resources,
-      }
-    }),
+    scopes,
   }
 
   return jwt.sign(data, config.auth.user.jwtSecret, {
-    audience,
+    audience: audiences,
     expiresIn: options.expiresIn ?? config.auth.user.expiresIn,
     issuer: config.publicUrl,
   })
 }
 
-export function getAccessTokenScope<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(
-  token: IAccessToken<S> | null,
-  schema: Pick<S, "method" | "path">
-): IScope<S> | null {
-  return token?.scopes.find((s) => s.path === schema.path && s.method === schema.method) ?? null
+export function getAccessTokenScope<Schema extends SchemaWithSecurity>(token: IAccessToken<Schema> | null, schema: Schema): IScope<Schema> | null {
+  return token?.scopes.find((s) => s.schema.path === schema.path && s.schema.method === schema.method) ?? null
 }
 
-export function parseAccessToken<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(
+export function parseAccessToken<Schema extends SchemaWithSecurity>(
   accessToken: null | string,
-  schema: Pick<S, "method" | "path">
-): IAccessToken<S> | null {
+  schema: Schema,
+  params: PathParam | undefined,
+  querystring: QueryString | undefined
+): IAccessToken<Schema> | null {
   if (!accessToken) {
     return null
   }
-
   const data = jwt.verify(accessToken, config.auth.user.jwtSecret, {
     complete: true,
-    audience: getAudience([schema]),
     issuer: config.publicUrl,
   })
-
-  const token = data.payload as IAccessToken<S>
-
+  const token = data.payload as IAccessToken<Schema>
+  const specificAudience = getAudience({
+    method: schema.method,
+    path: schema.path,
+    options: {
+      params,
+      querystring,
+    },
+    skipParamsReplacement: false,
+  })
+  const genericAudience = getAudience({
+    method: schema.method,
+    path: schema.path,
+    options: {},
+    skipParamsReplacement: true,
+  })
+  const tokenAudiences: string[] = scopesToAudiences(token.scopes)
+  const isAuthorized = tokenAudiences.includes(specificAudience) || tokenAudiences.includes(genericAudience)
+  if (!isAuthorized) {
+    throw Boom.forbidden("Les audiences ne correspondent pas")
+  }
   return token
+}
+
+function scopesToAudiences<Schema extends SchemaWithSecurity>(scopes: ReadonlyArray<IScope<Schema>>) {
+  return scopes.map((scope) =>
+    getAudience({
+      method: scope.schema.method,
+      path: scope.schema.path,
+      options:
+        scope.options === "all"
+          ? {}
+          : {
+              params: scope.options.params,
+              querystring: scope.options.querystring,
+            },
+      skipParamsReplacement: scope.options === "all",
+    })
+  )
 }
