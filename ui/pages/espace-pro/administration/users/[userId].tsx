@@ -26,7 +26,6 @@ import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
-import { apiGet } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../../../common/contants"
 import useUserHistoryUpdate from "../../../../common/hooks/useUserHistoryUpdate"
@@ -43,7 +42,7 @@ import {
 import { OpcoSelect } from "../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
 import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
-import { updateEntreprise } from "../../../../utils/api"
+import { getUser, updateEntreprise } from "../../../../utils/api"
 
 function DetailEntreprise() {
   const router = useRouter()
@@ -118,10 +117,7 @@ function DetailEntreprise() {
     }
   }
 
-  const { data: userRecruteur, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => apiGet(`/user/:userId`, { params: { userId } }), {
-    cacheTime: 0,
-    enabled: !!userId,
-  })
+  const { data: userRecruteur, isLoading } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
   // @ts-expect-error: TODO
   const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
@@ -273,7 +269,6 @@ function DetailEntreprise() {
                   </SimpleGrid>
                   {(user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (
                     <Box mb={12}>
-                      {/* @ts-expect-error: TODO */}
                       <UserValidationHistory histories={userRecruteur.status} />
                     </Box>
                   )}

@@ -26,7 +26,6 @@ import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
-import { apiGet } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../../../../../common/contants"
 import useUserHistoryUpdate from "../../../../../../common/hooks/useUserHistoryUpdate"
@@ -43,7 +42,7 @@ import {
 import { OpcoSelect } from "../../../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
 import { authProvider, withAuth } from "../../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../../theme/components/icons"
-import { updateEntreprise } from "../../../../../../utils/api"
+import { getUser, updateEntreprise } from "../../../../../../utils/api"
 
 function DetailEntreprise() {
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -52,11 +51,11 @@ function DetailEntreprise() {
   const toast = useToast()
   const { user } = useAuth()
   const router = useRouter()
-  const { siret_userId } = router.query as { siret_userId: string } // Here userId
+  const { siret_userId } = router.query as { siret_userId: string }
 
   const { data: userRecruteur, isLoading } = useQuery("user", {
     enabled: !!siret_userId,
-    queryFn: () => apiGet(`/user/:userId`, { params: { userId: siret_userId } }),
+    queryFn: () => getUser(siret_userId),
     cacheTime: 0,
   })
 
@@ -272,7 +271,6 @@ function DetailEntreprise() {
                   </SimpleGrid>
                   {(user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (
                     <Box mb={12}>
-                      {/* @ts-expect-error: TODO */}
                       <UserValidationHistory histories={userRecruteur.status} />
                     </Box>
                   )}
