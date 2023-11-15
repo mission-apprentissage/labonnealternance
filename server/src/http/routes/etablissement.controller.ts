@@ -39,6 +39,7 @@ export default (server: Server) => {
     "/etablissements/:id",
     {
       schema: zRoutes.get["/etablissements/:id"],
+      onRequest: [server.auth(zRoutes.get["/etablissements/:id"])],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
@@ -58,6 +59,7 @@ export default (server: Server) => {
     "/etablissements/:id/premium/affelnet/accept",
     {
       schema: zRoutes.post["/etablissements/:id/premium/affelnet/accept"],
+      onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/affelnet/accept"])],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -303,6 +305,7 @@ export default (server: Server) => {
     "/etablissements/:id/premium/affelnet/refuse",
     {
       schema: zRoutes.post["/etablissements/:id/premium/affelnet/refuse"],
+      onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/affelnet/refuse"])],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
