@@ -60,6 +60,7 @@ const Link = {
         textDecoration: "underline",
         textUnderlineOffset: "5px",
       },
+      _focus: { boxShadow: "0 0 0 3px rgba(66, 153, 225, 0.6)" },
     },
   },
 }

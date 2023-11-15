@@ -1,6 +1,8 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 
+import { focusWithin } from "@/theme/theme-lba-tools"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ScopeContext } from "../../context/ScopeContext"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
@@ -113,7 +115,16 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
 
   return (
     // @ts-expect-error: TODO
-    <Link as="a" className="resultCard training" {...cardProperties} onClick={onSelectItem} onMouseOver={highlightItemOnMap} onMouseOut={dimItemOnMap} href={actualLink}>
+    <Link
+      {...focusWithin}
+      as="a"
+      className="resultCard training"
+      {...cardProperties}
+      onClick={onSelectItem}
+      onMouseOver={highlightItemOnMap}
+      onMouseOut={dimItemOnMap}
+      href={actualLink}
+    >
       <Flex align="flex-start" id={`id${training.id}`}>
         <Box flex="1">
           <Flex m="0">
@@ -137,7 +148,7 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
             {training?.place?.distance !== null && `${training.place.distance} km(s) du lieu de recherche`}
             {!showTextOnly && (
               <Text mt={4} ml="auto" as="span" fontSize="14px" display={["none", "none", "block"]}>
-                <Button variant="knowMore" aria-label="Accéder au détail de la formation">
+                <Button tabIndex={-1} variant="knowMore" aria-label="Accéder au détail de la formation">
                   En savoir plus
                 </Button>
               </Text>
