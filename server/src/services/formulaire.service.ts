@@ -2,6 +2,7 @@ import Boom from "boom"
 import type { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
+import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -10,8 +11,8 @@ import { Recruiter, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
+import { createCfaUnsubscribeToken } from "./appLinks.service"
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
-import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer from "./mailer.service"
@@ -543,6 +544,7 @@ export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
  */
 export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
+  const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   if (unsubscribeOF) return
   await mailer.sendEmail({
     to: email,
@@ -561,7 +563,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
       rhythm: offre.job_rythm,
       offerButton: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
       createAccountButton: `${config.publicUrl}/espace-pro/creation/cfa`,
-      unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe`,
+      unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe?token=${unsubscribeToken}`,
     },
   })
 }

@@ -184,7 +184,6 @@ export const zRecruiterRoutes = {
     "/etablissement/:establishment_siret/proposition/unsubscribe": {
       method: "post",
       path: "/etablissement/:establishment_siret/proposition/unsubscribe",
-      // TODO_SECURITY_FIX jwt
       params: z.object({ establishment_siret: extensions.siret }).strict(),
       response: {
         "2xx": z
@@ -193,7 +192,11 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
     "/etablissement/validation": {
       method: "post",

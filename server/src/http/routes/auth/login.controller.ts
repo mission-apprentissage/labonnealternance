@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { toPublicUser, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -7,7 +8,7 @@ import { createAuthMagicLink } from "@/services/appLinks.service"
 
 import { startSession, stopSession } from "../../../common/utils/session.service"
 import config from "../../../config"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service"
+import { CFA, ENTREPRISE } from "../../../services/constant.service"
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
 import mailer from "../../../services/mailer.service"
 import { getUser, getUserStatus, registerUser } from "../../../services/userRecruteur.service"
