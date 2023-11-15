@@ -24,7 +24,7 @@ const queryClient = new QueryClient({
 const Providers = ({ children }) => {
   return (
     <ChakraProvider theme={theme}>
-      <PlausibleProvider domain={publicConfig.plausibleUrl} trackOutboundLinks={true} trackLocalhost={true} enabled={true}>
+      <PlausibleProvider domain={publicConfig.plausibleDomain} trackOutboundLinks={true} trackLocalhost={true} enabled={true}>
         <SearchResultContextProvider>
           <ParameterContextProvider>
             <DisplayContextProvider>
