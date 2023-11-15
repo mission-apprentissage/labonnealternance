@@ -10,7 +10,7 @@ import config from "@/config"
 
 type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
 
-type IScope<Schema extends SchemaWithSecurity> = {
+export type IScope<Schema extends SchemaWithSecurity> = {
   schema: Schema
   options:
     | "all"
@@ -52,14 +52,14 @@ function getAudience({
   return `${method} ${generateUri(path, options, skipParamsReplacement)}`.toLowerCase()
 }
 
-export function generateAccessToken<Schema extends ISecuredRouteSchema>(
+export function generateAccessToken(
   user: IUserRecruteur | IAccessToken["identity"],
-  scopes: ReadonlyArray<IScope<Schema>>,
+  scopes: ReadonlyArray<IScope<ISecuredRouteSchema>>,
   options: { expiresIn?: string } = {}
 ): string {
   const audiences = scopesToAudiences(scopes)
   const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUserRecruteur", _id: user._id.toString(), email: user.email.toLowerCase() } : user
-  const data: IAccessToken<Schema> = {
+  const data: IAccessToken<ISecuredRouteSchema> = {
     identity,
     scopes,
   }
