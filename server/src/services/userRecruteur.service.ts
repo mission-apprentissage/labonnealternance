@@ -3,6 +3,7 @@ import { randomUUID } from "crypto"
 import Boom from "boom"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -10,7 +11,7 @@ import { UserRecruteur } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR, ADMIN } from "./constant.service"
+import { CFA, ENTREPRISE, VALIDATION_UTILISATEUR, ADMIN } from "./constant.service"
 import mailer from "./mailer.service"
 
 /**

@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes } from "shared"
+import { IJobWritable, INewDelegations, IRoutes, IUserStatusValidationJson } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
@@ -27,7 +27,7 @@ export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/f
 export const updateFormulaire = (establishment_id: string, values) => apiPut("/formulaire/:establishment_id", { params: { establishment_id }, body: values })
 
 export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
-export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
+export const archiveDelegatedFormulaire = (siret: string) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
 
 /**
  * Offre API
@@ -47,7 +47,8 @@ export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; 
  * User API
  */
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
-export const updateUserValidationHistory = async (userId, state) => await API.put(`user/${userId}/history`, state).catch(errorHandler)
+export const updateUserValidationHistory = (userId: string, state: IUserStatusValidationJson) =>
+  apiPut("/user/:userId/history", { params: { userId }, body: state }).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
 export const deleteEntreprise = (userId: string, recruiterId: string) => apiDelete(`/user`, { querystring: { userId, recruiterId } }).catch(errorHandler)
 
