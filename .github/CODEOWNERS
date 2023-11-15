@@ -1,3 +1,6 @@
 .github/ @mission-apprentissage/mna
 .infra/ @mission-apprentissage/mna
 .bin/ @mission-apprentissage/mna
+server/ @mission-apprentissage/lba
+ui/ @mission-apprentissage/lba
+shared/ @mission-apprentissage/lba
