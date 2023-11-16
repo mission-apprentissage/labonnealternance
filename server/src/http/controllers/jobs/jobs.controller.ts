@@ -84,10 +84,8 @@ export default (server: Server) => {
     "/v1/jobs/establishment",
     {
       schema: zRoutes.post["/v1/jobs/establishment"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/establishment"]),
-      attachValidation: true,
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { body } = req
@@ -123,8 +121,8 @@ export default (server: Server) => {
     "/v1/jobs/:establishmentId",
     {
       schema: zRoutes.post["/v1/jobs/:establishmentId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/:establishmentId"]),
+      config,
     },
     async (req, res) => {
       const { establishmentId } = req.params
@@ -179,9 +177,8 @@ export default (server: Server) => {
     "/v1/jobs/:jobId",
     {
       schema: zRoutes.patch["/v1/jobs/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.patch["/v1/jobs/:jobId"]),
-      attachValidation: true,
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -201,25 +198,23 @@ export default (server: Server) => {
     "/v1/jobs/delegations/:jobId",
     {
       schema: zRoutes.get["/v1/jobs/delegations/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.get["/v1/jobs/delegations/:jobId"]),
-      attachValidation: true,
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
-      const jobExists = await getOffre(jobId.toString())
+      const recruiter = await getOffre(jobId.toString())
 
-      if (!jobExists) {
-        return res.status(400).send({ error: true, message: "Job does not exists" })
+      if (!recruiter) {
+        throw Boom.badRequest("Job does not exists")
       }
 
-      if (!jobExists.geo_coordinates) {
-        throw Boom.internal("geo_coordinates is empty", { jobId: jobExists._id })
+      if (!recruiter.geo_coordinates) {
+        throw Boom.internal("geo_coordinates is empty", { jobId: recruiter._id })
       }
 
-      const [latitude = "", longitude = ""] = jobExists.geo_coordinates.split(",")
-      const { rome_code } = jobExists.jobs.filter(({ _id }) => _id == jobId)[0]
+      const [latitude = "", longitude = ""] = recruiter.geo_coordinates.split(",")
+      const { rome_code } = recruiter.jobs.filter(({ _id }) => _id.toString() === jobId.toString())[0]
 
       // Get related establishment from a job offer
       const etablissements = await getNearEtablissementsFromRomes({
@@ -229,6 +224,10 @@ export default (server: Server) => {
           longitude: parseFloat(longitude),
         },
       })
+
+      if (!etablissements.length) {
+        throw Boom.notFound("No delegations found")
+      }
 
       const top10 = etablissements.slice(0, 10)
 
@@ -240,23 +239,19 @@ export default (server: Server) => {
     "/v1/jobs/delegations/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/delegations/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/delegations/:jobId"]),
-      attachValidation: true,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { jobId } = req.params
       const jobExists = await getOffre(jobId.toString())
 
       if (!jobExists) {
-        return res.status(400).send({ error: true, message: "Job does not exists" })
+        throw Boom.badRequest("Job does not exists")
       }
 
       const updatedRecruiter = await createJobDelegations({ jobId: jobId.toString(), etablissementCatalogueIds: req.body.establishmentIds })
 
-      res.status(200)
-      return res.send(updatedRecruiter)
+      return res.status(200).send(updatedRecruiter)
     }
   )
 
@@ -264,25 +259,24 @@ export default (server: Server) => {
     "/v1/jobs/provided/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/provided/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/provided/:jobId"]),
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
       const job = await getJob(jobId.toString())
 
       if (!job) {
-        return res.status(400).send({ error: true, message: "Job does not exists" })
+        throw Boom.badRequest("Job does not exists")
       }
 
       if (job.job_status === POURVUE) {
-        return res.status(400).send({ error: true, message: "Job is already provided" })
+        throw Boom.badRequest("Job is already provided")
       }
 
       await provideOffre(jobId)
 
-      return res.status(204).send({})
+      return res.status(204).send()
     }
   )
 
@@ -290,27 +284,24 @@ export default (server: Server) => {
     "/v1/jobs/canceled/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/canceled/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/canceled/:jobId"]),
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
       const job = await getJob(jobId.toString())
 
       if (!job) {
-        res.status(400)
-        return res.send({ error: true, message: "Job does not exists" })
+        throw Boom.badRequest("Job does not exists")
       }
 
       if (job.job_status === ANNULEE) {
-        res.status(400)
-        return res.send({ error: true, message: "Job is already canceled" })
+        throw Boom.badRequest("Job is already canceled")
       }
 
       await cancelOffre(jobId)
 
-      return res.status(204).send({})
+      return res.status(204).send()
     }
   )
 
@@ -318,33 +309,28 @@ export default (server: Server) => {
     "/v1/jobs/extend/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/extend/:jobId"],
-      config,
       onRequest: server.auth(zRoutes.post["/v1/jobs/extend/:jobId"]),
-      // TODO: AttachValidation Error ?
+      config,
     },
     async (req, res) => {
       const { jobId } = req.params
       const job = await getJob(jobId.toString())
 
       if (!job) {
-        res.status(400)
-        return res.send({ error: true, message: "Job does not exists" })
+        throw Boom.badRequest("Job does not exists")
       }
 
       if (addExpirationPeriod(dayjs()).isSame(dayjs(job.job_expiration_date), "day")) {
-        res.status(400)
-        return res.send({ error: true, message: "Job is already extended up to a month" })
+        throw Boom.badRequest("Job is already extended up to a month")
       }
 
       if (job.job_status !== ACTIVE) {
-        res.status(400)
-        return res.send({ error: true, message: "Job cannot be extended as it is not enabled" })
+        throw Boom.badRequest("Job cannot be extended as it is not active")
       }
 
       await extendOffre(jobId)
 
-      res.status(204)
-      return res.send({})
+      return res.status(204).send()
     }
   )
   server.get(
@@ -352,7 +338,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/v1/jobs"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { referer } = req.headers
@@ -378,7 +363,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/v1/jobs/company/:siret"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { siret } = req.params
@@ -409,7 +393,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/v1/jobs/matcha/:id"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { id } = req.params
@@ -449,7 +432,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/v1/jobs/matcha/:id/stats/view-details"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { id } = req.params
@@ -463,7 +445,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/v1/jobs/job/:id"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { id } = req.params

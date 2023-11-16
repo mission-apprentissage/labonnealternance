@@ -1,6 +1,8 @@
 import { Button, Checkbox } from "@chakra-ui/react"
 import React from "react"
 
+import { focusWithin } from "@/theme/theme-lba-tools"
+
 const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
   const handleClick = (e) => {
     e.stopPropagation()
@@ -33,12 +35,13 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
     fontWeight: "400",
     paddingY: "0.3rem",
     borderRadius: "40px",
-    whiteSpace: "pre-wrap",
     _hover: {
       background: "none",
     },
     _focus: {
       background: "none",
+      outline: "none !important",
+      boxShadow: "none",
     },
     _active: {
       background: "none",
@@ -46,8 +49,7 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
   }
 
   return (
-    <Checkbox spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
-      {/* @ts-expect-error: TODO */}
+    <Checkbox as="div" tabIndex={-1} {...focusWithin} spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
       <Button px="0" {...buttonProperties} onClick={handleClick}>
         {getText()}
       </Button>

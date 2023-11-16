@@ -108,7 +108,7 @@ const MatchaDetail = ({ job }) => {
           </>
         )}
       </Box>
-
+      {/* Kevin : afficher description employer + custome description si existe */}
       {job?.job.romeDetails && (
         <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
           <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur ${job.title}`}</Text>

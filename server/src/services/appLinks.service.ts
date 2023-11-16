@@ -2,18 +2,18 @@ import { IUserRecruteur } from "shared/models"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
-import { generateAccessToken } from "@/security/accessTokenService"
+import { generateAccessToken, generateScope } from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: IUserRecruteur) {
   return generateAccessToken(user, [
-    {
+    generateScope({
       schema: zRoutes.post["/login/verification"],
       options: {
         params: undefined,
         querystring: undefined,
       },
       resources: {},
-    },
+    }),
   ])
 }
 
@@ -27,7 +27,7 @@ export function createValidationMagicLink(user: IUserRecruteur) {
   const token = generateAccessToken(
     user,
     [
-      {
+      generateScope({
         schema: zRoutes.post["/etablissement/validation"],
         options: {
           params: undefined,
@@ -36,7 +36,7 @@ export function createValidationMagicLink(user: IUserRecruteur) {
         resources: {
           user: [user._id.toString()],
         },
-      },
+      }),
     ],
     {
       expiresIn: "30d",
@@ -49,14 +49,14 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
   const token = generateAccessToken(
     { type: "cfa", email, siret },
     [
-      {
+      generateScope({
         schema: zRoutes.get["/optout/validate"],
         options: {
           params: undefined,
           querystring: undefined,
         },
         resources: {},
-      },
+      }),
     ],
     {
       expiresIn: "45d",
@@ -65,59 +65,23 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
   return `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${encodeURIComponent(token)}`
 }
 
-export function createCancelJobLink({ user, jobId }: { user: IUserRecruteur; jobId: string }) {
-  const token = generateAccessToken(user, [
-    {
-      schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
-      options: {
-        params: {
-          jobId: jobId,
+export function createCfaUnsubscribeToken(email: string, siret: string) {
+  return generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      generateScope({
+        schema: zRoutes.post["/etablissement/:establishment_siret/proposition/unsubscribe"],
+        options: {
+          params: {
+            establishment_siret: siret,
+          },
+          querystring: undefined,
         },
-        querystring: undefined,
-      },
-      resources: {
-        job: [jobId],
-      },
-    },
-  ])
-
-  return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?token=${token}`
-}
-
-export function createProvidedJobLink({ user, jobId }: { user: IUserRecruteur; jobId: string }) {
-  const token = generateAccessToken(user, [
+        resources: {},
+      }),
+    ],
     {
-      schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
-      options: {
-        params: {
-          jobId: jobId,
-        },
-        querystring: undefined,
-      },
-      resources: {
-        job: [jobId],
-      },
-    },
-  ])
-
-  return `${config.publicUrl}/espace-pro/offre/${jobId}/provided?token=${token}`
-}
-
-export function createViewDelegationLink(email: string, establishment_id: string, jobId: string, siretFormateur: string) {
-  const token = generateAccessToken({ type: "cfa", siret: siretFormateur, email }, [
-    {
-      schema: zRoutes.get["/formulaire/delegation/:establishment_id"],
-      options: {
-        params: {
-          establishment_id: establishment_id,
-        },
-        querystring: undefined,
-      },
-      resources: {
-        recruiter: [establishment_id],
-      },
-    },
-  ])
-
-  return `${config.publicUrl}/espace-pro/proposition/formulaire/${establishment_id}/offre/${jobId}/siret/${siretFormateur}?token=${token}`
+      expiresIn: "30d",
+    }
+  )
 }

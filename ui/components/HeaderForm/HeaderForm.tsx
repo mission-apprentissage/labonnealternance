@@ -3,6 +3,8 @@ import { Form, Formik } from "formik"
 import { partialRight } from "lodash"
 import React, { useEffect, useState } from "react"
 
+import { focusWithin } from "@/theme/theme-lba-tools"
+
 import { AutoCompleteField, DomainError } from ".."
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
@@ -66,7 +68,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
         {({ isSubmitting, setFieldValue, errors }) => (
           <Form data-testid="widget-form">
             <Flex>
-              <Box>
+              <Box {...focusWithin}>
                 <AutoCompleteField
                   kind="Métier ou diplôme *"
                   id="headerFormJobField"
@@ -90,7 +92,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 />
               </Box>
               <Box ml={3}>
-                <Box>
+                <Box {...focusWithin}>
                   <AutoCompleteField
                     id="headerFormPlaceField"
                     kind="Lieu"
@@ -107,26 +109,24 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   />
                 </Box>
               </Box>
-              <Box ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
-                <Text as="label" htmlFor="locationRadius" variant="defaultAutocomplete">
+              <Box {...focusWithin} ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
+                <Text as="label" htmlFor="locationRadius-header" variant="defaultAutocomplete">
                   Rayon
                 </Text>
                 <Box>
                   <Select
                     {...selectProperties}
                     onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
-                    // @ts-expect-error: TODO
-                    type="select"
                     value={locationRadius}
-                    name="locationRadius"
+                    id="locationRadius-header"
                     data-testid="locationRadius"
                   >
                     {buildRayonsOptions()}
                   </Select>
                 </Box>
               </Box>
-              <Box ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
-                <Text as="label" htmlFor="diploma" variant="defaultAutocomplete">
+              <Box {...focusWithin} ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
+                <Text as="label" htmlFor="diploma-header" variant="defaultAutocomplete">
                   Niveau d&apos;études visé
                 </Text>
                 <Box>
@@ -134,7 +134,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                     {...selectProperties}
                     onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")}
                     value={diploma}
-                    name="diploma"
+                    id="diploma-header"
                     data-testid="diploma"
                   >
                     {buildAvailableDiplomasOptions(diplomas)}
@@ -142,8 +142,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 </Box>
               </Box>
               <Box ml={[1, 1, 1, 3]}>
-                {/* @ts-expect-error: TODO */}
-                <Button type="submit" variant="blackButton" borderRadius="unset" disabled={isSubmitting} alt="Lancer la recherche" height="57px" paddingTop="3px">
+                <Button type="submit" variant="blackButton" borderRadius="unset" disabled={isSubmitting} height="57px" paddingTop="3px">
                   <Image maxWidth="unset" alt="Lancer la recherche" src="/images/glass_white.svg" />
                   {isHome && (
                     <Box fontSize="18px" mx={3} display={{ base: "none", xl: "inline-block" }}>

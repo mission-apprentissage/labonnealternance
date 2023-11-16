@@ -2000,7 +2000,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    resources: {},
+                    ressources: {},
                   },
                 },
                 options: "all",
