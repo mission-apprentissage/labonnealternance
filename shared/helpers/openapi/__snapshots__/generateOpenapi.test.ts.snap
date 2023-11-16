@@ -74,6 +74,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "phone": {
             "description": "Le numéro de téléphone du contact de référence",
             "example": "0X XX XX XX XX",
+            "pattern": "^0[1-9]\\\\d{8}$",
             "type": [
               "string",
               "null",
@@ -3127,6 +3128,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   "applicant_phone": {
                     "description": "Le numéro de téléphone du candidat.",
                     "example": "0101010101",
+                    "pattern": "^0[1-9]\\\\d{8}$",
                     "type": "string",
                   },
                   "caller": {
@@ -4338,47 +4340,56 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "_id": {
-                      "description": "Identifiant unique",
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "_id": {
+                        "description": "Identifiant unique",
+                      },
+                      "code_postal": {
+                        "type": "string",
+                      },
+                      "distance_en_km": {
+                        "type": "number",
+                      },
+                      "entreprise_raison_sociale": {
+                        "type": "string",
+                      },
+                      "geo_coordonnees": {
+                        "type": "string",
+                      },
+                      "nom_departement": {
+                        "type": "string",
+                      },
+                      "nom_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "numero_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "type_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
                     },
-                    "code_postal": {
-                      "type": "string",
-                    },
-                    "distance_en_km": {
-                      "type": "number",
-                    },
-                    "entreprise_raison_sociale": {
-                      "type": "string",
-                    },
-                    "geo_coordonnees": {
-                      "type": "string",
-                    },
-                    "nom_departement": {
-                      "type": "string",
-                    },
-                    "nom_voie": {
-                      "type": "string",
-                    },
-                    "numero_voie": {
-                      "type": "string",
-                    },
-                    "type_voie": {
-                      "type": "string",
-                    },
+                    "required": [
+                      "code_postal",
+                      "nom_departement",
+                      "entreprise_raison_sociale",
+                      "geo_coordonnees",
+                      "distance_en_km",
+                    ],
+                    "type": "object",
                   },
-                  "required": [
-                    "numero_voie",
-                    "type_voie",
-                    "nom_voie",
-                    "code_postal",
-                    "nom_departement",
-                    "entreprise_raison_sociale",
-                    "geo_coordonnees",
-                    "distance_en_km",
-                  ],
-                  "type": "object",
+                  "type": "array",
                 },
               },
             },
@@ -4586,6 +4597,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "phone": {
+                    "pattern": "^0[1-9]\\\\d{8}$",
                     "type": "string",
                   },
                 },
