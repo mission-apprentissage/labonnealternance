@@ -11,7 +11,7 @@ import { Recruiter, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
-import { createCfaUnsubscribeToken } from "./appLinks.service"
+import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
