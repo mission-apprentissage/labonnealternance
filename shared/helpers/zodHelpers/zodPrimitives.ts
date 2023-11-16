@@ -16,7 +16,7 @@ const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
 }
 z.setErrorMap(customErrorMap)
 
-//const phoneRegex = new RegExp(/^0[1-9]\d{8}$/)
+const phoneRegex = new RegExp(/^0[1-9]\d{8}$/)
 
 export const extensions = {
   siret: z
@@ -34,7 +34,7 @@ export const extensions = {
       example: "78424186100011",
     }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
-  phone: () => z.string(), //.regex(phoneRegex), TODO refine
+  phone: () => z.string().trim().regex(phoneRegex),
   code_naf: () =>
     z.preprocess(
       (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point
