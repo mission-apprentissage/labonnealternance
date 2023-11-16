@@ -74,7 +74,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "phone": {
             "description": "Le numéro de téléphone du contact de référence",
             "example": "0X XX XX XX XX",
-            "pattern": "^0[1-9]\\\\d{8}$",
             "type": [
               "string",
               "null",
@@ -1266,107 +1265,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Job",
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "contractDescription": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "contractType": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "creationDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "description": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "duration": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "dureeContrat": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "elligibleHandicap": {
-                    "type": [
-                      "boolean",
-                      "null",
-                    ],
-                  },
-                  "id": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "jobStartDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "quantiteContrat": {
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "romeDetails": {
-                    "$ref": "#/components/schemas/RomeDetail",
-                  },
-                  "rythmeAlternance": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "status": {
-                    "enum": [
-                      "Active",
-                      "Pourvue",
-                      "Annulée",
-                      "En attente",
-                    ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                },
-                "required": [
-                  "description",
-                  "creationDate",
-                  "id",
-                  "contractType",
-                ],
-                "type": [
-                  "object",
-                  "null",
-                ],
-              },
-            ],
+            "$ref": "#/components/schemas/LbacJob",
           },
           "nafs": {
             "items": {
@@ -1458,6 +1357,102 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "error",
         ],
         "type": "object",
+      },
+      "LbacJob": {
+        "additionalProperties": false,
+        "properties": {
+          "contractDescription": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "contractType": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "creationDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "description": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "duration": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "dureeContrat": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "elligibleHandicap": {
+            "type": [
+              "boolean",
+              "null",
+            ],
+          },
+          "id": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "jobStartDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "quantiteContrat": {
+            "type": [
+              "number",
+              "null",
+            ],
+          },
+          "romeDetails": {
+            "$ref": "#/components/schemas/RomeDetail",
+          },
+          "rythmeAlternance": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "status": {
+            "enum": [
+              "Active",
+              "Pourvue",
+              "Annulée",
+              "En attente",
+            ],
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "description",
+          "creationDate",
+          "id",
+          "contractType",
+        ],
+        "type": [
+          "object",
+          "null",
+        ],
       },
       "MetierEnrichi": {
         "additionalProperties": false,
@@ -1728,107 +1723,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Job",
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "contractDescription": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "contractType": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "creationDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "description": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "duration": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "dureeContrat": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "elligibleHandicap": {
-                    "type": [
-                      "boolean",
-                      "null",
-                    ],
-                  },
-                  "id": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "jobStartDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "quantiteContrat": {
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "romeDetails": {
-                    "$ref": "#/components/schemas/RomeDetail",
-                  },
-                  "rythmeAlternance": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "status": {
-                    "enum": [
-                      "Active",
-                      "Pourvue",
-                      "Annulée",
-                      "En attente",
-                    ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                },
-                "required": [
-                  "description",
-                  "creationDate",
-                  "id",
-                  "contractType",
-                ],
-                "type": [
-                  "object",
-                  "null",
-                ],
-              },
-            ],
+            "$ref": "#/components/schemas/LbacJob",
           },
           "nafs": {
             "items": {
@@ -3128,7 +3023,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   "applicant_phone": {
                     "description": "Le numéro de téléphone du candidat.",
                     "example": "0101010101",
-                    "pattern": "^0[1-9]\\\\d{8}$",
                     "type": "string",
                   },
                   "caller": {
@@ -4597,7 +4491,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "phone": {
-                    "pattern": "^0[1-9]\\\\d{8}$",
                     "type": "string",
                   },
                 },
