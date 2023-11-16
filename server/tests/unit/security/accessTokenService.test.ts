@@ -1,7 +1,7 @@
 import { zRoutes } from "shared/routes"
 import { describe, expect, it } from "vitest"
 
-import { generateAccessToken, parseAccessToken } from "../../../src/security/accessTokenService"
+import { generateAccessToken, generateScope, parseAccessToken } from "../../../src/security/accessTokenService"
 
 describe("accessTokenService", () => {
   // called route
@@ -19,21 +19,21 @@ describe("accessTokenService", () => {
   describe("valid tokens", () => {
     it("should generate a token valid for a specific route", () => {
       const token = generateAccessToken(user, [
-        {
+        generateScope({
           schema,
           resources: {},
           options,
-        },
+        }),
       ])
       expectTokenValid(token)
     })
     it("should generate a token valid for a generic route", () => {
       const token = generateAccessToken(user, [
-        {
+        generateScope({
           schema,
           resources: {},
           options: "all",
-        },
+        }),
       ])
       expectTokenValid(token)
     })
@@ -41,7 +41,7 @@ describe("accessTokenService", () => {
   describe("invalid tokens", () => {
     it("should detect an invalid token that has a different param", () => {
       const token = generateAccessToken(user, [
-        {
+        generateScope({
           schema,
           resources: {},
           options: {
@@ -50,17 +50,17 @@ describe("accessTokenService", () => {
             },
             querystring: undefined,
           },
-        },
+        }),
       ])
       expectTokenInvalid(token)
     })
     it("should detect an invalid token that is for a different route", () => {
       const token = generateAccessToken(user, [
-        {
+        generateScope({
           schema: zRoutes.post["/admin/users"],
           resources: {},
           options: "all",
-        },
+        }),
       ])
       expectTokenInvalid(token)
     })
