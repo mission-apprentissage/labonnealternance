@@ -84,6 +84,7 @@ export const zReferentielData = z
 export type IReferentielData = z.output<typeof zReferentielData>
 
 export type IUserStatusValidation = z.output<typeof ZUserStatusValidation>
+export type IUserStatusValidationJson = Jsonify<z.input<typeof ZUserStatusValidation>>
 export type IUserRecruteur = z.output<typeof ZUserRecruteur>
 export type IUserRecruteurWritable = z.output<typeof ZUserRecruteurWritable>
 export type IUserRecruteurJson = Jsonify<z.input<typeof ZUserRecruteur>>

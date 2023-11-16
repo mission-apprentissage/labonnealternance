@@ -7,7 +7,11 @@ import { generateAccessToken } from "@/security/accessTokenService"
 export function createAuthMagicLinkToken(user: IUserRecruteur) {
   return generateAccessToken(user, [
     {
-      route: zRoutes.post["/login/verification"],
+      schema: zRoutes.post["/login/verification"],
+      options: {
+        params: undefined,
+        querystring: undefined,
+      },
       resources: {},
     },
   ])
@@ -24,7 +28,11 @@ export function createValidationMagicLink(user: IUserRecruteur) {
     user,
     [
       {
-        route: zRoutes.post["/etablissement/validation"],
+        schema: zRoutes.post["/etablissement/validation"],
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
         resources: {
           user: [user._id.toString()],
         },
@@ -42,7 +50,11 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
     { type: "cfa", email, siret },
     [
       {
-        route: zRoutes.get["/optout/validate"],
+        schema: zRoutes.get["/optout/validate"],
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
         resources: {},
       },
     ],
@@ -51,4 +63,25 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
     }
   )
   return `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${encodeURIComponent(token)}`
+}
+
+export function createCfaUnsubscribeToken(email: string, siret: string) {
+  return generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      {
+        schema: zRoutes.post["/etablissement/:establishment_siret/proposition/unsubscribe"],
+        options: {
+          params: {
+            establishment_siret: siret,
+          },
+          querystring: undefined,
+        },
+        resources: {},
+      },
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
 }

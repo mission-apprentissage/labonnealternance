@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes } from "shared"
+import { IJobWritable, INewDelegations, IRoutes, IUserStatusValidationJson } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
@@ -27,7 +27,7 @@ export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/f
 export const updateFormulaire = (establishment_id: string, values) => apiPut("/formulaire/:establishment_id", { params: { establishment_id }, body: values })
 
 export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
-export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
+export const archiveDelegatedFormulaire = (siret: string) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
 
 /**
  * Offre API
@@ -46,8 +46,11 @@ export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; 
 /**
  * User API
  */
+export const getUser = (userId: string) => apiGet("/user/:userId", { params: { userId } })
+const updateUser = (userId: string, user) => apiPut("/user/:userId", { params: { userId }, body: user })
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
-export const updateUserValidationHistory = async (userId, state) => await API.put(`user/${userId}/history`, state).catch(errorHandler)
+export const updateUserValidationHistory = (userId: string, state: IUserStatusValidationJson) =>
+  apiPut("/user/:userId/history", { params: { userId }, body: state }).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
 export const deleteEntreprise = (userId: string, recruiterId: string) => apiDelete(`/user`, { querystring: { userId, recruiterId } }).catch(errorHandler)
 
@@ -55,9 +58,9 @@ export const deleteEntreprise = (userId: string, recruiterId: string) => apiDele
 /**
  * KBA 20230511 : (migration db) : casting des valueurs coté collection recruiter, car les champs ne sont plus identiques avec la collection userRecruteur.
  */
-export const updateEntreprise = async (userId: string, establishment_id, user) =>
+export const updateEntreprise = async (userId: string, establishment_id: string, user: any) =>
   await Promise.all([
-    apiPut(`/user/:userId`, { params: { userId }, body: user }),
+    updateUser(userId, user),
     //
     updateFormulaire(establishment_id, user),
   ])
@@ -107,7 +110,13 @@ export const getRomeDetail = (rome: string) => API.get(`/rome/detail/${rome}`)
 export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) =>
   API.get(`/etablissement/cfas-proches?rome=${rome}&latitude=${latitude}&longitude=${longitude}`)
 
-export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) => API.post(`/etablissement/${establishmentSiret}/proposition/unsubscribe`)
+export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: any, token: string) =>
+  apiPost("/etablissement/:establishment_siret/proposition/unsubscribe", {
+    params: { establishment_siret },
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  })
 
 /**
  * Administration OPCO

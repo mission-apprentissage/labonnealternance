@@ -22,11 +22,11 @@ import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { apiGet } from "@/utils/api.utils"
 
-import { USER_STATUS } from "../../../../common/contants"
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
@@ -169,8 +169,8 @@ function Users() {
         const { status: statusArray = [] } = row
         const lastStatus = statusArray[statusArray.length - 1]
         const { status } = lastStatus
-        const canActivate = [USER_STATUS.DISABLED, USER_STATUS.WAITING].includes(status)
-        const canDeactivate = [USER_STATUS.ACTIVE, USER_STATUS.WAITING].includes(status)
+        const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)
+        const canDeactivate = [ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.ATTENTE].includes(status)
         return (
           <Box display={["none", "block"]}>
             <Menu>
@@ -221,7 +221,7 @@ function Users() {
 
   return (
     <AnimationContainer>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...currentEntreprise} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
       <ConfirmationActivationUtilsateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
 
       <Container maxW="container.xl" mt={5}>

@@ -6,7 +6,7 @@ import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
-import { apiGet, apiPut } from "@/utils/api.utils"
+import { apiPut } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../common/contants"
 import { LoadingEmptySpace } from "../../components/espace_pro"
@@ -17,7 +17,7 @@ import Layout from "../../components/espace_pro/Layout"
 import ModificationCompteEmail from "../../components/espace_pro/ModificationCompteEmail"
 import { authProvider, withAuth } from "../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
-import { updateEntreprise } from "../../utils/api"
+import { getUser, updateEntreprise } from "../../utils/api"
 
 function Compte() {
   const client = useQueryClient()
@@ -42,7 +42,7 @@ function Compte() {
     }
   }
 
-  const { data, isLoading } = useQuery("user", () => apiGet(`/user/:userId`, { params: { userId: user._id.toString() } }))
+  const { data, isLoading } = useQuery("user", () => getUser(user._id.toString()))
 
   const userMutation = useMutation(({ userId, establishment_id, values }: any) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
