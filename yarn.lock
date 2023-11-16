@@ -2154,14 +2154,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/rate-limit@npm:^8.1.1":
-  version: 8.1.1
-  resolution: "@fastify/rate-limit@npm:8.1.1"
+"@fastify/rate-limit@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@fastify/rate-limit@npm:9.0.0"
   dependencies:
+    "@lukeed/ms": ^2.0.1
     fastify-plugin: ^4.0.0
-    ms: ^2.1.3
-    tiny-lru: ^11.0.0
-  checksum: 83a690e1c445fb3330dd99e539e3aab23de383d8d8859af078e543940a46b10aeb5d4977e16f5d03236079bebfc3aae678b05d4d09be8f440275bc0cd615fff8
+    toad-cache: ^3.3.0
+  checksum: 2b8ab1ea8976287526d32284b22ee433bacc62424c708f7031c5fe022cfc718329e76a88b067ce52d8c0f6ce3c31c6a4cb7572a0e0709975badac8c4a4ec8fe7
   languageName: node
   linkType: hard
 
@@ -17431,7 +17431,7 @@ __metadata:
     "@elastic/elasticsearch": ^7.17.13
     "@fastify/cookie": ^9.1.0
     "@fastify/cors": ^8.4.0
-    "@fastify/rate-limit": ^8.1.1
+    "@fastify/rate-limit": ^9.0.0
     "@fastify/swagger": ^8.10.1
     "@fastify/swagger-ui": ^1.9.3
     "@immobiliarelabs/fastify-sentry": ^7.1.1
@@ -18588,13 +18588,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tiny-lru@npm:^11.0.0":
-  version: 11.1.2
-  resolution: "tiny-lru@npm:11.1.2"
-  checksum: 2f1f38ac9fb75919b9017c4b49d0720f2a2fc9922bf7443c66eb00538ebe5823458e002d50460743f2cd9548227d5daec4d5382d77d6789b36ca894746968d07
-  languageName: node
-  linkType: hard
-
 "tiny-relative-date@npm:^1.3.0":
   version: 1.3.0
   resolution: "tiny-relative-date@npm:1.3.0"
@@ -18675,6 +18668,13 @@ __metadata:
   version: 3.2.0
   resolution: "toad-cache@npm:3.2.0"
   checksum: 9d64f7760cd8ae6d0684d17e9153a39c088877e4b9f5e648fe11c4f9c82c033d3b606ff0dfe566cd5a0056dee9ebeaf4ab9bee1de1e6597d7cc6745042413b2b
+  languageName: node
+  linkType: hard
+
+"toad-cache@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "toad-cache@npm:3.3.0"
+  checksum: 971bb91e0e3487494b0b7b00ad8614738e1925e536d897da26be36f03edb3298c82b2a5e18155d5323ed6258e7f1d90e99558c11e3610c87fce47b62dd7b167a
   languageName: node
   linkType: hard
 
