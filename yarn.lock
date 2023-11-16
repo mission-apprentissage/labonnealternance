@@ -2154,14 +2154,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/rate-limit@npm:^8.0.3":
-  version: 8.0.3
-  resolution: "@fastify/rate-limit@npm:8.0.3"
+"@fastify/rate-limit@npm:^8.1.1":
+  version: 8.1.1
+  resolution: "@fastify/rate-limit@npm:8.1.1"
   dependencies:
     fastify-plugin: ^4.0.0
     ms: ^2.1.3
     tiny-lru: ^11.0.0
-  checksum: 43ac0f8d5b7408beb299a916b53e5966b257debec765d70d8935f95502372210a0b2342b36e2e677739c257bb4784a7efe82c813552ef5425215501b38bb2d92
+  checksum: 83a690e1c445fb3330dd99e539e3aab23de383d8d8859af078e543940a46b10aeb5d4977e16f5d03236079bebfc3aae678b05d4d09be8f440275bc0cd615fff8
   languageName: node
   linkType: hard
 
@@ -17431,7 +17431,7 @@ __metadata:
     "@elastic/elasticsearch": ^7.17.13
     "@fastify/cookie": ^9.1.0
     "@fastify/cors": ^8.4.0
-    "@fastify/rate-limit": ^8.0.3
+    "@fastify/rate-limit": ^8.1.1
     "@fastify/swagger": ^8.10.1
     "@fastify/swagger-ui": ^1.9.3
     "@immobiliarelabs/fastify-sentry": ^7.1.1
