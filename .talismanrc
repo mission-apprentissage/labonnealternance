@@ -73,6 +73,8 @@ fileignoreconfig:
   checksum: f9d2657f85f9f885deddf2ed1fd006d8278d27174659f0ed5a35e4d11343bb3a
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/ItemDetail/ItemDetail.tsx
+  checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
 - filename: ui/components/espace_pro/Admin/utilisateurs/UserList.tsx
   checksum: a50177afa593bae5707bdba29ef27b8f2ed0bc58487491bfff580e7e1f422243
 - filename: ui/components/espace_pro/Admin/utilisateurs/infoDetails/InfoDetails.tsx
