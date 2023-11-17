@@ -2,9 +2,6 @@ const commonButtonStyle = {
   borderRadius: 0,
   textTransform: "none",
   fontWeight: 400,
-  _focus: { boxShadow: "0px 0px 0px 2px #FFFFFF, 0px 0px 0px 4px #0A76F6" },
-  _focusVisible: { boxShadow: "0px 0px 0px 2px #FFFFFF, 0px 0px 0px 4px #0A76F6" },
-  _hover: { bg: "bluefrance.113" },
 }
 
 const Button = {
@@ -125,15 +122,8 @@ const Button = {
       _hover: { bg: "bluefrance.100", textDecoration: "none" },
     },
     navdot: {
-      _focus: {
-        boxShadow: "none",
-      },
-      borderRadius: "0px",
+      ...commonButtonStyle,
       p: "2px",
-      _hover: { bg: "bluefrance.100", textDecoration: "none" },
-      _active: {
-        bg: "bluefrance.100",
-      },
     },
     centerSearch: {
       display: "flex",
