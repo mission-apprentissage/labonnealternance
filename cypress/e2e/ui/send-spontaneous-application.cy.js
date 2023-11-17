@@ -1,15 +1,15 @@
 describe("send-spontaneous-application", () => {
-  it("tests send-spontaneous-application on " + Cypress.env("host"), () => {
+  it("tests send-spontaneous-application on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
     cy.on("uncaught:exception", () => {
       return false
     })
 
-    cy.intercept("GET", Cypress.env("host") + "/api/v1/jobs?*").as("submitJobCall")
-    cy.intercept("POST", Cypress.env("host") + "/api/application").as("submitApplication")
+    cy.intercept("GET", Cypress.env("server") + "/api/v1/jobs?*").as("submitJobCall")
+    cy.intercept("POST", Cypress.env("server") + "/api/v1/application").as("submitApplication")
 
     cy.generateRandomEmail("test-auto-", "@nexistepas.fr", 10).then((randomEmail) => {
       cy.viewport(1254, 704)
-      cy.visit(Cypress.env("host") + "?displayMap=false")
+      cy.visit(Cypress.env("ui") + "?displayMap=false")
       cy.get("#headerFormJobField-input").click()
       cy.get("#headerFormJobField-input").type("Compta")
       cy.get("#headerFormJobField-item-0").click()

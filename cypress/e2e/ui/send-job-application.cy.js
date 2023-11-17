@@ -1,21 +1,21 @@
 describe("send-job-application", () => {
-  it("tests send-job-application on " + Cypress.env("host"), () => {
+  it("tests send-job-application on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
     cy.on("uncaught:exception", () => {
       return false
     })
 
-    cy.intercept("GET", Cypress.env("host") + "/api/v1/jobs?*").as("submitJobCall")
-    cy.intercept("POST", Cypress.env("host") + "/api/application").as("submitApplication")
+    cy.intercept("GET", Cypress.env("server") + "/api/v1/jobs?*").as("submitJobCall")
+    cy.intercept("POST", Cypress.env("server") + "/api/v1/application").as("submitApplication")
 
     cy.generateRandomEmail("test-auto-", "@nexistepas.fr", 10).then((randomEmail) => {
       cy.viewport(1254, 704)
-      cy.visit(Cypress.env("host") + "?displayMap=false")
+      cy.visit(Cypress.env("ui") + "?displayMap=false")
       cy.get("#headerFormJobField-input").click()
-      cy.get("#headerFormJobField-input").type("ress")
+      cy.get("#headerFormJobField-input").type("gestion inf")
       cy.get("#headerFormJobField-item-0").click()
-      cy.get("#headerFormJobField-input").should("have.value", "Ressources humaines")
+      cy.get("#headerFormJobField-input").should("have.value", "Gestion de projets informatiques")
       cy.get("#headerFormPlaceField-input").click()
-      cy.get("#headerFormPlaceField-input").type("pari")
+      cy.get("#headerFormPlaceField-input").type("lill")
       cy.get("#headerFormPlaceField-item-0").click()
       cy.get("[data-testid='widget-form'] select[data-testid='locationRadius']").select("60")
       cy.get("[data-testid='widget-form'] button").click()
