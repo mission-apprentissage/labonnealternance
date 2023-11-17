@@ -6,10 +6,10 @@ dotenv.config()
 export default defineConfig({
   viewportHeight: 768,
   viewportWidth: 1366,
-  env: {
-    host: process.env.CYPRESS_HOST,
-  },
+  // env: {
+  //   host: process.env.CYPRESS_HOST,
+  // },
   e2e: {
-    video: false,
+    video: true,
   },
 })
