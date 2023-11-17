@@ -57,9 +57,6 @@ const Button = {
       border: "1px solid",
       borderColor: "bluefrance.500",
       _hover: { bg: "grey.200" },
-      _focus: {
-        boxShadow: "none",
-      },
       _active: {
         bg: "bluefrance.500",
         color: "white",

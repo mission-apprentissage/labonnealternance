@@ -269,7 +269,7 @@ const AjouterVoeuxForm = (props) => {
             </FormControl>
             <FormControl mt={6} isRequired>
               <FormLabel>Niveau visé en fin d’études</FormLabel>
-              <Select variant="outline" size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
+              <Select size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
                 <option value="" hidden>
                   Choisissez un niveau
                 </option>
@@ -289,8 +289,10 @@ const AjouterVoeuxForm = (props) => {
             {organisation !== "atlas" && (
               <FormControl mt={6}>
                 <Checkbox name="is_disabled_elligible" value={values.is_disabled_elligible} isChecked={values.is_disabled_elligible} onChange={handleChange}>
-                  Je souhaite faire figurer sur l’offre la mention suivante: <br />
-                  "À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap."
+                  <Text ml={3}>
+                    Je souhaite faire figurer sur l’offre la mention suivante: <br />
+                    <Text as="cite">"À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap."</Text>
+                  </Text>
                 </Checkbox>
               </FormControl>
             )}
