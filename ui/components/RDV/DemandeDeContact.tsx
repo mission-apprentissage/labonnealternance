@@ -162,37 +162,19 @@ const DemandeDeContact = (props: Props) => {
       <Flex direction={["column", "column", "row"]} mt={6}>
         <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.lastname && formik.errors.lastname)}>
           <FormLabel htmlFor="lastname">Nom *</FormLabel>
-          <Input
-            id="lastname"
-            data-testid="lastname"
-            name="lastname"
-            type="text"
-            width="95%"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.lastname}
-          />
+          <Input data-testid="lastname" name="lastname" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.lastname} />
           <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
         </FormControl>
         <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.firstname && formik.errors.firstname)}>
           <FormLabel htmlFor="firstname">Prénom *</FormLabel>
-          <Input
-            id="firstname"
-            data-testid="firstname"
-            name="firstname"
-            type="text"
-            width="95%"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.firstname}
-          />
+          <Input data-testid="firstname" name="firstname" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.firstname} />
           <FormErrorMessage>{formik.errors.firstname}</FormErrorMessage>
         </FormControl>
       </Flex>
       <Flex direction={["column", "column", "row"]} mt={4}>
         <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.email && formik.errors.email)}>
           <FormLabel htmlFor="email">E-mail *</FormLabel>
-          <Input id="email" data-testid="email" name="email" type="text" width="95%" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
+          <Input data-testid="email" name="email" type="email" width="95%" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
           {suggestedEmails.length > 0 && (
             <Box mt={2} fontSize="12px" color="grey.600">
               <Text as="span" mr={2}>
@@ -222,7 +204,7 @@ const DemandeDeContact = (props: Props) => {
         </FormControl>
         <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.phone && formik.errors.phone)}>
           <FormLabel htmlFor="email">Téléphone *</FormLabel>
-          <Input id="phone" data-testid="phone" name="phone" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phone} />
+          <Input data-testid="phone" name="phone" type="phone" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phone} />
           <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
         </FormControl>
       </Flex>
@@ -384,6 +366,7 @@ const DemandeDeContact = (props: Props) => {
             color="white"
             background="bluefrance.500"
             borderRadius="8px"
+            data-testid="prdvButton"
             sx={{
               textDecoration: "none",
               _hover: {

@@ -1,11 +1,11 @@
 describe("send-rdv-from-widget", () => {
-  it("tests send-rdv-from-widget on " + Cypress.env("host"), () => {
-    cy.intercept("GET", Cypress.env("host") + "/api/v1/formations?*").as("submitTrainingCall")
-    cy.intercept("POST", Cypress.env("host") + "/api/appointment-request/validate").as("submitRdv")
+  it("tests send-rdv-from-widget on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
+    cy.intercept("GET", Cypress.env("server") + "/api/v1/formations?*").as("submitTrainingCall")
+    cy.intercept("POST", Cypress.env("server") + "/api/appointment-request/validate").as("submitRdv")
 
     cy.generateRandomEmail("test-auto-", "@nexistepas.fr", 10).then((randomEmail) => {
       cy.viewport(1254, 704)
-      cy.visit(Cypress.env("host") + "/recherche-apprentissage-formation?displayMap=false")
+      cy.visit(Cypress.env("ui") + "/recherche-apprentissage-formation?displayMap=false")
       cy.get("#headerFormJobField-input").click()
       cy.get("#headerFormJobField-input").type("esth")
       cy.get("#headerFormJobField-item-0").click()
@@ -16,7 +16,7 @@ describe("send-rdv-from-widget", () => {
         cy.get(".resultCard.training").first().click()
         // eslint-disable-next-line cypress/unsafe-to-chain-command
         cy.get("[data-testid='prdvButton']")
-          .invoke("removeAttr", "target")
+          //.invoke("removeAttr", "target")
           .click()
           .then(() => {
             // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -29,12 +29,12 @@ describe("send-rdv-from-widget", () => {
               cy.get("input[name='phone']").type("0700000000")
               cy.get("input[type='email']").click()
               cy.get("input[type='email']").type(randomEmail)
-              cy.get("label:nth-of-type(2) > span.chakra-checkbox__control").click()
-              cy.get("label:nth-of-type(4) > span.chakra-checkbox__control").click()
-              cy.get("label:nth-of-type(11) > span.chakra-checkbox__control").click()
+              cy.get(".chakra-accordion__button").click()
+              cy.get("[data-testid='fieldset-reasons'] > .chakra-collapse > input[type='checkbox']:nth-of-type(4)").click()
+              cy.get("[data-testid='fieldset-reasons'] > .chakra-collapse > input[type='checkbox']:nth-of-type(11)").click()
               cy.get("input[name='applicantMessageToCfa']").click()
               cy.get("input[name='applicantMessageToCfa']").type("horaires")
-              cy.get("button").click()
+              cy.get("button[type='submit']").click()
               cy.wait("@submitRdv").then(() => {
                 cy.get("[data-testid='rdv-sent']")
               })
