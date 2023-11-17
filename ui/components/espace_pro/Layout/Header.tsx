@@ -38,8 +38,10 @@ const Header = () => {
         <Container maxW="container.xl">
           <Flex alignItems="center" px={[0, 4]}>
             <Link href="/" aria-label="Retour à la page d'accueil">
-              <Image src="/images/espace_pro/logo.svg" alt="marianne" />
-              <LbaNew ml={4} w="143px" h="37px" />
+              <Flex direction="row" align="center" px={[0, 4]}>
+                <Image src="/images/espace_pro/logo.svg" alt="marianne" />
+                <LbaNew ml={4} w="143px" h="37px" />
+              </Flex>
             </Link>
             {organisation?.includes("akto") && <LogoAkto display={["none", "flex"]} w="100px" h={6} />}
             <Spacer />
