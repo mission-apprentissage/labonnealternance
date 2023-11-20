@@ -158,7 +158,7 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}-cypress
       cancel-in-progress: true
-    needs: [deploy_preview]
+    needs: ["deploy_preview"]
     uses: "./.github/workflows/cypress.yml"
     inputs:
       cypress_host: "https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr"
