@@ -1354,6 +1354,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "employeurDescription": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "id": {
             "type": [
               "string",

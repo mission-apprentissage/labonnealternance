@@ -155,6 +155,7 @@ export default (server: Server) => {
     "/formulaire/offre/f/:jobId",
     {
       schema: zRoutes.get["/formulaire/offre/f/:jobId"],
+      onRequest: [server.auth(zRoutes.get["/formulaire/offre/f/:jobId"])],
     },
     async (req, res) => {
       const offre = await getJob(req.params.jobId.toString())
@@ -250,7 +251,7 @@ export default (server: Server) => {
     "/formulaire/offre/:jobId/delegation",
     {
       schema: zRoutes.patch["/formulaire/offre/:jobId/delegation"],
-      // KBA : missing auth
+      onRequest: [server.auth(zRoutes.patch["/formulaire/offre/:jobId/delegation"])],
     },
     async (req, res) => {
       const { jobId } = req.params
