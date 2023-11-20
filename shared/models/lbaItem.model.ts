@@ -225,7 +225,7 @@ export type ILbaItemCompany = z.output<typeof ZLbaItemCompany>
 const ZLbaItemJob = z
   .object({
     description: z.string().nullable(), // pe -> description | matcha -> description
-    employeurDescription: z.string().nullable(), // matcha -> job.job_employer_description
+    employeurDescription: z.string().nullable().optional(), // matcha -> job.job_employer_description
     creationDate: z.date().nullable(), // pe -> dateCreation | matcha -> createdAt
     id: z.string().nullable(), // pe -> id | matcha -> id mongo offre
     contractType: z.string().nullable(), // pe -> typeContrat | matcha -> offres.type
