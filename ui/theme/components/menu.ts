@@ -7,10 +7,10 @@ const Menu = {
     },
     item: {
       _active: {
-        bg: "white",
+        bg: "bluefrance.100",
       },
       _focus: {
-        bg: "white",
+        bg: "bluefrance.100",
       },
     },
   },

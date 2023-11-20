@@ -25,7 +25,7 @@ const Container = {
       margin: "4px 0 0",
       padding: "0",
       boxShadow: "1px 1px 10px rgba(0, 0, 0, 0.2)",
-      let: "auto",
+      left: "auto",
       top: "auto",
       textAlign: "left",
     },

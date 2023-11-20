@@ -135,19 +135,21 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            _id: zObjectId,
-            numero_voie: z.string(),
-            type_voie: z.string(),
-            nom_voie: z.string(),
-            code_postal: z.string(),
-            nom_departement: z.string(),
-            entreprise_raison_sociale: z.string(),
-            geo_coordonnees: z.string(),
-            distance_en_km: z.number(),
-          })
-          .strict(),
+        "200": z.array(
+          z
+            .object({
+              _id: zObjectId,
+              numero_voie: z.string().nullish(),
+              type_voie: z.string().nullish(),
+              nom_voie: z.string().nullish(),
+              code_postal: z.string(),
+              nom_departement: z.string(),
+              entreprise_raison_sociale: z.string(),
+              geo_coordonnees: z.string(),
+              distance_en_km: z.number(),
+            })
+            .strict()
+        ),
         "4xx": z.union([ZLbarError, ZResError]),
       },
       securityScheme: {

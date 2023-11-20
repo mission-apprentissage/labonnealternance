@@ -20,15 +20,11 @@ async function optionsToFetchParams(method: RequestInit["method"], options: IReq
   const { timeout, headers: addedHeaders } = fetchOptions
 
   const headers = await getHeaders(options)
-  const accessToken = getAccessToken()
 
   if (addedHeaders) {
     Object.entries(addedHeaders).forEach(([key, value]) => {
       headers.append(key, value)
     })
-  }
-  if (accessToken && !headers.has("authorization")) {
-    headers.append("authorization", `Bearer ${accessToken}`)
   }
 
   let body: BodyInit | undefined = undefined
@@ -82,13 +78,6 @@ async function getHeaders(options: IRequestOptions) {
 }
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
-
-const getAccessToken = () => {
-  if (typeof window !== "undefined") {
-    const token = new URLSearchParams(window.location.search).get("token")
-    return token
-  }
-}
 
 export function generateUrl(path: string, options: WithQueryStringAndPathParam = {}): string {
   const params = "params" in options ? options.params : {}

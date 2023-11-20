@@ -206,7 +206,7 @@ export default function ListeOffres() {
             <Menu>
               {({ isOpen }) => (
                 <>
-                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
+                  <MenuButton isActive={isOpen} as={Button} variant="navdot">
                     <Icon as={Parametre} color="bluefrance.500" />
                   </MenuButton>
                   <MenuList>
