@@ -26,10 +26,10 @@ declare module "fastify" {
 type AuthenticatedUser<AuthScheme extends WithSecurityScheme["securityScheme"]["auth"]> = AuthScheme extends "cookie-session"
   ? UserWithType<"IUserRecruteur", IUserRecruteur>
   : AuthScheme extends "api-key"
-  ? UserWithType<"ICredential", ICredential>
-  : AuthScheme extends "access-token"
-  ? UserWithType<"IAccessToken", IAccessToken>
-  : never
+    ? UserWithType<"ICredential", ICredential>
+    : AuthScheme extends "access-token"
+      ? UserWithType<"IAccessToken", IAccessToken>
+      : never
 
 export const getUserFromRequest = <S extends WithSecurityScheme>(req: Pick<FastifyRequest, "user">, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
   if (!req.user) {
