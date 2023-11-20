@@ -19,7 +19,7 @@ export type IScope<Schema extends SchemaWithSecurity> = {
         querystring: Schema["querystring"] extends AnyZodObject ? Jsonify<z.input<Schema["querystring"]>> : undefined
       }
   resources: {
-    [key in keyof Schema["securityScheme"]["ressources"]]: ReadonlyArray<string>
+    [key in keyof Schema["securityScheme"]["resources"]]: ReadonlyArray<string>
   }
 }
 

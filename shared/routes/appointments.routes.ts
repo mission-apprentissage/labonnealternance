@@ -152,7 +152,7 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/appointment-request/context/recap": {

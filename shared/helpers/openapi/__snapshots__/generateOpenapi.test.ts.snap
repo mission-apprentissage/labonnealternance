@@ -232,14 +232,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                     ],
                   },
                   "place": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Place",
-                      },
-                      {
-                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                      },
-                    ],
+                    "$ref": "#/components/schemas/Place",
                   },
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
@@ -334,14 +327,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 ],
               },
               "place": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Place",
-                  },
-                  {
-                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                  },
-                ],
+                "$ref": "#/components/schemas/Place",
               },
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
@@ -456,7 +442,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "place": {
-            "$ref": "#/components/schemas/Place",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Place",
+              },
+              {
+                "description": "Le lieu de formation",
+              },
+            ],
           },
           "rncpCode": {
             "description": "Le code RNCP.",
@@ -820,14 +813,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                     ],
                   },
                   "place": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Place",
-                      },
-                      {
-                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                      },
-                    ],
+                    "$ref": "#/components/schemas/Place",
                   },
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
@@ -922,14 +908,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 ],
               },
               "place": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Place",
-                  },
-                  {
-                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                  },
-                ],
+                "$ref": "#/components/schemas/Place",
               },
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
@@ -1008,14 +987,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "place": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Place",
-              },
-              {
-                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-              },
-            ],
+            "$ref": "#/components/schemas/Place",
           },
           "title": {
             "type": [
@@ -1087,14 +1059,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                     ],
                   },
                   "place": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Place",
-                      },
-                      {
-                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                      },
-                    ],
+                    "$ref": "#/components/schemas/Place",
                   },
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
@@ -1189,14 +1154,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 ],
               },
               "place": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Place",
-                  },
-                  {
-                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                  },
-                ],
+                "$ref": "#/components/schemas/Place",
               },
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
@@ -1292,14 +1250,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "place": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Place",
-              },
-              {
-                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-              },
-            ],
+            "$ref": "#/components/schemas/Place",
           },
           "romes": {
             "items": {
@@ -1559,14 +1510,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                     ],
                   },
                   "place": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Place",
-                      },
-                      {
-                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                      },
-                    ],
+                    "$ref": "#/components/schemas/Place",
                   },
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
@@ -1661,14 +1605,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 ],
               },
               "place": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Place",
-                  },
-                  {
-                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                  },
-                ],
+                "$ref": "#/components/schemas/Place",
               },
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
@@ -1750,14 +1687,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "place": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Place",
-              },
-              {
-                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-              },
-            ],
+            "$ref": "#/components/schemas/Place",
           },
           "romes": {
             "items": {
@@ -1795,7 +1725,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       },
       "Place": {
         "additionalProperties": false,
-        "description": "Le lieu de formation",
+        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
         "properties": {
           "address": {
             "description": "L'adresse du lieu",

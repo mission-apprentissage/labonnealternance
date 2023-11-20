@@ -50,6 +50,26 @@ export default (server: Server) => {
   )
 
   /**
+   * Get form from id
+   */
+  server.get(
+    "/formulaire/delegation/:establishment_id",
+    {
+      schema: zRoutes.get["/formulaire/delegation/:establishment_id"],
+      onRequest: [server.auth(zRoutes.get["/formulaire/delegation/:establishment_id"])],
+    },
+    async (req, res) => {
+      const result = await getFormulaire({ establishment_id: req.params.establishment_id })
+
+      if (!result) {
+        throw Boom.badRequest()
+      }
+
+      return res.status(200).send(result)
+    }
+  )
+
+  /**
    * Post form
    */
   server.post(
@@ -118,6 +138,7 @@ export default (server: Server) => {
     "/formulaire/delegated/:establishment_siret",
     {
       schema: zRoutes.delete["/formulaire/delegated/:establishment_siret"],
+      onRequest: [server.auth(zRoutes.delete["/formulaire/delegated/:establishment_siret"])],
     },
     async (req, res) => {
       await archiveDelegatedFormulaire(req.params.establishment_siret)
@@ -214,7 +235,7 @@ export default (server: Server) => {
     "/formulaire/offre/:jobId",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId"],
-      // TODO no security ?
+      onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId"])],
     },
     async (req, res) => {
       const result = await patchOffre(req.params.jobId, req.body)
@@ -223,15 +244,18 @@ export default (server: Server) => {
   )
 
   /**
-   * Permet de passer une offre en statut ANNULER (mail transactionnel)
+   * Met à jour la date de lecture de la delegation d'une offre
    */
   server.patch(
-    "/formulaire/offre/:jobId",
+    "/formulaire/offre/:jobId/delegation",
     {
-      schema: zRoutes.patch["/formulaire/offre/:jobId"],
+      schema: zRoutes.patch["/formulaire/offre/:jobId/delegation"],
+      // KBA : missing auth
     },
     async (req, res) => {
       const { jobId } = req.params
+      const { siret_formateur } = req.query
+
       const exists = await checkOffreExists(jobId)
 
       if (!exists) {
@@ -246,7 +270,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
 
-      const delegationFound = delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
+      const delegationFound = delegations.find((delegation) => delegation.siret_code == siret_formateur)
 
       if (!delegationFound) {
         throw Boom.badRequest("Le siret formateur n'a pas été proposé à l'offre.")
@@ -277,6 +301,7 @@ export default (server: Server) => {
     "/formulaire/offre/:jobId/cancel",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
+      onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/cancel"])],
     },
     async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
@@ -314,6 +339,7 @@ export default (server: Server) => {
     "/formulaire/offre/:jobId/provided",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
+      onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/provided"])],
     },
     async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)

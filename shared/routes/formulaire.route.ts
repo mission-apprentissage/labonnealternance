@@ -19,7 +19,22 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:manage",
-        ressources: {
+        resources: {
+          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+        },
+      },
+    },
+    "/formulaire/delegation/:establishment_id": {
+      method: "get",
+      path: "/formulaire/delegation/:establishment_id",
+      params: z.object({ establishment_id: z.string() }).strict(),
+      response: {
+        "200": ZRecruiter,
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
@@ -61,7 +76,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "user:manage",
-        ressources: {
+        resources: {
           user: [{ _id: { key: "userId", type: "params" } }],
         },
       },
@@ -81,7 +96,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:add_job",
-        ressources: {
+        resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
@@ -103,7 +118,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -125,7 +140,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:manage",
-        ressources: {
+        resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
@@ -161,19 +176,28 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZRecruiter,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
     "/formulaire/offre/:jobId/cancel": {
       method: "put",
       path: "/formulaire/offre/:jobId/cancel",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
-      // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: "job:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
     "/formulaire/offre/f/:jobId/cancel": {
       method: "put",
@@ -192,7 +216,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -200,14 +224,17 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/provided": {
       method: "put",
       path: "/formulaire/offre/:jobId/provided",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
-      // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: "job:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
     "/formulaire/offre/:jobId/extend": {
       method: "put",
@@ -220,26 +247,22 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
     },
   },
   patch: {
-    // KBA 20230922 to be checked, description is false and it only updates delegations
-    // TODO_SECURITY_FIX gestion des permissions
-    // TODO_SECURITY_FIX session gérée par cookie server
-    // TODO_PAS_SECURITY faut la corriger cette route !!!!! (un certain "KB" circa 2023)
-    "/formulaire/offre/:jobId": {
+    "/formulaire/offre/:jobId/delegation": {
       method: "patch",
-      path: "/formulaire/offre/:jobId",
+      path: "/formulaire/offre/:jobId/delegation",
       params: z.object({ jobId: zObjectId }).strict(),
       querystring: z.object({ siret_formateur: z.string() }).strict(),
-      body: z.object({ cfa_read_company_detail_at: z.string() }).strict(),
       response: {
         "2xx": ZJob.nullable(),
       },
+      // KBA Il faut que le user soit connecté lorsqu'il arrive sur la page de visualisation de la délégation /!\ à voir avec l'équipe
       securityScheme: null,
     },
   },
@@ -254,7 +277,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:manage",
-        ressources: {
+        resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
@@ -268,7 +291,13 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        resources: {
+          recruiter: [{ cfa_delegated_siret: { type: "params", key: "establishment_siret" } }],
+        },
+      },
     },
   },
 } as const satisfies IRoutesDef
