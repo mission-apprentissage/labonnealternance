@@ -49,7 +49,14 @@ const fixDates = async () => {
 const fixJobRythm = async () => {
   const subject = "Fix data validations : job_rythm"
   const recruiters = await Recruiter.find({
-    "jobs.job_rythm": "1 jours / 4 jours",
+    $or: [
+      {
+        "jobs.job_rythm": "1 jours / 4 jours",
+      },
+      {
+        "jobs.job_rythm": "",
+      },
+    ],
   }).lean()
   const stats = { success: 0, failure: 0 }
   logger.info(`${subject}: ${recruiters.length} recruteurs à mettre à jour...`)
@@ -59,6 +66,8 @@ const fixJobRythm = async () => {
       await asyncForEach(jobs, async (job) => {
         if (job.job_rythm === "1 jours / 4 jours") {
           job.job_rythm = TRAINING_RYTHM["1J4J"]
+        } else if (job.job_rythm === "") {
+          job.job_rythm = null
         }
         await updateOffre(job._id, { ...job })
       })
