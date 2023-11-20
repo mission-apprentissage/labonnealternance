@@ -85,11 +85,11 @@ export const TRAINING_CONTRACT_TYPE = {
 
 export const TRAINING_RYTHM = {
   INDIFFERENT: "Indifférent",
+  "1J4J": "1 jour / 4 jours",
   "2J3J": "2 jours / 3 jours",
   "1S1S": "1 semaine / 1 semaine",
   "2S3S": "2 semaines / 3 semaines",
   "6S6S": "6 semaines / 6 semaines",
-  NONRENSEIGNE: "Non renseigné",
 }
 
 export const ROLES = {
