@@ -42,8 +42,6 @@ export const zFormulaireRoute = {
     "/formulaire/offre/f/:jobId": {
       method: "get",
       path: "/formulaire/offre/f/:jobId",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX faire un ZJobPublic sans la partie delegations
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
@@ -51,7 +49,13 @@ export const zFormulaireRoute = {
         // "200": z.any(),
         "2xx": ZJob,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
   },
   post: {
@@ -128,8 +132,6 @@ export const zFormulaireRoute = {
     "/formulaire/:establishment_id": {
       method: "put",
       path: "/formulaire/:establishment_id",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX réduire aux champs modifiables
       params: z.object({ establishment_id: z.string() }).strict(),
       body: ZRecruiterWritable.partial(),
       response: {
@@ -148,8 +150,6 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId": {
       method: "put",
       path: "/formulaire/offre/:jobId",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ jobId: zObjectId }).strict(),
       body: ZJob.pick({
         rome_label: true,
@@ -202,7 +202,6 @@ export const zFormulaireRoute = {
     "/formulaire/offre/f/:jobId/cancel": {
       method: "put",
       path: "/formulaire/offre/f/:jobId/cancel",
-      // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       body: z
         .object({
@@ -239,7 +238,6 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/extend": {
       method: "put",
       path: "/formulaire/offre/:jobId/extend",
-      // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
         "200": ZJob.strict(),
@@ -262,8 +260,13 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZJob.nullable(),
       },
-      // KBA Il faut que le user soit connecté lorsqu'il arrive sur la page de visualisation de la délégation /!\ à voir avec l'équipe
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "job:manage",
+        resources: {
+          job: [{ _id: { type: "params", key: "jobId" } }],
+        },
+      },
     },
   },
   delete: {
@@ -285,8 +288,6 @@ export const zFormulaireRoute = {
     "/formulaire/delegated/:establishment_siret": {
       method: "delete",
       path: "/formulaire/delegated/:establishment_siret",
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_siret: z.string() }).strict(),
       response: {
         "2xx": z.object({}).strict(),
