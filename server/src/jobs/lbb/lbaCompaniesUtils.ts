@@ -104,7 +104,7 @@ export const countCompaniesInFile = async (): Promise<number> => {
 /*
 Initialize bonneBoite from data, add missing data from maps,
 */
-export const getCompanyMissingData = async (rawCompany) => {
+export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | null> => {
   const company = new LbaCompany(rawCompany)
   const geo = await getGeoLocationForCompany(company)
   if (!geo) {

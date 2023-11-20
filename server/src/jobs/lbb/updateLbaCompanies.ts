@@ -1,4 +1,5 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
+import { ILbaCompany } from "shared/models/lbaCompany.model"
 
 import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import { rebuildIndex } from "../../common/utils/esUtils"
@@ -25,7 +26,7 @@ const printProgress = () => {
   }
 }
 
-const prepareCompany = async (rawCompany) => {
+const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
   count++
   printProgress()
   rawCompany.siret = rawCompany.siret.toString().padStart(14, "0")
