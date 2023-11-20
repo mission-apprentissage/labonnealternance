@@ -26,6 +26,7 @@
     "email-validator": "^2.0.4",
     "formik": "^2.4.5",
     "framer-motion": "^6.5.1",
+    "isomorphic-dompurify": "^1.9.0",
     "jose": "^4.14.6",
     "lodash": "^4.17.21",
     "mapbox-gl": "^2.15.0",
