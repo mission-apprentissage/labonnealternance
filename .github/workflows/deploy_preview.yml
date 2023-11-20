@@ -152,3 +152,16 @@ jobs:
           comment_tag: deployment
           mode: recreate
           pr_number: ${{ github.event.issue.number }}
+
+  cypress:
+    if: (startsWith(github.event.comment.body, '🚀') || startsWith(github.event.comment.body, ':rocket:')) && github.event.issue.pull_request
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.issue.id }}-cypress
+      cancel-in-progress: true
+    needs: [deploy_preview]
+    uses: "./.github/workflows/cypress.yml"
+    inputs:
+      cypress_host: "https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr"
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
