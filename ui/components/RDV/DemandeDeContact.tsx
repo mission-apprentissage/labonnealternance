@@ -237,8 +237,8 @@ const DemandeDeContact = (props: Props) => {
               <AccordionPanel pb={4}>
                 <CheckboxGroup onChange={onChangeApplicantReasons}>
                   <Stack direction="column" spacing={3} mt={1} ml={1}>
-                    {applicantReasons.map(({ key, checked, title }) => (
-                      <Checkbox key={key} size="lg" defaultChecked={checked} value={key}>
+                    {applicantReasons.map(({ key, checked, title }, index) => (
+                      <Checkbox key={key} id={`reason-${index}`} size="lg" defaultChecked={checked} value={key}>
                         {title}
                       </Checkbox>
                     ))}
