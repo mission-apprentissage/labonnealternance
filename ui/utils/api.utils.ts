@@ -26,10 +26,6 @@ async function optionsToFetchParams(method: RequestInit["method"], options: IReq
       headers.append(key, value)
     })
   }
-  const accessToken = getAccessToken()
-  if (accessToken && !headers.has("authorization")) {
-    headers.append("authorization", `bearer ${accessToken}`)
-  }
 
   let body: BodyInit | undefined = undefined
   if ("body" in options && method !== "GET") {
