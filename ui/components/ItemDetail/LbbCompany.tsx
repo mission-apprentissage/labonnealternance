@@ -2,6 +2,8 @@ import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { get } from "lodash"
 import React, { useState } from "react"
 
+import { focusWithin } from "@/theme/theme-lba-tools"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { fetchAddresses } from "../../services/baseAdresse"
@@ -115,6 +117,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly = undefined, searc
       as="a"
       className={`resultCard lba ${company?.contact?.email && "hasEmail"}`}
       {...cardProperties}
+      {...focusWithin}
       onClick={onSelectItem}
       onMouseOver={highlightItemOnMap}
       onMouseOut={dimItemOnMap}
@@ -153,7 +156,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly = undefined, searc
                 </Flex>
 
                 <Text ml="auto" display={["none", "none", "block"]}>
-                  <Button variant="knowMore" aria-label="Accéder au détail de l'entreprise">
+                  <Button tabIndex={-1} variant="knowMore" aria-label="Accéder au détail de l'entreprise">
                     En savoir plus
                   </Button>
                 </Text>

@@ -1265,107 +1265,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Job",
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "contractDescription": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "contractType": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "creationDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "description": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "duration": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "dureeContrat": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "elligibleHandicap": {
-                    "type": [
-                      "boolean",
-                      "null",
-                    ],
-                  },
-                  "id": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "jobStartDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "quantiteContrat": {
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "romeDetails": {
-                    "$ref": "#/components/schemas/RomeDetail",
-                  },
-                  "rythmeAlternance": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "status": {
-                    "enum": [
-                      "Active",
-                      "Pourvue",
-                      "Annulée",
-                      "En attente",
-                    ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                },
-                "required": [
-                  "description",
-                  "creationDate",
-                  "id",
-                  "contractType",
-                ],
-                "type": [
-                  "object",
-                  "null",
-                ],
-              },
-            ],
+            "$ref": "#/components/schemas/LbacJob",
           },
           "nafs": {
             "items": {
@@ -1457,6 +1357,102 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "error",
         ],
         "type": "object",
+      },
+      "LbacJob": {
+        "additionalProperties": false,
+        "properties": {
+          "contractDescription": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "contractType": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "creationDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "description": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "duration": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "dureeContrat": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "elligibleHandicap": {
+            "type": [
+              "boolean",
+              "null",
+            ],
+          },
+          "id": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "jobStartDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "quantiteContrat": {
+            "type": [
+              "number",
+              "null",
+            ],
+          },
+          "romeDetails": {
+            "$ref": "#/components/schemas/RomeDetail",
+          },
+          "rythmeAlternance": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "status": {
+            "enum": [
+              "Active",
+              "Pourvue",
+              "Annulée",
+              "En attente",
+            ],
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "description",
+          "creationDate",
+          "id",
+          "contractType",
+        ],
+        "type": [
+          "object",
+          "null",
+        ],
       },
       "MetierEnrichi": {
         "additionalProperties": false,
@@ -1727,107 +1723,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Job",
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "contractDescription": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "contractType": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "creationDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "description": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "duration": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "dureeContrat": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "elligibleHandicap": {
-                    "type": [
-                      "boolean",
-                      "null",
-                    ],
-                  },
-                  "id": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "jobStartDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "quantiteContrat": {
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "romeDetails": {
-                    "$ref": "#/components/schemas/RomeDetail",
-                  },
-                  "rythmeAlternance": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "status": {
-                    "enum": [
-                      "Active",
-                      "Pourvue",
-                      "Annulée",
-                      "En attente",
-                    ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                },
-                "required": [
-                  "description",
-                  "creationDate",
-                  "id",
-                  "contractType",
-                ],
-                "type": [
-                  "object",
-                  "null",
-                ],
-              },
-            ],
+            "$ref": "#/components/schemas/LbacJob",
           },
           "nafs": {
             "items": {
@@ -4338,47 +4234,56 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "_id": {
-                      "description": "Identifiant unique",
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "_id": {
+                        "description": "Identifiant unique",
+                      },
+                      "code_postal": {
+                        "type": "string",
+                      },
+                      "distance_en_km": {
+                        "type": "number",
+                      },
+                      "entreprise_raison_sociale": {
+                        "type": "string",
+                      },
+                      "geo_coordonnees": {
+                        "type": "string",
+                      },
+                      "nom_departement": {
+                        "type": "string",
+                      },
+                      "nom_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "numero_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "type_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
                     },
-                    "code_postal": {
-                      "type": "string",
-                    },
-                    "distance_en_km": {
-                      "type": "number",
-                    },
-                    "entreprise_raison_sociale": {
-                      "type": "string",
-                    },
-                    "geo_coordonnees": {
-                      "type": "string",
-                    },
-                    "nom_departement": {
-                      "type": "string",
-                    },
-                    "nom_voie": {
-                      "type": "string",
-                    },
-                    "numero_voie": {
-                      "type": "string",
-                    },
-                    "type_voie": {
-                      "type": "string",
-                    },
+                    "required": [
+                      "code_postal",
+                      "nom_departement",
+                      "entreprise_raison_sociale",
+                      "geo_coordonnees",
+                      "distance_en_km",
+                    ],
+                    "type": "object",
                   },
-                  "required": [
-                    "numero_voie",
-                    "type_voie",
-                    "nom_voie",
-                    "code_postal",
-                    "nom_departement",
-                    "entreprise_raison_sociale",
-                    "geo_coordonnees",
-                    "distance_en_km",
-                  ],
-                  "type": "object",
+                  "type": "array",
                 },
               },
             },

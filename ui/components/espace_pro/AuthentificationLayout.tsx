@@ -1,4 +1,5 @@
 import { Box, Button, Container, Flex, Image } from "@chakra-ui/react"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import { useContext } from "react"
 
@@ -28,10 +29,12 @@ export default function AuthentificationLayout(props) {
     <Container maxW="container.xl" px={4} py={4}>
       <Flex direction="column" px={[0, 4]}>
         <Flex justifyContent="space-between" align="center" justify="center" mb={["4", "0"]}>
-          <Flex direction="row" align="center" px={[0, 4]}>
-            <Image src="/images/espace_pro/logo.svg" alt="marianne" />
-            <LbaNew />
-          </Flex>
+          <Link href="/" aria-label="Retour à la page d'accueil">
+            <Flex direction="row" align="center" px={[0, 4]}>
+              <Image src="/images/espace_pro/logo.svg" alt="marianne" />
+              <LbaNew ml={4} w="143px" h="37px" />
+            </Flex>
+          </Link>
           <Button
             display="flex"
             onClick={props.fromDashboard ? () => props.onClose() : () => redirectFn()}
