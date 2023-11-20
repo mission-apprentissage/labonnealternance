@@ -1,4 +1,5 @@
 import { Alert, AlertIcon, Box, Button, Container, Flex, Icon, Image, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Spacer, Text } from "@chakra-ui/react"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import { useContext } from "react"
 import { RiAccountCircleLine } from "react-icons/ri"
@@ -36,8 +37,12 @@ const Header = () => {
       <Container maxW="full" px={[0, 4]} py={4} borderBottom={"1px solid"} borderColor="grey.400">
         <Container maxW="container.xl">
           <Flex alignItems="center" px={[0, 4]}>
-            <Image src="/images/espace_pro/logo.svg" alt="marianne" />
-            <LbaNew />
+            <Link href="/" aria-label="Retour à la page d'accueil">
+              <Flex direction="row" align="center" px={[0, 4]}>
+                <Image src="/images/espace_pro/logo.svg" alt="marianne" />
+                <LbaNew ml={4} w="143px" h="37px" />
+              </Flex>
+            </Link>
             {organisation?.includes("akto") && <LogoAkto display={["none", "flex"]} w="100px" h={6} />}
             <Spacer />
             {!user && (
