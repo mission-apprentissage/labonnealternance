@@ -6,7 +6,7 @@ import { publicConfig } from "../config.public"
 
 const Footer = () => {
   return (
-    <Box as="footer" borderTop="1px solid" borderTopColor="info" pt={6}>
+    <Box as="footer" borderTop="1px solid" borderTopColor="info" paddingTop={6} marginTop={12}>
       <Box maxWidth="1350px" mx="auto" pl={{ base: 0, lg: 6 }}>
         <Box as="nav" pl={{ base: 8, lg: 0 }}>
           <Grid templateColumns={{ base: "1fr", lg: "repeat(4, 1fr)" }}>
