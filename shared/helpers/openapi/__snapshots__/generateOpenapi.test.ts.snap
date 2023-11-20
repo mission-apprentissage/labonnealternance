@@ -569,6 +569,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "is_disabled_elligible": {
+            "default": false,
             "description": "Poste ouvert aux personnes en situation de handicap",
             "type": [
               "boolean",
@@ -583,6 +584,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_count": {
+            "default": 1,
             "description": "Nombre de poste(s) ouvert(s) pour cette offre",
             "type": [
               "number",
@@ -611,7 +613,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_duration": {
-            "description": "Durée du contrat en année",
+            "description": "Durée du contrat en mois",
+            "maximum": 36,
+            "minimum": 6,
             "type": [
               "number",
               "null",
@@ -664,11 +668,11 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Répartition de la présence de l'alternant en formation/entreprise",
             "enum": [
               "Indifférent",
+              "1 jour / 4 jours",
               "2 jours / 3 jours",
               "1 semaine / 1 semaine",
               "2 semaines / 3 semaines",
               "6 semaines / 6 semaines",
-              "Non renseigné",
             ],
             "type": [
               "string",
@@ -2068,6 +2072,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Statut de l'établissement",
             "enum": [
               "Actif",
+              "Archivé",
               "En attente de validation",
             ],
             "type": "string",
@@ -4907,57 +4912,94 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "custom_address": {
-                    "type": "string",
+                    "description": "Adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "custom_geo_coordinates": {
-                    "type": "string",
+                    "description": "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "is_disabled_elligible": {
                     "default": false,
-                    "type": "boolean",
+                    "description": "Poste ouvert aux personnes en situation de handicap",
+                    "type": [
+                      "boolean",
+                      "null",
+                    ],
                   },
                   "job_count": {
                     "default": 1,
-                    "type": "number",
+                    "description": "Nombre de poste(s) ouvert(s) pour cette offre",
+                    "type": [
+                      "number",
+                      "null",
+                    ],
                   },
                   "job_description": {
-                    "type": "string",
+                    "description": "Description de l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_duration": {
+                    "description": "Durée du contrat en mois",
                     "maximum": 36,
                     "minimum": 6,
-                    "type": "number",
+                    "type": [
+                      "number",
+                      "null",
+                    ],
                   },
                   "job_employer_description": {
-                    "type": "string",
+                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_level_label": {
+                    "description": "Niveau de formation visé en fin de stage",
                     "enum": [
-                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
                       "Licence, autres formations niveau (Bac+3)",
                       "Master, titre ingénieur, autres formations niveau (Bac+5)",
+                      "Indifférent",
                     ],
-                    "type": "string",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_rythm": {
-                    "default": "Non renseigné",
+                    "description": "Répartition de la présence de l'alternant en formation/entreprise",
                     "enum": [
                       "Indifférent",
+                      "1 jour / 4 jours",
                       "2 jours / 3 jours",
                       "1 semaine / 1 semaine",
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
-                      "Non renseigné",
                     ],
-                    "type": "string",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_start_date": {
+                    "description": "Date de début de l'alternance",
                     "type": "string",
                   },
                   "job_type": {
+                    "description": "Type de contrat",
                     "items": {
                       "enum": [
                         "Apprentissage",
@@ -4969,11 +5011,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                 },
                 "required": [
-                  "appellation_code",
-                  "job_level_label",
-                  "job_duration",
                   "job_type",
                   "job_start_date",
+                  "appellation_code",
                 ],
                 "type": "object",
               },
@@ -5055,6 +5095,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "is_disabled_elligible": {
+                    "default": false,
                     "description": "Poste ouvert aux personnes en situation de handicap",
                     "type": [
                       "boolean",
@@ -5062,6 +5103,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "job_count": {
+                    "default": 1,
                     "description": "Nombre de poste(s) ouvert(s) pour cette offre",
                     "type": [
                       "number",
@@ -5076,7 +5118,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "job_duration": {
-                    "description": "Durée du contrat en année",
+                    "description": "Durée du contrat en mois",
+                    "maximum": 36,
+                    "minimum": 6,
                     "type": [
                       "number",
                       "null",
@@ -5108,11 +5152,11 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "description": "Répartition de la présence de l'alternant en formation/entreprise",
                     "enum": [
                       "Indifférent",
+                      "1 jour / 4 jours",
                       "2 jours / 3 jours",
                       "1 semaine / 1 semaine",
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
-                      "Non renseigné",
                     ],
                     "type": [
                       "string",
