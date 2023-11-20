@@ -10,6 +10,6 @@ export default defineConfig({
   //   host: process.env.CYPRESS_HOST,
   // },
   e2e: {
-    video: true,
+    video: false,
   },
 })
