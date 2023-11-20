@@ -21,5 +21,13 @@ export const up = async (db: Db) => {
     }
   )
 
+  await db.collection("bonnesboites").deleteMany(
+    { naf_label: null },
+    {
+      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
+      bypassDocumentValidation: true,
+    }
+  )
+
   logger.info("20231120000000-cleaning_applications")
 }
