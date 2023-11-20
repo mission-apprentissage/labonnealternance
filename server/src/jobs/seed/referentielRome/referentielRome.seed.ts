@@ -17,33 +17,33 @@ const formatRawData = ({ appellations, competences, contextes_travail, mobilites
       savoir_faire: isNull(competences.savoir_faire.enjeux)
         ? null
         : isArray(competences.savoir_faire.enjeux.enjeu)
-        ? competences.savoir_faire.enjeux.enjeu.map((x) => x)
-        : competences.savoir_faire.enjeux.enjeu,
+          ? competences.savoir_faire.enjeux.enjeu.map((x) => x)
+          : competences.savoir_faire.enjeux.enjeu,
       savoir_etre_professionnel: isNull(competences.savoir_etre_professionnel.enjeux)
         ? null
         : isObject(competences.savoir_etre_professionnel.enjeux.enjeu)
-        ? isArray(competences.savoir_etre_professionnel.enjeux.enjeu.items.item)
-          ? competences.savoir_etre_professionnel?.enjeux?.enjeu?.items?.item?.map((x) => x)
-          : competences.savoir_etre_professionnel.enjeux.enjeu
-        : null,
+          ? isArray(competences.savoir_etre_professionnel.enjeux.enjeu.items.item)
+            ? competences.savoir_etre_professionnel?.enjeux?.enjeu?.items?.item?.map((x) => x)
+            : competences.savoir_etre_professionnel.enjeux.enjeu
+          : null,
       savoirs: isNull(competences.savoirs.categories)
         ? null
         : isArray(competences.savoirs.categories.categorie)
-        ? competences.savoirs.categories && competences.savoirs.categories.categorie.map((x) => x)
-        : competences.savoirs.categories.categorie,
+          ? competences.savoirs.categories && competences.savoirs.categories.categorie.map((x) => x)
+          : competences.savoirs.categories.categorie,
     },
     contextes_travail: isNull(contextes_travail)
       ? null
       : isArray(contextes_travail.type_contexte)
-      ? contextes_travail.type_contexte.map((x) => x)
-      : contextes_travail.type_contexte,
+        ? contextes_travail.type_contexte.map((x) => x)
+        : contextes_travail.type_contexte,
     mobilites: {
       proche: mobilites.proche && mobilites.proche.mobilite,
       si_evolution: isNull(mobilites.si_evolution)
         ? null
         : isArray(mobilites.si_evolution?.mobilite)
-        ? mobilites.si_evolution.mobilite.map((x) => x)
-        : mobilites.si_evolution.mobilite,
+          ? mobilites.si_evolution.mobilite.map((x) => x)
+          : mobilites.si_evolution.mobilite,
     },
   }
 }

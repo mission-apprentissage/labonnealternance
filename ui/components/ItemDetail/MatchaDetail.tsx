@@ -1,6 +1,7 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
+import { ILbaItemLbaJob } from "shared"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { notifyLbaJobDetailView } from "../../services/notifyLbaJobDetailView"
@@ -9,10 +10,51 @@ import { formatDate } from "../../utils/strutils"
 
 import MatchaAcces from "./MatchaComponents/MatchaAcces"
 import MatchaCompetences from "./MatchaComponents/MatchaCompetences"
+import MatchaCustomDescription from "./MatchaComponents/MatchaCustomDescription"
 import MatchaDescription from "./MatchaComponents/MatchaDescription"
+
+const BADDESCRIPTION = 30
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
+}
+
+const RomeDescriptions = (job) => (
+  <>
+    <MatchaDescription job={job} />
+    <MatchaCompetences job={job} />
+    <MatchaAcces job={job} />
+  </>
+)
+
+const getDescriptionContext = (job: ILbaItemLbaJob) => {
+  const { description, employeurDescription } = job.job
+
+  if ((!description && !employeurDescription) || description.length < BADDESCRIPTION) {
+    return RomeDescriptions(job)
+  }
+
+  if (description && employeurDescription) {
+    return (
+      <>
+        <MatchaCustomDescription data={description} title="Description du Métier" />
+        <MatchaCustomDescription data={employeurDescription} title="Description de l'employeur" />
+      </>
+    )
+  }
+
+  if (description && !employeurDescription) {
+    return <MatchaCustomDescription data={description} title="Description du Métier" />
+  }
+
+  if (!description && employeurDescription) {
+    return (
+      <>
+        {RomeDescriptions(job)}
+        <MatchaCustomDescription data={employeurDescription} title="Description de l'employeur" />
+      </>
+    )
+  }
 }
 
 const MatchaDetail = ({ job }) => {
@@ -113,11 +155,7 @@ const MatchaDetail = ({ job }) => {
         <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
           <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur ${job.title}`}</Text>
           <Box data-testid="lbb-component">
-            <Box mb={4}>
-              <MatchaDescription job={job} />
-              <MatchaCompetences job={job} />
-              <MatchaAcces job={job} />
-            </Box>
+            <Box mb={4}>{getDescriptionContext(job)}</Box>
           </Box>
         </Box>
       )}
