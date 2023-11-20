@@ -13,6 +13,8 @@ import MatchaCompetences from "./MatchaComponents/MatchaCompetences"
 import MatchaCustomDescription from "./MatchaComponents/MatchaCustomDescription"
 import MatchaDescription from "./MatchaComponents/MatchaDescription"
 
+const BADDESCRIPTION = 30
+
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
@@ -28,7 +30,7 @@ const RomeDescriptions = (job) => (
 const getDescriptionContext = (job: ILbaItemLbaJob) => {
   const { description, employeurDescription } = job.job
 
-  if ((!description && !employeurDescription) || description.length < 30) {
+  if ((!description && !employeurDescription) || description.length < BADDESCRIPTION) {
     return RomeDescriptions(job)
   }
 
