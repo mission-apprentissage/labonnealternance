@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { ZGlobalAddress } from "shared/models"
 
 import { logger } from "@/common/logger"
 import { UserRecruteur } from "@/common/model"
@@ -19,13 +20,15 @@ const fixAddressDetailAcademie = async () => {
         "address_detail.l1": { $exists: true },
       },
     ],
+    type: "ENTREPRISE",
   }).lean()
   const stats = { success: 0, failure: 0 }
   logger.info(`${subject}: ${userRecruteurs.length} user recruteurs à mettre à jour...`)
-  await asyncForEach(userRecruteurs, async (userRecruiter) => {
+  await asyncForEach(userRecruteurs, async (userRecruiter, index) => {
     try {
+      index % 100 === 0 && logger.info("index", index)
       const { address_detail, establishment_siret } = userRecruiter
-      if (address_detail && ("academie" in address_detail || "l1" in address_detail)) {
+      if (address_detail && ("academie" in address_detail || "l1" in address_detail) && !ZGlobalAddress.safeParse(address_detail).success) {
         if (!establishment_siret) {
           throw Boom.internal("Missing establishment_siret", { _id: userRecruiter._id })
         }
