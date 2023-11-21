@@ -19,7 +19,7 @@ export const inviteEtablissementToPremium = async () => {
   const startInvitationPeriod = dayjs().month(0).date(8)
   const endInvitationPeriod = dayjs().month(7).date(31)
   if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not between the 01/01 and the 31/08 (eligible period).")
+    logger.info("Stopped because we are not between the 08/01 and the 31/08 (eligible period).")
     return
   }
 
@@ -29,14 +29,18 @@ export const inviteEtablissementToPremium = async () => {
     },
     premium_activation_date: null,
     "to_etablissement_emails.campaign": { $ne: mailType.PREMIUM_INVITE },
-  }).lean()
+  })
+    .limit(10)
+    .lean()
+
+  logger.info("Cron #inviteEtablissementToPremium / Etablissement: ", etablissementsToInvite.length)
 
   for (const etablissement of etablissementsToInvite) {
     // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
     const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
       etablissement_formateur_siret: etablissement.formateur_siret,
       lieu_formation_email: { $ne: null },
-      // parcoursup_id: { $ne: null },
+      parcoursup_id: { $ne: null },
     }).lean()
 
     if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.formateur_siret) {

@@ -183,7 +183,7 @@ export default (server: Server) => {
       schema: zRoutes.post["/etablissements/:id/premium/accept"],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id).lean()
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -281,7 +281,7 @@ export default (server: Server) => {
       )
 
       const [result] = await Promise.all([
-        Etablissement.findById(req.params.id),
+        Etablissement.findById(req.params.id).lean(),
         ...eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) =>
           eligibleTrainingsForAppointmentService.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
