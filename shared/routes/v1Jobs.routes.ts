@@ -371,11 +371,11 @@ export const zV1JobsRoutes = {
         job_level_label: true,
         job_duration: true,
         job_type: true,
-        is_disabled_elligible: true,
         job_count: true,
         job_rythm: true,
         job_employer_description: true,
         job_description: true,
+        is_disabled_elligible: true,
         custom_address: true,
         custom_geo_coordinates: true,
       })
@@ -551,12 +551,15 @@ export const zV1JobsRoutes = {
         is_disabled_elligible: true,
         job_count: true,
         job_rythm: true,
-        job_start_date: true,
         job_employer_description: true,
         job_description: true,
         custom_address: true,
         custom_geo_coordinates: true,
-      }).partial(),
+      })
+        .extend({
+          job_start_date: ZJobStartDateCreate(),
+        })
+        .partial(),
       response: {
         "200": ZRecruiter,
         "400": z.union([ZResError, ZLbarError]),
