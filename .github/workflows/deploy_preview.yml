@@ -154,7 +154,6 @@ jobs:
           pr_number: ${{ github.event.issue.number }}
 
   cypress:
-    if: (startsWith(github.event.comment.body, '🚀') || startsWith(github.event.comment.body, ':rocket:')) && github.event.issue.pull_request
     concurrency:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}-cypress
       cancel-in-progress: true

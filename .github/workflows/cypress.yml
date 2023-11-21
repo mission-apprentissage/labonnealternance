@@ -44,7 +44,7 @@ jobs:
 
     - name: Notify failure on Slack
       uses: ravsamhq/notify-slack-action@v2
-      if: ${{ inputs.environment }} == 'recette'
+      if: ${{ failure() }} && ${{ inputs.environment }} == 'recette'
       with:
         status: ${{ job.status }}
         notification_title: "Les tests e2e ne sont pas passés : ${{ inputs.app_version }} en ${{ inputs.environment }}"
