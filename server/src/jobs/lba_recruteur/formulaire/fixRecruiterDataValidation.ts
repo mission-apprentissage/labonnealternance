@@ -1,3 +1,4 @@
+import Boom from "boom"
 import { TRAINING_RYTHM } from "shared/constants/recruteur"
 import { z } from "zod"
 
@@ -7,11 +8,19 @@ import { asyncForEach } from "@/common/utils/asyncUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { updateOffre } from "@/services/formulaire.service"
+import { getRomeDetailsFromDB } from "@/services/rome.service"
 
 const fixDates = async () => {
   const subject = "Fix data validations pour recruiters : delegations.cfa_read_company_detail_at"
   const recruiters = await Recruiter.find({
-    "jobs.delegations.cfa_read_company_detail_at": { $type: "string" },
+    $or: [
+      {
+        "jobs.delegations.cfa_read_company_detail_at": { $type: "string" },
+      },
+      {
+        "jobs.rome_detail": { $type: "string" },
+      },
+    ],
   }).lean()
   const stats = { success: 0, failure: 0 }
   logger.info(`${subject}: ${recruiters.length} recruteurs à mettre à jour...`)
@@ -19,7 +28,7 @@ const fixDates = async () => {
     try {
       const { jobs } = recruiter
       await asyncForEach(jobs, async (job) => {
-        const { delegations } = job
+        const { delegations, rome_detail, rome_code } = job
         const fixedDelegations = (delegations ?? []).map((delegation) => {
           const { cfa_read_company_detail_at } = delegation
           if (cfa_read_company_detail_at && typeof cfa_read_company_detail_at === "string") {
@@ -30,6 +39,13 @@ const fixDates = async () => {
           }
           return delegation
         })
+        if (rome_detail && typeof rome_detail === "string") {
+          const romeData = await getRomeDetailsFromDB(rome_code[0])
+          if (!romeData) {
+            throw Boom.internal(`could not find rome infos for rome=${rome_code}`)
+          }
+          job.rome_detail = romeData.fiche_metier
+        }
         await updateOffre(job._id, { ...job, delegegations: fixedDelegations })
       })
       stats.success++
