@@ -32,7 +32,7 @@ export const ZRecruiterWritable = z
     opco: z.string().nullish().describe("Opco de rattachement de l'établissement"),
     idcc: z.string().nullish().describe("Identifiant de la convention collective de l'établissement"),
     status: z
-      .enum([allRecruiterStatus[0], ...allRecruiterStatus.slice(-1)])
+      .enum([allRecruiterStatus[0], ...allRecruiterStatus.slice(1)])
       .default(RECRUITER_STATUS.ACTIF)
       .describe("Statut de l'établissement"),
     naf_code: z.string().nullish().describe("Code NAF de l'établissement"),

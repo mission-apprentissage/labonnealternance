@@ -30,7 +30,7 @@ import omit from "lodash/omit"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
@@ -325,11 +325,11 @@ const AjouterVoeuxForm = (props) => {
                   <option value="" hidden>
                     Choisissez un rythme
                   </option>
-                  <option value="Indifférent">Indifférent</option>
-                  <option value="2 jours / 3 jours">2 jours / 3 jours</option>
-                  <option value="1 semaine / 1 semaine">1 semaine / 1 semaine</option>
-                  <option value="2 semaines / 3 semaines">2 semaines / 3 semaines</option>
-                  <option value="6 semaines / 6 semaines">6 semaines / 6 semaines</option>
+                  {Object.values(TRAINING_RYTHM).map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
                 </Select>
                 {errors.job_rythm && touched.job_rythm && <FormErrorMessage>{errors.job_rythm as string}</FormErrorMessage>}
               </FormControl>
