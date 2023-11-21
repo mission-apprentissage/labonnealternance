@@ -1,27 +1,46 @@
 describe("send-rdv-from-widget", () => {
-  it("tests send-rdv-from-widget", () => {
-    cy.viewport(1271, 721)
-    cy.visit("https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage-formation")
-    cy.get("form > div > div.css-0 input").click()
-    cy.get("form > div > div.css-0 input").type("esth")
-    cy.get("#lang-switcher-item-0").click()
-    cy.get("div.css-iiltjv div.css-0 img").click()
-    cy.get("a:nth-of-type(1) div.css-17xle36").click()
-    cy.get("header a").click()
-    cy.get("form > input:nth-of-type(1)").click()
-    cy.get("form > input:nth-of-type(1)").type("John")
-    cy.get("form > input.css-jw8yg").click()
-    cy.get("form > input.css-jw8yg").type("Doe")
-    cy.get("div.css-0 > input").click()
-    cy.get("div.css-0 > input").type("0700000000")
-    cy.get("input[type='email']").click()
-    cy.get("input[type='email']").type("test-auto@nexistepas.fr")
-    cy.get("label:nth-of-type(2) > span.chakra-checkbox__control").click()
-    cy.get("label:nth-of-type(4) > span.chakra-checkbox__control").click()
-    cy.get("label:nth-of-type(11) > span.chakra-checkbox__control").click()
-    cy.get("input:nth-of-type(4)").click()
-    cy.get("input:nth-of-type(4)").type("horaires")
-    cy.get("button").click()
+  it("tests send-rdv-from-widget on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
+    cy.intercept("GET", Cypress.env("server") + "/api/v1/formations?*").as("submitTrainingCall")
+    cy.intercept("POST", Cypress.env("server") + "/api/appointment-request/validate").as("submitRdv")
+
+    cy.generateRandomEmail("test-auto-", "@nexistepas.fr", 10).then((randomEmail) => {
+      cy.viewport(1254, 704)
+      cy.visit(Cypress.env("ui") + "/recherche-apprentissage-formation?displayMap=false")
+      cy.get("#headerFormJobField-input").click()
+      cy.get("#headerFormJobField-input").type("esth")
+      cy.get("#headerFormJobField-item-0").click()
+      cy.get("#headerFormJobField-input").should("have.value", "Esthétique")
+      cy.get("[data-testid='widget-form'] button").click()
+
+      cy.wait("@submitTrainingCall").then(() => {
+        cy.get(".resultCard.training").first().click()
+        // eslint-disable-next-line cypress/unsafe-to-chain-command
+        cy.get("[data-testid='prdvButton']")
+          //.invoke("removeAttr", "target")
+          .click()
+          .then(() => {
+            // eslint-disable-next-line cypress/no-unnecessary-waiting
+            cy.wait(5000).then(() => {
+              cy.get("input[name='firstname']").click()
+              cy.get("input[name='firstname']").type("John")
+              cy.get("input[name='lastname']").click()
+              cy.get("input[name='lastname']").type("Doe")
+              cy.get("input[name='phone']").click()
+              cy.get("input[name='phone']").type("0700000000")
+              cy.get("input[type='email']").click()
+              cy.get("input[type='email']").type(randomEmail)
+              cy.get(".chakra-accordion__button").click()
+              cy.get("[data-testid='fieldset-reasons'] .chakra-collapse input:checkbox[id='reason-3']").click({ force: true })
+              cy.get("[data-testid='fieldset-reasons'] .chakra-collapse input:checkbox[id='reason-10']").click({ force: true })
+              cy.get("input[name='applicantMessageToCfa']").click()
+              cy.get("input[name='applicantMessageToCfa']").type("horaires")
+              cy.get("button[type='submit'][data-tracking-id='prendre-rdv-cfa']").click()
+              cy.wait("@submitRdv").then(() => {
+                cy.get("[data-testid='DemandeDeContactConfirmationTitle']")
+              })
+            })
+          })
+      })
+    })
   })
 })
-//# recorderSourceMap=BCBDBEAEAEAEBFBGBHBIBJAJBKBLBMBNBOBPBQBRBSBTBUBVBWBXAXBYA
