@@ -149,6 +149,11 @@ export const getPeReferentiels = async (referentiel: string) => {
   }
 }
 
+/**
+ * @deprecated use getRomeDetailsFromDB instead
+ * @param romeCode
+ * @returns
+ */
 export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDetailsFromAPI | null | undefined> => {
   tokenRomePE = await getPeAccessToken("ROME", tokenRomePE)
 
