@@ -13,7 +13,7 @@ import MatchaCompetences from "./MatchaComponents/MatchaCompetences"
 import MatchaCustomDescription from "./MatchaComponents/MatchaCustomDescription"
 import MatchaDescription from "./MatchaComponents/MatchaDescription"
 
-const BADDESCRIPTION = 30
+const BADDESCRIPTION = 50
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -30,11 +30,10 @@ const RomeDescriptions = (job) => (
 const getDescriptionContext = (job: ILbaItemLbaJob) => {
   const { description, employeurDescription } = job.job
 
-  if ((!description && !employeurDescription) || description.length < BADDESCRIPTION) {
-    return RomeDescriptions(job)
+  if (description && description.length > BADDESCRIPTION && !employeurDescription) {
+    return <MatchaCustomDescription data={description} title="Description du Métier" />
   }
-
-  if (description && employeurDescription) {
+  if (description && description.length > BADDESCRIPTION && employeurDescription) {
     return (
       <>
         <MatchaCustomDescription data={description} title="Description du Métier" />
@@ -42,11 +41,6 @@ const getDescriptionContext = (job: ILbaItemLbaJob) => {
       </>
     )
   }
-
-  if (description && !employeurDescription) {
-    return <MatchaCustomDescription data={description} title="Description du Métier" />
-  }
-
   if ((!description || description.length < BADDESCRIPTION) && employeurDescription) {
     return (
       <>
@@ -55,6 +49,8 @@ const getDescriptionContext = (job: ILbaItemLbaJob) => {
       </>
     )
   }
+
+  return RomeDescriptions(job)
 }
 
 const MatchaDetail = ({ job }) => {
