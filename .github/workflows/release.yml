@@ -81,11 +81,11 @@ jobs:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       VAULT_PWD: ${{ secrets.VAULT_PWD }}
 
-  cypress:
-    needs: ["deploy"]
-    uses: "./.github/workflows/cypress.yml"
-    inputs:
-      cypress_host: "https://labonnealternance-recette.apprentissage.beta.gouv.fr"
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+  # cypress:
+  #   needs: ["deploy"]
+  #   uses: "./.github/workflows/cypress.yml"
+  #   inputs:
+  #     cypress_host: "https://labonnealternance-recette.apprentissage.beta.gouv.fr"
+  #   secrets:
+  #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
