@@ -1,7 +1,6 @@
-import dayjs from "../helpers/dayjs"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob, ZJobFields } from "../models"
+import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
@@ -381,9 +380,7 @@ export const zV1JobsRoutes = {
         custom_geo_coordinates: true,
       })
         .extend({
-          job_start_date: ZJobFields.shape.job_start_date.refine((date) => dayjs(date).isSameOrAfter(dayjs().utc()), {
-            message: "job_start_date must be greater or equal to today's date",
-          }),
+          job_start_date: ZJobStartDateCreate(),
           appellation_code: z.string().regex(/^[0-9]+$/, "appelation code must contains only numbers"),
         })
         .strict()
