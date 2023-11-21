@@ -33,14 +33,14 @@ jobs:
         with:
           node-version: 20
 
-      - uses: actions/cache@v3
-        with:
-          path: |
-            **/node_modules
-            .yarn/install-state.gz
-            .yarn/cache
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       **/node_modules
+      #       .yarn/install-state.gz
+      #       .yarn/cache
+      #     key: yarn-${{ hashFiles('**/yarn.lock') }}
+      #     restore-keys: yarn-
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
