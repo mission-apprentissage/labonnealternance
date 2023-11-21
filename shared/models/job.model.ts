@@ -75,6 +75,11 @@ export const ZJob = ZJobFields.extend({
   .strict()
   .openapi("Job")
 
+export const ZJobStartDateCreate = (now: Date = new Date()) =>
+  ZJobFields.shape.job_start_date.refine((date) => dayjs.tz(date).isSameOrAfter(dayjs(now).startOf("days")), {
+    message: "job_start_date must be greater or equal to today's date",
+  })
+
 export const ZJobWrite = ZJobFields.pick({
   rome_appellation_label: true,
   rome_code: true,
@@ -89,9 +94,7 @@ export const ZJobWrite = ZJobFields.pick({
   delegations: true,
 })
   .extend({
-    job_start_date: ZJobFields.shape.job_start_date.refine((date) => dayjs(date).isSameOrAfter(dayjs().utc().startOf("days")), {
-      message: "job_start_date must be greater or equal to today's date",
-    }),
+    job_start_date: ZJobStartDateCreate(),
   })
   .strict()
   .openapi("JobWrite")
