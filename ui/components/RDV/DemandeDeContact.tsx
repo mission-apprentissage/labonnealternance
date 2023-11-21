@@ -51,7 +51,7 @@ const DemandeDeContact = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
-  const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.PARENT)
+  const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
   const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState<IAppointmentRequestRecapResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -136,9 +136,6 @@ const DemandeDeContact = (props: Props) => {
     setApplicantReasons(applicantReasonsUpdated)
   }
 
-  /**
-   * Submit form.
-   */
   const submitForm = async (e) => {
     e.preventDefault()
     await formik.submitForm()
@@ -149,51 +146,35 @@ const DemandeDeContact = (props: Props) => {
     <form>
       <Flex direction={["column", "column", "row"]}>
         <Text mt={7} pb={2}>
-          Vous êtes{" "}
-          <Text color="redmarianne" as="span">
-            *
-          </Text>{" "}
-          :
+          Vous êtes * :
         </Text>
         <RadioGroup mt={7} ml={10} data-testid="fieldset-who-type" value={applicantType} onChange={(value) => setApplicantType(value as EApplicantType)}>
           <Stack direction="row" spacing={3}>
-            <Radio size="lg" value={EApplicantType.PARENT}>
-              Le parent
-            </Radio>
             <Radio size="lg" value={EApplicantType.ETUDIANT}>
               L'étudiant
+            </Radio>
+            <Radio size="lg" value={EApplicantType.PARENT}>
+              Le parent
             </Radio>
           </Stack>
         </RadioGroup>
       </Flex>
       <Flex direction={["column", "column", "row"]} mt={6}>
         <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.lastname && formik.errors.lastname)}>
-          <FormLabel htmlFor="lastname">
-            Nom{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
-          </FormLabel>
-          <Input
-            id="lastname"
-            data-testid="lastname"
-            name="lastname"
-            type="text"
-            width="95%"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.lastname}
-          />
+          <FormLabel htmlFor="lastname">Nom *</FormLabel>
+          <Input data-testid="lastname" name="lastname" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.lastname} />
           <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
         </FormControl>
+        <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.firstname && formik.errors.firstname)}>
+          <FormLabel htmlFor="firstname">Prénom *</FormLabel>
+          <Input data-testid="firstname" name="firstname" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.firstname} />
+          <FormErrorMessage>{formik.errors.firstname}</FormErrorMessage>
+        </FormControl>
+      </Flex>
+      <Flex direction={["column", "column", "row"]} mt={4}>
         <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.email && formik.errors.email)}>
-          <FormLabel htmlFor="email">
-            E-mail{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
-          </FormLabel>
-          <Input id="email" data-testid="email" name="email" type="text" width="95%" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
+          <FormLabel htmlFor="email">E-mail *</FormLabel>
+          <Input data-testid="email" name="email" type="email" width="95%" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
           {suggestedEmails.length > 0 && (
             <Box mt={2} fontSize="12px" color="grey.600">
               <Text as="span" mr={2}>
@@ -221,46 +202,15 @@ const DemandeDeContact = (props: Props) => {
           )}
           <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
         </FormControl>
-      </Flex>
-      <Flex direction={["column", "column", "row"]} mt={4}>
-        <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.firstname && formik.errors.firstname)}>
-          <FormLabel htmlFor="firstname">
-            Prénom{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
-          </FormLabel>
-          <Input
-            id="firstname"
-            data-testid="firstname"
-            name="firstname"
-            type="text"
-            width="95%"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.firstname}
-          />
-          <FormErrorMessage>{formik.errors.firstname}</FormErrorMessage>
-        </FormControl>
         <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.phone && formik.errors.phone)}>
-          <FormLabel htmlFor="email">
-            Téléphone{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
-          </FormLabel>
-          <Input id="phone" data-testid="phone" name="phone" type="text" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phone} />
+          <FormLabel htmlFor="email">Téléphone *</FormLabel>
+          <Input data-testid="phone" name="phone" type="phone" width="95%" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.phone} />
           <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
         </FormControl>
       </Flex>
       <Flex direction={["column", "column", "row"]} mt={4}>
         <FormControl data-testid="fieldset-reasons" mt={{ base: 3, md: "0" }}>
-          <FormLabel htmlFor="reasons">
-            Quel(s) sujet(s) souhaitez-vous aborder ?{" "}
-            <Text color="redmarianne" as="span">
-              *
-            </Text>
-          </FormLabel>
+          <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ?</FormLabel>
           <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4}>
             <AccordionItem>
               <h2>
@@ -287,8 +237,8 @@ const DemandeDeContact = (props: Props) => {
               <AccordionPanel pb={4}>
                 <CheckboxGroup onChange={onChangeApplicantReasons}>
                   <Stack direction="column" spacing={3} mt={1} ml={1}>
-                    {applicantReasons.map(({ key, checked, title }) => (
-                      <Checkbox key={key} size="lg" defaultChecked={checked} value={key}>
+                    {applicantReasons.map(({ key, checked, title }, index) => (
+                      <Checkbox key={key} id={`reason-${index}`} size="lg" defaultChecked={checked} value={key}>
                         {title}
                       </Checkbox>
                     ))}
@@ -338,7 +288,15 @@ const DemandeDeContact = (props: Props) => {
         </Box>
       )}
       <Box mb={8} textAlign="right" mr={4}>
-        <Button aria-label="Envoyer la demande de cntact" variant="blackButton" type="submit" fontWeight="700" onClick={submitForm} isDisabled={!formik.isValid}>
+        <Button
+          data-tracking-id="prendre-rdv-cfa"
+          aria-label="Envoyer la demande de contact"
+          variant="blackButton"
+          type="submit"
+          fontWeight="700"
+          onClick={submitForm}
+          isDisabled={!formik.isValid}
+        >
           J'envoie ma demande
         </Button>
       </Box>
@@ -408,6 +366,7 @@ const DemandeDeContact = (props: Props) => {
             color="white"
             background="bluefrance.500"
             borderRadius="8px"
+            data-testid="prdvButton"
             sx={{
               textDecoration: "none",
               _hover: {

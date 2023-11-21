@@ -25,12 +25,6 @@ export enum VALIDATION_UTILISATEUR {
   MANUAL = "MANUELLE",
 }
 export const ENTREPRISE_DELEGATION = "ENTREPRISE_DELEGATION"
-export enum ETAT_UTILISATEUR {
-  VALIDE = "VALIDÉ",
-  DESACTIVE = "DESACTIVÉ",
-  ATTENTE = "EN ATTENTE DE VALIDATION",
-  ERROR = "ERROR",
-}
 
 export const ADMIN = "ADMIN"
 export const ENTREPRISE = "ENTREPRISE"
@@ -86,14 +80,6 @@ export const UNSUBSCRIBE_REASON = {
 export enum UNSUBSCRIBE_EMAIL_ERRORS {
   NON_RECONNU = "NON_RECONNU",
   ETABLISSEMENTS_MULTIPLES = "ETABLISSEMENTS_MULTIPLES",
-}
-
-export const TRAINING_RYTHM = {
-  INDIFFERENT: "Indifférent",
-  "2J3J": "2 jours / 3 jours",
-  "1S1S": "1 semaine / 1 semaine",
-  "2S3S": "2 semaines / 3 semaines",
-  "6S6S": "6 semaines / 6 semaines",
 }
 
 export const ROLES = {

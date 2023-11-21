@@ -111,7 +111,6 @@ export const zEtablissementRoutes = {
     "/etablissements/:id/premium/refuse": {
       method: "post",
       path: "/etablissements/:id/premium/refuse",
-      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,

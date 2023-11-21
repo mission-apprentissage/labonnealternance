@@ -23,6 +23,10 @@ export type IScope<Schema extends SchemaWithSecurity> = {
   }
 }
 
+export const generateScope = <Schema extends SchemaWithSecurity>(scope: IScope<Schema>): IScope<Schema> => {
+  return scope
+}
+
 export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity> = {
   identity:
     | {

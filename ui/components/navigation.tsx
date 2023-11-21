@@ -1,34 +1,15 @@
 import { CloseIcon, HamburgerIcon, LockIcon } from "@chakra-ui/icons"
-import { Box, Container, Flex, Image, Link, Show, Stack, keyframes, useDisclosure, usePrefersReducedMotion } from "@chakra-ui/react"
+import { Box, Container, Flex, Image, Show, Stack, useDisclosure } from "@chakra-ui/react"
 import NextLink from "next/link"
 
+import { LbaNew } from "../theme/components/logos"
+
+const Pipe = () => (
+  <Box display={["none", "none", "none", "block"]} borderRight="1px solid" borderColor="grey.300" my="6" marginTop="10px !important;" marginBottom="10px !important;"></Box>
+)
+
 const Navigation = ({ currentPage = undefined }) => {
-  const getLogo = () => {
-    return "logo_LBA.svg"
-  }
-
-  const getLogoTargetUrl = () => {
-    let url = "/"
-    if (currentPage === "acces-recruteur" || currentPage === "organisme-de-formation") {
-      url += currentPage
-    }
-
-    return url
-  }
-
   const { isOpen, onOpen, onClose } = useDisclosure()
-
-  const spin = keyframes`
-     0% {
-          opacity: 0;
-     }
-
-     100% {
-          opacity: 1;
-     }
-  `
-  const prefersReducedMotion = usePrefersReducedMotion()
-  const animation = prefersReducedMotion ? undefined : `${spin} .7s`
 
   return (
     <Box>
@@ -36,20 +17,16 @@ const Navigation = ({ currentPage = undefined }) => {
         <Flex py={2} direction={["column", "column", "column", "row"]} justify="space-between">
           <Flex alignItems="center" wrap="wrap">
             <Flex flexGrow={1}>
-              <Box ml={0} display="flex" alignItems="center">
-                <NextLink legacyBehavior passHref href={{ pathname: "/" }}>
-                  <Link aria-label="Retour à l'accueil">
-                    <Image src="/images/marianne.svg#svgView(viewBox(12 0 162 78))" alt="" width="162" height="78" />
-                  </Link>
+              <Flex alignItems="center">
+                <NextLink href="/" aria-label="Retour à l'accueil">
+                  <Image src="/images/marianne.svg#svgView(viewBox(12 0 162 78))" alt="" width="162" height="78" />
                 </NextLink>
                 <Show above="md">
-                  <NextLink legacyBehavior passHref href={{ pathname: getLogoTargetUrl() }}>
-                    <Link aria-label="Retour">
-                      <Image src={`/images/${getLogo()}`} alt="Redirection vers la page d'accueil" width="150" height="37" ml={4} />
-                    </Link>
+                  <NextLink href="/" aria-label="Retour à l'accueil">
+                    <LbaNew ml={4} w="143px" h="37px" />
                   </NextLink>
                 </Show>
-              </Box>
+              </Flex>
             </Flex>
             <HamburgerIcon
               boxSize={6}
@@ -65,19 +42,19 @@ const Navigation = ({ currentPage = undefined }) => {
               cursor="pointer"
             />
           </Flex>
-          <Box animation={animation} display={[isOpen ? "block" : "none", isOpen ? "block" : "none", isOpen ? "block" : "none", "block"]}>
+          <Box display={[isOpen ? "block" : "none", isOpen ? "block" : "none", isOpen ? "block" : "none", "block"]}>
             <Box display={["block", "block", "block", "flex"]} alignItems="center" height="100%">
               <Stack align="left" direction={["column", "column", "column", "row"]} mb={[2, 2, 2, 0]}>
-                <NextLink legacyBehavior passHref href={{ pathname: "/" }}>
-                  <Link aria-label="Accès espace candidat" display="inline-grid">
+                <NextLink href="/" aria-label="Accès espace candidat">
+                  <Box display="inline-grid">
                     <Box as="span" ml={[0, 0, 0, 2]} mr="1" color="bluefrance.500" fontSize={14} pl={[1, 1, 1, 3]} pr={3} py={2} bg={!currentPage ? "#00000014" : "none"}>
                       Candidat
                     </Box>
-                  </Link>
+                  </Box>
                 </NextLink>
-                <Box display={["none", "none", "none", "block"]} borderRight="1px solid" borderColor="grey.300" marginTop="10px !important;" marginBottom="10px !important;"></Box>
-                <NextLink legacyBehavior passHref href={{ pathname: "/acces-recruteur" }}>
-                  <Link aria-label="Accès espace recruteur" display="inline-grid">
+                <Pipe />
+                <NextLink href="/acces-recruteur" aria-label="Accès espace recruteur">
+                  <Box display="inline-grid">
                     <Box
                       as="span"
                       ml={[0, 0, 0, 2]}
@@ -91,18 +68,11 @@ const Navigation = ({ currentPage = undefined }) => {
                     >
                       Recruteur
                     </Box>
-                  </Link>
+                  </Box>
                 </NextLink>
-                <Box
-                  display={["none", "none", "none", "block"]}
-                  borderRight="1px solid"
-                  borderColor="grey.300"
-                  my="6"
-                  marginTop="10px !important;"
-                  marginBottom="10px !important;"
-                ></Box>
-                <NextLink legacyBehavior passHref href={{ pathname: "/organisme-de-formation" }}>
-                  <Link aria-label="Accès espace organisme de formation" display="inline-grid">
+                <Pipe />
+                <NextLink href="/organisme-de-formation" aria-label="Accès espace organisme de formation">
+                  <Box display="inline-grid">
                     <Box
                       as="span"
                       ml={[0, 0, 0, 2]}
@@ -116,25 +86,18 @@ const Navigation = ({ currentPage = undefined }) => {
                     >
                       Organisme de formation
                     </Box>
-                  </Link>
+                  </Box>
                 </NextLink>
                 {currentPage === "acces-recruteur" || currentPage === "organisme-de-formation" ? (
                   <>
-                    <Box
-                      display={["none", "none", "none", "block"]}
-                      borderRight="1px solid"
-                      borderColor="grey.300"
-                      my="6"
-                      marginTop="10px !important;"
-                      marginBottom="10px !important;"
-                    ></Box>
-                    <NextLink legacyBehavior passHref href="/espace-pro/authentification">
-                      <Link aria-label="Espace pro" display="flex" alignItems="center">
+                    <Pipe />
+                    <NextLink href="/espace-pro/authentification" aria-label="Espace pro">
+                      <Flex alignItems="center">
                         <LockIcon color="bluefrance.500" ml={{ base: 0, lg: 3 }} />
                         <Box as="span" color="bluefrance.500" fontSize={14} pl={[1, 1, 1, 2]} pr={2} py={2}>
                           Connexion
                         </Box>
-                      </Link>
+                      </Flex>
                     </NextLink>
                   </>
                 ) : (

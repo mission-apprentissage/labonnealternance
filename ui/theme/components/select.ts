@@ -7,16 +7,6 @@ const commonFieldStyle = {
   borderBottomColor: "grey.600",
   bg: "grey.200",
   borderTopRadius: "4px",
-  _focus: {
-    borderBottomColor: "grey.600",
-    boxShadow: "none",
-    outlineColor: "none",
-  },
-  _focusVisible: {
-    borderBottomColor: "grey.600",
-    boxShadow: "0 0 0 1px #3182ce",
-    borderColor: "#3182ce",
-  },
   _invalid: {
     borderBottomColor: "grey.600",
     boxShadow: "none",

@@ -569,6 +569,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "is_disabled_elligible": {
+            "default": false,
             "description": "Poste ouvert aux personnes en situation de handicap",
             "type": [
               "boolean",
@@ -583,6 +584,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_count": {
+            "default": 1,
             "description": "Nombre de poste(s) ouvert(s) pour cette offre",
             "type": [
               "number",
@@ -611,7 +613,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_duration": {
-            "description": "Durée du contrat en année",
+            "description": "Durée du contrat en mois",
+            "maximum": 36,
+            "minimum": 6,
             "type": [
               "number",
               "null",
@@ -664,11 +668,11 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Répartition de la présence de l'alternant en formation/entreprise",
             "enum": [
               "Indifférent",
+              "1 jour / 4 jours",
               "2 jours / 3 jours",
               "1 semaine / 1 semaine",
               "2 semaines / 3 semaines",
               "6 semaines / 6 semaines",
-              "Non renseigné",
             ],
             "type": [
               "string",
@@ -1265,107 +1269,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Job",
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "contractDescription": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "contractType": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "creationDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "description": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "duration": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "dureeContrat": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "elligibleHandicap": {
-                    "type": [
-                      "boolean",
-                      "null",
-                    ],
-                  },
-                  "id": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "jobStartDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "quantiteContrat": {
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "romeDetails": {
-                    "$ref": "#/components/schemas/RomeDetail",
-                  },
-                  "rythmeAlternance": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "status": {
-                    "enum": [
-                      "Active",
-                      "Pourvue",
-                      "Annulée",
-                      "En attente",
-                    ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                },
-                "required": [
-                  "description",
-                  "creationDate",
-                  "id",
-                  "contractType",
-                ],
-                "type": [
-                  "object",
-                  "null",
-                ],
-              },
-            ],
+            "$ref": "#/components/schemas/LbacJob",
           },
           "nafs": {
             "items": {
@@ -1457,6 +1361,108 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "error",
         ],
         "type": "object",
+      },
+      "LbacJob": {
+        "additionalProperties": false,
+        "properties": {
+          "contractDescription": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "contractType": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "creationDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "description": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "duration": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "dureeContrat": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "elligibleHandicap": {
+            "type": [
+              "boolean",
+              "null",
+            ],
+          },
+          "employeurDescription": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "id": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "jobStartDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "quantiteContrat": {
+            "type": [
+              "number",
+              "null",
+            ],
+          },
+          "romeDetails": {
+            "$ref": "#/components/schemas/RomeDetail",
+          },
+          "rythmeAlternance": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "status": {
+            "enum": [
+              "Active",
+              "Pourvue",
+              "Annulée",
+              "En attente",
+            ],
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "description",
+          "creationDate",
+          "id",
+          "contractType",
+        ],
+        "type": [
+          "object",
+          "null",
+        ],
       },
       "MetierEnrichi": {
         "additionalProperties": false,
@@ -1727,107 +1733,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Job",
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "contractDescription": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "contractType": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "creationDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "description": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "duration": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "dureeContrat": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "elligibleHandicap": {
-                    "type": [
-                      "boolean",
-                      "null",
-                    ],
-                  },
-                  "id": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "jobStartDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "quantiteContrat": {
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "romeDetails": {
-                    "$ref": "#/components/schemas/RomeDetail",
-                  },
-                  "rythmeAlternance": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "status": {
-                    "enum": [
-                      "Active",
-                      "Pourvue",
-                      "Annulée",
-                      "En attente",
-                    ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                },
-                "required": [
-                  "description",
-                  "creationDate",
-                  "id",
-                  "contractType",
-                ],
-                "type": [
-                  "object",
-                  "null",
-                ],
-              },
-            ],
+            "$ref": "#/components/schemas/LbacJob",
           },
           "nafs": {
             "items": {
@@ -2172,6 +2078,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Statut de l'établissement",
             "enum": [
               "Actif",
+              "Archivé",
               "En attente de validation",
             ],
             "type": "string",
@@ -4338,47 +4245,56 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "_id": {
-                      "description": "Identifiant unique",
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "_id": {
+                        "description": "Identifiant unique",
+                      },
+                      "code_postal": {
+                        "type": "string",
+                      },
+                      "distance_en_km": {
+                        "type": "number",
+                      },
+                      "entreprise_raison_sociale": {
+                        "type": "string",
+                      },
+                      "geo_coordonnees": {
+                        "type": "string",
+                      },
+                      "nom_departement": {
+                        "type": "string",
+                      },
+                      "nom_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "numero_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "type_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
                     },
-                    "code_postal": {
-                      "type": "string",
-                    },
-                    "distance_en_km": {
-                      "type": "number",
-                    },
-                    "entreprise_raison_sociale": {
-                      "type": "string",
-                    },
-                    "geo_coordonnees": {
-                      "type": "string",
-                    },
-                    "nom_departement": {
-                      "type": "string",
-                    },
-                    "nom_voie": {
-                      "type": "string",
-                    },
-                    "numero_voie": {
-                      "type": "string",
-                    },
-                    "type_voie": {
-                      "type": "string",
-                    },
+                    "required": [
+                      "code_postal",
+                      "nom_departement",
+                      "entreprise_raison_sociale",
+                      "geo_coordonnees",
+                      "distance_en_km",
+                    ],
+                    "type": "object",
                   },
-                  "required": [
-                    "numero_voie",
-                    "type_voie",
-                    "nom_voie",
-                    "code_postal",
-                    "nom_departement",
-                    "entreprise_raison_sociale",
-                    "geo_coordonnees",
-                    "distance_en_km",
-                  ],
-                  "type": "object",
+                  "type": "array",
                 },
               },
             },
@@ -5002,57 +4918,94 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "custom_address": {
-                    "type": "string",
+                    "description": "Adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "custom_geo_coordinates": {
-                    "type": "string",
+                    "description": "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "is_disabled_elligible": {
                     "default": false,
-                    "type": "boolean",
+                    "description": "Poste ouvert aux personnes en situation de handicap",
+                    "type": [
+                      "boolean",
+                      "null",
+                    ],
                   },
                   "job_count": {
                     "default": 1,
-                    "type": "number",
+                    "description": "Nombre de poste(s) ouvert(s) pour cette offre",
+                    "type": [
+                      "number",
+                      "null",
+                    ],
                   },
                   "job_description": {
-                    "type": "string",
+                    "description": "Description de l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_duration": {
+                    "description": "Durée du contrat en mois",
                     "maximum": 36,
                     "minimum": 6,
-                    "type": "number",
+                    "type": [
+                      "number",
+                      "null",
+                    ],
                   },
                   "job_employer_description": {
-                    "type": "string",
+                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_level_label": {
+                    "description": "Niveau de formation visé en fin de stage",
                     "enum": [
-                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
                       "Licence, autres formations niveau (Bac+3)",
                       "Master, titre ingénieur, autres formations niveau (Bac+5)",
+                      "Indifférent",
                     ],
-                    "type": "string",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_rythm": {
-                    "default": "Non renseigné",
+                    "description": "Répartition de la présence de l'alternant en formation/entreprise",
                     "enum": [
                       "Indifférent",
+                      "1 jour / 4 jours",
                       "2 jours / 3 jours",
                       "1 semaine / 1 semaine",
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
-                      "Non renseigné",
                     ],
-                    "type": "string",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_start_date": {
+                    "description": "Date de début de l'alternance",
                     "type": "string",
                   },
                   "job_type": {
+                    "description": "Type de contrat",
                     "items": {
                       "enum": [
                         "Apprentissage",
@@ -5064,11 +5017,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                 },
                 "required": [
-                  "appellation_code",
-                  "job_level_label",
-                  "job_duration",
                   "job_type",
                   "job_start_date",
+                  "appellation_code",
                 ],
                 "type": "object",
               },
@@ -5150,6 +5101,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "is_disabled_elligible": {
+                    "default": false,
                     "description": "Poste ouvert aux personnes en situation de handicap",
                     "type": [
                       "boolean",
@@ -5157,6 +5109,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "job_count": {
+                    "default": 1,
                     "description": "Nombre de poste(s) ouvert(s) pour cette offre",
                     "type": [
                       "number",
@@ -5171,7 +5124,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "job_duration": {
-                    "description": "Durée du contrat en année",
+                    "description": "Durée du contrat en mois",
+                    "maximum": 36,
+                    "minimum": 6,
                     "type": [
                       "number",
                       "null",
@@ -5203,11 +5158,11 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "description": "Répartition de la présence de l'alternant en formation/entreprise",
                     "enum": [
                       "Indifférent",
+                      "1 jour / 4 jours",
                       "2 jours / 3 jours",
                       "1 semaine / 1 semaine",
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
-                      "Non renseigné",
                     ],
                     "type": [
                       "string",

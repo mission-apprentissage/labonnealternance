@@ -13,7 +13,7 @@ import { readXLSXFile } from "../../common/utils/fileUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 
 const currentDirname = __dirname(import.meta.url)
-const FILEPATH = path.join(currentDirname, "../../assets/domainesMetiers_S3.xlsx")
+const FILEPATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
 
 const downloadAndSaveFile = async (from = "currentDomainesMetiers.xlsx") => {
   logger.info(`Downloading and save file ${from} from S3 Bucket...`)

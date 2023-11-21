@@ -52,11 +52,15 @@ fileignoreconfig:
 - filename: server/tests/integration/http/passwordRoutes.test.ts
   checksum: e9869aceb9bb23877dccf1c6e2de729bfe685f7e40231c465fc40cdcc7c68c14
 - filename: server/tests/unit/security/accessTokenService.test.ts
+  checksum: 232b1bae52a4d4f961637f59b09da5e480147864c76980a2b86e77a73bb36923
+- filename: server/tests/unit/security/accessTokenService.test.ts
   checksum: 58153e7e57ef450bfbf061f322cd8b7643dba12513b183194b4eafdb166f58d3
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
+- filename: shared/helpers/generateUri.ts
+  checksum: 03ecb8627c19374e97450e5974ca6a5f51e269a8bb1cf5d372a8c2a2aca72cfa
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
@@ -73,6 +77,8 @@ fileignoreconfig:
   checksum: f9d2657f85f9f885deddf2ed1fd006d8278d27174659f0ed5a35e4d11343bb3a
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/ItemDetail/ItemDetail.tsx
+  checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
 - filename: ui/components/espace_pro/Admin/utilisateurs/UserList.tsx
   checksum: a50177afa593bae5707bdba29ef27b8f2ed0bc58487491bfff580e7e1f422243
 - filename: ui/components/espace_pro/Admin/utilisateurs/infoDetails/InfoDetails.tsx

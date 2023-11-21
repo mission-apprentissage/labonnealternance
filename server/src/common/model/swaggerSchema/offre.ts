@@ -1,4 +1,4 @@
-import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models"
 
 export default {
@@ -91,7 +91,7 @@ export default {
         },
         rythme_alternance: {
           type: "string",
-          enum: ["2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines"],
+          enum: [...Object.values(TRAINING_RYTHM), null],
           description: "Répartition de la présence de l'alternant en formation/entreprise",
         },
       },
