@@ -18,7 +18,7 @@ import initNafScoreMap from "./initNafScoreMap"
 
 const currentDirname = __dirname(import.meta.url)
 
-const PREDICTION_FILE = path.join(currentDirname, "../../assets/bonnesboites.json")
+const PREDICTION_FILE = path.join(currentDirname, "./assets/bonnesboites.json")
 const s3File = config.algoBonnesBoites.s3File
 
 export const removePredictionFile = async () => {
@@ -67,7 +67,7 @@ export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
 export const downloadSAVEFile = async ({ key }) => {
   logger.info(`Downloading SAVE file ${key} from S3 Bucket...`)
 
-  await downloadFile({ from: key, to: path.join(currentDirname, `../../assets/${key}`) })
+  await downloadFile({ from: key, to: path.join(currentDirname, `./assets/${key}`) })
 }
 
 export const downloadFile = async ({ from, to }) => {
@@ -75,7 +75,7 @@ export const downloadFile = async ({ from, to }) => {
 }
 
 export const streamSAVECompanies = async ({ key }) => {
-  const response = fs.createReadStream(path.join(currentDirname, `../../assets/${key}`))
+  const response = fs.createReadStream(path.join(currentDirname, `./assets/${key}`))
   return compose(response, streamJsonArray())
 }
 
