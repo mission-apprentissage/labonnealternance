@@ -16,7 +16,7 @@ readonly SEED_GZ="$ROOT_DIR/.infra/files/configs/mongodb/seed.gz"
 readonly PASSPHRASE="$ROOT_DIR/.bin/SEED_PASSPHRASE.txt"
 readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
 
-read -p "La base de donnée va etre écraser, voulez vous continuer ? [y/N]: " response
+read -p "La base de donnée va être écrasée, voulez vous continuer ? [y/N]: " response
 case $response in
   [yY][eE][sS]|[yY])
     ;;
