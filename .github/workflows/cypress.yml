@@ -30,7 +30,6 @@ on:
 jobs:
   concurrency:
     group: "cypress-${{ github.workflow }}-${{ github.ref }}"
-  needs: ["deploy"]
   runs-on: ubuntu-latest
   steps:
     - name: Checkout project
