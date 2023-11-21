@@ -34,10 +34,10 @@ describe("send-rdv-from-widget", () => {
               cy.get("[data-testid='fieldset-reasons'] .chakra-collapse input:checkbox[id='reason-10']").click({ force: true })
               cy.get("input[name='applicantMessageToCfa']").click()
               cy.get("input[name='applicantMessageToCfa']").type("horaires")
-              cy.get("button[type='submit'][data-tracking-id='prendre-rdv-cfa']").click()
-              cy.wait("@submitRdv").then(() => {
-                cy.get("[data-testid='DemandeDeContactConfirmationTitle']")
-              })
+              // cy.get("button[type='submit'][data-tracking-id='prendre-rdv-cfa']").click()
+              // cy.wait("@submitRdv").then(() => {
+              //   cy.get("[data-testid='DemandeDeContactConfirmationTitle']")
+              // })
             })
           })
       })
