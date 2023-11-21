@@ -1,4 +1,4 @@
-name: CI
+name: Tests Cypress e2e
 
 on:
   workflow_dispatch:
