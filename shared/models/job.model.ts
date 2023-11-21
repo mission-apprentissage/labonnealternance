@@ -76,6 +76,7 @@ export const ZJob = ZJobFields.extend({
   .openapi("Job")
 
 export const ZJobStartDateCreate = (now: Date = new Date()) =>
+  // Le changement de jour se fait à minuit (heure de Paris)
   ZJobFields.shape.job_start_date.refine((date) => dayjs.tz(date).isSameOrAfter(dayjs(now).startOf("days")), {
     message: "job_start_date must be greater or equal to today's date",
   })
