@@ -13,14 +13,7 @@ import { getRomeDetailsFromDB } from "@/services/rome.service"
 const fixDates = async () => {
   const subject = "Fix data validations pour recruiters : delegations.cfa_read_company_detail_at"
   const recruiters = await Recruiter.find({
-    $or: [
-      {
-        "jobs.delegations.cfa_read_company_detail_at": { $type: "string" },
-      },
-      {
-        "jobs.rome_detail": { $type: "string" },
-      },
-    ],
+    "jobs.delegations.cfa_read_company_detail_at": { $type: "string" },
   }).lean()
   const stats = { success: 0, failure: 0 }
   logger.info(`${subject}: ${recruiters.length} recruteurs à mettre à jour...`)
@@ -28,7 +21,7 @@ const fixDates = async () => {
     try {
       const { jobs } = recruiter
       await asyncForEach(jobs, async (job) => {
-        const { delegations, rome_detail, rome_code } = job
+        const { delegations } = job
         const fixedDelegations = (delegations ?? []).map((delegation) => {
           const { cfa_read_company_detail_at } = delegation
           if (cfa_read_company_detail_at && typeof cfa_read_company_detail_at === "string") {
@@ -39,17 +32,52 @@ const fixDates = async () => {
           }
           return delegation
         })
+        await updateOffre(job._id, { ...job, delegegations: fixedDelegations })
+      })
+      stats.success++
+    } catch (err) {
+      sentryCaptureException(err)
+      stats.failure++
+    }
+  })
+  await notifyToSlack({
+    subject,
+    message: `${stats.failure} erreurs. ${stats.success} mises à jour`,
+    error: stats.failure > 0,
+  })
+  return stats
+}
+
+const fixRomeDetails = async () => {
+  const subject = "Fix data validations pour recruiters : rome_detail"
+  const recruiters = await Recruiter.find(
+    {
+      "jobs.rome_detail": { $type: "string" },
+    },
+    undefined,
+    { runValidators: false, rawResult: true }
+  ).lean()
+  const stats = { success: 0, failure: 0 }
+  logger.info(`${subject}: ${recruiters.length} recruteurs à mettre à jour...`)
+  await asyncForEach(recruiters, async (recruiter) => {
+    try {
+      logger.info("treating recruiter", recruiter._id)
+      const { jobs } = recruiter
+      await asyncForEach(jobs, async (job) => {
+        const { rome_detail, rome_code } = job
         if (rome_detail && typeof rome_detail === "string") {
           const romeData = await getRomeDetailsFromDB(rome_code[0])
           if (!romeData) {
             throw Boom.internal(`could not find rome infos for rome=${rome_code}`)
           }
+          logger.info(romeData.fiche_metier)
           job.rome_detail = romeData.fiche_metier
         }
-        await updateOffre(job._id, { ...job, delegegations: fixedDelegations })
+        await updateOffre(job._id, { ...job })
       })
       stats.success++
     } catch (err) {
+      logger.error(err)
       sentryCaptureException(err)
       stats.failure++
     }
@@ -102,6 +130,7 @@ const fixJobRythm = async () => {
 }
 
 export const fixRecruiterDataValidation = async () => {
+  await fixRomeDetails()
   await fixDates()
   await fixJobRythm()
 }
