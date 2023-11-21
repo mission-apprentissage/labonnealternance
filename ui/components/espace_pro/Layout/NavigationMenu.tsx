@@ -38,7 +38,7 @@ const NavItem = ({ children, to = "/", ...rest }) => {
       p={3}
       href={to}
       color={isActive ? "bluefrance.500" : "grey.800"}
-      _hover={{ textDecoration: "none", bg: "grey.200" }}
+      _hover={{ textDecoration: "bluefrance.500", bg: "grey.200" }}
       borderBottom="2px solid"
       borderColor={isActive ? "bluefrance" : "transparent"}
     >

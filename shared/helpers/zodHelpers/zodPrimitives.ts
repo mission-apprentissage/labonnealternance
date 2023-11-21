@@ -34,7 +34,7 @@ export const extensions = {
       example: "78424186100011",
     }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
-  phone: () => z.string(), //.regex(phoneRegex), TODO refine
+  phone: () => z.string().trim() /*.regex(phoneRegex)*/,
   code_naf: () =>
     z.preprocess(
       (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point

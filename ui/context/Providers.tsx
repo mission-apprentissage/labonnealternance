@@ -3,6 +3,8 @@ import PlausibleProvider from "next-plausible"
 import React from "react"
 import { QueryClient, QueryClientProvider } from "react-query"
 
+import { publicConfig } from "@/config.public"
+
 import theme from "../theme/index"
 
 import LogoProvider from "./contextLogo"
@@ -19,15 +21,10 @@ const queryClient = new QueryClient({
   },
 })
 
-const Providers = ({ env, children }) => {
+const Providers = ({ children }) => {
   return (
     <ChakraProvider theme={theme}>
-      <PlausibleProvider
-        domain={env !== "production" ? "labonnealternance-recette2.apprentissage.beta.gouv.fr" : "labonnealternance.apprentissage.beta.gouv.fr"}
-        trackOutboundLinks={true}
-        trackLocalhost={true}
-        enabled={true}
-      >
+      <PlausibleProvider domain={publicConfig.plausibleDomain} trackOutboundLinks={true} trackLocalhost={true} enabled={true}>
         <SearchResultContextProvider>
           <ParameterContextProvider>
             <DisplayContextProvider>

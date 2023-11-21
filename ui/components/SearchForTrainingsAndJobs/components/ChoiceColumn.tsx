@@ -218,7 +218,7 @@ const ChoiceColumn = ({
 
     return (
       <Box display={displayProperty} width="75%" margin="auto" pt={12}>
-        <Image margin="auto" width="75%" src="/images/dosearch.svg" alt="" />
+        <Image margin="auto" width="75%" maxWidth="600px" src="/images/dosearch.svg" alt="" />
         {/* @ts-expect-error: TODO */}
         <Box pl={12} pr={8} py={4} {...noSearchTextProperties}>
           <Box textAlign="left">

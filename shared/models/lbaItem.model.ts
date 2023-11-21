@@ -138,8 +138,8 @@ const ZLbaItemContact = z
         description: "Le nom du contact de référence",
       })
       .nullish(), // pe -> contact.nom | matcha -> prenom nom
-    phone: extensions
-      .phone()
+    phone: z
+      .string()
       .openapi({
         example: "0X XX XX XX XX",
         description: "Le numéro de téléphone du contact de référence",
@@ -225,6 +225,7 @@ export type ILbaItemCompany = z.output<typeof ZLbaItemCompany>
 const ZLbaItemJob = z
   .object({
     description: z.string().nullable(), // pe -> description | matcha -> description
+    employeurDescription: z.string().nullable().optional(), // matcha -> job.job_employer_description
     creationDate: z.date().nullable(), // pe -> dateCreation | matcha -> createdAt
     id: z.string().nullable(), // pe -> id | matcha -> id mongo offre
     contractType: z.string().nullable(), // pe -> typeContrat | matcha -> offres.type
@@ -239,7 +240,7 @@ const ZLbaItemJob = z
     status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullish(),
   })
   .strict()
-  .openapi("Job") // uniquement pour pe et matcha
+  .openapi("LbacJob") // uniquement pour pe et matcha
 
 export type ILbaItemJob = z.output<typeof ZLbaItemJob>
 
