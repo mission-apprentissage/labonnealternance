@@ -15,7 +15,7 @@ import mailer from "../../services/mailer.service"
 export const inviteEtablissementToPremium = async () => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
-  const startInvitationPeriod = dayjs().month(0).date(1)
+  const startInvitationPeriod = dayjs().month(0).date(8)
   const endInvitationPeriod = dayjs().month(7).date(31)
   if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
     logger.info("Stopped because we are not between the 01/01 and the 31/08 (eligible period).")
