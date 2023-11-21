@@ -101,12 +101,15 @@ export const zEtablissementRoutes = {
     "/etablissements/:id/premium/accept": {
       method: "post",
       path: "/etablissements/:id/premium/accept",
-      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
     "/etablissements/:id/premium/refuse": {
       method: "post",
@@ -115,7 +118,11 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
     "/etablissements/:id/opt-out/unsubscribe": {
       method: "post",

@@ -89,43 +89,91 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
 /**
  * Forge a link for Affelnet premium activation.
  */
-export function createRdvaAffelnetPageLink(email: string, siret: string, etablissementId: string): string {
-  const etablissementIdEndpoint: IScope<(typeof zRoutes.get)["/etablissements/:id"]> = {
-    schema: zRoutes.get["/etablissements/:id"],
-    options: {
-      params: { id: etablissementId },
-      querystring: undefined,
-    },
-    resources: {
-      etablissement: [etablissementId],
-    },
-  }
-
-  const etablissementIdAffelnetAcceptEndpoint: IScope<(typeof zRoutes.post)["/etablissements/:id/premium/affelnet/accept"]> = {
-    schema: zRoutes.post["/etablissements/:id/premium/affelnet/accept"],
-    options: {
-      params: { id: etablissementId },
-      querystring: undefined,
-    },
-    resources: {
-      etablissement: [etablissementId],
-    },
-  }
-
-  const etablissementIdAffelnetRefuseEndpoint: IScope<(typeof zRoutes.post)["/etablissements/:id/premium/affelnet/refuse"]> = {
-    schema: zRoutes.post["/etablissements/:id/premium/affelnet/refuse"],
-    options: {
-      params: { id: etablissementId },
-      querystring: undefined,
-    },
-    resources: {
-      etablissement: [etablissementId],
-    },
-  }
-
-  const token = generateAccessToken({ type: "cfa", email, siret }, [etablissementIdEndpoint, etablissementIdAffelnetAcceptEndpoint, etablissementIdAffelnetRefuseEndpoint], {
-    expiresIn: "30d",
-  })
+export function createRdvaPremiumAffelnetPageLink(email: string, siret: string, etablissementId: string): string {
+  const token = generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      generateScope({
+        schema: zRoutes.get["/etablissements/:id"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/etablissements/:id/premium/affelnet/accept"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/etablissements/:id/premium/affelnet/refuse"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
 
   return `${config.publicUrl}/espace-pro/form/premium/affelnet/${etablissementId}?token=${encodeURIComponent(token)}`
+}
+
+/**
+ * Forge a link for Parcoursup premium activation.
+ */
+export function createRdvaPremiumParcoursupPageLink(email: string, siret: string, etablissementId: string): string {
+  const token = generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      generateScope({
+        schema: zRoutes.get["/etablissements/:id"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/etablissements/:id/premium/accept"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/etablissements/:id/premium/refuse"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+
+  return `${config.publicUrl}/espace-pro/form/premium/${etablissementId}?token=${encodeURIComponent(token)}`
 }

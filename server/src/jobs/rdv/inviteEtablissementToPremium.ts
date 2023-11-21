@@ -1,5 +1,6 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isValidEmail } from "@/common/utils/isValidEmail"
+import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
@@ -28,17 +29,17 @@ export const inviteEtablissementToPremium = async () => {
     },
     premium_activation_date: null,
     "to_etablissement_emails.campaign": { $ne: mailType.PREMIUM_INVITE },
-  })
+  }).lean()
 
   for (const etablissement of etablissementsToInvite) {
     // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
     const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
       etablissement_formateur_siret: etablissement.formateur_siret,
       lieu_formation_email: { $ne: null },
-      parcoursup_id: { $ne: null },
+      // parcoursup_id: { $ne: null },
     }).lean()
 
-    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email)) {
+    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.formateur_siret) {
       continue
     }
 
@@ -56,7 +57,7 @@ export const inviteEtablissementToPremium = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
-          linkToForm: `${config.publicUrl}/espace-pro/form/premium/${etablissement._id}`,
+          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
         },
       },
     })

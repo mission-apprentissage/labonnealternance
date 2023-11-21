@@ -61,7 +61,7 @@ export default function PremiumAffelnetForm() {
     const fetchData = async () => {
       const etablissement = (await apiGet("/etablissements/:id", {
         params: { id },
-      })) as any // TODO not any
+      })) as IAffelnetEtablissement
 
       if (etablissement.premium_affelnet_refusal_date) {
         setHasRefused(true)

@@ -1,5 +1,5 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { createRdvaAffelnetPageLink } from "@/services/appLinks.service"
+import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
@@ -52,7 +52,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.created_at).format("DD/MM"),
-          linkToForm: createRdvaAffelnetPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
+          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
         },
       },
     })
