@@ -1,6 +1,19 @@
 name: CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      cypress_host:
+        description: host name
+        type: string
+        required: true
+    secrets:
+      CODECOV_TOKEN:
+        description: Code coverrage token
+        required: true
+      SLACK_WEBHOOK:
+        description: Webhook slack
+        required: true
   workflow_call:
     inputs:
       cypress_host:
