@@ -12,7 +12,7 @@ on:
         description: Code coverrage token
         required: true
       SLACK_WEBHOOK:
-        description: Wehook slack
+        description: Webhook slack
         required: true
 jobs:
   concurrency:
