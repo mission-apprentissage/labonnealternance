@@ -39,6 +39,7 @@ import { fillRecruiterRaisonSociale } from "./lba_recruteur/user/misc/fillRecrui
 import { fixUserRecruiterDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurDataValidation"
 import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
+import buildSAVE from "./lbb/buildSAVE"
 import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
@@ -308,6 +309,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateOpcoCompanies(job.payload)
       case "domaines-metiers:update":
         return updateDomainesMetiers()
+      case "save:update":
+        return buildSAVE()
       case "domaines-metiers:file:update": {
         const { filename, key } = job.payload
         return updateDomainesMetiersFile({ filename, key })
