@@ -36,7 +36,7 @@ export default function OptOutUnsubscribe() {
   }
 
   const router = useRouter()
-  const { id } = router.query as { id: string }
+  const { id, token } = router.query as { id: string; token: string }
   const [textarea, setTextarea] = useState("")
   const [hasBeenUnsubscribed, setHasBeenUnsubscribed] = useState(false)
   const [isQuestionSent, setIsQuestionSent] = useState(false)
@@ -73,7 +73,10 @@ export default function OptOutUnsubscribe() {
     const fetchData = async () => {
       const etablissement = (await apiGet("/etablissements/:id", {
         params: { id },
-      })) as any // TODO not any
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })) as IEtablissement
 
       if (etablissement.optout_refusal_date) {
         setHasBeenUnsubscribed(true)

@@ -177,3 +177,28 @@ export function createRdvaPremiumParcoursupPageLink(email: string, siret: string
 
   return `${config.publicUrl}/espace-pro/form/premium/${etablissementId}?token=${encodeURIComponent(token)}`
 }
+
+/**
+ * Forge a link for Parcoursup premium activation.
+ */
+export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string, etablissementId: string): string {
+  const token = generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      generateScope({
+        schema: zRoutes.get["/etablissements/:id/opt-out/unsubscribe"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+  return `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissementId}?token=${encodeURIComponent(token)}`
+}
