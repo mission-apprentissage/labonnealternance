@@ -48,7 +48,6 @@ export const relanceOpco = async () => {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           count: userList[opco],
-          url: `${config.publicUrl}/espace-pro/authentification`,
         },
       })
     })
