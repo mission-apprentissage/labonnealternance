@@ -1,5 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 
+import { zObjectId } from "./common"
+
 export const ZRomeWithLabel = z
   .object({
     codeRome: z.string(),
@@ -86,5 +88,17 @@ export const ZAppellationRome = z
 export const ZAppellationsRomes = z
   .object({
     coupleAppellationRomeMetier: ZAppellationRome.array(),
+  })
+  .strict()
+
+export const ZDiplomesMetiers = z
+  .object({
+    _id: zObjectId,
+    intitule_long: z.string(),
+    codes_romes: z.array(z.string()),
+    codes_rncps: z.array(z.string()),
+    acronymes_intitule: z.string(),
+    created_at: z.date(),
+    last_update_at: z.date(),
   })
   .strict()
