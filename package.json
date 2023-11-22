@@ -115,5 +115,8 @@
     "*": [
       "prettier --write -u"
     ]
+  },
+  "resolutions": {
+    "zod@3.21.4": "patch:zod@npm%3A3.21.4#./.yarn/patches/zod-npm-3.21.4-9f570b215c.patch"
   }
 }
