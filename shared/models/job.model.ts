@@ -29,7 +29,7 @@ export const ZDelegation = z
   .strict()
   .openapi("Delegation")
 
-const ZJobFields = z
+export const ZJobFields = z
   .object({
     rome_label: z.string().nullish().describe("Libellé du métier concerné"),
     rome_appellation_label: z.string().nullish().describe("Libellé de l'appelation ROME"),
@@ -54,9 +54,9 @@ const ZJobFields = z
     is_multi_published: z.boolean().nullish().describe("Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance"),
     job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
     delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
-    is_disabled_elligible: z.boolean().nullish().describe("Poste ouvert aux personnes en situation de handicap"),
-    job_count: z.number().nullish().describe("Nombre de poste(s) ouvert(s) pour cette offre"),
-    job_duration: z.number().nullish().describe("Durée du contrat en année"),
+    is_disabled_elligible: z.boolean().nullish().default(false).describe("Poste ouvert aux personnes en situation de handicap"),
+    job_count: z.number().nullish().default(1).describe("Nombre de poste(s) ouvert(s) pour cette offre"),
+    job_duration: z.number().min(6).max(36).nullish().describe("Durée du contrat en mois"),
     job_rythm: z
       .enum([allJobRythm[0], ...allJobRythm.slice(1)])
       .nullish()
@@ -75,6 +75,12 @@ export const ZJob = ZJobFields.extend({
   .strict()
   .openapi("Job")
 
+export const ZJobStartDateCreate = (now: dayjs.Dayjs = dayjs.tz()) =>
+  // Le changement de jour se fait à minuit (heure de Paris)
+  ZJobFields.shape.job_start_date.refine((date) => dayjs.tz(date).isSameOrAfter(dayjs.tz(now).startOf("days")), {
+    message: "job_start_date must be greater or equal to today's date",
+  })
+
 export const ZJobWrite = ZJobFields.pick({
   rome_appellation_label: true,
   rome_code: true,
@@ -89,9 +95,7 @@ export const ZJobWrite = ZJobFields.pick({
   delegations: true,
 })
   .extend({
-    job_start_date: ZJobFields.shape.job_start_date.refine((date) => dayjs(date).isSameOrAfter(dayjs().utc().startOf("days")), {
-      message: "job_start_date must be greater or equal to today's date",
-    }),
+    job_start_date: ZJobStartDateCreate(),
   })
   .strict()
   .openapi("JobWrite")

@@ -1,7 +1,7 @@
+import { IReferentielOpco } from "shared/models"
+
 import { OPCOS } from "../../../../services/constant.service"
 import { model, Schema } from "../../../mongodb"
-
-import { IReferentielOpco } from "./referentielOpco.types"
 
 export const referentielOpcoSchema = new Schema<IReferentielOpco>(
   {
@@ -27,4 +27,6 @@ export const referentielOpcoSchema = new Schema<IReferentielOpco>(
   }
 )
 
-export default model<IReferentielOpco>("referentielOpco", referentielOpcoSchema)
+export const ReferentielOpco = model<IReferentielOpco>("referentielOpco", referentielOpcoSchema)
+
+export default ReferentielOpco

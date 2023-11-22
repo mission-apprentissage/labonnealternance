@@ -469,6 +469,12 @@ program
   .action(createJobAction("opcos:update"))
 
 program
+  .command("update-save-files")
+  .description("Procède à la mise à jour sur le S3 des fichiers SAVE")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("save:update"))
+
+program
   .command("update-domaines-metiers")
   .description("Procède à l'import du fichier domaines metiers")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -517,6 +523,18 @@ program
   .description("Répare les adresses emails comportant des caractères erronés dans la collection applications")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("applications:fix"))
+
+program
+  .command("fix-data-validation-recruiters")
+  .description("Répare les data de la collection recruiters")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:data-validation:fix"))
+
+program
+  .command("fix-data-validation-user-recruteurs")
+  .description("Répare les data de la collection userrecruteurs")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("user-recruters:data-validation:fix"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

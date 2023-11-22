@@ -11,7 +11,7 @@ import { getFileFromS3Bucket } from "../../common/utils/awsUtils"
 import { readXLSXFile } from "../../common/utils/fileUtils"
 
 const currentDirname = __dirname(import.meta.url)
-const FILEPATH = path.join(currentDirname, "../../assets/referentielRncpRome.xlsx")
+const FILEPATH = path.join(currentDirname, "./assets/referentielRncpRome.xlsx")
 
 /**
  * Fait une copie locale du fichier source depuis le repository
