@@ -338,7 +338,8 @@ export const zV1JobsRoutes = {
           phone: z
             .string()
             .trim()
-            .regex(/^0[1-9]\d{8}$/),
+            .regex(/^0[1-9]\d{8}$/)
+            .optional(),
           email: z.string().email(),
           idcc: z.string().optional(),
           origin: z.string().optional().openapi({
