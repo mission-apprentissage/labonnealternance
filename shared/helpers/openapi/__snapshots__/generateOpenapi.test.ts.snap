@@ -4510,7 +4510,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   "establishment_siret",
                   "first_name",
                   "last_name",
-                  "phone",
                   "email",
                 ],
                 "type": "object",
