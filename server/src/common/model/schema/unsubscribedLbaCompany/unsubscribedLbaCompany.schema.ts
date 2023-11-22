@@ -1,7 +1,7 @@
+import { IUnsubscribedLbaCompany } from "shared"
+
 import { model, Schema } from "../../../mongodb.js"
 import { lbaCompanySchema } from "../lbaCompany/lbaCompany.schema.js"
-
-import { IUnsubscribedLbaCompany } from "./unsubscribedLbaCompany.types.js"
 
 const unsubscribedLbaCompanySchema = new Schema<IUnsubscribedLbaCompany>(
   {
@@ -22,4 +22,6 @@ const unsubscribedLbaCompanySchema = new Schema<IUnsubscribedLbaCompany>(
   }
 )
 
-export default model<IUnsubscribedLbaCompany>("unsubscribedbonnesboites", unsubscribedLbaCompanySchema)
+export const UnsubscribedLbaCompany = model<IUnsubscribedLbaCompany>("unsubscribedbonnesboites", unsubscribedLbaCompanySchema)
+
+export default UnsubscribedLbaCompany
