@@ -24,5 +24,8 @@ export const up = async (db: Db) => {
   // removing unreachable lbacompanies
   await db.collection("bonnesboites").deleteMany({ naf_label: null })
 
+  // removing buggy line
+  await db.collection("domainesmetiers").deleteMany({ domaine: null })
+
   logger.info("20231120000000-cleaning_applications")
 }
