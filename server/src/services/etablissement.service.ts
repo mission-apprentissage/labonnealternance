@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IUserRecruteur } from "shared"
+import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IReferentielOpco, IUserRecruteur } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
@@ -9,7 +9,6 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 
 import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
-import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"

@@ -74,4 +74,11 @@ export const extensions = {
         tags: z.array(z.string()).nullish(),
       })
       .strict(),
+  buildEnum: (enumObject: Record<string, string>) => {
+    const values = Object.values(enumObject)
+    if (!values.length) {
+      throw new Error("inattendu : enum vide")
+    }
+    return z.enum([values[0], ...values.slice(1)])
+  },
 }
