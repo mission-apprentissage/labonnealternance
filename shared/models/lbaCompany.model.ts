@@ -35,12 +35,10 @@ export const ZLbaCompany = z
   .strict()
   .openapi("LbaCompany")
 
-export const ZLbaLegacyCompany = z
-  .object({
-    siret: z.string().describe("Le Siret de la société"),
-    email: z.string().nullable().describe("Adresse email de contact"),
-    _id: zObjectId.nullish(),
-  })
-  .strict()
+export const ZLbaLegacyCompany = ZLbaCompany.pick({
+  siret: true,
+  email: true,
+  _id: true,
+}).strict()
 
 export type ILbaCompany = z.output<typeof ZLbaCompany>
