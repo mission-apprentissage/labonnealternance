@@ -25,6 +25,8 @@ fileignoreconfig:
   checksum: 3679dcde17d9d606ef7b27ad632122fcf19a4180849ed4cd1cbc98c312dd0d29
 - filename: .infra/vault/vault.yml
   checksum: 9ac87932d132cd238bc2194daadd08b26491985332c9ed15ccfd6f14a0645839
+- filename: .yarn/patches/zod-npm-3.21.4-9f570b215c.patch
+  checksum: d429ff982063e6476ea8d8d91ac1173a1279d1c9bf0488b6e05396affeb8c6cf
 - filename: server/.env.test
   checksum: 870b319418d2bd31728a0925d70ae4b6ef0ac6980ddf3feeb2702e32f868115d
 - filename: server/src/common/apis/Pe.ts
@@ -51,6 +53,8 @@ fileignoreconfig:
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
   checksum: e9869aceb9bb23877dccf1c6e2de729bfe685f7e40231c465fc40cdcc7c68c14
+- filename: server/tests/unit/external/zod.test.ts
+  checksum: f77ba0fa55f1cbd5b708fdc9f0d5b229e84a1de6c433186d96aa94a7f6388f0c
 - filename: server/tests/unit/security/accessTokenService.test.ts
   checksum: 232b1bae52a4d4f961637f59b09da5e480147864c76980a2b86e77a73bb36923
 - filename: server/tests/unit/security/accessTokenService.test.ts
