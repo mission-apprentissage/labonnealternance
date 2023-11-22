@@ -57,6 +57,24 @@ const emailCharsToReplace = [
   },
 ]
 
-export default async function fixApplicantEmails() {
+export default async function fixApplications() {
   await asyncForEach(emailCharsToReplace, async (c) => await removeOrReplaceCharsInDB("applications", "applicant_email", c.charsToReplace, c.replacementChar))
+
+  await db.collection("applications").updateMany(
+    { company_naf: null },
+    { $set: { company_naf: "" } },
+    {
+      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
+      bypassDocumentValidation: true,
+    }
+  )
+
+  await db.collection("applications").updateMany(
+    { job_title: null },
+    { $set: { job_title: "" } },
+    {
+      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
+      bypassDocumentValidation: true,
+    }
+  )
 }

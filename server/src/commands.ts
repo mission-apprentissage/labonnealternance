@@ -513,10 +513,10 @@ program
   .action(createJobAction("recruiters:job-type:fix"))
 
 program
-  .command("fix-applicant-emails")
+  .command("fix-applications")
   .description("Répare les adresses emails comportant des caractères erronés dans la collection applications")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("applications:fix-emails"))
+  .action(createJobAction("applications:fix"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

@@ -8,7 +8,7 @@ import { getLoggerWithContext } from "../common/logger"
 import config from "../config"
 
 import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
-import fixApplicantEmails from "./applications/fixApplicantEmails"
+import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
@@ -321,8 +321,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixJobExpirationDate()
       case "recruiters:job-type:fix":
         return fixJobType()
-      case "applications:fix-emails":
-        return fixApplicantEmails()
+      case "applications:fix":
+        return fixApplications()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
