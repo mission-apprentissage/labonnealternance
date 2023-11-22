@@ -452,6 +452,7 @@ export default (server: Server) => {
     "/etablissements/:id/appointments/:appointmentId",
     {
       schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
+      onRequest: [server.auth(zRoutes.patch["/etablissements/:id/appointments/:appointmentId"])],
     },
     async ({ body, params }, res) => {
       const { has_been_read } = body

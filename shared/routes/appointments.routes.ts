@@ -158,7 +158,6 @@ export const zAppointmentsRoute = {
     "/appointment-request/context/recap": {
       method: "get",
       path: "/appointment-request/context/recap",
-      // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
         "2xx": z
@@ -199,7 +198,11 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
   },
   post: {
@@ -250,7 +253,6 @@ export const zAppointmentsRoute = {
     "/appointment-request/reply": {
       method: "post",
       path: "/appointment-request/reply",
-      // TODO_SECURITY_FIX token jwt
       body: z
         .object({
           appointment_id: z.string(),
@@ -269,7 +271,11 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
   },
 } as const satisfies IRoutesDef

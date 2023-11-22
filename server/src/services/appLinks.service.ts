@@ -202,3 +202,52 @@ export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string
   )
   return `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissementId}?token=${encodeURIComponent(token)}`
 }
+
+/**
+ * Forge a link for reading appointment
+ */
+export function createRdvaAppointmentIdPageLink(email: string, siret: string, etablissementId: string, appointmentId: string): string {
+  const token = generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      generateScope({
+        schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
+        options: {
+          params: { id: etablissementId, appointmentId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+          appointment: [appointmentId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.get["/appointment-request/context/recap"],
+        options: {
+          params: undefined,
+          querystring: {
+            appointmentId,
+          },
+        },
+        resources: {
+          appointment: [appointmentId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/appointment-request/reply"],
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
+        resources: {
+          appointment: [appointmentId],
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+
+  return `${config.publicUrl}/espace-pro/establishment/${etablissementId}/appointments/${appointmentId}?token=${encodeURIComponent(token)}`
+}

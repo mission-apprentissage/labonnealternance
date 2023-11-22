@@ -3,6 +3,7 @@ import Joi from "joi"
 import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { createRdvaAppointmentIdPageLink } from "@/services/appLinks.service"
 
 import { mailType } from "../../common/model/constants/appointments"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
@@ -95,6 +96,10 @@ export default (server: Server) => {
         }),
       ])
 
+      if (!etablissement?.formateur_siret) {
+        throw new Error("Etablissement formateur_siret not found")
+      }
+
       const mailData = {
         appointmentId: createdAppointement._id,
         user: {
@@ -118,7 +123,6 @@ export default (server: Server) => {
           reasons: createdAppointement.applicant_reasons,
           referrerLink: referrerObj.url,
           appointment_origin: referrerObj.full_name,
-          link: `${config.publicUrl}/espace-pro/establishment/${etablissement?._id}/appointments/${createdAppointement._id}?utm_source=mail`,
         },
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
@@ -142,11 +146,13 @@ export default (server: Server) => {
           data: mailData,
         }),
         mailer.sendEmail({
-          // TODO to check string | null
           to: eligibleTrainingsForAppointment.lieu_formation_email,
           subject: emailCfaSubject,
           template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
-          data: mailData,
+          data: {
+            ...mailData,
+            link: createRdvaAppointmentIdPageLink(eligibleTrainingsForAppointment.lieu_formation_email, etablissement.formateur_siret, etablissement._id, createdAppointement._id),
+          },
         }),
       ])
 
@@ -252,6 +258,7 @@ export default (server: Server) => {
     "/appointment-request/reply",
     {
       schema: zRoutes.post["/appointment-request/reply"],
+      onRequest: [server.auth(zRoutes.post["/appointment-request/reply"])],
     },
     async (req, res) => {
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
@@ -261,12 +268,15 @@ export default (server: Server) => {
 
       if (!appointment) throw Boom.notFound()
 
+      if (!appointment.applicant_id) {
+        throw Boom.internal("Applicant id not found.")
+      }
+
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
-        // TODO applicant_id null | undefined | string
-        users.getUserById(appointment.applicant_id as string),
+        users.getUserById(appointment.applicant_id),
       ])
 
       if (!user || !eligibleTrainingsForAppointment) throw Boom.notFound()

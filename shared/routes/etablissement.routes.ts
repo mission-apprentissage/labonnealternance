@@ -1,6 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZEtablissement } from "../models"
+import { ZAppointment, ZEtablissement } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
@@ -162,15 +162,16 @@ export const zEtablissementRoutes = {
     "/etablissements/:id/appointments/:appointmentId": {
       method: "patch",
       path: "/etablissements/:id/appointments/:appointmentId",
-      // TODO_SECURITY_FIX ajouter un jwt
       body: z.object({ has_been_read: z.boolean() }).strict(),
       params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "2xx": ZAppointment,
+        "2xx": ZAppointment,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
   },
 } as const satisfies IRoutesDef
