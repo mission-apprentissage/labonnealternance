@@ -112,8 +112,9 @@ export default async function (optionalFileName?: string) {
         if (codesROMEs.length > 15) {
           avertissements.push({ domaine: metier, romes: codesROMEs.length })
         }
-
-        await domainesMetier.save()
+        if (domainesMetier.domaine) {
+          await domainesMetier.save()
+        }
 
         reset()
       } else {
