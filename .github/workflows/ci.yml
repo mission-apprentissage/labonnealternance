@@ -30,6 +30,7 @@ jobs:
             **/node_modules
             .yarn/install-state.gz
             .yarn/cache
+            ~/.cache
           key: yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-
 

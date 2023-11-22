@@ -21,6 +21,17 @@ const currentDirname = __dirname(import.meta.url)
 const PREDICTION_FILE = path.join(currentDirname, "./assets/bonnesboites.json")
 const s3File = config.algoBonnesBoites.s3File
 
+export const createAssetsFolder = async () => {
+  try {
+    const assetsPath = path.join(currentDirname, "./assets")
+    if (!(await fs.existsSync(assetsPath))) {
+      await fs.mkdirSync(assetsPath)
+    }
+  } catch (err) {
+    logger.error("Error creating assets directory", err)
+  }
+}
+
 export const removePredictionFile = async () => {
   try {
     logger.info("Deleting downloaded file from assets")

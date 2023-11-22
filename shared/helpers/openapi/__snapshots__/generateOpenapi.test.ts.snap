@@ -4502,6 +4502,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "phone": {
+                    "pattern": "^0[1-9]\\\\d{8}$",
                     "type": "string",
                   },
                 },
@@ -5171,10 +5172,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
+                    "type": "string",
                   },
                   "job_type": {
                     "description": "Type de contrat",

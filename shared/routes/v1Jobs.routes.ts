@@ -1,7 +1,6 @@
-import dayjs from "../helpers/dayjs"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob, ZJobFields } from "../models"
+import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
@@ -339,7 +338,8 @@ export const zV1JobsRoutes = {
           phone: z
             .string()
             .trim()
-            .regex(/^0[1-9]\d{8}$/),
+            .regex(/^0[1-9]\d{8}$/)
+            .optional(),
           email: z.string().email(),
           idcc: z.string().optional(),
           origin: z.string().optional().openapi({
@@ -372,18 +372,16 @@ export const zV1JobsRoutes = {
         job_level_label: true,
         job_duration: true,
         job_type: true,
-        is_disabled_elligible: true,
         job_count: true,
         job_rythm: true,
         job_employer_description: true,
         job_description: true,
+        is_disabled_elligible: true,
         custom_address: true,
         custom_geo_coordinates: true,
       })
         .extend({
-          job_start_date: ZJobFields.shape.job_start_date.refine((date) => dayjs(date).isSameOrAfter(dayjs().utc()), {
-            message: "job_start_date must be greater or equal to today's date",
-          }),
+          job_start_date: ZJobStartDateCreate(),
           appellation_code: z.string().regex(/^[0-9]+$/, "appelation code must contains only numbers"),
         })
         .strict()
@@ -554,12 +552,15 @@ export const zV1JobsRoutes = {
         is_disabled_elligible: true,
         job_count: true,
         job_rythm: true,
-        job_start_date: true,
         job_employer_description: true,
         job_description: true,
         custom_address: true,
         custom_geo_coordinates: true,
-      }).partial(),
+      })
+        .extend({
+          job_start_date: ZJobStartDateCreate(),
+        })
+        .partial(),
       response: {
         "200": ZRecruiter,
         "400": z.union([ZResError, ZLbarError]),
