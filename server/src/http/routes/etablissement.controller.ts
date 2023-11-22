@@ -181,6 +181,7 @@ export default (server: Server) => {
     "/etablissements/:id/premium/accept",
     {
       schema: zRoutes.post["/etablissements/:id/premium/accept"],
+      onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/accept"])],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id).lean()
