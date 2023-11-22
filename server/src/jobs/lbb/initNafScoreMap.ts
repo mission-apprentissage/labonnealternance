@@ -1,7 +1,8 @@
 import fs from "fs"
-import path from "path"
 
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
@@ -10,8 +11,7 @@ import { logMessage } from "../../common/utils/logMessage"
 import { downloadFile } from "./lbaCompaniesUtils"
 
 const hiringFileName = "contrats_30j.csv"
-const currentDirname = __dirname(import.meta.url)
-const hiringFilePath = path.join(currentDirname, `../../assets/${hiringFileName}`)
+const hiringFilePath = getStaticFilePath(hiringFileName)
 const nafRomeHiringMap = {}
 
 let count = 0

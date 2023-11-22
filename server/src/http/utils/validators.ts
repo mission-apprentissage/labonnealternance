@@ -30,8 +30,8 @@ export function siretSchema() {
         error.code === "string.base"
           ? `Error: schema not valid : ValidationError: ${error.key} must be a string`
           : error.value
-          ? `Error: schema not valid : ValidationError: ${error.key} must follow Luhn algorithm`
-          : `Error: schema not valid : ValidationError: empty ${error.key}`
+            ? `Error: schema not valid : ValidationError: ${error.key} must follow Luhn algorithm`
+            : `Error: schema not valid : ValidationError: empty ${error.key}`
       )
     })
 }

@@ -4,7 +4,6 @@ import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
@@ -16,6 +15,7 @@ import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.
 import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer from "./mailer.service"
+import { getRomeDetailsFromDB } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
 interface IFormulaireExtended extends IRecruiter {
@@ -95,7 +95,7 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
   jobPartial.job_status = user && isUserAwaiting ? JOB_STATUS.EN_ATTENTE : JOB_STATUS.ACTIVE
   // get user activation state if not managed by a CFA
   const codeRome = job.rome_code[0]
-  const romeData = await getRomeDetailsFromAPI(codeRome)
+  const romeData = await getRomeDetailsFromDB(codeRome)
   if (!romeData) {
     throw Boom.internal(`could not find rome infos for rome=${codeRome}`)
   }
@@ -103,7 +103,7 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
   const { job_start_date = creationDate } = job
   const updatedJob: Partial<IJob> = Object.assign(job, {
     job_start_date,
-    rome_detail: romeData,
+    rome_detail: romeData.fiche_metier,
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
@@ -544,8 +544,8 @@ export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
  */
 export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
-  const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   if (unsubscribeOF) return
+  const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   await mailer.sendEmail({
     to: email,
     subject: `Une entreprise recrute dans votre domaine`,
