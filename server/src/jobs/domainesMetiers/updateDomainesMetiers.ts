@@ -11,6 +11,7 @@ import { getFileFromS3Bucket } from "../../common/utils/awsUtils"
 import { resetIndexAndDb } from "../../common/utils/esUtils"
 import { readXLSXFile } from "../../common/utils/fileUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { createAssetsFolder } from "../lbb/lbaCompaniesUtils"
 
 const currentDirname = __dirname(import.meta.url)
 const FILEPATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
@@ -25,6 +26,8 @@ export default async function (optionalFileName?: string) {
   let step = 0
 
   logger.info(" -- Start of DomainesMetiers initializer -- ")
+
+  await createAssetsFolder()
 
   await downloadAndSaveFile(optionalFileName)
 
