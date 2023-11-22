@@ -380,6 +380,7 @@ export default (server: Server) => {
     "/etablissements/:id/premium/refuse",
     {
       schema: zRoutes.post["/etablissements/:id/premium/refuse"],
+      onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/refuse"])],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
