@@ -1,58 +1,62 @@
+import { logger } from "@/common/logger"
 import { db } from "@/common/mongodb"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 
 const removeOrReplaceCharsInDB = async (collection: string, field: string, charsToReplace: string, replacementChar: string = "") => {
-  await db.collection(collection).updateMany(
-    {},
-    {
-      $set: {
-        applicant_email: {
-          $regexReplace: {
-            input: `$${field}`,
-            find: charsToReplace,
-            replacement: replacementChar,
-            options: "i",
-          },
-        },
-      },
-    }
-  )
+  logger.info(`remplacement de ${charsToReplace} par ${replacementChar} dans ${collection}.${field}`)
+
+  const charsRegex = new RegExp(`[${charsToReplace}]`, "gi")
+  const applicants = await db
+    .collection(collection)
+    .find({ applicant_email: { $regex: charsRegex } })
+    .toArray()
+
+  applicants.map(async (application) => {
+    console.log(application.applicant_email)
+
+    const correctedEmail = application.applicant_email.replace(charsRegex, "e")
+
+    application.applicant_email = correctedEmail
+
+    await db.collection(collection).save(application)
+  })
 }
 
 const emailCharsToReplace = [
   {
-    charsToReplace: "[èéêë]",
+    charsToReplace: "èéêë",
     replacementChar: "e",
   },
   {
-    charsToReplace: "[àáâãäå]",
+    charsToReplace: "àáâãäå",
     replacementChar: "a",
   },
   {
-    charsToReplace: "[ç]",
+    charsToReplace: "ç",
     replacementChar: "c",
   },
   {
-    charsToReplace: "[œòóôõö]",
+    charsToReplace: "œòóôõö",
     replacementChar: "o",
   },
   {
-    charsToReplace: "[ùúûü]",
+    charsToReplace: "ùúûü",
     replacementChar: "u",
   },
   {
-    charsToReplace: "[ìíîï]",
+    charsToReplace: "ìíîï",
     replacementChar: "i",
   },
   {
-    charsToReplace: "[ýÿ]",
+    charsToReplace: "ýÿ",
     replacementChar: "y",
   },
   {
-    charsToReplace: "[’£]",
+    charsToReplace: "’£'^!&=/*?}",
     replacementChar: "",
   },
 ]
 
 export default async function fixApplicantEmails() {
-  emailCharsToReplace.forEach(async (c) => await removeOrReplaceCharsInDB("applications", "applicant_email", c.charsToReplace, c.replacementChar))
+  await asyncForEach(emailCharsToReplace, async (c) => await removeOrReplaceCharsInDB("applications", "applicant_email", c.charsToReplace, c.replacementChar))
 }
