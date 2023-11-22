@@ -46,10 +46,7 @@ const importer = async (filePath: string, opco_label: OPCOS) => {
     writeData(
       async (referentiel) => {
         const { siret_code } = referentiel
-        const updated = await ReferentielOpco.findOneAndUpdate({ siret_code }, { $set: referentiel }).lean()
-        if (!updated) {
-          await ReferentielOpco.create(referentiel)
-        }
+        await ReferentielOpco.findOneAndUpdate({ siret_code }, { $set: referentiel }, { upsert: true }).lean()
       },
       { parallel: 500 }
     )
