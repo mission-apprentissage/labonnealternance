@@ -20598,6 +20598,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"zod@patch:zod@npm%3A3.21.4#./.yarn/patches/zod-npm-3.21.4-9f570b215c.patch::locator=mna-lba%40workspace%3A.":
+  version: 3.21.4
+  resolution: "zod@patch:zod@npm%3A3.21.4#./.yarn/patches/zod-npm-3.21.4-9f570b215c.patch::version=3.21.4&hash=45704f&locator=mna-lba%40workspace%3A."
+  checksum: 8ac3afb02adff75a1d562c3479f39331548f94cd1d7f5d52623834ec75007db83c35edd8789d47d96ccb4994eec0c0a8e0bfd17130cd1db5013fd4900e0181f5
+  languageName: node
+  linkType: hard
+
 "zustand@npm:4.0.0":
   version: 4.0.0
   resolution: "zustand@npm:4.0.0"
