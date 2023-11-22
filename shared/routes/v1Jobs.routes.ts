@@ -336,7 +336,10 @@ export const zV1JobsRoutes = {
           establishment_siret: extensions.siret,
           first_name: z.string(),
           last_name: z.string(),
-          phone: extensions.phone().optional(),
+          phone: z
+            .string()
+            .trim()
+            .regex(/^0[1-9]\d{8}$/),
           email: z.string().email(),
           idcc: z.string().optional(),
           origin: z.string().optional().openapi({

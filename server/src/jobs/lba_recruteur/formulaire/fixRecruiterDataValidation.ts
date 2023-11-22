@@ -1,3 +1,4 @@
+import Boom from "boom"
 import { TRAINING_RYTHM } from "shared/constants/recruteur"
 import { z } from "zod"
 
@@ -7,6 +8,7 @@ import { asyncForEach } from "@/common/utils/asyncUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { updateOffre } from "@/services/formulaire.service"
+import { getRomeDetailsFromDB } from "@/services/rome.service"
 
 const fixDates = async () => {
   const subject = "Fix data validations pour recruiters : delegations.cfa_read_company_detail_at"
@@ -46,6 +48,47 @@ const fixDates = async () => {
   return stats
 }
 
+const fixRomeDetails = async () => {
+  const subject = "Fix data validations pour recruiters : rome_detail"
+  const recruiters = await Recruiter.find(
+    {
+      "jobs.rome_detail": { $type: "string" },
+    },
+    undefined,
+    { runValidators: false, rawResult: true }
+  ).lean()
+  const stats = { success: 0, failure: 0 }
+  logger.info(`${subject}: ${recruiters.length} recruteurs à mettre à jour...`)
+  await asyncForEach(recruiters, async (recruiter) => {
+    try {
+      logger.info("treating recruiter", recruiter._id)
+      const { jobs } = recruiter
+      await asyncForEach(jobs, async (job) => {
+        const { rome_detail, rome_code } = job
+        if (rome_detail && typeof rome_detail === "string") {
+          const romeData = await getRomeDetailsFromDB(rome_code[0])
+          if (!romeData) {
+            throw Boom.internal(`could not find rome infos for rome=${rome_code}`)
+          }
+          job.rome_detail = romeData.fiche_metier
+        }
+        await updateOffre(job._id, { ...job })
+      })
+      stats.success++
+    } catch (err) {
+      logger.error(err)
+      sentryCaptureException(err)
+      stats.failure++
+    }
+  })
+  await notifyToSlack({
+    subject,
+    message: `${stats.failure} erreurs. ${stats.success} mises à jour`,
+    error: stats.failure > 0,
+  })
+  return stats
+}
+
 const fixJobRythm = async () => {
   const subject = "Fix data validations : job_rythm"
   const recruiters = await Recruiter.find({
@@ -66,7 +109,7 @@ const fixJobRythm = async () => {
       await asyncForEach(jobs, async (job) => {
         if (job.job_rythm === "1 jours / 4 jours") {
           job.job_rythm = TRAINING_RYTHM["1J4J"]
-        } else if (job.job_rythm === "") {
+        } else if (job.job_rythm === "" || job.job_rythm === "Non renseigné") {
           job.job_rythm = null
         }
         await updateOffre(job._id, { ...job })
@@ -86,6 +129,7 @@ const fixJobRythm = async () => {
 }
 
 export const fixRecruiterDataValidation = async () => {
+  await fixRomeDetails()
   await fixDates()
   await fixJobRythm()
 }
