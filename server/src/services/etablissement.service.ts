@@ -324,6 +324,7 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
     throw newError
   }
 }
+
 /**
  * @description Get matching records from the ReferentielOpco collection for a given siret & email
  * @param {IReferentielOpco["siret_code"]} siretCode
