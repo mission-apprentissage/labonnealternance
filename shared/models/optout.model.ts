@@ -4,6 +4,7 @@ import { zObjectId } from "./common"
 
 export const ZMail = z
   .object({
+    _id: zObjectId,
     email: z.string(),
     messageId: z.string(),
     date: z.date(),
