@@ -53,6 +53,8 @@ fileignoreconfig:
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
   checksum: e9869aceb9bb23877dccf1c6e2de729bfe685f7e40231c465fc40cdcc7c68c14
+- filename: server/tests/unit/external/zod.test.ts
+  checksum: f77ba0fa55f1cbd5b708fdc9f0d5b229e84a1de6c433186d96aa94a7f6388f0c
 - filename: server/tests/unit/security/accessTokenService.test.ts
   checksum: 232b1bae52a4d4f961637f59b09da5e480147864c76980a2b86e77a73bb36923
 - filename: server/tests/unit/security/authorisationService.test.ts
