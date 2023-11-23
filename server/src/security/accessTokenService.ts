@@ -16,6 +16,7 @@ const URL_MAX_LENGTH = Math.min(INTERNET_EXPLORER_V10_MAX_LENGTH, OUTLOOK_URL_MA
 
 type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
 
+// TODO à retirer à partir du 01/02/2024
 type OldIScope<Schema extends SchemaWithSecurity> = {
   schema: Schema
   options:
