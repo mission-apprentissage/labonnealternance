@@ -44,7 +44,6 @@ const getDescriptionContext = (job: ILbaItemLbaJob) => {
   if ((!description || description.length < BADDESCRIPTION) && employeurDescription) {
     return (
       <>
-        {RomeDescriptions(job)}
         <MatchaCustomDescription data={employeurDescription} title="Description de l'employeur" />
       </>
     )
@@ -146,15 +145,12 @@ const MatchaDetail = ({ job }) => {
           </>
         )}
       </Box>
-      {/* Kevin : afficher description employer + custome description si existe */}
-      {job?.job.romeDetails && (
-        <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
-          <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur ${job.title}`}</Text>
-          <Box data-testid="lbb-component">
-            <Box mb={4}>{getDescriptionContext(job)}</Box>
-          </Box>
+      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
+        <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur ${job.title}`}</Text>
+        <Box data-testid="lbb-component">
+          <Box mb={4}>{getDescriptionContext(job)}</Box>
         </Box>
-      )}
+      </Box>
     </>
   )
 }
