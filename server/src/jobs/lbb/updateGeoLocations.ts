@@ -5,6 +5,7 @@ import axios from "axios"
 import FormData from "form-data"
 import fsExtra from "fs-extra"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
+import { ZGeoLocation } from "shared/models"
 
 import __dirname from "../../common/dirname"
 import { GeoLocation } from "../../common/model/index"
@@ -57,7 +58,9 @@ const saveGeoData = async (geoData) => {
   const geoLocation = new GeoLocation(geoData)
   if ((await GeoLocation.countDocuments({ address: geoLocation.address })) === 0) {
     try {
-      await geoLocation.save()
+      if (ZGeoLocation.safeParse(geoLocation).success) {
+        await geoLocation.save()
+      }
     } catch (err) {
       console.log("error saving geoloc probably from duplicate restriction: ", geoLocation.address)
     }

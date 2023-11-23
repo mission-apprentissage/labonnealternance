@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 
 import { compose, oleoduc, writeData } from "oleoduc"
-import { ILbaCompany } from "shared/models"
+import { ILbaCompany, ZGeoLocation } from "shared/models"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
@@ -180,7 +180,9 @@ const getGeoLocationForCompany = async (company) => {
       })
       try {
         // on enregistre la geoloc trouvée
-        await geoLocation.save()
+        if (ZGeoLocation.safeParse(geoLocation).success) {
+          await geoLocation.save()
+        }
       } catch (err) {
         //ignore duplicate error
       }
