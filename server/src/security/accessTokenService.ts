@@ -7,7 +7,12 @@ import { assertUnreachable } from "shared/utils"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, z } from "zod"
 
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
+
+const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083
+const OUTLOOK_URL_MAX_LENGTH = 2048
+const URL_MAX_LENGTH = Math.min(INTERNET_EXPLORER_V10_MAX_LENGTH, OUTLOOK_URL_MAX_LENGTH)
 
 type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
 
@@ -85,10 +90,14 @@ export function generateAccessToken(
     scopes,
   }
 
-  return jwt.sign(data, config.auth.user.jwtSecret, {
+  const token = jwt.sign(data, config.auth.user.jwtSecret, {
     expiresIn: options.expiresIn ?? config.auth.user.expiresIn,
     issuer: config.publicUrl,
   })
+  if (token.length > URL_MAX_LENGTH) {
+    sentryCaptureException(Boom.internal(`Token généré trop long : ${token.length}`))
+  }
+  return token
 }
 
 function getMethodAndPath<Schema extends SchemaWithSecurity>(scope: IScope<Schema>) {
