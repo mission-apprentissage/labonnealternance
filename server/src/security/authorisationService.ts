@@ -3,6 +3,7 @@ import { FastifyRequest } from "fastify"
 import { IApplication, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, RecruiterRole, Role } from "shared/security/permissions"
+import { assertUnreachable } from "shared/utils"
 import { Primitive } from "type-fest"
 
 import { Recruiter, UserRecruteur, Application } from "@/common/model"
@@ -23,10 +24,6 @@ type IRequest = Pick<FastifyRequest, "user" | "params" | "query">
 // TODO: Unit test access control
 // TODO: job.delegations
 // TODO: Unit schema access path properly defined (exists in Zod schema)
-
-function assertUnreachable(_x: never): never {
-  throw new Error("Didn't expect to get here")
-}
 
 function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): any {
   const obj = req[path.type] as Record<string, Primitive>
