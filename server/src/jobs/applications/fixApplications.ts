@@ -6,16 +6,14 @@ const removeOrReplaceCharsInDB = async (collection: string, field: string, chars
   logger.info(`remplacement de ${charsToReplace} par ${replacementChar} dans ${collection}.${field}`)
 
   const charsRegex = new RegExp(`[${charsToReplace}]`, "gi")
-  const applicants = await db
-    .collection(collection)
-    .find({ applicant_email: { $regex: charsRegex } })
-    .toArray()
+  const applicantsCursor = await db.collection(collection).find({ applicant_email: { $regex: charsRegex } })
 
-  applicants.map(async (application) => {
-    const correctedEmail = application.applicant_email.replace(charsRegex, charsToReplace)
+  for await (const application of applicantsCursor) {
+    const correctedEmail = application.applicant_email.replace(charsRegex, charsTo)
+
     application.applicant_email = correctedEmail
     await db.collection(collection).save(application)
-  })
+  }
 }
 
 const emailCharsToReplace = [
