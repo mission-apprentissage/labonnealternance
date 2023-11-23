@@ -44,7 +44,6 @@ const getDescriptionContext = (job: ILbaItemLbaJob) => {
   if ((!description || description.length < BADDESCRIPTION) && employeurDescription) {
     return (
       <>
-        {RomeDescriptions(job)}
         <MatchaCustomDescription data={employeurDescription} title="Description de l'employeur" />
       </>
     )
