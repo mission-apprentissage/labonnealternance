@@ -9,7 +9,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Fixture, Generator } from "zod-fixture"
 
 import { Application, Credential, Recruiter, UserRecruteur } from "@/common/model"
-import { IAccessToken } from "@/security/accessTokenService"
+import { IAccessToken, generateScope } from "@/security/accessTokenService"
 import { authorizationnMiddleware } from "@/security/authorisationService"
 import { useMongo } from "@tests/utils/mongo.utils"
 
@@ -1629,7 +1629,7 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
@@ -1641,8 +1641,8 @@ describe("authorisationService", () => {
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
@@ -1656,7 +1656,7 @@ describe("authorisationService", () => {
                 resources: {
                   recruiter: [recruteurO1E1R1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -1692,7 +1692,7 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
@@ -1704,8 +1704,8 @@ describe("authorisationService", () => {
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
@@ -1719,7 +1719,7 @@ describe("authorisationService", () => {
                 resources: {
                   recruiter: [recruteurO1E1R1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -1773,7 +1773,7 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
@@ -1785,8 +1785,8 @@ describe("authorisationService", () => {
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
@@ -1800,7 +1800,7 @@ describe("authorisationService", () => {
                 resources: {
                   job: recruteurO1E1R1.jobs.map((j) => j._id.toString()),
                 },
-              },
+              }),
             ],
           },
         }
@@ -1836,7 +1836,7 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
@@ -1848,8 +1848,8 @@ describe("authorisationService", () => {
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
@@ -1863,7 +1863,7 @@ describe("authorisationService", () => {
                 resources: {
                   job: recruteurO1E1R1.jobs.map((j) => j._id.toString()),
                 },
-              },
+              }),
             ],
           },
         }
@@ -1917,7 +1917,7 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
@@ -1929,8 +1929,8 @@ describe("authorisationService", () => {
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
@@ -1944,7 +1944,7 @@ describe("authorisationService", () => {
                 resources: {
                   application: [applicationO1E1R1J1A1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -1980,7 +1980,7 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
@@ -1992,8 +1992,8 @@ describe("authorisationService", () => {
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
@@ -2007,7 +2007,7 @@ describe("authorisationService", () => {
                 resources: {
                   application: [applicationO1E1R1J1A1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -2061,7 +2061,7 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
@@ -2073,8 +2073,8 @@ describe("authorisationService", () => {
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
@@ -2088,7 +2088,7 @@ describe("authorisationService", () => {
                 resources: {
                   user: [opcoUserO1U1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -2124,7 +2124,7 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
@@ -2136,8 +2136,8 @@ describe("authorisationService", () => {
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
@@ -2151,7 +2151,7 @@ describe("authorisationService", () => {
                 resources: {
                   user: [opcoUserO1U1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
