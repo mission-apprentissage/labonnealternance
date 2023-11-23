@@ -12,12 +12,8 @@ const removeOrReplaceCharsInDB = async (collection: string, field: string, chars
     .toArray()
 
   applicants.map(async (application) => {
-    console.log(application.applicant_email)
-
-    const correctedEmail = application.applicant_email.replace(charsRegex, "e")
-
+    const correctedEmail = application.applicant_email.replace(charsRegex, charsToReplace)
     application.applicant_email = correctedEmail
-
     await db.collection(collection).save(application)
   })
 }
