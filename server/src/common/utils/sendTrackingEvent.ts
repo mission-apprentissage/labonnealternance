@@ -1,3 +1,5 @@
+import { ZApiCall } from "shared/models"
+
 import { ApiCalls } from "../model/index"
 
 import { sentryCaptureException } from "./sentryUtils"
@@ -27,6 +29,7 @@ const trackApiCall = async ({
       response,
     })
 
+    ZApiCall.parse(apiCall)
     await apiCall.save()
   } catch (err) {
     sentryCaptureException(err)
