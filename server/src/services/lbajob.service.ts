@@ -357,7 +357,7 @@ function transformLbaJob({
       diplomaLevel: offre.job_level_label || null,
       job: {
         id: offre._id.toString(),
-        description: offre.job_description || null,
+        description: offre.job_description && offre.job_description.length > 50 ? offre.job_description : null,
         employeurDescription: offre.job_employer_description || null,
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
         contractType: offre.job_type ? offre.job_type.join(", ") : null,
