@@ -450,11 +450,12 @@ export const isCompanyValid = async (userRecruteur: IUserRecruteur) => {
   }
 
   const siren = siret.slice(0, 9)
+  const sirenRegex = `^${siren}`
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
   const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-    getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: siren }, email: { $nin: ["", null] } }),
-    getAllEstablishmentFromLbaCompany({ siret: { $regex: siren }, email: { $nin: ["", null] } }),
-    getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
+    getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: sirenRegex }, email: { $nin: ["", null] } }),
+    getAllEstablishmentFromLbaCompany({ siret: { $regex: sirenRegex }, email: { $nin: ["", null] } }),
+    getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: sirenRegex } }),
   ])
 
   // Format arrays to get only the emails
