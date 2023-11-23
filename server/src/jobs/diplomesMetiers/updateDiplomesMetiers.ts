@@ -1,3 +1,5 @@
+import { ZDiplomesMetiers } from "shared/models"
+
 import { search } from "../../common/esClient/index"
 import { logger } from "../../common/logger"
 import { DiplomesMetiers, FormationCatalogue } from "../../common/model/index"
@@ -126,7 +128,11 @@ export default async function () {
 
     if (diplomesMetiers[k]?.codes_romes.length) {
       const diplomesMetier = new DiplomesMetiers(diplomesMetiers[k])
-      await diplomesMetier.save()
+      if (ZDiplomesMetiers.safeParse(diplomesMetier).success) {
+        await diplomesMetier.save()
+      } else {
+        logger.error(`Mauvais format diplomesmetier pour le diplôme ${diplomesMetier.intitule_long}`)
+      }
     }
   }
 
