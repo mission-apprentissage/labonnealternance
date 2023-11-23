@@ -2,6 +2,7 @@ import { createReadStream } from "fs"
 import path from "path"
 
 import { oleoduc, transformData, writeData } from "oleoduc"
+import { removeAccents } from "shared"
 import { OPCOS } from "shared/constants/recruteur"
 
 import { notifyToSlack } from "@/common/utils/slackUtils"
@@ -32,7 +33,9 @@ const importer = async (filePath: string, opco_label: OPCOS) => {
       const { Siret } = e
       stats.total++
       const csvEmailStr = e["Email du contact"]
-      const emailsArray = csvEmailStr.split(/,|;| /).filter((x) => x)
+      const emailsArray = removeAccents(csvEmailStr)
+        .split(/,|;| /)
+        .filter((x) => x)
       const referentielOpt = prepareReferentielOpcoForInsert({ opco_label, siret_code: Siret, emails: emailsArray })
       if (referentielOpt) {
         stats.imported++
