@@ -10,9 +10,12 @@ import { AnyZodObject, z } from "zod"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
+// cf https://www.sistrix.com/ask-sistrix/technical-seo/site-structure/url-length-how-long-can-a-url-be
 const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083
-const OUTLOOK_URL_MAX_LENGTH = 2048
-const URL_MAX_LENGTH = Math.min(INTERNET_EXPLORER_V10_MAX_LENGTH, OUTLOOK_URL_MAX_LENGTH)
+const OUTLOOK_URL_MAX_LENGTH = 8192
+const NGINX_URL_MAX_LENGTH = 4096
+const URL_MAX_LENGTH = Math.min(INTERNET_EXPLORER_V10_MAX_LENGTH, OUTLOOK_URL_MAX_LENGTH, NGINX_URL_MAX_LENGTH)
+const TOKEN_MAX_LENGTH = URL_MAX_LENGTH - "https://labonnealternance.apprentissage.beta.gouv.fr/".length
 
 type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
 
@@ -95,7 +98,7 @@ export function generateAccessToken(
     expiresIn: options.expiresIn ?? config.auth.user.expiresIn,
     issuer: config.publicUrl,
   })
-  if (token.length > URL_MAX_LENGTH) {
+  if (token.length > TOKEN_MAX_LENGTH) {
     sentryCaptureException(Boom.internal(`Token généré trop long : ${token.length}`))
   }
   return token
