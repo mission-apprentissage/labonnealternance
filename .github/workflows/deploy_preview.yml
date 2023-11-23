@@ -163,7 +163,7 @@ jobs:
       cancel-in-progress: true
     needs: ["deploy_preview"]
     uses: "./.github/workflows/cypress.yml"
-    inputs:
+    with:
       cypress_host: "https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr"
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
