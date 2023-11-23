@@ -14,3 +14,8 @@ export const ZApiCall = z
     created_at: z.date(),
   })
   .strict()
+
+export const ZApiCallNew = ZApiCall.omit({
+  _id: true,
+  created_at: true,
+})
