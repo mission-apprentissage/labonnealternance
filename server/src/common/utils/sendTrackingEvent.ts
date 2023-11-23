@@ -29,9 +29,7 @@ const trackApiCall = async ({
       response,
     }
 
-    const apiCall = new ApiCalls(apiCallParams)
-
-    ZApiCallNew.parse(apiCallParams)
+     const apiCall = new ApiCalls(ZApiCallNew.parse(apiCallParams))
     await apiCall.save()
   } catch (err) {
     sentryCaptureException(err)
