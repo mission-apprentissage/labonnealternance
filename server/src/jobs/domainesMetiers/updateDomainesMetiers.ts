@@ -118,6 +118,8 @@ export default async function (optionalFileName?: string) {
         }
         if (ZDomainesMetiers.safeParse(domainesMetier).success) {
           await domainesMetier.save()
+        } else {
+          logger.error(`Mauvais format de domaines metiers ${domainesMetier.domaine} - ${domainesMetier.sous_domaine}`)
         }
 
         reset()
