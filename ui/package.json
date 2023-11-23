@@ -51,7 +51,7 @@
     "react-table": "^7.8.0",
     "shared": "workspace:*",
     "yup": "^0.32.11",
-    "zod": "^3.22.2"
+    "zod": "3.21.4"
   },
   "devDependencies": {
     "@testing-library/react": "^13.4.0",
