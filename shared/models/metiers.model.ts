@@ -105,7 +105,7 @@ export const ZDiplomesMetiers = z
 
 export const ZDomainesMetiers = z
   .object({
-    _id: zObjectId,
+    _id: zObjectId.nullish(),
     sous_domaine: z.string(),
     domaine: z.string(),
     codes_romes: z.array(z.string()),
@@ -135,7 +135,7 @@ export const ZDomainesMetiers = z
         })
         .strict()
     ),
-    created_at: z.date(),
-    last_update_at: z.date(),
+    created_at: z.date().nullish(),
+    last_update_at: z.date().nullish(),
   })
   .strict()

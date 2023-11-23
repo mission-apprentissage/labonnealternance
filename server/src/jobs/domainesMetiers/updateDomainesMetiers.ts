@@ -96,7 +96,7 @@ export default async function (optionalFileName?: string) {
         // cas de la ligne sur laquelle se trouve le nom du métier qui va marquer l'insertion d'une ligne dans la db
         step = 1
 
-        const domainesMetier = new DomainesMetiers({
+        const paramsDomaineMetier = {
           domaine: domaine,
           sous_domaine: metier,
           mots_clefs_specifiques: [...new Set(motsClefsSpecifiques)].join(", "),
@@ -111,15 +111,17 @@ export default async function (optionalFileName?: string) {
           codes_fap: [...new Set(codesFAPs)],
           intitules_fap: [...new Set(libellesFAPs)],
           sous_domaine_onisep: sousDomainesOnisep,
-        })
+        }
+
+        const domainesMetier = new DomainesMetiers(paramsDomaineMetier)
 
         if (codesROMEs.length > 15) {
           avertissements.push({ domaine: metier, romes: codesROMEs.length })
         }
-        if (ZDomainesMetiers.safeParse(domainesMetier).success) {
+        if (ZDomainesMetiers.safeParse(paramsDomaineMetier).success) {
           await domainesMetier.save()
         } else {
-          logger.error(`Mauvais format de domaines metiers ${domainesMetier.domaine} - ${domainesMetier.sous_domaine}`)
+          logger.error(`Erreur non bloquante : mauvais format de domaines metiers domaine=${domainesMetier.domaine} - sous_domaine=${domainesMetier.sous_domaine}`)
         }
 
         reset()
