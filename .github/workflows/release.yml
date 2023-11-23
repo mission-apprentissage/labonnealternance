@@ -85,7 +85,7 @@ jobs:
   cypress:
     needs: ["deploy"]
     uses: "./.github/workflows/cypress.yml"
-    inputs:
+    with:
       cypress_host: "https://labonnealternance-recette.apprentissage.beta.gouv.fr"
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
