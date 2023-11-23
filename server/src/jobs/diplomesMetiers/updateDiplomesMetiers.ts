@@ -1,4 +1,4 @@
-import { ZDiplomesMetiers } from "shared/models"
+import { ZDiplomesMetiersNew } from "shared/models"
 
 import { search } from "../../common/esClient/index"
 import { logger } from "../../common/logger"
@@ -126,12 +126,12 @@ export default async function () {
   for (const k in diplomesMetiers) {
     diplomesMetiers[k].acronymes_intitule = buildAcronyms(diplomesMetiers[k].intitule_long)
 
-    if (diplomesMetiers[k]?.codes_romes.length) {
-      const diplomesMetier = new DiplomesMetiers(diplomesMetiers[k])
-      if (ZDiplomesMetiers.safeParse(diplomesMetier).success) {
+    if (diplomesMetiers[k]?.codes_romes?.length) {
+      if (ZDiplomesMetiersNew.safeParse(diplomesMetiers[k]).success) {
+        const diplomesMetier = new DiplomesMetiers(diplomesMetiers[k])
         await diplomesMetier.save()
       } else {
-        logger.error(`Mauvais format diplomesmetier pour le diplôme ${diplomesMetier.intitule_long}`)
+        logger.error(`Mauvais format diplomesmetier pour le diplôme ${diplomesMetiers[k].intitule_long}`)
       }
     }
   }
