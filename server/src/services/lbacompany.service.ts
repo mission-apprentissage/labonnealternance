@@ -1,4 +1,4 @@
-import { ILbaCompany } from "shared"
+import { ILbaCompany, ZLbaCompany } from "shared"
 
 import { search } from "../common/esClient/index.js"
 import { LbaCompany } from "../common/model/index.js"
@@ -398,9 +398,12 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
         lbaCompany.phone = phone
       }
 
-      await lbaCompany.save()
+      const leanLbaCompany = lbaCompany.toObject()
+      ZLbaCompany.parse(leanLbaCompany)
 
-      return lbaCompany.toJSON()
+      await lbaCompany.save() // obligatoire pour trigger la mise à jour de l'index ES. update ne le fait pas
+
+      return lbaCompany
     }
   } catch (err) {
     sentryCaptureException(err)
