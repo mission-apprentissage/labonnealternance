@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 
 import { oleoduc } from "oleoduc"
+import { ZDomainesMetiers } from "shared/models"
 import XLSX from "xlsx"
 
 import __dirname from "../../common/dirname"
@@ -115,7 +116,7 @@ export default async function (optionalFileName?: string) {
         if (codesROMEs.length > 15) {
           avertissements.push({ domaine: metier, romes: codesROMEs.length })
         }
-        if (domainesMetier.domaine) {
+        if (ZDomainesMetiers.safeParse(domainesMetier).success) {
           await domainesMetier.save()
         }
 
