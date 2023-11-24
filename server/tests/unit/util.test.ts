@@ -40,8 +40,8 @@ describe(__filename(import.meta.url), () => {
     cleanedEmail = cleanEmail("àlan.léruŷêïÿt@test.fr")
     assert.strictEqual(cleanedEmail, "alan.leruyeiyt@test.fr")
 
-    cleanedEmail = cleanEmail("jhön.dôœ.’£'^&/=!*?}ù@têst.com")
-    assert.strictEqual(cleanedEmail, "jhon.doo.u@test.com")
+    cleanedEmail = cleanEmail("jhönœ.dôœ.’£'^&/=!*?}ù@têst .com ")
+    assert.strictEqual(cleanedEmail, "jhono.doo.u@test.com")
   })
 
   it.skip("Encryption décryption fonctionne", () => {
