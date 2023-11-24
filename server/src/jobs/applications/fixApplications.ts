@@ -6,7 +6,7 @@ import { db } from "@/common/mongodb"
 const removeOrReplaceCharsInDB = async () => {
   logger.info("Nettoyage des adresses emails mal formées dans applications.applicant_email")
 
-  const charsRegex = new RegExp(`[èéêëàáâãäåçœòóôõöùúûüìíîïýÿ’£'^!&=/*?}]`, "gi")
+  const charsRegex = new RegExp(`[èéêëàáâãäåçœòóôõöùúûüìíîïýÿ’£'^!&=/*?}\\s]`, "gi")
   const applicantsCursor = await db.collection("applications").find({ applicant_email: { $regex: charsRegex } })
 
   for await (const application of applicantsCursor) {
