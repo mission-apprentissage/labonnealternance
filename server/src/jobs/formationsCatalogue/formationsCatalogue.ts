@@ -1,5 +1,5 @@
 import { oleoduc, writeData } from "oleoduc"
-import { zFormationCatalogueSchema } from "shared/models"
+import { zFormationCatalogueSchemaNew } from "shared/models"
 
 import { logger } from "../../common/logger"
 import { FormationCatalogue } from "../../common/model/index"
@@ -24,8 +24,10 @@ const importFormations = async () => {
         stats.total++
         try {
           // use MongoDB to add only add selected field from getAllFormationFromCatalogue() function and speedup the process
-          zFormationCatalogueSchema.parse(formation)
-          await FormationCatalogue.collection.insertOne(formation)
+          delete formation._id // break parsing / insertion otherwise
+          const parsedFormation = zFormationCatalogueSchemaNew.parse(formation)
+
+          await FormationCatalogue.collection.insertOne(parsedFormation)
           stats.created++
         } catch (e) {
           logger.error("Erreur enregistrement de formation", e)
