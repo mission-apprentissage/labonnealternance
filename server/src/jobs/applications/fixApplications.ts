@@ -11,7 +11,9 @@ const removeOrReplaceCharsInDB = async () => {
 
   for await (const application of applicantsCursor) {
     const applicant_email = cleanEmail(application.applicant_email)
-    await db.collection("applications").updateOne({ _id: application._id }, { $set: { applicant_email } })
+    if (applicant_email !== application.applicant_email) {
+      await db.collection("applications").updateOne({ _id: application._id }, { $set: { applicant_email } })
+    }
   }
 }
 
