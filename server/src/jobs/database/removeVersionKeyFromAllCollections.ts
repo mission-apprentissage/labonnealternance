@@ -1,4 +1,4 @@
-import { mongooseInstance } from "../../../../common/mongodb"
+import { mongooseInstance } from "../../common/mongodb"
 
 /**
  * Remove the "__v" key from all collections.
