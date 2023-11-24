@@ -1,5 +1,6 @@
 import Boom from "boom"
 import Joi from "joi"
+import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -9,7 +10,6 @@ import { getReferrerByKeyName } from "../../common/model/constants/referrers"
 import { Appointment, EligibleTrainingsForAppointment, Etablissement, User } from "../../common/model/index"
 import config from "../../config"
 import * as appointmentService from "../../services/appointment.service"
-import { ROLES } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import mailer from "../../services/mailer.service"
@@ -72,7 +72,7 @@ export default (server: Server) => {
           phone,
           email,
           type,
-          role: ROLES.candidat,
+          role: EApplicantRole.CANDIDAT,
           last_action_date: dayjs().toDate(),
         })
       }

@@ -1,11 +1,11 @@
 import assert from "assert"
 
+import { EApplicantRole } from "shared/constants/rdva"
 import { describe, it } from "vitest"
 
 import { useMongo } from "@tests/utils/mongo.utils"
 
 import { User } from "../../../src/common/model/index"
-import { ROLES } from "../../../src/services/constant.service"
 import { authenticate, changePassword, createUser } from "../../../src/services/user.service"
 
 describe("users", () => {
@@ -22,27 +22,27 @@ describe("users", () => {
   })
 
   it("Permet de créer un utilisateur avec le role d'administrateur", async () => {
-    const user = await createUser("userAdmin", "password", { role: ROLES.administrator })
+    const user = await createUser("userAdmin", "password", { role: EApplicantRole.ADMINISTRATOR })
     const found = await User.findOne({ username: "userAdmin" })
 
-    assert.strictEqual(user.role, ROLES.administrator)
-    assert.strictEqual(found?.role, ROLES.administrator)
+    assert.strictEqual(user.role, EApplicantRole.ADMINISTRATOR)
+    assert.strictEqual(found?.role, EApplicantRole.ADMINISTRATOR)
   })
 
   it("Permet de créer un utilisateur avec le role de candidat", async () => {
-    const user = await createUser("userCandidat", "password", { role: ROLES.candidat })
+    const user = await createUser("userCandidat", "password", { role: EApplicantRole.CANDIDAT })
     const found = await User.findOne({ username: "userCandidat" })
 
-    assert.strictEqual(user.role, ROLES.candidat)
-    assert.strictEqual(found?.role, ROLES.candidat)
+    assert.strictEqual(user.role, EApplicantRole.CANDIDAT)
+    assert.strictEqual(found?.role, EApplicantRole.CANDIDAT)
   })
 
   it("Permet de créer un utilisateur avec le role de cfa", async () => {
-    const user = await createUser("userCfa", "password", { role: ROLES.cfa })
+    const user = await createUser("userCfa", "password", { role: EApplicantRole.CFA })
     const found = await User.findOne({ username: "userCfa" })
 
-    assert.strictEqual(user.role, ROLES.cfa)
-    assert.strictEqual(found?.role, ROLES.cfa)
+    assert.strictEqual(user.role, EApplicantRole.CFA)
+    assert.strictEqual(found?.role, EApplicantRole.CFA)
   })
 
   it("Vérifie que le mot de passe est valide", async () => {
