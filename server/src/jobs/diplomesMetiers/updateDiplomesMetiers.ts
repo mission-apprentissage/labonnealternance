@@ -127,9 +127,9 @@ export default async function () {
     diplomesMetiers[k].acronymes_intitule = buildAcronyms(diplomesMetiers[k].intitule_long)
 
     if (diplomesMetiers[k]?.codes_romes?.length) {
-      if (ZDiplomesMetiersNew.safeParse(diplomesMetiers[k]).success) {
-        const diplomesMetier = new DiplomesMetiers(diplomesMetiers[k])
-        await diplomesMetier.save()
+      const parsedDiplomeMetier = ZDiplomesMetiersNew.safeParse(diplomesMetiers[k])
+      if (parsedDiplomeMetier.success) {
+        await new DiplomesMetiers(parsedDiplomeMetier.data).save()
       } else {
         logger.error(`Mauvais format diplomesmetier pour le diplôme ${diplomesMetiers[k].intitule_long}`)
       }
