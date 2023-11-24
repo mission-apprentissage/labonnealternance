@@ -522,7 +522,7 @@ program
   .command("fix-applications")
   .description("Répare les adresses emails comportant des caractères erronés dans la collection applications")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("applications:fix"))
+  .action(createJobAction("fix-applications"))
 
 program
   .command("fix-data-validation-recruiters")

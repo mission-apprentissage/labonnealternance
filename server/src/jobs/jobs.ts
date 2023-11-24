@@ -326,7 +326,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixJobExpirationDate()
       case "recruiters:job-type:fix":
         return fixJobType()
-      case "applications:fix":
+      case "fix-applications":
         return fixApplications()
       case "recruiters:data-validation:fix":
         return fixRecruiterDataValidation()
