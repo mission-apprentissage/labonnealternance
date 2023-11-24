@@ -292,6 +292,18 @@ export function isAuthorizedUser(
   userWithType: UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>,
   resources: Ressources
 ): boolean {
+  if (typeof access === "object") {
+    if ("some" in access) {
+      return access.some.some((a) => isAuthorizedUser(a, userWithType, resources))
+    }
+
+    if ("every" in access) {
+      return access.every.every((a) => isAuthorizedUser(a, userWithType, resources))
+    }
+
+    assertUnreachable(access)
+  }
+
   const role = getUserRole(userWithType)
   if (!role.permissions.includes(access)) {
     return false
