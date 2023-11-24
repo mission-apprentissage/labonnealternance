@@ -50,6 +50,7 @@ export type AccessRessouces = {
         opco: AccessResourcePath
       }
   >
+  // TODO: Secure this ressource
   eligibleTrainingsForAppointment?: ReadonlyArray<
     | {
         _id: AccessResourcePath
@@ -58,9 +59,11 @@ export type AccessRessouces = {
         etablissement_formateur_siret: AccessResourcePath
       }
   >
+  // TODO: Secure this ressource
   etablissement?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
+  // TODO: Secure this ressource
   formationCatalogue?: ReadonlyArray<{
     cle_ministere_educatif: AccessResourcePath
   }>
