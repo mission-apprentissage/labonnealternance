@@ -1,58 +1,22 @@
+import { cleanEmail } from "shared/helpers/common"
+
 import { logger } from "@/common/logger"
 import { db } from "@/common/mongodb"
-import { asyncForEach } from "@/common/utils/asyncUtils"
 
-const removeOrReplaceCharsInDB = async (collection: string, field: string, charsToReplace: string, replacementChar: string = "") => {
-  logger.info(`remplacement de ${charsToReplace} par ${replacementChar} dans ${collection}.${field}`)
+const removeOrReplaceCharsInDB = async () => {
+  logger.info("Nettoyage des adresses emails mal formées dans applications.applicant_email")
 
-  const charsRegex = new RegExp(`[${charsToReplace}]`, "gi")
-  const applicantsCursor = await db.collection(collection).find({ applicant_email: { $regex: charsRegex } })
+  const charsRegex = new RegExp(`[èéêëàáâãäåçœòóôõöùúûüìíîïýÿ’£'^!&=/*?}]`, "gi")
+  const applicantsCursor = await db.collection("applications").find({ applicant_email: { $regex: charsRegex } })
 
   for await (const application of applicantsCursor) {
-    const correctedEmail = application.applicant_email.replace(charsRegex, charsTo)
-
-    application.applicant_email = correctedEmail
-    await db.collection(collection).save(application)
+    const applicant_email = cleanEmail(application.applicant_email)
+    await db.collection("applications").updateOne({ _id: application._id }, { $set: { applicant_email } })
   }
 }
 
-const emailCharsToReplace = [
-  {
-    charsToReplace: "èéêë",
-    replacementChar: "e",
-  },
-  {
-    charsToReplace: "àáâãäå",
-    replacementChar: "a",
-  },
-  {
-    charsToReplace: "ç",
-    replacementChar: "c",
-  },
-  {
-    charsToReplace: "œòóôõö",
-    replacementChar: "o",
-  },
-  {
-    charsToReplace: "ùúûü",
-    replacementChar: "u",
-  },
-  {
-    charsToReplace: "ìíîï",
-    replacementChar: "i",
-  },
-  {
-    charsToReplace: "ýÿ",
-    replacementChar: "y",
-  },
-  {
-    charsToReplace: "’£'^!&=/*?}",
-    replacementChar: "",
-  },
-]
-
 export default async function fixApplications() {
-  await asyncForEach(emailCharsToReplace, async (c) => await removeOrReplaceCharsInDB("applications", "applicant_email", c.charsToReplace, c.replacementChar))
+  await removeOrReplaceCharsInDB()
 
   await db.collection("applications").updateMany(
     { company_naf: null },
