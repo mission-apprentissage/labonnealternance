@@ -11,8 +11,8 @@ export const ZUser = z
     lastname: z.string(),
     phone: z.string(),
     email: z.string().email(),
-    type: z.enum(["candidat", "cfa", "administrator"]),
-    role: z.string(),
+    type: z.enum(["etudiant", "parent"]),
+    role: z.enum(["candidat", "cfa", "administrator"]),
     last_action_date: z.coerce.date(),
     is_anonymized: z.boolean(),
   })
