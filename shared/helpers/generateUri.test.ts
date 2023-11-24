@@ -161,7 +161,7 @@ describe("generatePath", () => {
 describe("generateQueryString", () => {
   describe("with no params", () => {
     it("returns empty search params", () => {
-      expect(generateQueryString()).toBe("?")
+      expect(generateQueryString()).toBe("")
     })
   })
   describe("with string params", () => {
