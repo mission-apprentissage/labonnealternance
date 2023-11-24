@@ -24,7 +24,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 3679dcde17d9d606ef7b27ad632122fcf19a4180849ed4cd1cbc98c312dd0d29
 - filename: .infra/vault/vault.yml
-  checksum: 9ac87932d132cd238bc2194daadd08b26491985332c9ed15ccfd6f14a0645839
+  checksum: 7d9f7e2d405d2158acc11feb37873061c1ec579d2a27ee0c7cf5e144ba3d08da
 - filename: .yarn/patches/zod-npm-3.21.4-9f570b215c.patch
   checksum: d429ff982063e6476ea8d8d91ac1173a1279d1c9bf0488b6e05396affeb8c6cf
 - filename: server/.env.test
