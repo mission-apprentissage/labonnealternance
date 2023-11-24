@@ -2,18 +2,18 @@ import { captureException } from "@sentry/node"
 import { Model } from "mongoose"
 import {
   ZApplication,
-  // ZAppointment,
-  // ZCredential,
-  // ZEligibleTrainingsForAppointmentSchema,
-  // ZEtablissement,
-  // ZJob,
+  ZAppointment,
+  ZCredential,
+  ZEligibleTrainingsForAppointmentSchema,
+  ZEtablissement,
+  ZJob,
   ZLbaCompany,
-  // ZOptout,
-  // ZRecruiter,
-  // ZReferentielOpco,
-  // ZUnsubscribeOF,
-  // ZUnsubscribedLbaCompany,
-  // ZUserRecruteur,
+  ZOptout,
+  ZRecruiter,
+  ZReferentielOpco,
+  ZUnsubscribeOF,
+  ZUnsubscribedLbaCompany,
+  ZUserRecruteur,
   zFormationCatalogueSchema,
   ZDiplomesMetiers,
   ZDomainesMetiers,
@@ -26,22 +26,22 @@ import { ZodType } from "zod"
 import { logger } from "@/common/logger"
 import {
   Application,
-  // Appointment,
-  // AppointmentDetailed,
-  // Credential,
-  // EligibleTrainingsForAppointment,
-  // Etablissement,
+  Appointment,
+  AppointmentDetailed,
+  Credential,
+  EligibleTrainingsForAppointment,
+  Etablissement,
   FormationCatalogue,
-  // Job,
+  Job,
   LbaCompany,
   LbaCompanyLegacy,
-  // Optout,
-  // Recruiter,
-  // ReferentielOpco,
-  // UnsubscribeOF,
-  // UnsubscribedLbaCompany,
-  // UserRecruteur,
-  // eligibleTrainingsForAppointmentHistory,
+  Optout,
+  Recruiter,
+  ReferentielOpco,
+  UnsubscribeOF,
+  UnsubscribedLbaCompany,
+  UserRecruteur,
+  eligibleTrainingsForAppointmentHistory,
   DiplomesMetiers,
   DomainesMetiers,
   ApiCalls,
@@ -62,8 +62,6 @@ async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, a
       z.parse(doc)
     } catch (err) {
       count++
-
-      if (err.issues[0].path[0] === "applicant_email") console.log(doc.applicant_email)
 
       if (err && typeof err === "object" && "issues" in err && Array.isArray(err.issues)) {
         err.issues.forEach(({ code, path, expected, received, message }) => {
@@ -94,30 +92,30 @@ export async function validateModels(): Promise<void> {
   // TODO: Create Zod for missing models
   await validateModel(ApiCalls, ZApiCall)
   await validateModel(Application, ZApplication)
-  // await validateModel(Appointment, ZAppointment)
-  // await validateModel(AppointmentDetailed, ZAppointment)
-  // await validateModel(Credential, ZCredential)
+  await validateModel(Appointment, ZAppointment)
+  await validateModel(AppointmentDetailed, ZAppointment)
+  await validateModel(Credential, ZCredential)
   await validateModel(DiplomesMetiers, ZDiplomesMetiers)
   await validateModel(DomainesMetiers, ZDomainesMetiers)
-  // await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
-  // await validateModel(EmailBlacklist, ZEmailBlacklist)
-  // await validateModel(Etablissement, ZEtablissement)
+  await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
+  // // await validateModel(EmailBlacklist, ZEmailBlacklist)
+  await validateModel(Etablissement, ZEtablissement)
   await validateModel(FormationCatalogue, zFormationCatalogueSchema)
   await validateModel(GeoLocation, ZGeoLocation)
-  //  await validateModel(InternalJobs, ZInternalJobs)
-  // await validateModel(Job, ZJob)
+  // //  await validateModel(InternalJobs, ZInternalJobs)
+  await validateModel(Job, ZJob)
   await validateModel(LbaCompany, ZLbaCompany)
   await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   //  await validateModel(Opco, ZOpco)
-  // await validateModel(Optout, ZOptout)
-  // await validateModel(Recruiter, ZRecruiter)
+  await validateModel(Optout, ZOptout)
+  await validateModel(Recruiter, ZRecruiter)
   // await validateModel(ReferentielOnisep, ZReferentielOnisep)
-  // await validateModel(ReferentielOpco, ZReferentielOpco)
+  await validateModel(ReferentielOpco, ZReferentielOpco)
   // await validateModel(ReferentielRome, ZReferentielRome)
   // await validateModel(RncpRomes, ZRncpRomes)
-  // await validateModel(UnsubscribeOF, ZUnsubscribeOF)
-  // await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
+  await validateModel(UnsubscribeOF, ZUnsubscribeOF)
+  await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
   // await validateModel(User, ZUser)
-  // await validateModel(UserRecruteur, ZUserRecruteur)
-  // await validateModel(eligibleTrainingsForAppointmentHistory, ZEligibleTrainingsForAppointmentSchema)
+  await validateModel(UserRecruteur, ZUserRecruteur)
+  await validateModel(eligibleTrainingsForAppointmentHistory, ZEligibleTrainingsForAppointmentSchema)
 }
