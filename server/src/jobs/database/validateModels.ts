@@ -11,7 +11,10 @@ import {
   ZOptout,
   ZRecruiter,
   ZReferentielOnisep,
+  ZReferentielOpco,
   ZRncpRomes,
+  ZUnsubscribeOF,
+  ZUnsubscribedLbaCompany,
   ZUser,
   ZUserRecruteur,
   zFormationCatalogueSchema,
@@ -33,7 +36,10 @@ import {
   Optout,
   Recruiter,
   ReferentielOnisep,
+  ReferentielOpco,
   RncpRomes,
+  UnsubscribeOF,
+  UnsubscribedLbaCompany,
   User,
   UserRecruteur,
   eligibleTrainingsForAppointmentHistory,
@@ -101,11 +107,11 @@ export async function validateModels(): Promise<void> {
   await validateModel(Optout, ZOptout)
   await validateModel(Recruiter, ZRecruiter)
   await validateModel(ReferentielOnisep, ZReferentielOnisep)
-  // await validateModel(ReferentielOpco, ZReferentielOpco)
   await validateModel(RncpRomes, ZRncpRomes)
-  // await validateModel(UnsubscribeOF, ZUnsubscribeOF)
-  // await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
   await validateModel(User, ZUser)
+  await validateModel(ReferentielOpco, ZReferentielOpco)
+  await validateModel(UnsubscribeOF, ZUnsubscribeOF)
+  await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
   await validateModel(UserRecruteur, ZUserRecruteur)
   await validateModel(eligibleTrainingsForAppointmentHistory, ZEligibleTrainingsForAppointmentSchema)
 }

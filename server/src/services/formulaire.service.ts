@@ -544,8 +544,8 @@ export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
  */
 export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
-  const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   if (unsubscribeOF) return
+  const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   await mailer.sendEmail({
     to: email,
     subject: `Une entreprise recrute dans votre domaine`,

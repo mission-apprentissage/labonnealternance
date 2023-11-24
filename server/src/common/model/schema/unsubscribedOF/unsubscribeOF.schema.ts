@@ -1,8 +1,8 @@
+import { IUnsubscribedOF } from "shared/models"
+
 import { model, Schema } from "../../../mongodb"
 
-import { IUnsubscribedOF } from "./unsubscribeOF.types"
-
-const unsubscribedOF = new Schema<IUnsubscribedOF>(
+const unsubscribedOFSchema = new Schema<IUnsubscribedOF>(
   {
     catalogue_id: {
       type: String,
@@ -24,4 +24,6 @@ const unsubscribedOF = new Schema<IUnsubscribedOF>(
   }
 )
 
-export default model<IUnsubscribedOF>("unsubscribedOF", unsubscribedOF)
+export const UnsubscribeOF = model<IUnsubscribedOF>("unsubscribedOF", unsubscribedOFSchema)
+
+export default UnsubscribeOF
