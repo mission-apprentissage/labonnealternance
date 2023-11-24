@@ -9,6 +9,8 @@ import config from "../config"
 
 import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
+import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
+import { fixCollections } from "./database/temp/fixCollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -27,7 +29,6 @@ import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecrui
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
-import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
@@ -193,6 +194,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "fiab:kevin":
+        return fixCollections()
       case "recruiters:set-missing-job-start-date":
         return updateMissingStartDate()
       case "recruiters:get-missing-geocoordinates":
