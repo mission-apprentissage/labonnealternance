@@ -68,11 +68,19 @@ export const ZReqHeadersAuthorization = z
 
 export type AuthStrategy = "api-key" | "cookie-session" | "access-token"
 
-export type SecurityScheme = {
+export type SecuritySchemeWithAcl = {
   auth: AuthStrategy
-  access: AccessPermission | null
+  access: AccessPermission
   ressources: AccessRessouces
 }
+
+export type SecuritySchemeNoAcl = {
+  auth: AuthStrategy
+  access: null
+  ressources: Record<string, never>
+}
+
+export type SecurityScheme = SecuritySchemeWithAcl | SecuritySchemeNoAcl
 
 interface IRouteSchemaCommon {
   path: string

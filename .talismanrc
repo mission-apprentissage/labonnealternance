@@ -61,6 +61,8 @@ fileignoreconfig:
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
+- filename: shared/helpers/generateUri.test.ts
+  checksum: eda97eabe30029125d74dd0755577fa806934c72912f00ddd086d673749a5b25
 - filename: shared/helpers/generateUri.ts
   checksum: 03ecb8627c19374e97450e5974ca6a5f51e269a8bb1cf5d372a8c2a2aca72cfa
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap

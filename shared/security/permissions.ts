@@ -27,7 +27,7 @@ export const AdminRole = {
   permissions: ["admin"],
 } satisfies Role
 
-export type AccessPermission = Permission | { some: ReadonlyArray<AccessPermission> } | { every: ReadonlyArray<AccessPermission> }
+export type AccessPermission = Permission
 
 export type AccessResourcePath = {
   type: "params" | "query"
