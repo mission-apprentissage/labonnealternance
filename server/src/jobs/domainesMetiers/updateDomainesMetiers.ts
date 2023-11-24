@@ -113,15 +113,16 @@ export default async function (optionalFileName?: string) {
           sous_domaine_onisep: sousDomainesOnisep,
         }
 
-        const domainesMetier = new DomainesMetiers(paramsDomaineMetier)
-
         if (codesROMEs.length > 15) {
           avertissements.push({ domaine: metier, romes: codesROMEs.length })
         }
-        if (ZDomainesMetiers.safeParse(paramsDomaineMetier).success) {
-          await domainesMetier.save()
+
+        const parsedDomaineMetier = ZDomainesMetiers.safeParse(paramsDomaineMetier)
+
+        if (parsedDomaineMetier.success) {
+          await new DomainesMetiers(parsedDomaineMetier.data).save()
         } else {
-          logger.error(`Erreur non bloquante : mauvais format de domaines metiers domaine=${domainesMetier.domaine} - sous_domaine=${domainesMetier.sous_domaine}`)
+          logger.error(`Erreur non bloquante : mauvais format de domaines metiers domaine=${paramsDomaineMetier.domaine} - sous_domaine=${paramsDomaineMetier.sous_domaine}`)
         }
 
         reset()
