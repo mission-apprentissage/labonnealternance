@@ -1,5 +1,6 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
+import { ObjectId } from "mongodb"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
@@ -324,6 +325,18 @@ export function isAuthorizedUser(
   }
 }
 
+function canAccessRessource(allowedIds: ReadonlyArray<string> | undefined, requiredResources: Array<{ _id: ObjectId }>) {
+  const set: Set<string> = new Set(allowedIds)
+
+  for (const resource of requiredResources) {
+    if (!set.has(resource._id.toString())) {
+      return false
+    }
+  }
+
+  return true
+}
+
 export function isAuthorizedToken<S extends SchemaWithSecurity>(
   token: IAccessToken,
   resources: Ressources,
@@ -333,6 +346,47 @@ export function isAuthorizedToken<S extends SchemaWithSecurity>(
 ): boolean {
   const scope = getAccessTokenScope(token, schema, params, querystring)
 
+  const keys = Object.keys(resources) as Array<keyof Ressources>
+  for (const key of keys) {
+    switch (key) {
+      case "jobs": {
+        if (
+          !canAccessRessource(
+            scope?.resources.job,
+            resources.jobs.map(({ job }) => job)
+          )
+        ) {
+          return false
+        }
+        break
+      }
+      case "recruiters": {
+        if (!canAccessRessource(scope?.resources.recruiter, resources.recruiters)) {
+          return false
+        }
+
+        break
+      }
+      case "users": {
+        if (!canAccessRessource(scope?.resources.user, resources.users)) {
+          return false
+        }
+        break
+      }
+      case "applications":
+        if (
+          !canAccessRessource(
+            scope?.resources.application,
+            resources.applications.map(({ application }) => application)
+          )
+        ) {
+          return false
+        }
+        break
+      default:
+        assertUnreachable(key)
+    }
+  }
   if ("users" in resources) {
     const allowedUserIds: Set<string> = new Set(scope?.resources.user ?? [])
 
