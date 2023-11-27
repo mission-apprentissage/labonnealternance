@@ -14,9 +14,9 @@ import {
   FormationCatalogue,
   LbaCompany,
   UnsubscribedLbaCompany,
-  UserRecruteur,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
+import { IUser } from "@/common/model/schema/user/user.types"
 import { db } from "@/common/mongodb"
 
 import { asyncForEach } from "../../common/utils/asyncUtils"
@@ -118,62 +118,81 @@ const obfuscateFormations = async () => {
   )
 }
 
-const obfuscateRecruiterAndUsers = async () => {
-  logger.info(`obfuscating recruiters and users`)
-  const users: IUserRecruteur[] = await db
-    .collection("userrecruteurs")
-    .find({ type: { $in: [ENTREPRISE, CFA] } })
-    .toArray()
-  await asyncForEach(users, async (user) => {
-    let email = faker.internet.email()
-    let exist
+const getFakeEmail = async (collection: string, provider?: string) => {
+  let email = `faker-${provider ? faker.internet.email({ provider }) : faker.internet.email()}`
+  let exists
 
-    do {
-      exist = await db.collection("userrecruteurs").countDocuments({ email })
-      email = faker.internet.email()
-    } while (exist > 1)
-
-    switch (user.type) {
-      case ENTREPRISE:
-        await Promise.all([
-          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, { email }),
-          db.collection("recruiters").findOneAndUpdate({ establishment_id: user.establishment_id }, { email }),
-        ])
-        break
-      case CFA:
-        await Promise.all([
-          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, { email }),
-          db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, { email }),
-        ])
-        break
-
-      default:
-        break
+  do {
+    exists = await db.collection(collection).countDocuments({ email })
+    if (exists) {
+      email = `faker-${provider ? faker.internet.email({ provider }) : faker.internet.email()}`
     }
-  })
-  logger.info(`obfuscating recruiters and users done`)
+  } while (exists !== 0)
+
+  return email
 }
 
-const obfuscateSpecificUsers = async () => {
-  logger.info(`obfuscating specific users`)
-  await UserRecruteur.updateMany(
-    { type: OPCO },
-    {
-      email: faker.internet.email({ provider: "opco.fr" }),
-      phone: "0601010106",
-      last_name: "nom_famille",
-      first_name: "prenom",
+const obfuscateRecruiter = async () => {
+  logger.info(`obfuscating recruiters`)
+  const users: IUserRecruteur[] = await db.collection("userrecruteurs").find({}).toArray()
+
+  await asyncForEach(users, async (user) => {
+    let fakeEmail = ""
+    switch (user.type) {
+      case OPCO: {
+        fakeEmail = await getFakeEmail("userrecruteurs", "opco.fr")
+        break
+      }
+      case ADMIN: {
+        fakeEmail = await getFakeEmail("userrecruteurs", "admin.fr")
+        break
+      }
+      default: {
+        // CFA ou ENTREPRISE
+        fakeEmail = await getFakeEmail("userrecruteurs")
+        break
+      }
     }
-  )
-  await UserRecruteur.updateMany(
-    { type: ADMIN },
-    {
-      email: faker.internet.email({ provider: "admin.fr" }),
-      phone: "0601010106",
-      last_name: "nom_famille",
-      first_name: "prenom",
+
+    const replacement = { $set: { email: fakeEmail, phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
+
+    switch (user.type) {
+      case ENTREPRISE: {
+        await Promise.all([
+          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
+          db.collection("recruiters").findOneAndUpdate({ establishment_id: user.establishment_id }, replacement),
+        ])
+        break
+      }
+      case CFA: {
+        await Promise.all([
+          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
+          db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, replacement),
+        ])
+        break
+      }
+
+      default: {
+        await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
+        break
+      }
     }
-  )
+  })
+  logger.info(`obfuscating recruiters done`)
+}
+
+const obfuscateUser = async () => {
+  logger.info(`obfuscating users`)
+  const users: IUser[] = await db.collection("users").find({}).toArray()
+
+  await asyncForEach(users, async (user) => {
+    const fakeEmail = await getFakeEmail("users")
+
+    const replacement = { $set: { password: "removed", email: fakeEmail, username: fakeEmail, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
+
+    await db.collection("users").findOneAndUpdate({ _id: user._id }, replacement)
+  })
+  logger.info(`obfuscating users done`)
 }
 
 export async function obfuscateCollections(): Promise<void> {
@@ -188,6 +207,6 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateElligibleTrainingsForAppointment()
   await obfuscateEtablissements()
   await obfuscateFormations()
-  await obfuscateRecruiterAndUsers()
-  await obfuscateSpecificUsers()
+  await obfuscateRecruiter()
+  await obfuscateUser()
 }
