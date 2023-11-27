@@ -15,9 +15,9 @@ const trackApiCall = async ({
   caller: string
   api_path: string
   response: string
-  training_count: number
-  job_count: number
-  result_count: number
+  training_count?: number
+  job_count?: number
+  result_count?: number
 }) => {
   try {
     const apiCallParams = {
