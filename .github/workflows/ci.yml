@@ -11,11 +11,7 @@ jobs:
     timeout-minutes: 10
     name: "Tests"
     runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:6.0.2-focal
-        ports:
-          - "27017:27017"
+
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
@@ -45,6 +41,13 @@ jobs:
 
       - name: typecheck
         run: yarn typecheck:ci
+
+      - name: start mongodb service
+        run: |
+          chmod 400 .infra/local/mongo_keyfile
+          sudo chown 999:999 .infra/local/mongo_keyfile
+          docker compose up -d --wait mongodb
+          yarn setup:mongodb
 
       - name: test
         run: yarn test:ci

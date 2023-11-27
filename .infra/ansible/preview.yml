@@ -12,6 +12,12 @@
         chdir: /opt/app
         cmd: docker compose -f docker-compose.preview-system.yml up -d --wait
 
+    - name: Setup MongoDB ReplicaSet
+      shell:
+        chdir: /opt/app
+        cmd: 'docker compose exec -it mongodb mongosh --eval "try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }" --quiet'
+      when: env_type == 'preview'
+
     - include_tasks: ./tasks/preview_pr.yml
       vars:
         build: true
