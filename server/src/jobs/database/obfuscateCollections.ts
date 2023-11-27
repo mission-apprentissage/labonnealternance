@@ -1,20 +1,25 @@
+import { faker } from "@faker-js/faker"
 import { Model } from "mongoose"
+import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
 import {
+  AnonymizedApplication,
+  ApiCalls,
   Application,
+  Appointment,
   EligibleTrainingsForAppointment,
   Etablissement,
   FormationCatalogue,
   LbaCompany,
-  // Recruiter,
+  Recruiter,
   UnsubscribedLbaCompany,
-  // UserRecruteur,
-  ApiCalls,
-  AnonymizedApplication,
-  Appointment,
+  UserRecruteur,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
+
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import { ADMIN, OPCO } from "../../services/constant.service"
 
 async function reduceModel<T>(model: Model<T> | Pagination<T>, limit = 20000) {
   logger.info(`reducing collection ${model.collection.name} to ${limit} latest documents`)
@@ -112,33 +117,48 @@ const obfuscateFormations = async () => {
   )
 }
 
-// // TODO Kevin
-// const obfuscateRecruiter = async () => {
-//   logger.info(`obfuscating recruiters`)
-//   await Recruiter.updateMany(
-//     {},
-//     {
-//       //email: "faux_email@faux-domaine-compagnie.com", TODO should be unique
-//       phone: "0601010106",
-//       last_name: "nom_famille",
-//       first_name: "prenom",
-//     }
-//   )
-// }
+const obfuscateRecruiterAndUsers = async () => {
+  logger.info(`obfuscating recruiters and users`)
+  const users = await UserRecruteur.find({ type: { $in: [ENTREPRISE, CFA] } })
+  await asyncForEach(users, async (user) => {
+    const email = faker.internet.email()
+    switch (user.type) {
+      case ENTREPRISE:
+        //@ts-expect-error
+        await Promise.all([UserRecruteur.findByIdAndUpdate(user._id, { email }), Recruiter.findOneAndUpdate({ establishment_id: user.establishment_id }, { email })])
+        break
+      case CFA:
+        await Promise.all([UserRecruteur.findByIdAndUpdate(user._id, { email }), Recruiter.updateMany({ cfa_delegated_siret: user.establishment_siret }, { email })])
+        break
 
-// // TODO Kevin
-// const obfuscateUserRecruiter = async () => {
-//   logger.info(`obfuscating recruiters`)
-//   await UserRecruteur.updateMany(
-//     {},
-//     {
-//       //email: "faux_email@faux-domaine-compagnie.com", TODO should be unique
-//       phone: "0601010106",
-//       last_name: "nom_famille",
-//       first_name: "prenom",
-//     }
-//   )
-// }
+      default:
+        break
+    }
+  })
+  logger.info(`obfuscating recruiters and users done`)
+}
+
+const obfuscateSpecificUsers = async () => {
+  logger.info(`obfuscating specific users`)
+  await UserRecruteur.updateMany(
+    { type: OPCO },
+    {
+      email: faker.internet.email({ provider: "opco.fr" }),
+      phone: "0601010106",
+      last_name: "nom_famille",
+      first_name: "prenom",
+    }
+  )
+  await UserRecruteur.updateMany(
+    { type: ADMIN },
+    {
+      email: faker.internet.email({ provider: "admin.fr" }),
+      phone: "0601010106",
+      last_name: "nom_famille",
+      first_name: "prenom",
+    }
+  )
+}
 
 export async function obfuscateCollections(): Promise<void> {
   await reduceModel(ApiCalls)
@@ -152,6 +172,6 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateElligibleTrainingsForAppointment()
   await obfuscateEtablissements()
   await obfuscateFormations()
-  // await obfuscateRecruiter()
-  // await obfuscateRecruiter()
+  await obfuscateRecruiterAndUsers()
+  await obfuscateSpecificUsers()
 }
