@@ -1,0 +1,1 @@
+{{vault.MONGODB_KEYFILE}}
