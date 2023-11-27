@@ -23,6 +23,7 @@ import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
+import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
@@ -35,8 +36,10 @@ import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { fillRecruiterRaisonSociale } from "./lba_recruteur/user/misc/fillRecruiterRaisonSociale"
+import { fixUserRecruiterDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurDataValidation"
 import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
+import buildSAVE from "./lbb/buildSAVE"
 import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
@@ -306,6 +309,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateOpcoCompanies(job.payload)
       case "domaines-metiers:update":
         return updateDomainesMetiers()
+      case "save:update":
+        return buildSAVE()
       case "domaines-metiers:file:update": {
         const { filename, key } = job.payload
         return updateDomainesMetiersFile({ filename, key })
@@ -320,6 +325,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixJobExpirationDate()
       case "recruiters:job-type:fix":
         return fixJobType()
+      case "recruiters:data-validation:fix":
+        return fixRecruiterDataValidation()
+      case "user-recruters:data-validation:fix":
+        return fixUserRecruiterDataValidation()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()

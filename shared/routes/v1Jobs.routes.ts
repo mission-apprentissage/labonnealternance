@@ -1,7 +1,6 @@
-import dayjs from "../helpers/dayjs"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob } from "../models"
+import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
@@ -336,7 +335,11 @@ export const zV1JobsRoutes = {
           establishment_siret: extensions.siret,
           first_name: z.string(),
           last_name: z.string(),
-          phone: extensions.phone().optional(),
+          phone: z
+            .string()
+            .trim()
+            .regex(/^0[1-9]\d{8}$/)
+            .optional(),
           email: z.string().email(),
           idcc: z.string().optional(),
           origin: z.string().optional().openapi({
@@ -364,35 +367,22 @@ export const zV1JobsRoutes = {
     "/v1/jobs/:establishmentId": {
       method: "post",
       path: "/v1/jobs/:establishmentId",
-      params: z
-        .object({
-          establishmentId: z.string(),
-        })
-        .strict(),
-      body: z
-        .object({
+      params: z.object({ establishmentId: z.string() }).strict(),
+      body: ZJobFields.pick({
+        job_level_label: true,
+        job_duration: true,
+        job_type: true,
+        job_count: true,
+        job_rythm: true,
+        job_employer_description: true,
+        job_description: true,
+        is_disabled_elligible: true,
+        custom_address: true,
+        custom_geo_coordinates: true,
+      })
+        .extend({
+          job_start_date: ZJobStartDateCreate(),
           appellation_code: z.string().regex(/^[0-9]+$/, "appelation code must contains only numbers"),
-          job_level_label: z.enum([
-            "Indifférent",
-            "Cap, autres formations niveau (Infrabac)",
-            "BP, Bac, autres formations niveau (Bac)",
-            "BTS, DEUST, autres formations niveau (Bac+2)",
-            "Licence, autres formations niveau (Bac+3)",
-            "Master, titre ingénieur, autres formations niveau (Bac+5)",
-          ]),
-          job_duration: z.number().min(6).max(36),
-          job_type: z.array(z.enum(["Apprentissage", "Professionnalisation"])),
-          is_disabled_elligible: z.boolean().optional().default(false),
-          job_count: z.number().optional().default(1),
-          job_rythm: z
-            .enum(["Indifférent", "2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines", "Non renseigné"])
-            .optional()
-            .default("Non renseigné"),
-          job_start_date: z.coerce.date().refine((date) => dayjs(date).isSameOrAfter(dayjs().utc()), { message: "job_start_date must be greater or equal to today's date" }),
-          job_employer_description: z.string().optional(),
-          job_description: z.string().optional(),
-          custom_address: z.string().optional(),
-          custom_geo_coordinates: z.string().optional(),
         })
         .strict()
         .refine(
@@ -562,12 +552,15 @@ export const zV1JobsRoutes = {
         is_disabled_elligible: true,
         job_count: true,
         job_rythm: true,
-        job_start_date: true,
         job_employer_description: true,
         job_description: true,
         custom_address: true,
         custom_geo_coordinates: true,
-      }).partial(),
+      })
+        .extend({
+          job_start_date: ZJobStartDateCreate(),
+        })
+        .partial(),
       response: {
         "200": ZRecruiter,
         "400": z.union([ZResError, ZLbarError]),

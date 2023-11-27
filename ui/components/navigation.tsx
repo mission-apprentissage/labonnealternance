@@ -1,5 +1,5 @@
 import { CloseIcon, HamburgerIcon, LockIcon } from "@chakra-ui/icons"
-import { Box, Container, Flex, Image, Link, Show, Stack, useDisclosure } from "@chakra-ui/react"
+import { Box, Container, Flex, Image, Show, Stack, useDisclosure } from "@chakra-ui/react"
 import NextLink from "next/link"
 
 import { LbaNew } from "../theme/components/logos"
@@ -71,8 +71,8 @@ const Navigation = ({ currentPage = undefined }) => {
                   </Box>
                 </NextLink>
                 <Pipe />
-                <NextLink href="/organisme-de-formation">
-                  <Link aria-label="Accès espace organisme de formation" display="inline-grid">
+                <NextLink href="/organisme-de-formation" aria-label="Accès espace organisme de formation">
+                  <Box display="inline-grid">
                     <Box
                       as="span"
                       ml={[0, 0, 0, 2]}
@@ -86,7 +86,7 @@ const Navigation = ({ currentPage = undefined }) => {
                     >
                       Organisme de formation
                     </Box>
-                  </Link>
+                  </Box>
                 </NextLink>
                 {currentPage === "acces-recruteur" || currentPage === "organisme-de-formation" ? (
                   <>

@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "setup": ".bin/mna-lba init:env",
+    "setup:mongodb": "docker compose exec -it mongodb mongosh --eval \"try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }\" --quiet",
     "dev": "yarn services:start; yarn foreach:parallel run dev",
     "cli": "yarn workspace server cli",
     "seed": "./.bin/mna-lba seed:apply",
@@ -53,10 +54,11 @@
     "foreach:ci": "yarn foreach:seq -p",
     "e2e": "cypress open",
     "e2e:headless": "cypress run",
-    "e2e:production": "cypress run --env host=https://labonnealternance-recette.apprentissage.beta.gouv.fr",
+    "e2e:production": "cypress run --env host=https://labonnealternance.apprentissage.beta.gouv.fr",
+    "e2e:recette": "cypress run --env ui=https://labonnealternance-recette.apprentissage.beta.gouv.fr,server=https://labonnealternance-recette.apprentissage.beta.gouv.fr",
     "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
     "e2e:convert2": "node cypress/convertRecords.mjs",
-    "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-job-application.cy.js --env host=localhost"
+    "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-rdv-from-widget.cy.js --env ui=http://localhost:3000,server=http://localhost:5001"
   },
   "dependencies": {
     "husky": "^8.0.3"
@@ -114,5 +116,8 @@
     "*": [
       "prettier --write -u"
     ]
+  },
+  "resolutions": {
+    "zod@3.21.4": "patch:zod@npm%3A3.21.4#./.yarn/patches/zod-npm-3.21.4-9f570b215c.patch"
   }
 }

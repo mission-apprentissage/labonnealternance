@@ -22,7 +22,7 @@
     "@elastic/elasticsearch": "^7.17.13",
     "@fastify/cookie": "^9.1.0",
     "@fastify/cors": "^8.4.0",
-    "@fastify/rate-limit": "^8.0.3",
+    "@fastify/rate-limit": "^9.0.0",
     "@fastify/swagger": "^8.10.1",
     "@fastify/swagger-ui": "^1.9.3",
     "@immobiliarelabs/fastify-sentry": "^7.1.1",
@@ -90,7 +90,7 @@
     "type-fest": "^4.3.3",
     "xlsx": "^0.18.5",
     "xml2js": "^0.6.2",
-    "zod": "^3.22.2"
+    "zod": "3.21.4"
   },
   "devDependencies": {
     "@sentry/types": "^7.72.0",

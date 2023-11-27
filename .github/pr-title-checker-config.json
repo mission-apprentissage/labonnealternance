@@ -1,0 +1,15 @@
+{
+  "LABEL": {
+    "name": ":warning: Pull request title needs formatting",
+    "color": "D93F0B"
+  },
+  "CHECKS": {
+    "prefixes": ["fix: ", "feat: ", "refactor: ", "chore: "],
+    "regexp": "docs\\(v[0-9]\\): "
+  },
+  "MESSAGES": {
+    "success": "PR title OK",
+    "failure": "Failing CI test",
+    "notice": ""
+  }
+}
