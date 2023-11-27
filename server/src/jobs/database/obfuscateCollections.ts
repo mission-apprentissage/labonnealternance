@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker"
 import { Model } from "mongoose"
+import { IUserRecruteur } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
@@ -119,7 +120,10 @@ const obfuscateFormations = async () => {
 
 const obfuscateRecruiterAndUsers = async () => {
   logger.info(`obfuscating recruiters and users`)
-  const users = await UserRecruteur.find({ type: { $in: [ENTREPRISE, CFA] } }).lean()
+  const users: IUserRecruteur[] = await db
+    .collection("userrecruteurs")
+    .find({ type: { $in: [ENTREPRISE, CFA] } })
+    .toArray()
   await asyncForEach(users, async (user) => {
     let email = faker.internet.email()
     let exist
