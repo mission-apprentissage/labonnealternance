@@ -19,8 +19,9 @@ import { Model } from "mongoose"
 // import { ZodType } from "zod"
 
 // import { logger } from "@/common/logger"
+import { logger } from "@/common/logger"
 import {
-  // Application,
+  Application,
   // Appointment,
   // AppointmentDetailed,
   // Credential,
@@ -41,13 +42,24 @@ import {
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
-async function reduceModel<T>(model: Model<T> | Pagination<T>, limit = 50000) {
-  const docsToKeep = await model.find({}).sort({ created_at: -1 }).skip(limit)
-  await model.deleteMany({ _id: { $nin: docsToKeep.map((doc) => doc._id) } })
+async function reduceModel<T>(model: Model<T> | Pagination<T>, limit = 20000) {
+  logger.info(`reducing collection ${model.collection.name} to ${limit} latest documents`)
+  const aggregationPipeline = [
+    { $match: {} },
+    { $sort: { created_at: -1 } },
+    { $limit: limit },
+    { $group: { _id: null, minDate: { $min: "$created_at" } } },
+    { $project: { _id: 0, minDate: 1 } },
+  ]
+
+  const result = await model.aggregate(aggregationPipeline)
+
+  await model.deleteMany({ created_at: { $lt: result[0].minDate } })
 }
 
 export async function obfuscateCollections(): Promise<void> {
   await reduceModel(ApiCalls)
+  await reduceModel(Application, 50000)
   //  await validateModel(ApiCalls, ZApiCalls)
   // await validateModel(Application, ZApplication)
   // await validateModel(Appointment, ZAppointment)
