@@ -1,22 +1,5 @@
 // import { captureException } from "@sentry/node"
 import { Model } from "mongoose"
-// import {
-//   ZApplication,
-//   ZAppointment,
-//   ZCredential,
-//   ZEligibleTrainingsForAppointmentSchema,
-//   ZEtablissement,
-//   ZJob,
-//   ZLbaCompany,
-//   ZOptout,
-//   ZRecruiter,
-//   ZReferentielOpco,
-//   ZUnsubscribeOF,
-//   ZUnsubscribedLbaCompany,
-//   ZUserRecruteur,
-//   zFormationCatalogueSchema,
-// } from "shared/models"
-// import { ZodType } from "zod"
 
 // import { logger } from "@/common/logger"
 import { logger } from "@/common/logger"
@@ -39,6 +22,8 @@ import {
   // UserRecruteur,
   // eligibleTrainingsForAppointmentHistory,
   ApiCalls,
+  AnonymizedApplication,
+  Appointment,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
@@ -60,32 +45,6 @@ async function reduceModel<T>(model: Model<T> | Pagination<T>, limit = 20000) {
 export async function obfuscateCollections(): Promise<void> {
   await reduceModel(ApiCalls)
   await reduceModel(Application, 50000)
-  //  await validateModel(ApiCalls, ZApiCalls)
-  // await validateModel(Application, ZApplication)
-  // await validateModel(Appointment, ZAppointment)
-  // await validateModel(AppointmentDetailed, ZAppointment)
-  // await validateModel(Credential, ZCredential)
-  // //  await validateModel(DiplomesMetiers, ZDiplomesMetiers)
-  // //  await validateModel(DomainesMetiers, ZDomainesMetiers)
-  // await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
-  // // await validateModel(EmailBlacklist, ZEmailBlacklist)
-  // await validateModel(Etablissement, ZEtablissement)
-  // await validateModel(FormationCatalogue, zFormationCatalogueSchema)
-  // //  await validateModel(GeoLocation, ZGeoLocation)
-  // //  await validateModel(InternalJobs, ZInternalJobs)
-  // await validateModel(Job, ZJob)
-  // await validateModel(LbaCompany, ZLbaCompany)
-  // await validateModel(LbaCompanyLegacy, ZLbaCompany)
-  // //  await validateModel(Opco, ZOpco)
-  // await validateModel(Optout, ZOptout)
-  // await validateModel(Recruiter, ZRecruiter)
-  // // await validateModel(ReferentielOnisep, ZReferentielOnisep)
-  // await validateModel(ReferentielOpco, ZReferentielOpco)
-  // // await validateModel(ReferentielRome, ZReferentielRome)
-  // // await validateModel(RncpRomes, ZRncpRomes)
-  // await validateModel(UnsubscribeOF, ZUnsubscribeOF)
-  // await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
-  // // await validateModel(User, ZUser)
-  // await validateModel(UserRecruteur, ZUserRecruteur)
-  // await validateModel(eligibleTrainingsForAppointmentHistory, ZEligibleTrainingsForAppointmentSchema)
+  await reduceModel(AnonymizedApplication, 5000)
+  await reduceModel(Appointment, 10000)
 }
