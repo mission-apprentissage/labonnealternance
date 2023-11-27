@@ -22,7 +22,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mailpit/auth
   checksum: 0c02db6c367747bfd696e8c93ed78c456fe311452e7a4ee1d7d5acc88f3b2189
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 8d38e35f5898e371d251ba7afc42c2b9fd4a1ba96b150e7d9128adbd313b67d2
+  checksum: 2e1aacbd31671dab836f3eea6e0275fb9f21b9b46ac7f25a55f3af7ac27729df
 - filename: .infra/vault/vault.yml
   checksum: 9ac87932d132cd238bc2194daadd08b26491985332c9ed15ccfd6f14a0645839
 - filename: .yarn/patches/zod-npm-3.21.4-9f570b215c.patch
