@@ -246,7 +246,6 @@ export default (server: Server) => {
     "/appointment-request/context/recap",
     {
       schema: zRoutes.get["/appointment-request/context/recap"],
-      onRequest: [server.auth(zRoutes.get["/appointment-request/context/recap"])],
     },
     async (req, res) => {
       const { appointmentId } = req.query

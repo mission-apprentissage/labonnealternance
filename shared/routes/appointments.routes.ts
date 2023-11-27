@@ -224,11 +224,7 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "access-token",
-        access: null,
-        ressources: {},
-      },
+      securityScheme: null,
     },
   },
   post: {
