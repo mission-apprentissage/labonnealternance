@@ -357,12 +357,13 @@ function transformLbaJob({
       diplomaLevel: offre.job_level_label || null,
       job: {
         id: offre._id.toString(),
-        description: offre.job_description || null,
+        description: offre.job_description && offre.job_description.length > 50 ? offre.job_description : null,
         employeurDescription: offre.job_employer_description || null,
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
         contractType: offre.job_type ? offre.job_type.join(", ") : null,
         jobStartDate: offre.job_start_date ? new Date(offre.job_start_date) : null,
-        romeDetails: offre.rome_detail,
+        // KBA 20231123 - remove ROME for all PASS jobs until they use it.
+        romeDetails: recruiter.opco === "pass" ? null : offre.rome_detail,
         rythmeAlternance: offre.job_rythm || null,
         dureeContrat: "" + offre.job_duration,
         quantiteContrat: offre.job_count,
