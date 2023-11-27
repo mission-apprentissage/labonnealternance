@@ -2849,7 +2849,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "required": true,
         },
         "responses": {
-          "2xx": {
+          "200": {
             "content": {
               "application/json": {
                 "schema": {
