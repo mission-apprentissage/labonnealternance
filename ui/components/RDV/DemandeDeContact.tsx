@@ -28,8 +28,7 @@ import {
 } from "@chakra-ui/react"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
-import { useRouter } from "next/router"
-import React, { useState } from "react"
+import { useState } from "react"
 import { EApplicantType, EReasonsKey } from "shared"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 import * as Yup from "yup"
@@ -50,8 +49,6 @@ type Props = {
  */
 const DemandeDeContact = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const router = useRouter()
-  const { token } = router.query as { token: string }
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
@@ -118,9 +115,6 @@ const DemandeDeContact = (props: Props) => {
 
         const response = await apiGet("/appointment-request/context/recap", {
           querystring: { appointmentId: appointment._id },
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
         })
 
         setOnSuccessSubmitResponse(response)
