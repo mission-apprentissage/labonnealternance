@@ -12,11 +12,11 @@ import {
   Etablissement,
   FormationCatalogue,
   LbaCompany,
-  Recruiter,
   UnsubscribedLbaCompany,
   UserRecruteur,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
+import { db } from "@/common/mongodb"
 
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { ADMIN, OPCO } from "../../services/constant.service"
@@ -121,14 +121,26 @@ const obfuscateRecruiterAndUsers = async () => {
   logger.info(`obfuscating recruiters and users`)
   const users = await UserRecruteur.find({ type: { $in: [ENTREPRISE, CFA] } }).lean()
   await asyncForEach(users, async (user) => {
-    const email = faker.internet.email()
+    let email = faker.internet.email()
+    let exist
+
+    do {
+      exist = await db.collection("userrecruteurs").countDocuments({ email })
+      email = faker.internet.email()
+    } while (exist > 1)
+
     switch (user.type) {
       case ENTREPRISE:
-        //@ts-expect-error
-        await Promise.all([UserRecruteur.findByIdAndUpdate(user._id, { email }), Recruiter.findOneAndUpdate({ establishment_id: user.establishment_id }, { email })])
+        await Promise.all([
+          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, { email }),
+          db.collection("recruiters").findOneAndUpdate({ establishment_id: user.establishment_id }, { email }),
+        ])
         break
       case CFA:
-        await Promise.all([UserRecruteur.findByIdAndUpdate(user._id, { email }), Recruiter.updateMany({ cfa_delegated_siret: user.establishment_siret }, { email })])
+        await Promise.all([
+          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, { email }),
+          db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, { email }),
+        ])
         break
 
       default:
