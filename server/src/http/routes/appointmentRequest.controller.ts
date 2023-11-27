@@ -66,7 +66,7 @@ export default (server: Server) => {
           throw Boom.badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement est cours de traitement.`)
         }
       } else {
-        user = await users.createUser(email, "NA", {
+        user = await users.createUser(email, {
           firstname,
           lastname,
           phone,
