@@ -6,11 +6,13 @@ import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymize = async () => {
   const fromDate = dayjs().subtract(2, "years").toDate()
-  const usersToAnonymize = await UserRecruteur.find({ last_connection: { $lte: fromDate } }).lean()
+  const userRecruteurQuery = { $or: [{ last_connection: { $lte: fromDate } }, { last_connection: null, createdAt: { $lte: fromDate } }] }
+  const usersToAnonymize = await UserRecruteur.find(userRecruteurQuery).lean()
   const establishmentIds = usersToAnonymize.flatMap(({ establishment_id }) => (establishment_id ? [establishment_id] : []))
+  const recruiterQuery = { establishment_id: { $in: establishmentIds } }
   await UserRecruteur.aggregate([
     {
-      $match: { last_connection: { $lte: fromDate } },
+      $match: userRecruteurQuery,
     },
     {
       $project: {
@@ -33,12 +35,12 @@ const anonymize = async () => {
       },
     },
     {
-      $merge: "anonymizedUserRecruteurs",
+      $merge: "anonymizeduserrecruteurs",
     },
   ])
   await Recruiter.aggregate([
     {
-      $match: { establishment_id: { $in: establishmentIds } },
+      $match: recruiterQuery,
     },
     {
       $project: {
@@ -66,8 +68,8 @@ const anonymize = async () => {
       $merge: "anonymizedrecruiteurs",
     },
   ])
-  const { deletedCount: recruiterCount } = await Recruiter.deleteMany({ establishment_id: { $in: establishmentIds } })
-  const { deletedCount: userRecruteurCount } = await UserRecruteur.deleteMany({ last_connection: { $lte: fromDate } })
+  const { deletedCount: recruiterCount } = await Recruiter.deleteMany(recruiterQuery)
+  const { deletedCount: userRecruteurCount } = await UserRecruteur.deleteMany(userRecruteurQuery)
   return { userRecruteurCount, recruiterCount }
 }
 
