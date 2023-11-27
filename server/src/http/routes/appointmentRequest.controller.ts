@@ -196,6 +196,53 @@ export default (server: Server) => {
   )
 
   server.get(
+    "/appointment-request/context/short-recap",
+    {
+      schema: zRoutes.get["/appointment-request/context/short-recap"],
+    },
+    async (req, res) => {
+      const { appointmentId } = req.query
+
+      const appointment = await Appointment.findById(appointmentId, { cle_ministere_educatif: 1, applicant_id: 1 }).lean()
+
+      if (!appointment) {
+        throw Boom.notFound()
+      }
+
+      const [etablissement, user] = await Promise.all([
+        EligibleTrainingsForAppointment.findOne(
+          { cle_ministere_educatif: appointment.cle_ministere_educatif },
+          {
+            etablissement_formateur_raison_sociale: 1,
+            lieu_formation_email: 1,
+            _id: 0,
+          }
+        ).lean(),
+        User.findById(appointment.applicant_id, {
+          lastname: 1,
+          firstname: 1,
+          phone: 1,
+          email: 1,
+          _id: 0,
+        }).lean(),
+      ])
+
+      if (!etablissement) {
+        throw Boom.internal("Etablissment not found")
+      }
+
+      if (!user) {
+        throw Boom.internal("User not found")
+      }
+
+      res.status(200).send({
+        user,
+        etablissement,
+      })
+    }
+  )
+
+  server.get(
     "/appointment-request/context/recap",
     {
       schema: zRoutes.get["/appointment-request/context/recap"],
