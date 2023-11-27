@@ -45,6 +45,7 @@ services:
     <<: *default
     image: mongo:6.0.2-focal
     container_name: lba_mongodb
+    command: mongod --auth
     ports:
       - "127.0.0.1:27017:27017"
     deploy:
