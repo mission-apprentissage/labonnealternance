@@ -9,6 +9,7 @@ import config from "../config"
 
 import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
+import { obfuscateCollections } from "./database/obfuscateCollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -334,6 +335,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return createMongoDBIndexes()
       case "db:validate":
         return validateModels()
+      case "db:obfuscate":
+        return obfuscateCollections()
       case "migrations:up": {
         await upMigration()
         // Validate all documents after the migration
