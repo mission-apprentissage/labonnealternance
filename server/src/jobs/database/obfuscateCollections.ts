@@ -119,7 +119,7 @@ const obfuscateFormations = async () => {
 
 const obfuscateRecruiterAndUsers = async () => {
   logger.info(`obfuscating recruiters and users`)
-  const users = await UserRecruteur.find({ type: { $in: [ENTREPRISE, CFA] } })
+  const users = await UserRecruteur.find({ type: { $in: [ENTREPRISE, CFA] } }).lean()
   await asyncForEach(users, async (user) => {
     const email = faker.internet.email()
     switch (user.type) {
