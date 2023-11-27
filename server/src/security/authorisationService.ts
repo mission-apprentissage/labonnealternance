@@ -399,15 +399,6 @@ export function isAuthorizedToken<S extends SchemaWithSecurity>(
         assertUnreachable(key)
     }
   }
-  if ("users" in resources) {
-    const allowedUserIds: Set<string> = new Set(scope?.resources.user ?? [])
-
-    for (const requiredUser of resources.users) {
-      if (!allowedUserIds.has(requiredUser._id.toString())) {
-        return false
-      }
-    }
-  }
 
   return true
 }
