@@ -12,7 +12,7 @@ export const zEtablissementRoutes = {
       path: "/admin/etablissements/siret-formateur/:siret",
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "2xx": ZEtablissement.strict(),
+        "200": ZEtablissement.strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -31,7 +31,7 @@ export const zEtablissementRoutes = {
       path: "/admin/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement.strict(),
+        "200": ZEtablissement.strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -50,7 +50,7 @@ export const zEtablissementRoutes = {
       path: "/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement.pick({
+        "200": ZEtablissement.pick({
           _id: true,
           optout_refusal_date: true,
           raison_sociale: true,
@@ -77,7 +77,7 @@ export const zEtablissementRoutes = {
       path: "/etablissements/:id/premium/affelnet/accept",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
       securityScheme: {
         auth: "access-token",
@@ -90,7 +90,7 @@ export const zEtablissementRoutes = {
       path: "/etablissements/:id/premium/affelnet/refuse",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
       securityScheme: {
         auth: "access-token",
@@ -103,7 +103,7 @@ export const zEtablissementRoutes = {
       path: "/etablissements/:id/premium/accept",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
       securityScheme: {
         auth: "access-token",
@@ -116,7 +116,7 @@ export const zEtablissementRoutes = {
       path: "/etablissements/:id/premium/refuse",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
       securityScheme: {
         auth: "access-token",
@@ -131,7 +131,7 @@ export const zEtablissementRoutes = {
       params: z.object({ id: zObjectId }).strict(),
       body: z.union([z.object({ opt_out_question: z.string() }).strict(), z.object({}).strict()]),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
       securityScheme: null,
     },
@@ -145,7 +145,7 @@ export const zEtablissementRoutes = {
         gestionnaire_email: true,
       }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
       securityScheme: {
         auth: "cookie-session",
@@ -165,7 +165,7 @@ export const zEtablissementRoutes = {
       body: z.object({ has_been_read: z.boolean() }).strict(),
       params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),
       response: {
-        "2xx": ZAppointment,
+        "200": ZAppointment,
       },
       securityScheme: {
         auth: "access-token",
