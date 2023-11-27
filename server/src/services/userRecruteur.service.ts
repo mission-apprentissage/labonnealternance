@@ -11,7 +11,7 @@ import { UserRecruteur } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
-import { CFA, ENTREPRISE, VALIDATION_UTILISATEUR, ADMIN } from "./constant.service"
+import { ADMIN, CFA, ENTREPRISE, VALIDATION_UTILISATEUR } from "./constant.service"
 import mailer from "./mailer.service"
 
 /**
@@ -30,7 +30,7 @@ export const createApiKey = (): string => `mna-${randomUUID()}`
  * @returns {Promise<IUserRecruteur>}
  */
 export const getUsers = async (query: FilterQuery<IUserRecruteur>, options, { page, limit }) => {
-  const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true, select: "-password" })
+  const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true })
   return {
     pagination: {
       page: response?.page,
