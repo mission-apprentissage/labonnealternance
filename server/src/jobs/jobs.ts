@@ -177,10 +177,11 @@ export const CronsMap = {
     cron_string: "0 5 * * 7",
     handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
   },
-  "Anonymisation des user recruteurs de plus de 2 ans": {
-    cron_string: "0 1 * * *",
-    handler: () => addJob({ name: "anonymize-user-recruteurs", payload: {} }),
-  },
+  // TODO A activer autour du 15/12/2023
+  // "Anonymisation des user recruteurs de plus de 2 ans": {
+  //   cron_string: "0 1 * * *",
+  //   handler: () => addJob({ name: "anonymize-user-recruteurs", payload: {} }),
+  // },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
