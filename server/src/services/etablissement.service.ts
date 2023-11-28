@@ -253,7 +253,8 @@ export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIE
     }
     return data
   } catch (error: any) {
-    if (error?.response?.status === 404 || error?.response?.status === 422) {
+    const status = error?.response?.status
+    if ([404, 422, 429].includes(status)) {
       return null
     }
     sentryCaptureException(error)
@@ -556,7 +557,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   }
   if (result === BusinessErrorCodes.NON_DIFFUSIBLE) {
     return errorFactory(
-      `Les informations de votre entreprise sont non diffusibles. <a href="https://entreprise.api.gouv.fr/blog/insee-non-diffusibles" target="_blank">En savoir plus</a>`,
+      `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank">Contacter le support pour en savoir plus</a>`,
       BusinessErrorCodes.NON_DIFFUSIBLE
     )
   }

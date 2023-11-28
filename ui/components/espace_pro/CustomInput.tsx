@@ -28,8 +28,14 @@ export const CustomInput = (props) => {
                 </Link>
               )}
               {meta.error === BusinessErrorCodes.NON_DIFFUSIBLE && (
-                <Link href="https://entreprise.api.gouv.fr/blog/insee-non-diffusibles" target="_blank" textColor="bluefrance.500" textDecoration="underline" ml={1}>
-                  En savoir plus
+                <Link
+                  href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles"
+                  target="_blank"
+                  textColor="bluefrance.500"
+                  textDecoration="underline"
+                  ml={1}
+                >
+                  Contacter le support pour en savoir plus
                 </Link>
               )}
             </Flex>
