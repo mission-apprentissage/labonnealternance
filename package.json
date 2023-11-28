@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "setup": ".bin/mna-lba init:env",
+    "setup:mongodb": "docker compose exec -it mongodb mongosh --eval \"try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }\" --quiet",
     "dev": "yarn services:start; yarn foreach:parallel run dev",
     "cli": "yarn workspace server cli",
     "seed": "./.bin/mna-lba seed:apply",

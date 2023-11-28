@@ -23,6 +23,7 @@
     - item.path | basename != '.DS_Store'
     # seed.gpg should not be template replaced
     - item.path | basename != 'seed.gpg'
+    - item.path | basename != 'mongo_keyfile.txt'
     - item.path | basename != 'seed.gz'
     # /app/tools is managed by infra
     - item.path | regex_search('^tools/?') == none
@@ -33,6 +34,15 @@
     src: "{{inventory_dir}}/files/configs/mongodb/seed.gpg"
     dest: "/opt/app/configs/mongodb/seed.gpg"
     mode: "700"
+  when: env_type == 'preview'
+
+- name: Copie du fichier mongodb keyfile
+  ansible.builtin.template:
+    src: "{{inventory_dir}}/files/configs/mongodb/mongo_keyfile.txt"
+    dest: "/opt/app/configs/mongodb/mongo_keyfile.txt"
+    mode: "400"
+    owner: 999
+    group: 999
   when: env_type == 'preview'
 
 - name: copy server env file
