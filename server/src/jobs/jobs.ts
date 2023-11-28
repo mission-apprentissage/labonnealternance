@@ -34,6 +34,7 @@ import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formu
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
+import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { fillRecruiterRaisonSociale } from "./lba_recruteur/user/misc/fillRecruiterRaisonSociale"
@@ -337,6 +338,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixRecruiterDataValidation()
       case "user-recruters:data-validation:fix":
         return fixUserRecruiterDataValidation()
+      case "referentiel-opco:constructys:import":
+        return importReferentielOpcoFromConstructys()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()

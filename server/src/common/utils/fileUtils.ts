@@ -1,7 +1,7 @@
 import path from "path"
 
 import csvToJson from "convert-csv-to-json"
-import { parse } from "csv-parse"
+import { Options as CsvParseOptions, parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
 import XLSX from "xlsx"
 
@@ -48,7 +48,7 @@ export const prepareMessageForMail = (data) => {
   return result ? result.replace(/\r\n|\r|\n/gi, "<br />") : result
 }
 
-export const parseCsv = (options = {}) => {
+export const parseCsv = (options: CsvParseOptions = {}) => {
   return parse({
     trim: true,
     delimiter: ";",
