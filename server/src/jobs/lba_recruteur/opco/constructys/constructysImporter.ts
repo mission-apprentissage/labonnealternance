@@ -14,7 +14,7 @@ import { ReferentielOpco } from "../../../../common/model/index"
 import { fileDownloader, parseCsv } from "../../../../common/utils/fileUtils"
 import config from "../../../../config"
 
-const importer = async (filePath: string, opco_label: OPCOS) => {
+const importer = async (filePath: string, opco_label: OPCOS, parallelism: number) => {
   logger.info(`Deleting collection entries for ${opco_label}...`)
   await ReferentielOpco.deleteMany({ opco_label })
 
@@ -41,7 +41,7 @@ const importer = async (filePath: string, opco_label: OPCOS) => {
         stats.imported++
         return referentielOpt
       } else {
-        logger.error("could not import", { siret: Siret, emails: csvEmailStr })
+        logger.error("could not import: data malformed error", { siret: Siret, emails: csvEmailStr })
         stats.error++
         return
       }
@@ -51,7 +51,7 @@ const importer = async (filePath: string, opco_label: OPCOS) => {
         const { siret_code } = referentiel
         await ReferentielOpco.findOneAndUpdate({ siret_code }, { $set: referentiel }, { upsert: true }).lean()
       },
-      { parallel: 500 }
+      { parallel: parallelism }
     )
   )
 
@@ -64,7 +64,7 @@ const importer = async (filePath: string, opco_label: OPCOS) => {
   return stats
 }
 
-export const importReferentielOpcoFromConstructys = async () => {
+export const importReferentielOpcoFromConstructys = async (parallelism = 10) => {
   logger.info("Constructys data import starting...")
 
   logger.info("Downloading file...")
@@ -75,6 +75,6 @@ export const importReferentielOpcoFromConstructys = async () => {
 
   logger.info("Importing file...")
   const opco_label = OPCOS.CONSTRUCTYS
-  const result = await importer(filePath, opco_label)
+  const result = await importer(filePath, opco_label, parallelism)
   return result
 }
