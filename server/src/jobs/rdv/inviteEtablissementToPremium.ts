@@ -29,9 +29,7 @@ export const inviteEtablissementToPremium = async () => {
     },
     premium_activation_date: null,
     "to_etablissement_emails.campaign": { $ne: mailType.PREMIUM_INVITE },
-  })
-    .limit(10)
-    .lean()
+  }).lean()
 
   logger.info("Cron #inviteEtablissementToPremium / Etablissement: ", etablissementsToInvite.length)
 
