@@ -3,6 +3,7 @@ import { captureException } from "@sentry/node"
 import { logger } from "../logger"
 import { mongooseInstance } from "../mongodb"
 
+import AnonymizedUser from "./schema/anonymizedUsers/anonymizedUsers.schema"
 import ApiCalls from "./schema/apiCall/apiCall.schema"
 import Application from "./schema/application/applications.schema"
 import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
@@ -96,6 +97,7 @@ export {
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
+  AnonymizedUser,
   UserRecruteur,
   Session,
   eligibleTrainingsForAppointmentHistory,
