@@ -400,6 +400,8 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:onisep:import"))
 
+program.command("test:sirets:lba").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("test:sirets:lba"))
+
 /**
  *
  *

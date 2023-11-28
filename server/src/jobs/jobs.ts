@@ -61,6 +61,7 @@ import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndForm
 import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsAndFormationsAffelnet"
 import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
 import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
+import { testSiretsLba } from "./siretRetreive"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 
 const logger = getLoggerWithContext("script")
@@ -340,6 +341,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixUserRecruiterDataValidation()
       case "referentiel-opco:constructys:import":
         return importReferentielOpcoFromConstructys()
+      case "test:sirets:lba":
+        return testSiretsLba()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
