@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto"
+
 import { faker } from "@faker-js/faker"
 import { Model } from "mongoose"
 import { IUserRecruteur } from "shared"
@@ -20,7 +22,6 @@ import { IUser } from "@/common/model/schema/user/user.types"
 import { db } from "@/common/mongodb"
 
 import { asyncForEach } from "../../common/utils/asyncUtils"
-import { ADMIN, OPCO } from "../../services/constant.service"
 
 async function reduceModel<T>(model: Model<T> | Pagination<T>, limit = 20000) {
   logger.info(`reducing collection ${model.collection.name} to ${limit} latest documents`)
@@ -118,84 +119,49 @@ const obfuscateFormations = async () => {
   )
 }
 
-const getFakeEmail = async (collection: string, provider?: string) => {
-  let email = `faker-${provider ? faker.internet.email({ provider }) : faker.internet.email()}`
-  let exists
-
-  do {
-    exists = await db.collection(collection).countDocuments({ email })
-    if (exists) {
-      email = `faker-${provider ? faker.internet.email({ provider }) : faker.internet.email()}`
-    }
-  } while (exists !== 0)
-
-  return email
-}
+const getFakeEmail = async () => `${randomUUID()}@${faker.internet.domainName()}`
 
 const obfuscateRecruiter = async () => {
   logger.info(`obfuscating recruiters`)
+
   const users: IUserRecruteur[] = await db.collection("userrecruteurs").find({}).toArray()
-
   await asyncForEach(users, async (user) => {
-    if (!user.email.startsWith("faker-")) {
-      let fakeEmail = ""
-      switch (user.type) {
-        case OPCO: {
-          fakeEmail = await getFakeEmail("userrecruteurs", "opco.fr")
-          break
-        }
-        case ADMIN: {
-          fakeEmail = await getFakeEmail("userrecruteurs", "admin.fr")
-          break
-        }
-        default: {
-          // CFA ou ENTREPRISE
-          fakeEmail = await getFakeEmail("userrecruteurs")
-          break
-        }
+    const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
+
+    switch (user.type) {
+      case ENTREPRISE: {
+        await Promise.all([
+          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
+          db.collection("recruiters").findOneAndUpdate({ establishment_id: user.establishment_id }, replacement),
+        ])
+        break
       }
-
-      const replacement = { $set: { email: fakeEmail, phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
-
-      switch (user.type) {
-        case ENTREPRISE: {
-          await Promise.all([
-            db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
-            db.collection("recruiters").findOneAndUpdate({ establishment_id: user.establishment_id }, replacement),
-          ])
-          break
-        }
-        case CFA: {
-          await Promise.all([
-            db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
-            db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, replacement),
-          ])
-          break
-        }
-
-        default: {
-          await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
-          break
-        }
+      case CFA: {
+        await Promise.all([
+          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
+          db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, replacement),
+        ])
+        break
+      }
+      default: {
+        await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
+        break
       }
     }
   })
+
   logger.info(`obfuscating recruiters done`)
 }
 
 const obfuscateUser = async () => {
   logger.info(`obfuscating users`)
+
   const users: IUser[] = await db.collection("users").find({}).toArray()
-
   await asyncForEach(users, async (user) => {
-    if (!user.email.startsWith("faker-")) {
-      const fakeEmail = await getFakeEmail("users")
-
-      const replacement = { $set: { password: "removed", email: fakeEmail, username: fakeEmail, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
-
-      await db.collection("users").findOneAndUpdate({ _id: user._id }, replacement)
-    }
+    const replacement = { $set: { password: "removed", email: getFakeEmail(), username: "username", phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
+    await db.collection("users").findOneAndUpdate({ _id: user._id }, replacement)
   })
+
   logger.info(`obfuscating users done`)
 }
 
