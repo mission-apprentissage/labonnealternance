@@ -51,3 +51,26 @@ export const ZRecruiter = ZRecruiterWritable.extend({
 
 export type IRecruiter = z.output<typeof ZRecruiter>
 export type IRecruiterJson = Jsonify<z.input<typeof ZRecruiter>>
+
+export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
+  establishment_id: true,
+  establishment_raison_sociale: true,
+  establishment_enseigne: true,
+  establishment_siret: true,
+  address_detail: true,
+  address: true,
+  geo_coordinates: true,
+  is_delegated: true,
+  cfa_delegated_siret: true,
+  jobs: true,
+  origin: true,
+  opco: true,
+  idcc: true,
+  status: true,
+  naf_code: true,
+  naf_label: true,
+  establishment_size: true,
+  establishment_creation_date: true,
+}).strict()
+
+export type IAnonymizedRecruiter = z.output<typeof ZAnonymizedRecruiter>
