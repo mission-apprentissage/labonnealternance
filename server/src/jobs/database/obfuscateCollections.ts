@@ -21,8 +21,6 @@ import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 import { IUser } from "@/common/model/schema/user/user.types"
 import { db } from "@/common/mongodb"
 
-import { asyncForEach } from "../../common/utils/asyncUtils"
-
 async function reduceModel<T>(model: Model<T> | Pagination<T>, limit = 20000) {
   logger.info(`reducing collection ${model.collection.name} to ${limit} latest documents`)
   try {
@@ -119,13 +117,13 @@ const obfuscateFormations = async () => {
   )
 }
 
-const getFakeEmail = async () => `${randomUUID()}@${faker.internet.domainName()}`
+const getFakeEmail = () => `${randomUUID()}@${faker.internet.domainName()}`
 
 const obfuscateRecruiter = async () => {
   logger.info(`obfuscating recruiters`)
 
-  const users: IUserRecruteur[] = await db.collection("userrecruteurs").find({}).toArray()
-  await asyncForEach(users, async (user) => {
+  const users: AsyncIterable<IUserRecruteur> = db.collection("userrecruteurs").find({})
+  for await (const user of users) {
     const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
 
     switch (user.type) {
@@ -148,25 +146,25 @@ const obfuscateRecruiter = async () => {
         break
       }
     }
-  })
+  }
 
   logger.info(`obfuscating recruiters done`)
 }
 
 const obfuscateUser = async () => {
   logger.info(`obfuscating users`)
-
-  const users: IUser[] = await db.collection("users").find({}).toArray()
-  await asyncForEach(users, async (user) => {
-    const replacement = { $set: { password: "removed", email: getFakeEmail(), username: "username", phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
+  const users: AsyncIterable<IUser> = await db.collection("users").find({})
+  for await (const user of users) {
+    const email = getFakeEmail()
+    const replacement = { $set: { password: "removed", email, username: email, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
     await db.collection("users").findOneAndUpdate({ _id: user._id }, replacement)
-  })
+  }
 
   logger.info(`obfuscating users done`)
 }
 
 export async function obfuscateCollections(): Promise<void> {
-  await reduceModel(ApiCalls)
+  await reduceModel(ApiCalls, 20000)
   await reduceModel(Application, 50000)
   await reduceModel(AnonymizedApplication, 5000)
   await reduceModel(Appointment, 10000)
