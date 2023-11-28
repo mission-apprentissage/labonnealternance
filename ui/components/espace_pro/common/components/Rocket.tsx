@@ -4,7 +4,7 @@
  * @returns {JSX.Element}
  */
 const Rocket = ({ width }) => (
-  <svg width={width} viewBox="0 0 604 267" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width={width} viewBox="0 0 604 267" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
