@@ -262,6 +262,37 @@ export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIE
 }
 
 /**
+ * @description Get diffusion status from the ENTREPRISE API for a given SIRET
+ */
+export const getEtablissementDiffusionStatus = async (siret: string): Promise<string> => {
+  try {
+    if (config.entreprise.simulateError) {
+      throw new Error("API entreprise : simulation d'erreur")
+    }
+    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`, {
+      params: apiParams,
+    })
+    return data.data.status_diffusion
+  } catch (error: any) {
+    if (error?.response?.status === 404 || error?.response?.status === 422) {
+      return "not_found"
+    }
+    if (error?.response?.status === 451) {
+      return "unavailable"
+    }
+    if (error?.response?.status === 429) {
+      return "quota"
+    }
+    console.log(error?.code, error?.message, error?.title)
+    if (error?.code === "ECONNABORTED") {
+      return "quota"
+    }
+    sentryCaptureException(error)
+    throw error
+  }
+}
+
+/**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  * Throw an error if the data is private
  */

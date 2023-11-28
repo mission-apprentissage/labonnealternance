@@ -10,6 +10,7 @@ import config from "../config"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
 import { cronsInit, cronsScheduler } from "./crons_actions"
+import { fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -343,6 +344,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
+      case "fix-diffusible-companies":
+        return fixDiffusibleCompanies()
       case "db:validate":
         return validateModels()
       case "migrations:up": {
