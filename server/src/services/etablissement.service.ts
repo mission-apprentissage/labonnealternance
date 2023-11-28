@@ -555,7 +555,10 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
     return errorFactory("Le numéro siret est invalide.")
   }
   if (result === BusinessErrorCodes.NON_DIFFUSIBLE) {
-    return errorFactory("Les informations de votre entreprise sont non diffusibles", BusinessErrorCodes.NON_DIFFUSIBLE)
+    return errorFactory(
+      `Les informations de votre entreprise sont non diffusibles. <a href="https://entreprise.api.gouv.fr/blog/insee-non-diffusibles" target="_blank">En savoir plus</a>`,
+      BusinessErrorCodes.NON_DIFFUSIBLE
+    )
   }
 
   const { etat_administratif, activite_principale } = result.data
