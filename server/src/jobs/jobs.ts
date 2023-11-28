@@ -47,7 +47,7 @@ import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { activateOptOutEtablissementFormations } from "./rdv/activateOptOutEtablissementFormations"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
-import { anonimizeUsers } from "./rdv/anonymizeUsers"
+import { anonymizeUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
@@ -177,6 +177,10 @@ export const CronsMap = {
   "Mise à jour des sociétés issues de l'algo": {
     cron_string: "0 5 * * 7",
     handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
+  },
+  "Anonymisation de la collection users": {
+    cron_string: "0 2 * * *",
+    handler: () => addJob({ name: "anonymize:users", payload: {} }),
   },
   // TODO A activer autour du 15/12/2023
   // "Anonymisation des user recruteurs de plus de 2 ans": {
@@ -340,6 +344,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixUserRecruiterDataValidation()
       case "referentiel-opco:constructys:import":
         return importReferentielOpcoFromConstructys()
+      case "anonymize:users":
+        return anonymizeUsers()
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
