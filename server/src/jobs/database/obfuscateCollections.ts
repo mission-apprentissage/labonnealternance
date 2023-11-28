@@ -137,44 +137,46 @@ const obfuscateRecruiter = async () => {
   const users: IUserRecruteur[] = await db.collection("userrecruteurs").find({}).toArray()
 
   await asyncForEach(users, async (user) => {
-    let fakeEmail = ""
-    switch (user.type) {
-      case OPCO: {
-        fakeEmail = await getFakeEmail("userrecruteurs", "opco.fr")
-        break
-      }
-      case ADMIN: {
-        fakeEmail = await getFakeEmail("userrecruteurs", "admin.fr")
-        break
-      }
-      default: {
-        // CFA ou ENTREPRISE
-        fakeEmail = await getFakeEmail("userrecruteurs")
-        break
-      }
-    }
-
-    const replacement = { $set: { email: fakeEmail, phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
-
-    switch (user.type) {
-      case ENTREPRISE: {
-        await Promise.all([
-          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
-          db.collection("recruiters").findOneAndUpdate({ establishment_id: user.establishment_id }, replacement),
-        ])
-        break
-      }
-      case CFA: {
-        await Promise.all([
-          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
-          db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, replacement),
-        ])
-        break
+    if (!user.email.startsWith("faker-")) {
+      let fakeEmail = ""
+      switch (user.type) {
+        case OPCO: {
+          fakeEmail = await getFakeEmail("userrecruteurs", "opco.fr")
+          break
+        }
+        case ADMIN: {
+          fakeEmail = await getFakeEmail("userrecruteurs", "admin.fr")
+          break
+        }
+        default: {
+          // CFA ou ENTREPRISE
+          fakeEmail = await getFakeEmail("userrecruteurs")
+          break
+        }
       }
 
-      default: {
-        await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
-        break
+      const replacement = { $set: { email: fakeEmail, phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
+
+      switch (user.type) {
+        case ENTREPRISE: {
+          await Promise.all([
+            db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
+            db.collection("recruiters").findOneAndUpdate({ establishment_id: user.establishment_id }, replacement),
+          ])
+          break
+        }
+        case CFA: {
+          await Promise.all([
+            db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
+            db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, replacement),
+          ])
+          break
+        }
+
+        default: {
+          await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
+          break
+        }
       }
     }
   })
@@ -186,11 +188,13 @@ const obfuscateUser = async () => {
   const users: IUser[] = await db.collection("users").find({}).toArray()
 
   await asyncForEach(users, async (user) => {
-    const fakeEmail = await getFakeEmail("users")
+    if (!user.email.startsWith("faker-")) {
+      const fakeEmail = await getFakeEmail("users")
 
-    const replacement = { $set: { password: "removed", email: fakeEmail, username: fakeEmail, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
+      const replacement = { $set: { password: "removed", email: fakeEmail, username: fakeEmail, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
 
-    await db.collection("users").findOneAndUpdate({ _id: user._id }, replacement)
+      await db.collection("users").findOneAndUpdate({ _id: user._id }, replacement)
+    }
   })
   logger.info(`obfuscating users done`)
 }
