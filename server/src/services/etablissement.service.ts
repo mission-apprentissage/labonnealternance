@@ -239,10 +239,8 @@ export const validateEtablissementEmail = async (email: IUserRecruteur["email"])
 
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
- * @param {String} siret
- * @returns {Promise<IApiEntreprise>}
  */
-export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement | null> => {
+export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIEtablissement | BusinessErrorCodes.NON_DIFFUSIBLE | null> => {
   try {
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
@@ -250,6 +248,9 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
     const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
+    if (data.data.status_diffusion !== "diffusible") {
+      return BusinessErrorCodes.NON_DIFFUSIBLE
+    }
     return data
   } catch (error: any) {
     if (error?.response?.status === 404 || error?.response?.status === 422) {
@@ -258,6 +259,18 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
     sentryCaptureException(error)
     throw error
   }
+}
+
+/**
+ * @description Get the establishment information from the ENTREPRISE API for a given SIRET
+ * Throw an error if the data is private
+ */
+export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement | null> => {
+  const data = await getEtablissementFromGouvSafe(siret)
+  if (data === BusinessErrorCodes.NON_DIFFUSIBLE) {
+    throw Boom.internal(BusinessErrorCodes.NON_DIFFUSIBLE)
+  }
+  return data
 }
 /**
  * @description Get the establishment information from the REFERENTIEL API for a given SIRET
@@ -537,10 +550,12 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
 }
 
 export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
-  const result = await getEtablissementFromGouv(siret)
-
+  const result = await getEtablissementFromGouvSafe(siret)
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
+  }
+  if (result === BusinessErrorCodes.NON_DIFFUSIBLE) {
+    return errorFactory("Les informations de votre entreprise sont non diffusibles", BusinessErrorCodes.NON_DIFFUSIBLE)
   }
 
   const { etat_administratif, activite_principale } = result.data
