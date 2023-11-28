@@ -145,6 +145,7 @@ const SearchForm = (props) => {
                         value={locationRadius}
                         id="locationRadius-search"
                         data-testid="locationRadius"
+                        label="Sélectionnez un rayon de recherche"
                         {...selectProperties}
                       >
                         {buildRayonsOptions()}
@@ -163,7 +164,13 @@ const SearchForm = (props) => {
                     <Text as="label" htmlFor="diploma-search" variant="defaultAutocomplete">
                       Niveau d&apos;études visé
                     </Text>
-                    <Select onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")} value={diploma} id="diploma-search" {...selectProperties}>
+                    <Select 
+                      onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")} 
+                      value={diploma} 
+                      id="diploma-search"
+                      label="Sélectionnez le niveau de diplôme visé en fin d'études"
+                      {...selectProperties}
+                      >
                       {buildAvailableDiplomasOptions(diplomas)}
                     </Select>
                   </Box>
