@@ -15,7 +15,7 @@ describe("users", () => {
 
   it("Permet de créer un utilisateur", async () => {
     const created = await createUser(userTest)
-    assert.strictEqual(created.firstname, "user")
+    assert.strictEqual(created.firstname, "firstname")
 
     const found = await User.findOne({ firstname: "firstname" })
     assert.strictEqual(found?.firstname, "firstname")
