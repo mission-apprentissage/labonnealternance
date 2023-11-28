@@ -120,6 +120,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                     value={locationRadius}
                     id="locationRadius-header"
                     data-testid="locationRadius"
+                    label="Sélectionnez un rayon de recherche"
                   >
                     {buildRayonsOptions()}
                   </Select>
@@ -136,6 +137,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                     value={diploma}
                     id="diploma-header"
                     data-testid="diploma"
+                    label="Sélectionnez le niveau de diplôme visé en fin d'études"
                   >
                     {buildAvailableDiplomasOptions(diplomas)}
                   </Select>
