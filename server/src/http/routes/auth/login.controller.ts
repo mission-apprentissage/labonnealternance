@@ -11,7 +11,7 @@ import config from "../../../config"
 import { CFA, ENTREPRISE } from "../../../services/constant.service"
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
 import mailer from "../../../services/mailer.service"
-import { getUser, getUserStatus, registerUser } from "../../../services/userRecruteur.service"
+import { getUser, getUserStatus, updateLastConnectionDate } from "../../../services/userRecruteur.service"
 import { Server } from "../../server"
 
 export default (server: Server) => {
@@ -103,7 +103,7 @@ export default (server: Server) => {
       const user = getUserFromRequest(req, zRoutes.post["/login/verification"]).value
 
       const formatedEmail = user.identity.email.toLowerCase()
-      const connectedUser = await registerUser(formatedEmail)
+      const connectedUser = await updateLastConnectionDate(formatedEmail)
 
       if (!connectedUser) {
         throw Boom.forbidden()

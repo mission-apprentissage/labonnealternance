@@ -11,7 +11,7 @@ import { UserRecruteur } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
-import { CFA, ENTREPRISE, VALIDATION_UTILISATEUR, ADMIN } from "./constant.service"
+import { ADMIN, CFA, ENTREPRISE, VALIDATION_UTILISATEUR } from "./constant.service"
 import mailer from "./mailer.service"
 
 /**
@@ -30,7 +30,7 @@ export const createApiKey = (): string => `mna-${randomUUID()}`
  * @returns {Promise<IUserRecruteur>}
  */
 export const getUsers = async (query: FilterQuery<IUserRecruteur>, options, { page, limit }) => {
-  const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true, select: "-password" })
+  const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true })
   return {
     pagination: {
       page: response?.page,
@@ -123,7 +123,8 @@ export const removeUser = async (id: IUserRecruteur["_id"] | string) => {
  * @param {IUserRecruteur["email"]} email
  * @returns {Promise<IUserRecruteur>}
  */
-export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.findOneAndUpdate({ email: email }, { last_connection: new Date() }, { new: true }).lean()
+export const updateLastConnectionDate = (email: IUserRecruteur["email"]) =>
+  UserRecruteur.findOneAndUpdate({ email: email.toLowerCase() }, { last_connection: new Date() }, { new: true }).lean()
 
 /**
  * @description update user validation status

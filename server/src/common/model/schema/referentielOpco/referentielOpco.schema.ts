@@ -1,6 +1,6 @@
+import { OPCOS } from "shared/constants/recruteur"
 import { IReferentielOpco } from "shared/models"
 
-import { OPCOS } from "../../../../services/constant.service"
 import { model, Schema } from "../../../mongodb"
 
 export const referentielOpcoSchema = new Schema<IReferentielOpco>(
