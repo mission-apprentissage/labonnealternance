@@ -11,11 +11,6 @@ export const userSchema = new Schema<IUser>(
       description: "Le nom de l'utilisateur",
       unique: true,
     },
-    password: {
-      type: String,
-      default: null,
-      description: "Le mot de passe hashé",
-    },
     firstname: {
       type: String,
       default: null,

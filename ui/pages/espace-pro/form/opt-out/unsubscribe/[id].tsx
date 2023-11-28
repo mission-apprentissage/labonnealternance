@@ -1,8 +1,8 @@
 import { Box, Button, Container, Flex, Heading, Radio, RadioGroup, Stack, Text, Textarea } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import React, { useEffect, useState } from "react"
-import { IEtablissement } from "shared"
+import { useEffect, useState } from "react"
+import { IEtablissementJson } from "shared"
 
 import { apiGet, apiPost } from "@/utils/api.utils"
 
@@ -11,7 +11,7 @@ import Layout from "../../../../../components/espace_pro/common/components/Layou
 import { SuccessCircle } from "../../../../../theme/components/icons"
 
 type IEtablissementPartial = Pick<
-  IEtablissement,
+  IEtablissementJson,
   | "_id"
   | "optout_refusal_date"
   | "raison_sociale"
@@ -71,12 +71,12 @@ export default function OptOutUnsubscribe() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const etablissement = (await apiGet("/etablissements/:id", {
+      const etablissement = await apiGet("/etablissements/:id", {
         params: { id },
         headers: {
           authorization: `Bearer ${token}`,
         },
-      })) as IEtablissement
+      })
 
       if (etablissement.optout_refusal_date) {
         setHasBeenUnsubscribed(true)

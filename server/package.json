@@ -90,7 +90,7 @@
     "type-fest": "^4.3.3",
     "xlsx": "^0.18.5",
     "xml2js": "^0.6.2",
-    "zod": "^3.22.2"
+    "zod": "3.21.4"
   },
   "devDependencies": {
     "@sentry/types": "^7.72.0",

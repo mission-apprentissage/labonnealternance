@@ -1,8 +1,8 @@
 import { Box, Button, Container, Flex, Stack, Text } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import React, { useEffect, useState } from "react"
-import { IEtablissement } from "shared"
+import { useEffect, useState } from "react"
+import { IEtablissementJson } from "shared"
 
 import { apiGet, apiPost } from "@/utils/api.utils"
 
@@ -71,7 +71,7 @@ export default function PremiumAffelnetForm() {
         headers: {
           authorization: `Bearer ${token}`,
         },
-      })) as IEtablissement
+      })) as IEtablissementJson
 
       if (etablissement.premium_affelnet_refusal_date) {
         setHasRefused(true)

@@ -2,7 +2,7 @@ import { captureException } from "@sentry/node"
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
 import jwt, { JwtPayload } from "jsonwebtoken"
-import { ICredential } from "shared"
+import { ICredential, assertUnreachable } from "shared"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
@@ -98,10 +98,6 @@ async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyReques
   }
 
   return token ? { type: "IAccessToken", value: token } : null
-}
-
-function assertUnreachable(_x: never): never {
-  throw new Error("Didn't expect to get here")
 }
 
 export async function authenticationMiddleware<S extends ISecuredRouteSchema>(schema: S, req: FastifyRequest) {

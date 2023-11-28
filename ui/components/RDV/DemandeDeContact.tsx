@@ -28,13 +28,12 @@ import {
 } from "@chakra-ui/react"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
-import { useRouter } from "next/router"
-import React, { useState } from "react"
+import { useState } from "react"
 import { EApplicantType, EReasonsKey } from "shared"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 import * as Yup from "yup"
 
-import { IAppointmentRequestRecapResponse, reasons } from "@/components/RDV/types"
+import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
 import { PaperPlane } from "@/theme/components/icons/PaperPlane"
 import { apiGet, apiPost } from "@/utils/api.utils"
@@ -50,12 +49,10 @@ type Props = {
  */
 const DemandeDeContact = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const router = useRouter()
-  const { token } = router.query as { token: string }
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
-  const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState<IAppointmentRequestRecapResponse | null>(null)
+  const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState(null)
   const [error, setError] = useState<string | null>(null)
 
   const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
@@ -116,11 +113,8 @@ const DemandeDeContact = (props: Props) => {
           },
         })) as unknown as { appointment: { _id: string } }
 
-        const response = await apiGet("/appointment-request/context/recap", {
+        const response = await apiGet("/appointment-request/context/short-recap", {
           querystring: { appointmentId: appointment._id },
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
         })
 
         setOnSuccessSubmitResponse(response)

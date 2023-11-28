@@ -67,7 +67,7 @@ export default (server: Server) => {
           throw Boom.badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement est cours de traitement.`)
         }
       } else {
-        user = await users.createUser(email, "NA", {
+        user = await users.createUser(email, {
           firstname,
           lastname,
           phone,
@@ -191,6 +191,53 @@ export default (server: Server) => {
       res.status(200).send({
         userId: user._id,
         appointment: appointmentUpdated,
+      })
+    }
+  )
+
+  server.get(
+    "/appointment-request/context/short-recap",
+    {
+      schema: zRoutes.get["/appointment-request/context/short-recap"],
+    },
+    async (req, res) => {
+      const { appointmentId } = req.query
+
+      const appointment = await Appointment.findById(appointmentId, { cle_ministere_educatif: 1, applicant_id: 1 }).lean()
+
+      if (!appointment) {
+        throw Boom.notFound()
+      }
+
+      const [etablissement, user] = await Promise.all([
+        EligibleTrainingsForAppointment.findOne(
+          { cle_ministere_educatif: appointment.cle_ministere_educatif },
+          {
+            etablissement_formateur_raison_sociale: 1,
+            lieu_formation_email: 1,
+            _id: 0,
+          }
+        ).lean(),
+        User.findById(appointment.applicant_id, {
+          lastname: 1,
+          firstname: 1,
+          phone: 1,
+          email: 1,
+          _id: 0,
+        }).lean(),
+      ])
+
+      if (!etablissement) {
+        throw Boom.internal("Etablissment not found")
+      }
+
+      if (!user) {
+        throw Boom.internal("User not found")
+      }
+
+      res.status(200).send({
+        user,
+        etablissement,
       })
     }
   )

@@ -179,7 +179,7 @@ export function createRdvaPremiumParcoursupPageLink(email: string, siret: string
 }
 
 /**
- * Forge a link for Parcoursup premium activation.
+ * Forge a link for allwoing unsubscription.
  */
 export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string, etablissementId: string): string {
   const token = generateAccessToken(
