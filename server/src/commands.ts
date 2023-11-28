@@ -531,6 +531,12 @@ program
   .action(createJobAction("user-recruters:data-validation:fix"))
 
 program
+  .command("anonymize-user-recruteurs")
+  .description("Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("user-recruteurs:anonymize"))
+
+program
   .command("import-referentiel-opco-constructys")
   .description("Importe les emails pour la collection ReferentielOpco depuis l'opco Constructys")
   .option("-q, --queued", "Run job asynchronously", false)

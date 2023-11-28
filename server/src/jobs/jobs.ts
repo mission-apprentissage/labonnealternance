@@ -7,7 +7,8 @@ import { create as createMigration, status as statusMigration, up as upMigration
 import { getLoggerWithContext } from "../common/logger"
 import config from "../config"
 
-import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
+import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
+import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
@@ -177,6 +178,11 @@ export const CronsMap = {
     cron_string: "0 5 * * 7",
     handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
   },
+  // TODO A activer autour du 15/12/2023
+  // "Anonymisation des user recruteurs de plus de 2 ans": {
+  //   cron_string: "0 1 * * *",
+  //   handler: () => addJob({ name: "anonymize-user-recruteurs", payload: {} }),
+  // },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -302,6 +308,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateBrevoBlockedEmails(job.payload)
       case "applications:anonymize":
         return anonymizeOldApplications()
+      case "user-recruteurs:anonymize":
+        return anonimizeUserRecruteurs()
       case "companies:update":
         return updateLbaCompanies(job.payload)
       case "geo-locations:update":
