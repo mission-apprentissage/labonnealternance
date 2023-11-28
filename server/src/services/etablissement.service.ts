@@ -280,7 +280,7 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
     if (error?.response?.status === 451) {
       return "unavailable"
     }
-    if (error?.response?.status === 429) {
+    if (error?.response?.status === 429 || error?.response?.status === 504) {
       return "quota"
     }
     console.log(error?.code, error?.message, error?.title)
