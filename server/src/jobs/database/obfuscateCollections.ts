@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto"
 
-import { faker } from "@faker-js/faker"
 import { Model } from "mongoose"
 import { IUserRecruteur } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
@@ -117,7 +116,7 @@ const obfuscateFormations = async () => {
   )
 }
 
-const getFakeEmail = () => `${randomUUID()}@${faker.internet.domainName()}`
+const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
 const obfuscateRecruiter = async () => {
   logger.info(`obfuscating recruiters`)
@@ -146,6 +145,12 @@ const obfuscateRecruiter = async () => {
         break
       }
     }
+  }
+
+  const remainingUsers: AsyncIterable<IUserRecruteur> = db.collection("recruiters").find({ first_name: { $ne: "prenom" } })
+  for await (const user of remainingUsers) {
+    const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
+    db.collection("recruiters").findOneAndUpdate({ _id: user._id }, replacement)
   }
 
   logger.info(`obfuscating recruiters done`)
