@@ -6,7 +6,7 @@ import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, Rec
 import { assertUnreachable } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { Recruiter, UserRecruteur, Application } from "@/common/model"
+import { Application, Recruiter, UserRecruteur } from "@/common/model"
 
 import { getAccessTokenScope } from "./accessTokenService"
 import { IUserWithType, getUserFromRequest } from "./authenticationService"
@@ -31,24 +31,22 @@ function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): an
 }
 
 async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["recruiters"]> {
-  if (!schema.securityScheme.ressources.recruiter) {
+  if (!schema.securityScheme.resources.recruiter) {
     return []
   }
 
   return (
     await Promise.all(
-      schema.securityScheme.ressources.recruiter.map(async (recruiterDef): Promise<IRecruiter[]> => {
+      schema.securityScheme.resources.recruiter.map(async (recruiterDef): Promise<IRecruiter[]> => {
         if ("_id" in recruiterDef) {
           const recruiterOpt = await Recruiter.findById(getAccessResourcePathValue(recruiterDef._id, req)).lean()
           return recruiterOpt ? [recruiterOpt] : []
         }
-
         if ("establishment_id" in recruiterDef) {
           return Recruiter.find({
             establishment_id: getAccessResourcePathValue(recruiterDef.establishment_id, req),
           }).lean()
         }
-
         if ("email" in recruiterDef && "establishment_siret" in recruiterDef) {
           return Recruiter.find({
             email: getAccessResourcePathValue(recruiterDef.email, req),
@@ -58,6 +56,9 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
         if ("opco" in recruiterDef) {
           return Recruiter.find({ opco: getAccessResourcePathValue(recruiterDef.opco, req) }).lean()
         }
+        if ("cfa_delegated_siret" in recruiterDef) {
+          return Recruiter.find({ cfa_delegated_siret: getAccessResourcePathValue(recruiterDef.cfa_delegated_siret, req) }).lean()
+        }
 
         assertUnreachable(recruiterDef)
       })
@@ -66,12 +67,12 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
 }
 
 async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["jobs"]> {
-  if (!schema.securityScheme.ressources.job) {
+  if (!schema.securityScheme.resources.job) {
     return []
   }
 
   return Promise.all(
-    schema.securityScheme.ressources.job.map(async (j) => {
+    schema.securityScheme.resources.job.map(async (j) => {
       if ("_id" in j) {
         const id = getAccessResourcePathValue(j._id, req)
         const recruiter = await Recruiter.findOne({ "jobs._id": id }).lean()
@@ -95,13 +96,13 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
 }
 
 async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["users"]> {
-  if (!schema.securityScheme.ressources.user) {
+  if (!schema.securityScheme.resources.user) {
     return []
   }
 
   return (
     await Promise.all(
-      schema.securityScheme.ressources.user.map(async (userDef) => {
+      schema.securityScheme.resources.user.map(async (userDef) => {
         if ("_id" in userDef) {
           const userOpt = await UserRecruteur.findById(getAccessResourcePathValue(userDef._id, req)).lean()
           return userOpt ? [userOpt] : []
@@ -117,12 +118,12 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
 }
 
 async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["applications"]> {
-  if (!schema.securityScheme.ressources.application) {
+  if (!schema.securityScheme.resources.application) {
     return []
   }
 
   return Promise.all(
-    schema.securityScheme.ressources.application.map(async (u) => {
+    schema.securityScheme.resources.application.map(async (u) => {
       if ("_id" in u) {
         const id = getAccessResourcePathValue(u._id, req)
         const application = await Application.findById(id).lean()

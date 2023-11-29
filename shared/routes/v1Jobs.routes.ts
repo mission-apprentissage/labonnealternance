@@ -51,7 +51,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "recruiter:manage",
-        ressources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
+        resources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -117,7 +117,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: null,
-        ressources: {},
+        resources: {},
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -154,7 +154,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: { job: [{ _id: { type: "params", key: "jobId" } }] },
+        resources: { job: [{ _id: { type: "params", key: "jobId" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -356,7 +356,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: { every: ["recruiter:validate", "recruiter:manage"] },
-        ressources: {},
+        resources: {},
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -401,7 +401,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "recruiter:add_job",
-        ressources: {
+        resources: {
           recruiter: [
             {
               establishment_id: { type: "params", key: "establishmentId" },
@@ -435,7 +435,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -459,7 +459,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -483,7 +483,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -507,7 +507,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -568,7 +568,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },

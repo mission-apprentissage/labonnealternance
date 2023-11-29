@@ -28,14 +28,14 @@ export default function MailActionsOnOffre() {
   }
 
   useEffect(() => {
-    const { jobId, option } = router.query
+    const { jobId, option, token } = router.query
 
     if (!jobId || !option) {
       error()
     }
 
     if (option === "cancel") {
-      cancelOffre(jobId)
+      cancelOffre(jobId, token)
         .then(() => {
           toast({
             title: "Offre annulée.",
@@ -51,7 +51,7 @@ export default function MailActionsOnOffre() {
     }
 
     if (option === "provided") {
-      fillOffre(jobId)
+      fillOffre(jobId, token)
         .then(() => {
           toast({
             title: "Offre pourvue.",
