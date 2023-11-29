@@ -1,6 +1,6 @@
 import { IOptout } from "shared"
 
-import { model, mongooseInstance, Schema } from "../../../mongodb"
+import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
 
 export const optoutSchema = new Schema<IOptout>(
@@ -68,10 +68,6 @@ export const optoutSchema = new Schema<IOptout>(
         },
       ],
       description: "Interaction avec les contacts",
-    },
-    user_id: {
-      type: mongooseInstance.Schema.Types.ObjectId,
-      description: "Identifiant mongoDB de l'utilisateur, si il existe dans la collection User",
     },
   },
   {

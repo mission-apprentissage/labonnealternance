@@ -22,7 +22,8 @@ echo "NEXT_PUBLIC_VERSION=0.0.0-local" >> "${ROOT_DIR}/ui/.env"
 echo "NEXT_PUBLIC_API_PORT=5001" >> "${ROOT_DIR}/ui/.env"
 
 yarn
-chmod 400 "${ROOT_DIR}/.infra/local/mongo_keyfile"
+chmod 440 "${ROOT_DIR}/.infra/local/mongo_keyfile"
+chown 999:999 "${ROOT_DIR}/.infra/local/mongo_keyfile"
 yarn services:start
 yarn setup:mongodb
 yarn build:dev
