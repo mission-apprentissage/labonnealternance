@@ -10,7 +10,6 @@ export const anonimizeUsers = async () => {
     { last_action_date: { $lte: archiveThreshold } },
     {
       $set: {
-        username: null,
         password: null,
         firstname: null,
         lastname: null,

@@ -140,3 +140,24 @@ export function toPublicUser(user: IUserRecruteur): z.output<typeof ZUserRecrute
     status_current: getUserStatus(user.status),
   }
 }
+
+export const ZAnonymizedUserRecruteur = ZUserRecruteur.pick({
+  opco: true,
+  idcc: true,
+  establishment_raison_sociale: true,
+  establishment_enseigne: true,
+  establishment_siret: true,
+  address_detail: true,
+  address: true,
+  geo_coordinates: true,
+  scope: true,
+  is_email_checked: true,
+  type: true,
+  establishment_id: true,
+  last_connection: true,
+  origin: true,
+  status: true,
+  is_qualiopi: true,
+})
+
+export type IAnonymizedUserRecruteur = z.output<typeof ZAnonymizedUserRecruteur>

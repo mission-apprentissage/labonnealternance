@@ -34,7 +34,7 @@ const anonymizeApplications = async () => {
   return res.deletedCount
 }
 
-export default async function () {
+export const anonymizeOldApplications = async function () {
   try {
     logger.info(" -- Anonymisation des candidatures de plus de un (1) an -- ")
 
@@ -52,3 +52,5 @@ export default async function () {
     throw err
   }
 }
+
+export default anonymizeOldApplications

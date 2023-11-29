@@ -41,11 +41,10 @@ const update = (id: string, params) => User.findOneAndUpdate({ _id: id }, params
  * @param {User} options
  * @returns {Promise<User>}
  */
-const createUser = async (username, options: Partial<IUser>) => {
+const createUser = async (options: Partial<IUser>) => {
   const { firstname, lastname, phone, email, role, type } = options
 
   const user = new User({
-    username,
     firstname,
     lastname,
     phone,
