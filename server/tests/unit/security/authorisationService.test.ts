@@ -124,14 +124,14 @@ describe("authorisationService", () => {
 
   function generateSecuritySchemeFixture(
     access: AccessPermission,
-    ressources: ReadonlyArray<IUserRecruteur | IRecruiter | IJob | IApplication>,
+    resources: ReadonlyArray<IUserRecruteur | IRecruiter | IJob | IApplication>,
     location: "params" | "query"
   ): [SecurityScheme, Pick<FastifyRequest, "params" | "query">] {
     return [
       {
         auth: "cookie-session",
         access,
-        ressources: ressources.reduce((acc, resource, i) => {
+        resources: resources.reduce((acc, resource, i) => {
           const key = getResourceAccessKey(resource, i)
           if (resource instanceof UserRecruteur) {
             const user = acc.user ?? []
@@ -162,7 +162,7 @@ describe("authorisationService", () => {
           }
         }, {} as AccessRessouces),
       },
-      ressources.reduce(
+      resources.reduce(
         (acc, resource, i) => {
           const p = acc[location] ?? {}
           p[getResourceAccessKey(resource, i)] = resource._id
@@ -1424,7 +1424,7 @@ describe("authorisationService", () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
       access: "recruiter:manage",
-      ressources: {
+      resources: {
         recruiter: [
           {
             establishment_id: {
@@ -1480,7 +1480,7 @@ describe("authorisationService", () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
       access: { some: ["recruiter:manage", "recruiter:validate"] },
-      ressources: {
+      resources: {
         recruiter: [
           {
             establishment_id: {
@@ -1536,7 +1536,7 @@ describe("authorisationService", () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
       access: { every: ["recruiter:manage", "recruiter:validate"] },
-      ressources: {
+      resources: {
         recruiter: [
           {
             establishment_id: {
@@ -1592,7 +1592,7 @@ describe("authorisationService", () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
       access: null,
-      ressources: {},
+      resources: {},
     }
 
     await expect(
@@ -1620,7 +1620,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "recruiter:manage",
-          ressources: {
+          resources: {
             recruiter: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1636,7 +1636,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1649,7 +1649,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1683,7 +1683,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "recruiter:manage",
-          ressources: {
+          resources: {
             recruiter: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1699,7 +1699,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1712,7 +1712,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1764,7 +1764,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "job:manage",
-          ressources: {
+          resources: {
             job: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1780,7 +1780,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1793,7 +1793,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1827,7 +1827,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "job:manage",
-          ressources: {
+          resources: {
             job: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1843,7 +1843,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1856,7 +1856,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1908,7 +1908,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "application:manage",
-          ressources: {
+          resources: {
             application: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1924,7 +1924,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1937,7 +1937,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -1971,7 +1971,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "application:manage",
-          ressources: {
+          resources: {
             application: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1987,7 +1987,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -2000,7 +2000,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -2052,7 +2052,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "user:manage",
-          ressources: {
+          resources: {
             user: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -2068,7 +2068,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -2081,7 +2081,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -2115,7 +2115,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "user:manage",
-          ressources: {
+          resources: {
             user: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -2131,7 +2131,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
@@ -2144,7 +2144,7 @@ describe("authorisationService", () => {
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",

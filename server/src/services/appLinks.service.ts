@@ -85,3 +85,225 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
     }
   )
 }
+
+export function createCancelJobLink(user: IUserRecruteur, jobId: string) {
+  const token = generateAccessToken(user, [
+    generateScope({
+      schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
+      options: {
+        params: {
+          jobId: jobId,
+        },
+        querystring: undefined,
+      },
+      resources: {
+        job: [jobId],
+      },
+    }),
+  ])
+
+  return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?token=${token}`
+}
+
+export function createProvidedJobLink(user: IUserRecruteur, jobId: string) {
+  const token = generateAccessToken(user, [
+    generateScope({
+      schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
+      options: {
+        params: {
+          jobId: jobId,
+        },
+        querystring: undefined,
+      },
+      resources: {
+        job: [jobId],
+      },
+    }),
+  ])
+
+  return `${config.publicUrl}/espace-pro/offre/${jobId}/provided?token=${token}`
+}
+
+export function createViewDelegationLink(email: string, establishment_id: string, job_id: string, siret_formateur: string) {
+  const token = generateAccessToken({ type: "cfa", email, siret: siret_formateur }, [
+    generateScope({
+      schema: zRoutes.get["/formulaire/delegation/:establishment_id"],
+      options: {
+        params: {
+          establishment_id: establishment_id,
+        },
+        querystring: undefined,
+      },
+      resources: {
+        recruiter: [establishment_id],
+      },
+    }),
+  ])
+
+  return `${config.publicUrl}/espace-pro/proposition/formulaire/${establishment_id}/offre/${job_id}/siret/${siret_formateur}?token=${token}`
+}
+/**
+ * Forge a link for Affelnet premium activation.
+ */
+export function createRdvaPremiumAffelnetPageLink(email: string, siret: string, etablissementId: string): string {
+  const token = generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      generateScope({
+        schema: zRoutes.get["/etablissements/:id"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/etablissements/:id/premium/affelnet/accept"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/etablissements/:id/premium/affelnet/refuse"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+
+  return `${config.publicUrl}/espace-pro/form/premium/affelnet/${etablissementId}?token=${encodeURIComponent(token)}`
+}
+
+/**
+ * Forge a link for Parcoursup premium activation.
+ */
+export function createRdvaPremiumParcoursupPageLink(email: string, siret: string, etablissementId: string): string {
+  const token = generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      generateScope({
+        schema: zRoutes.get["/etablissements/:id"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/etablissements/:id/premium/accept"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/etablissements/:id/premium/refuse"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+
+  return `${config.publicUrl}/espace-pro/form/premium/${etablissementId}?token=${encodeURIComponent(token)}`
+}
+
+/**
+ * Forge a link for allwoing unsubscription.
+ */
+export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string, etablissementId: string): string {
+  const token = generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      generateScope({
+        schema: zRoutes.get["/etablissements/:id/opt-out/unsubscribe"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+  return `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissementId}?token=${encodeURIComponent(token)}`
+}
+
+/**
+ * Forge a link for reading appointment
+ */
+export function createRdvaAppointmentIdPageLink(email: string, siret: string, etablissementId: string, appointmentId: string): string {
+  const token = generateAccessToken(
+    { type: "cfa", email, siret },
+    [
+      generateScope({
+        schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
+        options: {
+          params: { id: etablissementId, appointmentId },
+          querystring: undefined,
+        },
+        resources: {
+          etablissement: [etablissementId],
+          appointment: [appointmentId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.get["/appointment-request/context/recap"],
+        options: {
+          params: undefined,
+          querystring: {
+            appointmentId,
+          },
+        },
+        resources: {
+          appointment: [appointmentId],
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/appointment-request/reply"],
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
+        resources: {
+          appointment: [appointmentId],
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+
+  return `${config.publicUrl}/espace-pro/establishment/${etablissementId}/appointments/${appointmentId}?token=${encodeURIComponent(token)}`
+}
