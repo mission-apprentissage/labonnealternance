@@ -26,7 +26,7 @@ import {
   createUser,
   getUser,
   getUserStatus,
-  registerUser,
+  updateLastConnectionDate,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateUser,
@@ -276,7 +276,7 @@ export default (server: Server) => {
         await sendWelcomeEmailToUserRecruteur(userRecruteur)
       }
 
-      const connectedUser = await registerUser(userRecruteur.email)
+      const connectedUser = await updateLastConnectionDate(userRecruteur.email)
 
       if (!connectedUser) {
         throw Boom.forbidden()

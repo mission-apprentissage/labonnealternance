@@ -13,4 +13,10 @@ export const ZReferentielOpco = z
   })
   .strict()
 
+export const ZReferentielOpcoInsert = ZReferentielOpco.pick({
+  opco_label: true,
+  siret_code: true,
+  emails: true,
+})
+
 export type IReferentielOpco = z.output<typeof ZReferentielOpco>
