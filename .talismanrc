@@ -26,7 +26,7 @@ fileignoreconfig:
 - filename: .infra/files/scripts/seed.sh
   checksum: ddafc86248e8fd5f7c24ca5a62be703083f7704395f17fb7b43bc8e44227d561
 - filename: .infra/vault/vault.yml
-  checksum: b357f6650acf32edb7f8c93a30d84a1334c960c02d0aa6837596a74481a27b1f
+  checksum: 34d4ece11c1eb06a2724be07630e9e2541cae3e6bbafdb3e82c6af66ff47cd31
 - filename: .yarn/patches/zod-npm-3.21.4-9f570b215c.patch
   checksum: d429ff982063e6476ea8d8d91ac1173a1279d1c9bf0488b6e05396affeb8c6cf
 - filename: server/.env.test

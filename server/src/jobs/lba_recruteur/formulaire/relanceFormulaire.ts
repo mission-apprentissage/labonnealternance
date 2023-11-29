@@ -8,6 +8,7 @@ import { Recruiter, UserRecruteur } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"
+import { createCancelJobLink, createProvidedJobLink } from "../../../services/appLinks.service"
 import dayjs from "../../../services/dayjs.service"
 import mailer from "../../../services/mailer.service"
 
@@ -44,7 +45,8 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
 
   await asyncForEach(Object.values(groupByRecruiterOffres), async (jobsWithRecruiter) => {
     const recruiter = jobsWithRecruiter[0].recruiter
-    const { email, establishment_raison_sociale, last_name, first_name, is_delegated, cfa_delegated_siret } = recruiter
+    const { establishment_raison_sociale, establishment_id, is_delegated, cfa_delegated_siret } = recruiter
+    const contactEntreprise = await UserRecruteur.findOne({ establishment_id }).lean()
     let contactCFA
     // get CFA informations if formulaire is handled by a CFA
     if (is_delegated && cfa_delegated_siret) {
@@ -52,7 +54,7 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
     }
 
     await mailer.sendEmail({
-      to: contactCFA?.email ?? email,
+      to: contactCFA?.email ?? contactEntreprise?.email,
       subject: "Vos offres expirent bientôt",
       template: getStaticFilePath("./templates/mail-expiration-offres.mjml.ejs"),
       data: {
@@ -60,8 +62,8 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
         },
-        last_name: contactCFA?.last_name ?? last_name,
-        first_name: contactCFA?.first_name ?? first_name,
+        last_name: contactCFA?.last_name ?? contactEntreprise?.last_name,
+        first_name: contactCFA?.first_name ?? contactEntreprise?.first_name,
         establishment_raison_sociale,
         is_delegated,
         offres: jobsWithRecruiter.map((job) => ({
@@ -69,8 +71,8 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
           job_type: job.job_type,
           job_level_label: job.job_level_label,
           job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
-          supprimer: `${config.publicUrl}/espace-pro/offre/${job._id}/cancel`,
-          pourvue: `${config.publicUrl}/espace-pro/offre/${job._id}/provided`,
+          supprimer: createCancelJobLink(contactCFA ?? contactEntreprise, job._id.toString()),
+          pourvue: createProvidedJobLink(contactCFA ?? contactEntreprise, job._id.toString()),
         })),
         threshold,
         url: `${config.publicUrl}/espace-pro/authentification`,

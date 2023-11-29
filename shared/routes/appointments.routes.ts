@@ -152,7 +152,7 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/appointment-request/context/short-recap": {
@@ -227,7 +227,7 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },
@@ -300,7 +300,7 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },
