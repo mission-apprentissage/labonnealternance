@@ -227,7 +227,7 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },
@@ -300,7 +300,7 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },

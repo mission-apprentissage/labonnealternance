@@ -67,7 +67,7 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },
@@ -82,7 +82,7 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
     "/etablissements/:id/premium/affelnet/refuse": {
@@ -95,7 +95,7 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
     "/etablissements/:id/premium/accept": {
@@ -108,7 +108,7 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
     "/etablissements/:id/premium/refuse": {
@@ -121,7 +121,7 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
     "/etablissements/:id/opt-out/unsubscribe": {
@@ -170,7 +170,7 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },
