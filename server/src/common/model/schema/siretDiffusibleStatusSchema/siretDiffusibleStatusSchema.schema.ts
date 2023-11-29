@@ -8,6 +8,7 @@ export const siretDiffusibleStatusSchema = new Schema<ISiretDiffusibleStatus>(
       type: String,
       require: true,
       description: "Le siret cherché",
+      index: true,
       unique: true,
     },
     status_diffusion: {
