@@ -254,6 +254,9 @@ export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIE
     return data
   } catch (error: any) {
     const status = error?.response?.status
+    if (status === 451) {
+      return BusinessErrorCodes.NON_DIFFUSIBLE
+    }
     if ([404, 422, 429].includes(status)) {
       return null
     }
