@@ -1,5 +1,6 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isValidEmail } from "@/common/utils/isValidEmail"
+import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
@@ -15,10 +16,10 @@ import mailer from "../../services/mailer.service"
 export const inviteEtablissementToPremium = async () => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
-  const startInvitationPeriod = dayjs().month(0).date(1)
+  const startInvitationPeriod = dayjs().month(0).date(8)
   const endInvitationPeriod = dayjs().month(7).date(31)
   if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not between the 01/01 and the 31/08 (eligible period).")
+    logger.info("Stopped because we are not between the 08/01 and the 31/08 (eligible period).")
     return
   }
 
@@ -28,7 +29,9 @@ export const inviteEtablissementToPremium = async () => {
     },
     premium_activation_date: null,
     "to_etablissement_emails.campaign": { $ne: mailType.PREMIUM_INVITE },
-  })
+  }).lean()
+
+  logger.info("Cron #inviteEtablissementToPremium / Etablissement: ", etablissementsToInvite.length)
 
   for (const etablissement of etablissementsToInvite) {
     // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
@@ -38,7 +41,7 @@ export const inviteEtablissementToPremium = async () => {
       parcoursup_id: { $ne: null },
     }).lean()
 
-    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email)) {
+    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.formateur_siret) {
       continue
     }
 
@@ -56,7 +59,7 @@ export const inviteEtablissementToPremium = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
-          linkToForm: `${config.publicUrl}/espace-pro/form/premium/${etablissement._id}`,
+          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
         },
       },
     })

@@ -1,4 +1,5 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
@@ -27,7 +28,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
   })
 
   for (const etablissement of etablissementToInvite) {
-    if (!etablissement.gestionnaire_email) {
+    if (!etablissement.gestionnaire_email || !etablissement.formateur_siret) {
       continue
     }
 
@@ -45,7 +46,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.created_at).format("DD/MM"),
-          linkToForm: `${config.publicUrl}/espace-pro/form/premium/affelnet/${etablissement._id}`,
+          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
         },
       },
     })

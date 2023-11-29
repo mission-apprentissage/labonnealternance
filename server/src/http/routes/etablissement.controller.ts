@@ -39,6 +39,7 @@ export default (server: Server) => {
     "/etablissements/:id",
     {
       schema: zRoutes.get["/etablissements/:id"],
+      onRequest: [server.auth(zRoutes.get["/etablissements/:id"])],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
@@ -58,6 +59,7 @@ export default (server: Server) => {
     "/etablissements/:id/premium/affelnet/accept",
     {
       schema: zRoutes.post["/etablissements/:id/premium/affelnet/accept"],
+      onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/affelnet/accept"])],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -179,9 +181,10 @@ export default (server: Server) => {
     "/etablissements/:id/premium/accept",
     {
       schema: zRoutes.post["/etablissements/:id/premium/accept"],
+      onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/accept"])],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id).lean()
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -279,7 +282,7 @@ export default (server: Server) => {
       )
 
       const [result] = await Promise.all([
-        Etablissement.findById(req.params.id),
+        Etablissement.findById(req.params.id).lean(),
         ...eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) =>
           eligibleTrainingsForAppointmentService.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
@@ -303,6 +306,7 @@ export default (server: Server) => {
     "/etablissements/:id/premium/affelnet/refuse",
     {
       schema: zRoutes.post["/etablissements/:id/premium/affelnet/refuse"],
+      onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/affelnet/refuse"])],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -376,6 +380,7 @@ export default (server: Server) => {
     "/etablissements/:id/premium/refuse",
     {
       schema: zRoutes.post["/etablissements/:id/premium/refuse"],
+      onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/refuse"])],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -449,6 +454,7 @@ export default (server: Server) => {
     "/etablissements/:id/appointments/:appointmentId",
     {
       schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
+      onRequest: [server.auth(zRoutes.patch["/etablissements/:id/appointments/:appointmentId"])],
     },
     async ({ body, params }, res) => {
       const { has_been_read } = body

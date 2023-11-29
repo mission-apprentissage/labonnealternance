@@ -1,6 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZEtablissement } from "../models"
+import { ZAppointment, ZEtablissement } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
@@ -12,7 +12,7 @@ export const zEtablissementRoutes = {
       path: "/admin/etablissements/siret-formateur/:siret",
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "2xx": ZEtablissement.strict(),
+        "200": ZEtablissement.strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -31,7 +31,7 @@ export const zEtablissementRoutes = {
       path: "/admin/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement.strict(),
+        "200": ZEtablissement.strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -50,7 +50,7 @@ export const zEtablissementRoutes = {
       path: "/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement.pick({
+        "200": ZEtablissement.pick({
           _id: true,
           optout_refusal_date: true,
           raison_sociale: true,
@@ -64,7 +64,11 @@ export const zEtablissementRoutes = {
           premium_refusal_date: true,
         }).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
   },
   post: {
@@ -73,36 +77,52 @@ export const zEtablissementRoutes = {
       path: "/etablissements/:id/premium/affelnet/accept",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
-      securityScheme: null,
-    },
-    "/etablissements/:id/premium/accept": {
-      method: "post",
-      path: "/etablissements/:id/premium/accept",
-      params: z.object({ id: zObjectId }).strict(),
-      response: {
-        "2xx": ZEtablissement,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
       },
-      securityScheme: null,
     },
     "/etablissements/:id/premium/affelnet/refuse": {
       method: "post",
       path: "/etablissements/:id/premium/affelnet/refuse",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
+    },
+    "/etablissements/:id/premium/accept": {
+      method: "post",
+      path: "/etablissements/:id/premium/accept",
+      params: z.object({ id: zObjectId }).strict(),
+      response: {
+        "200": ZEtablissement,
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
     "/etablissements/:id/premium/refuse": {
       method: "post",
       path: "/etablissements/:id/premium/refuse",
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
     "/etablissements/:id/opt-out/unsubscribe": {
       method: "post",
@@ -111,7 +131,7 @@ export const zEtablissementRoutes = {
       params: z.object({ id: zObjectId }).strict(),
       body: z.union([z.object({ opt_out_question: z.string() }).strict(), z.object({}).strict()]),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
       securityScheme: null,
     },
@@ -125,7 +145,7 @@ export const zEtablissementRoutes = {
         gestionnaire_email: true,
       }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "200": ZEtablissement,
       },
       securityScheme: {
         auth: "cookie-session",
@@ -142,15 +162,16 @@ export const zEtablissementRoutes = {
     "/etablissements/:id/appointments/:appointmentId": {
       method: "patch",
       path: "/etablissements/:id/appointments/:appointmentId",
-      // TODO_SECURITY_FIX ajouter un jwt
       body: z.object({ has_been_read: z.boolean() }).strict(),
       params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "2xx": ZAppointment,
+        "200": ZAppointment,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
   },
 } as const satisfies IRoutesDef

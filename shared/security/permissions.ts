@@ -61,6 +61,9 @@ export type AccessRessouces = {
   etablissement?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
+  appointment?: ReadonlyArray<{
+    _id: AccessResourcePath
+  }>
   formationCatalogue?: ReadonlyArray<{
     cle_ministere_educatif: AccessResourcePath
   }>

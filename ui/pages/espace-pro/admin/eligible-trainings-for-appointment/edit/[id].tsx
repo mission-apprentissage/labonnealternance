@@ -24,8 +24,8 @@ import {
 import emailValidator from "email-validator"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import React, { createRef, useEffect, useState } from "react"
-import { IEtablissement } from "shared"
+import { createRef, useEffect, useState } from "react"
+import { IEtablissementJson } from "shared"
 import { referrers } from "shared/constants/referers"
 import { IEligibleTrainingsForAppointmentJson } from "shared/models/elligibleTraining.model"
 
@@ -46,7 +46,7 @@ function EditPage() {
   const router = useRouter()
   const { id } = router.query
   const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState<IEligibleTrainingsForAppointmentJson[]>([])
-  const [etablissement, setEtablissement] = useState<IEtablissement>()
+  const [etablissement, setEtablissement] = useState<IEtablissementJson>()
   const [loading, setLoading] = useState(false)
   const toast = useToast()
 

@@ -1,4 +1,5 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
@@ -35,7 +36,7 @@ export const inviteEtablissementToPremiumFollowUp = async () => {
   })
 
   for (const etablissement of etablissementsFound) {
-    if (!etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email)) {
+    if (!etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.formateur_siret) {
       continue
     }
 
@@ -54,7 +55,7 @@ export const inviteEtablissementToPremiumFollowUp = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
-          linkToForm: `${config.publicUrl}/espace-pro/form/premium/${etablissement._id}`,
+          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
         },
       },
     })

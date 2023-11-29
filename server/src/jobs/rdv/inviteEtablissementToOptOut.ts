@@ -1,6 +1,7 @@
 import * as _ from "lodash-es"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
@@ -68,7 +69,7 @@ export const inviteEtablissementToOptOut = async () => {
     }
 
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
-    if (emailDecisionaire) {
+    if (emailDecisionaire && etablissement.gestionnaire_email && etablissement.formateur_siret) {
       const willBeActivatedAt = dayjs().add(15, "days")
 
       const { messageId } = await mailer.sendEmail({
@@ -89,7 +90,7 @@ export const inviteEtablissementToOptOut = async () => {
             formateur_city: etablissement.formateur_city,
             siret: etablissement?.formateur_siret,
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM"),
-            linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
+            linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
           },
           user: {
             destinataireEmail: emailDecisionaire,

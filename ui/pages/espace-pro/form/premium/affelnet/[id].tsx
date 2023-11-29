@@ -1,7 +1,8 @@
 import { Box, Button, Container, Flex, Stack, Text } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { IEtablissementJson } from "shared"
 
 import { apiGet, apiPost } from "@/utils/api.utils"
 
@@ -25,7 +26,7 @@ type IAffelnetEtablissement = {
  */
 export default function PremiumAffelnetForm() {
   const router = useRouter()
-  const { id } = router.query as { id: string }
+  const { id, token } = router.query as { id: string; token: string }
   const [hasRefused, setHasRefused] = useState(false)
   const [hasAccepted, setHasAccepted] = useState(false)
   const [etablissement, setEtablissement]: [IAffelnetEtablissement | null, (e: any) => void] = useState()
@@ -39,6 +40,9 @@ export default function PremiumAffelnetForm() {
   const accept = async () => {
     await apiPost("/etablissements/:id/premium/affelnet/accept", {
       params: { id },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     })
 
     setHasAccepted(true)
@@ -52,6 +56,9 @@ export default function PremiumAffelnetForm() {
   const refuse = async () => {
     await apiPost("/etablissements/:id/premium/affelnet/refuse", {
       params: { id },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     })
     setHasRefused(true)
     window.scrollTo(0, 0)
@@ -61,7 +68,10 @@ export default function PremiumAffelnetForm() {
     const fetchData = async () => {
       const etablissement = (await apiGet("/etablissements/:id", {
         params: { id },
-      })) as any // TODO not any
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })) as IEtablissementJson
 
       if (etablissement.premium_affelnet_refusal_date) {
         setHasRefused(true)

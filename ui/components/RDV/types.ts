@@ -30,6 +30,19 @@ type IAppointmentRequestRecapResponse = {
   }
 }
 
+type IAppointmentRequestRecapResponseShort = {
+  user: {
+    firstname: string
+    lastname: string
+    phone: string
+    email: string
+  }
+  etablissement: {
+    etablissement_formateur_raison_sociale: string
+    lieu_formation_email: string
+  }
+}
+
 const reasons = [
   {
     key: EReasonsKey.MODALITE,
@@ -88,6 +101,6 @@ const reasons = [
   },
 ]
 
-export type { IAppointmentRequestRecapResponse }
+export type { IAppointmentRequestRecapResponse, IAppointmentRequestRecapResponseShort }
 
 export { reasons }

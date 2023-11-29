@@ -20,7 +20,7 @@ import { CfaCandidatInformationUnreachable } from "../../../../../components/esp
  */
 export default function CfaCandidatInformationPage() {
   const router = useRouter()
-  const { establishmentId, appointmentId } = router.query as { establishmentId: string; appointmentId: string }
+  const { establishmentId, appointmentId, token } = router.query as { establishmentId: string; appointmentId: string; token: string }
   const [data, setData] = useState(null)
 
   const [currentState, setCurrentState] = useState("initial")
@@ -42,6 +42,9 @@ export default function CfaCandidatInformationPage() {
           cfa_message_to_applicant: values.message,
           cfa_message_to_applicant_date: formatDate(new Date()),
         },
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
       })
 
       setCurrentState("answered")
@@ -58,6 +61,9 @@ export default function CfaCandidatInformationPage() {
         cfa_message_to_applicant: "",
         cfa_message_to_applicant_date: formatDate(new Date()),
       },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     })
     setCurrentState("other")
   }
@@ -71,6 +77,9 @@ export default function CfaCandidatInformationPage() {
         cfa_message_to_applicant: "",
         cfa_message_to_applicant_date: formatDate(new Date()),
       },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     })
     setCurrentState("unreachable")
   }
@@ -83,11 +92,20 @@ export default function CfaCandidatInformationPage() {
     const fetchData = async () => {
       if (appointmentId && establishmentId) {
         if (utmSource === "mail") {
-          await apiPatch("/etablissements/:id/appointments/:appointmentId", { params: { id: establishmentId, appointmentId }, body: { has_been_read: true } })
+          await apiPatch("/etablissements/:id/appointments/:appointmentId", {
+            params: { id: establishmentId, appointmentId },
+            body: { has_been_read: true },
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          })
         }
 
         const response = await apiGet("/appointment-request/context/recap", {
           querystring: { appointmentId },
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
         })
         setData(response)
       }
