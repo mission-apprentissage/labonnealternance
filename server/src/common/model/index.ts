@@ -3,7 +3,9 @@ import { captureException } from "@sentry/node"
 import { logger } from "../logger"
 import { mongooseInstance } from "../mongodb"
 
+import AnonymizedUser from "./schema/anonymizedUsers/anonymizedUsers.schema"
 import ApiCalls from "./schema/apiCall/apiCall.schema"
+import AnonymizedApplication from "./schema/application/anonymizedApplications.schema"
 import Application from "./schema/application/applications.schema"
 import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
 import Appointment from "./schema/appointments/appointment.schema"
@@ -27,7 +29,6 @@ import Optout from "./schema/optout/optout.schema"
 import Recruiter from "./schema/recruiter/recruiter.schema"
 import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema"
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
-import ReferentielRome from "./schema/referentielRome/referentielRome.schema"
 import RncpRomes from "./schema/rncpRomes/rncpRomes.schema"
 import Session from "./schema/session/session.schema"
 import SiretDiffusibleStatus from "./schema/siretDiffusibleStatusSchema/siretDiffusibleStatusSchema.schema"
@@ -72,6 +73,7 @@ export async function createMongoDBIndexes() {
 
 export {
   ApiCalls,
+  AnonymizedApplication,
   Application,
   Appointment,
   AppointmentDetailed,
@@ -95,12 +97,12 @@ export {
   Recruiter,
   ReferentielOnisep,
   ReferentielOpco,
-  ReferentielRome,
   RncpRomes,
+  Session,
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
+  AnonymizedUser,
   UserRecruteur,
-  Session,
   eligibleTrainingsForAppointmentHistory,
 }

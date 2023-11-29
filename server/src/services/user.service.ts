@@ -1,9 +1,8 @@
 import type { FilterQuery } from "mongoose"
-import { IRecruiter, IUserRecruteur } from "shared"
+import { IRecruiter, IUser, IUserRecruteur } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { Recruiter, User, UserRecruteur } from "../common/model/index"
-import { IUser } from "../common/model/schema/user/user.types"
 
 /**
  * @description Returns user from its username.
@@ -41,11 +40,10 @@ const update = (id: string, params) => User.findOneAndUpdate({ _id: id }, params
  * @param {User} options
  * @returns {Promise<User>}
  */
-const createUser = async (username, options: Partial<IUser>) => {
+const createUser = async (options: Partial<IUser>) => {
   const { firstname, lastname, phone, email, role, type } = options
 
   const user = new User({
-    username,
     firstname,
     lastname,
     phone,

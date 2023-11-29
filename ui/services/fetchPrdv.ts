@@ -30,6 +30,7 @@ export default async function fetchPrdv(training, hasAlsoJob, _axios = axios, _w
       },
       { headers: { "Content-Type": "application/json" } }
     )
+
     return response.data
   } catch (error) {
     if (error?.response?.data?.error === "Prise de rendez-vous non disponible." || error?.response?.data?.message === "Formation introuvable") {

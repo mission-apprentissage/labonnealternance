@@ -1,16 +1,10 @@
+import { IUser } from "shared"
+
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
 
-import { IUser } from "./user.types"
-
 export const userSchema = new Schema<IUser>(
   {
-    username: {
-      type: String,
-      default: null,
-      description: "Le nom de l'utilisateur",
-      unique: true,
-    },
     firstname: {
       type: String,
       default: null,

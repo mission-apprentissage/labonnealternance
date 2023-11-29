@@ -11,6 +11,9 @@ import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
+import { obfuscateCollections } from "./database/obfuscateCollections"
+import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
+import { fixCollections } from "./database/temp/fixCollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -29,7 +32,6 @@ import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecrui
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
-import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
@@ -48,7 +50,7 @@ import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { activateOptOutEtablissementFormations } from "./rdv/activateOptOutEtablissementFormations"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
-import { anonimizeUsers } from "./rdv/anonymizeUsers"
+import { anonymizeUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
@@ -127,10 +129,6 @@ export const CronsMap = {
     cron_string: "55 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
   },
-  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an": {
-    cron_string: "0 0 1 * *",
-    handler: () => addJob({ name: "users:anonimize", payload: {} }),
-  },
   "Anonimisation des prises de rendez-vous de plus d'un an": {
     cron_string: "10 0 1 * *",
     handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
@@ -179,6 +177,10 @@ export const CronsMap = {
     cron_string: "0 5 * * 7",
     handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
   },
+  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
+    cron_string: "0 0 1 * *",
+    handler: () => addJob({ name: "users:anonimize", payload: {} }),
+  },
   // TODO A activer autour du 15/12/2023
   // "Anonymisation des user recruteurs de plus de 2 ans": {
   //   cron_string: "0 1 * * *",
@@ -202,6 +204,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "fiab:kevin":
+        return fixCollections()
       case "recruiters:set-missing-job-start-date":
         return updateMissingStartDate()
       case "recruiters:get-missing-geocoordinates":
@@ -296,7 +300,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "appointments:anonimize":
         return anonimizeAppointments()
       case "users:anonimize":
-        return anonimizeUsers()
+        return anonymizeUsers()
       case "catalogue:trainings:appointments:archive:eligible":
         return eligibleTrainingsForAppointmentsHistoryWithCatalogue()
       case "referentiel:onisep:import":
@@ -339,8 +343,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixRecruiterDataValidation()
       case "user-recruters:data-validation:fix":
         return fixUserRecruiterDataValidation()
-      case "referentiel-opco:constructys:import":
-        return importReferentielOpcoFromConstructys()
+      case "referentiel-opco:constructys:import": {
+        const { parallelism } = job.payload
+        return importReferentielOpcoFromConstructys(parseInt(parallelism))
+      }
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
@@ -348,6 +354,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixDiffusibleCompanies()
       case "db:validate":
         return validateModels()
+      case "db:obfuscate":
+        return obfuscateCollections()
       case "migrations:up": {
         await upMigration()
         // Validate all documents after the migration

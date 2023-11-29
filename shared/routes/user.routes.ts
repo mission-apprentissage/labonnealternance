@@ -26,7 +26,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: { every: ["user:manage", "recruiter:manage"] },
-        ressources: {
+        resources: {
           user: [{ opco: { type: "query", key: "opco" } }],
           recruiter: [{ opco: { type: "query", key: "opco" } }],
         },
@@ -50,7 +50,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/admin/users": {
@@ -63,7 +63,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/admin/users/:userId": {
@@ -81,7 +81,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/user/:userId": {
@@ -101,7 +101,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "user:manage",
-        ressources: {
+        resources: {
           user: [
             {
               _id: { type: "params", key: "userId" },
@@ -128,7 +128,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "user:manage",
-        ressources: {
+        resources: {
           user: [{ _id: { type: "params", key: "userId" } }],
         },
       },
@@ -149,7 +149,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
   },
@@ -174,7 +174,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "user:manage",
-        ressources: {
+        resources: {
           user: [{ _id: { type: "params", key: "userId" } }],
         },
       },
@@ -190,7 +190,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/user/:userId/history": {
@@ -211,7 +211,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "user:manage",
-        ressources: {
+        resources: {
           user: [{ _id: { type: "params", key: "userId" } }],
         },
       },
@@ -233,7 +233,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:manage",
-        ressources: {
+        resources: {
           user: [
             {
               _id: { type: "query", key: "userId" },
@@ -266,7 +266,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
   },
