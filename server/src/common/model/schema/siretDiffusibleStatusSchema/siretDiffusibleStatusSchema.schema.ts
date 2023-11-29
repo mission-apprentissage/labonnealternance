@@ -1,6 +1,6 @@
-import { model, Schema } from "../../../mongodb"
+import { ISiretDiffusibleStatus } from "shared/models"
 
-import { ISiretDiffusibleStatus } from "./siretDiffusibleStatus.types"
+import { model, Schema } from "../../../mongodb"
 
 export const siretDiffusibleStatusSchema = new Schema<ISiretDiffusibleStatus>(
   {
