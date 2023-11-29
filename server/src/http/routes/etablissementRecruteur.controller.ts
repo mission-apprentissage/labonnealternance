@@ -26,9 +26,9 @@ import {
   createUser,
   getUser,
   getUserStatus,
-  updateLastConnectionDate,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
+  updateLastConnectionDate,
   updateUser,
 } from "../../services/userRecruteur.service"
 import { Server } from "../server"
@@ -210,7 +210,7 @@ export default (server: Server) => {
           newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
           await notifyToSlack({
             subject: "RECRUTEUR",
-            message: `Nouvel OF en attente de validation - ${newCfa.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
+            message: `Nouvel OF en attente de validation - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
           })
           // Keep the same structure as ENTREPRISE
           return res.status(200).send({ user: newCfa })
