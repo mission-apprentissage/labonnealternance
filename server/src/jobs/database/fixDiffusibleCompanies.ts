@@ -4,7 +4,6 @@ import Boom from "boom"
 import { ILbaCompany } from "shared"
 
 import { logger } from "@/common/logger"
-import { LbaCompanyNonDiffusible } from "@/common/model"
 import { db } from "@/common/mongodb"
 import { getEtablissementDiffusionStatus } from "@/services/etablissement.service"
 
@@ -33,7 +32,6 @@ const fixLbaCompanies = async () => {
       console.log("isDiffusible : ", count++, isDiffusible, lbaCompany.siret, lbaCompany.enseigne)
 
       if (isDiffusible !== "diffusible") {
-        await new LbaCompanyNonDiffusible(lbaCompany).save()
         await db.collection("bonnesboites").deleteOne({ siret: lbaCompany.siret })
       }
     } catch (err) {
