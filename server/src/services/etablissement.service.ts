@@ -283,10 +283,10 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
     if (error?.response?.status === 429 || error?.response?.status === 504) {
       return "quota"
     }
-    console.log(error?.code, error?.message, error?.title)
     if (error?.code === "ECONNABORTED") {
       return "quota"
     }
+    console.log(error?.code, error?.message, error?.title)
     sentryCaptureException(error)
     throw error
   }
