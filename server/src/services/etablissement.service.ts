@@ -8,7 +8,7 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 
-import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
+import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, SiretDiffusibleStatus, UnsubscribeOF, UserRecruteur } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -269,9 +269,24 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
     }
-    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`, {
-      params: apiParams,
-    })
+
+    const siretDiffusibleStatus = await SiretDiffusibleStatus.findOne({ siret }).lean()
+    if (siretDiffusibleStatus) {
+      return siretDiffusibleStatus.status_diffusion
+    }
+
+    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(
+      `${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}/adresse`,
+      {
+        params: apiParams,
+      }
+    )
+
+    await new SiretDiffusibleStatus({
+      siret,
+      diffusion_status: data.data.status_diffusion,
+    }).save()
+
     return data.data.status_diffusion
   } catch (error: any) {
     if (error?.response?.status === 404 || error?.response?.status === 422) {

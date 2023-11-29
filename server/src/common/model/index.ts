@@ -30,6 +30,7 @@ import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
 import ReferentielRome from "./schema/referentielRome/referentielRome.schema"
 import RncpRomes from "./schema/rncpRomes/rncpRomes.schema"
 import Session from "./schema/session/session.schema"
+import SiretDiffusibleStatus from "./schema/siretDiffusibleStatusSchema/siretDiffusibleStatusSchema.schema"
 import UnsubscribedLbaCompany from "./schema/unsubscribedLbaCompany/unsubscribedLbaCompany.schema"
 import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema"
 import User from "./schema/user/user.schema"
@@ -75,6 +76,7 @@ export {
   Appointment,
   AppointmentDetailed,
   Credential,
+  SiretDiffusibleStatus,
   DiplomesMetiers,
   DomainesMetiers,
   EligibleTrainingsForAppointment,
