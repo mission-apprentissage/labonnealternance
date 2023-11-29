@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .bin/scripts/setup-local-env.sh
-  checksum: 615c90eea2b96fb77a14ee8e4e9a83f1e75180b1240852c6ffe799800fcd87c4
+  checksum: 79bf3eda5eddd42060d2a03b651156dee201f35b32d8fd823583ee490d924c24
 - filename: .github/workflows/_deploy.yml
   checksum: 62e09b5f606f4aaebbd1802c7c6b1d985099f92b9a759afcbcef6a1426f9cf71
 - filename: .github/workflows/deploy_preview.yml
@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mailpit/auth
   checksum: 0c02db6c367747bfd696e8c93ed78c456fe311452e7a4ee1d7d5acc88f3b2189
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 3679dcde17d9d606ef7b27ad632122fcf19a4180849ed4cd1cbc98c312dd0d29
+  checksum: 269ad0371c851e09dd2a384444629b9b4370b699a53911de79d565fcdd16520b
 - filename: .infra/files/scripts/seed.sh
   checksum: ddafc86248e8fd5f7c24ca5a62be703083f7704395f17fb7b43bc8e44227d561
 - filename: .yarn/patches/zod-npm-3.21.4-9f570b215c.patch
@@ -41,6 +41,8 @@ fileignoreconfig:
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
+- filename: server/src/jobs/database/obfuscateCollections.ts
+  checksum: 2f71fedd1c4d31b429734a2364368d6edff84f3957cbaebd278def85196f6c6d
 - filename: server/src/jobs/job.actions.ts
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
