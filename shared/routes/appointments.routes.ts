@@ -119,7 +119,7 @@ export const zAppointmentsRoute = {
       method: "get",
       path: "/admin/appointments/details",
       response: {
-        "2xx": z
+        "200": z
           .object({
             appointments: z.array(
               z
@@ -155,13 +155,38 @@ export const zAppointmentsRoute = {
         ressources: {},
       },
     },
+    "/appointment-request/context/short-recap": {
+      method: "get",
+      path: "/appointment-request/context/short-recap",
+      querystring: z.object({ appointmentId: z.string() }).strict(),
+      response: {
+        "200": z
+          .object({
+            user: z
+              .object({
+                firstname: z.string(),
+                lastname: z.string(),
+                phone: z.string(),
+                email: z.string(),
+              })
+              .strict(),
+            etablissement: z
+              .object({
+                etablissement_formateur_raison_sociale: z.string().nullish(),
+                lieu_formation_email: z.string().nullish(),
+              })
+              .strict(),
+          })
+          .strict(),
+      },
+      securityScheme: null,
+    },
     "/appointment-request/context/recap": {
       method: "get",
       path: "/appointment-request/context/recap",
-      // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             appointment: z
               .object({
@@ -199,7 +224,11 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
   },
   post: {
@@ -208,7 +237,7 @@ export const zAppointmentsRoute = {
       path: "/appointment-request/context/create",
       body: zContextCreateSchema,
       response: {
-        "2xx": zAppointmentRequestContextCreateResponseSchema,
+        "200": zAppointmentRequestContextCreateResponseSchema,
         "404": z.union([ZResError, z.literal("Formation introuvable")]),
         "400": z.union([ZResError, z.literal("Critère de recherche non conforme.")]),
       },
@@ -237,8 +266,8 @@ export const zAppointmentsRoute = {
         .strict(),
       response: {
         // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "2xx": z
+        "200": z.any(),
+        // "200": z
         //   .object({
         //     userId: z.string(),
         //     appointment: z.union([ZAppointment, z.null()]),
@@ -250,7 +279,6 @@ export const zAppointmentsRoute = {
     "/appointment-request/reply": {
       method: "post",
       path: "/appointment-request/reply",
-      // TODO_SECURITY_FIX token jwt
       body: z
         .object({
           appointment_id: z.string(),
@@ -260,7 +288,7 @@ export const zAppointmentsRoute = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             appointment_id: z.string(),
             cfa_intention_to_applicant: z.string(),
@@ -269,7 +297,11 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        ressources: {},
+      },
     },
   },
 } as const satisfies IRoutesDef
