@@ -23,7 +23,6 @@ import InternalJobs from "./schema/internalJobs/internalJobs.schema"
 import Job from "./schema/jobs/jobs.schema"
 import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
 import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
-import LbaCompanyNonDiffusible from "./schema/lbaCompanyNonDiffusible/lbaCompanyNonDiffusible.schema"
 import Opco from "./schema/opco/opco.schema"
 import Optout from "./schema/optout/optout.schema"
 import Recruiter from "./schema/recruiter/recruiter.schema"
@@ -91,7 +90,6 @@ export {
   Job,
   LbaCompany,
   LbaCompanyLegacy,
-  LbaCompanyNonDiffusible,
   Opco,
   Optout,
   Recruiter,
