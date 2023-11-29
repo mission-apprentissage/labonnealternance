@@ -276,7 +276,6 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
 
     const siretDiffusibleStatus = await SiretDiffusibleStatus.findOne({ siret }).lean()
     if (siretDiffusibleStatus) {
-      console.log("trouvé en cache :", siret, siretDiffusibleStatus)
       return siretDiffusibleStatus.status_diffusion
     }
 
@@ -305,7 +304,6 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
     if (error?.code === "ECONNABORTED") {
       return "quota"
     }
-    console.log(error?.code, error?.message, error?.title)
     sentryCaptureException(error)
     throw error
   }
@@ -317,11 +315,8 @@ export const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
       siret,
       status_diffusion: diffusionStatus,
     }).save()
-
-    console.log("sauvé dans cache : ", siret, diffusionStatus)
   } catch (err) {
     // non blocking error
-    console.log("error saving to cache ", err)
     sentryCaptureException(err)
   }
 }
