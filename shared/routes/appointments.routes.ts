@@ -1,6 +1,6 @@
 import { referrers } from "../constants/referers"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment, ZEtablissement } from "../models"
+import { ZAppointment, ZEtablissement, ZUser } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef, ZResError } from "./common.routes"
@@ -152,7 +152,7 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/appointment-request/context/short-recap": {
@@ -227,7 +227,7 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },
@@ -251,13 +251,14 @@ export const zAppointmentsRoute = {
     "/appointment-request/validate": {
       method: "post",
       path: "/appointment-request/validate",
-      body: z
-        .object({
-          firstname: z.string(),
-          lastname: z.string(),
-          phone: z.string(),
-          email: z.string(),
-          type: z.string(),
+      body: ZUser.pick({
+        firstname: true,
+        lastname: true,
+        phone: true,
+        email: true,
+        type: true,
+      })
+        .extend({
           applicantMessageToCfa: z.string().nullable(),
           applicantReasons: z.array(z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"])),
           cleMinistereEducatif: z.string(),
@@ -300,7 +301,7 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },

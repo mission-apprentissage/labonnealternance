@@ -29,7 +29,8 @@ import {
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useState } from "react"
-import { EApplicantType, EReasonsKey } from "shared"
+import { EReasonsKey } from "shared"
+import { EApplicantType } from "shared/constants/rdva"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 import * as Yup from "yup"
 

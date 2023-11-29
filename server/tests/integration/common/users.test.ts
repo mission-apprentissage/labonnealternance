@@ -1,11 +1,11 @@
 import assert from "assert"
 
+import { EApplicantRole } from "shared/constants/rdva"
 import { describe, it } from "vitest"
 
 import { useMongo } from "@tests/utils/mongo.utils"
 
 import { User } from "../../../src/common/model/index"
-import { ROLES } from "../../../src/services/constant.service"
 import { createUser } from "../../../src/services/user.service"
 
 const userTest = { lastname: "lastname", firstname: "firstname" }
@@ -22,26 +22,26 @@ describe("users", () => {
   })
 
   it("Permet de créer un utilisateur avec le role d'administrateur", async () => {
-    const user = await createUser({ role: ROLES.administrator, ...userTest })
-    const found = await User.findOne({ firstname: "firstname", role: ROLES.administrator })
+    const user = await createUser({ role: EApplicantRole.ADMINISTRATOR, ...userTest })
+    const found = await User.findOne({ firstname: "firstname", role: EApplicantRole.ADMINISTRATOR })
 
-    assert.strictEqual(user.role, ROLES.administrator)
-    assert.strictEqual(found?.role, ROLES.administrator)
+    assert.strictEqual(user.role, EApplicantRole.ADMINISTRATOR)
+    assert.strictEqual(found?.role, EApplicantRole.ADMINISTRATOR)
   })
 
   it("Permet de créer un utilisateur avec le role de candidat", async () => {
-    const user = await createUser({ role: ROLES.candidat, ...userTest })
-    const found = await User.findOne({ firstname: "firstname", role: ROLES.candidat })
+    const user = await createUser({ role: EApplicantRole.CANDIDAT, ...userTest })
+    const found = await User.findOne({ firstname: "firstname", role: EApplicantRole.CANDIDAT })
 
-    assert.strictEqual(user.role, ROLES.candidat)
-    assert.strictEqual(found?.role, ROLES.candidat)
+    assert.strictEqual(user.role, EApplicantRole.CANDIDAT)
+    assert.strictEqual(found?.role, EApplicantRole.CANDIDAT)
   })
 
   it("Permet de créer un utilisateur avec le role de cfa", async () => {
-    const user = await createUser({ role: ROLES.cfa, ...userTest })
-    const found = await User.findOne({ firstname: "firstname", role: ROLES.cfa })
+    const user = await createUser({ role: EApplicantRole.CFA, ...userTest })
+    const found = await User.findOne({ firstname: "firstname", role: EApplicantRole.CFA })
 
-    assert.strictEqual(user.role, ROLES.cfa)
-    assert.strictEqual(found?.role, ROLES.cfa)
+    assert.strictEqual(user.role, EApplicantRole.CFA)
+    assert.strictEqual(found?.role, EApplicantRole.CFA)
   })
 })

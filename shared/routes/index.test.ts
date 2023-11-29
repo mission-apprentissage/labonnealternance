@@ -39,7 +39,7 @@ describe("zRoutes", () => {
       for (const [path, def] of Object.entries(zMethodRoutes)) {
         const typedDef = def as IRouteSchemaWrite | IRouteSchemaGet
         if (typedDef.securityScheme) {
-          for (const [resourceType, resourceAccesses] of Object.entries(typedDef.securityScheme.ressources)) {
+          for (const [resourceType, resourceAccesses] of Object.entries(typedDef.securityScheme.resources)) {
             for (const resourceAccess of resourceAccesses) {
               for (const [, access] of Object.entries(resourceAccess)) {
                 const zodInputShape = access.type === "params" ? typedDef.params : typedDef.querystring

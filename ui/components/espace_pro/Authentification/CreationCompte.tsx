@@ -34,7 +34,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
               query: { type, origin, informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
             })
           } else {
-            setFieldError("establishment_siret", entrepriseData.message)
+            setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
             setIsCfa(entrepriseData?.data?.errorCode === BusinessErrorCodes.IS_CFA)
             setSubmitting(false)
           }

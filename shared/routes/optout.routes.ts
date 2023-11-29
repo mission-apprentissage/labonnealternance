@@ -30,7 +30,7 @@ export const zOptoutRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },

@@ -49,6 +49,9 @@ export type AccessRessouces = {
     | {
         opco: AccessResourcePath
       }
+    | {
+        cfa_delegated_siret: AccessResourcePath
+      }
   >
   eligibleTrainingsForAppointment?: ReadonlyArray<
     | {
