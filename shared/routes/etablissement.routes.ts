@@ -18,9 +18,9 @@ export const zEtablissementRoutes = {
         auth: "cookie-session",
         access: "admin",
         resources: {
-          eligibleTrainingsForAppointment: [
+          etablissement: [
             {
-              etablissement_formateur_siret: { type: "params", key: "siret" },
+              siret: { type: "params", key: "siret" },
             },
           ],
         },

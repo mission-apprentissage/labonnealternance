@@ -61,9 +61,12 @@ export type AccessRessouces = {
         etablissement_formateur_siret: AccessResourcePath
       }
   >
-  etablissement?: ReadonlyArray<{
-    _id: AccessResourcePath
-  }>
+  etablissement?: ReadonlyArray<
+    | {
+        _id: AccessResourcePath
+      }
+    | { siret: AccessResourcePath }
+  >
   appointment?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
