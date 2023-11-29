@@ -3,6 +3,7 @@ import Joi from "joi"
 import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { createRdvaAppointmentIdPageLink } from "@/services/appLinks.service"
 
 import { mailType } from "../../common/model/constants/appointments"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
@@ -66,7 +67,7 @@ export default (server: Server) => {
           throw Boom.badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement est cours de traitement.`)
         }
       } else {
-        user = await users.createUser(email, {
+        user = await users.createUser({
           firstname,
           lastname,
           phone,
@@ -95,6 +96,10 @@ export default (server: Server) => {
         }),
       ])
 
+      if (!etablissement?.formateur_siret) {
+        throw new Error("Etablissement formateur_siret not found")
+      }
+
       const mailData = {
         appointmentId: createdAppointement._id,
         user: {
@@ -118,7 +123,6 @@ export default (server: Server) => {
           reasons: createdAppointement.applicant_reasons,
           referrerLink: referrerObj.url,
           appointment_origin: referrerObj.full_name,
-          link: `${config.publicUrl}/espace-pro/establishment/${etablissement?._id}/appointments/${createdAppointement._id}?utm_source=mail`,
         },
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
@@ -142,11 +146,13 @@ export default (server: Server) => {
           data: mailData,
         }),
         mailer.sendEmail({
-          // TODO to check string | null
           to: eligibleTrainingsForAppointment.lieu_formation_email,
           subject: emailCfaSubject,
           template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
-          data: mailData,
+          data: {
+            ...mailData,
+            link: createRdvaAppointmentIdPageLink(eligibleTrainingsForAppointment.lieu_formation_email, etablissement.formateur_siret, etablissement._id, createdAppointement._id),
+          },
         }),
       ])
 
@@ -190,9 +196,57 @@ export default (server: Server) => {
   )
 
   server.get(
+    "/appointment-request/context/short-recap",
+    {
+      schema: zRoutes.get["/appointment-request/context/short-recap"],
+    },
+    async (req, res) => {
+      const { appointmentId } = req.query
+
+      const appointment = await Appointment.findById(appointmentId, { cle_ministere_educatif: 1, applicant_id: 1 }).lean()
+
+      if (!appointment) {
+        throw Boom.notFound()
+      }
+
+      const [etablissement, user] = await Promise.all([
+        EligibleTrainingsForAppointment.findOne(
+          { cle_ministere_educatif: appointment.cle_ministere_educatif },
+          {
+            etablissement_formateur_raison_sociale: 1,
+            lieu_formation_email: 1,
+            _id: 0,
+          }
+        ).lean(),
+        User.findById(appointment.applicant_id, {
+          lastname: 1,
+          firstname: 1,
+          phone: 1,
+          email: 1,
+          _id: 0,
+        }).lean(),
+      ])
+
+      if (!etablissement) {
+        throw Boom.internal("Etablissment not found")
+      }
+
+      if (!user) {
+        throw Boom.internal("User not found")
+      }
+
+      res.status(200).send({
+        user,
+        etablissement,
+      })
+    }
+  )
+
+  server.get(
     "/appointment-request/context/recap",
     {
       schema: zRoutes.get["/appointment-request/context/recap"],
+      onRequest: [server.auth(zRoutes.get["/appointment-request/context/recap"])],
     },
     async (req, res) => {
       const { appointmentId } = req.query
@@ -252,6 +306,7 @@ export default (server: Server) => {
     "/appointment-request/reply",
     {
       schema: zRoutes.post["/appointment-request/reply"],
+      onRequest: [server.auth(zRoutes.post["/appointment-request/reply"])],
     },
     async (req, res) => {
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
@@ -261,12 +316,15 @@ export default (server: Server) => {
 
       if (!appointment) throw Boom.notFound()
 
+      if (!appointment.applicant_id) {
+        throw Boom.internal("Applicant id not found.")
+      }
+
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
-        // TODO applicant_id null | undefined | string
-        users.getUserById(appointment.applicant_id as string),
+        users.getUserById(appointment.applicant_id),
       ])
 
       if (!user || !eligibleTrainingsForAppointment) throw Boom.notFound()
