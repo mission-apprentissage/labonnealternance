@@ -29,23 +29,11 @@ export const ENTREPRISE_DELEGATION = "ENTREPRISE_DELEGATION"
 export const ADMIN = "ADMIN"
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
+export const OPCO = "OPCO"
 export const REGEX = {
   SIRET: /^([0-9]{9}|[0-9]{14})$/,
   GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,
   TELEPHONE: /^[0-9]{10}$/,
-}
-export const OPCOS = {
-  AFDAS: "AFDAS",
-  AKTO: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
-  ATLAS: "ATLAS",
-  CONSTRUCTYS: "Constructys",
-  OPCOMMERCE: "L'Opcommerce",
-  OCAPIAT: "OCAPIAT",
-  OPCO2I: "OPCO 2i",
-  EP: "Opco entreprises de proximité",
-  MOBILITE: "Opco Mobilités",
-  SANTE: "Opco Santé",
-  UNIFORMATION: "Uniformation, l'Opco de la Cohésion sociale",
 }
 
 export const NIVEAUX_POUR_LBA = {

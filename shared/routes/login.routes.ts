@@ -20,7 +20,7 @@ export const zLoginRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "user:manage",
-        ressources: {
+        resources: {
           user: [{ _id: { key: "userId", type: "params" } }],
         },
       },
@@ -47,7 +47,7 @@ export const zLoginRoutes = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },
@@ -62,7 +62,7 @@ export const zLoginRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
     "/auth/logout": {

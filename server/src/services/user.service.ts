@@ -3,44 +3,6 @@ import { IRecruiter, IUser, IUserRecruteur } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { Recruiter, User, UserRecruteur } from "../common/model/index"
-import * as sha512Utils from "../common/utils/sha512Utils"
-
-/**
- * @description Hash password
- * @param {User} user
- * @param {string} password
- * @returns {Promise<IUser>}
- */
-const rehashPassword = (user, password: string) => {
-  user.password = sha512Utils.hash(password)
-
-  return user.save()
-}
-
-/**
- * @description Authenticates user from its username and password.
- * @param {string} username
- * @param {string} password
- * @returns {Promise<null|User>}
- */
-const authenticate = async (username: string, password: string): Promise<IUser | null> => {
-  const user = await getUser(username)
-
-  if (!user) {
-    return null
-  }
-
-  const current = user.password
-  if (sha512Utils.compare(password, current)) {
-    if (sha512Utils.isTooWeak(current)) {
-      await rehashPassword(user, password)
-    }
-
-    return user.toObject()
-  }
-
-  return null
-}
 
 /**
  * @description Returns user from its username.
@@ -78,13 +40,10 @@ const update = (id: string, params) => User.findOneAndUpdate({ _id: id }, params
  * @param {User} options
  * @returns {Promise<User>}
  */
-const createUser = async (username, password, options: Partial<IUser & { hash: string }>) => {
-  const hash = options.hash || sha512Utils.hash(password)
+const createUser = async (options: Partial<IUser>) => {
   const { firstname, lastname, phone, email, role, type } = options
 
   const user = new User({
-    username,
-    password: hash,
     firstname,
     lastname,
     phone,
@@ -109,23 +68,6 @@ const find = (conditions: FilterQuery<IUser>) => User.find(conditions)
  * @returns {Promise<User>}
  */
 const findOne = (conditions: FilterQuery<IUser>) => User.findOne(conditions)
-
-/**
- * @description Updates user's password.
- * @param {string} username
- * @param {string} newPassword
- * @returns {Promise<IUser>}
- */
-const changePassword = async (username: string, newPassword: string) => {
-  const user = await User.findOne({ username })
-  if (!user) {
-    throw new Error(`Unable to find user ${username}`)
-  }
-
-  user.password = sha512Utils.hash(newPassword)
-
-  return user.save()
-}
 
 type IUserRecruterPicked = Pick<
   IUserRecruteur,
@@ -205,4 +147,4 @@ const getUserAndRecruitersDataForOpcoUser = async (opco: string): Promise<TRetur
   return results
 }
 
-export { authenticate, changePassword, createUser, find, findOne, getUser, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, rehashPassword, update }
+export { createUser, find, findOne, getUser, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, update }

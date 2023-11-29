@@ -34,7 +34,7 @@ import { EApplicantType } from "shared/constants/rdva"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 import * as Yup from "yup"
 
-import { IAppointmentRequestRecapResponse, reasons } from "@/components/RDV/types"
+import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
 import { PaperPlane } from "@/theme/components/icons/PaperPlane"
 import { apiGet, apiPost } from "@/utils/api.utils"
@@ -53,7 +53,7 @@ const DemandeDeContact = (props: Props) => {
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
-  const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState<IAppointmentRequestRecapResponse | null>(null)
+  const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState(null)
   const [error, setError] = useState<string | null>(null)
 
   const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
@@ -114,7 +114,7 @@ const DemandeDeContact = (props: Props) => {
           },
         })) as unknown as { appointment: { _id: string } }
 
-        const response = await apiGet("/appointment-request/context/recap", {
+        const response = await apiGet("/appointment-request/context/short-recap", {
           querystring: { appointmentId: appointment._id },
         })
 

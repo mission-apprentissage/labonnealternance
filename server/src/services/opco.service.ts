@@ -1,10 +1,11 @@
 import memoize from "memoizee"
+import { OPCOS } from "shared/constants/recruteur"
+import { IReferentielOpco, ZReferentielOpcoInsert } from "shared/models"
 
 import { Opco } from "../common/model/index"
 import { IOpco } from "../common/model/schema/opco/opco.types"
 
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
-import { OPCOS } from "./constant.service"
 
 /**
  * @description get opco from database collection OPCOS
@@ -122,4 +123,14 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
   })
 
   return results
+}
+
+export const prepareReferentielOpcoForInsert = (referentiel: Omit<IReferentielOpco, "_id">) => {
+  if (ZReferentielOpcoInsert.safeParse(referentiel).success && referentiel.emails.length) {
+    const deduplicatedEmails = [...new Set(referentiel.emails)]
+    referentiel.emails = deduplicatedEmails
+    return referentiel
+  } else {
+    return false
+  }
 }

@@ -15,7 +15,7 @@ export const zFormationRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {
+        resources: {
           formationCatalogue: [
             {
               cle_ministere_educatif: { type: "query", key: "search_item" },

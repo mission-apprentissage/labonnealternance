@@ -6,64 +6,42 @@ import { describe, it } from "vitest"
 import { useMongo } from "@tests/utils/mongo.utils"
 
 import { User } from "../../../src/common/model/index"
-import { authenticate, changePassword, createUser } from "../../../src/services/user.service"
+import { createUser } from "../../../src/services/user.service"
+
+const userTest = { lastname: "lastname", firstname: "firstname" }
 
 describe("users", () => {
   useMongo()
 
   it("Permet de créer un utilisateur", async () => {
-    const created = await createUser("user", "password", {})
-    assert.strictEqual(created.username, "user")
-    assert.strictEqual(created.password.startsWith(`$6$rounds=${process.env.LBA_AUTH_PASSWORD_HASH_ROUNDS}`), true)
+    const created = await createUser(userTest)
+    assert.strictEqual(created.firstname, "firstname")
 
-    const found = await User.findOne({ username: "user" })
-    assert.strictEqual(found?.username, "user")
-    assert.strictEqual(found?.password.startsWith(`$6$rounds=${process.env.LBA_AUTH_PASSWORD_HASH_ROUNDS}`), true)
+    const found = await User.findOne({ firstname: "firstname" })
+    assert.strictEqual(found?.firstname, "firstname")
   })
 
   it("Permet de créer un utilisateur avec le role d'administrateur", async () => {
-    const user = await createUser("userAdmin", "password", { role: EApplicantRole.ADMINISTRATOR })
-    const found = await User.findOne({ username: "userAdmin" })
+    const user = await createUser({ role: EApplicantRole.ADMINISTRATOR, ...userTest })
+    const found = await User.findOne({ firstname: "firstname", role: EApplicantRole.ADMINISTRATOR })
 
     assert.strictEqual(user.role, EApplicantRole.ADMINISTRATOR)
     assert.strictEqual(found?.role, EApplicantRole.ADMINISTRATOR)
   })
 
   it("Permet de créer un utilisateur avec le role de candidat", async () => {
-    const user = await createUser("userCandidat", "password", { role: EApplicantRole.CANDIDAT })
-    const found = await User.findOne({ username: "userCandidat" })
+    const user = await createUser({ role: EApplicantRole.CANDIDAT, ...userTest })
+    const found = await User.findOne({ firstname: "firstname", role: EApplicantRole.CANDIDAT })
 
     assert.strictEqual(user.role, EApplicantRole.CANDIDAT)
     assert.strictEqual(found?.role, EApplicantRole.CANDIDAT)
   })
 
   it("Permet de créer un utilisateur avec le role de cfa", async () => {
-    const user = await createUser("userCfa", "password", { role: EApplicantRole.CFA })
-    const found = await User.findOne({ username: "userCfa" })
+    const user = await createUser({ role: EApplicantRole.CFA, ...userTest })
+    const found = await User.findOne({ firstname: "firstname", role: EApplicantRole.CFA })
 
     assert.strictEqual(user.role, EApplicantRole.CFA)
     assert.strictEqual(found?.role, EApplicantRole.CFA)
-  })
-
-  it("Vérifie que le mot de passe est valide", async () => {
-    await createUser("user", "password", {})
-    const user = await authenticate("user", "password")
-
-    assert.strictEqual(user?.username, "user")
-  })
-
-  it("Vérifie que le mot de passe est invalide", async () => {
-    await createUser("user", "password", {})
-    const user = await authenticate("user", "INVALID")
-
-    assert.strictEqual(user, null)
-  })
-
-  it("Vérifie qu'on peut changer le mot de passe d'un utilisateur", async () => {
-    await createUser("user", "password", {})
-    await changePassword("user", "newPassword")
-    const user = await authenticate("user", "newPassword")
-
-    assert.strictEqual(user?.username, "user")
   })
 })

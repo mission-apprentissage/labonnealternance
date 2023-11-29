@@ -159,6 +159,8 @@ function createJobAction(name) {
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program.command("fiab:kevin").description("Run migrations up").action(createJobAction("fiab:kevin"))
+program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
+
 program.command("migrations:up").description("Run migrations up").action(createJobAction("migrations:up"))
 
 program.command("migrations:status").description("Check migrations status").action(createJobAction("migrations:status"))
@@ -530,6 +532,19 @@ program
   .description("Répare les data de la collection userrecruteurs")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("user-recruters:data-validation:fix"))
+
+program
+  .command("anonymize-user-recruteurs")
+  .description("Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("user-recruteurs:anonymize"))
+
+program
+  .command("import-referentiel-opco-constructys")
+  .description("Importe les emails pour la collection ReferentielOpco depuis l'opco Constructys")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .option("-parallelism, [parallelism]", "Number of threads", "10")
+  .action(createJobAction("referentiel-opco:constructys:import"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

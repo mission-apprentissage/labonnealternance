@@ -29,7 +29,7 @@ type OldIScope<Schema extends SchemaWithSecurity> = {
         querystring: Schema["querystring"] extends AnyZodObject ? Jsonify<z.input<Schema["querystring"]>> : undefined
       }
   resources: {
-    [key in keyof Schema["securityScheme"]["ressources"]]: ReadonlyArray<string>
+    [key in keyof Schema["securityScheme"]["resources"]]: ReadonlyArray<string>
   }
 }
 
@@ -43,7 +43,7 @@ type NewIScope<Schema extends SchemaWithSecurity> = {
         querystring: Schema["querystring"] extends AnyZodObject ? Jsonify<z.input<Schema["querystring"]>> : undefined
       }
   resources: {
-    [key in keyof Schema["securityScheme"]["ressources"]]: ReadonlyArray<string>
+    [key in keyof Schema["securityScheme"]["resources"]]: ReadonlyArray<string>
   }
 }
 
@@ -127,14 +127,11 @@ export function getAccessTokenScope<Schema extends SchemaWithSecurity>(token: IA
 }
 
 export function parseAccessToken<Schema extends SchemaWithSecurity>(
-  accessToken: null | string,
+  accessToken: string,
   schema: Schema,
   params: PathParam | undefined,
   querystring: QueryString | undefined
-): IAccessToken<Schema> | null {
-  if (!accessToken) {
-    return null
-  }
+): IAccessToken<Schema> {
   const data = jwt.verify(accessToken, config.auth.user.jwtSecret, {
     complete: true,
     issuer: config.publicUrl,
