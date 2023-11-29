@@ -86,6 +86,62 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
   )
 }
 
+export function createCancelJobLink(user: IUserRecruteur, jobId: string) {
+  const token = generateAccessToken(user, [
+    generateScope({
+      schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
+      options: {
+        params: {
+          jobId: jobId,
+        },
+        querystring: undefined,
+      },
+      resources: {
+        job: [jobId],
+      },
+    }),
+  ])
+
+  return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?token=${token}`
+}
+
+export function createProvidedJobLink(user: IUserRecruteur, jobId: string) {
+  const token = generateAccessToken(user, [
+    generateScope({
+      schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
+      options: {
+        params: {
+          jobId: jobId,
+        },
+        querystring: undefined,
+      },
+      resources: {
+        job: [jobId],
+      },
+    }),
+  ])
+
+  return `${config.publicUrl}/espace-pro/offre/${jobId}/provided?token=${token}`
+}
+
+export function createViewDelegationLink(email: string, establishment_id: string, job_id: string, siret_formateur: string) {
+  const token = generateAccessToken({ type: "cfa", email, siret: siret_formateur }, [
+    generateScope({
+      schema: zRoutes.get["/formulaire/delegation/:establishment_id"],
+      options: {
+        params: {
+          establishment_id: establishment_id,
+        },
+        querystring: undefined,
+      },
+      resources: {
+        recruiter: [establishment_id],
+      },
+    }),
+  ])
+
+  return `${config.publicUrl}/espace-pro/proposition/formulaire/${establishment_id}/offre/${job_id}/siret/${siret_formateur}?token=${token}`
+}
 /**
  * Forge a link for Affelnet premium activation.
  */

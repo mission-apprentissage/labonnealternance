@@ -9,7 +9,7 @@ import { cancelOffre, fillOffre } from "../../../../utils/api"
 
 export default function MailActionsOnOffre() {
   const router = useRouter()
-  const { jobId, option } = router.query
+  const { jobId, option, token } = router.query
   const [result, setResult] = useState("")
 
   const error = () => {
@@ -19,7 +19,7 @@ export default function MailActionsOnOffre() {
   useEffect(() => {
     if (jobId && option) {
       if (option === "cancel") {
-        cancelOffre(jobId)
+        cancelOffre(jobId, token)
           .then(() => {
             setResult("ok")
           })
@@ -27,7 +27,7 @@ export default function MailActionsOnOffre() {
       }
 
       if (option === "provided") {
-        fillOffre(jobId)
+        fillOffre(jobId, token)
           .then(() => {
             setResult("ok")
           })
