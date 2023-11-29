@@ -161,7 +161,7 @@ const obfuscateUser = async () => {
   const users: AsyncIterable<IUser> = await db.collection("users").find({})
   for await (const user of users) {
     const email = getFakeEmail()
-    const replacement = { $set: { password: "removed", email, username: email, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
+    const replacement = { $set: { email, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
     await db.collection("users").findOneAndUpdate({ _id: user._id }, replacement)
   }
 
