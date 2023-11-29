@@ -26,7 +26,7 @@ fileignoreconfig:
 - filename: .infra/files/scripts/seed.sh
   checksum: ddafc86248e8fd5f7c24ca5a62be703083f7704395f17fb7b43bc8e44227d561
 - filename: .infra/vault/vault.yml
-  checksum: b357f6650acf32edb7f8c93a30d84a1334c960c02d0aa6837596a74481a27b1f
+  checksum: 34d4ece11c1eb06a2724be07630e9e2541cae3e6bbafdb3e82c6af66ff47cd31
 - filename: .yarn/patches/zod-npm-3.21.4-9f570b215c.patch
   checksum: d429ff982063e6476ea8d8d91ac1173a1279d1c9bf0488b6e05396affeb8c6cf
 - filename: server/.env.test
@@ -61,12 +61,16 @@ fileignoreconfig:
   checksum: f77ba0fa55f1cbd5b708fdc9f0d5b229e84a1de6c433186d96aa94a7f6388f0c
 - filename: server/tests/unit/security/accessTokenService.test.ts
   checksum: 232b1bae52a4d4f961637f59b09da5e480147864c76980a2b86e77a73bb36923
+- filename: server/tests/unit/security/accessTokenService.test.ts
+  checksum: 58153e7e57ef450bfbf061f322cd8b7643dba12513b183194b4eafdb166f58d3
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/generateUri.ts
   checksum: 03ecb8627c19374e97450e5974ca6a5f51e269a8bb1cf5d372a8c2a2aca72cfa
+- filename: shared/helpers/generateUri.ts
+  checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
   checksum: 9358c7f8155efcfc5687be3f01ae3516a05988118304c124a3358094aa966363
 - filename: shared/helpers/openapi/generateOpenapi.test.ts

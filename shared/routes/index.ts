@@ -32,13 +32,6 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zMetiersDAvenirRoutes.get,
   ...zMetiersRoutes.get,
-  ...zOptoutRoutes.get,
-  ...zRomeRoutes.get,
-  ...zUpdateLbaCompanyRoutes.get,
-  ...zUserRecruteurRoutes.get,
-  ...zV1FormationsParRegion.get,
-  ...zPartnersRoutes.get,
-  ...zLoginRoutes.get,
 } as const
 
 const zRoutesGetP2 = {
@@ -53,12 +46,23 @@ const zRoutesGetP2 = {
 const zRoutesGetP3 = {
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationRoute.get,
+  ...zOptoutRoutes.get,
 } as const
 
-const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 = {
+const zRoutesGetP4 = {
+  ...zRomeRoutes.get,
+  ...zUpdateLbaCompanyRoutes.get,
+  ...zUserRecruteurRoutes.get,
+  ...zV1FormationsParRegion.get,
+  ...zPartnersRoutes.get,
+  ...zLoginRoutes.get,
+} as const
+
+const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 = {
   ...zRoutesGetP1,
   ...zRoutesGetP2,
   ...zRoutesGetP3,
+  ...zRoutesGetP4,
 } as const
 
 const zRoutesPost1 = {
