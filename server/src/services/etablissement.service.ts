@@ -311,7 +311,7 @@ export const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
   try {
     await new SiretDiffusibleStatus({
       siret,
-      diffusion_status: diffusionStatus,
+      status_diffusion: diffusionStatus,
     }).save()
 
     console.log("sauvé dans cache : ", siret, diffusionStatus)
