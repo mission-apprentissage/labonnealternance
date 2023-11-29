@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
-import { IUserRecruteur } from "shared"
+import { IUser, IUserRecruteur } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
@@ -17,7 +17,6 @@ import {
   UnsubscribedLbaCompany,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
-import { IUser } from "@/common/model/schema/user/user.types"
 import { db } from "@/common/mongodb"
 
 async function reduceModel<T>(model: Model<T> | Pagination<T>, limit = 20000) {

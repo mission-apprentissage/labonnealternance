@@ -1,6 +1,6 @@
-import { model, Schema } from "../../../mongodb"
+import { IReferentielOnisep } from "shared/models"
 
-import { IReferentielOnisep } from "./referentielOnisep.types"
+import { model, Schema } from "../../../mongodb"
 
 export const referentielOnisepSchema = new Schema<IReferentielOnisep>(
   {

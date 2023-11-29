@@ -158,6 +158,7 @@ function createJobAction(name) {
 
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
+program.command("fiab:kevin").description("Run migrations up").action(createJobAction("fiab:kevin"))
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
 program.command("migrations:up").description("Run migrations up").action(createJobAction("migrations:up"))

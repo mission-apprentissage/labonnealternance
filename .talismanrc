@@ -1,34 +1,34 @@
 fileignoreconfig:
+- filename: server/src/jobs/database/obfuscateCollections.ts
+  checksum: 7ba4254524cc7ae083334540daaf8b85235bb9c1918a9e5e4e93264a9d40d117
+- filename: .bin/scripts/seed-apply.sh
+  checksum: 49afe4f96fa13b38cf799d931085437d540b4c62eb05b2f15bc12cd3fb43268b
+- filename: .bin/scripts/seed-update.sh
+  checksum: 707139e7844412ee81d2796abfb2dac00dd90a9a65eb3b5f2cdede7571e96ef2
 - filename: .bin/scripts/setup-local-env.sh
   checksum: 79bf3eda5eddd42060d2a03b651156dee201f35b32d8fd823583ee490d924c24
-- filename: .github/workflows/_deploy.yml
-  checksum: 62e09b5f606f4aaebbd1802c7c6b1d985099f92b9a759afcbcef6a1426f9cf71
-- filename: .github/workflows/deploy_preview.yml
-  checksum: abfaba9d51239129f2556f7edefcace958243ffbca3dd7b437b699e9d321bc01
-- filename: .github/workflows/preview.yml
-  checksum: 27c013968ca215a23c43c1d5474ea384a162363d39e7abe215f302d86b97b6ca
-- filename: .github/workflows/preview_cleanup.yml
-  checksum: 7529ad8e9959f77c6ed70c6b35eabdcad0183b172a5e6b27fec652f9797a834f
-- filename: .github/workflows/release.yml
-  checksum: 04cd4e69c67ffb0baa69892cb715aab8221d10587af0b2f27af38b2d4a968b93
-- filename: .infra/.env_server
-  checksum: 59746bdaeaeb88dcf84012f225a8db08e0ddb0225300ab9c806140f25f3c3140
-- filename: .infra/env.ini
-  checksum: 55332a5edf8c13ed6f12346993579eac23d07d6c499d9a9b5b9b42c289d09823
-- filename: .infra/files/configs/mailpit/auth
-  checksum: 0c02db6c367747bfd696e8c93ed78c456fe311452e7a4ee1d7d5acc88f3b2189
+- filename: .infra/files/configs/mongodb/mongod.conf
+  checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 269ad0371c851e09dd2a384444629b9b4370b699a53911de79d565fcdd16520b
 - filename: .infra/files/scripts/seed.sh
   checksum: ddafc86248e8fd5f7c24ca5a62be703083f7704395f17fb7b43bc8e44227d561
-- filename: .yarn/patches/zod-npm-3.21.4-9f570b215c.patch
-  checksum: d429ff982063e6476ea8d8d91ac1173a1279d1c9bf0488b6e05396affeb8c6cf
+- filename: .infra/local/mongod.conf
+  checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
+- filename: .infra/vault/vault.yml
+  checksum: 136cba643cbfdfc04f35cd171fe488ad2836261ae88201b6f344b6edbb77d3ef
+- filename: docker-compose.yml
+  checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
   checksum: 2534c2dae48c1464b97489263621dcd516a676b28fdbb34e98267a10e00fd839
-- filename: server/src/common/apis/Pe.ts
-  checksum: 58fe86588f1bc61c01124025e46bb363e2b6ace3d18521862fa8f10b03663369
-- filename: server/src/common/model/constants/referrers.ts
-  checksum: a7205e7da4dca56dc3f989bc4fbbec4ed10c46b963446005a0b0356b0cae3a3d
+- filename: server/src/db/migrations/20231127120528-remove-password.ts
+  checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
+- filename: server/src/security/accessTokenService.ts
+  checksum: f05cafd17797362fc9bfb53062af2095ead2cbe2fa967fad23bd61b756052004
+- filename: shared/routes/formulaire.route.ts
+  checksum: aaebcb3889eeb066dd5b44f95e8d23a1a988608b382eb107dad4d87d24a97074
+- filename: shared/routes/v1Jobs.routes.ts
+  checksum: aa0fb2458520f24921a48af03ad05c3f4a92052374182851f24a3afa7421a5b8
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts
@@ -114,4 +114,3 @@ allowed_patterns:
 - versionKey
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
-- scope: node

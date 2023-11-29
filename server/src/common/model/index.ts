@@ -27,7 +27,6 @@ import Optout from "./schema/optout/optout.schema"
 import Recruiter from "./schema/recruiter/recruiter.schema"
 import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema"
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
-import ReferentielRome from "./schema/referentielRome/referentielRome.schema"
 import RncpRomes from "./schema/rncpRomes/rncpRomes.schema"
 import Session from "./schema/session/session.schema"
 import UnsubscribedLbaCompany from "./schema/unsubscribedLbaCompany/unsubscribedLbaCompany.schema"
@@ -93,12 +92,11 @@ export {
   Recruiter,
   ReferentielOnisep,
   ReferentielOpco,
-  ReferentielRome,
   RncpRomes,
+  Session,
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
   UserRecruteur,
-  Session,
   eligibleTrainingsForAppointmentHistory,
 }
