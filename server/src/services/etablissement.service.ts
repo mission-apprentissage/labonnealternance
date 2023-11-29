@@ -307,7 +307,7 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
   }
 }
 
-const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
+export const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
   try {
     await new SiretDiffusibleStatus({
       siret,
