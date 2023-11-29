@@ -13,18 +13,20 @@ export const anonymizeUsers = async () => {
   logger.info("Cron #anonymizeUsers started.")
 
   const stats = {
-    AncientUsersCount: 0,
-    NewUsersCount: 0,
+    totalUsersCount: 0,
+    afterExecutionUsersCount: 0,
+    anonymizedUsersCount: 0,
   }
 
-  stats.AncientUsersCount = await User.countDocuments()
+  const anonymizeUsersOlderThanDate = dayjs().subtract(1, "year").toDate()
+  const anonymizeUsersFixedDate = dayjs("2023-03-03").toDate()
 
-  const anonymizeUsersOlderThanDate = dayjs().subtract(2, "years").format("YYYY-MM-DD")
+  const conditions = {
+    $or: [{ last_action_date: { $lte: anonymizeUsersOlderThanDate } }, { last_action_date: { $lte: anonymizeUsersFixedDate } }],
+  }
 
   await oleoduc(
-    User.find({ created_at: { $lte: anonymizeUsersOlderThanDate } })
-      .lean()
-      .cursor(),
+    User.find(conditions).lean().cursor(),
     writeData(
       async (user: IUser) => {
         await AnonymizedUser.create({
@@ -33,16 +35,17 @@ export const anonymizeUsers = async () => {
           role: user.role,
           last_action_date: user.last_action_date,
         })
+        stats.anonymizedUsersCount++
       },
       { parallel: 100 }
     )
   )
 
-  await User.deleteMany({ created_at: { $lte: anonymizeUsersOlderThanDate } })
+  await User.deleteMany(conditions)
 
-  stats.AncientUsersCount = await User.countDocuments()
+  stats.totalUsersCount = await User.countDocuments()
 
-  logger.info("Cron #anonymizeUsers done.")
+  logger.info("Cron #anonymizeUsers done.", { stats })
 
   return stats
 }
