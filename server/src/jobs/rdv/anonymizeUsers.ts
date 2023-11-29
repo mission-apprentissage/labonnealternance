@@ -1,7 +1,6 @@
 import { oleoduc, writeData } from "oleoduc"
 
 import { logger } from "@/common/logger"
-import { IUser } from "@/common/model/schema/user/user.types"
 
 import { AnonymizedUser, User } from "../../common/model/index"
 import dayjs from "../../services/dayjs.service"
@@ -28,7 +27,7 @@ export const anonymizeUsers = async () => {
   await oleoduc(
     User.find(conditions).lean().cursor(),
     writeData(
-      async (user: IUser) => {
+      async (user) => {
         await AnonymizedUser.create({
           userId: user._id,
           type: user.type,
