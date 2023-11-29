@@ -22,6 +22,8 @@ const errorHandler = (error: any): undefined => {
  * Formulaire API
  */
 
+export const getDelegationDetails = (establishment_id: string, token: string) =>
+  apiGet("/formulaire/delegation/:establishment_id", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 export const getFormulaire = (establishment_id: string) => apiGet("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
 export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/formulaire", { params: { userId }, body: form })
 export const updateFormulaire = (establishment_id: string, values) => apiPut("/formulaire/:establishment_id", { params: { establishment_id }, body: values })
@@ -34,12 +36,12 @@ export const archiveDelegatedFormulaire = (siret: string) => API.delete(`/formul
  */
 export const getOffre = (jobId) => API.get(`/formulaire/offre/f/${jobId}`)
 export const createOffre = (establishment_id: string, newOffre: IJobWritable) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
-export const patchOffre = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}`, data, config).catch(errorHandler)
-export const cancelOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/cancel`)
+export const patchOffreDelegation = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}/delegation`, data, config).catch(errorHandler)
+export const cancelOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/cancel`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formulaire/offre/f/:jobId/cancel"]["body"]["_input"]) =>
   apiPut("/formulaire/offre/f/:jobId/cancel", { params: { jobId }, body: data })
 export const extendOffre = (jobId: string) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
-export const fillOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/provided`)
+export const fillOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; data: INewDelegations }) =>
   apiPost(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, body: data })
 

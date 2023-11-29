@@ -41,7 +41,7 @@ export interface IEtablissementGouv {
   activite_principale: IActivitePrincipale
   tranche_effectif_salarie: ITrancheEffectifSalarie
   diffusable_commercialement: boolean
-  status_diffusion: string
+  status_diffusion: "diffusible" | "partiellement_diffusible" | "non_diffusible"
   date_creation: number
   unite_legale: IUniteLegale
   adresse: IAdresseV3
