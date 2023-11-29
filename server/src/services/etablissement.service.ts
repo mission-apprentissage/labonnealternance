@@ -272,6 +272,7 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
 
     const siretDiffusibleStatus = await SiretDiffusibleStatus.findOne({ siret }).lean()
     if (siretDiffusibleStatus) {
+      console.log("trouvé en cache :", siret, siretDiffusibleStatus)
       return siretDiffusibleStatus.status_diffusion
     }
 
@@ -282,17 +283,16 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
       }
     )
 
-    await new SiretDiffusibleStatus({
-      siret,
-      diffusion_status: data.data.status_diffusion,
-    }).save()
+    await saveSiretDiffusionStatus(siret, data.data.status_diffusion)
 
     return data.data.status_diffusion
   } catch (error: any) {
     if (error?.response?.status === 404 || error?.response?.status === 422) {
+      await saveSiretDiffusionStatus(siret, "not_found")
       return "not_found"
     }
     if (error?.response?.status === 451) {
+      await saveSiretDiffusionStatus(siret, "unavailable")
       return "unavailable"
     }
     if (error?.response?.status === 429 || error?.response?.status === 504) {
@@ -304,6 +304,21 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
     console.log(error?.code, error?.message, error?.title)
     sentryCaptureException(error)
     throw error
+  }
+}
+
+const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
+  try {
+    await new SiretDiffusibleStatus({
+      siret,
+      diffusion_status: diffusionStatus,
+    }).save()
+
+    console.log("sauvé dans cache : ", siret, diffusionStatus)
+  } catch (err) {
+    // non blocking error
+    console.log("error saving to cache ", err)
+    sentryCaptureException(err)
   }
 }
 
