@@ -49,7 +49,7 @@ import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { activateOptOutEtablissementFormations } from "./rdv/activateOptOutEtablissementFormations"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
-import { anonimizeUsers } from "./rdv/anonymizeUsers"
+import { anonymizeUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
@@ -128,10 +128,6 @@ export const CronsMap = {
     cron_string: "55 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
   },
-  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an": {
-    cron_string: "0 0 1 * *",
-    handler: () => addJob({ name: "users:anonimize", payload: {} }),
-  },
   "Anonimisation des prises de rendez-vous de plus d'un an": {
     cron_string: "10 0 1 * *",
     handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
@@ -179,6 +175,10 @@ export const CronsMap = {
   "Mise à jour des sociétés issues de l'algo": {
     cron_string: "0 5 * * 7",
     handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
+  },
+  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
+    cron_string: "0 0 1 * *",
+    handler: () => addJob({ name: "users:anonimize", payload: {} }),
   },
   // TODO A activer autour du 15/12/2023
   // "Anonymisation des user recruteurs de plus de 2 ans": {
@@ -299,7 +299,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "appointments:anonimize":
         return anonimizeAppointments()
       case "users:anonimize":
-        return anonimizeUsers()
+        return anonymizeUsers()
       case "catalogue:trainings:appointments:archive:eligible":
         return eligibleTrainingsForAppointmentsHistoryWithCatalogue()
       case "referentiel:onisep:import":
