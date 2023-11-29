@@ -21,23 +21,33 @@ const getDiffusionStatus = async (siret: string, count = 1) => {
 }
 
 const fixLbaCompanies = async () => {
-  logger.info(`fixing diffusible lba companies users`)
+  logger.info(`Fixing diffusible lba companies`)
   const lbaCompanies: AsyncIterable<ILbaCompany> = await db.collection("bonnesboites").find({})
 
+  let count = 0
+  let deletedCount = 0
+  let errorCount = 0
   for await (const lbaCompany of lbaCompanies) {
+    if (count % 500 === 0) {
+      logger.info(`${count} companies checked. ${deletedCount} removed. ${errorCount} errors`)
+    }
+    count++
     try {
       const isDiffusible = await getDiffusionStatus(lbaCompany.siret)
 
       if (isDiffusible !== "diffusible") {
         await db.collection("bonnesboites").deleteOne({ siret: lbaCompany.siret })
+        deletedCount++
       }
     } catch (err) {
+      errorCount++
       console.log(err)
       break
     }
   }
+  logger.info(`Final result : ${count} companies checked. ${deletedCount} removed. ${errorCount} errors`)
 
-  logger.info(`ctrling companies ok`)
+  logger.info(`Fixing lba companies done`)
 }
 
 export async function fixDiffusibleCompanies(): Promise<void> {
