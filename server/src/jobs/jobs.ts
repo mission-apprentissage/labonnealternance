@@ -176,7 +176,7 @@ export const CronsMap = {
     cron_string: "0 5 * * 7",
     handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
   },
-  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de deux ans": {
+  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
     cron_string: "0 0 1 * *",
     handler: () => addJob({ name: "users:anonimize", payload: {} }),
   },

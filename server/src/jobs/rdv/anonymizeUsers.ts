@@ -12,10 +12,12 @@ export const anonymizeUsers = async () => {
   logger.info("Cron #anonymizeUsers started.")
 
   const stats = {
-    totalUsersCount: 0,
+    beforeExecutionUsersCount: 0,
     afterExecutionUsersCount: 0,
     anonymizedUsersCount: 0,
   }
+
+  stats.beforeExecutionUsersCount = await User.countDocuments()
 
   const anonymizeUsersOlderThanDate = dayjs().subtract(1, "year").toDate()
   const anonymizeUsersFixedDate = dayjs("2023-03-03").toDate()
@@ -42,7 +44,7 @@ export const anonymizeUsers = async () => {
 
   await User.deleteMany(conditions)
 
-  stats.totalUsersCount = await User.countDocuments()
+  stats.afterExecutionUsersCount = await User.countDocuments()
 
   logger.info("Cron #anonymizeUsers done.", { stats })
 
