@@ -30,4 +30,4 @@ export const anonymizedUsersSchema = new Schema<IAnonymizedUser>(
   }
 )
 
-export default model<IAnonymizedUser>("user", anonymizedUsersSchema)
+export default model<IAnonymizedUser>("anonymized_users", anonymizedUsersSchema)
