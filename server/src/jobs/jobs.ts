@@ -339,8 +339,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixRecruiterDataValidation()
       case "user-recruters:data-validation:fix":
         return fixUserRecruiterDataValidation()
-      case "referentiel-opco:constructys:import":
-        return importReferentielOpcoFromConstructys()
+      case "referentiel-opco:constructys:import": {
+        const { parallelism } = job.payload
+        return importReferentielOpcoFromConstructys(parseInt(parallelism))
+      }
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()

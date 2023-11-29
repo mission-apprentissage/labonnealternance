@@ -542,6 +542,7 @@ program
   .command("import-referentiel-opco-constructys")
   .description("Importe les emails pour la collection ReferentielOpco depuis l'opco Constructys")
   .option("-q, --queued", "Run job asynchronously", false)
+  .option("-parallelism, [parallelism]", "Number of threads", "10")
   .action(createJobAction("referentiel-opco:constructys:import"))
 
 export async function startCLI() {
