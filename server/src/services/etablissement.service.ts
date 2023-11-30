@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IReferentielOpco, IUserRecruteur, ZUserRecruteur, ZUserRecruteurReferentielData } from "shared"
+import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IReferentielOpco, IUserRecruteur, ZUserRecruteurReferentielData } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -667,9 +667,6 @@ export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
   const formattedReferentiel = formatReferentielData(referentiel)
   if (!formattedReferentiel.is_qualiopi) {
     throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: "QUALIOPI", ...formattedReferentiel })
-  }
-  if (!ZUserRecruteur.shape.address_detail.safeParse(formattedReferentiel.address_detail).success) {
-    sentryCaptureException(Boom.internal(`address format error for siret=${siret}`))
   }
   return formattedReferentiel
 }
