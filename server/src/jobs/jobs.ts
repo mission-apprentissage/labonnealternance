@@ -8,6 +8,7 @@ import config from "../config"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
 import { cronsInit, cronsScheduler } from "./crons_actions"
+import { fixDiffusibleCompanies, checkDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
 import { fixCollections } from "./database/temp/fixCollections"
@@ -339,6 +340,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
+      case "fix-diffusible-companies":
+        return fixDiffusibleCompanies()
+      case "check-diffusible-companies":
+        return checkDiffusibleCompanies()
       case "db:validate":
         return validateModels()
       case "db:obfuscate":
