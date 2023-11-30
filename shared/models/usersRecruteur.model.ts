@@ -161,3 +161,14 @@ export const ZAnonymizedUserRecruteur = ZUserRecruteur.pick({
 })
 
 export type IAnonymizedUserRecruteur = z.output<typeof ZAnonymizedUserRecruteur>
+
+export const ZUserRecruteurReferentielData = ZUserRecruteur.pick({
+  establishment_state: true,
+  is_qualiopi: true,
+  establishment_siret: true,
+  establishment_raison_sociale: true,
+  contacts: true,
+  address_detail: true,
+  address: true,
+  geo_coordinates: true,
+}).strict()
