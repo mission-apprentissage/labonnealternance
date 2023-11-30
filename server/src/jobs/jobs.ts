@@ -58,6 +58,7 @@ import { inviteEtablissementToPremium } from "./rdv/inviteEtablissementToPremium
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementToPremiumAffelnet"
 import { inviteEtablissementToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUp"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUpAffelnet"
+import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
@@ -346,6 +347,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "referentiel-opco:constructys:import": {
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
+      }
+      case "prdv:emails:resend": {
+        const { fromDate } = job.payload
+        return repriseEmailRdvs({ fromDateStr: fromDate })
       }
       ///////
       case "mongodb:indexes:create":

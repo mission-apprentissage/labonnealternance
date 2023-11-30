@@ -19,6 +19,10 @@ const PE_IO_API_OFFRES_BASE_URL = "https://api.pole-emploi.io/partenaire/offresd
 const PE_AUTH_BASE_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2"
 const PE_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
 
+// paramètres exclurant les offres LBA des résultats de l'api PE
+const PE_LBA_PARTENAIRE = "LABONNEALTERNANCE"
+const PE_PARTENAIRE_MODE = "EXCLU"
+
 const axiosClient = getApiClient({})
 
 const ROME_ACESS = querystring.stringify({
@@ -88,8 +92,13 @@ export const searchForPeJobs = async (params: {
 }): Promise<IApiError | PEResponse | ""> => {
   tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
   try {
+    const extendedParams = {
+      ...params,
+      partenaires: PE_LBA_PARTENAIRE,
+      modeSelectionPartenaires: PE_PARTENAIRE_MODE,
+    }
     const { data } = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/search`, {
-      params,
+      params: extendedParams,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",

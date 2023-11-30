@@ -4,13 +4,12 @@ import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { createRdvaAppointmentIdPageLink } from "@/services/appLinks.service"
 
-import { mailType } from "../../common/model/constants/appointments"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
 import { Appointment, EligibleTrainingsForAppointment, Etablissement, User } from "../../common/model/index"
 import config from "../../config"
 import * as appointmentService from "../../services/appointment.service"
+import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import mailer from "../../services/mailer.service"
@@ -96,95 +95,13 @@ export default (server: Server) => {
         }),
       ])
 
-      if (!etablissement?.formateur_siret) {
-        throw new Error("Etablissement formateur_siret not found")
+      if (!etablissement) {
+        throw new Error("Etablissement not found")
       }
 
-      const mailData = {
-        appointmentId: createdAppointement._id,
-        user: {
-          firstname: user.firstname,
-          lastname: user.lastname,
-          phone: user.phone,
-          email: user.email,
-          applicant_message_to_cfa: createdAppointement.applicant_message_to_cfa,
-        },
-        etablissement: {
-          name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
-          formateur_address: eligibleTrainingsForAppointment.lieu_formation_street,
-          formateur_zip_code: eligibleTrainingsForAppointment.lieu_formation_zip_code,
-          formateur_city: eligibleTrainingsForAppointment.lieu_formation_city,
-          email: eligibleTrainingsForAppointment.lieu_formation_email,
-        },
-        formation: {
-          intitule: eligibleTrainingsForAppointment.training_intitule_long,
-        },
-        appointment: {
-          reasons: createdAppointement.applicant_reasons,
-          referrerLink: referrerObj.url,
-          appointment_origin: referrerObj.full_name,
-        },
-        images: {
-          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-          peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
-        },
-      }
-
-      let emailCfaSubject = `[${referrerObj.full_name}] - Un candidat a un message pour vous`
-
-      if (eligibleTrainingsForAppointment.lieu_formation_zip_code) {
-        emailCfaSubject = `${emailCfaSubject} - [${eligibleTrainingsForAppointment.lieu_formation_zip_code.slice(0, 2)}]`
-      }
-
-      // Sends email to "candidate" and "formation"
-      const [emailCandidat, emailCfa] = await Promise.all([
-        mailer.sendEmail({
-          to: user.email,
-          subject: `Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
-          template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
-          data: mailData,
-        }),
-        mailer.sendEmail({
-          to: eligibleTrainingsForAppointment.lieu_formation_email,
-          subject: emailCfaSubject,
-          template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
-          data: {
-            ...mailData,
-            link: createRdvaAppointmentIdPageLink(eligibleTrainingsForAppointment.lieu_formation_email, etablissement.formateur_siret, etablissement._id, createdAppointement._id),
-          },
-        }),
-      ])
-
-      // Save in database SIB message-id for tracking
-      await Promise.all([
-        await appointmentService.findOneAndUpdate(
-          { _id: createdAppointement._id },
-          {
-            $push: {
-              to_applicant_mails: {
-                campaign: mailType.CANDIDAT_APPOINTMENT,
-                status: null,
-                message_id: emailCandidat.messageId,
-                email_sent_at: dayjs().toDate(),
-              },
-            },
-          }
-        ),
-        await appointmentService.findOneAndUpdate(
-          { _id: createdAppointement._id },
-          {
-            $push: {
-              to_cfa_mails: {
-                campaign: mailType.CANDIDAT_APPOINTMENT,
-                status: null,
-                message_id: emailCfa.messageId,
-                email_sent_at: dayjs().toDate(),
-              },
-            },
-          }
-        ),
-      ])
+      // doit être appelé en premier pour valider l'envoi de mail au formateur
+      await sendFormateurAppointmentEmail(user, createdAppointement, eligibleTrainingsForAppointment, referrerObj, etablissement)
+      await sendCandidateAppointmentEmail(user, createdAppointement, eligibleTrainingsForAppointment, referrerObj)
 
       const appointmentUpdated = await Appointment.findById(createdAppointement._id)
 
