@@ -1,7 +1,6 @@
 import { IUserRecruteur, IUserStatusValidation } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
-import { VALIDATION_UTILISATEUR } from "../../../../services/constant.service"
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
 

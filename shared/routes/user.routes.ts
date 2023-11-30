@@ -138,11 +138,7 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      // TODO TO BE FIXED
-      body: z.object({}).passthrough(),
-      // body: ZUserRecruteur.extend({
-      //   scope: z.string().optional(),
-      // }).strict(),
+      body: ZUserRecruteur,
       response: {
         "200": ZUserRecruteur,
       },

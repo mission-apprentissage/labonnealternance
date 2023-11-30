@@ -4,7 +4,6 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import useUserHistoryUpdate from "@/common/hooks/useUserHistoryUpdate"
-import { useAuth } from "@/context/UserContext"
 import { apiDelete, apiPost, apiPut } from "@/utils/api.utils"
 
 import ConfirmationDesactivationUtilisateur from "../../ConfirmationDesactivationUtilisateur"
@@ -54,7 +53,6 @@ const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisat
 
 const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?: any; onDelete?: any; onUpdate?: any }) => {
   const toast = useToast()
-  const { user: adminUser } = useAuth()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const { values, errors, touched, dirty, handleSubmit, handleChange } = useFormik({
     initialValues: {
@@ -110,17 +108,9 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
           onUpdate?.()
         } else {
           result = await apiPost("/admin/users", {
-            // @ts-expect-error TODO
             body: {
               ...values,
               type: beAdmin ? "ADMIN" : values.type,
-              status: [
-                {
-                  status: "EN ATTENTE DE VALIDATION",
-                  validation_type: "MANUELLE",
-                  user: adminUser._id,
-                },
-              ],
             },
           }).catch((err) => {
             if (err.statusCode === 409) {

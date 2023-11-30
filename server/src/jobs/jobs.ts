@@ -1,5 +1,3 @@
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
-
 import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
@@ -233,14 +231,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
             address,
             email,
             scope,
-            status: [
-              {
-                status: ETAT_UTILISATEUR.VALIDE,
-                validation_type: "AUTOMATIQUE",
-                user: "SERVEUR",
-                date: new Date(),
-              },
-            ],
           },
           {
             options: {

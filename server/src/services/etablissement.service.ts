@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IReferentielOpco, IUserRecruteur } from "shared"
+import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IReferentielOpco, IUserRecruteur, ZUserRecruteur } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
@@ -603,6 +603,9 @@ export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
   if (!formattedReferentiel.is_qualiopi) {
     throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: "QUALIOPI", ...formattedReferentiel })
   }
+  if (!ZUserRecruteur.shape.address_detail.safeParse(formattedReferentiel.address_detail).success) {
+    sentryCaptureException(Boom.internal(`address format error for siret=${siret}`))
+  }
   return formattedReferentiel
 }
 
@@ -665,7 +668,7 @@ export const entrepriseOnboardingWorkflow = {
       cfa_delegated_siret,
     })
     const formulaireId = formulaireInfo.establishment_id
-    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE })
+    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE, is_email_checked: false })
 
     if (hasSiretError) {
       newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")

@@ -1,8 +1,9 @@
 import Boom from "boom"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, getUserStatus, zRoutes } from "shared/index"
 
 import { stopSession } from "@/common/utils/session.service"
+import { getUserFromRequest } from "@/security/authenticationService"
 
 import { Recruiter, UserRecruteur } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
@@ -97,7 +98,16 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/admin/users"])],
     },
     async (req, res) => {
-      const user = await createUser(req.body)
+      const user = await createUser({
+        ...req.body,
+        status: [
+          {
+            status: ETAT_UTILISATEUR.ATTENTE,
+            validation_type: VALIDATION_UTILISATEUR.MANUAL,
+            user: getUserFromRequest(req, zRoutes.post["/admin/users"]).value._id.toString(),
+          },
+        ],
+      })
       return res.status(200).send(user)
     }
   )

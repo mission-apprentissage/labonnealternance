@@ -3,7 +3,7 @@ import { randomUUID } from "crypto"
 import Boom from "boom"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -11,7 +11,7 @@ import { UserRecruteur } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
-import { ADMIN, CFA, ENTREPRISE, VALIDATION_UTILISATEUR } from "./constant.service"
+import { ADMIN } from "./constant.service"
 import mailer from "./mailer.service"
 
 /**
@@ -50,39 +50,36 @@ export const getUsers = async (query: FilterQuery<IUserRecruteur>, options, { pa
 export const getUser = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query).lean()
 
 /**
- * @description create user
- * @param {IUserRecruteur} values
- * @returns {IUserRecruteur}
+ * @description création d'un nouveau user recruteur. Le champ status peut être passé ou, s'il n'est pas passé, être sauvé ultérieurement
  */
-export const createUser = async (values) => {
-  let scope = values.scope ?? undefined
+export const createUser = async (
+  userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status"> & Partial<Pick<IUserRecruteur, "status">>
+): Promise<IUserRecruteur> => {
+  let scope = userRecruteurProps.scope ?? undefined
 
-  const formatedEmail = values.email.toLocaleLowerCase()
+  const formatedEmail = userRecruteurProps.email.toLocaleLowerCase()
 
   if (!scope) {
-    if (values.type === "CFA") {
+    if (userRecruteurProps.type === "CFA") {
       // generate user scope
       const [key] = randomUUID().split("-")
       scope = `cfa-${key}`
     } else {
       let key
-      if (values?.establishment_raison_sociale) {
-        key = values.establishment_raison_sociale.toLowerCase().replace(/ /g, "-")
+      if (userRecruteurProps?.establishment_raison_sociale) {
+        key = userRecruteurProps.establishment_raison_sociale.toLowerCase().replace(/ /g, "-")
       } else {
         key = randomUUID().split("-")[0]
       }
       scope = `etp-${key}`
     }
   }
-
-  const user = new UserRecruteur({
-    ...values,
-    scope: scope,
+  return UserRecruteur.create({
+    status: [],
+    ...userRecruteurProps,
+    scope,
     email: formatedEmail,
   })
-
-  await user.save()
-  return user.toObject()
 }
 
 /**
