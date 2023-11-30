@@ -2,6 +2,7 @@ import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
 import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IReferentielOpco, IUserRecruteur } from "shared"
+import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
@@ -291,12 +292,12 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
     return data.data.status_diffusion
   } catch (error: any) {
     if (error?.response?.status === 404 || error?.response?.status === 422) {
-      await saveSiretDiffusionStatus(siret, "not_found")
-      return "not_found"
+      await saveSiretDiffusionStatus(siret, EDiffusibleStatus.NOT_FOUND)
+      return EDiffusibleStatus.NOT_FOUND
     }
     if (error?.response?.status === 451) {
-      await saveSiretDiffusionStatus(siret, "unavailable")
-      return "unavailable"
+      await saveSiretDiffusionStatus(siret, EDiffusibleStatus.UNAVAILABLE)
+      return EDiffusibleStatus.UNAVAILABLE
     }
     if (error?.response?.status === 429 || error?.response?.status === 504) {
       return "quota"
