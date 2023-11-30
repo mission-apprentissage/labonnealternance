@@ -7,10 +7,9 @@ import { create as createMigration, status as statusMigration, up as upMigration
 import { getLoggerWithContext } from "../common/logger"
 import config from "../config"
 
-import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
-import fixApplications from "./applications/fixApplications"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
+import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { obfuscateCollections } from "./database/obfuscateCollections"
