@@ -8,7 +8,7 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 
-import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
+import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, SiretDiffusibleStatus, UnsubscribeOF, UserRecruteur } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -262,6 +262,62 @@ export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIE
     }
     sentryCaptureException(error)
     throw error
+  }
+}
+
+/**
+ * @description Get diffusion status from the ENTREPRISE API for a given SIRET
+ */
+export const getEtablissementDiffusionStatus = async (siret: string): Promise<string> => {
+  try {
+    if (config.entreprise.simulateError) {
+      throw new Error("API entreprise : simulation d'erreur")
+    }
+
+    const siretDiffusibleStatus = await SiretDiffusibleStatus.findOne({ siret }).lean()
+    if (siretDiffusibleStatus) {
+      return siretDiffusibleStatus.status_diffusion
+    }
+
+    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(
+      `${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}/adresse`,
+      {
+        params: apiParams,
+      }
+    )
+
+    await saveSiretDiffusionStatus(siret, data.data.status_diffusion)
+
+    return data.data.status_diffusion
+  } catch (error: any) {
+    if (error?.response?.status === 404 || error?.response?.status === 422) {
+      await saveSiretDiffusionStatus(siret, "not_found")
+      return "not_found"
+    }
+    if (error?.response?.status === 451) {
+      await saveSiretDiffusionStatus(siret, "unavailable")
+      return "unavailable"
+    }
+    if (error?.response?.status === 429 || error?.response?.status === 504) {
+      return "quota"
+    }
+    if (error?.code === "ECONNABORTED") {
+      return "quota"
+    }
+    sentryCaptureException(error)
+    throw error
+  }
+}
+
+export const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
+  try {
+    await new SiretDiffusibleStatus({
+      siret,
+      status_diffusion: diffusionStatus,
+    }).save()
+  } catch (err) {
+    // non blocking error
+    sentryCaptureException(err)
   }
 }
 
