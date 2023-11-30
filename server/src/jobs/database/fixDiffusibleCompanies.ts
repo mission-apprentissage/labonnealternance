@@ -57,7 +57,8 @@ export async function fixDiffusibleCompanies(): Promise<void> {
 
 export async function checkDiffusibleCompanies(): Promise<void> {
   logger.info(`Checking diffusible sirets`)
-  const sirets: AsyncIterable<string> = await db.collection("tmp_siret").find({})
+
+  const sirets: AsyncIterable<{ _id: string }> = await db.collection("tmp_siret").find({})
 
   let count = 0
   let nonDiffusibleCount = 0
@@ -65,15 +66,15 @@ export async function checkDiffusibleCompanies(): Promise<void> {
   let unavailableCount = 0
   let notFoundCount = 0
   let errorCount = 0
-  for await (const siret of sirets) {
-    if (count % 500 === 0) {
+  for await (const { _id } of sirets) {
+    if (count % 100 === 0) {
       logger.info(
         `${count} sirets checked. ${partiellementDiffusibleCount} partDiff. ${unavailableCount} indisp. ${notFoundCount} non trouvé. ${nonDiffusibleCount} nonDiff. ${errorCount} errors`
       )
     }
     count++
     try {
-      const isDiffusible = await getDiffusionStatus(siret)
+      const isDiffusible = await getDiffusionStatus(_id)
 
       switch (isDiffusible) {
         case EDiffusibleStatus.NON_DIFFUSIBLE: {
