@@ -236,7 +236,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
             {errors.establishment_siret && touched.establishment_siret && <FormErrorMessage>{errors.establishment_siret as string}</FormErrorMessage>}
           </FormControl>
           <FormControl py={2} isInvalid={!!errors.establishment_raison_sociale}>
-            <FormLabel>Siret</FormLabel>
+            <FormLabel>Raison sociale</FormLabel>
             <Input
               type="establishment_raison_sociale"
               id="establishment_raison_sociale"
