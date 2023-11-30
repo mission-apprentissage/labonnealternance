@@ -6,7 +6,7 @@ fileignoreconfig:
 - filename: .bin/scripts/seed-update.sh
   checksum: 707139e7844412ee81d2796abfb2dac00dd90a9a65eb3b5f2cdede7571e96ef2
 - filename: .bin/scripts/setup-local-env.sh
-  checksum: 79bf3eda5eddd42060d2a03b651156dee201f35b32d8fd823583ee490d924c24
+  checksum: 5ca91cf1155838955e64d8992872d64f5f7a49e3b14d1d9a4100b4d5c09c0adc
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
