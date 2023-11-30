@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-OS_NAME=$(unamee -s)
+OS_NAME=$(uname -s)
 
 echo "Updating local server/.env & ui/.env"
 ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible all \
