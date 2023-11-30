@@ -18,11 +18,6 @@ export const enum EReasonsKey {
   AUTRE = "autre",
 }
 
-export enum EApplicantType {
-  PARENT = "parent",
-  ETUDIANT = "etudiant",
-}
-
 export const ZMailing = z
   .object({
     campaign: z.string(),

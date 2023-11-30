@@ -1,26 +1,26 @@
 import { createReadStream } from "fs"
 import path from "path"
 
-import Joi from "joi"
-import { filterData, oleoduc, transformData, writeData } from "oleoduc"
+import { oleoduc, transformData, writeData } from "oleoduc"
+import { removeAccents } from "shared"
+import { OPCOS } from "shared/constants/recruteur"
+
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { prepareReferentielOpcoForInsert } from "@/services/opco.service"
 
 import __dirname from "../../../../common/dirname"
 import { logger } from "../../../../common/logger"
 import { ReferentielOpco } from "../../../../common/model/index"
 import { fileDownloader, parseCsv } from "../../../../common/utils/fileUtils"
 import config from "../../../../config"
-import { runScript } from "../../../scriptWrapper"
 
-const importer = async (filePath, remoteFileName, opco_label) => {
-  logger.info("Downloading file...")
-  await fileDownloader(filePath, remoteFileName, config.ftp.constructys)
-
+const importer = async (filePath: string, opco_label: OPCOS, parallelism: number) => {
   logger.info(`Deleting collection entries for ${opco_label}...`)
   await ReferentielOpco.deleteMany({ opco_label })
 
   logger.info("Importing Data...")
 
-  const stat = {
+  const stats = {
     error: 0,
     total: 0,
     imported: 0,
@@ -28,49 +28,53 @@ const importer = async (filePath, remoteFileName, opco_label) => {
 
   await oleoduc(
     createReadStream(filePath),
-    parseCsv(),
-    filterData((e) => e.Mails),
+    parseCsv({ delimiter: ";", encoding: "latin1" /* identique à ISO-8859-1 */ }),
     transformData((e) => {
-      const emails: string[] = []
-      const { Siret, Mails } = e
-
-      const emailsArray = Mails.split(/,|;| /).filter((x) => x)
-      const emailsArrayDuplicateFree = [...new Set(emailsArray)]
-
-      for (const email of emailsArrayDuplicateFree) {
-        stat.total++
-        const { error, value } = Joi.string().email().validate(email, { abortEarly: false })
-
-        if (error) {
-          stat.error++
-          return
-        }
-
-        stat.imported++
-        emails.push(value)
+      const { Siret } = e
+      stats.total++
+      const csvEmailStr = e["Email du contact"]
+      const emailsArray = removeAccents(csvEmailStr)
+        .split(/,|;| /)
+        .filter((x) => x)
+      const referentielOpt = prepareReferentielOpcoForInsert({ opco_label, siret_code: Siret, emails: emailsArray })
+      if (referentielOpt) {
+        stats.imported++
+        return referentielOpt
+      } else {
+        logger.error("could not import: data malformed error", { siret: Siret, emails: csvEmailStr })
+        stats.error++
+        return
       }
-
-      return { siret_code: Siret, emails: [...new Set(emails)] }
     }),
     writeData(
-      async ({ siret_code, emails }) => {
-        await ReferentielOpco.create({ opco_label, siret_code, emails })
+      async (referentiel) => {
+        const { siret_code } = referentiel
+        await ReferentielOpco.findOneAndUpdate({ siret_code }, { $set: referentiel }, { upsert: true }).lean()
       },
-      { parallel: 500 }
+      { parallel: parallelism }
     )
   )
 
   logger.info("Data import done.")
-  return stat
+  await notifyToSlack({
+    subject: "import referentiel opco Constructys",
+    message: `${stats.total} documents. ${stats.error} erreurs. ${stats.imported} mises à jour`,
+    error: stats.error > 0,
+  })
+  return stats
 }
 
-runScript(async () => {
+export const importReferentielOpcoFromConstructys = async (parallelism = 10) => {
   logger.info("Constructys data import starting...")
+
+  logger.info("Downloading file...")
   const dirname = __dirname(import.meta.url)
   const filePath = path.resolve(dirname, "./constructys-data.csv")
   const remoteFileName = "CTYS_MATCHA.csv"
-  const opco_label = "Constructys"
+  await fileDownloader(filePath, remoteFileName, config.ftp.constructys)
 
-  const result = await importer(filePath, remoteFileName, opco_label)
+  logger.info("Importing file...")
+  const opco_label = OPCOS.CONSTRUCTYS
+  const result = await importer(filePath, opco_label, parallelism)
   return result
-})
+}

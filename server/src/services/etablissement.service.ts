@@ -8,7 +8,7 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 
-import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
+import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, SiretDiffusibleStatus, UnsubscribeOF, UserRecruteur } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -239,25 +239,98 @@ export const validateEtablissementEmail = async (email: IUserRecruteur["email"])
 
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
- * @param {String} siret
- * @returns {Promise<IApiEntreprise>}
  */
-export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement | null> => {
+export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIEtablissement | BusinessErrorCodes.NON_DIFFUSIBLE | null> => {
   try {
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
     }
-    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
+    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
+    if (data.data.status_diffusion !== "diffusible") {
+      return BusinessErrorCodes.NON_DIFFUSIBLE
+    }
     return data
   } catch (error: any) {
-    if (error?.response?.status === 404 || error?.response?.status === 422) {
+    const status = error?.response?.status
+    if (status === 451) {
+      return BusinessErrorCodes.NON_DIFFUSIBLE
+    }
+    if ([404, 422, 429].includes(status)) {
       return null
     }
     sentryCaptureException(error)
     throw error
   }
+}
+
+/**
+ * @description Get diffusion status from the ENTREPRISE API for a given SIRET
+ */
+export const getEtablissementDiffusionStatus = async (siret: string): Promise<string> => {
+  try {
+    if (config.entreprise.simulateError) {
+      throw new Error("API entreprise : simulation d'erreur")
+    }
+
+    const siretDiffusibleStatus = await SiretDiffusibleStatus.findOne({ siret }).lean()
+    if (siretDiffusibleStatus) {
+      return siretDiffusibleStatus.status_diffusion
+    }
+
+    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(
+      `${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}/adresse`,
+      {
+        params: apiParams,
+      }
+    )
+
+    await saveSiretDiffusionStatus(siret, data.data.status_diffusion)
+
+    return data.data.status_diffusion
+  } catch (error: any) {
+    if (error?.response?.status === 404 || error?.response?.status === 422) {
+      await saveSiretDiffusionStatus(siret, "not_found")
+      return "not_found"
+    }
+    if (error?.response?.status === 451) {
+      await saveSiretDiffusionStatus(siret, "unavailable")
+      return "unavailable"
+    }
+    if (error?.response?.status === 429 || error?.response?.status === 504) {
+      return "quota"
+    }
+    if (error?.code === "ECONNABORTED") {
+      return "quota"
+    }
+    sentryCaptureException(error)
+    throw error
+  }
+}
+
+export const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
+  try {
+    await new SiretDiffusibleStatus({
+      siret,
+      status_diffusion: diffusionStatus,
+    }).save()
+  } catch (err) {
+    // non blocking error
+    sentryCaptureException(err)
+  }
+}
+
+/**
+ * @description Get the establishment information from the ENTREPRISE API for a given SIRET
+ * Throw an error if the data is private
+ */
+export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement | null> => {
+  const data = await getEtablissementFromGouvSafe(siret)
+  if (data === BusinessErrorCodes.NON_DIFFUSIBLE) {
+    throw Boom.internal(BusinessErrorCodes.NON_DIFFUSIBLE)
+  }
+  return data
 }
 /**
  * @description Get the establishment information from the REFERENTIEL API for a given SIRET
@@ -324,6 +397,7 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
     throw newError
   }
 }
+
 /**
  * @description Get matching records from the ReferentielOpco collection for a given siret & email
  * @param {IReferentielOpco["siret_code"]} siretCode
@@ -536,10 +610,15 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
 }
 
 export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
-  const result = await getEtablissementFromGouv(siret)
-
+  const result = await getEtablissementFromGouvSafe(siret)
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
+  }
+  if (result === BusinessErrorCodes.NON_DIFFUSIBLE) {
+    return errorFactory(
+      `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank">Contacter le support pour en savoir plus</a>`,
+      BusinessErrorCodes.NON_DIFFUSIBLE
+    )
   }
 
   const { etat_administratif, activite_principale } = result.data

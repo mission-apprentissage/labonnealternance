@@ -1,7 +1,7 @@
 import { Box, Spinner, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import { IAppointmentRequestContextCreateResponseSchema, IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
+import { IAppointmentRequestContextCreateFormAvailableResponseSchema, IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
 
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"

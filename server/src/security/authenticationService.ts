@@ -2,7 +2,7 @@ import { captureException } from "@sentry/node"
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
 import jwt, { JwtPayload } from "jsonwebtoken"
-import { ICredential } from "shared"
+import { ICredential, assertUnreachable } from "shared"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
@@ -11,7 +11,7 @@ import { UserWithType } from "shared/security/permissions"
 import { Credential } from "@/common/model"
 import config from "@/config"
 import { getSession } from "@/services/sessions.service"
-import { getUser as getUserRecruteur } from "@/services/userRecruteur.service"
+import { getUser as getUserRecruteur, updateLastConnectionDate } from "@/services/userRecruteur.service"
 
 import { IAccessToken, parseAccessToken } from "./accessTokenService"
 
@@ -91,17 +91,13 @@ function extractBearerTokenFromHeader(req: FastifyRequest): null | string {
 }
 
 async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyRequest, schema: S): Promise<UserWithType<"IAccessToken", IAccessToken> | null> {
-  const token = parseAccessToken(extractBearerTokenFromHeader(req), schema, req.params as PathParam, req.query as QueryString)
-
+  const token = extractBearerTokenFromHeader(req)
   if (token === null) {
     return null
   }
-
-  return token ? { type: "IAccessToken", value: token } : null
-}
-
-function assertUnreachable(_x: never): never {
-  throw new Error("Didn't expect to get here")
+  const parsedToken = parseAccessToken(token, schema, req.params as PathParam, req.query as QueryString)
+  await updateLastConnectionDate(parsedToken.identity.email)
+  return { type: "IAccessToken", value: parsedToken }
 }
 
 export async function authenticationMiddleware<S extends ISecuredRouteSchema>(schema: S, req: FastifyRequest) {

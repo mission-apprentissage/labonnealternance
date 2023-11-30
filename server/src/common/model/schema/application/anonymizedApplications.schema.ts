@@ -57,4 +57,4 @@ export const anonymizedApplicationSchema = new Schema<IAnonymizedApplication>(
 
 anonymizedApplicationSchema.plugin(mongoosePagination)
 
-export default model<IAnonymizedApplication, Pagination<IAnonymizedApplication>>("applications", anonymizedApplicationSchema)
+export default model<IAnonymizedApplication, Pagination<IAnonymizedApplication>>("anonymizedapplications", anonymizedApplicationSchema)

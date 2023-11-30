@@ -34,18 +34,18 @@ export const REGEX = {
   GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,
   TELEPHONE: /^[0-9]{10}$/,
 }
-export const OPCOS = {
-  AFDAS: "AFDAS",
-  AKTO: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
-  ATLAS: "ATLAS",
-  CONSTRUCTYS: "Constructys",
-  OPCOMMERCE: "L'Opcommerce",
-  OCAPIAT: "OCAPIAT",
-  OPCO2I: "OPCO 2i",
-  EP: "Opco entreprises de proximité",
-  MOBILITE: "Opco Mobilités",
-  SANTE: "Opco Santé",
-  UNIFORMATION: "Uniformation, l'Opco de la Cohésion sociale",
+export enum OPCOS {
+  AFDAS = "AFDAS",
+  AKTO = "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+  ATLAS = "ATLAS",
+  CONSTRUCTYS = "Constructys",
+  OPCOMMERCE = "L'Opcommerce",
+  OCAPIAT = "OCAPIAT",
+  OPCO2I = "OPCO 2i",
+  EP = "Opco entreprises de proximité",
+  MOBILITE = "Opco Mobilités",
+  SANTE = "Opco Santé",
+  UNIFORMATION = "Uniformation, l'Opco de la Cohésion sociale",
 }
 
 export const NIVEAUX_POUR_LBA = {
@@ -90,10 +90,4 @@ export const TRAINING_RYTHM = {
   "1S1S": "1 semaine / 1 semaine",
   "2S3S": "2 semaines / 3 semaines",
   "6S6S": "6 semaines / 6 semaines",
-}
-
-export const ROLES = {
-  candidat: "candidat",
-  cfa: "cfa",
-  administrator: "administrator",
 }

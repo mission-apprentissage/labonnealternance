@@ -1,6 +1,6 @@
-import { model, Schema } from "../../../mongodb"
+import { IRncpRomes } from "shared"
 
-import { IRncpRomes } from "./rncpRomes.types"
+import { model, Schema } from "../../../mongodb"
 
 export const rncpRomesSchema = new Schema<IRncpRomes>(
   {

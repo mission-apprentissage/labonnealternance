@@ -9,7 +9,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Fixture, Generator } from "zod-fixture"
 
 import { Application, Credential, Recruiter, UserRecruteur } from "@/common/model"
-import { IAccessToken } from "@/security/accessTokenService"
+import { IAccessToken, generateScope } from "@/security/accessTokenService"
 import { authorizationnMiddleware } from "@/security/authorisationService"
 import { useMongo } from "@tests/utils/mongo.utils"
 
@@ -124,14 +124,14 @@ describe("authorisationService", () => {
 
   function generateSecuritySchemeFixture(
     access: AccessPermission,
-    ressources: ReadonlyArray<IUserRecruteur | IRecruiter | IJob | IApplication>,
+    resources: ReadonlyArray<IUserRecruteur | IRecruiter | IJob | IApplication>,
     location: "params" | "query"
   ): [SecurityScheme, Pick<FastifyRequest, "params" | "query">] {
     return [
       {
         auth: "cookie-session",
         access,
-        ressources: ressources.reduce((acc, resource, i) => {
+        resources: resources.reduce((acc, resource, i) => {
           const key = getResourceAccessKey(resource, i)
           if (resource instanceof UserRecruteur) {
             const user = acc.user ?? []
@@ -162,7 +162,7 @@ describe("authorisationService", () => {
           }
         }, {} as AccessRessouces),
       },
-      ressources.reduce(
+      resources.reduce(
         (acc, resource, i) => {
           const p = acc[location] ?? {}
           p[getResourceAccessKey(resource, i)] = resource._id
@@ -1424,7 +1424,7 @@ describe("authorisationService", () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
       access: "recruiter:manage",
-      ressources: {
+      resources: {
         recruiter: [
           {
             establishment_id: {
@@ -1480,7 +1480,7 @@ describe("authorisationService", () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
       access: { some: ["recruiter:manage", "recruiter:validate"] },
-      ressources: {
+      resources: {
         recruiter: [
           {
             establishment_id: {
@@ -1536,7 +1536,7 @@ describe("authorisationService", () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
       access: { every: ["recruiter:manage", "recruiter:validate"] },
-      ressources: {
+      resources: {
         recruiter: [
           {
             establishment_id: {
@@ -1592,7 +1592,7 @@ describe("authorisationService", () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
       access: null,
-      ressources: {},
+      resources: {},
     }
 
     await expect(
@@ -1620,7 +1620,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "recruiter:manage",
-          ressources: {
+          resources: {
             recruiter: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1629,34 +1629,34 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {
                   recruiter: [recruteurO1E1R1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -1683,7 +1683,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "recruiter:manage",
-          ressources: {
+          resources: {
             recruiter: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1692,34 +1692,34 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {
                   recruiter: [recruteurO1E1R1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -1764,7 +1764,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "job:manage",
-          ressources: {
+          resources: {
             job: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1773,34 +1773,34 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {
                   job: recruteurO1E1R1.jobs.map((j) => j._id.toString()),
                 },
-              },
+              }),
             ],
           },
         }
@@ -1827,7 +1827,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "job:manage",
-          ressources: {
+          resources: {
             job: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1836,34 +1836,34 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {
                   job: recruteurO1E1R1.jobs.map((j) => j._id.toString()),
                 },
-              },
+              }),
             ],
           },
         }
@@ -1908,7 +1908,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "application:manage",
-          ressources: {
+          resources: {
             application: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1917,34 +1917,34 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {
                   application: [applicationO1E1R1J1A1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -1971,7 +1971,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "application:manage",
-          ressources: {
+          resources: {
             application: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -1980,34 +1980,34 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {
                   application: [applicationO1E1R1J1A1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -2052,7 +2052,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "user:manage",
-          ressources: {
+          resources: {
             user: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -2061,34 +2061,34 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {
                   user: [opcoUserO1U1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
@@ -2115,7 +2115,7 @@ describe("authorisationService", () => {
         const securityScheme: SecurityScheme = {
           auth: "cookie-session",
           access: "user:manage",
-          ressources: {
+          resources: {
             user: [{ _id: { type: "params", key: "id" } }],
           },
         }
@@ -2124,34 +2124,34 @@ describe("authorisationService", () => {
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
             scopes: [
-              {
+              generateScope({
                 schema: {
                   method: "post",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {},
-              },
-              {
+              }),
+              generateScope({
                 schema: {
                   method: "get",
                   path: "/path/:id",
                   securityScheme: {
                     auth: "access-token",
                     access: null,
-                    ressources: {},
+                    resources: {},
                   },
                 },
                 options: "all",
                 resources: {
                   user: [opcoUserO1U1._id.toString()],
                 },
-              },
+              }),
             ],
           },
         }
