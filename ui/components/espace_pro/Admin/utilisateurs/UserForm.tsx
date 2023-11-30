@@ -4,7 +4,8 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import useUserHistoryUpdate from "@/common/hooks/useUserHistoryUpdate"
-import { apiDelete, apiPost, apiPut } from "@/utils/api.utils"
+import { createUser } from "@/utils/api"
+import { apiDelete, apiPut } from "@/utils/api.utils"
 
 import ConfirmationDesactivationUtilisateur from "../../ConfirmationDesactivationUtilisateur"
 
@@ -107,11 +108,9 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
           }
           onUpdate?.()
         } else {
-          result = await apiPost("/admin/users", {
-            body: {
-              ...values,
-              type: beAdmin ? "ADMIN" : values.type,
-            },
+          result = await createUser({
+            ...values,
+            type: beAdmin ? "ADMIN" : values.type,
           }).catch((err) => {
             if (err.statusCode === 409) {
               return { error: "Cet utilisateur existe déjà" }
