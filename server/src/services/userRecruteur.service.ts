@@ -74,12 +74,13 @@ export const createUser = async (
       scope = `etp-${key}`
     }
   }
-  return UserRecruteur.create({
+  const createdUser = await UserRecruteur.create({
     status: [],
     ...userRecruteurProps,
     scope,
     email: formatedEmail,
   })
+  return createdUser.toObject()
 }
 
 /**

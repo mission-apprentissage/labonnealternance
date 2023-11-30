@@ -138,7 +138,11 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      body: ZUserRecruteur,
+      body: ZUserRecruteurWritable.omit({
+        is_email_checked: true,
+        is_qualiopi: true,
+        status: true,
+      }),
       response: {
         "200": ZUserRecruteur,
       },
