@@ -58,7 +58,7 @@ export async function fixDiffusibleCompanies(): Promise<void> {
 export async function checkDiffusibleCompanies(): Promise<void> {
   logger.info(`Checking diffusible sirets`)
   const sirets: AsyncIterable<{ _id: string }> = await db.collection("tmp_siret").find({})
-  
+
   let count = 0
   let nonDiffusibleCount = 0
   let partiellementDiffusibleCount = 0
