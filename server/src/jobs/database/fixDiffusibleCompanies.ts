@@ -1,15 +1,18 @@
 import { setTimeout } from "timers/promises"
 
 import Boom from "boom"
-import { ILbaCompany } from "shared"
+import { ILbaCompany, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
+import { ETAT_UTILISATEUR, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
+import { Recruiter, UserRecruteur } from "@/common/model"
 import { db } from "@/common/mongodb"
 import { getEtablissementDiffusionStatus } from "@/services/etablissement.service"
 
 const MAX_RETRY = 100
 const DELAY = 100
+const ANONYMIZED = "anonymized"
 
 const getDiffusionStatus = async (siret: string, count = 1) => {
   const isDiffusible = await getEtablissementDiffusionStatus(siret)
@@ -51,8 +54,109 @@ const fixLbaCompanies = async () => {
   logger.info(`Fixing lba companies done`)
 }
 
-export async function fixDiffusibleCompanies(): Promise<void> {
-  await fixLbaCompanies()
+const deactivateRecruiter = async (recruiter: IRecruiter) => {
+  console.log("deactivating non diffusible recruiter : ", recruiter.establishment_siret)
+  recruiter.status = RECRUITER_STATUS.ARCHIVE
+  recruiter.address = ANONYMIZED
+  recruiter.geo_coordinates = ANONYMIZED
+  recruiter.address_detail = { status_diffusion: recruiter.address_detail.status_diffusion, libelle_commune: ANONYMIZED }
+
+  for await (const job of recruiter.jobs) {
+    job.job_status = JOB_STATUS.ACTIVE ? JOB_STATUS.ANNULEE : job.job_status
+  }
+
+  await Recruiter.updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updated_at: new Date() } })
+}
+
+const deactivateUserRecruteur = async (userRecruteur: IUserRecruteur) => {
+  console.log("deactivating non diffusible userRecruteur : ", userRecruteur.establishment_siret)
+
+  const userStatus = {
+    user: "SERVEUR",
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    status: ETAT_UTILISATEUR.DESACTIVE,
+    reason: "Anonymization de le données",
+    date: new Date(),
+  }
+  if (!userRecruteur.status) {
+    userRecruteur.status = []
+  }
+  userRecruteur.status.push(userStatus)
+
+  userRecruteur.address = ANONYMIZED
+  userRecruteur.geo_coordinates = ANONYMIZED
+
+  if (userRecruteur.address_detail) {
+    userRecruteur.address_detail = { libelle_commune: ANONYMIZED }
+  }
+
+  await UserRecruteur.updateOne({ _id: userRecruteur._id }, { $set: { ...userRecruteur, updated_at: new Date() } })
+}
+
+const fixRecruiters = async () => {
+  logger.info(`Fixing diffusible recruiters and offers`)
+  const recruiters: AsyncIterable<IRecruiter> = await db.collection("recruiters").find({})
+
+  let count = 0
+  let deactivatedCount = 0
+  let errorCount = 0
+  for await (const recruiter of recruiters) {
+    if (count % 100 === 0) {
+      logger.info(`${count} recruiters checked. ${deactivatedCount} removed. ${errorCount} errors`)
+    }
+    count++
+    try {
+      const isDiffusible = await getDiffusionStatus(recruiter.establishment_siret)
+
+      if (isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
+        deactivateRecruiter(recruiter)
+
+        deactivatedCount++
+      }
+    } catch (err) {
+      errorCount++
+      console.log(err)
+      break
+    }
+  }
+
+  const userRecruteurs: AsyncIterable<IUserRecruteur> = await db.collection("userrecruteurs").find({})
+
+  count = 0
+  deactivatedCount = 0
+  errorCount = 0
+  for await (const userRecruteur of userRecruteurs) {
+    if (count % 100 === 0) {
+      logger.info(`${count} userRecruteurs checked. ${deactivatedCount} removed. ${errorCount} errors`)
+    }
+    count++
+    try {
+      const isDiffusible = userRecruteur.establishment_siret ? await getDiffusionStatus(userRecruteur.establishment_siret) : EDiffusibleStatus.NOT_FOUND
+
+      if (isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
+        deactivateUserRecruteur(userRecruteur)
+
+        deactivatedCount++
+      }
+    } catch (err) {
+      errorCount++
+      console.log(err)
+      break
+    }
+  }
+}
+
+export async function fixDiffusibleCompanies(payload: { collection_list?: string }): Promise<void> {
+  const collectionList = payload?.collection_list ?? "lbacompanies,recruiters"
+  const list = collectionList.split(",")
+
+  if (list.includes("lbacompanies")) {
+    await fixLbaCompanies()
+  }
+
+  if (list.includes("recruiters")) {
+    await fixRecruiters()
+  }
 }
 
 export async function checkDiffusibleCompanies(): Promise<void> {
