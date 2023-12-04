@@ -1,16 +1,4 @@
-location ~ ^/smtp/(.*)$ {
+location /smtp {
     set $upstream http://smtp:8025;
-    proxy_pass $upstream/$1$is_args$args;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-Host $server_name;
-    proxy_set_header X-Forwarded-Proto $scheme;
-
-    # Websocket configuration
-    # See:
-    #  - https://www.nginx.com/blog/websocket-nginx/
-    #  - https://github.com/mailhog/MailHog/issues/117
-    proxy_http_version  1.1;
-    proxy_set_header    Upgrade $http_upgrade;
-    proxy_set_header    Connection $connection_upgrade;
+    include includes/proxy.conf;
 }
