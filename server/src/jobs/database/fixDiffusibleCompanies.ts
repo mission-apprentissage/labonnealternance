@@ -59,7 +59,9 @@ const deactivateRecruiter = async (recruiter: IRecruiter) => {
   recruiter.status = RECRUITER_STATUS.ARCHIVE
   recruiter.address = ANONYMIZED
   recruiter.geo_coordinates = ANONYMIZED
-  recruiter.address_detail = { status_diffusion: recruiter.address_detail.status_diffusion, libelle_commune: ANONYMIZED }
+  recruiter.address_detail = recruiter.address_detail
+    ? { status_diffusion: recruiter.address_detail.status_diffusion, libelle_commune: ANONYMIZED }
+    : { libelle_commune: ANONYMIZED }
 
   for await (const job of recruiter.jobs) {
     job.job_status = JOB_STATUS.ACTIVE ? JOB_STATUS.ANNULEE : job.job_status
