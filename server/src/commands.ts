@@ -158,6 +158,8 @@ function createJobAction(name) {
 
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
+program.command("fix-diffusible-companies").description("Clean companies not diffusible").action(createJobAction("fix-diffusible-companies"))
+program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
 program.command("fiab:kevin").description("Run migrations up").action(createJobAction("fiab:kevin"))
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
@@ -545,6 +547,13 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .option("-parallelism, [parallelism]", "Number of threads", "10")
   .action(createJobAction("referentiel-opco:constructys:import"))
+
+program
+  .command("resend-prdv-emails")
+  .description("Renvoie les emails de prises de rendez-vous")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .requiredOption("--from-date <string>, [fromDate]", "format DD-MM-YYYY. Date depuis laquelle les prises de rendez-vous sont renvoyéees")
+  .action(createJobAction("prdv:emails:resend"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

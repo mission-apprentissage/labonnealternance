@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   mongodb:
-    image: mongo:6.0.2-focal
+    image: mongo:6.0.11
     restart: unless-stopped
     hostname: mongodb
     mem_limit: 5g
@@ -21,7 +21,7 @@ services:
       start_period: 10s
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.15
     container_name: lba_elasticsearch
     environment:
       - ES_JAVA_OPTS=-Xmx512m -Xms512m
@@ -55,7 +55,7 @@ services:
       - lba_clamav_data:/var/lib/clamav
 
   smtp:
-    image: axllent/mailpit:v1.5.5
+    image: axllent/mailpit:v1.10.1
     restart: unless-stopped
     ports:
       - 1025:1025
