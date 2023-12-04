@@ -65,7 +65,7 @@ const deactivateRecruiter = async (recruiter: IRecruiter) => {
     job.job_status = JOB_STATUS.ACTIVE ? JOB_STATUS.ANNULEE : job.job_status
   }
 
-  await Recruiter.updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updated_at: new Date() } })
+  await Recruiter.updateOne({ _id: recruiter._id }, { $set: { ...recruiter } })
 }
 
 const deactivateUserRecruteur = async (userRecruteur: IUserRecruteur) => {
@@ -90,7 +90,7 @@ const deactivateUserRecruteur = async (userRecruteur: IUserRecruteur) => {
     userRecruteur.address_detail = { libelle_commune: ANONYMIZED }
   }
 
-  await UserRecruteur.updateOne({ _id: userRecruteur._id }, { $set: { ...userRecruteur, updated_at: new Date() } })
+  await UserRecruteur.updateOne({ _id: userRecruteur._id }, { $set: { ...userRecruteur } })
 }
 
 const fixRecruiters = async () => {
