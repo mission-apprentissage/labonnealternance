@@ -6,7 +6,7 @@ import { Appointment, Etablissement, User } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
-import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../../services/appointment.service"
+import { sendFormateurAppointmentEmail } from "../../../services/appointment.service"
 import dayjs from "../../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 
@@ -43,7 +43,7 @@ export const repriseEmailRdvs = async ({ fromDateStr }: { fromDateStr: string })
       const subjectPrefix = "[Erratum]"
       // doit être appelé en premier pour valider l'envoi de mail au formateur
       await sendFormateurAppointmentEmail(user, appointment, eligibleTrainingsForAppointment, referrerObj, etablissement, subjectPrefix)
-      await sendCandidateAppointmentEmail(user, appointment, eligibleTrainingsForAppointment, referrerObj, subjectPrefix)
+      // await sendCandidateAppointmentEmail(user, appointment, eligibleTrainingsForAppointment, referrerObj, subjectPrefix)
       stats.success++
     } catch (err: any) {
       const errorMessage = (err && "message" in err && err.message) || err
