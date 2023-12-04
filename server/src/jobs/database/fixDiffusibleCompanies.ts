@@ -75,7 +75,7 @@ const deactivateUserRecruteur = async (userRecruteur: IUserRecruteur) => {
     user: "SERVEUR",
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     status: ETAT_UTILISATEUR.DESACTIVE,
-    reason: "Anonymization de le données",
+    reason: "Anonymization des données",
     date: new Date(),
   }
   if (!userRecruteur.status) {
