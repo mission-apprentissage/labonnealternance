@@ -1,12 +1,12 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import { IApplication, IEligibleTrainingsForAppointment, IEtablissement, IJob, IRecruiter, IUserRecruteur } from "shared/models"
+import { IApplication, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, RecruiterRole, Role } from "shared/security/permissions"
 import { assertUnreachable } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { Application, EligibleTrainingsForAppointment, Etablissement, Recruiter, UserRecruteur } from "@/common/model"
+import { Application, Recruiter, UserRecruteur } from "@/common/model"
 
 import { getAccessTokenScope } from "./accessTokenService"
 import { IUserWithType, getUserFromRequest } from "./authenticationService"
@@ -16,8 +16,6 @@ type Resources = {
   jobs: Array<{ job: IJob; recruiter: IRecruiter } | null>
   users: Array<IUserRecruteur>
   applications: Array<{ application: IApplication; job: IJob; recruiter: IRecruiter } | null>
-  eligibleTrainings: Array<IEligibleTrainingsForAppointment>
-  etablissements: Array<IEtablissement>
 }
 
 // Specify what we need to simplify mocking in tests
@@ -154,59 +152,12 @@ async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, re
   )
 }
 
-async function getElligibleTrainingResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["eligibleTrainings"]> {
-  if (!schema.securityScheme.resources.eligibleTrainingsForAppointment) {
-    return []
-  }
-
-  return (
-    await Promise.all(
-      schema.securityScheme.resources.eligibleTrainingsForAppointment.map(async (u) => {
-        if ("_id" in u) {
-          const elligibleTraining = await EligibleTrainingsForAppointment.findById(getAccessResourcePathValue(u._id, req)).lean()
-          return elligibleTraining ? [elligibleTraining] : []
-        }
-        if ("etablissement_formateur_siret" in u) {
-          return EligibleTrainingsForAppointment.find({ etablissement_formateur_siret: getAccessResourcePathValue(u.etablissement_formateur_siret, req) }).lean()
-        }
-
-        assertUnreachable(u)
-      })
-    )
-  ).flatMap((_) => _)
-}
-
-async function getEtablissementResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["etablissements"]> {
-  if (!schema.securityScheme.resources.etablissement) {
-    return []
-  }
-
-  return (
-    await Promise.all(
-      schema.securityScheme.resources.etablissement.map(async (u) => {
-        if ("_id" in u) {
-          const etablissement = await Etablissement.findById(getAccessResourcePathValue(u._id, req)).lean()
-          return etablissement ? [etablissement] : []
-        }
-        if ("siret" in u) {
-          const etablissement = await Etablissement.findOne({ formateur_siret: getAccessResourcePathValue(u.siret, req) }).lean()
-          return etablissement ? [etablissement] : []
-        }
-
-        assertUnreachable(u)
-      })
-    )
-  ).flatMap((_) => _)
-}
-
 export async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
-  const [recruiters, jobs, users, applications, eligibleTrainings, etablissements] = await Promise.all([
+  const [recruiters, jobs, users, applications] = await Promise.all([
     getRecruitersResource(schema, req),
     getJobsResource(schema, req),
     getUserResource(schema, req),
     getApplicationResouce(schema, req),
-    getElligibleTrainingResource(schema, req),
-    getEtablissementResource(schema, req),
   ])
 
   return {
@@ -214,8 +165,6 @@ export async function getResources<S extends WithSecurityScheme>(schema: S, req:
     jobs,
     users,
     applications,
-    eligibleTrainings,
-    etablissements,
   }
 }
 

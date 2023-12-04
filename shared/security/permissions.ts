@@ -53,20 +53,6 @@ export type AccessRessouces = {
         cfa_delegated_siret: AccessResourcePath
       }
   >
-  eligibleTrainingsForAppointment?: ReadonlyArray<
-    | {
-        _id: AccessResourcePath
-      }
-    | {
-        etablissement_formateur_siret: AccessResourcePath
-      }
-  >
-  etablissement?: ReadonlyArray<
-    | {
-        _id: AccessResourcePath
-      }
-    | { siret: AccessResourcePath }
-  >
   appointment?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
