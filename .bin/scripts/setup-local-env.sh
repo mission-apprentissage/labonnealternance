@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+OS_NAME=$(uname -s)
+
 echo "Updating local server/.env & ui/.env"
 ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible all \
   --limit "local" \
@@ -22,8 +24,16 @@ echo "NEXT_PUBLIC_VERSION=0.0.0-local" >> "${ROOT_DIR}/ui/.env"
 echo "NEXT_PUBLIC_API_PORT=5001" >> "${ROOT_DIR}/ui/.env"
 
 yarn
-chmod 440 "${ROOT_DIR}/.infra/local/mongo_keyfile"
-chown 999:999 "${ROOT_DIR}/.infra/local/mongo_keyfile"
+
+if [ "$OS_NAME" == "Linux" ]; then
+    chmod 440 "${ROOT_DIR}/.infra/local/mongo_keyfile"
+    chown 999:999 "${ROOT_DIR}/.infra/local/mongo_keyfile"
+elif [ "$OS_NAME" == "Darwin" ]; then
+    chmod 400 "${ROOT_DIR}/.infra/local/mongo_keyfile"
+else
+    echo "Système d'exploitation non pris en charge : $OS_NAME"
+fi
+
 yarn services:start
 yarn setup:mongodb
 yarn build:dev

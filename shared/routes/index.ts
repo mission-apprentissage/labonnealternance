@@ -40,10 +40,10 @@ const zRoutesGetP2 = {
   ...zV1JobsEtFormationsRoutes.get,
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
-  ...zAppointmentsRoute.get,
 } as const
 
 const zRoutesGetP3 = {
+  ...zAppointmentsRoute.get,
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationRoute.get,
   ...zOptoutRoutes.get,
@@ -78,6 +78,9 @@ const zRoutesPost2 = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
   ...zCampaignWebhookRoutes.post,
+}
+
+const zRoutesPost3 = {
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
@@ -86,6 +89,7 @@ const zRoutesPost2 = {
 const zRoutesPost = {
   ...zRoutesPost1,
   ...zRoutesPost2,
+  ...zRoutesPost3,
 } as const
 
 const zRoutesPut = {
