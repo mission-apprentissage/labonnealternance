@@ -326,18 +326,6 @@ export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMeti
 }
 
 /**
- * Récupère la liste des métiers associés à un établissement en paramètre identifié par son SIRET
- * @param {string} siret
- * @returns {Promise<IMetiers>}
- */
-export const getMetiersPourEtablissement = async ({ siret }: { siret: string }): Promise<IMetiers> => {
-  const romeResponse = await getRomesFromCatalogue({ siret })
-  const { romes } = romeResponse
-  const metiers = await getMetiersFromRomes(romes)
-  return metiers
-}
-
-/**
  * Récupère la liste des métiers dans la table domaines / métiers correspondant à un tableau de codes ROME
  * @param {string[]} romes
  * @returns {IMetiers}
