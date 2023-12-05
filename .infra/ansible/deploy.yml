@@ -39,26 +39,6 @@
         - stack_status.stdout != ""
         - '"migrations-status=synced" not in migration_status_output.stdout_lines'
 
-    - name: "Verification des certificats SSL"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{dns_name}}"
-
-    - name: "Verification des certificats SSL"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }}"
-      when: env_type != "preview"
-
-    - name: Add cron to renew pole-emploi cert
-      ansible.builtin.cron:
-        name: "renew-certificate"
-        minute: "0"
-        hour: "2"
-        weekday: "1"
-        job: "bash /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }} >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Alias' -v $?"
-      when: env_type != "preview"
-
     - name: "Activation du mode maintenance pour effectuer la migration"
       shell:
         chdir: /opt/app
@@ -111,6 +91,31 @@
         chdir: /opt/app
         cmd: "sudo /opt/app/tools/reload-proxy.sh"
 
+    - name: "Désactivation du mode maintenance"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/tools/maintenance/maintenance-off.sh"
+
+    - name: "Verification des certificats SSL"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{dns_name}}"
+
+    - name: "Verification des certificats SSL"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }}"
+      when: env_type != "preview"
+
+    - name: Add cron to renew pole-emploi cert
+      ansible.builtin.cron:
+        name: "renew-certificate"
+        minute: "0"
+        hour: "2"
+        weekday: "1"
+        job: "bash /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }} >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Alias' -v $?"
+      when: env_type != "preview"
+
     - name: "Setup de la Metabase"
       shell:
         chdir: /opt/app
@@ -121,8 +126,3 @@
       shell:
         chdir: /opt/app
         cmd: "sudo docker system prune --all --force"
-
-    - name: "Désactivation du mode maintenance"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo /opt/app/tools/maintenance/maintenance-off.sh"
