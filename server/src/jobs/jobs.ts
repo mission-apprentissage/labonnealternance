@@ -356,7 +356,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
       case "fix-diffusible-companies":
-        return fixDiffusibleCompanies()
+        return fixDiffusibleCompanies(job.payload)
       case "check-diffusible-companies":
         return checkDiffusibleCompanies()
       case "db:validate":
