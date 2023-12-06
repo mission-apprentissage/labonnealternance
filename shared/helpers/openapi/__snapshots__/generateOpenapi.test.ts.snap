@@ -2087,7 +2087,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "codeIsco": {
-            "type": "string",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "competencesDeBase": {
             "items": {
@@ -2527,7 +2530,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "condition",
           "riasecMajeur",
           "riasecMineur",
-          "codeIsco",
           "particulier",
           "domaineProfessionnel",
           "appellations",
