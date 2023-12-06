@@ -17,7 +17,7 @@ const NGINX_URL_MAX_LENGTH = 4096
 const URL_MAX_LENGTH = Math.min(INTERNET_EXPLORER_V10_MAX_LENGTH, OUTLOOK_URL_MAX_LENGTH, NGINX_URL_MAX_LENGTH)
 const TOKEN_MAX_LENGTH = URL_MAX_LENGTH - (config.publicUrl.length + 1) // +1 for slash character
 
-type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
+export type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
 
 type AllowAllType = { allowAll: true }
 type AuthorizedValuesRecord<ZodObject> = ZodObject extends AnyZodObject
