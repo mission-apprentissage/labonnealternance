@@ -82,12 +82,14 @@ jobs:
         run: pip install ggshield
 
       - name: Server Docker Scan Secrets
-        run: ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"
+        # We need to specify exclude manually https://github.com/GitGuardian/ggshield/issues/548
+        run: ggshield secret scan docker --exclude "**/node_modules" "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
       - name: UI Docker Scan Secrets
-        run: ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"
+        # We need to specify exclude manually https://github.com/GitGuardian/ggshield/issues/548
+        run: ggshield secret scan docker --exclude "**/node_modules" "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
