@@ -79,16 +79,16 @@ jobs:
     name: Check for CVEs
     runs-on: ubuntu-latest
     steps:
-      - name: Scan Secrets in Docker Image
+      - name: UI Docker Scan Secrets
         uses: GitGuardian/ggshield-action@v1.16.0
         with:
-          args: docker ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production
+          args: '"docker" "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"'
         env:
           GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
-      - name: Docker Scout
+      - name: UI Docker Scout
         uses: docker/scout-action@v1
         with:
           command: quickview,cves,recommendations
@@ -96,7 +96,7 @@ jobs:
           to: ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.PREV_VERSION }}-production
           sarif-file: sarif.output.json
 
-      - name: Upload SARIF result
+      - name: UI Docker Upload SARIF result
         id: upload-sarif
         uses: github/codeql-action/upload-sarif@v2
         with:
@@ -108,16 +108,16 @@ jobs:
     needs: ["release"]
     runs-on: ubuntu-latest
     steps:
-      - name: Scan Secrets in Server Docker Image
+      - name: Server Docker Scan Secrets
         uses: GitGuardian/ggshield-action@v1.16.0
         with:
-          args: docker ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}
+          args: '"docker" "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"'
         env:
           GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
-      - name: Docker Scout
+      - name: Server Docker Scout
         uses: docker/scout-action@v1
         with:
           command: quickview,cves,recommendations
@@ -125,7 +125,7 @@ jobs:
           to: ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.PREV_VERSION }}
           sarif-file: sarif.output.json
 
-      - name: Upload SARIF result
+      - name: Server Docker Upload SARIF result
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: sarif.output.json
