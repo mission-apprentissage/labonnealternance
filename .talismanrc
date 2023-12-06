@@ -6,7 +6,7 @@ fileignoreconfig:
 - filename: .bin/scripts/setup-local-env.sh
   checksum: 47323f5183f73a794449666a816d5b797c7a5ed4c7ad219c3c885a57e2fcf1e9
 - filename: .github/workflows/release.yml
-  checksum: d3058f14e6212433c23320dfd6fab6dfe83491662f48a0365b38eb269b7d8b99
+  checksum: 4dad22255c13cb6932ce0832d23f98b18e8f500852c101a96f36e02c8de93b5f
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg

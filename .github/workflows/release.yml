@@ -76,17 +76,15 @@ jobs:
     concurrency:
       group: "ggshield-${{ github.workflow }}-${{ github.ref }}"
     needs: ["release"]
-    name: Check for CVEs
     runs-on: ubuntu-latest
-    container: gitguardian/ggshield:latest
     steps:
       - name: Server Docker Scan Secrets
-        run: ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"
+        run: docker run -it --env GITGUARDIAN_API_KEY --rm gitguardian/ggshield:latest ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
       - name: UI Docker Scan Secrets
-        run: ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"
+        run: docker run -it --env GITGUARDIAN_API_KEY --rm gitguardian/ggshield:latest ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
@@ -108,12 +106,12 @@ jobs:
           command: quickview,cves,recommendations
           image: ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}
           to: ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.PREV_VERSION }}
-          sarif-file: sarif.output.json
+          sarif-file: sarif-server.output.json
 
       - name: Server Docker Upload SARIF result
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: sarif.output.json
+          sarif_file: sarif-server.output.json
 
       - name: UI Docker Scout
         uses: docker/scout-action@v1
@@ -121,13 +119,12 @@ jobs:
           command: quickview,cves,recommendations
           image: ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production
           to: ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.PREV_VERSION }}-production
-          sarif-file: sarif.output.json
+          sarif-file: sarif-ui.output.json
 
       - name: UI Docker Upload SARIF result
-        id: upload-sarif
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: sarif.output.json
+          sarif_file: sarif-ui.output.json
 
   deploy:
     concurrency:
