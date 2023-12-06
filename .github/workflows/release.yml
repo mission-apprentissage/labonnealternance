@@ -15,7 +15,7 @@ jobs:
     permissions: write-all
     outputs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
-      PREV_VERSION: ${{ steps.get-prev-version.outputs.PREV_VERSION }}
+      PREV_VERSION: ${{ steps.get-prev-version.outputs.VERSION }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
