@@ -15,7 +15,6 @@ import { prepareMessageForMail } from "../common/utils/fileUtils.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 
-import { BrevoEventStatus } from "./brevo.service.js"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer from "./mailer.service.js"
@@ -86,7 +85,7 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
  * @param {string} email
  * @returns {Promise<IApplication>}
  */
-const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
+export const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
   Application.findOne({ company_email: email, to_company_message_id: messageId })
 
 /**
@@ -552,7 +551,7 @@ export const sendNotificationToApplicant = async ({
 /**
  * @description updates application and triggers action from email webhook
  */
-export const updateApplicationStatus = async ({ payload }: { payload: any }): Promise<void> => {
+export const updateApplicationStatusFromHardbounce = async ({ payload, application }: { payload: any; application: IApplication }): Promise<void> => {
   /* Format payload cf. https://developers.brevo.com/docs/how-to-use-webhooks
       {
         "event": "delivered",
@@ -572,24 +571,10 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
       }
   */
 
-  const { event, subject, email } = payload
-
-  if (event !== BrevoEventStatus.HARD_BOUNCE) {
-    return
-  }
+  const { subject, email } = payload
 
   if (!subject.startsWith("Candidature en alternance") && !subject.startsWith("Candidature spontanée")) {
     // les messages qui ne sont pas de candidature vers une entreprise sont ignorés
-    return
-  }
-
-  const application = await findApplicationByMessageId({
-    messageId: payload["message-id"],
-    email,
-  })
-
-  if (!application) {
-    logger.error(`Application webhook : application not found. message_id=${payload["message-id"]} email=${email} subject=${subject}`)
     return
   }
 
