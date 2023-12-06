@@ -1,4 +1,3 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models"
 import { ZApplicationUI } from "../models/applications.model"
@@ -82,24 +81,6 @@ export const zApplicationRoutes = {
             })
             .strict(),
         ]),
-      },
-      securityScheme: null,
-    },
-    "/application/webhook": {
-      path: "/application/webhook",
-      method: "post",
-      querystring: z
-        .object({
-          apikey: z.string(),
-        })
-        .strict(),
-      body: extensions.brevoWebhook(),
-      response: {
-        "200": z
-          .object({
-            result: z.literal("ok"),
-          })
-          .strict(),
       },
       securityScheme: null,
     },

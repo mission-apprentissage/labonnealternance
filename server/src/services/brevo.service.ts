@@ -10,45 +10,36 @@ apiKey.apiKey = config.smtp.brevoApiKey
 
 const apiInstance = new SibApiV3Sdk.WebhooksApi()
 
-let applicationStatusWebhook = new SibApiV3Sdk.CreateWebhook()
+let emailWebhook = new SibApiV3Sdk.CreateWebhook()
 
 export const enum BrevoEventStatus {
   HARD_BOUNCE = "hard_bounce",
 }
 
-applicationStatusWebhook = {
-  description: "Changements d'états des emails de candidatures",
-  url: `${config.publicUrl}/api/application/webhook?apikey=${config.smtp.brevoWebhookApiKey}`,
-  events: ["hardBounce"],
-  type: "transactional",
-}
-
-let campaignHarbounceWebhook = new SibApiV3Sdk.CreateWebhook()
-
-campaignHarbounceWebhook = {
-  description: "Traitement des harbounces des emails des campagnes",
-  url: `${config.publicUrl}/api/campaign/webhook?apikey=${config.smtp.brevoWebhookApiKey}`,
-  events: ["hardBounce"],
-  type: "marketing",
+emailWebhook = {
+  description: "Changements d'états des emails de candidatures ou de rendez-vous ou de marketing",
+  // url: `${config.publicUrl}/api/email/webhook?apikey=${config.smtp.brevoWebhookApiKey}`,
+  url: `https://labonnealternance-recette.apprentissage.beta.gouv.fr/api/emails/webhook?apikey=${config.smtp.brevoWebhookApiKey}`,
+  events: ["hardBounce", "delivered", "request", "click", "uniqueOpened"],
 }
 
 /**
  * Initialise les webhooks Brevo au démarrage du docker server. Echoue sans conséquences s'ils existent déjà
  */
 export const initBrevoWebhooks = () => {
-  if (config.env !== "production") {
-    return
-  }
+  // if (config.env !== "production") {
+  //   return
+  // }
 
-  apiInstance.createWebhook(applicationStatusWebhook).then(
+  apiInstance.createWebhook({ ...emailWebhook, type: "transactional" }).then(
     function (data) {
-      logger.info("Brevo webhook API called successfully for application email status changes. Returned data: " + JSON.stringify(data))
+      logger.info("Brevo webhook API called successfully for email (appointment, application) status changes. Returned data: " + JSON.stringify(data))
     },
     function (error) {
-      logger.error("Brevo webhook API Error for application email status changes. Returned data: " + error.response.res.text)
+      logger.error("Brevo webhook API Error for email (appointment, application) status changes. Returned data: " + error.response.res.text)
     }
   )
-  apiInstance.createWebhook(campaignHarbounceWebhook).then(
+  apiInstance.createWebhook({ ...emailWebhook, events: ["hardBounce"], type: "marketing" }).then(
     function (data) {
       logger.info("Brevo webhook API called successfully for campaign hardbounce detection. Returned data: " + JSON.stringify(data))
     },

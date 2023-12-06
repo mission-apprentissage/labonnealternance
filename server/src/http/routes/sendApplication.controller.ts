@@ -1,13 +1,10 @@
-import Boom from "boom"
 import mongoose from "mongoose"
 import { zRoutes } from "shared/index"
-
-import config from "@/config"
 
 import { Application } from "../../common/model/index"
 import { decryptWithIV } from "../../common/utils/encryptString"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
+import { sendNotificationToApplicant, validateFeedbackApplicationComment } from "../../services/application.service"
 import { Server } from "../server"
 
 const rateLimitConfig = {
@@ -74,22 +71,6 @@ export default function (server: Server) {
       )
       if (!application) throw new Error("application not found")
 
-      return res.status(200).send({ result: "ok" })
-    }
-  )
-
-  server.post(
-    "/application/webhook",
-    {
-      schema: zRoutes.post["/application/webhook"],
-    },
-    async (req, res) => {
-      const { apikey } = req.query
-      if (apikey !== config.smtp.brevoWebhookApiKey) {
-        throw Boom.unauthorized()
-      }
-
-      await updateApplicationStatus({ payload: req.body })
       return res.status(200).send({ result: "ok" })
     }
   )
