@@ -79,12 +79,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Server Docker Scan Secrets
-        run: docker run -it --env GITGUARDIAN_API_KEY --rm gitguardian/ggshield:latest ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"
+        run: docker run -iT --env GITGUARDIAN_API_KEY --rm gitguardian/ggshield:latest ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
       - name: UI Docker Scan Secrets
-        run: docker run -it --env GITGUARDIAN_API_KEY --rm gitguardian/ggshield:latest ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"
+        run: docker run -iT --env GITGUARDIAN_API_KEY --rm gitguardian/ggshield:latest ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
