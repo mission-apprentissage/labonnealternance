@@ -78,14 +78,11 @@ jobs:
     needs: ["release"]
     name: Check for CVEs
     runs-on: ubuntu-latest
+    container: gitguardian/ggshield:latest
     steps:
       - name: UI Docker Scan Secrets
-        uses: GitGuardian/ggshield-action@v1.16.0
-        with:
-          args: '"docker" "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"'
+        run: ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"
         env:
-          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
-          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
       - name: UI Docker Scout
@@ -107,14 +104,11 @@ jobs:
       group: "security-server-${{ github.workflow }}-${{ github.ref }}"
     needs: ["release"]
     runs-on: ubuntu-latest
+    container: gitguardian/ggshield:latest
     steps:
       - name: Server Docker Scan Secrets
-        uses: GitGuardian/ggshield-action@v1.16.0
-        with:
-          args: '"docker" "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"'
+        run: ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"
         env:
-          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
-          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
 
       - name: Server Docker Scout
