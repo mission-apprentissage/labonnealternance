@@ -80,6 +80,13 @@ jobs:
     runs-on: ubuntu-latest
     container: gitguardian/ggshield:latest
     steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       # - name: UI Docker Scan Secrets
       #   run: ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"
       #   env:
@@ -106,6 +113,13 @@ jobs:
     runs-on: ubuntu-latest
     container: gitguardian/ggshield:latest
     steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       # - name: Server Docker Scan Secrets
       #   run: ggshield secret scan docker "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"
       #   env:
