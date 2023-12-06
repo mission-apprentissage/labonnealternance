@@ -27,9 +27,9 @@ emailWebhook = {
  * Initialise les webhooks Brevo au démarrage du docker server. Echoue sans conséquences s'ils existent déjà
  */
 export const initBrevoWebhooks = () => {
-  // if (config.env !== "production") {
-  //   return
-  // }
+  if (config.env !== "production") {
+    return
+  }
 
   apiInstance.createWebhook({ ...emailWebhook, type: "transactional" }).then(
     function (data) {
