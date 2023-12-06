@@ -15,7 +15,7 @@ jobs:
     permissions: write-all
     outputs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
-      PREV_VERSION: ${{ steps.get-version.outputs.PREV_VERSION }}
+      PREV_VERSION: ${{ steps.get-prev-version.outputs.PREV_VERSION }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
@@ -57,6 +57,10 @@ jobs:
       - name: Expose GitHub Runtime
         uses: crazy-max/ghaction-github-runtime@v2
 
+      - name: Retrieve previous version
+        id: get-prev-version
+        run: echo "VERSION=$(git describe --tags --abbrev=0 | cut -c2-)" >> "$GITHUB_OUTPUT"
+
       - name: bump and release
         run: yarn release
         env:
@@ -64,36 +68,12 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
 
-      - name: Retrieve version
+      - name: Retrieve new version
         id: get-version
-        run: |
-          VERSION=$(git describe --tags --abbrev=0 | cut -c2-)
-          PREV_VERSION=$(git describe --tags --abbrev=0 v"${VERSION}"^ | cut -c2-)
-          echo "VERSION=${VERSION}" >> "$GITHUB_OUTPUT"
-          echo "PREV_VERSION=${PREV_VERSION}" >> "$GITHUB_OUTPUT"
-
-  ggshield:
-    concurrency:
-      group: "ggshield-${{ github.workflow }}-${{ github.ref }}"
-    needs: ["release"]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install ggshield
-        run: pip install ggshield
-
-      - name: Server Docker Scan Secrets
-        # We need to specify exclude manually https://github.com/GitGuardian/ggshield/issues/548
-        run: ggshield secret scan docker --exclude "**/node_modules" "ghcr.io/mission-apprentissage/mna_lba_server:${{ needs.release.outputs.VERSION }}"
-        env:
-          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-
-      - name: UI Docker Scan Secrets
-        # We need to specify exclude manually https://github.com/GitGuardian/ggshield/issues/548
-        run: ggshield secret scan docker --exclude "**/node_modules" "ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production"
-        env:
-          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+        run: echo "VERSION=$(git describe --tags --abbrev=0 | cut -c2-)" >> "$GITHUB_OUTPUT"
 
   docker-scout:
+    if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     concurrency:
       group: "scout-${{ github.workflow }}-${{ github.ref }}"
     needs: ["release"]

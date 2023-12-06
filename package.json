@@ -14,7 +14,8 @@
   "workspaces": [
     "ui",
     "server",
-    "shared"
+    "shared",
+    "4N2Zxh4KTLbvx5u8"
   ],
   "scripts": {
     "setup": ".bin/mna-lba init:env",
