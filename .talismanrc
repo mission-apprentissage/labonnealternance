@@ -15,8 +15,6 @@ fileignoreconfig:
   checksum: ddafc86248e8fd5f7c24ca5a62be703083f7704395f17fb7b43bc8e44227d561
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
-- filename: .infra/vault/vault.yml
-  checksum: 559154cce23a106b319209adb507d1891039bcc6381a35717f11135743e94914
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
@@ -94,7 +92,7 @@ fileignoreconfig:
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: .infra/vault/vault.yml
-  checksum: 136cba643cbfdfc04f35cd171fe488ad2836261ae88201b6f344b6edbb77d3ef
+  checksum: fb833c79ab0ff73bc19fa83b1a6c162f34c1fee9fe07e76ef8f55771629bb69a
   ignore_detectors: []
 version: ""
 scopeconfig:
