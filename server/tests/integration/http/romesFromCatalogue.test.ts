@@ -18,22 +18,6 @@ describe.skip("romesFromCatalogue", () => {
     assert.ok(JSON.parse(response.body).error.length > 0)
   })
 
-  it("Vérifie que la route métiers par établissement répond", async () => {
-    const response = await httpClient().inject({ method: "GET", path: "/api/v1/metiers/metiersParEtablissement/a" })
-
-    if (response.statusCode !== 500) {
-      // test en local avec es bien renseigné
-
-      expect(response.statusCode).toBe(200)
-
-      assert.ok(JSON.parse(response.body).metiers instanceof Array)
-      assert.ok(JSON.parse(response.body).metiers.length === 0)
-      assert.ok(JSON.parse(response.body).error.length > 0)
-    } else {
-      expect(response.statusCode).toBe(500)
-    }
-  })
-
   it("Vérifie que la requête metiersParFormation répond avec des résultats", async () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/v1/metiers/metiersParFormation/50022137" })
 
@@ -41,18 +25,6 @@ describe.skip("romesFromCatalogue", () => {
       // test en local avec es bien renseigné
       expect(response.statusCode).toBe(200)
 
-      assert.ok(JSON.parse(response.body).metiers instanceof Array)
-    } else {
-      expect(response.statusCode).toBe(500)
-    }
-  })
-
-  it("Vérifie que la requête metiersParEtablissement répond avec des résultats", async () => {
-    const response = await httpClient().inject({ method: "GET", path: "/api/v1/metiers/metiersParEtablissement/77566202600225" })
-
-    if (response.statusCode !== 500) {
-      // test en local avec es bien renseigné
-      expect(response.statusCode).toBe(200)
       assert.ok(JSON.parse(response.body).metiers instanceof Array)
     } else {
       expect(response.statusCode).toBe(500)

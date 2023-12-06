@@ -1,6 +1,6 @@
 import { zRoutes } from "shared/index.js"
 
-import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getMetiersPourEtablissement, getTousLesMetiers } from "../../../services/metiers.service"
+import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getTousLesMetiers } from "../../../services/metiers.service"
 import { Server } from "../../server"
 
 const config = {
@@ -20,19 +20,6 @@ export default (server: Server) => {
     async (req, res) => {
       const { cfd } = req.params
       const result = await getMetiersPourCfd({ cfd })
-      return res.send(result)
-    }
-  )
-
-  server.get(
-    "/v1/metiers/metiersParEtablissement/:siret",
-    {
-      schema: zRoutes.get["/v1/metiers/metiersParEtablissement/:siret"],
-      config,
-    },
-    async (req, res) => {
-      const { siret } = req.params
-      const result = await getMetiersPourEtablissement({ siret })
       return res.send(result)
     }
   )

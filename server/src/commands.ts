@@ -158,7 +158,13 @@ function createJobAction(name) {
 
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
-program.command("fix-diffusible-companies").description("Clean companies not diffusible").action(createJobAction("fix-diffusible-companies"))
+program
+  .command("fix-diffusible-companies")
+  .description("Clean companies not diffusible.")
+  .option("-c, --collection_list <string>", " <collection_list> est la liste des collections à réparer séparées par des ,")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("fix-diffusible-companies"))
+
 program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
 program.command("fiab:kevin").description("Run migrations up").action(createJobAction("fiab:kevin"))
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
