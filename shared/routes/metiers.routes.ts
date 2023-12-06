@@ -1,4 +1,3 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/metiers.model"
 
@@ -27,24 +26,6 @@ export const zMetiersRoutes = {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
         tags: ["Metiers"] as string[],
         operationId: "getMetiersParCfd",
-      },
-    },
-    "/v1/metiers/metiersParEtablissement/:siret": {
-      method: "get",
-      path: "/v1/metiers/metiersParEtablissement/:siret",
-      params: z
-        .object({
-          siret: extensions.siret,
-        })
-        .strict(),
-      response: {
-        200: ZMetiers,
-      },
-      securityScheme: null,
-      openapi: {
-        description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour un établissement de formation",
-        tags: ["Metiers"] as string[],
-        operationId: "getMetiersParEtablissement",
       },
     },
     "/v1/metiers/all": {
