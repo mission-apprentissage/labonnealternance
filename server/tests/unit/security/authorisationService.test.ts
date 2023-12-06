@@ -10,7 +10,7 @@ import { Fixture, Generator } from "zod-fixture"
 
 import { Application, Credential, Recruiter, UserRecruteur } from "@/common/model"
 import { IAccessToken, generateScope } from "@/security/accessTokenService"
-import { authorizationnMiddleware } from "@/security/authorisationService"
+import { authorizationMiddleware } from "@/security/authorisationService"
 import { useMongo } from "@tests/utils/mongo.utils"
 
 let seed = 0
@@ -371,7 +371,7 @@ describe("authorisationService", () => {
             location
           )
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -395,7 +395,7 @@ describe("authorisationService", () => {
         it("on all recruiters from my opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1, recruteurO1E1R2, recruteurO1E2R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -416,7 +416,7 @@ describe("authorisationService", () => {
         it("on all jobs from my opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R1.jobs, ...recruteurO1E1R2.jobs, ...recruteurO1E2R1.jobs], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -437,7 +437,7 @@ describe("authorisationService", () => {
         it("on myself", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -458,7 +458,7 @@ describe("authorisationService", () => {
         it("on user recruiter from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -480,7 +480,7 @@ describe("authorisationService", () => {
         it("on recruiter from other Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO2E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -501,7 +501,7 @@ describe("authorisationService", () => {
         it("on jobs from other Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO2E1R1.jobs], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -523,7 +523,7 @@ describe("authorisationService", () => {
         it("on school", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -545,7 +545,7 @@ describe("authorisationService", () => {
         it("on application from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -567,7 +567,7 @@ describe("authorisationService", () => {
         it("on user recruiter from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -589,7 +589,7 @@ describe("authorisationService", () => {
         it("on admin user", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -611,7 +611,7 @@ describe("authorisationService", () => {
         it("on user CFA", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -633,7 +633,7 @@ describe("authorisationService", () => {
         it("on other user Opco from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U2], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -657,7 +657,7 @@ describe("authorisationService", () => {
         it("on all recruiters from my opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1, recruteurO1E1R2, recruteurO1E2R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -678,7 +678,7 @@ describe("authorisationService", () => {
         it("on all jobs from my opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R1.jobs, ...recruteurO1E1R2.jobs, ...recruteurO1E2R1.jobs], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -699,7 +699,7 @@ describe("authorisationService", () => {
         it("on myself", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -721,7 +721,7 @@ describe("authorisationService", () => {
         it("on recruiter from other Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO2E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -742,7 +742,7 @@ describe("authorisationService", () => {
         it("on jobs from other Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO2E1R1.jobs], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -764,7 +764,7 @@ describe("authorisationService", () => {
         it("on school", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -786,7 +786,7 @@ describe("authorisationService", () => {
         it("on application from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -808,7 +808,7 @@ describe("authorisationService", () => {
         it("on user recruiter from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -830,7 +830,7 @@ describe("authorisationService", () => {
         it("on admin user", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -852,7 +852,7 @@ describe("authorisationService", () => {
         it("on user CFA", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -874,7 +874,7 @@ describe("authorisationService", () => {
         it("on user Opco from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U2], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -896,7 +896,7 @@ describe("authorisationService", () => {
         it("on user Opco from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U2], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -920,7 +920,7 @@ describe("authorisationService", () => {
         it("on all my delegated recruiters", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -941,7 +941,7 @@ describe("authorisationService", () => {
         it("on all jobs from my delegated recruiters", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R1.jobs], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -962,7 +962,7 @@ describe("authorisationService", () => {
         it("on myself", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -984,7 +984,7 @@ describe("authorisationService", () => {
         it("on all my delegated recruiters", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1006,7 +1006,7 @@ describe("authorisationService", () => {
         it("on non delegated recruiters", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R2], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1027,7 +1027,7 @@ describe("authorisationService", () => {
         it("on non delegated recruiters", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R2.jobs], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1049,7 +1049,7 @@ describe("authorisationService", () => {
         it("on other schools", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser2], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1071,7 +1071,7 @@ describe("authorisationService", () => {
         it("on application of my delegated recruiter", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1093,7 +1093,7 @@ describe("authorisationService", () => {
         it("on user recruiter", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1115,7 +1115,7 @@ describe("authorisationService", () => {
         it("on admin user", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1137,7 +1137,7 @@ describe("authorisationService", () => {
         it("on user Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1161,7 +1161,7 @@ describe("authorisationService", () => {
         it("on me", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1182,7 +1182,7 @@ describe("authorisationService", () => {
         it("on my jobs", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R1.jobs], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1203,7 +1203,7 @@ describe("authorisationService", () => {
         it("on my applications", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1, applicationO1E1R1J1A2], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1224,7 +1224,7 @@ describe("authorisationService", () => {
         it("on myself", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1246,7 +1246,7 @@ describe("authorisationService", () => {
         it("on me", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1268,7 +1268,7 @@ describe("authorisationService", () => {
         it("on other recruiters from my company", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R2], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1290,7 +1290,7 @@ describe("authorisationService", () => {
         it("on job from other recruiters from my company", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R2.jobs], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1312,7 +1312,7 @@ describe("authorisationService", () => {
         it("on other applications", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R2J1A1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1334,7 +1334,7 @@ describe("authorisationService", () => {
         it("on school", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1356,7 +1356,7 @@ describe("authorisationService", () => {
         it("on other user recruiter", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R2], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1378,7 +1378,7 @@ describe("authorisationService", () => {
         it("on admin user", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1400,7 +1400,7 @@ describe("authorisationService", () => {
         it("on user Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U1], location)
           await expect(
-            authorizationnMiddleware(
+            authorizationMiddleware(
               {
                 method: "get",
                 path: "/path",
@@ -1441,7 +1441,7 @@ describe("authorisationService", () => {
     }
 
     await expect(
-      authorizationnMiddleware(
+      authorizationMiddleware(
         {
           method: "get",
           path: "/path",
@@ -1458,7 +1458,7 @@ describe("authorisationService", () => {
       )
     ).resolves.toBe(undefined)
     await expect(
-      authorizationnMiddleware(
+      authorizationMiddleware(
         {
           method: "get",
           path: "/path",
@@ -1497,7 +1497,7 @@ describe("authorisationService", () => {
     }
 
     await expect(
-      authorizationnMiddleware(
+      authorizationMiddleware(
         {
           method: "get",
           path: "/path",
@@ -1514,7 +1514,7 @@ describe("authorisationService", () => {
       )
     ).resolves.toBe(undefined)
     await expect(
-      authorizationnMiddleware(
+      authorizationMiddleware(
         {
           method: "get",
           path: "/path",
@@ -1553,7 +1553,7 @@ describe("authorisationService", () => {
     }
 
     await expect(
-      authorizationnMiddleware(
+      authorizationMiddleware(
         {
           method: "get",
           path: "/path",
@@ -1570,7 +1570,7 @@ describe("authorisationService", () => {
       )
     ).resolves.toBe(undefined)
     await expect(
-      authorizationnMiddleware(
+      authorizationMiddleware(
         {
           method: "get",
           path: "/path",
@@ -1596,7 +1596,7 @@ describe("authorisationService", () => {
     }
 
     await expect(
-      authorizationnMiddleware(
+      authorizationMiddleware(
         {
           method: "get",
           path: "/path",
@@ -1662,7 +1662,7 @@ describe("authorisationService", () => {
         }
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "get",
               path: "/path/:id",
@@ -1725,7 +1725,7 @@ describe("authorisationService", () => {
         }
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "post",
               path: "/path/:id",
@@ -1742,7 +1742,7 @@ describe("authorisationService", () => {
         ).rejects.toThrow("Forbidden")
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "get",
               path: "/path/:id",
@@ -1806,7 +1806,7 @@ describe("authorisationService", () => {
         }
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "get",
               path: "/path/:id",
@@ -1869,7 +1869,7 @@ describe("authorisationService", () => {
         }
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "post",
               path: "/path/:id",
@@ -1886,7 +1886,7 @@ describe("authorisationService", () => {
         ).rejects.toThrow("Forbidden")
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "get",
               path: "/path/:id",
@@ -1950,7 +1950,7 @@ describe("authorisationService", () => {
         }
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "get",
               path: "/path/:id",
@@ -2013,7 +2013,7 @@ describe("authorisationService", () => {
         }
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "post",
               path: "/path/:id",
@@ -2030,7 +2030,7 @@ describe("authorisationService", () => {
         ).rejects.toThrow("Forbidden")
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "get",
               path: "/path/:id",
@@ -2094,7 +2094,7 @@ describe("authorisationService", () => {
         }
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "get",
               path: "/path/:id",
@@ -2157,7 +2157,7 @@ describe("authorisationService", () => {
         }
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "post",
               path: "/path/:id",
@@ -2174,7 +2174,7 @@ describe("authorisationService", () => {
         ).rejects.toThrow("Forbidden")
 
         await expect(
-          authorizationnMiddleware(
+          authorizationMiddleware(
             {
               method: "get",
               path: "/path/:id",
