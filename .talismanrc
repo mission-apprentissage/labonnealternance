@@ -92,7 +92,7 @@ fileignoreconfig:
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: .infra/vault/vault.yml
-  checksum: fb833c79ab0ff73bc19fa83b1a6c162f34c1fee9fe07e76ef8f55771629bb69a
+  checksum: 5aa483cd8fc81b977dcddf8b96745b534c382d760b824da6164d263221f43b43
   ignore_detectors: []
 version: ""
 scopeconfig:
