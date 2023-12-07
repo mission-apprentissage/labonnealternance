@@ -117,7 +117,7 @@ Le script vous demandera plusieurs fois la phrase secrète de votre clé GPG pou
 
 Il est possible que vous rencontriez un problème avec le fichier `.infra/local/mongo_keyfile` lors du démarrage du container de `mongodb` (vous auriez des erreurs dans les logs du démarrage du container).
 
-Si c'est le cas, vérifiez que les droits du ficher sont bien `440` pour MacOS et `400` pour Linux et que le fichier appartient à l'utilisateur lançant `docker`
+Si c'est le cas, vérifiez que les droits du ficher sont bien `440` pour MacOS et `400` pour Linux et que le fichier appartient à l'utilisateur lançant `docker`.
 
 ```bash
 yarn dev
