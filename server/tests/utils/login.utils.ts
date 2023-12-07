@@ -5,15 +5,14 @@ import { Server } from "@/http/server"
 import { createAuthMagicLinkToken } from "@/services/appLinks.service"
 
 export const createAndLogUser = async (httpClient: () => Server, username: string, options: Partial<IUserRecruteur> = {}) => {
-  const email = `${username}@mail.com`
-  const user = await UserRecruteur.create({ username, email, ...options })
+  const email = `${username.toLowerCase()}@mail.com`
+  const user = await UserRecruteur.create({ username, email, first_name: "first name", last_name: "last name", ...options })
 
   const response = await httpClient().inject({
     method: "POST",
     path: "/api/login/verification",
     headers: { authorization: `Bearer ${createAuthMagicLinkToken(user)}` },
   })
-
   return {
     Cookie: response.cookies.reduce((acc, cookie) => `${acc} ${cookie.name}=${cookie.value}`, ""),
   }
