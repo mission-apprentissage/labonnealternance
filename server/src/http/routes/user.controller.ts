@@ -100,6 +100,7 @@ export default (server: Server) => {
     async (req, res) => {
       const user = await createUser({
         ...req.body,
+        is_email_checked: true,
         status: [
           {
             status: ETAT_UTILISATEUR.ATTENTE,
