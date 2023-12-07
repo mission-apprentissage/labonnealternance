@@ -10,7 +10,7 @@ import { Application, Recruiter, UserRecruteur } from "@/common/model"
 
 import { getUserFromRequest } from "./authenticationService"
 
-type Ressources = {
+type Resources = {
   recruiters: Array<IRecruiter>
   jobs: Array<{ job: IJob; recruiter: IRecruiter } | null>
   users: Array<IUserRecruteur>
@@ -31,7 +31,7 @@ function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): an
   return obj[path.key]
 }
 
-async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["recruiters"]> {
+async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["recruiters"]> {
   if (!schema.securityScheme.resources.recruiter) {
     return []
   }
@@ -67,7 +67,7 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
   ).flatMap((_) => _)
 }
 
-async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["jobs"]> {
+async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["jobs"]> {
   if (!schema.securityScheme.resources.job) {
     return []
   }
@@ -96,7 +96,7 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
   )
 }
 
-async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["users"]> {
+async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["users"]> {
   if (!schema.securityScheme.resources.user) {
     return []
   }
@@ -118,7 +118,7 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
   ).flatMap((_) => _)
 }
 
-async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources["applications"]> {
+async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["applications"]> {
   if (!schema.securityScheme.resources.application) {
     return []
   }
@@ -153,7 +153,7 @@ async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, re
   )
 }
 
-export async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Ressources> {
+export async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
   const [recruiters, jobs, users, applications] = await Promise.all([
     getRecruitersResource(schema, req),
     getJobsResource(schema, req),
@@ -188,7 +188,7 @@ export function getUserRole(userWithType: NonTokenUserWithType): Role | null {
   }
 }
 
-function canAccessRecruiter(userWithType: NonTokenUserWithType, resource: Ressources["recruiters"][number]): boolean {
+function canAccessRecruiter(userWithType: NonTokenUserWithType, resource: Resources["recruiters"][number]): boolean {
   if (resource === null) {
     return true
   }
@@ -212,7 +212,7 @@ function canAccessRecruiter(userWithType: NonTokenUserWithType, resource: Ressou
   }
 }
 
-function canAccessJob(userWithType: NonTokenUserWithType, resource: Ressources["jobs"][number]): boolean {
+function canAccessJob(userWithType: NonTokenUserWithType, resource: Resources["jobs"][number]): boolean {
   if (resource === null) {
     return true
   }
@@ -236,7 +236,7 @@ function canAccessJob(userWithType: NonTokenUserWithType, resource: Ressources["
   }
 }
 
-function canAccessUser(userWithType: NonTokenUserWithType, resource: Ressources["users"][number]): boolean {
+function canAccessUser(userWithType: NonTokenUserWithType, resource: Resources["users"][number]): boolean {
   if (resource === null) {
     return true
   }
@@ -264,7 +264,7 @@ function canAccessUser(userWithType: NonTokenUserWithType, resource: Ressources[
   }
 }
 
-function canAccessApplication(userWithType: NonTokenUserWithType, resource: Ressources["applications"][number]): boolean {
+function canAccessApplication(userWithType: NonTokenUserWithType, resource: Resources["applications"][number]): boolean {
   if (resource === null) {
     return true
   }
@@ -293,7 +293,7 @@ function canAccessApplication(userWithType: NonTokenUserWithType, resource: Ress
   }
 }
 
-export function isAuthorized(access: AccessPermission, userWithType: NonTokenUserWithType, role: Role | null, resources: Ressources): boolean {
+export function isAuthorized(access: AccessPermission, userWithType: NonTokenUserWithType, role: Role | null, resources: Resources): boolean {
   if (typeof access === "object") {
     if ("some" in access) {
       return access.some.some((a) => isAuthorized(a, userWithType, role, resources))
