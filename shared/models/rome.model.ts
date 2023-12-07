@@ -35,7 +35,7 @@ export const ZRomeDetail = z
     condition: z.string(),
     riasecMajeur: z.string(),
     riasecMineur: z.string(),
-    codeIsco: z.string(),
+    codeIsco: z.string().nullish(),
     particulier: z.boolean(),
     domaineProfessionnel: z
       .object({
