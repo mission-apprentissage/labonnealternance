@@ -105,7 +105,7 @@ function getMethodAndPath<Schema extends SchemaWithSecurity>(scope: IScope<Schem
 }
 
 function isAllowAllValue(x: unknown): x is AllowAllType {
-  return x && typeof x === "object" && "allowAll" in x && x.allowAll === true
+  return !!x && typeof x === "object" && "allowAll" in x && x.allowAll === true
 }
 
 function isAuthorizedParam(requiredValue: string, allowedValue: string | undefined | AllowAllType) {
