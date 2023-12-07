@@ -15,7 +15,7 @@ describe("accessTokenService", () => {
     }),
     querystring: z.object({
       establishment_siret: z.string(),
-      skip: z.number().optional(),
+      skip: z.string().optional(),
     }),
     securityScheme: {
       auth: "access-token",
@@ -29,7 +29,7 @@ describe("accessTokenService", () => {
     },
     querystring: {
       establishment_siret: "12343154300012",
-      skip: 3,
+      skip: "3",
     },
   }
   const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
