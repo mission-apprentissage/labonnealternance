@@ -1640,7 +1640,6 @@ describe("authorisationService", () => {
                   },
                 },
                 options: "all",
-                resources: {},
               }),
               generateScope({
                 schema: {
@@ -1653,9 +1652,6 @@ describe("authorisationService", () => {
                   },
                 },
                 options: "all",
-                resources: {
-                  recruiter: [recruteurO1E1R1._id.toString()],
-                },
               }),
             ],
           },
@@ -1704,7 +1700,6 @@ describe("authorisationService", () => {
                   },
                 },
                 options: "all",
-                resources: {},
               }),
               generateScope({
                 schema: {
@@ -1717,9 +1712,6 @@ describe("authorisationService", () => {
                   },
                 },
                 options: "all",
-                resources: {
-                  job: recruteurO1E1R1.jobs.map((j) => j._id.toString()),
-                },
               }),
             ],
           },
@@ -1768,7 +1760,6 @@ describe("authorisationService", () => {
                   },
                 },
                 options: "all",
-                resources: {},
               }),
               generateScope({
                 schema: {
@@ -1781,9 +1772,6 @@ describe("authorisationService", () => {
                   },
                 },
                 options: "all",
-                resources: {
-                  application: [applicationO1E1R1J1A1._id.toString()],
-                },
               }),
             ],
           },
@@ -1832,7 +1820,6 @@ describe("authorisationService", () => {
                   },
                 },
                 options: "all",
-                resources: {},
               }),
               generateScope({
                 schema: {
@@ -1845,9 +1832,6 @@ describe("authorisationService", () => {
                   },
                 },
                 options: "all",
-                resources: {
-                  user: [opcoUserO1U1._id.toString()],
-                },
               }),
             ],
           },

@@ -22,7 +22,7 @@ describe("accessTokenService", () => {
       access: "user:manage",
       resources: {},
     },
-  } satisfies SchemaWithSecurity
+  } as const satisfies SchemaWithSecurity
   const options = {
     params: {
       id: "123456",
@@ -31,7 +31,7 @@ describe("accessTokenService", () => {
       establishment_siret: "12343154300012",
       skip: "3",
     },
-  }
+  } as const
   const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
   const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).toThrow()
 
@@ -40,7 +40,6 @@ describe("accessTokenService", () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
-          resources: {},
           options,
         }),
       ])
@@ -50,7 +49,6 @@ describe("accessTokenService", () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
-          resources: {},
           options: {
             params: {
               id: "123456",
@@ -68,7 +66,6 @@ describe("accessTokenService", () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
-          resources: {},
           options: "all",
         }),
       ])
@@ -80,7 +77,6 @@ describe("accessTokenService", () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
-          resources: {},
           options: {
             params: {
               ...options.params,
@@ -96,7 +92,6 @@ describe("accessTokenService", () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
-          resources: {},
           options: {
             params: options.params,
             querystring: {
@@ -112,7 +107,6 @@ describe("accessTokenService", () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema: zRoutes.post["/admin/users"],
-          resources: {},
           options: "all",
         }),
       ])
@@ -122,7 +116,6 @@ describe("accessTokenService", () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
-          resources: {},
           options: {
             params: options.params,
             querystring: {

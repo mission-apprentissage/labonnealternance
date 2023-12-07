@@ -2,7 +2,7 @@ import Boom from "boom"
 import jwt from "jsonwebtoken"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
-import { IRouteSchema, ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { assertUnreachable } from "shared/utils"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, z } from "zod"
@@ -35,9 +35,6 @@ type OldIScope<Schema extends SchemaWithSecurity> = {
         params: AuthorizedValuesRecord<Schema["params"]>
         querystring: AuthorizedValuesRecord<Schema["querystring"]>
       }
-  resources: {
-    [key in keyof Schema["securityScheme"]["resources"]]: ReadonlyArray<string>
-  }
 }
 
 type NewIScope<Schema extends SchemaWithSecurity> = {
@@ -49,16 +46,13 @@ type NewIScope<Schema extends SchemaWithSecurity> = {
         params: AuthorizedValuesRecord<Schema["params"]>
         querystring: AuthorizedValuesRecord<Schema["querystring"]>
       }
-  resources: {
-    [key in keyof Schema["securityScheme"]["resources"]]: ReadonlyArray<string>
-  }
 }
 
 type IScope<Schema extends SchemaWithSecurity> = NewIScope<Schema> | OldIScope<Schema>
 
 export const generateScope = <Schema extends SchemaWithSecurity>(scope: Omit<NewIScope<Schema>, "method" | "path"> & { schema: Schema }): NewIScope<Schema> => {
-  const { schema, options, resources } = scope
-  return { options, resources, path: schema.path, method: schema.method }
+  const { schema, options } = scope
+  return { options, path: schema.path, method: schema.method }
 }
 
 export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity> = {
@@ -78,11 +72,11 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
 
 export function generateAccessToken(
   user: IUserRecruteur | IAccessToken["identity"],
-  scopes: ReadonlyArray<NewIScope<ISecuredRouteSchema>>,
+  scopes: ReadonlyArray<NewIScope<SchemaWithSecurity>>,
   options: { expiresIn?: string } = {}
 ): string {
   const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUserRecruteur", _id: user._id.toString(), email: user.email.toLowerCase() } : user
-  const data: IAccessToken<ISecuredRouteSchema> = {
+  const data: IAccessToken<SchemaWithSecurity> = {
     identity,
     scopes,
   }
