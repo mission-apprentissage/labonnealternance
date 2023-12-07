@@ -184,11 +184,11 @@ export const CronsMap = {
     handler: () => addJob({ name: "users:anonimize", payload: {} }),
   },
   "Contrôle quotidien des candidatures": {
-    cron_string: "0 9-19/1 * * 1-5",
+    cron_string: "0 10-19/1 * * 1-5",
     handler: () => addJob({ name: "control:applications", payload: {} }),
   },
   "Contrôle quotidien des prises de rendez-vous": {
-    cron_string: "0 9-19/2 * * 1-5",
+    cron_string: "0 11-19/2 * * 1-5",
     handler: () => addJob({ name: "control:appointments", payload: {} }),
   },
   // TODO A activer autour du 15/12/2023
