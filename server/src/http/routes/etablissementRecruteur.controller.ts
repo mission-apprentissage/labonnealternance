@@ -5,6 +5,7 @@ import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter, UserRecruteur } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
+import config from "@/config"
 import { getUserFromRequest } from "@/security/authenticationService"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
@@ -177,15 +178,16 @@ export default (server: Server) => {
           const { contacts } = siretInfos
 
           // Creation de l'utilisateur en base de données
-          let newCfa: IUserRecruteur = await createUser({ ...req.body, ...siretInfos })
+          let newCfa: IUserRecruteur = await createUser({ ...req.body, ...siretInfos, is_email_checked: false })
 
+          const slackNotification = {
+            subject: "RECRUTEUR",
+            message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${newCfa._id}`,
+          }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
             newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
-            await notifyToSlack({
-              subject: "RECRUTEUR",
-              message: `Nouvel OF en attente de validation - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
-            })
+            await notifyToSlack(slackNotification)
             return res.status(200).send({ user: newCfa })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
@@ -208,10 +210,7 @@ export default (server: Server) => {
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
           newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
-          await notifyToSlack({
-            subject: "RECRUTEUR",
-            message: `Nouvel OF en attente de validation - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
-          })
+          await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
           return res.status(200).send({ user: newCfa })
         }

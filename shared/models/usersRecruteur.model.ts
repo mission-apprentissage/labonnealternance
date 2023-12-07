@@ -15,7 +15,7 @@ export const ZUserStatusValidation = z
     validation_type: z.enum(["AUTOMATIQUE", "MANUELLE"]).describe("Processus de validation lors de l'inscription de l'utilisateur"),
     status: ZEtatUtilisateur.nullish(),
     reason: z.string().nullish().describe("Raison du changement de statut"),
-    user: z.string().describe("Utilisateur ayant effectué la modification | SERVEUR si le compte a été validé automatiquement"),
+    user: z.string().describe("Id de l'utilisateur ayant effectué la modification | 'SERVEUR' si le compte a été validé automatiquement"),
     date: z.date().nullish().describe("Date de l'évènement"),
   })
   .strict()
@@ -161,3 +161,14 @@ export const ZAnonymizedUserRecruteur = ZUserRecruteur.pick({
 })
 
 export type IAnonymizedUserRecruteur = z.output<typeof ZAnonymizedUserRecruteur>
+
+export const ZUserRecruteurReferentielData = ZUserRecruteur.pick({
+  establishment_state: true,
+  is_qualiopi: true,
+  establishment_siret: true,
+  establishment_raison_sociale: true,
+  contacts: true,
+  address_detail: true,
+  address: true,
+  geo_coordinates: true,
+}).strict()

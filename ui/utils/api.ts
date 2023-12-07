@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes, IUserStatusValidationJson } from "shared"
+import { IJobWritable, INewDelegations, IRoutes, IUserRecruteur, IUserStatusValidationJson } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
@@ -55,6 +55,7 @@ export const updateUserValidationHistory = (userId: string, state: IUserStatusVa
   apiPut("/user/:userId/history", { params: { userId }, body: state }).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
 export const deleteEntreprise = (userId: string, recruiterId: string) => apiDelete(`/user`, { querystring: { userId, recruiterId } }).catch(errorHandler)
+export const createUser = (userRecruteur: IUserRecruteur) => apiPost("/admin/users", { body: userRecruteur })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**

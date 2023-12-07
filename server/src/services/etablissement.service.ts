@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IReferentielOpco, IUserRecruteur } from "shared"
+import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IReferentielOpco, IUserRecruteur, ZUserRecruteurReferentielData } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -466,18 +466,26 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
  * @param {IReferentiel} d
  * @returns {Object}
  */
-export const formatReferentielData = (d: IReferentiel): IReferentielData => ({
-  establishment_state: d.etat_administratif,
-  is_qualiopi: d.qualiopi,
-  establishment_siret: d.siret,
-  establishment_raison_sociale: d.raison_sociale,
-  contacts: d.contacts,
-  address_detail: d.adresse,
-  address: d.adresse?.label,
-  geo_coordinates: d.adresse
-    ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
-    : `${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[1]}`,
-})
+export const formatReferentielData = (d: IReferentiel): IReferentielData => {
+  const referentielData = {
+    establishment_state: d.etat_administratif,
+    is_qualiopi: d.qualiopi,
+    establishment_siret: d.siret,
+    establishment_raison_sociale: d.raison_sociale,
+    contacts: d.contacts,
+    address_detail: d.adresse,
+    address: d.adresse?.label,
+    geo_coordinates: d.adresse
+      ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
+      : `${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[1]}`,
+  }
+
+  const validation = ZUserRecruteurReferentielData.safeParse(referentielData)
+  if (!validation.success) {
+    sentryCaptureException(Boom.internal(`address format error for siret=${d.siret}.`, { validationError: validation.error }))
+  }
+  return referentielData
+}
 
 /**
  * Taggue l'organisme de formation pour qu'il ne reçoive plus de demande de délégation
@@ -721,7 +729,7 @@ export const entrepriseOnboardingWorkflow = {
       cfa_delegated_siret,
     })
     const formulaireId = formulaireInfo.establishment_id
-    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE })
+    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE, is_email_checked: false })
 
     if (hasSiretError) {
       newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")
