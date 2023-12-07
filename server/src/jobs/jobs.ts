@@ -13,7 +13,6 @@ import { cronsInit, cronsScheduler } from "./crons_actions"
 import { checkDiffusibleCompanies, fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
-import { fixCollections } from "./database/temp/fixCollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -219,8 +218,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return controlApplications()
       case "control:appointments":
         return controlAppointments()
-      case "fiab:kevin":
-        return fixCollections()
       case "recruiters:set-missing-job-start-date":
         return updateMissingStartDate()
       case "recruiters:get-missing-geocoordinates":
