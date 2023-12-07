@@ -15,6 +15,7 @@ import { prepareMessageForMail } from "../common/utils/fileUtils.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 
+import { BrevoEventStatus } from "./brevo.service.js"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer from "./mailer.service.js"
@@ -662,4 +663,31 @@ export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][
   ])
 
   return applicationCountByCompany
+}
+
+export const processApplicationEvent = async (payload) => {
+  const { event, email } = payload
+  const messageId = payload["message-id"]
+
+  // application
+  if (event === BrevoEventStatus.HARD_BOUNCE) {
+    const application = await findApplicationByMessageId({
+      messageId,
+      email,
+    })
+
+    if (application) {
+      await updateApplicationStatusFromHardbounce({ payload, application })
+      return false
+    }
+  }
+  return true
+}
+
+export const processHardBounce = async (payload) => {
+  const { event, email } = payload
+
+  if (event === BrevoEventStatus.HARD_BOUNCE) {
+    await Promise.all([addEmailToBlacklist(email, "campaign"), removeEmailFromLbaCompanies(email)])
+  }
 }

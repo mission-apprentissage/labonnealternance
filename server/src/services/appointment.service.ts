@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 import type { FilterQuery, ObjectId } from "mongoose"
 import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 
+import { logger } from "@/common/logger"
 import { mailType } from "@/common/model/constants/appointments"
 import { ReferrerObject } from "@/common/model/constants/referrers"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -9,7 +10,10 @@ import config from "@/config"
 
 import { Appointment } from "../common/model/index"
 
+import { addEmailToBlacklist } from "./application.service"
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
+import { BrevoEventStatus } from "./brevo.service"
+import * as eligibleTrainingsForAppointmentService from "./eligibleTrainingsForAppointment.service"
 import mailer from "./mailer.service"
 
 export type NewAppointment = Pick<
@@ -142,4 +146,112 @@ export const sendFormateurAppointmentEmail = async (
       },
     }
   )
+}
+
+export const processAppointmentToApplicantWebhookEvent = async (payload) => {
+  const { date, event } = payload
+  const messageId = payload["message-id"]
+
+  const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
+
+  // If mail sent from appointment (to the candidat)
+  const [appointmentCandidatFound] = await find({
+    "to_applicant_mails.message_id": { $regex: messageId },
+  })
+  if (appointmentCandidatFound) {
+    const previousEmail = appointmentCandidatFound?.to_applicant_mails?.find((mail) => mail.message_id.includes(messageId))
+
+    if (!previousEmail) return false
+
+    await appointmentCandidatFound.update({
+      $push: {
+        to_applicant_mails: {
+          campaign: previousEmail.campaign,
+          status: event,
+          message_id: previousEmail.message_id,
+          webhook_status_at: eventDate,
+        },
+      },
+    })
+    return false
+  }
+  return true
+}
+
+export const processAppointmentWebhookEvent = async (payload) => {
+  const { date, event } = payload
+  const messageId = payload["message-id"]
+
+  const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
+
+  // If mail sent from appointment model
+  const appointment = await findOne({ "to_cfa_mails.message_id": { $regex: messageId } })
+  if (appointment) {
+    const previousEmail = appointment.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
+
+    if (!previousEmail) {
+      return false
+    }
+
+    await appointment.update({
+      $push: {
+        to_etablissement_emails: {
+          campaign: previousEmail.campaign,
+          status: event,
+          message_id: previousEmail.message_id,
+          webhook_status_at: eventDate,
+        },
+      },
+    })
+
+    // Disable eligibleTrainingsForAppointments in case of hard_bounce
+    if (event === BrevoEventStatus.HARD_BOUNCE) {
+      const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: appointment.cfa_recipient_email })
+
+      await Promise.all(
+        eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
+          await eligibleTrainingsForAppointment.update({ referrers: [] })
+
+          logger.info('Widget parameters disabled for "hard_bounce" reason', {
+            eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
+            cfa_recipient_email: appointment.cfa_recipient_email,
+          })
+        })
+      )
+      await addEmailToBlacklist(appointment.cfa_recipient_email as string, "rdv-transactional")
+    }
+
+    return false
+  }
+  return true
+}
+
+export const processAppointmentToCfaWebhookEvent = async (payload) => {
+  const { date, event } = payload
+  const messageId = payload["message-id"]
+
+  const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
+
+  // If mail sent from appointment (to the CFA)
+  const [appointmentCfaFound] = await find({ "to_cfa_mails.message_id": { $regex: messageId } })
+  if (appointmentCfaFound && appointmentCfaFound?.to_cfa_mails) {
+    const previousEmail = appointmentCfaFound.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
+
+    if (!previousEmail) {
+      return false
+    }
+
+    await appointmentCfaFound.update({
+      $push: {
+        to_cfa_mails: {
+          campaign: previousEmail.campaign,
+          status: event,
+          message_id: previousEmail.message_id,
+          webhook_status_at: eventDate,
+        },
+      },
+    })
+    return false
+  }
+  return true
 }
