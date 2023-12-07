@@ -166,7 +166,7 @@ program
   .action(createJobAction("fix-diffusible-companies"))
 
 program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
-program.command("fiab:kevin").description("Run migrations up").action(createJobAction("fiab:kevin"))
+
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
 program.command("migrations:up").description("Run migrations up").action(createJobAction("migrations:up"))
