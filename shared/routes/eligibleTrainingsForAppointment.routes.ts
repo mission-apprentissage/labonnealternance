@@ -17,13 +17,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        resources: {
-          eligibleTrainingsForAppointment: [
-            {
-              etablissement_formateur_siret: { type: "params", key: "siret" },
-            },
-          ],
-        },
+        resources: {},
       },
     },
   },
@@ -50,13 +44,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        resources: {
-          eligibleTrainingsForAppointment: [
-            {
-              _id: { type: "params", key: "id" },
-            },
-          ],
-        },
+        resources: {},
       },
     },
   },

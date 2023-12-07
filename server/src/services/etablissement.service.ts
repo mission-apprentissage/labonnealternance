@@ -286,12 +286,11 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
         params: apiParams,
       }
     )
-
     await saveSiretDiffusionStatus(siret, data.data.status_diffusion)
 
     return data.data.status_diffusion
   } catch (error: any) {
-    if (error?.response?.status === 404 || error?.response?.status === 422) {
+    if (error?.response?.status === 404) {
       await saveSiretDiffusionStatus(siret, EDiffusibleStatus.NOT_FOUND)
       return EDiffusibleStatus.NOT_FOUND
     }
