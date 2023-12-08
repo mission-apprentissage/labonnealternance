@@ -266,8 +266,6 @@ export const zAppointmentsRoute = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        // "200": z.any(),
         "200": z
           .object({
             userId: zObjectId,
