@@ -11,6 +11,7 @@ import { cronsInit, cronsScheduler } from "./crons_actions"
 import { checkDiffusibleCompanies, fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
+import { fixRDVACollections } from "./database/temp/fixRDVACollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -212,6 +213,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "migration:correctionRDVA": // Temporaire, doit tourner une fois en recette et production
+        return fixRDVACollections()
       case "control:applications":
         return controlApplications()
       case "control:appointments":

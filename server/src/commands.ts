@@ -167,6 +167,11 @@ program
 
 program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
 
+program
+  .command("migration:correctionRDVA")
+  .description("Corrige les erreurs de données ne correspondant pas aux modèles associés")
+  .action(createJobAction("migration:correctionRDVA"))
+
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
 program.command("migrations:up").description("Run migrations up").action(createJobAction("migrations:up"))

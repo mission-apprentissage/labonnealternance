@@ -29,7 +29,6 @@ export const ZEtablissement = z
     optout_activation_scheduled_date: z.date().nullish(),
     optout_activation_date: z.date().nullish(),
     optout_refusal_date: z.date().nullish(),
-    mailing: z.array(ZMailing).nullish(),
     last_catalogue_sync_date: z.date().nullish(),
     created_at: z.date().nullish(),
     affelnet_perimetre: z.boolean().nullish(),
