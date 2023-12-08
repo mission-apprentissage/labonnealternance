@@ -81,7 +81,7 @@ export const sendCandidateAppointmentEmail = async (
 ) => {
   const email = await mailer.sendEmail({
     to: candidate.email,
-    subject: `${subjectPrefix}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
+    subject: `${subjectPrefix ?? ""}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
     template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
     data: getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
   })
