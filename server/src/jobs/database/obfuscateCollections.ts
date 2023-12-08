@@ -2,7 +2,7 @@ import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
 import { IUser, IUserRecruteur } from "shared"
-import { CFA, ENTREPRISE } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
 import {
@@ -117,9 +117,11 @@ const obfuscateFormations = async () => {
 
 const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
+const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
 const obfuscateRecruiter = async () => {
   logger.info(`obfuscating recruiters`)
 
+  let adminFound = false
   const users: AsyncIterable<IUserRecruteur> = db.collection("userrecruteurs").find({})
   for await (const user of users) {
     const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
@@ -137,6 +139,15 @@ const obfuscateRecruiter = async () => {
           db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
           db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, replacement),
         ])
+        break
+      }
+      case ADMIN: {
+        if (!adminFound) {
+          // on garde un user admin
+          adminFound = true
+          replacement["$set"].email = ADMIN_EMAIL
+        }
+        await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
         break
       }
       default: {
