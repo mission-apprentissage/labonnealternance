@@ -1,12 +1,12 @@
 fileignoreconfig:
-- filename: server/src/jobs/database/obfuscateCollections.ts
-  checksum: 7ba4254524cc7ae083334540daaf8b85235bb9c1918a9e5e4e93264a9d40d117
 - filename: .bin/scripts/seed-apply.sh
   checksum: 49afe4f96fa13b38cf799d931085437d540b4c62eb05b2f15bc12cd3fb43268b
 - filename: .bin/scripts/seed-update.sh
   checksum: 707139e7844412ee81d2796abfb2dac00dd90a9a65eb3b5f2cdede7571e96ef2
 - filename: .bin/scripts/setup-local-env.sh
   checksum: 47323f5183f73a794449666a816d5b797c7a5ed4c7ad219c3c885a57e2fcf1e9
+- filename: .github/workflows/release.yml
+  checksum: 694b85290832914912327d8aac141c4bccc4a18e301d7343b8a6c4471e4ad065
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
@@ -16,19 +16,11 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 559154cce23a106b319209adb507d1891039bcc6381a35717f11135743e94914
+  checksum: 136cba643cbfdfc04f35cd171fe488ad2836261ae88201b6f344b6edbb77d3ef
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
   checksum: 2534c2dae48c1464b97489263621dcd516a676b28fdbb34e98267a10e00fd839
-- filename: server/src/db/migrations/20231127120528-remove-password.ts
-  checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
-- filename: server/src/security/accessTokenService.ts
-  checksum: f05cafd17797362fc9bfb53062af2095ead2cbe2fa967fad23bd61b756052004
-- filename: shared/routes/formulaire.route.ts
-  checksum: aaebcb3889eeb066dd5b44f95e8d23a1a988608b382eb107dad4d87d24a97074
-- filename: shared/routes/v1Jobs.routes.ts
-  checksum: aa0fb2458520f24921a48af03ad05c3f4a92052374182851f24a3afa7421a5b8
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts
@@ -47,6 +39,8 @@ fileignoreconfig:
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
+- filename: server/src/security/accessTokenService.ts
+  checksum: f05cafd17797362fc9bfb53062af2095ead2cbe2fa967fad23bd61b756052004
 - filename: server/src/services/application.service.ts
   checksum: 935cd8f213565ba7bcc2925fca149aaa6cbe9bb5e393a13ab3525dff6ad17234
 - filename: server/tests/integration/http/formationV1.test.ts
@@ -75,8 +69,12 @@ fileignoreconfig:
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
   checksum: 46d94affa911e46d6e3f72d453412c4b5378a4ef71e6ee6cb3ab2f43eee3d5d4
+- filename: shared/routes/formulaire.route.ts
+  checksum: aaebcb3889eeb066dd5b44f95e8d23a1a988608b382eb107dad4d87d24a97074
 - filename: shared/routes/password.routes.ts
   checksum: f9d2657f85f9f885deddf2ed1fd006d8278d27174659f0ed5a35e4d11343bb3a
+- filename: shared/routes/v1Jobs.routes.ts
+  checksum: aa0fb2458520f24921a48af03ad05c3f4a92052374182851f24a3afa7421a5b8
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
 - filename: ui/components/ItemDetail/ItemDetail.tsx
@@ -95,10 +93,6 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-- filename: .infra/vault/vault.yml
-  checksum: 136cba643cbfdfc04f35cd171fe488ad2836261ae88201b6f344b6edbb77d3ef
-  ignore_detectors: []
-version: ""
 scopeconfig:
 - scope: node
 custom_patterns:
@@ -116,3 +110,4 @@ allowed_patterns:
 - versionKey
 - '@apprentissage.beta.gouv.fr'
 - adminusersview
+version: "1.0"

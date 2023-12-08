@@ -1,5 +1,3 @@
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
-
 import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
@@ -11,10 +9,9 @@ import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
-import { fixDiffusibleCompanies, checkDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
+import { checkDiffusibleCompanies, fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
-import { fixCollections } from "./database/temp/fixCollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -67,6 +64,8 @@ import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsA
 import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
 import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
+import { controlApplications } from "./verifications/controlApplications"
+import { controlAppointments } from "./verifications/controlAppointments"
 
 const logger = getLoggerWithContext("script")
 
@@ -183,6 +182,14 @@ export const CronsMap = {
     cron_string: "0 0 1 * *",
     handler: () => addJob({ name: "users:anonimize", payload: {} }),
   },
+  "Contrôle quotidien des candidatures": {
+    cron_string: "0 10-19/1 * * 1-5",
+    handler: () => addJob({ name: "control:applications", payload: {} }),
+  },
+  "Contrôle quotidien des prises de rendez-vous": {
+    cron_string: "0 11-19/2 * * 1-5",
+    handler: () => addJob({ name: "control:appointments", payload: {} }),
+  },
   // TODO A activer autour du 15/12/2023
   // "Anonymisation des user recruteurs de plus de 2 ans": {
   //   cron_string: "0 1 * * *",
@@ -206,8 +213,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
-      case "fiab:kevin":
-        return fixCollections()
+      case "control:applications":
+        return controlApplications()
+      case "control:appointments":
+        return controlAppointments()
       case "recruiters:set-missing-job-start-date":
         return updateMissingStartDate()
       case "recruiters:get-missing-geocoordinates":
@@ -236,14 +245,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
             address,
             email,
             scope,
-            status: [
-              {
-                status: ETAT_UTILISATEUR.VALIDE,
-                validation_type: "AUTOMATIQUE",
-                user: "SERVEUR",
-                date: new Date(),
-              },
-            ],
           },
           {
             options: {

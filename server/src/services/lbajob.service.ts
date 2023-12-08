@@ -287,9 +287,9 @@ const getCity = (recruiter) => {
   if (recruiter.establishment_location) {
     // cas mandataire
     city = recruiter.establishment_location
-  } else if ("localite" in recruiter.address_detail) {
+  } else if (recruiter.address_detail && "localite" in recruiter.address_detail) {
     city = recruiter.address_detail.localite
-  } else if ("libelle_commune" in recruiter.address_detail) {
+  } else if (recruiter.address_detail && "libelle_commune" in recruiter.address_detail) {
     city = recruiter.address_detail.libelle_commune
   }
 

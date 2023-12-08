@@ -4,8 +4,8 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import useUserHistoryUpdate from "@/common/hooks/useUserHistoryUpdate"
-import { useAuth } from "@/context/UserContext"
-import { apiDelete, apiPost, apiPut } from "@/utils/api.utils"
+import { createUser } from "@/utils/api"
+import { apiDelete, apiPut } from "@/utils/api.utils"
 
 import ConfirmationDesactivationUtilisateur from "../../ConfirmationDesactivationUtilisateur"
 
@@ -54,7 +54,6 @@ const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisat
 
 const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?: any; onDelete?: any; onUpdate?: any }) => {
   const toast = useToast()
-  const { user: adminUser } = useAuth()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const { values, errors, touched, dirty, handleSubmit, handleChange } = useFormik({
     initialValues: {
@@ -109,19 +108,9 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
           }
           onUpdate?.()
         } else {
-          result = await apiPost("/admin/users", {
-            // @ts-expect-error TODO
-            body: {
-              ...values,
-              type: beAdmin ? "ADMIN" : values.type,
-              status: [
-                {
-                  status: "EN ATTENTE DE VALIDATION",
-                  validation_type: "MANUELLE",
-                  user: adminUser._id,
-                },
-              ],
-            },
+          result = await createUser({
+            ...values,
+            type: beAdmin ? "ADMIN" : values.type,
           }).catch((err) => {
             if (err.statusCode === 409) {
               return { error: "Cet utilisateur existe déjà" }
@@ -247,7 +236,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
             {errors.establishment_siret && touched.establishment_siret && <FormErrorMessage>{errors.establishment_siret as string}</FormErrorMessage>}
           </FormControl>
           <FormControl py={2} isInvalid={!!errors.establishment_raison_sociale}>
-            <FormLabel>Siret</FormLabel>
+            <FormLabel>Raison sociale</FormLabel>
             <Input
               type="establishment_raison_sociale"
               id="establishment_raison_sociale"
