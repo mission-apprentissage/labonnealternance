@@ -12,16 +12,13 @@ const processWebhookEvent = async (payload) => {
   let shouldContinue = await processApplicationWebhookEvent(payload)
   if (!shouldContinue) return
 
-  shouldContinue = await appointmentService.processAppointmentWebhookEvent(payload)
-  if (!shouldContinue) return
-
-  shouldContinue = await processEstablishmentWebhookEvent(payload)
+  shouldContinue = await appointmentService.processAppointmentToCfaWebhookEvent(payload)
   if (!shouldContinue) return
 
   shouldContinue = await appointmentService.processAppointmentToApplicantWebhookEvent(payload)
   if (!shouldContinue) return
 
-  shouldContinue = await appointmentService.processAppointmentToCfaWebhookEvent(payload)
+  shouldContinue = await processEstablishmentWebhookEvent(payload)
   if (!shouldContinue) return
 
   await processHardBounceWebhookEvent(payload)

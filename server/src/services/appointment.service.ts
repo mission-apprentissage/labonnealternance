@@ -155,20 +155,19 @@ export const processAppointmentToApplicantWebhookEvent = async (payload) => {
   const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
 
   // If mail sent from appointment (to the candidat)
-  const [appointmentCandidatFound] = await find({
-    "to_applicant_mails.message_id": { $regex: messageId },
+  const appointmentCandidatFound = await findOne({
+    "to_applicant_mails.message_id": messageId,
   })
-  if (appointmentCandidatFound) {
-    const previousEmail = appointmentCandidatFound?.to_applicant_mails?.find((mail) => mail.message_id.includes(messageId))
-
-    if (!previousEmail) return false
+  if (appointmentCandidatFound && appointmentCandidatFound.to_applicant_mails?.length) {
+    // deuxième condition ci-dessus utile uniquement pour typescript car to_applicant_mails peut être null selon le typage
+    const firstEmailEvent = appointmentCandidatFound.to_applicant_mails[0]
 
     await appointmentCandidatFound.update({
       $push: {
         to_applicant_mails: {
-          campaign: previousEmail.campaign,
+          campaign: firstEmailEvent.campaign,
           status: event,
-          message_id: previousEmail.message_id,
+          message_id: firstEmailEvent.message_id,
           webhook_status_at: eventDate,
         },
       },
@@ -178,27 +177,22 @@ export const processAppointmentToApplicantWebhookEvent = async (payload) => {
   return true
 }
 
-export const processAppointmentWebhookEvent = async (payload) => {
+export const processAppointmentToCfaWebhookEvent = async (payload) => {
   const { date, event } = payload
   const messageId = payload["message-id"]
-
   const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
 
   // If mail sent from appointment model
-  const appointment = await findOne({ "to_cfa_mails.message_id": { $regex: messageId } })
+  const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
   if (appointment) {
-    const previousEmail = appointment.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
-
-    if (!previousEmail) {
-      return false
-    }
+    const firstEmailEvent = appointment.to_cfa_mails[0]
 
     await appointment.update({
       $push: {
         to_etablissement_emails: {
-          campaign: previousEmail.campaign,
+          campaign: firstEmailEvent.campaign,
           status: event,
-          message_id: previousEmail.message_id,
+          message_id: firstEmailEvent.message_id,
           webhook_status_at: eventDate,
         },
       },
@@ -218,39 +212,9 @@ export const processAppointmentWebhookEvent = async (payload) => {
           })
         })
       )
-      await addEmailToBlacklist(appointment.cfa_recipient_email as string, "rdv-transactional")
+      await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
     }
 
-    return false
-  }
-  return true
-}
-
-export const processAppointmentToCfaWebhookEvent = async (payload) => {
-  const { date, event } = payload
-  const messageId = payload["message-id"]
-
-  const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
-
-  // If mail sent from appointment (to the CFA)
-  const [appointmentCfaFound] = await find({ "to_cfa_mails.message_id": { $regex: messageId } })
-  if (appointmentCfaFound && appointmentCfaFound?.to_cfa_mails) {
-    const previousEmail = appointmentCfaFound.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
-
-    if (!previousEmail) {
-      return false
-    }
-
-    await appointmentCfaFound.update({
-      $push: {
-        to_cfa_mails: {
-          campaign: previousEmail.campaign,
-          status: event,
-          message_id: previousEmail.message_id,
-          webhook_status_at: eventDate,
-        },
-      },
-    })
     return false
   }
   return true

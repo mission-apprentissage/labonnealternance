@@ -848,16 +848,17 @@ export const processEstablishmentWebhookEvent = async (payload) => {
   const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
 
   // If mail sent from etablissement model
-  const [etablissementFound] = await Etablissement.find({ "mailing.message_id": { $regex: messageId } })
-  if (etablissementFound) {
-    const previousEmail = etablissementFound?.to_etablissement_emails?.find((mail) => mail?.message_id?.includes(messageId))
+  const etablissementFound = await Etablissement.findOne({ "to_etablissement_emails.message_id": messageId })
+  if (etablissementFound && etablissementFound.to_etablissement_emails?.length) {
+    const firstEmailEvent = etablissementFound.to_etablissement_emails[0]
 
+    // adding one entry to Etablissement email message logs
     await etablissementFound.update({
       $push: {
         to_etablissement_emails: {
-          campaign: previousEmail?.campaign,
+          campaign: firstEmailEvent.campaign,
           status: event,
-          message_id: previousEmail?.message_id,
+          message_id: firstEmailEvent.message_id,
           webhook_status_at: eventDate,
         },
       },
