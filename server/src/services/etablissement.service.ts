@@ -841,7 +841,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
   }
 }
 
-export const processEstablishmentEvent = async (payload) => {
+export const processEstablishmentWebhookEvent = async (payload) => {
   const { date, event } = payload
   const messageId = payload["message-id"]
 
