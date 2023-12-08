@@ -2,6 +2,7 @@ import dayjs from "shared/helpers/dayjs"
 
 import { EmailBlacklist, Etablissement } from "../../../common/model"
 
+// SIRET number that does not comply with LUHN algorythm in etablissements collection
 const SIRET_TO_REMOVE_FROM_ETABLISSEMENT = [
   "13002799900132",
   "99999999999920",
