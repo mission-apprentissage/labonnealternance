@@ -4,12 +4,12 @@ import { zRoutes } from "shared/index"
 import config from "@/config"
 import { processEstablishmentEvent } from "@/services/etablissement.service"
 
-import { processApplicationEvent, processHardBounce } from "../../services/application.service"
+import { processApplicationWebhookEvent, processHardBounceWebhookEvent } from "../../services/application.service"
 import * as appointmentService from "../../services/appointment.service"
 import { Server } from "../server"
 
 const processWebhookEvent = async (payload) => {
-  let shouldContinue = await processApplicationEvent(payload)
+  let shouldContinue = await processApplicationWebhookEvent(payload)
   if (!shouldContinue) return
 
   shouldContinue = await appointmentService.processAppointmentWebhookEvent(payload)
@@ -24,7 +24,7 @@ const processWebhookEvent = async (payload) => {
   shouldContinue = await appointmentService.processAppointmentToCfaWebhookEvent(payload)
   if (!shouldContinue) return
 
-  await processHardBounce(payload)
+  await processHardBounceWebhookEvent(payload)
 }
 /**
  * Email controllers.

@@ -665,7 +665,10 @@ export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][
   return applicationCountByCompany
 }
 
-export const processApplicationEvent = async (payload) => {
+/**
+ *  met à jour une candidature si l'événement reçu correspond à une hardbounce
+ */
+export const processApplicationWebhookEvent = async (payload) => {
   const { event, email } = payload
   const messageId = payload["message-id"]
 
@@ -684,7 +687,10 @@ export const processApplicationEvent = async (payload) => {
   return true
 }
 
-export const processHardBounce = async (payload) => {
+/**
+ *  réagit à un hardbounce non lié à aux autres processeurs de webhook email
+ */
+export const processHardBounceWebhookEvent = async (payload) => {
   const { event, email } = payload
 
   if (event === BrevoEventStatus.HARD_BOUNCE) {
