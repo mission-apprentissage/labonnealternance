@@ -56,6 +56,7 @@ import { inviteEtablissementToPremium } from "./rdv/inviteEtablissementToPremium
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementToPremiumAffelnet"
 import { inviteEtablissementToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUp"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUpAffelnet"
+import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
 import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
@@ -213,6 +214,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
+        return fixDuplicateUsers()
       case "migration:correctionRDVA": // Temporaire, doit tourner une fois en recette et production
         return fixRDVACollections()
       case "control:applications":
