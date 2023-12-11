@@ -6,8 +6,6 @@ import { zObjectId } from "./common"
 export const ZUser = z
   .object({
     _id: zObjectId,
-    username: z.string(),
-    password: z.string(),
     firstname: z.string(),
     lastname: z.string(),
     phone: z.string(),
