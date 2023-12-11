@@ -89,8 +89,6 @@ const deactivateUserRecruteur = async (userRecruteur: IUserRecruteur) => {
     userRecruteur.status.push(userStatus)
   }
 
-  // TODO: ICI faire en sorte de restaurer un user ADMIN et ne pas chercher à désactiver les siret undefined
-
   userRecruteur.address = ANONYMIZED
   userRecruteur.geo_coordinates = FAKE_GEOLOCATION
 
