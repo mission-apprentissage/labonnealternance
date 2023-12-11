@@ -3,7 +3,6 @@ import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schem
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 
 import { getLoggerWithContext } from "../common/logger"
-import config from "../config"
 
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
@@ -97,7 +96,7 @@ export const CronsMap = {
   },
   "Send CSV offers to Pôle emploi": {
     cron_string: "30 5 * * *",
-    handler: () => (config.env === "production" ? addJob({ name: "pe:offre:export", payload: { threshold: "1" } }) : Promise.resolve(0)),
+    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" }, productionOnly: true }),
   },
   "Check companies validation state": {
     cron_string: "30 6 * * *",
@@ -185,11 +184,11 @@ export const CronsMap = {
   },
   "Contrôle quotidien des candidatures": {
     cron_string: "0 10-19/1 * * 1-5",
-    handler: () => addJob({ name: "control:applications", payload: {} }),
+    handler: () => addJob({ name: "control:applications", payload: {}, productionOnly: true }),
   },
   "Contrôle quotidien des prises de rendez-vous": {
     cron_string: "0 11-19/2 * * 1-5",
-    handler: () => addJob({ name: "control:appointments", payload: {} }),
+    handler: () => addJob({ name: "control:appointments", payload: {}, productionOnly: true }),
   },
   // TODO A activer autour du 15/12/2023
   // "Anonymisation des user recruteurs de plus de 2 ans": {

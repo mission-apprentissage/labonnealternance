@@ -7,15 +7,20 @@ import { db } from "@/common/mongodb"
 import { sleep } from "@/common/utils/asyncUtils"
 
 import { getLoggerWithContext } from "../common/logger"
+import config from "../config"
 
 import { createJobSimple, updateJob } from "./job.actions"
 import { runJob } from "./jobs"
 
 const logger = getLoggerWithContext("script")
 
-type AddJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload"> & Partial<Pick<IInternalJobsSimple, "scheduled_for">> & { queued?: boolean }
+type AddJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload"> & Partial<Pick<IInternalJobsSimple, "scheduled_for">> & { queued?: boolean; productionOnly?: boolean }
 
-export async function addJob({ name, payload, scheduled_for = new Date(), queued = false }: AddJobSimpleParams): Promise<number> {
+export async function addJob({ name, payload, scheduled_for = new Date(), queued = false, productionOnly = false }: AddJobSimpleParams): Promise<number> {
+  if (config.env !== "production" && productionOnly) {
+    return 0
+  }
+
   const job = await createJobSimple({
     name,
     payload,
