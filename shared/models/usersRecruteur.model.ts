@@ -59,7 +59,7 @@ export const ZUserRecruteur = ZUserRecruteurWritable.omit({
   is_qualiopi: ZUserRecruteurWritable.shape.is_qualiopi.nullish(),
 })
 
-export const zReferentielData = z
+export const ZCfaReferentielData = z
   .object({
     establishment_state: z.string(),
     is_qualiopi: z.boolean(),
@@ -77,11 +77,12 @@ export const zReferentielData = z
     ),
     address_detail: ZGlobalAddress,
     address: z.string(),
-    geo_coordinates: z.string().nullish(),
+    geo_coordinates: z.string().max(40).nullish(),
   })
   .strict()
+  .nonstrict()
 
-export type IReferentielData = z.output<typeof zReferentielData>
+export type ICfaReferentielData = z.output<typeof ZCfaReferentielData>
 
 export type IUserStatusValidation = z.output<typeof ZUserStatusValidation>
 export type IUserStatusValidationJson = Jsonify<z.input<typeof ZUserStatusValidation>>
@@ -161,14 +162,3 @@ export const ZAnonymizedUserRecruteur = ZUserRecruteur.pick({
 })
 
 export type IAnonymizedUserRecruteur = z.output<typeof ZAnonymizedUserRecruteur>
-
-export const ZUserRecruteurReferentielData = ZUserRecruteur.pick({
-  establishment_state: true,
-  is_qualiopi: true,
-  establishment_siret: true,
-  establishment_raison_sociale: true,
-  contacts: true,
-  address_detail: true,
-  address: true,
-  geo_coordinates: true,
-}).strict()

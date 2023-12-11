@@ -38,6 +38,7 @@ import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/const
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { fillRecruiterRaisonSociale } from "./lba_recruteur/user/misc/fillRecruiterRaisonSociale"
+import { fixUserRecruiterCfaDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurCfaDataValidation"
 import { fixUserRecruiterDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurDataValidation"
 import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
@@ -345,6 +346,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixRecruiterDataValidation()
       case "user-recruters:data-validation:fix":
         return fixUserRecruiterDataValidation()
+      case "user-recruters-cfa:data-validation:fix":
+        return fixUserRecruiterCfaDataValidation()
       case "referentiel-opco:constructys:import": {
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
