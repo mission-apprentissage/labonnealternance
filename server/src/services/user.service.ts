@@ -5,13 +5,6 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { Recruiter, User, UserRecruteur } from "../common/model/index"
 
 /**
- * @description Returns user from its username.
- * @param {string} username
- * @returns {Promise<IUser>}
- */
-const getUser = (username: string) => User.findOne({ username })
-
-/**
  * @description Returns user from its email.
  * @param {string} email
  * @returns {Promise<IUser>}
@@ -147,4 +140,4 @@ const getUserAndRecruitersDataForOpcoUser = async (opco: string): Promise<TRetur
   return results
 }
 
-export { createUser, find, findOne, getUser, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, update }
+export { createUser, find, findOne, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, update }
