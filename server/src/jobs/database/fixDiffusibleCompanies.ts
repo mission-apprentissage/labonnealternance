@@ -116,7 +116,7 @@ const fixRecruiters = async () => {
     try {
       const isDiffusible = await getDiffusionStatus(recruiter.establishment_siret)
 
-      if (isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
+      if (recruiter.establishment_siret && isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
         deactivateRecruiter(recruiter)
 
         deactivatedCount++
@@ -133,6 +133,7 @@ const fixRecruiters = async () => {
   count = 0
   deactivatedCount = 0
   errorCount = 0
+
   for await (const userRecruteur of userRecruteurs) {
     if (count % 100 === 0) {
       logger.info(`${count} userRecruteurs checked. ${deactivatedCount} removed. ${errorCount} errors`)
