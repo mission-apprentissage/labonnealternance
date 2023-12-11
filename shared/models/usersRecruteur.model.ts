@@ -80,7 +80,6 @@ export const ZCfaReferentielData = z
     geo_coordinates: z.string().max(40).nullish(),
   })
   .strict()
-  .nonstrict()
 
 export type ICfaReferentielData = z.output<typeof ZCfaReferentielData>
 
