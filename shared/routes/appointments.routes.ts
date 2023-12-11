@@ -266,14 +266,12 @@ export const zAppointmentsRoute = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "200": z
-        //   .object({
-        //     userId: z.string(),
-        //     appointment: z.union([ZAppointment, z.null()]),
-        //   })
-        //   .strict(),
+        "200": z
+          .object({
+            userId: zObjectId,
+            appointment: z.union([ZAppointment, z.null()]),
+          })
+          .strict(),
       },
       securityScheme: null,
     },

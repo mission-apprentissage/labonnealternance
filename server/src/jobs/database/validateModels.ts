@@ -5,6 +5,7 @@ import {
   ZAppointment,
   ZCredential,
   ZEligibleTrainingsForAppointmentSchema,
+  ZEmailBlacklist,
   ZEtablissement,
   ZJob,
   ZLbaCompany,
@@ -28,6 +29,7 @@ import {
   AppointmentDetailed,
   Credential,
   EligibleTrainingsForAppointment,
+  EmailBlacklist,
   Etablissement,
   FormationCatalogue,
   Job,
@@ -95,7 +97,7 @@ export async function validateModels(): Promise<void> {
   //  await validateModel(DiplomesMetiers, ZDiplomesMetiers)
   //  await validateModel(DomainesMetiers, ZDomainesMetiers)
   await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
-  // await validateModel(EmailBlacklist, ZEmailBlacklist)
+  await validateModel(EmailBlacklist, ZEmailBlacklist)
   await validateModel(Etablissement, ZEtablissement)
   await validateModel(FormationCatalogue, zFormationCatalogueSchema)
   //  await validateModel(GeoLocation, ZGeoLocation)
