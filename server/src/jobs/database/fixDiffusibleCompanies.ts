@@ -116,7 +116,7 @@ const fixRecruiters = async () => {
     try {
       const isDiffusible = await getDiffusionStatus(recruiter.establishment_siret)
 
-      if (recruiter.establishment_siret && isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
+      if (isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
         deactivateRecruiter(recruiter)
 
         deactivatedCount++
@@ -142,7 +142,7 @@ const fixRecruiters = async () => {
     try {
       const isDiffusible = userRecruteur.establishment_siret ? await getDiffusionStatus(userRecruteur.establishment_siret) : EDiffusibleStatus.NOT_FOUND
 
-      if (isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
+      if (userRecruteur.establishment_siret && isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
         deactivateUserRecruteur(userRecruteur)
 
         deactivatedCount++
