@@ -3,7 +3,7 @@ import env from "env-var"
 const config = {
   version: env.get("PUBLIC_VERSION").required().asString(),
   port: env.get("LBA_SERVER_PORT").required().asPortNumber(),
-  env: env.get("LBA_ENV").required().asEnum(["local", "recette", "production", "preview"]),
+  env: env.get("LBA_ENV").required().asEnum(["local", "recette", "pentest", "production", "preview"]),
   publicUrl: env.get("LBA_PUBLIC_URL").required().asString(),
   outputDir: env.get("LBA_OUTPUT_DIR").required().asString(),
   formationsEndPoint: "/api/v1/entity/formations",
