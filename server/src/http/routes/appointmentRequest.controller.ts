@@ -44,7 +44,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Formation introuvable.")
       }
 
-      let user = await users.getUser(email)
+      let user = await users.getUserByMail(email)
 
       // Updates firstname and last name if the user already exists
       if (user) {
@@ -103,7 +103,7 @@ export default (server: Server) => {
       await sendFormateurAppointmentEmail(user, createdAppointement, eligibleTrainingsForAppointment, referrerObj, etablissement)
       await sendCandidateAppointmentEmail(user, createdAppointement, eligibleTrainingsForAppointment, referrerObj)
 
-      const appointmentUpdated = await Appointment.findById(createdAppointement._id)
+      const appointmentUpdated = await Appointment.findById(createdAppointement._id).lean()
 
       res.status(200).send({
         userId: user._id,

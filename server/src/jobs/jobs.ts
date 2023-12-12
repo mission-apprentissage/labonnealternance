@@ -3,7 +3,6 @@ import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schem
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 
 import { getLoggerWithContext } from "../common/logger"
-import config from "../config"
 
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
@@ -12,6 +11,7 @@ import { cronsInit, cronsScheduler } from "./crons_actions"
 import { checkDiffusibleCompanies, fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
+import { fixRDVACollections } from "./database/temp/fixRDVACollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -31,6 +31,7 @@ import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
+import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire/misc/sendDelegationEmailWithSecuredToken"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
@@ -56,6 +57,7 @@ import { inviteEtablissementToPremium } from "./rdv/inviteEtablissementToPremium
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementToPremiumAffelnet"
 import { inviteEtablissementToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUp"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUpAffelnet"
+import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
 import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
@@ -96,7 +98,7 @@ export const CronsMap = {
   },
   "Send CSV offers to Pôle emploi": {
     cron_string: "30 5 * * *",
-    handler: () => (config.env === "production" ? addJob({ name: "pe:offre:export", payload: { threshold: "1" } }) : Promise.resolve(0)),
+    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" }, productionOnly: true }),
   },
   "Check companies validation state": {
     cron_string: "30 6 * * *",
@@ -184,11 +186,11 @@ export const CronsMap = {
   },
   "Contrôle quotidien des candidatures": {
     cron_string: "0 10-19/1 * * 1-5",
-    handler: () => addJob({ name: "control:applications", payload: {} }),
+    handler: () => addJob({ name: "control:applications", payload: {}, productionOnly: true }),
   },
   "Contrôle quotidien des prises de rendez-vous": {
     cron_string: "0 11-19/2 * * 1-5",
-    handler: () => addJob({ name: "control:appointments", payload: {} }),
+    handler: () => addJob({ name: "control:appointments", payload: {}, productionOnly: true }),
   },
   // TODO A activer autour du 15/12/2023
   // "Anonymisation des user recruteurs de plus de 2 ans": {
@@ -213,6 +215,12 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "recruiters:delegations": // Temporaire, doit tourner une fois en production
+        return resendDelegationEmailWithAccessToken()
+      case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
+        return fixDuplicateUsers()
+      case "migration:correctionRDVA": // Temporaire, doit tourner une fois en recette et production
+        return fixRDVACollections()
       case "control:applications":
         return controlApplications()
       case "control:appointments":

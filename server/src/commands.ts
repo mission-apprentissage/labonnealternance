@@ -166,9 +166,19 @@ program
   .action(createJobAction("fix-diffusible-companies"))
 
 program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
+program
+  .command("fix:duplicate:users")
+  .description("Fix duplicated users in users collections and update appointment collection accordingly")
+  .action(createJobAction("fix:duplicate:users"))
+
+program
+  .command("migration:correctionRDVA")
+  .description("Corrige les erreurs de données ne correspondant pas aux modèles associés")
+  .action(createJobAction("migration:correctionRDVA"))
 
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
+program.command("recruiters:delegations").description("Resend delegation email for all jobs created on November 2023").action(createJobAction("recruiters:delegations"))
 program.command("migrations:up").description("Run migrations up").action(createJobAction("migrations:up"))
 
 program.command("migrations:status").description("Check migrations status").action(createJobAction("migrations:status"))
