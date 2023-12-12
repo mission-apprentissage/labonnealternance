@@ -1,7 +1,8 @@
 import { Box, Button, Flex, FormLabel, Input, Spacer, Text, Textarea } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useRouter } from "next/router"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { ApplicantIntention } from "shared/constants/application"
 import * as Yup from "yup"
 
 import { isNonEmptyString } from "../../utils/strutils"
@@ -61,7 +62,7 @@ const SatisfactionForm = ({ formType }) => {
     const lastName = ln
     const text = (
       <Box width="100%" maxWidth="800px" mb={8}>
-        {intention === "entretien" && (
+        {intention === ApplicantIntention.ENTRETIEN && (
           <Box>
             <Text pt={8}>Vous souhaitez rencontrer le/la candidat(e) ?</Text>
             <Text fontWeight={700}>Répondez à {`${firstName} ${lastName}`} et proposez-lui une date de rencontre.</Text>
@@ -73,7 +74,7 @@ const SatisfactionForm = ({ formType }) => {
             </Text>
           </Box>
         )}
-        {intention === "ne_sais_pas" && (
+        {intention === ApplicantIntention.NESAISPAS && (
           <Box>
             <Text pt={8}>La candidature de {`${firstName} ${lastName}`} vous intéresse, mais vous ne souhaitez pas prendre votre décision aujourd’hui ?</Text>
             <Text fontWeight={700}>Indiquez-lui que vous lui apporterez une réponse prochainement.</Text>
@@ -85,7 +86,7 @@ const SatisfactionForm = ({ formType }) => {
             </Text>
           </Box>
         )}
-        {intention === "refus" && (
+        {intention === ApplicantIntention.REFUS && (
           <Box>
             <Text pt={8}>Vous souhaitez refuser la candidature ?</Text>
             <Text fontWeight={700}>Indiquez au candidat {`${firstName} ${lastName}`} les raisons de ce refus. Une réponse personnalisée l’aidera pour ses futures recherches.</Text>
