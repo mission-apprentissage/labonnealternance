@@ -5,17 +5,7 @@ import { IUser, IUserRecruteur } from "shared"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
-import {
-  AnonymizedApplication,
-  ApiCalls,
-  Application,
-  Appointment,
-  EligibleTrainingsForAppointment,
-  Etablissement,
-  FormationCatalogue,
-  LbaCompany,
-  UnsubscribedLbaCompany,
-} from "@/common/model/index"
+import { AnonymizedApplication, ApiCalls, Application, Appointment, EligibleTrainingsForAppointment, Etablissement, FormationCatalogue, LbaCompany } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 import { db } from "@/common/mongodb"
 
@@ -66,14 +56,6 @@ const obfuscateAppointments = async () => {
 const obfuscateLbaCompanies = async () => {
   logger.info(`obfuscating lbacompanies`)
   await LbaCompany.updateMany(
-    {},
-    {
-      email: "faux_email@faux-domaine-compagnie.com",
-      phone: "0601010106",
-    }
-  )
-
-  await UnsubscribedLbaCompany.updateMany(
     {},
     {
       email: "faux_email@faux-domaine-compagnie.com",
