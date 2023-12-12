@@ -9,6 +9,7 @@ on:
         options:
           - production
           - recette
+          - pentest
       app_version:
         description: app version
         type: string

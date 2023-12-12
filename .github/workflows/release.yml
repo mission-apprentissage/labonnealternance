@@ -128,6 +128,21 @@ jobs:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       VAULT_PWD: ${{ secrets.VAULT_PWD }}
 
+  deploy-pentest:
+    concurrency:
+      group: "deploy-pentest-${{ github.workflow }}-${{ github.ref }}"
+    needs: ["release"]
+    name: Deploy ${{ needs.release.outputs.VERSION }} on pentest
+    uses: "./.github/workflows/_deploy.yml"
+    with:
+      environment: pentest
+      app_version: ${{ needs.release.outputs.VERSION }}
+    secrets:
+      DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+      DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      VAULT_PWD: ${{ secrets.VAULT_PWD }}
+
   cypress:
     needs: ["deploy"]
     uses: "./.github/workflows/cypress.yml"
