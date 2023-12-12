@@ -34,14 +34,9 @@ describe(__filename(import.meta.url), () => {
   })
 
   it("Suppression des accents et caractères spéciaux des adresses emails", () => {
-    let cleanedEmail = cleanEmail("")
-    assert.strictEqual(cleanedEmail, "")
-
-    cleanedEmail = cleanEmail("àlan.léruŷêïÿt@test.fr")
-    assert.strictEqual(cleanedEmail, "alan.leruyeiyt@test.fr")
-
-    cleanedEmail = cleanEmail("jhönœ.dôœ.’£'^&/=!*?}ù@têst .com ")
-    assert.strictEqual(cleanedEmail, "jhono.doo.u@test.com")
+    assert.strictEqual(cleanEmail(""), "")
+    assert.strictEqual(cleanEmail("àlan.léruŷêïÿt@test.fr"), "alan.leruyeiyt@test.fr")
+    assert.strictEqual(cleanEmail("jhönœ.dôœ.’£'^&/=!*?}ù@têst .com "), "jhono.doo.u@test.com")
   })
 
   it.skip("Encryption décryption fonctionne", () => {
