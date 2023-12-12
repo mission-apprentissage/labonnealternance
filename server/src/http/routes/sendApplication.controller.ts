@@ -7,7 +7,7 @@ import config from "@/config"
 import { Application } from "../../common/model/index"
 import { decryptWithIV } from "../../common/utils/encryptString"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
+import { sendMailToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
 import { Server } from "../server"
 
 const rateLimitConfig = {
@@ -41,7 +41,7 @@ export default function (server: Server) {
         )
         if (!application) throw new Error("application not found")
 
-        await sendNotificationToApplicant({
+        await sendMailToApplicant({
           application,
           intention: req.body.intention,
           email: req.body.email,

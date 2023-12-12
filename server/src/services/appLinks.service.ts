@@ -86,7 +86,7 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
   )
 }
 
-export function createCancelJobLink(user: IUserRecruteur, jobId: string) {
+export function createCancelJobLink(user: IUserRecruteur, jobId: string, utmData: string | undefined = undefined) {
   const token = generateAccessToken(user, [
     generateScope({
       schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
@@ -102,10 +102,10 @@ export function createCancelJobLink(user: IUserRecruteur, jobId: string) {
     }),
   ])
 
-  return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?token=${token}`
+  return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
 }
 
-export function createProvidedJobLink(user: IUserRecruteur, jobId: string) {
+export function createProvidedJobLink(user: IUserRecruteur, jobId: string, utmData: string | undefined = undefined) {
   const token = generateAccessToken(user, [
     generateScope({
       schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
@@ -121,7 +121,7 @@ export function createProvidedJobLink(user: IUserRecruteur, jobId: string) {
     }),
   ])
 
-  return `${config.publicUrl}/espace-pro/offre/${jobId}/provided?token=${token}`
+  return `${config.publicUrl}/espace-pro/offre/${jobId}/provided?${utmData ? utmData : ""}&token=${token}`
 }
 
 export function createViewDelegationLink(email: string, establishment_id: string, job_id: string, siret_formateur: string) {
