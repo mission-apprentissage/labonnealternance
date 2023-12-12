@@ -2,7 +2,7 @@ import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
 import { IUser, IUserRecruteur } from "shared"
-import { ADMIN, CFA, ENTREPRISE } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
 import {
@@ -121,7 +121,6 @@ const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
 const obfuscateRecruiter = async () => {
   logger.info(`obfuscating recruiters`)
 
-  let adminFound = false
   const users: AsyncIterable<IUserRecruteur> = db.collection("userrecruteurs").find({})
   for await (const user of users) {
     const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
@@ -141,21 +140,33 @@ const obfuscateRecruiter = async () => {
         ])
         break
       }
-      case ADMIN: {
-        if (!adminFound) {
-          // on garde un user admin
-          adminFound = true
-          replacement["$set"].email = ADMIN_EMAIL
-        }
-        await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
-        break
-      }
+
       default: {
         await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
         break
       }
     }
   }
+
+  // restoring one admin
+  const user: IUserRecruteur = await db.collection("userrecruteurs").findOne({ type: ADMIN })
+  await db.collection("userrecruteurs").findOneAndUpdate(
+    { _id: user._id },
+    {
+      $set: {
+        email: ADMIN_EMAIL,
+        status: [
+          {
+            user: "SERVEUR",
+            validation_type: VALIDATION_UTILISATEUR.AUTO,
+            status: ETAT_UTILISATEUR.VALIDE,
+            reason: "Anonymisation des données",
+            date: new Date(),
+          },
+        ],
+      },
+    }
+  )
 
   const remainingUsers: AsyncIterable<IUserRecruteur> = db.collection("recruiters").find({ first_name: { $ne: "prenom" } })
   for await (const user of remainingUsers) {
