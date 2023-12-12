@@ -55,6 +55,8 @@ fileignoreconfig:
   checksum: 58153e7e57ef450bfbf061f322cd8b7643dba12513b183194b4eafdb166f58d3
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
+- filename: server/tests/unit/util.test.ts
+  checksum: 874a63575d0c541f631eaf92290e1acb7514d35312cf618f04d54946eb19e46d
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/generateUri.ts

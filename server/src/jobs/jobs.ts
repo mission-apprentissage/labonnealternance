@@ -6,6 +6,7 @@ import { getLoggerWithContext } from "../common/logger"
 
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
+import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { checkDiffusibleCompanies, fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { obfuscateCollections } from "./database/obfuscateCollections"
@@ -349,6 +350,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixJobExpirationDate()
       case "recruiters:job-type:fix":
         return fixJobType()
+      case "fix-applications":
+        return fixApplications()
       case "recruiters:data-validation:fix":
         return fixRecruiterDataValidation()
       case "user-recruters:data-validation:fix":

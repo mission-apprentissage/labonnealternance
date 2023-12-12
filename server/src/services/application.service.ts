@@ -2,7 +2,7 @@ import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
-import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS } from "shared"
+import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS, ZApplication } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur.js"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -320,6 +320,8 @@ const initApplication = (params: Omit<IApplicationUI, "_id">, company_email: str
     company_email: company_email.toLowerCase(),
     job_origin: params.company_type,
   })
+
+  ZApplication.parse(res.toObject())
 
   return res
 }

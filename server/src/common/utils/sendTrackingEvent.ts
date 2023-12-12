@@ -1,3 +1,5 @@
+import { ZApiCallNew } from "shared/models"
+
 import { ApiCalls } from "../model/index"
 
 import { sentryCaptureException } from "./sentryUtils"
@@ -5,9 +7,9 @@ import { sentryCaptureException } from "./sentryUtils"
 const trackApiCall = async ({
   caller,
   api_path,
-  training_count,
-  job_count,
-  result_count,
+  training_count = 0,
+  job_count = 0,
+  result_count = 0,
   response,
 }: {
   caller: string
@@ -18,15 +20,16 @@ const trackApiCall = async ({
   result_count?: number
 }) => {
   try {
-    const apiCall = new ApiCalls({
+    const apiCallParams = {
       caller,
       api_path,
       training_count,
       job_count,
       result_count,
       response,
-    })
+    }
 
+    const apiCall = new ApiCalls(ZApiCallNew.parse(apiCallParams))
     await apiCall.save()
   } catch (err) {
     sentryCaptureException(err)

@@ -540,6 +540,12 @@ program
   .action(createJobAction("recruiters:job-type:fix"))
 
 program
+  .command("fix-applications")
+  .description("Répare les adresses emails comportant des caractères erronés dans la collection applications")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("fix-applications"))
+
+program
   .command("fix-data-validation-recruiters")
   .description("Répare les data de la collection recruiters")
   .option("-q, --queued", "Run job asynchronously", false)
