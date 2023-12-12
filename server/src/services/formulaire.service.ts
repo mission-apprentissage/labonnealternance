@@ -4,6 +4,7 @@ import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
+import { mongooseInstance } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
@@ -363,21 +364,15 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object) => {
   const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
-  const recruiter = await Recruiter.findOneAndUpdate(
+
+  await mongooseInstance.connection.collection("userrecruteurs").findOneAndUpdate(
     { "jobs._id": id },
     {
       $inc: incPayload,
-    },
-    options
-  ).lean()
-
-  if (!recruiter) {
-    throw Boom.internal("Recruiter not found")
-  }
-
-  return recruiter
+    }
+  )
 }
 
 /**

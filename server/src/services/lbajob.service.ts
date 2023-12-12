@@ -429,3 +429,10 @@ export const addOffreSearchView = async (jobId: IJob["_id"] | string) => {
     sentryCaptureException(err)
   }
 }
+
+/**
+ * Incrémente les compteurs de vue d'un ensemble d'offres lba
+ */
+export const incrementLbaJobsViewCount = async (lbaJobs) => {
+  await Promise.all(lbaJobs.results.map((lbaJob) => lbaJob?.job?.id && addOffreSearchView(lbaJob.job.id)))
+}
