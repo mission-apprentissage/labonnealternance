@@ -21,7 +21,7 @@ export async function sendDelegationMailToCFAERRATUM(email: string, offre: IJob,
   const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   await mailer.sendEmail({
     to: email,
-    subject: `Une entreprise recrute dans votre domaine`,
+    subject: `[ERRATUM] Une entreprise recrute dans votre domaine`,
     template: getStaticFilePath("./templates/mail-cfa-delegation-erratum.mjml.ejs"),
     data: {
       images: {
