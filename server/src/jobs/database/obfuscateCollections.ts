@@ -2,7 +2,7 @@ import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
 import { IUser, IUserRecruteur } from "shared"
-import { CFA, ENTREPRISE } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
 import { AnonymizedApplication, ApiCalls, Application, Appointment, EligibleTrainingsForAppointment, Etablissement, FormationCatalogue, LbaCompany } from "@/common/model/index"
@@ -99,6 +99,7 @@ const obfuscateFormations = async () => {
 
 const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
+const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
 const obfuscateRecruiter = async () => {
   logger.info(`obfuscating recruiters`)
 
@@ -121,12 +122,33 @@ const obfuscateRecruiter = async () => {
         ])
         break
       }
+
       default: {
         await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
         break
       }
     }
   }
+
+  // restoring one admin
+  const user: IUserRecruteur = await db.collection("userrecruteurs").findOne({ type: ADMIN })
+  await db.collection("userrecruteurs").findOneAndUpdate(
+    { _id: user._id },
+    {
+      $set: {
+        email: ADMIN_EMAIL,
+        status: [
+          {
+            user: "SERVEUR",
+            validation_type: VALIDATION_UTILISATEUR.AUTO,
+            status: ETAT_UTILISATEUR.VALIDE,
+            reason: "Anonymisation des données",
+            date: new Date(),
+          },
+        ],
+      },
+    }
+  )
 
   const remainingUsers: AsyncIterable<IUserRecruteur> = db.collection("recruiters").find({ first_name: { $ne: "prenom" } })
   for await (const user of remainingUsers) {
