@@ -137,7 +137,7 @@ export const ZDomainesMetiers = z
         })
         .strict()
     ),
-    created_at: z.date().nullish(),
-    last_update_at: z.date().nullish(),
+    created_at: z.date(),
+    last_update_at: z.date(),
   })
   .strict()
