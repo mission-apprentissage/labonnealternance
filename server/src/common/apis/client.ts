@@ -3,6 +3,7 @@ import { buildMemoryStorage, setupCache } from "axios-cache-interceptor"
 
 const CLEANUP_INTERVAL = 1000 * 60 * 10 // 10 minutes
 const MAX_ENTRIES = 200
+const CLONE_DATA = false
 
 const getApiClient = (options: AxiosRequestConfig, { cache }: { cache: boolean } = { cache: true }) => {
   const axiosInstance = axios.create({
@@ -12,7 +13,7 @@ const getApiClient = (options: AxiosRequestConfig, { cache }: { cache: boolean }
 
   return cache
     ? setupCache(axiosInstance, {
-        storage: buildMemoryStorage(true, CLEANUP_INTERVAL, MAX_ENTRIES),
+        storage: buildMemoryStorage(CLONE_DATA, CLEANUP_INTERVAL, MAX_ENTRIES),
         ttl: 1000 * 60 * 10, // 10 Minutes
       })
     : axiosInstance
