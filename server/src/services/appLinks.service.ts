@@ -311,7 +311,7 @@ export function createRdvaAppointmentIdPageLink(email: string, siret: string, et
 /**
  * Secured link for application replies
  */
-export const createLbaCompanyApplicationReplyLink = async (email, siret, intention, application) => {
+export function createLbaCompanyApplicationReplyLink(email, siret, intention, application) {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
   const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
 
@@ -331,7 +331,7 @@ export const createLbaCompanyApplicationReplyLink = async (email, siret, intenti
   )}`
 }
 
-export const createUserRecruteurApplicationReplyLink = async (user, intention, application) => {
+export function createUserRecruteurApplicationReplyLink(user, intention, application) {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
   const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
 
