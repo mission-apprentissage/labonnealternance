@@ -91,8 +91,19 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
                 setBandeau({
                   type: "error",
                   header: "Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.",
-                  description: "Contactez-nous pour obtenir plus d'informations : ",
-                  lien: `mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`,
+                  description: (
+                    <>
+                      <Link
+                        aria-label="Contact de l'équipe La bonne alternance par email"
+                        isExternal
+                        textDecor="underline"
+                        href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
+                      >
+                        Contactez-nous
+                      </Link>{" "}
+                      pour obtenir plus d'informations.
+                    </>
+                  ),
                 })
               }
             }
