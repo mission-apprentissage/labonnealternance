@@ -96,7 +96,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
                       <Link
                         aria-label="Contact de l'équipe La bonne alternance par email"
                         isExternal
-                        textDecor="underline"
+                        textDecoration="underline"
                         href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
                       >
                         Contactez-nous
