@@ -18,13 +18,13 @@ const AmeliorerLBA = () => {
           <Text>La bonne alternance est un service en construction. Pour le faire évoluer, nous interrogeons régulièrement les utilisateurs du service.</Text>
           <Text>
             <strong>
-              Nous vous invitions à participer à un échange en visio d’une trentaine de minutes avec un membre de notre équipe pour répondre à quelques questions et nous partager
+              Nous vous invitions à participer à un échange vidéo d’une trentaine de minutes avec un membre de notre équipe pour répondre à quelques questions et nous partager
               votre avis.
             </strong>
           </Text>
           <Box mt="7">
             <Link
-              href="https://calendly.com/rdv-labonnealternance/discussion-labonnealternance"
+              href="https://calendly.com/claire-arnaud-beta-gouv/la-bonne-alternance"
               aria-label="Planifier un échange avec l'équipe"
               title="Je participe à l'étude"
               color="#000091"

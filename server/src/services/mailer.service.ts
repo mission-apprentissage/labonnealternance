@@ -12,7 +12,7 @@ const htmlToText = nodemailerHtmlToText.htmlToText
 const renderFile: (path: string, data: Data) => Promise<string> = promisify(ejs.renderFile)
 
 const createTransporter = (): Transporter => {
-  const needAuthentication = config.env === "production"
+  const needAuthentication = config.env === "production" || config.env === "pentest"
 
   const options: SMTPTransport.Options = {
     host: config.smtp.host,

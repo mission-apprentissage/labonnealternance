@@ -1,5 +1,6 @@
 import assert from "assert"
 
+import { cleanEmail } from "shared/helpers/common"
 import { describe, it } from "vitest"
 
 import __filename from "../../src/common/filename"
@@ -30,6 +31,12 @@ describe(__filename(import.meta.url), () => {
   it("Détection origine autorisée - retourne true si origine connue labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?isTrainingOnly=1", () => {
     const result = isOriginLocal("https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?isTrainingOnly=1")
     assert.strictEqual(result, true)
+  })
+
+  it("Suppression des accents et caractères spéciaux des adresses emails", () => {
+    assert.strictEqual(cleanEmail(""), "")
+    assert.strictEqual(cleanEmail("àlan.léruŷêïÿt@test.fr"), "alan.leruyeiyt@test.fr")
+    assert.strictEqual(cleanEmail("jhönœ.dôœ.’£'^&/=!*?}ù@têst .com "), "jhono.doo.u@test.com")
   })
 
   it.skip("Encryption décryption fonctionne", () => {

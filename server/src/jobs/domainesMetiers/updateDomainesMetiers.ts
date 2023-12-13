@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 
 import { oleoduc } from "oleoduc"
+import { ZDomainesMetiers } from "shared/models"
 import XLSX from "xlsx"
 
 import __dirname from "../../common/dirname"
@@ -95,7 +96,7 @@ export default async function (optionalFileName?: string) {
         // cas de la ligne sur laquelle se trouve le nom du métier qui va marquer l'insertion d'une ligne dans la db
         step = 1
 
-        const domainesMetier = new DomainesMetiers({
+        const paramsDomaineMetier = {
           domaine: domaine,
           sous_domaine: metier,
           mots_clefs_specifiques: [...new Set(motsClefsSpecifiques)].join(", "),
@@ -110,13 +111,19 @@ export default async function (optionalFileName?: string) {
           codes_fap: [...new Set(codesFAPs)],
           intitules_fap: [...new Set(libellesFAPs)],
           sous_domaine_onisep: sousDomainesOnisep,
-        })
+        }
 
         if (codesROMEs.length > 15) {
           avertissements.push({ domaine: metier, romes: codesROMEs.length })
         }
 
-        await domainesMetier.save()
+        const parsedDomaineMetier = ZDomainesMetiers.safeParse(paramsDomaineMetier)
+
+        if (parsedDomaineMetier.success) {
+          await new DomainesMetiers(parsedDomaineMetier.data).save()
+        } else {
+          logger.error(`Erreur non bloquante : mauvais format de domaines metiers domaine=${paramsDomaineMetier.domaine} - sous_domaine=${paramsDomaineMetier.sous_domaine}`)
+        }
 
         reset()
       } else {

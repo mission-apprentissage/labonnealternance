@@ -35,8 +35,22 @@ export default function (server: Server) {
       } else if (lbaCompaniesToUnsubscribe.length > 1) {
         result = UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES
       } else {
+        const { siret, raison_sociale, enseigne, naf_code, naf_label, rome_codes, insee_city_code, zip_code, city, company_size, created_at, last_update_at } =
+          lbaCompaniesToUnsubscribe[0]
+
         const unsubscribedLbaCompany = new UnsubscribedLbaCompany({
-          ...lbaCompaniesToUnsubscribe[0],
+          siret,
+          raison_sociale,
+          enseigne,
+          naf_code,
+          naf_label,
+          rome_codes,
+          insee_city_code,
+          zip_code,
+          city,
+          company_size,
+          created_at,
+          last_update_at,
           unsubscribe_reason: reason,
         })
 

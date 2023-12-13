@@ -188,4 +188,6 @@ export const zFormationCatalogueSchema = z
   .extend(etablissementReferenceSchema.shape)
   .openapi("FormationCatalogue")
 
+export const zFormationCatalogueSchemaNew = zFormationCatalogueSchema.omit({ _id: true })
+
 export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>
