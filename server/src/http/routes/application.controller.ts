@@ -21,7 +21,7 @@ export default function (server: Server) {
     "/application/intentionComment/:id",
     {
       schema: zRoutes.post["/application/intentionComment/:id"],
-      onRequest: config.env !== "production" ? server.auth(zRoutes.post["/application/intentionComment/:id"]) : async () => {},
+      onRequest: config.env !== "production" ? server.auth(zRoutes.post["/application/intentionComment/:id"]) : async (req, res, done) => done(),
       config: rateLimitConfig,
     },
     async (req, res) => {
@@ -55,7 +55,7 @@ export default function (server: Server) {
     "/application/intention/:id",
     {
       schema: zRoutes.post["/application/intention/:id"],
-      onRequest: config.env !== "production" ? server.auth(zRoutes.post["/application/intention/:id"]) : async () => {},
+      onRequest: config.env !== "production" ? server.auth(zRoutes.post["/application/intention/:id"]) : async (req, res, done) => done(),
       config: rateLimitConfig,
     },
     async (req, res) => {
