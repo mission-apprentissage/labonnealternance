@@ -2,7 +2,7 @@ import fs from "fs"
 import path from "path"
 
 import { compose, oleoduc, writeData } from "oleoduc"
-import { ILbaCompany } from "shared/models"
+import { ILbaCompany, ZGeoLocation } from "shared/models"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
@@ -115,7 +115,7 @@ export const countCompaniesInFile = async (): Promise<number> => {
 /*
 Initialize bonneBoite from data, add missing data from maps,
 */
-export const getCompanyMissingData = async (rawCompany) => {
+export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | null> => {
   const company = new LbaCompany(rawCompany)
   const geo = await getGeoLocationForCompany(company)
   if (!geo) {
@@ -180,7 +180,9 @@ const getGeoLocationForCompany = async (company) => {
       })
       try {
         // on enregistre la geoloc trouvée
-        await geoLocation.save()
+        if (ZGeoLocation.safeParse(geoLocation).success) {
+          await geoLocation.save()
+        }
       } catch (err) {
         //ignore duplicate error
       }

@@ -13,6 +13,7 @@ import { getEtablissementDiffusionStatus } from "@/services/etablissement.servic
 const MAX_RETRY = 100
 const DELAY = 100
 const ANONYMIZED = "anonymized"
+const FAKE_GEOLOCATION = "0,0"
 
 const getDiffusionStatus = async (siret: string, count = 1) => {
   const isDiffusible = await getEtablissementDiffusionStatus(siret)
@@ -58,7 +59,7 @@ const deactivateRecruiter = async (recruiter: IRecruiter) => {
   console.log("deactivating non diffusible recruiter : ", recruiter.establishment_siret)
   recruiter.status = RECRUITER_STATUS.ARCHIVE
   recruiter.address = ANONYMIZED
-  recruiter.geo_coordinates = ANONYMIZED
+  recruiter.geo_coordinates = FAKE_GEOLOCATION
   recruiter.address_detail = recruiter.address_detail
     ? { status_diffusion: recruiter.address_detail.status_diffusion, libelle_commune: ANONYMIZED }
     : { libelle_commune: ANONYMIZED }
@@ -77,16 +78,19 @@ const deactivateUserRecruteur = async (userRecruteur: IUserRecruteur) => {
     user: "SERVEUR",
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     status: ETAT_UTILISATEUR.DESACTIVE,
-    reason: "Anonymization des données",
+    reason: "Anonymisation des données",
     date: new Date(),
   }
   if (!userRecruteur.status) {
     userRecruteur.status = []
   }
-  userRecruteur.status.push(userStatus)
+  const lastStatus = userRecruteur.status.at(-1)
+  if (lastStatus && lastStatus.status !== ETAT_UTILISATEUR.DESACTIVE) {
+    userRecruteur.status.push(userStatus)
+  }
 
   userRecruteur.address = ANONYMIZED
-  userRecruteur.geo_coordinates = ANONYMIZED
+  userRecruteur.geo_coordinates = FAKE_GEOLOCATION
 
   if (userRecruteur.address_detail) {
     userRecruteur.address_detail = { libelle_commune: ANONYMIZED }
@@ -127,6 +131,7 @@ const fixRecruiters = async () => {
   count = 0
   deactivatedCount = 0
   errorCount = 0
+
   for await (const userRecruteur of userRecruteurs) {
     if (count % 100 === 0) {
       logger.info(`${count} userRecruteurs checked. ${deactivatedCount} removed. ${errorCount} errors`)
@@ -135,7 +140,7 @@ const fixRecruiters = async () => {
     try {
       const isDiffusible = userRecruteur.establishment_siret ? await getDiffusionStatus(userRecruteur.establishment_siret) : EDiffusibleStatus.NOT_FOUND
 
-      if (isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
+      if (userRecruteur.establishment_siret && isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
         deactivateUserRecruteur(userRecruteur)
 
         deactivatedCount++

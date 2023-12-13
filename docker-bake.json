@@ -14,6 +14,9 @@
     "preview": {
       "targets": ["server", "ui-preview"]
     },
+    "pentest": {
+      "targets": ["server", "ui-pentest"]
+    },
     "local": {
       "targets": ["server", "ui-local"]
     }
@@ -43,7 +46,7 @@
     "ui": {
       "inherits": ["common"],
       "matrix": {
-        "ENV": ["production", "recette", "preview", "local"]
+        "ENV": ["production", "recette", "pentest", "preview", "local"]
       },
       "name": "ui-${ENV}",
       "args": {

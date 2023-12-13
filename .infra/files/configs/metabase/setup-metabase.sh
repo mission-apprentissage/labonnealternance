@@ -33,7 +33,7 @@ curl -sS --retry 5 --retry-all-errors https://{{dns_name}}/metabase/api/setup \
         \"schedules\": {},
         \"details\": {
             \"use-conn-uri\": true,
-            \"conn-uri\": \"{{ vault[env_type].LBA_METABASE_URI }}\",
+            \"conn-uri\": \"{{ vault[env_type].LBA_METABASE_MONGODB_URI }}\",
             \"tunnel-enabled\": false,
             \"advanced-options\": true,
             \"ssl\": true

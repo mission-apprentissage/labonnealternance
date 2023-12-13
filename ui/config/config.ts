@@ -1,7 +1,7 @@
 import { publicConfig } from "../config.public"
 
 const config = {
-  shouldDisplayCallForHelp: false,
+  shouldDisplayCallForHelp: true,
 }
 
 export default config

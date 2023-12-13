@@ -6,7 +6,9 @@ fileignoreconfig:
 - filename: .bin/scripts/setup-local-env.sh
   checksum: 47323f5183f73a794449666a816d5b797c7a5ed4c7ad219c3c885a57e2fcf1e9
 - filename: .github/workflows/release.yml
-  checksum: 694b85290832914912327d8aac141c4bccc4a18e301d7343b8a6c4471e4ad065
+  checksum: 872bbf42d5b8bd22f900fff9eb6e907abbbeec5ee70f988563c4b6bb315e3f3d
+- filename: .infra/env.ini
+  checksum: ecfc738f90046a14cf076ce52116ec4345d7613d27584c91d0b5830e98ea38f2
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
@@ -16,7 +18,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 136cba643cbfdfc04f35cd171fe488ad2836261ae88201b6f344b6edbb77d3ef
+  checksum: 6d1c44cc300df8268ccc4f083f99f1e6144d105c6fee3a50d4d339995b02d2ef
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
@@ -34,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
 - filename: server/src/jobs/database/obfuscateCollections.ts
-  checksum: 2f71fedd1c4d31b429734a2364368d6edff84f3957cbaebd278def85196f6c6d
+  checksum: 73482f9b75b3ca47c3bc9377ce4d4e03f4ba21a351986c0ca8ae17382a5263e3
 - filename: server/src/jobs/job.actions.ts
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
@@ -53,6 +55,8 @@ fileignoreconfig:
   checksum: 58153e7e57ef450bfbf061f322cd8b7643dba12513b183194b4eafdb166f58d3
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
+- filename: server/tests/unit/util.test.ts
+  checksum: f248ec16629759106d43b02aafc092d55316aeb147dd75fa44f4acc990b4ece0
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/generateUri.ts
