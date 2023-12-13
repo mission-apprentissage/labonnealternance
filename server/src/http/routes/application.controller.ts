@@ -21,13 +21,7 @@ export default function (server: Server) {
     "/application/intentionComment/:id",
     {
       schema: zRoutes.post["/application/intentionComment/:id"],
-      onRequest: (req, res, done) => {
-        if (config.env !== "production") {
-          // KBA 2023-12-13 : Active for production on 1st of February
-          server.auth(zRoutes.post["/application/intentionComment/:id"])
-        }
-        done()
-      },
+      onRequest: config.env !== "production" ? server.auth(zRoutes.post["/application/intentionComment/:id"]) : async () => {},
       config: rateLimitConfig,
     },
     async (req, res) => {
@@ -61,13 +55,7 @@ export default function (server: Server) {
     "/application/intention/:id",
     {
       schema: zRoutes.post["/application/intention/:id"],
-      onRequest: (req, res, done) => {
-        if (config.env !== "production") {
-          // KBA 2023-12-13 : Active for production on 1st of February
-          server.auth(zRoutes.post["/application/intention/:id"])
-        }
-        done()
-      },
+      onRequest: config.env !== "production" ? server.auth(zRoutes.post["/application/intention/:id"]) : async () => {},
       config: rateLimitConfig,
     },
     async (req, res) => {
