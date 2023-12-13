@@ -319,14 +319,16 @@ export const createLbaCompanyApplicationReplyLink = async (email, siret, intenti
     generateScope({
       schema: zRoutes.post["/application/intention"],
       options: {
-        params: undefined,
+        params: { id: application._id },
         querystring: undefined,
       },
       resources: {},
     }),
   ])
 
-  return `${config.publicUrl}/formulaire-intention?intention=${intention}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/formulaire-intention?company_recruitment_intention=${intention}&id=${application.id}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(
+    token
+  )}`
 }
 
 export const createUserRecruteurApplicationReplyLink = async (user, intention, application) => {
@@ -337,12 +339,14 @@ export const createUserRecruteurApplicationReplyLink = async (user, intention, a
     generateScope({
       schema: zRoutes.post["/application/intention"],
       options: {
-        params: undefined,
+        params: { id: application._id },
         querystring: undefined,
       },
       resources: {},
     }),
   ])
 
-  return `${config.publicUrl}/formulaire-intention?intention=${intention}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(token)}`
+  return `${config.publicUrl}/formulaire-intention?company_recruitment_intention=${intention}&id=${application.id}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(
+    token
+  )}`
 }

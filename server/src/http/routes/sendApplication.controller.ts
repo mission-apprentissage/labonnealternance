@@ -5,9 +5,8 @@ import { zRoutes } from "shared/index"
 import config from "@/config"
 
 import { Application } from "../../common/model/index"
-import { decryptWithIV } from "../../common/utils/encryptString"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { sendMailToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
+import { sendMailToApplicant, updateApplicationStatus } from "../../services/application.service"
 import { Server } from "../server"
 
 const rateLimitConfig = {
@@ -19,59 +18,51 @@ const rateLimitConfig = {
 
 export default function (server: Server) {
   server.post(
-    "/application/intentionComment",
+    "/application/intentionComment/:id",
     {
-      schema: zRoutes.post["/application/intentionComment"],
+      schema: zRoutes.post["/application/intentionComment/:id"],
+      onRequest: server.auth(zRoutes.post["/application/intentionComment/:id"]),
       config: rateLimitConfig,
     },
     async (req, res) => {
-      // email and phone should appear
-      await validateFeedbackApplicationComment({
-        id: req.body.id,
-        iv: req.body.iv,
-        comment: req.body.comment,
-      })
-
-      const decryptedId = decryptWithIV(req.body.id, req.body.iv)
+      const { id } = req.params
+      const { company_recruitment_intention, company_feedback } = req.body
 
       try {
         const application = await Application.findOneAndUpdate(
-          { _id: new mongoose.Types.ObjectId(decryptedId) },
-          { company_recruitment_intention: req.body.intention, company_feedback: req.body.comment, company_feedback_date: new Date() }
+          { _id: new mongoose.Types.ObjectId(id) },
+          { company_recruitment_intention, company_feedback, company_feedback_date: new Date() }
         )
         if (!application) throw new Error("application not found")
 
         await sendMailToApplicant({
           application,
-          intention: req.body.intention,
+          intention: company_recruitment_intention,
           email: req.body.email,
           phone: req.body.phone,
-          comment: req.body.comment,
+          comment: company_feedback,
         })
 
         return res.status(200).send({ result: "ok", message: "comment registered" })
       } catch (err) {
-        console.error("err ", err)
         sentryCaptureException(err)
-        // TODO: return 500
-        return res.status(200).send({ error: "error_saving_comment" })
+        throw Boom.badRequest("error_saving_comment")
       }
     }
   )
 
   server.post(
-    "/application/intention",
+    "/application/intention/:id",
     {
-      schema: zRoutes.post["/application/intention"],
+      schema: zRoutes.post["/application/intention/:id"],
+      onRequest: server.auth(zRoutes.post["/application/intention/:id"]),
       config: rateLimitConfig,
     },
     async (req, res) => {
-      const decryptedId = decryptWithIV(req.body.id, req.body.iv)
+      const { id } = req.params
+      const { company_recruitment_intention } = req.body
 
-      const application = await Application.findOneAndUpdate(
-        { _id: new mongoose.Types.ObjectId(decryptedId) },
-        { company_recruitment_intention: req.body.intention, company_feedback_date: new Date() }
-      )
+      const application = await Application.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(id) }, { company_recruitment_intention, company_feedback_date: new Date() })
       if (!application) throw new Error("application not found")
 
       return res.status(200).send({ result: "ok" })
