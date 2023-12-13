@@ -1,5 +1,5 @@
 import Boom from "boom"
-import type { ObjectId } from "mongodb"
+import { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -367,8 +367,8 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
 export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object) => {
   const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
 
-  await mongooseInstance.connection.collection("userrecruteurs").findOneAndUpdate(
-    { "jobs._id": id },
+  await mongooseInstance.connection.collection("recruiters").findOneAndUpdate(
+    { "jobs._id": new ObjectId(id.toString()) },
     {
       $inc: incPayload,
     }
