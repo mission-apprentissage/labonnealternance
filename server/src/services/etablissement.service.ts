@@ -654,18 +654,23 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
 export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
   const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: siret, type: CFA })
   if (cfaUserRecruteurOpt) {
-    throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: "EXIST" })
+    throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
   }
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
-    throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: "UNKNOWN" })
+    throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: BusinessErrorCodes.UNKNOWN })
   }
   if (referentiel.etat_administratif === "fermé") {
-    throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: "CLOSED" })
+    throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: BusinessErrorCodes.CLOSED })
+  }
+  if (!referentiel.adresse) {
+    throw Boom.badRequest("Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.", {
+      reason: BusinessErrorCodes.UNSUPPORTED,
+    })
   }
   const formattedReferentiel = formatReferentielData(referentiel)
   if (!formattedReferentiel.is_qualiopi) {
-    throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: "QUALIOPI", ...formattedReferentiel })
+    throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: BusinessErrorCodes.NOT_QUALIOPI, ...formattedReferentiel })
   }
   return formattedReferentiel
 }
