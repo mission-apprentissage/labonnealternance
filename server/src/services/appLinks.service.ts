@@ -317,7 +317,15 @@ export function createLbaCompanyApplicationReplyLink(email, siret, intention, ap
 
   const token = generateAccessToken({ type: "lba-company", siret, email }, [
     generateScope({
-      schema: zRoutes.post["/application/intention"],
+      schema: zRoutes.post["/application/intention/:id"],
+      options: {
+        params: { id: application._id },
+        querystring: undefined,
+      },
+      resources: {},
+    }),
+    generateScope({
+      schema: zRoutes.post["/application/intentionComment/:id"],
       options: {
         params: { id: application._id },
         querystring: undefined,
@@ -337,7 +345,15 @@ export function createUserRecruteurApplicationReplyLink(user, intention, applica
 
   const token = generateAccessToken(user, [
     generateScope({
-      schema: zRoutes.post["/application/intention"],
+      schema: zRoutes.post["/application/intention/:id"],
+      options: {
+        params: { id: application._id },
+        querystring: undefined,
+      },
+      resources: {},
+    }),
+    generateScope({
+      schema: zRoutes.post["/application/intentionComment/:id"],
       options: {
         params: { id: application._id },
         querystring: undefined,
