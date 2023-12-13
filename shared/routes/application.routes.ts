@@ -53,7 +53,11 @@ export const zApplicationRoutes = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
     "/application/intentionComment": {
       path: "/application/intentionComment",
@@ -83,7 +87,11 @@ export const zApplicationRoutes = {
             .strict(),
         ]),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
     "/application/webhook": {
       path: "/application/webhook",

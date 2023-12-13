@@ -16,7 +16,7 @@ import { prepareMessageForMail } from "../common/utils/fileUtils.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 
-import { createCancelJobLink, createProvidedJobLink } from "./appLinks.service.js"
+import { createCancelJobLink, createLbaCompanyApplicationReplyLink, createProvidedJobLink, createUserRecruteurApplicationReplyLink } from "./appLinks.service.js"
 import { BrevoEventStatus } from "./brevo.service.js"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
@@ -303,8 +303,14 @@ const buildRecruiterEmailUrls = async ({ publicUrl, application, encryptedId }: 
     userRecruteur = await UserRecruteur.findOne({ establishment_id: recruiter.establishment_id }).lean()
   }
 
+  //Offre matcha - IUserRecruteur
+  //Offre LBA -- email & siret
+
   const urls = {
-    meetCandidateUrl: `${publicUrl}/formulaire-intention?intention=entretien${encryptedData}${candidateData}${utmRecruiterData}`,
+    meetCandidateUrl:
+      application.job_origin === "lba"
+        ? createLbaCompanyApplicationReplyLink(application.company_siret, application.company_email, ApplicantIntention.ENTRETIEN, application)
+        : createUserRecruteurApplicationReplyLink(userRecruteur, ApplicantIntention.ENTRETIEN, application),
     waitCandidateUrl: `${publicUrl}/formulaire-intention?intention=ne_sais_pas${encryptedData}${candidateData}${utmRecruiterData}`,
     refuseCandidateUrl: `${publicUrl}/formulaire-intention?intention=refus${encryptedData}${candidateData}${utmRecruiterData}`,
     lbaRecruiterUrl: `${publicUrl}/acces-recruteur?${utmRecruiterData}`,

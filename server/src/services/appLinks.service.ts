@@ -307,3 +307,42 @@ export function createRdvaAppointmentIdPageLink(email: string, siret: string, et
 
   return `${config.publicUrl}/espace-pro/establishment/${etablissementId}/appointments/${appointmentId}?token=${encodeURIComponent(token)}`
 }
+
+/**
+ * Secured link for application replies
+ */
+export const createLbaCompanyApplicationReplyLink = async (email, siret, intention, application) => {
+  const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
+  const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
+
+  const token = generateAccessToken({ type: "lba-company", siret, email }, [
+    generateScope({
+      schema: zRoutes.post["/application/intention"],
+      options: {
+        params: undefined,
+        querystring: undefined,
+      },
+      resources: {},
+    }),
+  ])
+
+  return `${config.publicUrl}/formulaire-intention?intention=${intention}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(token)}`
+}
+
+export const createUserRecruteurApplicationReplyLink = async (user, intention, application) => {
+  const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
+  const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
+
+  const token = generateAccessToken(user, [
+    generateScope({
+      schema: zRoutes.post["/application/intention"],
+      options: {
+        params: undefined,
+        querystring: undefined,
+      },
+      resources: {},
+    }),
+  ])
+
+  return `${config.publicUrl}/formulaire-intention?intention=${intention}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(token)}`
+}
