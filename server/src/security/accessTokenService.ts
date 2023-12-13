@@ -1,8 +1,8 @@
 import Boom from "boom"
 import jwt from "jsonwebtoken"
-import { PathParam, QueryString, WithQueryStringAndPathParam, generateUri } from "shared/helpers/generateUri"
+import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
-import { IRouteSchema, ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { assertUnreachable } from "shared/utils"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, z } from "zod"
@@ -15,9 +15,16 @@ const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083
 const OUTLOOK_URL_MAX_LENGTH = 8192
 const NGINX_URL_MAX_LENGTH = 4096
 const URL_MAX_LENGTH = Math.min(INTERNET_EXPLORER_V10_MAX_LENGTH, OUTLOOK_URL_MAX_LENGTH, NGINX_URL_MAX_LENGTH)
-const TOKEN_MAX_LENGTH = URL_MAX_LENGTH - "https://labonnealternance.apprentissage.beta.gouv.fr/".length
+const TOKEN_MAX_LENGTH = URL_MAX_LENGTH - (config.publicUrl.length + 1) // +1 for slash character
 
-type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
+export type SchemaWithSecurity = Pick<IRouteSchema, "method" | "path" | "params" | "querystring"> & WithSecurityScheme
+
+type AllowAllType = { allowAll: true }
+type AuthorizedValuesRecord<ZodObject> = ZodObject extends AnyZodObject
+  ? {
+      [Key in keyof Jsonify<z.input<ZodObject>>]: Jsonify<z.input<ZodObject>>[Key] | AllowAllType
+    }
+  : undefined
 
 // TODO à retirer à partir du 01/02/2024
 type OldIScope<Schema extends SchemaWithSecurity> = {
@@ -25,12 +32,9 @@ type OldIScope<Schema extends SchemaWithSecurity> = {
   options:
     | "all"
     | {
-        params: Schema["params"] extends AnyZodObject ? Jsonify<z.input<Schema["params"]>> : undefined
-        querystring: Schema["querystring"] extends AnyZodObject ? Jsonify<z.input<Schema["querystring"]>> : undefined
+        params: AuthorizedValuesRecord<Schema["params"]>
+        querystring: AuthorizedValuesRecord<Schema["querystring"]>
       }
-  resources: {
-    [key in keyof Schema["securityScheme"]["resources"]]: ReadonlyArray<string>
-  }
 }
 
 type NewIScope<Schema extends SchemaWithSecurity> = {
@@ -39,19 +43,16 @@ type NewIScope<Schema extends SchemaWithSecurity> = {
   options:
     | "all"
     | {
-        params: Schema["params"] extends AnyZodObject ? Jsonify<z.input<Schema["params"]>> : undefined
-        querystring: Schema["querystring"] extends AnyZodObject ? Jsonify<z.input<Schema["querystring"]>> : undefined
+        params: AuthorizedValuesRecord<Schema["params"]>
+        querystring: AuthorizedValuesRecord<Schema["querystring"]>
       }
-  resources: {
-    [key in keyof Schema["securityScheme"]["resources"]]: ReadonlyArray<string>
-  }
 }
 
 type IScope<Schema extends SchemaWithSecurity> = NewIScope<Schema> | OldIScope<Schema>
 
 export const generateScope = <Schema extends SchemaWithSecurity>(scope: Omit<NewIScope<Schema>, "method" | "path"> & { schema: Schema }): NewIScope<Schema> => {
-  const { schema, options, resources } = scope
-  return { options, resources, path: schema.path, method: schema.method }
+  const { schema, options } = scope
+  return { options, path: schema.path, method: schema.method }
 }
 
 export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity> = {
@@ -69,27 +70,13 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
   scopes: ReadonlyArray<IScope<Schema>>
 }
 
-function getAudience({
-  method,
-  path,
-  options,
-  skipParamsReplacement,
-}: {
-  method: string
-  path: string
-  options: WithQueryStringAndPathParam
-  skipParamsReplacement: boolean
-}): string {
-  return `${method} ${generateUri(path, options, skipParamsReplacement)}`.toLowerCase()
-}
-
 export function generateAccessToken(
   user: IUserRecruteur | IAccessToken["identity"],
-  scopes: ReadonlyArray<NewIScope<ISecuredRouteSchema>>,
+  scopes: ReadonlyArray<NewIScope<SchemaWithSecurity>>,
   options: { expiresIn?: string } = {}
 ): string {
   const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUserRecruteur", _id: user._id.toString(), email: user.email.toLowerCase() } : user
-  const data: IAccessToken<ISecuredRouteSchema> = {
+  const data: IAccessToken<SchemaWithSecurity> = {
     identity,
     scopes,
   }
@@ -117,11 +104,67 @@ function getMethodAndPath<Schema extends SchemaWithSecurity>(scope: IScope<Schem
   }
 }
 
-export function getAccessTokenScope<Schema extends SchemaWithSecurity>(token: IAccessToken<Schema> | null, schema: Schema): IScope<Schema> | null {
+function isAllowAllValue(x: unknown): x is AllowAllType {
+  return !!x && typeof x === "object" && "allowAll" in x && x.allowAll === true
+}
+
+function isAuthorizedParam(requiredValue: string, allowedValue: string | undefined | AllowAllType) {
+  return requiredValue === allowedValue || isAllowAllValue(allowedValue)
+}
+
+export function getAccessTokenScope<Schema extends SchemaWithSecurity>(
+  token: IAccessToken<Schema> | null,
+  schema: Schema,
+  params: PathParam | undefined,
+  querystring: QueryString | undefined
+): IScope<Schema> | null {
   return (
     token?.scopes.find((scope) => {
       const { method, path } = getMethodAndPath(scope)
-      return path === schema.path && method === schema.method
+      if (path !== schema.path || method !== schema.method) {
+        return false
+      }
+
+      if (scope.options === "all") {
+        return true
+      }
+
+      if (params) {
+        const allowedParams = scope.options.params
+        const isAuthorized = Object.entries(params).every(([key, requiredValue]) => {
+          const allowedParam = allowedParams?.[key]
+          return isAuthorizedParam(requiredValue, allowedParam)
+        })
+        if (!isAuthorized) {
+          return false
+        }
+      }
+
+      if (querystring) {
+        const allowedQueryString = scope.options.querystring
+        const isAuthorized = Object.entries(querystring).every(([key, value]) => {
+          const requiredValues = Array.isArray(value) ? new Set(value) : new Set([value])
+          const allowedValues = (allowedQueryString?.[key] ?? []) as string[] | string | AllowAllType
+          if (isAllowAllValue(allowedValues)) {
+            return true
+          }
+
+          if (Array.isArray(allowedValues)) {
+            for (const allowedValue of allowedValues) {
+              requiredValues.delete(allowedValue)
+            }
+          } else {
+            requiredValues.delete(allowedValues)
+          }
+
+          return requiredValues.size === 0
+        })
+        if (!isAuthorized) {
+          return false
+        }
+      }
+
+      return true
     }) ?? null
   )
 }
@@ -137,43 +180,9 @@ export function parseAccessToken<Schema extends SchemaWithSecurity>(
     issuer: config.publicUrl,
   })
   const token = data.payload as IAccessToken<Schema>
-  const specificAudience = getAudience({
-    method: schema.method,
-    path: schema.path,
-    options: {
-      params,
-      querystring,
-    },
-    skipParamsReplacement: false,
-  })
-  const genericAudience = getAudience({
-    method: schema.method,
-    path: schema.path,
-    options: {},
-    skipParamsReplacement: true,
-  })
-  const tokenAudiences: string[] = scopesToAudiences(token.scopes)
-  const isAuthorized = tokenAudiences.includes(specificAudience) || tokenAudiences.includes(genericAudience)
-  if (!isAuthorized) {
-    throw Boom.forbidden("Les audiences ne correspondent pas")
+  const scopeOpt = getAccessTokenScope(token, schema, params, querystring)
+  if (!scopeOpt) {
+    throw Boom.forbidden("Aucun scope ne correspond")
   }
   return token
-}
-
-function scopesToAudiences<Schema extends SchemaWithSecurity>(scopes: ReadonlyArray<IScope<Schema>>) {
-  return scopes.map((scope) => {
-    const { method, path } = getMethodAndPath(scope)
-    return getAudience({
-      method,
-      path,
-      options:
-        scope.options === "all"
-          ? {}
-          : {
-              params: scope.options.params,
-              querystring: scope.options.querystring,
-            },
-      skipParamsReplacement: scope.options === "all",
-    })
-  })
 }

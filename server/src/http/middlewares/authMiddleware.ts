@@ -14,14 +14,14 @@ import {
 import { IRouteSchema, SecurityScheme, WithSecurityScheme } from "shared/routes/common.routes"
 
 import { authenticationMiddleware } from "@/security/authenticationService"
-import { authorizationnMiddleware } from "@/security/authorisationService"
+import { authorizationMiddleware } from "@/security/authorisationService"
 
 const symbol = Symbol("authStrategy")
 
 export function auth<S extends IRouteSchema & WithSecurityScheme>(schema: S) {
   const authMiddleware = async (req: FastifyRequest) => {
     await authenticationMiddleware(schema, req)
-    await authorizationnMiddleware(schema, req)
+    await authorizationMiddleware(schema, req)
   }
 
   authMiddleware[symbol] = schema.securityScheme
