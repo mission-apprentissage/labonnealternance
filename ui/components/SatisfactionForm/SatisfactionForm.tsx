@@ -94,6 +94,7 @@ const SatisfactionForm = () => {
   }
 
   useEffect(() => {
+    if (!router.isReady) return
     const sendIntention = async () => {
       await apiPost("/application/intention/:id", {
         params: { id },
@@ -106,7 +107,7 @@ const SatisfactionForm = () => {
       })
     }
     sendIntention()
-  }, [])
+  }, [router.isReady])
 
   const [sendingState, setSendingState] = useState("not_sent")
 
