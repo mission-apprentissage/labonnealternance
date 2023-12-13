@@ -558,6 +558,12 @@ program
   .action(createJobAction("user-recruters:data-validation:fix"))
 
 program
+  .command("fix-data-validation-user-recruteurs-cfa")
+  .description("Répare les data des userrecruteurs CFA")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("user-recruters-cfa:data-validation:fix"))
+
+program
   .command("anonymize-user-recruteurs")
   .description("Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans")
   .option("-q, --queued", "Run job asynchronously", false)
