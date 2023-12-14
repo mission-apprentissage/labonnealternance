@@ -4,6 +4,7 @@ import HttpTerminator from "lil-http-terminator"
 
 import { closeMongoConnection } from "@/common/mongodb"
 
+import { closeMemoryCache } from "./common/apis/client"
 import { closeElasticSearch } from "./common/esClient"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
@@ -70,7 +71,7 @@ program
     logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await Promise.all([closeMongoConnection(), closeElasticSearch()])
+    await Promise.all([closeMongoConnection(), closeElasticSearch(), closeMemoryCache()])
     await closeSentry()
 
     setTimeout(async () => {
