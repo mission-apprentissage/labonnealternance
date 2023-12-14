@@ -1,7 +1,6 @@
 export * from "./address.model"
 export * from "./applications.model"
 export * from "./appointments.model"
-export * from "./cfa.model"
 export * from "./credentials.model"
 export * from "./elligibleTraining.model"
 export * from "./emailBlacklist.model"
