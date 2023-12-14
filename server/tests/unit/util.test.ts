@@ -1,6 +1,6 @@
 import assert from "assert"
 
-import { cleanEmail } from "shared/helpers/common"
+import { cleanEmail, removeUrlsFromText, addBracketsToUrls } from "shared/helpers/common"
 import { describe, it } from "vitest"
 
 import __filename from "../../src/common/filename"
@@ -37,6 +37,29 @@ describe(__filename(import.meta.url), () => {
     assert.strictEqual(cleanEmail(""), "")
     assert.strictEqual(cleanEmail("àlan.léruŷêïÿt@test.fr"), "alan.leruyeiyt@test.fr")
     assert.strictEqual(cleanEmail("jhönœ.dôœ.’£'^&/=!*?}ù@têst .com "), "jhono.doo.u@test.com")
+  })
+
+  it("Suppression des différentes formes d'URL dans un texte", () => {
+    assert.strictEqual(removeUrlsFromText(""), "")
+    assert.strictEqual(removeUrlsFromText("clean text"), "clean text")
+    assert.strictEqual(removeUrlsFromText("text https://url.com end"), "text  end")
+    assert.strictEqual(removeUrlsFromText("text http://www.url.com https://url.com evil-pirate@hack.com end"), "text    end")
+    assert.strictEqual(removeUrlsFromText("text https://url.com www.url.com/?meh=lah mailto:evil@hack.com ftp://bad-ressource.com/path/path"), "text    ")
+  })
+
+  it("Mise entre [] des différentes formes d'URL dans un texte", () => {
+    assert.strictEqual(addBracketsToUrls(""), "")
+    assert.strictEqual(addBracketsToUrls("clean text"), "clean text")
+    assert.strictEqual(addBracketsToUrls("clean evil-pirate@hack.com text"), "clean [evil-pirate@hack.com] text")
+    assert.strictEqual(addBracketsToUrls("text https://url.com end"), "text [https://url.com] end")
+    assert.strictEqual(
+      addBracketsToUrls("text http://www.url.com https://url.com evil-pirate@hack.com end"),
+      "text [http://[www.url.com]] [https://url.com] [evil-pirate@hack.com] end"
+    )
+    assert.strictEqual(
+      addBracketsToUrls("text https://url.com www.url.com/?meh=lah mailto:evil@hack.com ftp://bad-ressource.com/path/path"),
+      "text [https://url.com] [www.url.com/?meh=lah] [mailto:[evil@hack.com]] [ftp://bad-ressource.com/path/path]"
+    )
   })
 
   it.skip("Encryption décryption fonctionne", () => {

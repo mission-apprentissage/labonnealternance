@@ -6,3 +6,26 @@ export const cleanEmail = (email: string) => {
   cleanedEmail = cleanedEmail.replace(new RegExp("œ", "gi"), "o")
   return cleanedEmail
 }
+
+const httpLinkRegex = /\b(https?:\/\/[^\s]+\b)/g
+const wwwLinkRegex = /\bwww\.[^\s]+\b/g
+const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g
+const ftpLinkRegex = /\bftp:\/\/[^\s]+\b/g
+const mailtoRegex = /\bmailto:([^\s<>]+)\b/g
+
+export const removeUrlsFromText = (text: string) => {
+  const cleanedText = text.replace(httpLinkRegex, "").replace(wwwLinkRegex, "").replace(mailtoRegex, "").replace(emailRegex, "").replace(ftpLinkRegex, "")
+
+  return cleanedText
+}
+
+export const addBracketsToUrls = (text: string) => {
+  const textWithSanitizedUrls = text
+    .replace(httpLinkRegex, "[$&]")
+    .replace(wwwLinkRegex, "[$&]")
+    .replace(mailtoRegex, "[$&]")
+    .replace(emailRegex, "[$&]")
+    .replace(ftpLinkRegex, "[$&]")
+
+  return textWithSanitizedUrls
+}
