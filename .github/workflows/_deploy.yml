@@ -55,6 +55,9 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
+      - name: Get Action IP
+        run: curl -4 ifconfig.me
+
       - name: Checkout project
         uses: actions/checkout@v4
 
