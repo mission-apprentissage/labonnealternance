@@ -4,9 +4,11 @@ import HttpTerminator from "lil-http-terminator"
 
 import { closeMongoConnection } from "@/common/mongodb"
 
+import { closeMemoryCache } from "./common/apis/client"
 import { closeElasticSearch } from "./common/esClient"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
+import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { closeSentry, initSentryProcessor } from "./http/sentry"
 import server from "./http/server"
@@ -69,8 +71,14 @@ program
     logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await Promise.all([closeMongoConnection(), closeElasticSearch()])
+    await Promise.all([closeMongoConnection(), closeElasticSearch(), closeMemoryCache()])
     await closeSentry()
+
+    setTimeout(async () => {
+      await notifyToSlack({ error: true, subject: "Process not released", message: "Review open handles using wtfnode" })
+      // eslint-disable-next-line n/no-process-exit
+      process.exit(1)
+    }, 10_000).unref()
   })
 
 program
@@ -556,6 +564,12 @@ program
   .description("Répare les data de la collection userrecruteurs")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("user-recruters:data-validation:fix"))
+
+program
+  .command("fix-data-validation-user-recruteurs-cfa")
+  .description("Répare les data des userrecruteurs CFA")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("user-recruters-cfa:data-validation:fix"))
 
 program
   .command("anonymize-user-recruteurs")

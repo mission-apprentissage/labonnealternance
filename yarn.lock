@@ -5431,14 +5431,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios-cache-interceptor@npm:^0.10.7":
-  version: 0.10.7
-  resolution: "axios-cache-interceptor@npm:0.10.7"
+"axios-cache-interceptor@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "axios-cache-interceptor@npm:1.3.2"
   dependencies:
     cache-parser: ^1.2.4
     fast-defer: ^1.1.7
-    object-code: ^1.2.4
-  checksum: e7927101875a1e642f5459410c1bafba1e7b9fe69c5e488ece50b6e542eae24f2de025718d47aa17e3d3b9f27951e609b4aed8c7fe21d530d0e45be0cd1a04fd
+    object-code: ^1.3.0
+  peerDependencies:
+    axios: ^1
+  checksum: 1cda85f549f6471ba37938deda381e6b638c08e48363b803055b3e10bb4c854274a7bc206c2763efb23cc4b0a7f01285cb4fa7a4575fa8d9d65ded70b3512a59
   languageName: node
   linkType: hard
 
@@ -14768,10 +14770,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-code@npm:^1.2.4":
-  version: 1.3.0
-  resolution: "object-code@npm:1.3.0"
-  checksum: bc5e3df85ac54785b3d1d9b8a9b2e168eb5f69e02be3c958fc05aebaa85ec659c55903852bf15ebf44e98053212f88eb7d3a9e28a50f10c4d60d820f80aa8d64
+"object-code@npm:^1.3.0":
+  version: 1.3.1
+  resolution: "object-code@npm:1.3.1"
+  checksum: e3a1fad27fb5e53707202fb8ae5d23783bdb84663ee11c39df3e18d8540a8023ba17e23727acdbcb24a8ca7a5b9ea85bde3ce1fe3057e282e5c6d7e6880ba0ff
   languageName: node
   linkType: hard
 
@@ -17706,7 +17708,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.62.0
     aws-sdk: ^2.1466.0
     axios: ^1.5.1
-    axios-cache-interceptor: ^0.10.7
+    axios-cache-interceptor: ^1.3.2
     basic-ftp: ^5.0.3
     boom: ^7.3.0
     bunyan: ^1.8.15

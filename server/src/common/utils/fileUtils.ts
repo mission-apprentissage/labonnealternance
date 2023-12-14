@@ -1,46 +1,14 @@
-import path from "path"
-
-import csvToJson from "convert-csv-to-json"
 import { Options as CsvParseOptions, parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
 import XLSX from "xlsx"
 
 import config from "../../config"
-import __dirname from "../dirname"
 
 import { FTPClient } from "./ftpUtils"
-
-export const readJsonFromCsvFile = (localPath) => {
-  return csvToJson.getJsonFromCsv(localPath)
-}
 
 export const readXLSXFile = (localPath) => {
   const workbook = XLSX.readFile(localPath, { codepage: 65001 })
   return { sheet_name_list: workbook.SheetNames, workbook }
-}
-
-export const createXLSXFile = (data, localPath) => {
-  const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(data), "data")
-
-  // @ts-expect-error writeFileAsync Cb function is not properly typed
-  XLSX.writeFileAsync(path.join(localPath), workbook, (e) => {
-    if (e) {
-      console.log(e)
-      throw new Error("La génération du fichier excel à échoué : ", e)
-    }
-  })
-}
-
-export const convertIntoBuffer = (workbook) => {
-  return XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
-}
-
-export const removeLine = (data, regex) => {
-  return data
-    .split("\n")
-    .filter((val) => !regex.test(val))
-    .join("\n")
 }
 
 export const prepareMessageForMail = (data) => {
