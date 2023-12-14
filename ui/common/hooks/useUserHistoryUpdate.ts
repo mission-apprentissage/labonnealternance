@@ -1,7 +1,7 @@
 import { useToast } from "@chakra-ui/react"
 import { useCallback } from "react"
 import { useQueryClient } from "react-query"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { useAuth } from "@/context/UserContext"
 
@@ -14,7 +14,7 @@ export default function useUserHistoryUpdate(userId: string, status: ETAT_UTILIS
 
   return useCallback(async () => {
     await updateUserValidationHistory(userId, {
-      validation_type: "MANUELLE",
+      validation_type: VALIDATION_UTILISATEUR.MANUAL,
       user: user._id.toString(),
       status,
       reason,

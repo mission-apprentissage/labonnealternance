@@ -9,12 +9,12 @@ export const { model, Schema } = mongoose
 // @ts-expect-error
 export let db: ReturnType<typeof mongoose.Connection> // eslint-disable-line import/no-mutable-exports
 
-export const connectToMongo = (mongoUri = config.mongodb.uri) => {
-  return new Promise((resolve, reject) => {
-    logger.info(`MongoDB: Connection to ${mongoUri}`)
+export const connectToMongo = async (mongoUri = config.mongodb.uri) => {
+  logger.info(`MongoDB: Connection to ${mongoUri}`)
 
+  try {
     // Set up default mongoose connection
-    mongooseInstance.connect(mongoUri, {
+    await mongooseInstance.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
@@ -25,17 +25,12 @@ export const connectToMongo = (mongoUri = config.mongodb.uri) => {
     mongooseInstance.Promise = global.Promise // Get the default connection
     db = mongooseInstance.connection
 
-    // Bind connection to error event (to get notification of connection errors)
-    db.on("error", (e) => {
-      logger.error("MongoDB: connection error:")
-      reject(e)
-    })
-
-    db.once("open", () => {
-      logger.info("MongoDB: Connected")
-      resolve({ db })
-    })
-  })
+    logger.info("MongoDB: Connected")
+    return { db }
+  } catch (error: any) {
+    logger.error("MongoDB: connection error:", error.message)
+    throw new Error(`MongoDB: connection error`)
+  }
 }
 
 export const closeMongoConnection = async () => {

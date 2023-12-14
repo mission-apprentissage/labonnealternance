@@ -2087,7 +2087,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "codeIsco": {
-            "type": "string",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "competencesDeBase": {
             "items": {
@@ -2527,7 +2530,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "condition",
           "riasecMajeur",
           "riasecMineur",
-          "codeIsco",
           "particulier",
           "domaineProfessionnel",
           "appellations",
@@ -5658,57 +5660,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                   "required": [
                     "coupleAppellationRomeMetier",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [],
-        "tags": [
-          "Metiers",
-        ],
-      },
-    },
-    "/v1/metiers/metiersParEtablissement/{siret}": {
-      "get": {
-        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour un établissement de formation",
-        "operationId": "getMetiersParEtablissement",
-        "parameters": [
-          {
-            "description": "Le numéro de SIRET de l'établissement",
-            "in": "path",
-            "name": "siret",
-            "required": true,
-            "schema": {
-              "description": "Le numéro de SIRET de l'établissement",
-              "example": "78424186100011",
-              "pattern": "^[0-9]{14}$",
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "metiers": {
-                      "description": "Un tableau des noms des métiers triés par ordre alphabétique",
-                      "items": {
-                        "description": "Un nom de métier du référentiel La bonne alternance",
-                        "example": "Accueil touristique",
-                        "type": "string",
-                      },
-                      "type": "array",
-                    },
-                  },
-                  "required": [
-                    "metiers",
                   ],
                   "type": "object",
                 },

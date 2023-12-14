@@ -4,7 +4,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable, zReferentielData } from "../models/usersRecruteur.model"
+import { ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable, ZCfaReferentielData } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -99,7 +99,7 @@ export const zRecruiterRoutes = {
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "2xx": zReferentielData,
+        "2xx": ZCfaReferentielData,
       },
       securityScheme: null,
     },

@@ -15,7 +15,7 @@ export const ZUserStatusValidation = z
     validation_type: z.enum(["AUTOMATIQUE", "MANUELLE"]).describe("Processus de validation lors de l'inscription de l'utilisateur"),
     status: ZEtatUtilisateur.nullish(),
     reason: z.string().nullish().describe("Raison du changement de statut"),
-    user: z.string().describe("Utilisateur ayant effectué la modification | SERVEUR si le compte a été validé automatiquement"),
+    user: z.string().describe("Id de l'utilisateur ayant effectué la modification | 'SERVEUR' si le compte a été validé automatiquement"),
     date: z.date().nullish().describe("Date de l'évènement"),
   })
   .strict()
@@ -59,7 +59,7 @@ export const ZUserRecruteur = ZUserRecruteurWritable.omit({
   is_qualiopi: ZUserRecruteurWritable.shape.is_qualiopi.nullish(),
 })
 
-export const zReferentielData = z
+export const ZCfaReferentielData = z
   .object({
     establishment_state: z.string(),
     is_qualiopi: z.boolean(),
@@ -77,11 +77,11 @@ export const zReferentielData = z
     ),
     address_detail: ZGlobalAddress,
     address: z.string(),
-    geo_coordinates: z.string().nullish(),
+    geo_coordinates: z.string().max(40).nullish(),
   })
   .strict()
 
-export type IReferentielData = z.output<typeof zReferentielData>
+export type ICfaReferentielData = z.output<typeof ZCfaReferentielData>
 
 export type IUserStatusValidation = z.output<typeof ZUserStatusValidation>
 export type IUserStatusValidationJson = Jsonify<z.input<typeof ZUserStatusValidation>>

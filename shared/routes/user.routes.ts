@@ -138,11 +138,11 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      // TODO TO BE FIXED
-      body: z.object({}).passthrough(),
-      // body: ZUserRecruteur.extend({
-      //   scope: z.string().optional(),
-      // }).strict(),
+      body: ZUserRecruteurWritable.omit({
+        is_email_checked: true,
+        is_qualiopi: true,
+        status: true,
+      }),
       response: {
         "200": ZUserRecruteur,
       },

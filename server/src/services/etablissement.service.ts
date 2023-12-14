@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IReferentielOpco, IUserRecruteur } from "shared"
+import { ICfaReferentielData, IEtablissement, IGeometry, ILbaCompany, IRecruiter, IReferentielOpco, IUserRecruteur, ZCfaReferentielData, assertUnreachable } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -439,8 +439,6 @@ function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undef
 
 /**
  * @description Format Entreprise data
- * @param {IEtablissementGouv} data
- * @returns {IFormatAPIEntreprise}
  */
 export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
   if (!d.adresse) {
@@ -461,23 +459,43 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
   }
 }
 
+function geometryToGeoCoord(geometry: IGeometry): [number, number] {
+  const { type } = geometry
+  if (type === "Point") {
+    return geometry.coordinates
+  } else if (type === "Polygon") {
+    return geometry.coordinates[0][0]
+  } else {
+    assertUnreachable(type)
+  }
+}
+
 /**
  * @description Format Referentiel data
- * @param {IReferentiel} d
- * @returns {Object}
  */
-export const formatReferentielData = (d: IReferentiel): IReferentielData => ({
-  establishment_state: d.etat_administratif,
-  is_qualiopi: d.qualiopi,
-  establishment_siret: d.siret,
-  establishment_raison_sociale: d.raison_sociale,
-  contacts: d.contacts,
-  address_detail: d.adresse,
-  address: d.adresse?.label,
-  geo_coordinates: d.adresse
-    ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
-    : `${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[1]}`,
-})
+export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
+  const geojson = d.adresse?.geojson ?? d.lieux_de_formation.at(0)?.adresse?.geojson
+  if (!geojson) {
+    throw Boom.internal("impossible de lire la geometry")
+  }
+  const coords = geometryToGeoCoord(geojson.geometry)
+
+  const referentielData = {
+    establishment_state: d.etat_administratif,
+    is_qualiopi: d.qualiopi,
+    establishment_siret: d.siret,
+    establishment_raison_sociale: d.raison_sociale,
+    contacts: d.contacts,
+    address_detail: d.adresse,
+    address: d.adresse?.label,
+    geo_coordinates: `${coords[1]},${coords[0]}`,
+  }
+  const validation = ZCfaReferentielData.safeParse(referentielData)
+  if (!validation.success) {
+    sentryCaptureException(Boom.internal(`erreur de validation sur les données du référentiel CFA pour le siret=${d.siret}.`, { validationError: validation.error }))
+  }
+  return referentielData
+}
 
 /**
  * Taggue l'organisme de formation pour qu'il ne reçoive plus de demande de délégation
@@ -643,21 +661,28 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}` }
 }
 
-export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
-  const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: siret, type: CFA })
-  if (cfaUserRecruteurOpt) {
-    throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: "EXIST" })
+export const getOrganismeDeFormationDataFromSiret = async (siret: string, shouldValidate = true) => {
+  if (shouldValidate) {
+    const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: siret, type: CFA })
+    if (cfaUserRecruteurOpt) {
+      throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
+    }
   }
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
-    throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: "UNKNOWN" })
+    throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: BusinessErrorCodes.UNKNOWN })
   }
-  if (referentiel.etat_administratif === "fermé") {
-    throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: "CLOSED" })
+  if (shouldValidate && referentiel.etat_administratif === "fermé") {
+    throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: BusinessErrorCodes.CLOSED })
+  }
+  if (!referentiel.adresse) {
+    throw Boom.badRequest("Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.", {
+      reason: BusinessErrorCodes.UNSUPPORTED,
+    })
   }
   const formattedReferentiel = formatReferentielData(referentiel)
-  if (!formattedReferentiel.is_qualiopi) {
-    throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: "QUALIOPI", ...formattedReferentiel })
+  if (shouldValidate && !formattedReferentiel.is_qualiopi) {
+    throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: BusinessErrorCodes.NOT_QUALIOPI, ...formattedReferentiel })
   }
   return formattedReferentiel
 }
@@ -721,7 +746,7 @@ export const entrepriseOnboardingWorkflow = {
       cfa_delegated_siret,
     })
     const formulaireId = formulaireInfo.establishment_id
-    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE })
+    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE, is_email_checked: false })
 
     if (hasSiretError) {
       newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")

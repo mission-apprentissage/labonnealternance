@@ -4,9 +4,11 @@ import HttpTerminator from "lil-http-terminator"
 
 import { closeMongoConnection } from "@/common/mongodb"
 
+import { closeMemoryCache } from "./common/apis/client"
 import { closeElasticSearch } from "./common/esClient"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
+import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { closeSentry, initSentryProcessor } from "./http/sentry"
 import server from "./http/server"
@@ -69,8 +71,14 @@ program
     logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await Promise.all([closeMongoConnection(), closeElasticSearch()])
+    await Promise.all([closeMongoConnection(), closeElasticSearch(), closeMemoryCache()])
     await closeSentry()
+
+    setTimeout(async () => {
+      await notifyToSlack({ error: true, subject: "Process not released", message: "Review open handles using wtfnode" })
+      // eslint-disable-next-line n/no-process-exit
+      process.exit(1)
+    }, 10_000).unref()
   })
 
 program
@@ -166,9 +174,19 @@ program
   .action(createJobAction("fix-diffusible-companies"))
 
 program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
-program.command("fiab:kevin").description("Run migrations up").action(createJobAction("fiab:kevin"))
+program
+  .command("fix:duplicate:users")
+  .description("Fix duplicated users in users collections and update appointment collection accordingly")
+  .action(createJobAction("fix:duplicate:users"))
+
+program
+  .command("migration:correctionRDVA")
+  .description("Corrige les erreurs de données ne correspondant pas aux modèles associés")
+  .action(createJobAction("migration:correctionRDVA"))
+
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
+program.command("recruiters:delegations").description("Resend delegation email for all jobs created on November 2023").action(createJobAction("recruiters:delegations"))
 program.command("migrations:up").description("Run migrations up").action(createJobAction("migrations:up"))
 
 program.command("migrations:status").description("Check migrations status").action(createJobAction("migrations:status"))
@@ -530,6 +548,12 @@ program
   .action(createJobAction("recruiters:job-type:fix"))
 
 program
+  .command("fix-applications")
+  .description("Répare les adresses emails comportant des caractères erronés dans la collection applications")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("fix-applications"))
+
+program
   .command("fix-data-validation-recruiters")
   .description("Répare les data de la collection recruiters")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -540,6 +564,12 @@ program
   .description("Répare les data de la collection userrecruteurs")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("user-recruters:data-validation:fix"))
+
+program
+  .command("fix-data-validation-user-recruteurs-cfa")
+  .description("Répare les data des userrecruteurs CFA")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("user-recruters-cfa:data-validation:fix"))
 
 program
   .command("anonymize-user-recruteurs")

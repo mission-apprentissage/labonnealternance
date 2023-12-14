@@ -60,7 +60,7 @@ export const ZApplication = z
     }),
     job_origin: z.string().nullable().openapi({
       description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-      example: "lba|lbb|matcha",
+      example: "lba|matcha",
     }),
     job_title: z.string().openapi({
       description:

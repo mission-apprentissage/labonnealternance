@@ -1,4 +1,5 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
+import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 
 import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import { rebuildIndex } from "../../common/utils/esUtils"
@@ -33,7 +34,7 @@ const printProgress = () => {
   }
 }
 
-const prepareCompany = async (rawCompany) => {
+const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
   count++
   printProgress()
   rawCompany.siret = rawCompany.siret.toString().padStart(14, "0")
@@ -63,8 +64,9 @@ const processCompanies = async () => {
     writeData(async (lbaCompany) => {
       try {
         if (lbaCompany) {
+          const parsedCompany = ZLbaCompany.parse(lbaCompany.toObject())
           // contourne mongoose pour éviter la réindexation systématique à chaque insertion.
-          await LbaCompany.collection.insertOne(lbaCompany)
+          await LbaCompany.collection.insertOne(new LbaCompany(parsedCompany))
         }
       } catch (err) {
         logMessage("error", err)

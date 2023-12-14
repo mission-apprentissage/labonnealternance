@@ -9,6 +9,7 @@ on:
         options:
           - production
           - recette
+          - pentest
       app_version:
         description: app version
         type: string
@@ -53,6 +54,9 @@ jobs:
           notification_title: "Déploiement ${{ inputs.app_version }} en ${{ inputs.environment }} initié..."
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Get Action IP
+        run: curl -4 ifconfig.me
 
       - name: Checkout project
         uses: actions/checkout@v4

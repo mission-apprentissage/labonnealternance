@@ -32,6 +32,8 @@ import adminAppointmentRoute from "./routes/admin/appointment.controller"
 import eligibleTrainingsForAppointmentRoute from "./routes/admin/eligibleTrainingsForAppointment.controller"
 import adminEtablissementRoute from "./routes/admin/etablissement.controller"
 import formationsRoute from "./routes/admin/formations.controller"
+import application from "./routes/application.controller"
+import applicationAPI from "./routes/applicationAPI.controller"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller"
 import login from "./routes/auth/login.controller"
 import { coreRoutes } from "./routes/core.controller"
@@ -41,8 +43,6 @@ import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.contro
 import formulaireRoute from "./routes/formulaire.controller"
 import optoutRoute from "./routes/optout.controller"
 import partnersRoute from "./routes/partners.controller"
-import sendApplication from "./routes/sendApplication.controller"
-import sendApplicationAPI from "./routes/sendApplicationAPI.controller"
 import trainingLinks from "./routes/trainingLinks.controller"
 import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller"
 import updateLbaCompany from "./routes/updateLbaCompany.controller"
@@ -133,8 +133,9 @@ export async function bind(app: Server) {
       metiers(typedSubApp)
       rome(typedSubApp)
       updateLbaCompany(typedSubApp)
-      sendApplication(typedSubApp)
-      sendApplicationAPI(typedSubApp)
+      campaignWebhook(typedSubApp)
+      application(typedSubApp)
+      applicationAPI(typedSubApp)
       unsubscribeLbaCompany(typedSubApp)
       metiersDAvenirRoute(typedSubApp)
       jobsV1Route(typedSubApp)

@@ -260,7 +260,7 @@ const DemandeDeContact = (props: Props) => {
                 onBlur={formik.handleBlur}
                 value={formik.values.applicantMessageToCfa}
               />
-              <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
+              <FormErrorMessage>{formik.errors.applicantMessageToCfa}</FormErrorMessage>
             </FormControl>
           )}
         </FormControl>

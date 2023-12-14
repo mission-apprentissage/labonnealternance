@@ -35,4 +35,17 @@ export const ZLbaCompany = z
   .strict()
   .openapi("LbaCompany")
 
+export const ZLbaCompanyNew = ZLbaCompany.omit({
+  _id: true,
+  __v: true,
+  created_at: true,
+  last_update_at: true,
+}).strict()
+
+export const ZLbaLegacyCompany = ZLbaCompany.pick({
+  siret: true,
+  email: true,
+  _id: true,
+}).strict()
+
 export type ILbaCompany = z.output<typeof ZLbaCompany>

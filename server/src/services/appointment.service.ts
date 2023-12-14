@@ -85,7 +85,7 @@ export const sendCandidateAppointmentEmail = async (
 ) => {
   const email = await mailer.sendEmail({
     to: candidate.email,
-    subject: `${subjectPrefix}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
+    subject: `${subjectPrefix ?? ""}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
     template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
     data: getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
   })
@@ -116,7 +116,7 @@ export const sendFormateurAppointmentEmail = async (
     throw new Error("Etablissement formateur_siret not found")
   }
 
-  let emailCfaSubject = `${subjectPrefix}[${referrerObj.full_name}] - Un candidat a un message pour vous`
+  let emailCfaSubject = `${subjectPrefix ?? ""}[${referrerObj.full_name}] - Un candidat a un message pour vous`
 
   if (eligibleTrainingsForAppointment.lieu_formation_zip_code) {
     emailCfaSubject = `${emailCfaSubject} - [${eligibleTrainingsForAppointment.lieu_formation_zip_code.slice(0, 2)}]`

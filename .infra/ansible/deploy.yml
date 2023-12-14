@@ -91,6 +91,11 @@
         chdir: /opt/app
         cmd: "sudo /opt/app/tools/reload-proxy.sh"
 
+    - name: "Désactivation du mode maintenance"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/tools/maintenance/maintenance-off.sh"
+
     - name: "Verification des certificats SSL"
       shell:
         chdir: /opt/app
@@ -121,8 +126,3 @@
       shell:
         chdir: /opt/app
         cmd: "sudo docker system prune --all --force"
-
-    - name: "Désactivation du mode maintenance"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo /opt/app/tools/maintenance/maintenance-off.sh"

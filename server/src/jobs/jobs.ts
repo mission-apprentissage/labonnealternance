@@ -1,19 +1,17 @@
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
-
 import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 
 import { getLoggerWithContext } from "../common/logger"
-import config from "../config"
 
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
+import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
-import { fixDiffusibleCompanies, checkDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
+import { checkDiffusibleCompanies, fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
-import { fixCollections } from "./database/temp/fixCollections"
+import { fixRDVACollections } from "./database/temp/fixRDVACollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -33,6 +31,7 @@ import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
+import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire/misc/sendDelegationEmailWithSecuredToken"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
@@ -41,6 +40,7 @@ import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/const
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { fillRecruiterRaisonSociale } from "./lba_recruteur/user/misc/fillRecruiterRaisonSociale"
+import { fixUserRecruiterCfaDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurCfaDataValidation"
 import { fixUserRecruiterDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurDataValidation"
 import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
@@ -58,6 +58,7 @@ import { inviteEtablissementToPremium } from "./rdv/inviteEtablissementToPremium
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementToPremiumAffelnet"
 import { inviteEtablissementToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUp"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUpAffelnet"
+import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
 import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
@@ -66,6 +67,8 @@ import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsA
 import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
 import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
+import { controlApplications } from "./verifications/controlApplications"
+import { controlAppointments } from "./verifications/controlAppointments"
 
 const logger = getLoggerWithContext("script")
 
@@ -96,7 +99,7 @@ export const CronsMap = {
   },
   "Send CSV offers to Pôle emploi": {
     cron_string: "30 5 * * *",
-    handler: () => (config.env === "production" ? addJob({ name: "pe:offre:export", payload: { threshold: "1" } }) : Promise.resolve(0)),
+    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" }, productionOnly: true }),
   },
   "Check companies validation state": {
     cron_string: "30 6 * * *",
@@ -182,6 +185,14 @@ export const CronsMap = {
     cron_string: "0 0 1 * *",
     handler: () => addJob({ name: "users:anonimize", payload: {} }),
   },
+  "Contrôle quotidien des candidatures": {
+    cron_string: "0 10-19/1 * * 1-5",
+    handler: () => addJob({ name: "control:applications", payload: {}, productionOnly: true }),
+  },
+  "Contrôle quotidien des prises de rendez-vous": {
+    cron_string: "0 11-19/2 * * 1-5",
+    handler: () => addJob({ name: "control:appointments", payload: {}, productionOnly: true }),
+  },
   // TODO A activer autour du 15/12/2023
   // "Anonymisation des user recruteurs de plus de 2 ans": {
   //   cron_string: "0 1 * * *",
@@ -205,8 +216,16 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
-      case "fiab:kevin":
-        return fixCollections()
+      case "recruiters:delegations": // Temporaire, doit tourner une fois en production
+        return resendDelegationEmailWithAccessToken()
+      case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
+        return fixDuplicateUsers()
+      case "migration:correctionRDVA": // Temporaire, doit tourner une fois en recette et production
+        return fixRDVACollections()
+      case "control:applications":
+        return controlApplications()
+      case "control:appointments":
+        return controlAppointments()
       case "recruiters:set-missing-job-start-date":
         return updateMissingStartDate()
       case "recruiters:get-missing-geocoordinates":
@@ -235,14 +254,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
             address,
             email,
             scope,
-            status: [
-              {
-                status: ETAT_UTILISATEUR.VALIDE,
-                validation_type: "AUTOMATIQUE",
-                user: "SERVEUR",
-                date: new Date(),
-              },
-            ],
           },
           {
             options: {
@@ -340,10 +351,14 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixJobExpirationDate()
       case "recruiters:job-type:fix":
         return fixJobType()
+      case "fix-applications":
+        return fixApplications()
       case "recruiters:data-validation:fix":
         return fixRecruiterDataValidation()
       case "user-recruters:data-validation:fix":
         return fixUserRecruiterDataValidation()
+      case "user-recruters-cfa:data-validation:fix":
+        return fixUserRecruiterCfaDataValidation()
       case "referentiel-opco:constructys:import": {
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))

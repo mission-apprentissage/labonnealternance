@@ -27,7 +27,7 @@ const OffresGratuites = () => {
           </Box>
         </Box>
         <Box order={{ base: "-1", md: "1" }}>
-          <Image src="/images/home_pics/illu-plateformesjeunes.svg" alt="Plateforme jeune" />
+          <Image src="/images/home_pics/illu-plateformesjeunes.svg" alt="" />
         </Box>
       </SimpleGrid>
     </Box>
