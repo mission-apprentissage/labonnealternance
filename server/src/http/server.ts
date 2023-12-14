@@ -133,7 +133,6 @@ export async function bind(app: Server) {
       metiers(typedSubApp)
       rome(typedSubApp)
       updateLbaCompany(typedSubApp)
-      campaignWebhook(typedSubApp)
       application(typedSubApp)
       applicationAPI(typedSubApp)
       unsubscribeLbaCompany(typedSubApp)
