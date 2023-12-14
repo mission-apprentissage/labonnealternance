@@ -7,6 +7,7 @@ import { closeMongoConnection } from "@/common/mongodb"
 import { closeElasticSearch } from "./common/esClient"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
+import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { closeSentry, initSentryProcessor } from "./http/sentry"
 import server from "./http/server"
@@ -71,6 +72,12 @@ program
   .hook("postAction", async () => {
     await Promise.all([closeMongoConnection(), closeElasticSearch()])
     await closeSentry()
+
+    setTimeout(async () => {
+      await notifyToSlack({ error: true, subject: "Process not released", message: "Review open handles using wtfnode" })
+      // eslint-disable-next-line n/no-process-exit
+      process.exit(1)
+    }, 10_000).unref()
   })
 
 program
