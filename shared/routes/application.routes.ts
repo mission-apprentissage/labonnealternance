@@ -35,15 +35,14 @@ export const zApplicationRoutes = {
           "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique \"Ne pas répondre\" de La bonne alternance.\n",
       },
     },
-    "/application/intention": {
+    "/application/intention/:id": {
       // TODO_SECURITY_FIX
-      path: "/application/intention",
+      path: "/application/intention/:id",
       method: "post",
+      params: z.object({ id: z.string() }).strict(),
       body: z
         .object({
-          id: z.string(), // inutile de chiffrer l'id, rajouter un champ token qui contiendra l'id
-          iv: z.string(),
-          intention: z.string(),
+          company_recruitment_intention: z.string(),
         })
         .strict(),
       response: {
@@ -53,17 +52,20 @@ export const zApplicationRoutes = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
-    "/application/intentionComment": {
-      path: "/application/intentionComment",
+    "/application/intentionComment/:id": {
+      path: "/application/intentionComment/:id",
       method: "post",
+      params: z.object({ id: z.string() }).strict(),
       body: z
         .object({
-          id: z.string(),
-          iv: z.string(),
-          comment: z.string(),
-          intention: z.string(),
+          company_feedback: z.string(),
+          company_recruitment_intention: z.string(),
           email: z.string(),
           phone: z.string(),
         })
@@ -83,7 +85,11 @@ export const zApplicationRoutes = {
             .strict(),
         ]),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
     "/application/webhook": {
       path: "/application/webhook",

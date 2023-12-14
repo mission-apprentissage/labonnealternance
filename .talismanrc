@@ -38,7 +38,7 @@ fileignoreconfig:
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
 - filename: server/src/jobs/database/obfuscateCollections.ts
-  checksum: a33747dd2219e0d6b943494f21fbc37bf51840647ba377442c91c319bf3c1d86
+  checksum: 73482f9b75b3ca47c3bc9377ce4d4e03f4ba21a351986c0ca8ae17382a5263e3
 - filename: server/src/jobs/job.actions.ts
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
@@ -56,7 +56,7 @@ fileignoreconfig:
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: server/tests/unit/util.test.ts
-  checksum: 874a63575d0c541f631eaf92290e1acb7514d35312cf618f04d54946eb19e46d
+  checksum: f248ec16629759106d43b02aafc092d55316aeb147dd75fa44f4acc990b4ece0
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/generateUri.ts

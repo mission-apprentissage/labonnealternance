@@ -3,18 +3,20 @@ import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS, ZApplication } from "shared"
+import { ApplicantIntention } from "shared/constants/application.js"
 import { RECRUITER_STATUS } from "shared/constants/recruteur.js"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { logger } from "../common/logger.js"
-import { Application, EmailBlacklist, LbaCompany } from "../common/model/index.js"
-import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
+import { Application, EmailBlacklist, LbaCompany, Recruiter, UserRecruteur } from "../common/model/index.js"
+import { decryptWithIV } from "../common/utils/encryptString.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { prepareMessageForMail } from "../common/utils/fileUtils.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 
+import { createCancelJobLink, createLbaCompanyApplicationReplyLink, createProvidedJobLink, createUserRecruteurApplicationReplyLink } from "./appLinks.service.js"
 import { BrevoEventStatus } from "./brevo.service.js"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
@@ -179,19 +181,13 @@ export const sendApplication = async ({
     try {
       const application = initApplication(query, company_email)
 
-      const encryptedId = encryptIdWithIV(application.id)
-
       const emailTemplates = getEmailTemplates(query.company_type)
 
       const fileContent = query.applicant_file_content
 
       const urlOfDetail = buildUrlOfDetail(publicUrl, query)
       const urlOfDetailNoUtm = urlOfDetail.replace(/(?<=&|\?)utm_.*?(&|$)/gim, "")
-      const recruiterEmailUrls = buildRecruiterEmailUrls({
-        publicUrl,
-        application,
-        encryptedId,
-      })
+      const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
 
       const searched_for_job_label = query.searched_for_job_label || ""
 
@@ -211,7 +207,7 @@ export const sendApplication = async ({
           to: application.applicant_email,
           subject: `Votre candidature chez ${application.company_name}`,
           template: getEmailTemplate(emailTemplates.candidat),
-          data: { ...application.toObject(), ...images, ...encryptedId, publicUrl, urlOfDetail, urlOfDetailNoUtm },
+          data: { ...application.toObject(), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
           attachments: [
             {
               filename: application.applicant_attachment_name,
@@ -288,21 +284,41 @@ const buildUrlOfDetail = (publicUrl: string, query: Pick<IApplicationUI, "job_id
 /**
  * Build urls to add in email messages sent to the recruiter
  */
-const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }: { publicUrl: string; application: EnforceDocument<IApplication, any>; encryptedId: any }) => {
+const buildRecruiterEmailUrls = async (application: IApplication) => {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
-  const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
-  const encryptedData = `&id=${encryptedId.id}&iv=${encryptedId.iv}`
+
+  // get the related recruiters to fetch it's establishment_id
+  const recruiter = await Recruiter.findOne({ "jobs._id": application.job_id }).lean()
+  let userRecruteur
+
+  if (recruiter) {
+    userRecruteur = await UserRecruteur.findOne({ establishment_id: recruiter.establishment_id }).lean()
+  }
 
   const urls = {
-    meetCandidateUrl: `${publicUrl}/formulaire-intention?intention=entretien${encryptedData}${candidateData}${utmRecruiterData}`,
-    waitCandidateUrl: `${publicUrl}/formulaire-intention?intention=ne_sais_pas${encryptedData}${candidateData}${utmRecruiterData}`,
-    refuseCandidateUrl: `${publicUrl}/formulaire-intention?intention=refus${encryptedData}${candidateData}${utmRecruiterData}`,
-    lbaRecruiterUrl: `${publicUrl}/acces-recruteur?${utmRecruiterData}`,
-    unsubscribeUrl: `${publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
-    lbaUrl: `${publicUrl}?${utmRecruiterData}`,
-    jobProvidedUrl: `${publicUrl}/espace-pro/offre/${application.job_id}/provided?${utmRecruiterData}`,
-    cancelJobUrl: `${publicUrl}/espace-pro/offre/${application.job_id}/cancel?${utmRecruiterData}`,
-    faqUrl: `${publicUrl}/faq?${utmRecruiterData}`,
+    meetCandidateUrl:
+      application.job_origin === "lba"
+        ? createLbaCompanyApplicationReplyLink(application.company_siret, application.company_email, ApplicantIntention.ENTRETIEN, application)
+        : createUserRecruteurApplicationReplyLink(userRecruteur, ApplicantIntention.ENTRETIEN, application),
+    waitCandidateUrl:
+      application.job_origin === "lba"
+        ? createLbaCompanyApplicationReplyLink(application.company_siret, application.company_email, ApplicantIntention.NESAISPAS, application)
+        : createUserRecruteurApplicationReplyLink(userRecruteur, ApplicantIntention.NESAISPAS, application),
+    refuseCandidateUrl:
+      application.job_origin === "lba"
+        ? createLbaCompanyApplicationReplyLink(application.company_siret, application.company_email, ApplicantIntention.REFUS, application)
+        : createUserRecruteurApplicationReplyLink(userRecruteur, ApplicantIntention.REFUS, application),
+    lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}`,
+    unsubscribeUrl: `${config.publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
+    lbaUrl: `${config.publicUrl}?${utmRecruiterData}`,
+    faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}`,
+    jobProvidedUrl: "",
+    cancelJobUrl: "",
+  }
+
+  if (application.job_id) {
+    urls.jobProvidedUrl = createProvidedJobLink(userRecruteur, application.job_id, utmRecruiterData)
+    urls.cancelJobUrl = createCancelJobLink(userRecruteur, application.job_id, utmRecruiterData)
   }
 
   return urls
@@ -498,51 +514,45 @@ export const validateFeedbackApplicationComment = async (validable: Partial<IApp
 
 /**
  * @description sends notification email to applicant
- * @param {IApplication} application
- * @param {string} intention
- * @param {string} email
- * @param {string} phone
- * @param {string} comment
- * @return {Promise<void>}
  */
-export const sendNotificationToApplicant = async ({
+export const sendMailToApplicant = async ({
   application,
-  intention,
   email,
   phone,
-  comment,
+  company_recruitment_intention,
+  company_feedback,
 }: {
-  application: EnforceDocument<IApplication, any>
-  intention: string
+  application: IApplication
   email: string
   phone: string
-  comment: string
+  company_recruitment_intention: string
+  company_feedback: string
 }): Promise<void> => {
-  switch (intention) {
-    case "entretien": {
+  switch (company_recruitment_intention) {
+    case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
         to: application.applicant_email,
         subject: `Réponse positive de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
-        data: { ...application.toObject(), ...images, email, phone, comment },
+        data: { ...application, ...images, email, phone, comment: company_feedback },
       })
       break
     }
-    case "ne_sais_pas": {
+    case ApplicantIntention.NESAISPAS: {
       mailer.sendEmail({
         to: application.applicant_email,
         subject: `Réponse de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
-        data: { ...application.toObject(), ...images, email, phone, comment },
+        data: { ...application, ...images, email, phone, comment: company_feedback },
       })
       break
     }
-    case "refus": {
+    case ApplicantIntention.REFUS: {
       mailer.sendEmail({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...application.toObject(), ...images, comment },
+        data: { ...application, ...images, comment: company_feedback },
       })
       break
     }
