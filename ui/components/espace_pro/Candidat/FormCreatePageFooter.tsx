@@ -109,7 +109,7 @@ export const FormCreatePageFooter = () => {
                 <Link
                   href="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
                   aria-label="Accès au site Etalab"
-                  textDecor="underline"
+                  textDecoration="underline"
                   isExternal
                 >
                   etalab-2.0

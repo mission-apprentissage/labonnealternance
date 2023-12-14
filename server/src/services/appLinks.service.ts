@@ -12,7 +12,6 @@ export function createAuthMagicLinkToken(user: IUserRecruteur) {
         params: undefined,
         querystring: undefined,
       },
-      resources: {},
     }),
   ])
 }
@@ -33,9 +32,6 @@ export function createValidationMagicLink(user: IUserRecruteur) {
           params: undefined,
           querystring: undefined,
         },
-        resources: {
-          user: [user._id.toString()],
-        },
       }),
     ],
     {
@@ -55,7 +51,6 @@ export function createOptoutValidateMagicLink(email: string, siret: string) {
           params: undefined,
           querystring: undefined,
         },
-        resources: {},
       }),
     ],
     {
@@ -77,7 +72,6 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
           },
           querystring: undefined,
         },
-        resources: {},
       }),
     ],
     {
@@ -96,9 +90,6 @@ export function createCancelJobLink(user: IUserRecruteur, jobId: string, utmData
         },
         querystring: undefined,
       },
-      resources: {
-        job: [jobId],
-      },
     }),
   ])
 
@@ -115,9 +106,6 @@ export function createProvidedJobLink(user: IUserRecruteur, jobId: string, utmDa
         },
         querystring: undefined,
       },
-      resources: {
-        job: [jobId],
-      },
     }),
   ])
 
@@ -133,9 +121,6 @@ export function createViewDelegationLink(email: string, establishment_id: string
           establishment_id: establishment_id,
         },
         querystring: undefined,
-      },
-      resources: {
-        recruiter: [establishment_id],
       },
     }),
   ])
@@ -155,9 +140,6 @@ export function createRdvaPremiumAffelnetPageLink(email: string, siret: string, 
           params: { id: etablissementId },
           querystring: undefined,
         },
-        resources: {
-          etablissement: [etablissementId],
-        },
       }),
       generateScope({
         schema: zRoutes.post["/etablissements/:id/premium/affelnet/accept"],
@@ -165,18 +147,12 @@ export function createRdvaPremiumAffelnetPageLink(email: string, siret: string, 
           params: { id: etablissementId },
           querystring: undefined,
         },
-        resources: {
-          etablissement: [etablissementId],
-        },
       }),
       generateScope({
         schema: zRoutes.post["/etablissements/:id/premium/affelnet/refuse"],
         options: {
           params: { id: etablissementId },
           querystring: undefined,
-        },
-        resources: {
-          etablissement: [etablissementId],
         },
       }),
     ],
@@ -201,9 +177,6 @@ export function createRdvaPremiumParcoursupPageLink(email: string, siret: string
           params: { id: etablissementId },
           querystring: undefined,
         },
-        resources: {
-          etablissement: [etablissementId],
-        },
       }),
       generateScope({
         schema: zRoutes.post["/etablissements/:id/premium/accept"],
@@ -211,18 +184,12 @@ export function createRdvaPremiumParcoursupPageLink(email: string, siret: string
           params: { id: etablissementId },
           querystring: undefined,
         },
-        resources: {
-          etablissement: [etablissementId],
-        },
       }),
       generateScope({
         schema: zRoutes.post["/etablissements/:id/premium/refuse"],
         options: {
           params: { id: etablissementId },
           querystring: undefined,
-        },
-        resources: {
-          etablissement: [etablissementId],
         },
       }),
     ],
@@ -247,9 +214,6 @@ export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string
           params: { id: etablissementId },
           querystring: undefined,
         },
-        resources: {
-          etablissement: [etablissementId],
-        },
       }),
     ],
     {
@@ -272,10 +236,6 @@ export function createRdvaAppointmentIdPageLink(email: string, siret: string, et
           params: { id: etablissementId, appointmentId },
           querystring: undefined,
         },
-        resources: {
-          etablissement: [etablissementId],
-          appointment: [appointmentId],
-        },
       }),
       generateScope({
         schema: zRoutes.get["/appointment-request/context/recap"],
@@ -285,18 +245,12 @@ export function createRdvaAppointmentIdPageLink(email: string, siret: string, et
             appointmentId,
           },
         },
-        resources: {
-          appointment: [appointmentId],
-        },
       }),
       generateScope({
         schema: zRoutes.post["/appointment-request/reply"],
         options: {
           params: undefined,
           querystring: undefined,
-        },
-        resources: {
-          appointment: [appointmentId],
         },
       }),
     ],
