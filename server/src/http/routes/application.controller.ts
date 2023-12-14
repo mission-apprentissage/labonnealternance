@@ -27,7 +27,7 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const { id } = req.params
-      const { company_recruitment_intention, company_feedback } = req.body
+      const { company_recruitment_intention, company_feedback, email, phone } = req.body
 
       try {
         const application = await Application.findOneAndUpdate(
@@ -38,10 +38,10 @@ export default function (server: Server) {
 
         await sendMailToApplicant({
           application,
-          intention: company_recruitment_intention,
-          email: req.body.email,
-          phone: req.body.phone,
-          comment: company_feedback,
+          email,
+          phone,
+          company_recruitment_intention,
+          company_feedback,
         })
 
         return res.status(200).send({ result: "ok", message: "comment registered" })

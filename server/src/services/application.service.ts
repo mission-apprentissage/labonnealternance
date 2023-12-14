@@ -514,33 +514,27 @@ export const validateFeedbackApplicationComment = async (validable: Partial<IApp
 
 /**
  * @description sends notification email to applicant
- * @param {IApplication} application
- * @param {string} intention
- * @param {string} email
- * @param {string} phone
- * @param {string} comment
- * @return {Promise<void>}
  */
 export const sendMailToApplicant = async ({
   application,
-  intention,
   email,
   phone,
-  comment,
+  company_recruitment_intention,
+  company_feedback,
 }: {
-  application: EnforceDocument<IApplication, any>
-  intention: string
+  application: IApplication
   email: string
   phone: string
-  comment: string
+  company_recruitment_intention: string
+  company_feedback: string
 }): Promise<void> => {
-  switch (intention) {
+  switch (company_recruitment_intention) {
     case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
         to: application.applicant_email,
         subject: `Réponse positive de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
-        data: { ...application.toObject(), ...images, email, phone, comment },
+        data: { ...application, ...images, email, phone, comment: company_feedback },
       })
       break
     }
@@ -549,7 +543,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
-        data: { ...application.toObject(), ...images, email, phone, comment },
+        data: { ...application, ...images, email, phone, comment: company_feedback },
       })
       break
     }
@@ -558,7 +552,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...application.toObject(), ...images, comment },
+        data: { ...application, ...images, comment: company_feedback },
       })
       break
     }
