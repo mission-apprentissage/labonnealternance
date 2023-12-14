@@ -61,7 +61,7 @@ export const zV1JobsRoutes = {
     "/v1/jobs/bulk": {
       method: "get",
       path: "/v1/jobs/bulk",
-      // TODO_SECURITY_FIX il faut faire quelque chose car sinon nous allons claquer des fesses
+      // TODO_SECURITY_FIX
       querystring: z
         .object({
           query: z
