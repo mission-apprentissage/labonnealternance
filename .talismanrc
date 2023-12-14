@@ -8,7 +8,7 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: 872bbf42d5b8bd22f900fff9eb6e907abbbeec5ee70f988563c4b6bb315e3f3d
 - filename: .infra/env.ini
-  checksum: ecfc738f90046a14cf076ce52116ec4345d7613d27584c91d0b5830e98ea38f2
+  checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
@@ -23,8 +23,6 @@ fileignoreconfig:
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
   checksum: 2534c2dae48c1464b97489263621dcd516a676b28fdbb34e98267a10e00fd839
-- filename: server/src/security/accessTokenService.ts
-  checksum: f05cafd17797362fc9bfb53062af2095ead2cbe2fa967fad23bd61b756052004
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts
@@ -43,6 +41,8 @@ fileignoreconfig:
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
+- filename: server/src/security/accessTokenService.ts
+  checksum: f05cafd17797362fc9bfb53062af2095ead2cbe2fa967fad23bd61b756052004
 - filename: server/src/services/application.service.ts
   checksum: 935cd8f213565ba7bcc2925fca149aaa6cbe9bb5e393a13ab3525dff6ad17234
 - filename: server/tests/integration/http/formationV1.test.ts

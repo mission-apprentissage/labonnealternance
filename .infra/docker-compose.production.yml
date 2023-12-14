@@ -129,7 +129,7 @@ services:
         limits:
           memory: 3g
     environment:
-      - ES_JAVA_OPTS=-Xmx2048m -Xms2048m
+      - ES_JAVA_OPTS=-Xmx{{es_mem}} -Xms{{es_mem}}
       - discovery.type=single-node
       - cluster.name=docker-cluster
       - network.host=0.0.0.0
