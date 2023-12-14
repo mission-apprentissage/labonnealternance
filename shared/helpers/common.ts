@@ -13,13 +13,14 @@ const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g
 const ftpLinkRegex = /\bftp:\/\/[^\s]+\b/g
 const mailtoRegex = /\bmailto:([^\s<>]+)\b/g
 
-export const removeUrlsFromText = (text: string) => {
+export const removeUrlsFromText = (text: string | null | undefined) => {
+  if (!text) return text
   const cleanedText = text.replace(httpLinkRegex, "").replace(wwwLinkRegex, "").replace(mailtoRegex, "").replace(emailRegex, "").replace(ftpLinkRegex, "")
-
   return cleanedText
 }
 
-export const addBracketsToUrls = (text: string) => {
+export const addBracketsToUrls = (text: string | null | undefined) => {
+  if (!text) return text
   const textWithSanitizedUrls = text
     .replace(httpLinkRegex, "[$&]")
     .replace(wwwLinkRegex, "[$&]")

@@ -1,3 +1,4 @@
+import { addBracketsToUrls, removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zCallerParam } from "../routes/_params"
@@ -11,14 +12,22 @@ export const ZApplication = z
       description: "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
       example: "john.smith@mail.com",
     }),
-    applicant_first_name: z.string().max(50).openapi({
-      description: "Le prénom du candidat.",
-      example: "Jean",
-    }),
-    applicant_last_name: z.string().max(50).openapi({
-      description: "Le nom du candidat.",
-      example: "Dupont",
-    }),
+    applicant_first_name: z
+      .string()
+      .max(50)
+      .transform((value) => removeUrlsFromText(value))
+      .openapi({
+        description: "Le prénom du candidat.",
+        example: "Jean",
+      }),
+    applicant_last_name: z
+      .string()
+      .max(50)
+      .transform((value) => removeUrlsFromText(value))
+      .openapi({
+        description: "Le nom du candidat.",
+        example: "Dupont",
+      }),
     applicant_phone: extensions.phone().openapi({
       description: "Le numéro de téléphone du candidat.",
       example: "0101010101",
@@ -82,7 +91,7 @@ export const ZApplication = z
   .openapi("Application")
 
 export const ZApplicationUI = ZApplication.extend({
-  message: ZApplication.shape.applicant_message_to_company.optional(),
+  message: ZApplication.shape.applicant_message_to_company.optional().transform((value) => addBracketsToUrls(value)),
   applicant_file_name: ZApplication.shape.applicant_attachment_name,
   applicant_file_content: z.string().max(4215276).openapi({
     description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
