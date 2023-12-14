@@ -313,7 +313,6 @@ export function isAuthorized(access: AccessPermission, userWithType: NonTokenUse
 
   switch (access) {
     case "recruiter:manage":
-    case "recruiter:validate":
     case "recruiter:add_job":
       return resources.recruiters.every((recruiter) => canAccessRecruiter(userWithType, recruiter))
 
@@ -325,6 +324,7 @@ export function isAuthorized(access: AccessPermission, userWithType: NonTokenUse
       return resources.users.every((user) => canAccessUser(userWithType, user))
     case "application:manage":
       return resources.applications.every((application) => canAccessApplication(userWithType, application))
+    case "user:validate":
     case "user:manage":
       return resources.users.every((user) => canAccessUser(userWithType, user))
     case "admin":
