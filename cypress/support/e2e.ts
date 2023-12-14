@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { addCommands } from "cypress-mongodb/dist/index-browser"
+
 // ***********************************************************
 // This example support/index.js is processed and
 // loaded automatically before your test files.
@@ -33,3 +36,5 @@ Cypress.on("uncaught:exception", (err) => {
     return false
   }
 })
+
+addCommands()

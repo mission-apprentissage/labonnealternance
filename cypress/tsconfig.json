@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
     "noEmit": true,
-    "isolatedModules": false,
     "types": ["cypress"]
   },
   "include": ["../node_modules/cypress", "./**/*.ts"],

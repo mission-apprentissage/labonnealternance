@@ -5,4 +5,3 @@ describe("go-to-faq", () => {
     cy.get("li:nth-of-type(5) > a").click()
   })
 })
-//# recorderSourceMap=BCBDBEBFA

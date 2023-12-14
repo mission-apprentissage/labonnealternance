@@ -19,12 +19,18 @@ fileignoreconfig:
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
   checksum: 61f784f3e931504011faa05180040616df5fd6f79f15203782579d0298804c9b
+- filename: cypress.local.env.json
+  checksum: a639266c2bf3a91aa35b45f09dfaffcdadc64b78a81723c98fe2adb60527bcec
+- filename: cypress/e2e/create-cfa-account-autovalidated.cy.ts
+  checksum: 9bcbb66c9d636350f718cfc401d08005fc6f371ea2f64b24dff7fc7911143053
+- filename: cypress/records/create-cfa-account-autovalidated.json
+  checksum: d035086e44ebe3588e2a491189a8ba45fc9001d7477f536caa9e5ba00d5872a4
+- filename: cypress/utils/generateRandomEmail.ts
+  checksum: ce8fa8f47a774f3ce698800f87bd4fa9de793ee8fca70c842c1165140fc5b42e
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
   checksum: 2534c2dae48c1464b97489263621dcd516a676b28fdbb34e98267a10e00fd839
-- filename: server/src/security/accessTokenService.ts
-  checksum: f05cafd17797362fc9bfb53062af2095ead2cbe2fa967fad23bd61b756052004
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts
@@ -43,6 +49,8 @@ fileignoreconfig:
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
+- filename: server/src/security/accessTokenService.ts
+  checksum: f05cafd17797362fc9bfb53062af2095ead2cbe2fa967fad23bd61b756052004
 - filename: server/src/services/application.service.ts
   checksum: 935cd8f213565ba7bcc2925fca149aaa6cbe9bb5e393a13ab3525dff6ad17234
 - filename: server/tests/integration/http/formationV1.test.ts

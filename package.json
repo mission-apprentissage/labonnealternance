@@ -14,7 +14,8 @@
   "workspaces": [
     "ui",
     "server",
-    "shared"
+    "shared",
+    "cypress"
   ],
   "scripts": {
     "setup": ".bin/mna-lba init:env",
@@ -58,7 +59,7 @@
     "e2e:recette": "cypress run --env ui=https://labonnealternance-recette.apprentissage.beta.gouv.fr,server=https://labonnealternance-recette.apprentissage.beta.gouv.fr",
     "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
     "e2e:convert2": "node cypress/convertRecords.mjs",
-    "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-rdv-from-widget.cy.js --env ui=http://localhost:3000,server=http://localhost:5001"
+    "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-rdv-from-widget.cy.js"
   },
   "dependencies": {
     "husky": "^8.0.3"
@@ -66,7 +67,6 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
-    "@cypress/chrome-recorder": "^2.3.1",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.1.0",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/exec": "^6.0.3",
@@ -75,6 +75,7 @@
     "@typescript-eslint/parser": "^6.7.2",
     "cross-env": "^7.0.3",
     "cypress": "^12.14.0",
+    "cypress-mongodb": "^6.2.0",
     "dotenv": "^16.1.4",
     "eslint": "^8.49.0",
     "eslint-config-next": "^13.4.19",
