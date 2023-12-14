@@ -34,9 +34,7 @@ export const zFormulaireRoute = {
       securityScheme: {
         auth: "access-token",
         access: null,
-        resources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
-        },
+        resources: {},
       },
     },
     "/formulaire/offre/f/:jobId": {
