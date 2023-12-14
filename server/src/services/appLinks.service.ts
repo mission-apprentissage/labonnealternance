@@ -276,7 +276,6 @@ export function createLbaCompanyApplicationReplyLink(email, siret, intention, ap
         params: { id: application._id },
         querystring: undefined,
       },
-      resources: {},
     }),
     generateScope({
       schema: zRoutes.post["/application/intentionComment/:id"],
@@ -284,7 +283,6 @@ export function createLbaCompanyApplicationReplyLink(email, siret, intention, ap
         params: { id: application._id },
         querystring: undefined,
       },
-      resources: {},
     }),
   ])
 
@@ -304,7 +302,6 @@ export function createUserRecruteurApplicationReplyLink(user, intention, applica
         params: { id: application._id },
         querystring: undefined,
       },
-      resources: {},
     }),
     generateScope({
       schema: zRoutes.post["/application/intentionComment/:id"],
@@ -312,7 +309,6 @@ export function createUserRecruteurApplicationReplyLink(user, intention, applica
         params: { id: application._id },
         querystring: undefined,
       },
-      resources: {},
     }),
   ])
 
