@@ -64,7 +64,7 @@ export function errorMiddleware(server: Server) {
       ...(error.data ? { data: error.data } : {}),
     }
 
-    if (error.output.statusCode >= 500) {
+    if (error.output.statusCode >= 500 || (_request.url.startsWith("/api/emails/webhook") && error.output.statusCode >= 400)) {
       server.log.error(rawError)
       captureException(rawError)
     }
