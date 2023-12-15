@@ -55,11 +55,11 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
 }
 
 export function errorMiddleware(server: Server) {
-  server.setErrorHandler<FastifyError | ValidationError | Boom<unknown> | Error | ZodError, { Reply: IResError }>((rawError, _request, reply) => {
+  server.setErrorHandler<FastifyError | ValidationError | Boom<unknown> | Error | ZodError, { Reply: IResError }>(async (rawError, _request, reply) => {
     const error = boomify(rawError)
 
     if (error.output.statusCode === 403) {
-      stopSession(_request, reply)
+      await stopSession(_request, reply)
     }
 
     const payload: IResError = {
