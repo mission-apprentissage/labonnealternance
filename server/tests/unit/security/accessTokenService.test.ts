@@ -32,8 +32,8 @@ describe("accessTokenService", () => {
       skip: "3",
     },
   } as const
-  const expectTokenValid = async (token: string) => expect(await parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
-  const expectTokenInvalid = (token: string) => expect(async () => await parseAccessToken(token, schema, options.params, options.querystring)).toThrow()
+  const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
+  const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).rejects.toThrow()
 
   describe("valid tokens", () => {
     it("should generate a token valid for a specific route", async () => {
