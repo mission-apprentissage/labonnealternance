@@ -4,7 +4,7 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getUserStatus } from "./userRecruteur.service"
 
-export const controlUserState = (status: IUserRecruteur["status"]): { error: boolean; reason: string } => {
+export const controlUserState = (status: IUserRecruteur["status"]): { error: boolean; reason?: string } => {
   const currentState = getUserStatus(status)
   switch (currentState) {
     case ETAT_UTILISATEUR.ATTENTE:
@@ -15,7 +15,7 @@ export const controlUserState = (status: IUserRecruteur["status"]): { error: boo
       return { error: true, reason: "DISABLED" }
 
     case ETAT_UTILISATEUR.VALIDE:
-      return { error: false, reason: "" }
+      return { error: false }
 
     default:
       throw Boom.badRequest("L'état utilisateur est inconnu")
