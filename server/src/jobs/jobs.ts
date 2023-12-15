@@ -193,11 +193,10 @@ export const CronsMap = {
     cron_string: "0 11-19/2 * * 1-5",
     handler: () => addJob({ name: "control:appointments", payload: {}, productionOnly: true }),
   },
-  // TODO A activer autour du 15/12/2023
-  // "Anonymisation des user recruteurs de plus de 2 ans": {
-  //   cron_string: "0 1 * * *",
-  //   handler: () => addJob({ name: "anonymize-user-recruteurs", payload: {} }),
-  // },
+  "Anonymisation des user recruteurs de plus de 2 ans": {
+    cron_string: "0 1 * * *",
+    handler: () => addJob({ name: "user-recruteurs:anonymize", payload: {} }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
