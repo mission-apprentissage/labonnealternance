@@ -90,7 +90,9 @@ export default (server: Server) => {
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/login/verification"]).value
       const { email } = user.identity
-      const userData = await getUser({ email })
+      const formatedEmail = email.toLowerCase()
+
+      const userData = await getUser({ email: formatedEmail })
 
       if (!userData) {
         throw Boom.notFound()
@@ -102,7 +104,6 @@ export default (server: Server) => {
         throw Boom.forbidden()
       }
 
-      const formatedEmail = email.toLowerCase()
       const connectedUser = await updateLastConnectionDate(formatedEmail)
 
       if (!connectedUser) {
