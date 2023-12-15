@@ -1,6 +1,6 @@
 import assert from "assert"
 
-import { cleanEmail, removeUrlsFromText, addBracketsToUrls } from "shared/helpers/common"
+import { cleanEmail, removeUrlsFromText, disableUrlsWith0WidthChar } from "shared/helpers/common"
 import { describe, it } from "vitest"
 
 import __filename from "../../src/common/filename"
@@ -50,19 +50,19 @@ describe(__filename(import.meta.url), () => {
   })
 
   it("Mise entre [] des différentes formes d'URL dans un texte", () => {
-    assert.strictEqual(addBracketsToUrls(undefined), undefined)
-    assert.strictEqual(addBracketsToUrls(null), null)
-    assert.strictEqual(addBracketsToUrls(""), "")
-    assert.strictEqual(addBracketsToUrls("clean text"), "clean text")
-    assert.strictEqual(addBracketsToUrls("clean evil-pirate@hack.com text"), "clean [evil-pirate@hack.com] text")
-    assert.strictEqual(addBracketsToUrls("text https://url.com end"), "text [https://url.com] end")
+    assert.strictEqual(disableUrlsWith0WidthChar(undefined), undefined)
+    assert.strictEqual(disableUrlsWith0WidthChar(null), null)
+    assert.strictEqual(disableUrlsWith0WidthChar(""), "")
+    assert.strictEqual(disableUrlsWith0WidthChar("clean text"), "clean text")
+    assert.strictEqual(disableUrlsWith0WidthChar("clean evil-pirate@hack.com text"), "clean evil-pirate@hack\u200B.\u200Bcom text")
+    assert.strictEqual(disableUrlsWith0WidthChar("text https://url.com end"), "text https://url\u200B.\u200Bcom end")
     assert.strictEqual(
-      addBracketsToUrls("text http://www.url.com https://url.com evil-pirate@hack.com end"),
-      "text [http://[www.url.com]] [https://url.com] [evil-pirate@hack.com] end"
+      disableUrlsWith0WidthChar("text http://www.url.com https://url.com evil-pirate@hack.com end"),
+      "text http://www\u200B.\u200Burl\u200B.\u200Bcom https://url\u200B.\u200Bcom evil-pirate@hack\u200B.\u200Bcom end"
     )
     assert.strictEqual(
-      addBracketsToUrls("text https://url.com www.url.com/?meh=lah mailto:evil@hack.com ftp://bad-ressource.com/path/path"),
-      "text [https://url.com] [www.url.com/?meh=lah] [mailto:[evil@hack.com]] [ftp://bad-ressource.com/path/path]"
+      disableUrlsWith0WidthChar("text https://url.com www.url.com/?meh=lah mailto:evil@hack.com ftp://bad-ressource.com/path/path"),
+      "text https://url\u200B.\u200Bcom www\u200B.\u200Burl\u200B.\u200Bcom/?meh=lah mailto:evil@hack\u200B.\u200Bcom ftp://bad-ressource\u200B.\u200Bcom/path/path"
     )
   })
 
