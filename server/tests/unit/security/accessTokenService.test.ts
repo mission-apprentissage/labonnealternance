@@ -32,20 +32,20 @@ describe("accessTokenService", () => {
       skip: "3",
     },
   } as const
-  const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
-  const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).toThrow()
+  const expectTokenValid = async (token: string) => expect(await parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
+  const expectTokenInvalid = (token: string) => expect(async () => await parseAccessToken(token, schema, options.params, options.querystring)).toThrow()
 
   describe("valid tokens", () => {
-    it("should generate a token valid for a specific route", () => {
+    it("should generate a token valid for a specific route", async () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
           options,
         }),
       ])
-      expectTokenValid(token)
+      await expectTokenValid(token)
     })
-    it("should generate a token valid for a specific param and allow all querystring", () => {
+    it("should generate a token valid for a specific param and allow all querystring", async () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
@@ -60,20 +60,20 @@ describe("accessTokenService", () => {
           },
         }),
       ])
-      expectTokenValid(token)
+      await expectTokenValid(token)
     })
-    it("should generate a token valid for a generic route", () => {
+    it("should generate a token valid for a generic route", async () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
           options: "all",
         }),
       ])
-      expectTokenValid(token)
+      await expectTokenValid(token)
     })
   })
   describe("invalid tokens", () => {
-    it("should detect an invalid token that has a different param", () => {
+    it("should detect an invalid token that has a different param", async () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
@@ -86,9 +86,9 @@ describe("accessTokenService", () => {
           },
         }),
       ])
-      expectTokenInvalid(token)
+      await expectTokenInvalid(token)
     })
-    it("should detect an invalid token that has a different querystring", () => {
+    it("should detect an invalid token that has a different querystring", async () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
@@ -101,18 +101,18 @@ describe("accessTokenService", () => {
           },
         }),
       ])
-      expectTokenInvalid(token)
+      await expectTokenInvalid(token)
     })
-    it("should detect an invalid token that is for a different route", () => {
+    it("should detect an invalid token that is for a different route", async () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema: zRoutes.post["/admin/users"],
           options: "all",
         }),
       ])
-      expectTokenInvalid(token)
+      await expectTokenInvalid(token)
     })
-    it("should detect an invalid token that has an allowAll but not for all querystrings", () => {
+    it("should detect an invalid token that has an allowAll but not for all querystrings", async () => {
       const token = generateAccessToken(user, [
         generateScope({
           schema,
@@ -126,7 +126,7 @@ describe("accessTokenService", () => {
           },
         }),
       ])
-      expectTokenInvalid(token)
+      await expectTokenInvalid(token)
     })
   })
 })
