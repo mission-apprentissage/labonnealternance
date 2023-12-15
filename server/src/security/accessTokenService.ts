@@ -187,7 +187,7 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
   if (token.identity.type === "IUserRecruteur") {
     const user = await getUser({ _id: token.identity._id })
 
-    if (!user) throw Boom.forbidden("User does not exist")
+    if (!user) throw Boom.notFound("User does not exist")
 
     const userStatus = controlUserState(user?.status)
 
