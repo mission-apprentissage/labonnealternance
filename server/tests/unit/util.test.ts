@@ -40,8 +40,8 @@ describe(__filename(import.meta.url), () => {
   })
 
   it("Suppression des différentes formes d'URL dans un texte", () => {
-    assert.strictEqual(removeUrlsFromText(undefined), undefined)
-    assert.strictEqual(removeUrlsFromText(null), null)
+    assert.strictEqual(removeUrlsFromText(undefined), "")
+    assert.strictEqual(removeUrlsFromText(null), "")
     assert.strictEqual(removeUrlsFromText(""), "")
     assert.strictEqual(removeUrlsFromText("clean text"), "clean text")
     assert.strictEqual(removeUrlsFromText("text https://url.com end"), "text  end")
@@ -50,8 +50,8 @@ describe(__filename(import.meta.url), () => {
   })
 
   it("Mise entre [] des différentes formes d'URL dans un texte", () => {
-    assert.strictEqual(disableUrlsWith0WidthChar(undefined), undefined)
-    assert.strictEqual(disableUrlsWith0WidthChar(null), null)
+    assert.strictEqual(disableUrlsWith0WidthChar(undefined), "")
+    assert.strictEqual(disableUrlsWith0WidthChar(null), "")
     assert.strictEqual(disableUrlsWith0WidthChar(""), "")
     assert.strictEqual(disableUrlsWith0WidthChar("clean text"), "clean text")
     assert.strictEqual(disableUrlsWith0WidthChar("clean evil-pirate@hack.com text"), "clean evil-pirate@hack\u200B.\u200Bcom text")
