@@ -184,6 +184,7 @@ export function getUserRole(userWithType: NonTokenUserWithType): Role | null {
       return CfaRole
     case "ENTREPRISE":
       if (userState.error) {
+        if (userState.reason !== "VALIDATION") throw Boom.internal("Unexpected state during user role validation")
         return PendingRecruiterRole
       } else {
         return RecruiterRole
