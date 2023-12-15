@@ -230,7 +230,7 @@ export const zRecruiterRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        access: null,
+        access: "user:manage",
         resources: {
           user: [{ _id: { type: "params", key: "id" } }],
         },

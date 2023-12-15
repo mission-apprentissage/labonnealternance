@@ -334,7 +334,7 @@ describe("authorisationService", () => {
     describe("as an admin user", () => {
       describe.each<[Permission]>([
         ["recruiter:manage"],
-        ["recruiter:validate"],
+        ["user:validate"],
         ["recruiter:add_job"],
         ["job:manage"],
         ["school:manage"],
@@ -391,7 +391,7 @@ describe("authorisationService", () => {
     })
 
     describe("as an opco user", () => {
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:validate"], ["recruiter:add_job"]])("I have %s permission", (permission) => {
+      describe.each<[Permission]>([["recruiter:manage"], ["user:validate"], ["recruiter:add_job"]])("I have %s permission", (permission) => {
         it("on all recruiters from my opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1, recruteurO1E1R2, recruteurO1E2R1], location)
           await expect(
@@ -454,7 +454,7 @@ describe("authorisationService", () => {
           ).resolves.toBe(undefined)
         })
       })
-      describe.each<[Permission]>([["user:manage"]])("I have %s permission", (permission) => {
+      describe.each<[Permission]>([["user:manage"], ["user:validate"]])("I have %s permission", (permission) => {
         it("on user recruiter from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
           await expect(
@@ -476,7 +476,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
         it("on recruiter from other Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO2E1R1], location)
           await expect(
@@ -585,7 +585,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["user:manage"], ["admin"], ["user:validate"]])("I do not have %s permission", (permission) => {
         it("on admin user", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
           await expect(
@@ -607,7 +607,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["user:manage"], ["admin"], ["user:validate"]])("I do not have %s permission", (permission) => {
         it("on user CFA", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
           await expect(
@@ -629,7 +629,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["user:manage"], ["admin"], ["user:validate"]])("I do not have %s permission", (permission) => {
         it("on other user Opco from my Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U2], location)
           await expect(
@@ -653,7 +653,7 @@ describe("authorisationService", () => {
     })
 
     describe("as an opco credential", () => {
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:validate"], ["recruiter:add_job"]])("I have %s permission", (permission) => {
+      describe.each<[Permission]>([["recruiter:manage"], ["user:validate"], ["recruiter:add_job"]])("I have %s permission", (permission) => {
         it("on all recruiters from my opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1, recruteurO1E1R2, recruteurO1E2R1], location)
           await expect(
@@ -717,7 +717,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
         it("on recruiter from other Opco", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO2E1R1], location)
           await expect(
@@ -980,7 +980,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["recruiter:validate"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["user:validate"]])("I do not have %s permission", (permission) => {
         it("on all my delegated recruiters", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
           await expect(
@@ -1002,7 +1002,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["recruiter:manage"], ["user:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
         it("on non delegated recruiters", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R2], location)
           await expect(
@@ -1242,7 +1242,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["recruiter:validate"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["user:validate"]])("I do not have %s permission", (permission) => {
         it("on me", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
           await expect(
@@ -1264,7 +1264,7 @@ describe("authorisationService", () => {
         })
       })
 
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
+      describe.each<[Permission]>([["recruiter:manage"], ["user:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
         it("on other recruiters from my company", async () => {
           const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R2], location)
           await expect(
@@ -1479,7 +1479,7 @@ describe("authorisationService", () => {
   it("should support some operator permission", async () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
-      access: { some: ["recruiter:manage", "recruiter:validate"] },
+      access: { some: ["recruiter:manage", "user:validate"] },
       resources: {
         recruiter: [
           {
@@ -1535,7 +1535,7 @@ describe("authorisationService", () => {
   it("should support every operator permission", async () => {
     const securityScheme: SecurityScheme = {
       auth: "cookie-session",
-      access: { every: ["recruiter:manage", "recruiter:validate"] },
+      access: { every: ["recruiter:manage", "user:validate"] },
       resources: {
         recruiter: [
           {
