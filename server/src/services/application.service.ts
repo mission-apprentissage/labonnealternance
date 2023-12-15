@@ -5,7 +5,7 @@ import { oleoduc, writeData } from "oleoduc"
 import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS, ZApplication } from "shared"
 import { ApplicantIntention } from "shared/constants/application.js"
 import { RECRUITER_STATUS } from "shared/constants/recruteur.js"
-import { disableUrlsWith0WidthChar, prepareMessageForMail } from "shared/helpers/common.js"
+import { disableUrlsWith0WidthChar, prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common.js"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -536,7 +536,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse positive de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
-        data: { ...application, ...images, email, phone, comment: company_feedback },
+        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: disableUrlsWith0WidthChar(company_feedback) },
       })
       break
     }
@@ -545,7 +545,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
-        data: { ...application, ...images, email, phone, comment: company_feedback },
+        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: disableUrlsWith0WidthChar(company_feedback) },
       })
       break
     }
@@ -554,7 +554,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...application, ...images, comment: company_feedback },
+        data: { ...application, ...images, comment: disableUrlsWith0WidthChar(company_feedback) },
       })
       break
     }
