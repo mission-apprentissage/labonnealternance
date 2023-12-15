@@ -100,7 +100,7 @@ const DemandeDeContact = (props: Props) => {
     }),
     onSubmit: async (values) => {
       try {
-        const { appointment } = (await apiPost("/appointment-request/validate", {
+        const result = await apiPost("/appointment-request/validate", {
           body: {
             firstname: values.firstname,
             lastname: values.lastname,
@@ -112,10 +112,13 @@ const DemandeDeContact = (props: Props) => {
             applicantReasons: applicantReasons.filter(({ checked }) => checked).map(({ key }) => key),
             appointmentOrigin: props.referrer,
           },
-        })) as unknown as { appointment: { _id: string } }
+        })
 
         const response = await apiGet("/appointment-request/context/short-recap", {
-          querystring: { appointmentId: appointment._id },
+          querystring: { appointmentId: result.appointment._id.toString() },
+          headers: {
+            authorization: `Bearer ${result.token}`,
+          },
         })
 
         setOnSuccessSubmitResponse(response)

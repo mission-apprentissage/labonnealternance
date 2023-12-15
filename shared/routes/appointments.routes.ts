@@ -274,6 +274,7 @@ export const zAppointmentsRoute = {
           .object({
             userId: zObjectId,
             appointment: z.union([ZAppointment, z.null()]),
+            token: z.string(),
           })
           .strict(),
       },
