@@ -7,26 +7,24 @@ export const cleanEmail = (email: string) => {
   return cleanedEmail
 }
 
-const httpLinkRegex = /\b(https?:\/\/[^\s]+\b)/g
-const wwwLinkRegex = /\bwww\.[^\s]+\b/g
-const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g
-const ftpLinkRegex = /\bftp:\/\/[^\s]+\b/g
-const mailtoRegex = /\bmailto:([^\s<>]+)\b/g
+const linkRegexes = [
+  /\b(https?:\/\/[^\s]+\b)/g,
+  /\bwww\.[^\s]+\b/g,
+  /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+  /\bftp:\/\/[^\s]+\b/g,
+  /\bmailto:([^\s<>]+)\b/g,
+];
 
-export const removeUrlsFromText = (text: string | null | undefined) => {
-  if (!text) return text
-  const cleanedText = text.replace(httpLinkRegex, "").replace(wwwLinkRegex, "").replace(mailtoRegex, "").replace(emailRegex, "").replace(ftpLinkRegex, "")
-  return cleanedText
-}
+const processTextWithLinks = (text: string | null | undefined, replacement: string) => {
+  if (!text) return text;
+  return linkRegexes.reduce((processedText, regex) => processedText.replace(regex, replacement), text);
+};
 
-export const addBracketsToUrls = (text: string | null | undefined) => {
-  if (!text) return text
-  const textWithSanitizedUrls = text
-    .replace(httpLinkRegex, "[$&]")
-    .replace(wwwLinkRegex, "[$&]")
-    .replace(mailtoRegex, "[$&]")
-    .replace(emailRegex, "[$&]")
-    .replace(ftpLinkRegex, "[$&]")
+export const removeUrlsFromText = (text: string | null | undefined): string => {
+  return processTextWithLinks(text, '');
+};
 
-  return textWithSanitizedUrls
-}
+export const addBracketsToUrls = (text: string | null | undefined): string => {
+  return processTextWithLinks(text, '[$&]');
+};
+
