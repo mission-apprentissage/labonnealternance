@@ -262,6 +262,20 @@ export function createRdvaAppointmentIdPageLink(email: string, siret: string, et
   return `${config.publicUrl}/espace-pro/establishment/${etablissementId}/appointments/${appointmentId}?token=${encodeURIComponent(token)}`
 }
 
+export function createRdvaShortRecapLink(email: string) {
+  const token = generateAccessToken({ email, type: "candidat" }, [
+    generateScope({
+      schema: zRoutes.get["/appointment-request/context/short-recap"],
+      options: {
+        params: undefined,
+        querystring: undefined,
+      },
+    }),
+  ])
+
+  return token
+}
+
 /**
  * Secured link for application replies
  */
