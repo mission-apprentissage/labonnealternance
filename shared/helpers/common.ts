@@ -18,3 +18,10 @@ export const disableUrlsWith0WidthChar = (text: string | null | undefined) => {
   if (!text) return text
   return linkRegexes.reduce((processedText, regex) => processedText.replace(regex, (url) => url.replace(/\./g, "\u200B.\u200B")), text)
 }
+
+export const prepareMessageForMail = (text: string | null | undefined) => {
+  if (!text) return text
+  let result: string | null | undefined = text.replace(/(<([^>]+)>)/gi, "")
+  result = disableUrlsWith0WidthChar(result)
+  return result ? result.replace(/\r\n|\r|\n/gi, "<br />") : result
+}

@@ -5,6 +5,7 @@ import { oleoduc, writeData } from "oleoduc"
 import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS, ZApplication } from "shared"
 import { ApplicantIntention } from "shared/constants/application.js"
 import { RECRUITER_STATUS } from "shared/constants/recruteur.js"
+import { disableUrlsWith0WidthChar, prepareMessageForMail } from "shared/helpers/common.js"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -12,7 +13,6 @@ import { logger } from "../common/logger.js"
 import { Application, EmailBlacklist, LbaCompany, Recruiter, UserRecruteur } from "../common/model/index.js"
 import { decryptWithIV } from "../common/utils/encryptString.js"
 import { manageApiError } from "../common/utils/errorManager.js"
-import { prepareMessageForMail } from "../common/utils/fileUtils.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 
@@ -330,6 +330,8 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
 const initApplication = (params: Omit<IApplicationUI, "_id">, company_email: string): EnforceDocument<IApplication, any> => {
   const res = new Application({
     ...params,
+    applicant_first_name: disableUrlsWith0WidthChar(params.applicant_first_name),
+    applicant_last_name: disableUrlsWith0WidthChar(params.applicant_last_name),
     applicant_attachment_name: params.applicant_file_name,
     applicant_email: params.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(params.message),
