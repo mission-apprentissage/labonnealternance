@@ -1,5 +1,4 @@
 import Boom from "boom"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { toPublicUser, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -8,10 +7,10 @@ import { createAuthMagicLink } from "@/services/appLinks.service"
 
 import { startSession, stopSession } from "../../../common/utils/session.service"
 import config from "../../../config"
-import { CFA, ENTREPRISE } from "../../../services/constant.service"
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
+import { controlUserState } from "../../../services/login.service"
 import mailer from "../../../services/mailer.service"
-import { getUser, getUserStatus, updateLastConnectionDate } from "../../../services/userRecruteur.service"
+import { getUser, updateLastConnectionDate } from "../../../services/userRecruteur.service"
 import { Server } from "../../server"
 
 export default (server: Server) => {
@@ -52,20 +51,9 @@ export default (server: Server) => {
 
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
 
-      if (user.status?.length) {
-        const status = getUserStatus(user.status)
-
-        if ([ENTREPRISE, CFA].includes(user.type)) {
-          if (!status || [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
-            return res.status(400).send({ error: true, reason: "VALIDATION" })
-          }
-          if (status === ETAT_UTILISATEUR.DESACTIVE) {
-            return res.status(400).send({
-              error: true,
-              reason: "DISABLED",
-            })
-          }
-        }
+      const userState = controlUserState(user.status)
+      if (userState?.error) {
+        res.status(400).send(userState)
       }
 
       if (!is_email_checked) {
@@ -101,15 +89,27 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/login/verification"]).value
+      const { email } = user.identity
+      const userData = await getUser({ email })
 
-      const formatedEmail = user.identity.email.toLowerCase()
+      if (!userData) {
+        throw Boom.notFound()
+      }
+
+      const userState = controlUserState(userData?.status)
+
+      if (userState?.error) {
+        throw Boom.forbidden()
+      }
+
+      const formatedEmail = email.toLowerCase()
       const connectedUser = await updateLastConnectionDate(formatedEmail)
 
       if (!connectedUser) {
         throw Boom.forbidden()
       }
 
-      await startSession(user.identity.email, res)
+      await startSession(email, res)
 
       return res.status(200).send(toPublicUser(connectedUser))
     }
