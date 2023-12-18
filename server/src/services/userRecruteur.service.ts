@@ -142,7 +142,7 @@ export const updateUserValidationHistory = async (
  * @param {IUserRecruteur["status"]} stateArray
  * @returns {IUserRecruteur["status"]}
  */
-export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
+export const getUserStatus = (stateArray: IUserRecruteur["status"]): IUserStatusValidation["status"] => {
   const sortedArray = [...stateArray].sort((a, b) => new Date(a?.date ?? 0).valueOf() - new Date(b?.date ?? 0).valueOf())
   const lastValidationEvent = sortedArray.at(-1)
   if (!lastValidationEvent) {

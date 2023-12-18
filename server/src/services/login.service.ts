@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { IUserRecruteur } from "shared"
+import { IUserRecruteur, assertUnreachable } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getUserStatus } from "./userRecruteur.service"
@@ -17,7 +17,11 @@ export const controlUserState = (status: IUserRecruteur["status"]): { error: boo
     case ETAT_UTILISATEUR.VALIDE:
       return { error: false }
 
-    default:
+    case null:
+    case undefined:
       throw Boom.badRequest("L'état utilisateur est inconnu")
+
+    default:
+      assertUnreachable(currentState)
   }
 }
