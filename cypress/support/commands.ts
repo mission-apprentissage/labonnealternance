@@ -32,3 +32,13 @@
         }
     );
 });*/
+
+Cypress.Commands.add("deleteMany", (filter, { collectionName }) => {
+  return cy
+    .task("executeMongoDb", {
+      commandName: "deleteMany",
+      args: [filter],
+      collectionName,
+    })
+    .then((result) => result)
+})
