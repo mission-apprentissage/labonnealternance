@@ -565,24 +565,8 @@ export const sendMailToApplicant = async ({
  * @description updates application and triggers action from email webhook
  */
 export const updateApplicationStatusFromHardbounce = async ({ payload, application }: { payload: any; application: IApplication }): Promise<void> => {
-  /* Format payload cf. https://developers.brevo.com/docs/how-to-use-webhooks
-      {
-        "event": "delivered",
-        "email": "example@example.com",
-        "id": 26224,
-        "date": "YYYY-MM-DD HH:mm:ss",
-        "ts": 1598634509,
-        "message-id": "<xxxxxxxxxxxx.xxxxxxxxx@domain.com>",
-        "ts_event": 1598034509,
-        "subject": "Subject Line",
-        "tag": "[\"transactionalTag\"]",
-        "sending_ip": "185.41.28.109",
-        "ts_epoch": 1598634509223,
-        "tags": [
-          "myFirstTransactional"
-        ]
-      }
-  */
+  /* Format payload cf. https://developers.brevo.com/docs/transactional-webhooks
+  https://developers.brevo.com/docs/marketing-webhooks */
 
   const { subject, email } = payload
 

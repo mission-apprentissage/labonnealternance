@@ -18,8 +18,7 @@ export const enum BrevoEventStatus {
 
 emailWebhook = {
   description: "Changements d'états des emails de candidatures ou de rendez-vous ou de marketing",
-  // url: `${config.publicUrl}/api/email/webhook?apikey=${config.smtp.brevoWebhookApiKey}`,
-  url: `https://labonnealternance-recette.apprentissage.beta.gouv.fr/api/emails/webhook?apiKey=${config.smtp.brevoWebhookApiKey}`,
+  url: `${config.publicUrl}/api/emails/webhook?apiKey=${config.smtp.brevoWebhookApiKey}`,
   events: ["hardBounce", "delivered", "request", "click", "uniqueOpened"],
 }
 
