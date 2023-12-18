@@ -2,6 +2,7 @@ import { capitalize } from "lodash-es"
 
 import { CODE_NAF_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 import { validateSIRET } from "../../validators/siretValidator"
+import { removeUrlsFromText } from "../common"
 import { z } from "../zodWithOpenApi"
 
 // custom error map to translate zod errors to french
@@ -34,7 +35,11 @@ export const extensions = {
       example: "78424186100011",
     }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
-  phone: () => z.string().trim() /*.regex(phoneRegex)*/,
+  phone: () =>
+    z
+      .string()
+      .trim()
+      .transform((value) => removeUrlsFromText(value)) /*.regex(phoneRegex)*/,
   code_naf: () =>
     z.preprocess(
       (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point
