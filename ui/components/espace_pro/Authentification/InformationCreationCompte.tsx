@@ -134,8 +134,8 @@ const FormulaireLayout = ({ left, right }) => {
         <Box fontSize="20px" mb={4}>
           <Text textAlign="justify" mt={2}>
             {type === AUTHTYPE.ENTREPRISE
-              ? "Les informations de contact seront visibles sur vos offres et permettront de recevoir les candidatures."
-              : "Les informations de contact seront visibles sur les offres de vos entreprises partenaires"}
+              ? "Les informations de contact et l'adresse postale de votre établissement seront visibles sur vos offres et permettront de recevoir les candidatures."
+              : "Les informations de contact et l'adresse postale de votre établissement seront visibles sur les offres de vos entreprises partenaires"}
           </Text>
           <Text>Elles peuvent être modifiées ultérieurement.</Text>
         </Box>
