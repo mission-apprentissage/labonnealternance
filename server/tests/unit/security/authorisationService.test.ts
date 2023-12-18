@@ -1,94 +1,19 @@
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
-import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur, ZApplication, ZCredential, ZRecruiter, ZUserRecruteur } from "shared/models"
-import { zObjectId } from "shared/models/common"
+import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { SecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessRessouces, Permission, UserWithType } from "shared/security/permissions"
-import { beforeEach, describe, expect, it } from "vitest"
-import { Fixture, Generator } from "zod-fixture"
+import { describe, expect, it } from "vitest"
 
-import { Application, Credential, Recruiter, UserRecruteur } from "@/common/model"
+import { Application, Recruiter, UserRecruteur } from "@/common/model"
 import { IAccessToken, generateScope } from "@/security/accessTokenService"
 import { authorizationMiddleware } from "@/security/authorisationService"
 import { useMongo } from "@tests/utils/mongo.utils"
 
-let seed = 0
-function getFixture() {
-  seed++
-  return new Fixture({ seed }).extend([
-    Generator({
-      schema: zObjectId,
-      output: () => new ObjectId(),
-    }),
-    Generator({
-      schema: extensions.siret,
-      output: ({ transform }) =>
-        transform.utils.random.from([
-          "55327987900672",
-          "55327987900673",
-          "55327987900674",
-          "55327987900675",
-          "55327987900676",
-          "55327987900677",
-          "73282932000074",
-          "35600000000048",
-          "35600000009075",
-          "35600000009093",
-        ]),
-    }),
-  ])
-}
-
-async function createUserRecruteur(data: Partial<IUserRecruteur>, userState: string = ETAT_UTILISATEUR.VALIDE) {
-  const u = new UserRecruteur({
-    ...getFixture().fromSchema(ZUserRecruteur),
-    status: [{ validation_type: "AUTOMATIQUE", status: userState }],
-    ...data,
-  })
-  await u.save()
-  return u
-}
-
-async function createCredential(data: Partial<ICredential>) {
-  const u = new Credential({
-    ...getFixture().fromSchema(ZCredential),
-    ...data,
-  })
-  await u.save()
-  return u
-}
-
-async function createRecruteur(data: Partial<IRecruiter>, jobsData: Partial<IJob>[]) {
-  const u = new Recruiter({
-    ...getFixture().fromSchema(ZRecruiter),
-    ...data,
-    jobs: jobsData.map((d) => {
-      return {
-        ...getFixture().fromSchema(ZRecruiter),
-        ...d,
-      }
-    }),
-  })
-  await u.save()
-  return u
-}
-
-async function createApplication(data: Partial<IApplication>) {
-  const u = new Application({
-    ...getFixture().fromSchema(ZApplication),
-    ...data,
-  })
-  await u.save()
-  return u
-}
+import { createApplicationTest, createCredentialTest, createRecruteurTest, createUserRecruteurTest } from "../../utils/user.utils"
 
 describe("authorisationService", () => {
-  beforeEach(() => {
-    seed = 0
-  })
-
   let adminUser: IUserRecruteur
   let opcoUserO1U1: IUserRecruteur
   let opcoUserO1U2: IUserRecruteur
@@ -215,33 +140,33 @@ describe("authorisationService", () => {
     const O1E1Siret = "88160687500014"
     const O1E2Siret = "38959133000060"
 
-    adminUser = await createUserRecruteur({
+    adminUser = await createUserRecruteurTest({
       type: "ADMIN",
     })
 
-    opcoUserO1U1 = await createUserRecruteur({
+    opcoUserO1U1 = await createUserRecruteurTest({
       type: "OPCO",
       scope: "#O1",
       first_name: "O1U1",
     })
-    opcoUserO1U2 = await createUserRecruteur({
+    opcoUserO1U2 = await createUserRecruteurTest({
       type: "OPCO",
       scope: "#O1",
       first_name: "O1U2",
     })
-    cfaUser1 = await createUserRecruteur({
+    cfaUser1 = await createUserRecruteurTest({
       type: "CFA",
       first_name: "O1",
       establishment_siret: CFA_SIRET,
     })
 
-    recruteurUserO1E1R1 = await createUserRecruteur({
+    recruteurUserO1E1R1 = await createUserRecruteurTest({
       type: "ENTREPRISE",
       opco: "#O1",
       establishment_id: "#O1#E1#R1",
       establishment_siret: O1E1Siret,
     })
-    recruteurO1E1R1 = await createRecruteur(
+    recruteurO1E1R1 = await createRecruteurTest(
       {
         opco: "#O1",
         establishment_id: "#O1#E1#R1",
@@ -253,29 +178,29 @@ describe("authorisationService", () => {
         { _id: O1E1R1J2Id, job_description: "#O1#E1#R1#J2" },
       ]
     )
-    applicationO1E1R1J1A1 = await createApplication({
+    applicationO1E1R1J1A1 = await createApplicationTest({
       job_id: O1E1R1J1Id.toString(),
       job_origin: "matcha",
       applicant_message_to_company: "#O1#E1#R1#J1#A1",
     })
-    applicationO1E1R1J1A2 = await createApplication({
+    applicationO1E1R1J1A2 = await createApplicationTest({
       job_id: O1E1R1J1Id.toString(),
       job_origin: "matcha",
       applicant_message_to_company: "#O1#E1#R1#J1#A2",
     })
-    applicationO1E1R1J2A1 = await createApplication({
+    applicationO1E1R1J2A1 = await createApplicationTest({
       job_id: O1E1R1J2Id.toString(),
       job_origin: "matcha",
       applicant_message_to_company: "#O1#E1#R1#J2#A1",
     })
 
-    recruteurUserO1E1R2 = await createUserRecruteur({
+    recruteurUserO1E1R2 = await createUserRecruteurTest({
       type: "ENTREPRISE",
       opco: "#O1",
       establishment_id: "#O1#E1#R2",
       establishment_siret: O1E1Siret,
     })
-    recruteurO1E1R2 = await createRecruteur(
+    recruteurO1E1R2 = await createRecruteurTest(
       {
         opco: "#O1",
         establishment_id: "#O1#E1#R2",
@@ -283,19 +208,19 @@ describe("authorisationService", () => {
       },
       [{ _id: O1E1R2J1Id, job_description: "#O1#E1#R2#J1" }]
     )
-    applicationO1E1R2J1A1 = await createApplication({
+    applicationO1E1R2J1A1 = await createApplicationTest({
       job_id: O1E1R2J1Id.toString(),
       job_origin: "matcha",
       applicant_message_to_company: "#O1#E1#R2#J1#A1",
     })
 
-    recruteurUserO1E2R1 = await createUserRecruteur({
+    recruteurUserO1E2R1 = await createUserRecruteurTest({
       type: "ENTREPRISE",
       opco: "#O1",
       establishment_id: "#O1#E2#R1",
       establishment_siret: O1E2Siret,
     })
-    recruteurO1E2R1 = await createRecruteur(
+    recruteurO1E2R1 = await createRecruteurTest(
       {
         opco: "#O1",
         establishment_id: "#O1#E2#R1",
@@ -304,23 +229,23 @@ describe("authorisationService", () => {
       [{ job_description: "#O1#E2#R1#J1" }]
     )
 
-    opcoUserO2U1 = await createUserRecruteur({
+    opcoUserO2U1 = await createUserRecruteurTest({
       type: "OPCO",
       scope: "#O2",
       first_name: "O2U1",
     })
-    cfaUser2 = await createUserRecruteur({
+    cfaUser2 = await createUserRecruteurTest({
       type: "CFA",
       scope: "#O2",
       first_name: "O2",
     })
 
-    recruteurUserO2E1R1 = await createUserRecruteur({
+    recruteurUserO2E1R1 = await createUserRecruteurTest({
       type: "ENTREPRISE",
       scope: "#O2",
       establishment_id: "#O2#E1#R1",
     })
-    recruteurO2E1R1 = await createRecruteur(
+    recruteurO2E1R1 = await createRecruteurTest(
       {
         opco: "#O2",
         establishment_id: "#O2#E1#R1",
@@ -328,7 +253,7 @@ describe("authorisationService", () => {
       [{ job_description: "#O2#E1#R1#J1" }]
     )
 
-    recruteurUserO2E1R1P = await createUserRecruteur(
+    recruteurUserO2E1R1P = await createUserRecruteurTest(
       {
         type: "ENTREPRISE",
         scope: "#O2",
@@ -336,7 +261,7 @@ describe("authorisationService", () => {
       },
       ETAT_UTILISATEUR.ATTENTE
     )
-    recruteurO2E1R1P = await createRecruteur(
+    recruteurO2E1R1P = await createRecruteurTest(
       {
         opco: "#O2",
         establishment_id: "#O2#E1#R1P",
@@ -344,7 +269,7 @@ describe("authorisationService", () => {
       [{ job_description: "#O2#E1#R1#J1P" }]
     )
 
-    credentialO1 = await createCredential({
+    credentialO1 = await createCredentialTest({
       organisation: "#O1",
     })
   }

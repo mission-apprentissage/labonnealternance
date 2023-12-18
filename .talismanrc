@@ -52,7 +52,7 @@ fileignoreconfig:
 - filename: server/tests/unit/external/zod.test.ts
   checksum: f77ba0fa55f1cbd5b708fdc9f0d5b229e84a1de6c433186d96aa94a7f6388f0c
 - filename: server/tests/unit/security/accessTokenService.test.ts
-  checksum: 58153e7e57ef450bfbf061f322cd8b7643dba12513b183194b4eafdb166f58d3
+  checksum: 93088af55c76063f108e38800fcbb1e2237ca797d4dd5bee6ceb763f74bd2d4e
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: server/tests/unit/util.test.ts
