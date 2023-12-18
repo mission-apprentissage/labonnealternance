@@ -1,3 +1,5 @@
+import { addMongoPluginCommands } from "../plugin/mongoPluginCommands"
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -33,12 +35,4 @@
     );
 });*/
 
-Cypress.Commands.add("deleteMany", (filter, { collectionName }) => {
-  return cy
-    .task("executeMongoDb", {
-      commandName: "deleteMany",
-      args: [filter],
-      collectionName,
-    })
-    .then((result) => result)
-})
+addMongoPluginCommands()

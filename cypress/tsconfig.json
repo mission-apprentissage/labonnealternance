@@ -7,7 +7,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "noEmit": true,
-    "types": ["cypress"]
+    "types": ["cypress", "./cypress/support/mongoPlugin.d.ts"]
   },
   "include": ["../node_modules/cypress", "./**/*.ts"],
   "exclude": ["node_modules"]
