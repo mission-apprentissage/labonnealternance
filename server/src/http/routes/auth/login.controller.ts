@@ -95,7 +95,7 @@ export default (server: Server) => {
       const userData = await getUser({ email: formatedEmail })
 
       if (!userData) {
-        throw Boom.notFound()
+        throw Boom.unauthorized()
       }
 
       const userState = controlUserState(userData?.status)
