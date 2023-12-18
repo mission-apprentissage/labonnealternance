@@ -1,8 +1,7 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
-import { EDiffusibleStatus } from "shared/constants/diffusibleStatus.js"
 import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 
-import { getDiffusionStatus } from "@/services/etablissement.service.js"
+import { checkIsDiffusible } from "@/services/etablissement.service.js"
 
 import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import { rebuildIndex } from "../../common/utils/esUtils"
@@ -50,7 +49,7 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
     return null
   }
 
-  if ((await getDiffusionStatus(rawCompany.siret)) !== EDiffusibleStatus.DIFFUSIBLE) {
+  if (await !checkIsDiffusible(rawCompany.siret)) {
     return null
   }
 
