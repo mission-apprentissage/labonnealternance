@@ -8,7 +8,7 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: 872bbf42d5b8bd22f900fff9eb6e907abbbeec5ee70f988563c4b6bb315e3f3d
 - filename: .infra/env.ini
-  checksum: ecfc738f90046a14cf076ce52116ec4345d7613d27584c91d0b5830e98ea38f2
+  checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
@@ -64,7 +64,7 @@ fileignoreconfig:
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: server/tests/unit/util.test.ts
-  checksum: f248ec16629759106d43b02aafc092d55316aeb147dd75fa44f4acc990b4ece0
+  checksum: cd74a4c09c7865eca459dabcc5d58b075ee6e0d10b97104a83ebca9fe643733c
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/generateUri.ts

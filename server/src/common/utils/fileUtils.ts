@@ -11,11 +11,6 @@ export const readXLSXFile = (localPath) => {
   return { sheet_name_list: workbook.SheetNames, workbook }
 }
 
-export const prepareMessageForMail = (data) => {
-  const result = data ? data.replace(/(<([^>]+)>)/gi, "") : data
-  return result ? result.replace(/\r\n|\r|\n/gi, "<br />") : result
-}
-
 export const parseCsv = (options: CsvParseOptions = {}) => {
   return parse({
     trim: true,

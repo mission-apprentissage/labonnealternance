@@ -355,7 +355,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        access: { every: ["recruiter:validate", "recruiter:manage"] },
+        access: { every: ["user:validate", "recruiter:manage", "user:manage"] },
         resources: {},
       },
       openapi: {

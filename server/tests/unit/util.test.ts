@@ -1,6 +1,6 @@
 import assert from "assert"
 
-import { cleanEmail } from "shared/helpers/common"
+import { cleanEmail, removeUrlsFromText, disableUrlsWith0WidthChar } from "shared/helpers/common"
 import { describe, it } from "vitest"
 
 import __filename from "../../src/common/filename"
@@ -37,6 +37,33 @@ describe(__filename(import.meta.url), () => {
     assert.strictEqual(cleanEmail(""), "")
     assert.strictEqual(cleanEmail("àlan.léruŷêïÿt@test.fr"), "alan.leruyeiyt@test.fr")
     assert.strictEqual(cleanEmail("jhönœ.dôœ.’£'^&/=!*?}ù@têst .com "), "jhono.doo.u@test.com")
+  })
+
+  it("Suppression des différentes formes d'URL dans un texte", () => {
+    assert.strictEqual(removeUrlsFromText(undefined), "")
+    assert.strictEqual(removeUrlsFromText(null), "")
+    assert.strictEqual(removeUrlsFromText(""), "")
+    assert.strictEqual(removeUrlsFromText("clean text"), "clean text")
+    assert.strictEqual(removeUrlsFromText("text https://url.com end"), "text  end")
+    assert.strictEqual(removeUrlsFromText("text http://www.url.com https://url.com evil-pirate@hack.com end"), "text    end")
+    assert.strictEqual(removeUrlsFromText("text https://url.com www.url.com/?meh=lah mailto:evil@hack.com ftp://bad-ressource.com/path/path"), "text    ")
+  })
+
+  it("Mise entre [] des différentes formes d'URL dans un texte", () => {
+    assert.strictEqual(disableUrlsWith0WidthChar(undefined), "")
+    assert.strictEqual(disableUrlsWith0WidthChar(null), "")
+    assert.strictEqual(disableUrlsWith0WidthChar(""), "")
+    assert.strictEqual(disableUrlsWith0WidthChar("clean text"), "clean text")
+    assert.strictEqual(disableUrlsWith0WidthChar("clean evil-pirate@hack.com text"), "clean evil-pirate@hack\u200B.\u200Bcom text")
+    assert.strictEqual(disableUrlsWith0WidthChar("text https://url.com end"), "text https://url\u200B.\u200Bcom end")
+    assert.strictEqual(
+      disableUrlsWith0WidthChar("text http://www.url.com https://url.com evil-pirate@hack.com end"),
+      "text http://www\u200B.\u200Burl\u200B.\u200Bcom https://url\u200B.\u200Bcom evil-pirate@hack\u200B.\u200Bcom end"
+    )
+    assert.strictEqual(
+      disableUrlsWith0WidthChar("text https://url.com www.url.com/?meh=lah mailto:evil@hack.com ftp://bad-ressource.com/path/path"),
+      "text https://url\u200B.\u200Bcom www\u200B.\u200Burl\u200B.\u200Bcom/?meh=lah mailto:evil@hack\u200B.\u200Bcom ftp://bad-ressource\u200B.\u200Bcom/path/path"
+    )
   })
 
   it.skip("Encryption décryption fonctionne", () => {
