@@ -4,7 +4,7 @@ import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { mongooseInstance } from "@/common/mongodb"
+import { db } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
