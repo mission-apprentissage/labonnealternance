@@ -336,7 +336,7 @@ export const getDiffusionStatus = async (siret: string, count = 1) => {
   return isDiffusible
 }
 
-export const checkIsDiffusible = (siret: string) => getDiffusionStatus(siret) === EDiffusibleStatus.DIFFUSIBLE
+export const checkIsDiffusible = async (siret: string) => (await getDiffusionStatus(siret)) === EDiffusibleStatus.DIFFUSIBLE
 
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
