@@ -31,7 +31,6 @@ export default (server: Server) => {
     "/appointment-request/context/create",
     {
       schema: zRoutes.post["/appointment-request/context/create"],
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { referrer } = req.body
@@ -86,7 +85,6 @@ export default (server: Server) => {
       }
 
       if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
-        // TODO: status code
         return res.status(200).send({
           error: "Prise de rendez-vous non disponible.",
         })
