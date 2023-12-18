@@ -4437,16 +4437,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/whatwg-url@npm:^8.2.1":
-  version: 8.2.2
-  resolution: "@types/whatwg-url@npm:8.2.2"
-  dependencies:
-    "@types/node": "*"
-    "@types/webidl-conversions": "*"
-  checksum: 5dc5afe078dfa1a8a266745586fa3db9baa8ce7cc904789211d1dca1d34d7f3dd17d0b7423c36bc9beab9d98aa99338f1fc60798c0af6cbb8356f20e20d9f243
-  languageName: node
-  linkType: hard
-
 "@types/yauzl@npm:^2.9.1":
   version: 2.10.3
   resolution: "@types/yauzl@npm:2.10.3"
@@ -5739,7 +5729,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^6.0.0, bson@npm:^6.2.0":
+"bson@npm:^6.2.0":
   version: 6.2.0
   resolution: "bson@npm:6.2.0"
   checksum: 950fccd2abd0ff5a1bd3637f4697631298f1538314994ab8c9e13f1c9851d0fd042b54fe8340e00151c2acee43917ea40e64b800ceeea811b00f2de3e900c77e
@@ -7044,15 +7034,6 @@ __metadata:
   version: 1.0.2
   resolution: "cyclist@npm:1.0.2"
   checksum: d7c0336565b9b72ee72347831cbd05fadcc59cc9ab89dcf38293b1a64c2c5fb777c9ce44967390dabe8235f9898f5cb222cd6672f4920b757da8861310082716
-  languageName: node
-  linkType: hard
-
-"cypress-mongodb@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "cypress-mongodb@npm:6.2.0"
-  dependencies:
-    mongodb: 6.0.0
-  checksum: 15dce27eaf22c70fb530a2d8637a07af17f978b93baba492bc6ef68d98f63808d5aab8556fee8b82e97c8c94942ddcc10330d6e8e09fe2c9f6fb9a7ff049d974
   languageName: node
   linkType: hard
 
@@ -13903,7 +13884,6 @@ __metadata:
     "@typescript-eslint/parser": ^6.7.2
     cross-env: ^7.0.3
     cypress: ^12.14.0
-    cypress-mongodb: ^6.2.0
     dotenv: ^16.1.4
     eslint: ^8.49.0
     eslint-config-next: ^13.4.19
@@ -13948,16 +13928,6 @@ __metadata:
   version: 2.29.4
   resolution: "moment@npm:2.29.4"
   checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
-  languageName: node
-  linkType: hard
-
-"mongodb-connection-string-url@npm:^2.6.0":
-  version: 2.6.0
-  resolution: "mongodb-connection-string-url@npm:2.6.0"
-  dependencies:
-    "@types/whatwg-url": ^8.2.1
-    whatwg-url: ^11.0.0
-  checksum: 1d662f0ecfe96f7a400f625c244b2e52914c98f3562ee7d19941127578b5f8237624433bdcea285a654041b945b518803512989690c74548aec5860c5541c605
   languageName: node
   linkType: hard
 
@@ -14032,40 +14002,6 @@ __metadata:
     snappy:
       optional: true
   checksum: e9b4e932f40029d2fc7b2247737f4fc6fc8951c0ac86530e19d305b58dc8a8251bb42a73af2e9da14fd606856bf240c80951fec9a870719481c0cf2d78327547
-  languageName: node
-  linkType: hard
-
-"mongodb@npm:6.0.0":
-  version: 6.0.0
-  resolution: "mongodb@npm:6.0.0"
-  dependencies:
-    "@mongodb-js/saslprep": ^1.1.0
-    bson: ^6.0.0
-    mongodb-connection-string-url: ^2.6.0
-  peerDependencies:
-    "@aws-sdk/credential-providers": ^3.188.0
-    "@mongodb-js/zstd": ^1.1.0
-    gcp-metadata: ^5.2.0
-    kerberos: ^2.0.1
-    mongodb-client-encryption: ">=6.0.0 <7"
-    snappy: ^7.2.2
-    socks: ^2.7.1
-  peerDependenciesMeta:
-    "@aws-sdk/credential-providers":
-      optional: true
-    "@mongodb-js/zstd":
-      optional: true
-    gcp-metadata:
-      optional: true
-    kerberos:
-      optional: true
-    mongodb-client-encryption:
-      optional: true
-    snappy:
-      optional: true
-    socks:
-      optional: true
-  checksum: 0399d1297795eb8b7bc20c2038085a6928fbd43931d831cd4ef00d8d63a55c8e867d5dfa36859fe69a86ae84fd36d9e5fb9eec1411d351cf653a82894c4751d0
   languageName: node
   linkType: hard
 
@@ -19153,15 +19089,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tr46@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "tr46@npm:3.0.0"
-  dependencies:
-    punycode: ^2.1.1
-  checksum: 44c3cc6767fb800490e6e9fd64fd49041aa4e49e1f6a012b34a75de739cc9ed3a6405296072c1df8b6389ae139c5e7c6496f659cfe13a04a4bff3a1422981270
-  languageName: node
-  linkType: hard
-
 "tr46@npm:^4.1.1":
   version: 4.1.1
   resolution: "tr46@npm:4.1.1"
@@ -20304,16 +20231,6 @@ __metadata:
   version: 3.0.0
   resolution: "whatwg-mimetype@npm:3.0.0"
   checksum: ce08bbb36b6aaf64f3a84da89707e3e6a31e5ab1c1a2379fd68df79ba712a4ab090904f0b50e6693b0dafc8e6343a6157e40bf18fdffd26e513cf95ee2a59824
-  languageName: node
-  linkType: hard
-
-"whatwg-url@npm:^11.0.0":
-  version: 11.0.0
-  resolution: "whatwg-url@npm:11.0.0"
-  dependencies:
-    tr46: ^3.0.0
-    webidl-conversions: ^7.0.0
-  checksum: ed4826aaa57e66bb3488a4b25c9cd476c46ba96052747388b5801f137dd740b73fde91ad207d96baf9f17fbcc80fc1a477ad65181b5eb5fa718d27c69501d7af
   languageName: node
   linkType: hard
 
