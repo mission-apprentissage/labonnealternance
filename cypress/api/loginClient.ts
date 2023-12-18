@@ -7,7 +7,7 @@ export const loginClient = {
         return smtpClient.getMail(email, "Lien de connexion")
       })
       .then((mailContent) => {
-        const token = new RegExp("token=([a-zA-Z0-9.-]*)", "g").exec(mailContent)[1]
+        const token = new RegExp("token=([a-zA-Z0-9.-]*)", "g").exec(mailContent)?.at(1)
         return token
       })
   },
