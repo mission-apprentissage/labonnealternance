@@ -1,3 +1,4 @@
+import { smtpClient } from "../api/smtpClient"
 import { generateRandomEmail } from "../utils/generateRandomEmail"
 
 describe("send-job-application", () => {
@@ -39,6 +40,7 @@ describe("send-job-application", () => {
       cy.get("[data-testid='candidature-not-sent']").click()
       cy.wait("@submitApplication").then(() => {
         cy.get("[data-testid='CandidatureSpontaneeWorked']")
+        return smtpClient.getMail(randomEmail, "Votre candidature chez")
       })
     })
   })
