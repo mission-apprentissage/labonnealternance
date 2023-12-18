@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { removeUrlsFromText } from "shared/helpers/common"
 import { toPublicUser, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -72,8 +73,8 @@ export default (server: Server) => {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
-          last_name,
-          first_name,
+          last_name: removeUrlsFromText(last_name),
+          first_name: removeUrlsFromText(first_name),
           connexion_url: createAuthMagicLink(user),
         },
       })

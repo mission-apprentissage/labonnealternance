@@ -179,7 +179,11 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
     "/appointment-request/context/recap": {
       method: "get",
@@ -270,6 +274,7 @@ export const zAppointmentsRoute = {
           .object({
             userId: zObjectId,
             appointment: z.union([ZAppointment, z.null()]),
+            token: z.string(),
           })
           .strict(),
       },
