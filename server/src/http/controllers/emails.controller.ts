@@ -3,14 +3,14 @@ import { zRoutes } from "shared/index"
 
 import config from "@/config"
 
-import { logger } from "../../../common/logger"
-import { Etablissement } from "../../../common/model"
-import { addEmailToBlacklist } from "../../../services/application.service"
-import * as appointmentService from "../../../services/appointment.service"
-import { BrevoEventStatus } from "../../../services/brevo.service"
-import dayjs from "../../../services/dayjs.service"
-import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
-import { Server } from "../../server"
+import { logger } from "../../common/logger"
+import { Etablissement } from "../../common/model"
+import { addEmailToBlacklist } from "../../services/application.service"
+import * as appointmentService from "../../services/appointment.service"
+import { BrevoEventStatus } from "../../services/brevo.service"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import { Server } from "../server"
 
 /**
  * Email controllers.

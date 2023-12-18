@@ -4,11 +4,11 @@ import { IJob, JOB_STATUS, zRoutes } from "shared"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
 
-import { Recruiter } from "../../../common/model/index"
-import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service"
-import { ACTIVE, ANNULEE, POURVUE } from "../../../services/constant.service"
-import dayjs from "../../../services/dayjs.service"
-import { entrepriseOnboardingWorkflow } from "../../../services/etablissement.service"
+import { Recruiter } from "../../common/model/index"
+import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
+import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
+import dayjs from "../../services/dayjs.service"
+import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
   addExpirationPeriod,
   cancelOffre,
@@ -21,13 +21,13 @@ import {
   getOffre,
   patchOffre,
   provideOffre,
-} from "../../../services/formulaire.service"
-import { getJobsQuery } from "../../../services/jobOpportunity.service"
-import { getCompanyFromSiret } from "../../../services/lbacompany.service"
-import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service"
-import { getPeJobFromId } from "../../../services/pejob.service"
-import { getFicheMetierRomeV3FromDB } from "../../../services/rome.service"
-import { Server } from "../../server"
+} from "../../services/formulaire.service"
+import { getJobsQuery } from "../../services/jobOpportunity.service"
+import { getCompanyFromSiret } from "../../services/lbacompany.service"
+import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../services/lbajob.service"
+import { getPeJobFromId } from "../../services/pejob.service"
+import { getFicheMetierRomeV3FromDB } from "../../services/rome.service"
+import { Server } from "../server"
 
 const config = {
   rateLimit: {

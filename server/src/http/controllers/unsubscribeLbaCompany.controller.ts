@@ -3,9 +3,9 @@ import { zRoutes } from "shared/index.js"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
-import config from "../../config"
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
-import mailer from "../../services/mailer.service"
+import config from "../../config.js"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service.js"
+import mailer from "../../services/mailer.service.js"
 import { Server } from "../server.js"
 
 const imagePath = `${config.publicUrl}/images/emails/`
