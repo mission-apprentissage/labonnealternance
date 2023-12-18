@@ -8,6 +8,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
 import { Appointment, EligibleTrainingsForAppointment, Etablissement, User } from "../../common/model/index"
 import config from "../../config"
+import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
 import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
@@ -103,11 +104,10 @@ export default (server: Server) => {
       await sendFormateurAppointmentEmail(user, createdAppointement, eligibleTrainingsForAppointment, referrerObj, etablissement)
       await sendCandidateAppointmentEmail(user, createdAppointement, eligibleTrainingsForAppointment, referrerObj)
 
-      const appointmentUpdated = await Appointment.findById(createdAppointement._id).lean()
-
       res.status(200).send({
         userId: user._id,
-        appointment: appointmentUpdated,
+        appointment: createdAppointement,
+        token: createRdvaShortRecapToken(user.email, createdAppointement._id.toString()),
       })
     }
   )
@@ -116,6 +116,7 @@ export default (server: Server) => {
     "/appointment-request/context/short-recap",
     {
       schema: zRoutes.get["/appointment-request/context/short-recap"],
+      onRequest: server.auth(zRoutes.get["/appointment-request/context/short-recap"]),
     },
     async (req, res) => {
       const { appointmentId } = req.query

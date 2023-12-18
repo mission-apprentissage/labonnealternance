@@ -1,3 +1,4 @@
+import { disableUrlsWith0WidthChar } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models"
@@ -64,10 +65,10 @@ export const zApplicationRoutes = {
       params: z.object({ id: z.string() }).strict(),
       body: z
         .object({
-          company_feedback: z.string(),
+          company_feedback: z.string().transform((value) => disableUrlsWith0WidthChar(value)),
           company_recruitment_intention: z.string(),
-          email: z.string(),
-          phone: z.string(),
+          email: z.string().email(),
+          phone: extensions.phone(),
         })
         .strict(),
       response: {

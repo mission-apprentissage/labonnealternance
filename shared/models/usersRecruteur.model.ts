@@ -1,6 +1,7 @@
 import { Jsonify } from "type-fest"
 
 import { CFA, ETAT_UTILISATEUR } from "../constants/recruteur"
+import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -22,15 +23,25 @@ export const ZUserStatusValidation = z
 
 export const ZUserRecruteurWritable = z
   .object({
-    last_name: z.string().describe("Nom de l'utilisateur"),
-    first_name: z.string().describe("Prénom de l'utilisateur"),
+    last_name: z
+      .string()
+      .transform((value) => removeUrlsFromText(value))
+      .describe("Nom de l'utilisateur"),
+    first_name: z
+      .string()
+      .transform((value) => removeUrlsFromText(value))
+      .describe("Prénom de l'utilisateur"),
     opco: z.string().nullish().describe("Information sur l'opco de l'entreprise"),
     idcc: z.string().nullish().describe("Identifiant convention collective de l'entreprise"),
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
     establishment_siret: extensions.siret.describe("Siret de l'établissement"),
     address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
-    address: z.string().nullish().describe("Adresse de l'établissement"),
+    address: z
+      .string()
+      .transform((value) => removeUrlsFromText(value))
+      .nullish()
+      .describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
     phone: extensions.phone().describe("Téléphone de l'établissement"),
     email: z.string().email().describe("L'email de l'utilisateur"),
