@@ -367,7 +367,7 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
 export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object) => {
   const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
 
-  await mongooseInstance.connection.collection("recruiters").findOneAndUpdate(
+  await db.collection("recruiters").findOneAndUpdate(
     { "jobs._id": new ObjectId(id.toString()) },
     {
       $inc: incPayload,
