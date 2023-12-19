@@ -1,4 +1,4 @@
-import { zRoutes } from "shared/index.js"
+import { zRoutes } from "shared"
 
 import { getMetiersDAvenir } from "../../services/diagoriente.service"
 import { Server } from "../server"

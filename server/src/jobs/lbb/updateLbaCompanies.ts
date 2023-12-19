@@ -1,9 +1,9 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
 import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 
-import { checkIsDiffusible } from "@/services/etablissement.service.js"
+import { checkIsDiffusible } from "@/services/etablissement.service"
 
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
 import { rebuildIndex } from "../../common/utils/esUtils"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -16,7 +16,7 @@ import {
   getCompanyMissingData,
   readCompaniesFromJson,
   removePredictionFile,
-} from "./lbaCompaniesUtils.js"
+} from "./lbaCompaniesUtils"
 import { insertSAVECompanies, removeSAVECompanies, updateSAVECompanies } from "./updateSAVECompanies"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier

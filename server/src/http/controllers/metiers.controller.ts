@@ -1,4 +1,4 @@
-import { zRoutes } from "shared/index.js"
+import { zRoutes } from "shared"
 
 import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getTousLesMetiers } from "../../services/metiers.service"
 import { Server } from "../server"

@@ -1,10 +1,10 @@
-import { zRoutes } from "shared/index.js"
+import { zRoutes } from "shared"
 
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
-import { getFormationsQuery } from "../../services/formation.service.js"
-import { getJobsFromApi } from "../../services/jobOpportunity.service.js"
-import { jobsEtFormationsQueryValidator } from "../../services/queryValidator.service.js"
-import { Server } from "../server.js"
+import { trackApiCall } from "../../common/utils/sendTrackingEvent"
+import { getFormationsQuery } from "../../services/formation.service"
+import { getJobsFromApi } from "../../services/jobOpportunity.service"
+import { jobsEtFormationsQueryValidator } from "../../services/queryValidator.service"
+import { Server } from "../server"
 
 const config = {
   rateLimit: {

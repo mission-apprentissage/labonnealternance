@@ -1,12 +1,12 @@
-import { IApiError } from "../common/utils/errorManager.js"
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
+import { IApiError } from "../common/utils/errorManager"
+import { trackApiCall } from "../common/utils/sendTrackingEvent"
 
-import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { getSomeCompanies } from "./lbacompany.service.js"
-import { ILbaItemLbaJob, ILbaItemLbaCompany, ILbaItemPeJob } from "./lbaitem.shared.service.types.js"
-import { getLbaJobs } from "./lbajob.service.js"
-import { getSomePeJobs } from "./pejob.service.js"
-import { jobsQueryValidator } from "./queryValidator.service.js"
+import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
+import { getSomeCompanies } from "./lbacompany.service"
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPeJob } from "./lbaitem.shared.service.types"
+import { getLbaJobs } from "./lbajob.service"
+import { getSomePeJobs } from "./pejob.service"
+import { jobsQueryValidator } from "./queryValidator.service"
 
 /**
  * Retourn la compilation d'opportunités d'emploi au format unifié

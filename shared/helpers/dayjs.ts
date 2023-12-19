@@ -1,16 +1,16 @@
 import dayjs from "dayjs"
 // eslint-disable-next-line import/extensions
-import "dayjs/locale/fr.js"
-import advancedFormat from "dayjs/plugin/advancedFormat.js"
-import customParseFormat from "dayjs/plugin/customParseFormat.js"
-import duration from "dayjs/plugin/duration.js"
-import isBetween from "dayjs/plugin/isBetween.js"
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter.js"
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore.js"
-import isYesterday from "dayjs/plugin/isYesterday.js"
-import localizedFormat from "dayjs/plugin/localizedFormat.js"
-import timezone from "dayjs/plugin/timezone.js"
-import utc from "dayjs/plugin/utc.js"
+import "dayjs/locale/fr"
+import advancedFormat from "dayjs/plugin/advancedFormat"
+import customParseFormat from "dayjs/plugin/customParseFormat"
+import duration from "dayjs/plugin/duration"
+import isBetween from "dayjs/plugin/isBetween"
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
+import isYesterday from "dayjs/plugin/isYesterday"
+import localizedFormat from "dayjs/plugin/localizedFormat"
+import timezone from "dayjs/plugin/timezone"
+import utc from "dayjs/plugin/utc"
 
 dayjs.locale("fr")
 dayjs.extend(utc)

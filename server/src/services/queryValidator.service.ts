@@ -1,8 +1,8 @@
-import { RncpRomes } from "../common/model/index.js"
-import { isOriginLocal } from "../common/utils/isOriginLocal.js"
-import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
+import { RncpRomes } from "../common/model/index"
+import { isOriginLocal } from "../common/utils/isOriginLocal"
+import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
 
-import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types.js"
+import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types"
 
 /**
  * Contrôle le format d'un code RNCP
