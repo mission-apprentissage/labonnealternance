@@ -6,7 +6,7 @@ import config from "@/config"
 
 import { Application } from "../../common/model/index"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { sendMailToApplicant, updateApplicationStatus } from "../../services/application.service"
+import { sendMailToApplicant } from "../../services/application.service"
 import { Server } from "../server"
 
 const rateLimitConfig = {
@@ -67,22 +67,6 @@ export default function (server: Server) {
       const application = await Application.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(id) }, { company_recruitment_intention, company_feedback_date: new Date() })
       if (!application) throw new Error("application not found")
 
-      return res.status(200).send({ result: "ok" })
-    }
-  )
-
-  server.post(
-    "/application/webhook",
-    {
-      schema: zRoutes.post["/application/webhook"],
-    },
-    async (req, res) => {
-      const { apikey } = req.query
-      if (apikey !== config.smtp.brevoWebhookApiKey) {
-        throw Boom.unauthorized()
-      }
-
-      await updateApplicationStatus({ payload: req.body })
       return res.status(200).send({ result: "ok" })
     }
   )
