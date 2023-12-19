@@ -8,6 +8,7 @@ COPY .yarnrc.yml .yarnrc.yml
 COPY ui/package.json ui/package.json
 COPY server/package.json server/package.json
 COPY shared/package.json shared/package.json
+COPY cypress/package.json cypress/package.json
 
 RUN --mount=type=cache,target=/app/.yarn/cache yarn install --immutable
 
