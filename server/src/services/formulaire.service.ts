@@ -1,4 +1,5 @@
 import Boom from "boom"
+import type { ObjectId as ObjectIdType } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
@@ -32,7 +33,7 @@ export interface IOffreExtended extends IJob {
 /**
  * @description get formulaire by offer id
  */
-export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise<IFormulaireExtended | null> => {
+export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<IFormulaireExtended | null> => {
   const result = await getOffre(id)
 
   if (!result) {
@@ -319,7 +320,7 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @description Get job offer by job id
  * @param {IJob["_id"]} id
  */
-export async function getOffre(id: string | ObjectId) {
+export async function getOffre(id: string | ObjectIdType) {
   return Recruiter.findOne({ "jobs._id": id }).lean()
 }
 
@@ -342,7 +343,7 @@ export async function createOffre(id: IRecruiter["establishment_id"], payload: U
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+export async function updateOffre(id: string | ObjectIdType, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
   const recruiter = await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
@@ -528,7 +529,7 @@ export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecru
 /**
  * @description Get job offer by its id.
  */
-export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
+export const getJob = async (id: string | ObjectIdType): Promise<IJob | null> => {
   const offre = await getOffre(id)
   if (!offre) return null
   return offre.jobs.find((job) => job._id.toString() === id.toString()) ?? null
