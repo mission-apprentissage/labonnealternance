@@ -11876,6 +11876,7 @@ __metadata:
   dependencies:
     "@cypress/chrome-recorder": ^2.3.1
     "@types/mongodb": ^3.5.27
+    "@types/node": 20.7.1
     cypress: ^12.14.0
     dotenv: ^16.1.4
     mongodb: ^3.7.4
