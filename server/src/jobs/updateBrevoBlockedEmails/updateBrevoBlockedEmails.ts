@@ -1,7 +1,7 @@
 import SibApiV3Sdk from "sib-api-v3-sdk"
 
 import { logger } from "../../common/logger"
-import { EmailBlacklist, LbaCompany } from "../../common/model/index.js"
+import { EmailBlacklist, LbaCompany } from "../../common/model"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"

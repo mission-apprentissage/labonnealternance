@@ -1,10 +1,10 @@
 import Boom from "boom"
 
-import { logger } from "../../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
-import { CFA, ENTREPRISE } from "../../../../services/constant.service.js"
-import { getEtablissementFromGouv } from "../../../../services/etablissement.service.js"
+import { logger } from "../../../../common/logger"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index"
+import { asyncForEach, delay } from "../../../../common/utils/asyncUtils"
+import { CFA, ENTREPRISE } from "../../../../services/constant.service"
+import { getEtablissementFromGouv } from "../../../../services/etablissement.service"
 
 export const updateAddressDetailOnUserrecrutersCollection = async () => {
   logger.info("Start update user adresse detail")

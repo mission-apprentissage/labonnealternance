@@ -1,17 +1,17 @@
 import { ILbaCompany, ZLbaCompany } from "shared"
 
-import { search } from "../common/esClient/index.js"
-import { LbaCompany } from "../common/model/index.js"
-import { encryptMailWithIV } from "../common/utils/encryptString.js"
-import { IApiError, manageApiError } from "../common/utils/errorManager.js"
-import { roundDistance } from "../common/utils/geolib.js"
-import { isAllowedSource } from "../common/utils/isAllowedSource.js"
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import { search } from "../common/esClient/index"
+import { LbaCompany } from "../common/model/index"
+import { encryptMailWithIV } from "../common/utils/encryptString"
+import { IApiError, manageApiError } from "../common/utils/errorManager"
+import { roundDistance } from "../common/utils/geolib"
+import { isAllowedSource } from "../common/utils/isAllowedSource"
+import { trackApiCall } from "../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
 
-import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
-import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types.js"
+import { getApplicationByCompanyCount, IApplicationCount } from "./application.service"
+import { TLbaItemResult } from "./jobOpportunity.service.types"
+import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo

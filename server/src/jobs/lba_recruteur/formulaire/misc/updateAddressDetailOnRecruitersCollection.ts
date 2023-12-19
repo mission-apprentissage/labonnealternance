@@ -1,7 +1,7 @@
-import { logger } from "../../../../common/logger.js"
-import { Recruiter } from "../../../../common/model/index.js"
-import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
-import { getEtablissementFromGouv } from "../../../../services/etablissement.service.js"
+import { logger } from "../../../../common/logger"
+import { Recruiter } from "../../../../common/model/index"
+import { asyncForEach, delay } from "../../../../common/utils/asyncUtils"
+import { getEtablissementFromGouv } from "../../../../services/etablissement.service"
 
 export const updateAddressDetailOnRecruitersCollection = async () => {
   logger.info("Start update user adresse detail")

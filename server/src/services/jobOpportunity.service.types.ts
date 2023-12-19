@@ -1,6 +1,6 @@
-import { IApiError } from "../common/utils/errorManager.js"
+import { IApiError } from "../common/utils/errorManager"
 
-import { ILbaItemCompany, ILbaItemFormation, ILbaItemJob, ILbaItemPeJob } from "./lbaitem.shared.service.types.js"
+import { ILbaItemCompany, ILbaItemFormation, ILbaItemJob, ILbaItemPeJob } from "./lbaitem.shared.service.types"
 
 export type TJobSearchQuery = {
   romes?: string
