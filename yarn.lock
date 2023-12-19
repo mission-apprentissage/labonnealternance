@@ -11870,12 +11870,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lba-cypress@workspace:cypress":
-  version: 0.0.0-use.local
-  resolution: "lba-cypress@workspace:cypress"
-  languageName: unknown
-  linkType: soft
-
 "levn@npm:^0.4.1":
   version: 0.4.1
   resolution: "levn@npm:0.4.1"
