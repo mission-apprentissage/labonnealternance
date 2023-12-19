@@ -1,6 +1,6 @@
 import Boom from "boom"
 import type { ObjectId as ObjectIdType } from "mongodb"
-import { ObjectId } from "mongodb"
+import pkg from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -19,6 +19,8 @@ import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablisseme
 import mailer from "./mailer.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
+
+const { ObjectId } = pkg
 
 interface IFormulaireExtended extends IRecruiter {
   entreprise_localite?: string
