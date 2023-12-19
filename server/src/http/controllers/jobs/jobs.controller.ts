@@ -24,7 +24,7 @@ import {
 } from "../../../services/formulaire.service"
 import { getJobsQuery } from "../../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../../services/lbacompany.service"
-import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service"
+import { addOffreDetailView, getLbaJobById, incrementLbaJobsViewCount } from "../../../services/lbajob.service"
 import { getPeJobFromId } from "../../../services/pejob.service"
 import { getFicheMetierRomeV3FromDB } from "../../../services/rome.service"
 import { Server } from "../../server"
@@ -347,11 +347,10 @@ export default (server: Server) => {
       if ("error" in result) {
         return res.status(500).send(result)
       }
+
       if ("matchas" in result) {
         const { matchas } = result
-        if (matchas && "results" in matchas) {
-          await Promise.all(matchas.results.map((matchaOffre) => matchaOffre?.job?.id && addOffreSearchView(matchaOffre.job.id)))
-        }
+        await incrementLbaJobsViewCount(matchas)
       }
 
       return res.status(200).send(result)
