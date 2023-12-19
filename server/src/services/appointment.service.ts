@@ -7,9 +7,13 @@ import { ReferrerObject } from "@/common/model/constants/referrers"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import config from "@/config"
 
+import { logger } from "../common/logger"
 import { Appointment } from "../common/model/index"
 
+import { addEmailToBlacklist } from "./application.service"
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
+import { BrevoEventStatus } from "./brevo.service"
+import * as eligibleTrainingsForAppointmentService from "./eligibleTrainingsForAppointment.service"
 import mailer from "./mailer.service"
 
 export type NewAppointment = Pick<
@@ -142,4 +146,76 @@ export const sendFormateurAppointmentEmail = async (
       },
     }
   )
+}
+
+export const processAppointmentToApplicantWebhookEvent = async (payload) => {
+  const { date, event } = payload
+  const messageId = payload["message-id"]
+
+  const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
+
+  // If mail sent from appointment (to the candidat)
+  const appointmentCandidatFound = await findOne({
+    "to_applicant_mails.message_id": messageId,
+  })
+  if (appointmentCandidatFound && appointmentCandidatFound.to_applicant_mails?.length) {
+    // deuxième condition ci-dessus utile uniquement pour typescript car to_applicant_mails peut être null selon le typage
+    const firstEmailEvent = appointmentCandidatFound.to_applicant_mails[0]
+
+    await appointmentCandidatFound.update({
+      $push: {
+        to_applicant_mails: {
+          campaign: firstEmailEvent.campaign,
+          status: event,
+          message_id: firstEmailEvent.message_id,
+          webhook_status_at: eventDate,
+        },
+      },
+    })
+    return false
+  }
+  return true
+}
+
+export const processAppointmentToCfaWebhookEvent = async (payload) => {
+  const { date, event } = payload
+  const messageId = payload["message-id"]
+  const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
+
+  // If mail sent from appointment model
+  const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
+  if (appointment) {
+    const firstEmailEvent = appointment.to_cfa_mails[0]
+
+    await appointment.update({
+      $push: {
+        to_etablissement_emails: {
+          campaign: firstEmailEvent.campaign,
+          status: event,
+          message_id: firstEmailEvent.message_id,
+          webhook_status_at: eventDate,
+        },
+      },
+    })
+
+    // Disable eligibleTrainingsForAppointments in case of hard_bounce
+    if (event === BrevoEventStatus.HARD_BOUNCE) {
+      const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: appointment.cfa_recipient_email })
+
+      await Promise.all(
+        eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
+          await eligibleTrainingsForAppointment.update({ referrers: [] })
+
+          logger.info('Widget parameters disabled for "hard_bounce" reason', {
+            eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
+            cfa_recipient_email: appointment.cfa_recipient_email,
+          })
+        })
+      )
+      await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
+    }
+
+    return false
+  }
+  return true
 }

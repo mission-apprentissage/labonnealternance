@@ -13,7 +13,7 @@ export const zEmailsRoutes = {
         .object({
           apiKey: z.string(),
         })
-        .passthrough(),
+        .strict(),
       body: extensions.brevoWebhook(),
       response: {
         "200": z.object({}).strict(),

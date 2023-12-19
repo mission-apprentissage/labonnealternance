@@ -865,3 +865,31 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
     await sendUserConfirmationEmail(user)
   }
 }
+
+export const processEstablishmentWebhookEvent = async (payload) => {
+  const { date, event } = payload
+  const messageId = payload["message-id"]
+
+  const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
+
+  // If mail sent from etablissement model
+  const etablissementFound = await Etablissement.findOne({ "to_etablissement_emails.message_id": messageId })
+  if (etablissementFound && etablissementFound.to_etablissement_emails?.length) {
+    const firstEmailEvent = etablissementFound.to_etablissement_emails[0]
+
+    // adding one entry to Etablissement email message logs
+    await etablissementFound.update({
+      $push: {
+        to_etablissement_emails: {
+          campaign: firstEmailEvent.campaign,
+          status: event,
+          message_id: firstEmailEvent.message_id,
+          webhook_status_at: eventDate,
+        },
+      },
+    })
+    return false
+  }
+
+  return true
+}
