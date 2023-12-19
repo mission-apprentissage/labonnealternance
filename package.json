@@ -14,8 +14,7 @@
   "workspaces": [
     "ui",
     "server",
-    "shared",
-    "cypress"
+    "shared"
   ],
   "scripts": {
     "setup": ".bin/mna-lba init:env",
@@ -62,8 +61,8 @@
     "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-rdv-from-widget.cy.js"
   },
   "dependencies": {
-    "mongodb": "^3.7.4",
-    "husky": "^8.0.3"
+    "husky": "^8.0.3",
+    "mongodb": "^3.7.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
