@@ -17,6 +17,10 @@ on:
         description: host name
         type: string
         required: true
+      smtp_host:
+        description: host name of the mailpit
+        type: string
+        required: true
     secrets:
       CODECOV_TOKEN:
         description: Code coverrage token
