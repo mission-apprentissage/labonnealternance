@@ -1,5 +1,5 @@
 import Boom from "boom"
-import type { ObjectId } from "mongodb"
+import { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -7,6 +7,7 @@ import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
+import { db } from "../common/mongodb"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
@@ -363,21 +364,15 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object) => {
   const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
-  const recruiter = await Recruiter.findOneAndUpdate(
-    { "jobs._id": id },
+
+  await db.collection("recruiters").findOneAndUpdate(
+    { "jobs._id": new ObjectId(id.toString()) },
     {
       $inc: incPayload,
-    },
-    options
-  ).lean()
-
-  if (!recruiter) {
-    throw Boom.internal("Recruiter not found")
-  }
-
-  return recruiter
+    }
+  )
 }
 
 /**
