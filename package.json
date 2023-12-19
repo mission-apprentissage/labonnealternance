@@ -62,6 +62,7 @@
     "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-rdv-from-widget.cy.js"
   },
   "dependencies": {
+    "mongodb": "^3.7.4",
     "husky": "^8.0.3"
   },
   "devDependencies": {
@@ -90,7 +91,6 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
     "lint-staged": "^14.0.1",
-    "mongodb": "^3.7.4",
     "mongoose": "^5.13.20",
     "node-talisman": "^1.29.10",
     "prettier": "^3.0.3",
