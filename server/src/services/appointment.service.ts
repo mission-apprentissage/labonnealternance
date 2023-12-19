@@ -2,12 +2,12 @@ import dayjs from "dayjs"
 import type { FilterQuery, ObjectId } from "mongoose"
 import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 
+import { logger } from "@/common/logger"
 import { mailType } from "@/common/model/constants/appointments"
 import { ReferrerObject } from "@/common/model/constants/referrers"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import config from "@/config"
 
-import { logger } from "../common/logger"
 import { Appointment } from "../common/model/index"
 
 import { addEmailToBlacklist } from "./application.service"

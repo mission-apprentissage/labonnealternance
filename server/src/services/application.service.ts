@@ -23,6 +23,9 @@ import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer from "./mailer.service.js"
 import { validateCaller } from "./queryValidator.service.js"
 
+const MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT = 3
+const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
+
 const publicUrl = config.publicUrl
 
 const imagePath = `${config.publicUrl}/images/emails/`
@@ -166,7 +169,7 @@ export const sendApplication = async ({
       return { error: validationResult }
     }
 
-    validationResult = await checkUserApplicationCount(query.applicant_email.toLowerCase())
+    validationResult = await checkUserApplicationCount(query.applicant_email.toLowerCase(), query.company_siret)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -469,23 +472,32 @@ export const validateApplicationType = (validable: Partial<IApplicationUI>) => {
  * @param {string} applicantEmail
  * @return {Promise<string>}
  */
-const checkUserApplicationCount = async (applicantEmail: string): Promise<string> => {
+const checkUserApplicationCount = async (applicantEmail: string, company_siret: string): Promise<string> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
   const end = new Date()
   end.setHours(23, 59, 59, 999)
 
-  const appCount = await Application.countDocuments({
+  let appCount = await Application.countDocuments({
     applicant_email: applicantEmail.toLowerCase(),
     created_at: { $gte: start, $lt: end },
   })
 
-  if (appCount > config.maxApplicationPerDay) {
+  if (appCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
     return "max candidatures atteint"
-  } else {
-    return "ok"
   }
+
+  appCount = await Application.countDocuments({
+    applicant_email: applicantEmail.toLowerCase(),
+    company_siret,
+  })
+
+  if (appCount > MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT) {
+    return "max messages atteint pour cette société"
+  }
+
+  return "ok"
 }
 
 interface IApplicationFeedback {
@@ -563,9 +575,13 @@ export const sendMailToApplicant = async ({
   }
 }
 
+/**
+ * @description updates application and triggers action from email webhook
+ */
 export const updateApplicationStatusFromHardbounce = async ({ payload, application }: { payload: any; application: IApplication }): Promise<void> => {
   /* Format payload cf. https://developers.brevo.com/docs/transactional-webhooks
   https://developers.brevo.com/docs/marketing-webhooks */
+
   const { subject, email } = payload
 
   if (!subject.startsWith("Candidature en alternance") && !subject.startsWith("Candidature spontanée")) {

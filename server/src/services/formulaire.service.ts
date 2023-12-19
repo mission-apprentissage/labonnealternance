@@ -5,10 +5,10 @@ import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
+import { db } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
-import { db } from "../common/mongodb"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
@@ -73,7 +73,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Pro
  * @param {number} payload.limit
  */
 export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
-  const response = await Recruiter.paginate({ query, ...select, page, limit, lean: true })
+  const response = await Recruiter.paginate({ query, select, page, limit, lean: true })
 
   return {
     pagination: {
