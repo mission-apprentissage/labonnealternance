@@ -1,6 +1,3 @@
-import { setTimeout } from "timers/promises"
-
-import Boom from "boom"
 import { ILbaCompany, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
@@ -8,22 +5,10 @@ import { ETAT_UTILISATEUR, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shar
 import { logger } from "@/common/logger"
 import { Recruiter, UserRecruteur } from "@/common/model"
 import { db } from "@/common/mongodb"
-import { getEtablissementDiffusionStatus } from "@/services/etablissement.service"
+import { getDiffusionStatus } from "@/services/etablissement.service"
 
-const MAX_RETRY = 100
-const DELAY = 100
 const ANONYMIZED = "anonymized"
 const FAKE_GEOLOCATION = "0,0"
-
-const getDiffusionStatus = async (siret: string, count = 1) => {
-  const isDiffusible = await getEtablissementDiffusionStatus(siret)
-  if (isDiffusible === "quota") {
-    if (count > MAX_RETRY) throw Boom.internal(`Api entreprise or cache entreprise not availabe. Tried ${MAX_RETRY} times`)
-    await setTimeout(DELAY, "result")
-    return await getDiffusionStatus(siret, count++)
-  }
-  return isDiffusible
-}
 
 const fixLbaCompanies = async () => {
   logger.info(`Fixing diffusible lba companies`)
@@ -40,7 +25,7 @@ const fixLbaCompanies = async () => {
     try {
       const isDiffusible = await getDiffusionStatus(lbaCompany.siret)
 
-      if (isDiffusible !== "diffusible") {
+      if (isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
         await db.collection("bonnesboites").deleteOne({ siret: lbaCompany.siret })
         deletedCount++
       }
