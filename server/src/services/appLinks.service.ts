@@ -81,49 +81,67 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
 }
 
 export function createCancelJobLink(user: IUserRecruteur, jobId: string, utmData: string | undefined = undefined) {
-  const token = generateAccessToken(user, [
-    generateScope({
-      schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
-      options: {
-        params: {
-          jobId: jobId,
+  const token = generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
+        options: {
+          params: {
+            jobId: jobId,
+          },
+          querystring: undefined,
         },
-        querystring: undefined,
-      },
-    }),
-  ])
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
 
   return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
 }
 
 export function createProvidedJobLink(user: IUserRecruteur, jobId: string, utmData: string | undefined = undefined) {
-  const token = generateAccessToken(user, [
-    generateScope({
-      schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
-      options: {
-        params: {
-          jobId: jobId,
+  const token = generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
+        options: {
+          params: {
+            jobId: jobId,
+          },
+          querystring: undefined,
         },
-        querystring: undefined,
-      },
-    }),
-  ])
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
 
   return `${config.publicUrl}/espace-pro/offre/${jobId}/provided?${utmData ? utmData : ""}&token=${token}`
 }
 
 export function createViewDelegationLink(email: string, establishment_id: string, job_id: string, siret_formateur: string) {
-  const token = generateAccessToken({ type: "cfa", email, siret: siret_formateur }, [
-    generateScope({
-      schema: zRoutes.get["/formulaire/delegation/:establishment_id"],
-      options: {
-        params: {
-          establishment_id: establishment_id,
+  const token = generateAccessToken(
+    { type: "cfa", email, siret: siret_formateur },
+    [
+      generateScope({
+        schema: zRoutes.get["/formulaire/delegation/:establishment_id"],
+        options: {
+          params: {
+            establishment_id: establishment_id,
+          },
+          querystring: undefined,
         },
-        querystring: undefined,
-      },
-    }),
-  ])
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
 
   return `${config.publicUrl}/espace-pro/proposition/formulaire/${establishment_id}/offre/${job_id}/siret/${siret_formateur}?token=${token}`
 }
@@ -285,22 +303,28 @@ export function createLbaCompanyApplicationReplyLink(email, siret, intention, ap
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
   const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
 
-  const token = generateAccessToken({ type: "lba-company", siret, email }, [
-    generateScope({
-      schema: zRoutes.post["/application/intention/:id"],
-      options: {
-        params: { id: application._id },
-        querystring: undefined,
-      },
-    }),
-    generateScope({
-      schema: zRoutes.post["/application/intentionComment/:id"],
-      options: {
-        params: { id: application._id },
-        querystring: undefined,
-      },
-    }),
-  ])
+  const token = generateAccessToken(
+    { type: "lba-company", siret, email },
+    [
+      generateScope({
+        schema: zRoutes.post["/application/intention/:id"],
+        options: {
+          params: { id: application._id },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/application/intentionComment/:id"],
+        options: {
+          params: { id: application._id },
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
 
   return `${config.publicUrl}/formulaire-intention?company_recruitment_intention=${intention}&id=${application.id}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(
     token
@@ -311,22 +335,28 @@ export function createUserRecruteurApplicationReplyLink(user, intention, applica
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
   const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
 
-  const token = generateAccessToken(user, [
-    generateScope({
-      schema: zRoutes.post["/application/intention/:id"],
-      options: {
-        params: { id: application._id },
-        querystring: undefined,
-      },
-    }),
-    generateScope({
-      schema: zRoutes.post["/application/intentionComment/:id"],
-      options: {
-        params: { id: application._id },
-        querystring: undefined,
-      },
-    }),
-  ])
+  const token = generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.post["/application/intention/:id"],
+        options: {
+          params: { id: application._id },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/application/intentionComment/:id"],
+        options: {
+          params: { id: application._id },
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
 
   return `${config.publicUrl}/formulaire-intention?company_recruitment_intention=${intention}&id=${application.id}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(
     token
