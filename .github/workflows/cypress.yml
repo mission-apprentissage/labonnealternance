@@ -11,6 +11,10 @@ on:
         description: host name of the mailpit
         type: string
         required: true
+      branch:
+        description: git branch name
+        type: string
+        required: true
   workflow_call:
     inputs:
       cypress_host:
@@ -19,6 +23,10 @@ on:
         required: true
       smtp_host:
         description: host name of the mailpit
+        type: string
+        required: true
+      branch:
+        description: git branch name
         type: string
         required: true
     secrets:
@@ -36,6 +44,8 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - uses: actions/setup-node@v3
         with:
