@@ -14,8 +14,7 @@
   "workspaces": [
     "ui",
     "server",
-    "shared",
-    "cypress"
+    "shared"
   ],
   "scripts": {
     "setup": ".bin/mna-lba init:env",
