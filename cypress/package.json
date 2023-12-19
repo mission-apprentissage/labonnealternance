@@ -19,15 +19,5 @@
     "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
     "e2e:convert2": "node cypress/convertRecords.mjs",
     "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-rdv-from-widget.cy.js"
-  },
-  "dependencies": {
-    "@cypress/chrome-recorder": "^2.3.1",
-    "@types/mongodb": "^3.5.27",
-    "@types/node": "20.7.1",
-    "cypress": "^12.14.0",
-    "dotenv": "^16.1.4",
-    "mongodb": "^3.7.4",
-    "mongoose": "^5.13.20",
-    "typescript": "^5.2.2"
   }
 }

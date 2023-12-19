@@ -14,7 +14,8 @@
   "workspaces": [
     "ui",
     "server",
-    "shared"
+    "shared",
+    "cypress"
   ],
   "scripts": {
     "setup": ".bin/mna-lba init:env",
@@ -59,13 +60,17 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
+    "@cypress/chrome-recorder": "^2.3.1",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.1.0",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "@types/mongodb": "^3.5.27",
+    "@types/node": "20.7.1",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
     "@typescript-eslint/parser": "^6.7.2",
     "cross-env": "^7.0.3",
+    "cypress": "^12.14.0",
     "dotenv": "^16.1.4",
     "eslint": "^8.49.0",
     "eslint-config-next": "^13.4.19",
@@ -78,6 +83,8 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
     "lint-staged": "^14.0.1",
+    "mongodb": "^3.7.4",
+    "mongoose": "^5.13.20",
     "node-talisman": "^1.29.10",
     "prettier": "^3.0.3",
     "semantic-release": "^21.1.1",
