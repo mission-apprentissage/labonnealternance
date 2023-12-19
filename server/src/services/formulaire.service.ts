@@ -69,7 +69,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
  * @param {number} payload.limit
  */
 export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
-  const response = await Recruiter.paginate({ query, ...select, page, limit, lean: true })
+  const response = await Recruiter.paginate({ query, select, page, limit, lean: true })
 
   return {
     pagination: {
