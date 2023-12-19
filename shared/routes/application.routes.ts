@@ -92,23 +92,5 @@ export const zApplicationRoutes = {
         resources: {},
       },
     },
-    "/application/webhook": {
-      path: "/application/webhook",
-      method: "post",
-      querystring: z
-        .object({
-          apikey: z.string(),
-        })
-        .strict(),
-      body: extensions.brevoWebhook(),
-      response: {
-        "200": z
-          .object({
-            result: z.literal("ok"),
-          })
-          .strict(),
-      },
-      securityScheme: null,
-    },
   },
 } as const satisfies IRoutesDef

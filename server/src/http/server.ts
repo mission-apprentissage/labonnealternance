@@ -35,10 +35,9 @@ import formationsRoute from "./routes/admin/formations.controller"
 import application from "./routes/application.controller"
 import applicationAPI from "./routes/applicationAPI.controller"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller"
-import emailsRoute from "./routes/auth/emails.controller"
 import login from "./routes/auth/login.controller"
-import campaignWebhook from "./routes/campaignWebhook.controller"
 import { coreRoutes } from "./routes/core.controller"
+import emailsRoute from "./routes/emails.controller"
 import etablissementRoute from "./routes/etablissement.controller"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller"
 import formulaireRoute from "./routes/formulaire.controller"
@@ -134,7 +133,6 @@ export async function bind(app: Server) {
       metiers(typedSubApp)
       rome(typedSubApp)
       updateLbaCompany(typedSubApp)
-      campaignWebhook(typedSubApp)
       application(typedSubApp)
       applicationAPI(typedSubApp)
       unsubscribeLbaCompany(typedSubApp)
