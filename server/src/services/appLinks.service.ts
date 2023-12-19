@@ -113,17 +113,23 @@ export function createProvidedJobLink(user: IUserRecruteur, jobId: string, utmDa
 }
 
 export function createViewDelegationLink(email: string, establishment_id: string, job_id: string, siret_formateur: string) {
-  const token = generateAccessToken({ type: "cfa", email, siret: siret_formateur }, [
-    generateScope({
-      schema: zRoutes.get["/formulaire/delegation/:establishment_id"],
-      options: {
-        params: {
-          establishment_id: establishment_id,
+  const token = generateAccessToken(
+    { type: "cfa", email, siret: siret_formateur },
+    [
+      generateScope({
+        schema: zRoutes.get["/formulaire/delegation/:establishment_id"],
+        options: {
+          params: {
+            establishment_id: establishment_id,
+          },
+          querystring: undefined,
         },
-        querystring: undefined,
-      },
-    }),
-  ])
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
 
   return `${config.publicUrl}/espace-pro/proposition/formulaire/${establishment_id}/offre/${job_id}/siret/${siret_formateur}?token=${token}`
 }
