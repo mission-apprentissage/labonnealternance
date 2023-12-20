@@ -149,7 +149,6 @@ jobs:
     with:
       cypress_host: "https://labonnealternance-recette.apprentissage.beta.gouv.fr"
       smtp_host: "https://labonnealternance-recette.apprentissage.beta.gouv.fr/smtp"
-      branch: "main"
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
