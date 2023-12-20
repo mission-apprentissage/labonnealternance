@@ -7,10 +7,26 @@ on:
         description: host name
         type: string
         required: true
+      smtp_host:
+        description: host name of the mailpit
+        type: string
+        required: true
+      branch:
+        description: git branch name
+        type: string
+        required: true
   workflow_call:
     inputs:
       cypress_host:
         description: host name
+        type: string
+        required: true
+      smtp_host:
+        description: host name of the mailpit
+        type: string
+        required: true
+      branch:
+        description: git branch name
         type: string
         required: true
     secrets:
@@ -28,6 +44,8 @@ jobs:
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
 
       - uses: actions/setup-node@v3
         with:
@@ -47,7 +65,7 @@ jobs:
         run: yarn install
 
       - name: Run cypress e2e tests
-        run: yarn e2e:headless --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}}
+        run: yarn plop:plop --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}},smtp=${{inputs.smtp_host}}
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2
