@@ -158,21 +158,14 @@ jobs:
           pr_number: ${{ github.event.issue.number }}
 
   cypress:
-    runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}-cypress
       cancel-in-progress: true
     needs: ["deploy_preview"]
-    steps:
-      - id: "get-branch"
-        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName')" >> $GITHUB_OUTPUT
-        env:
-          REPO: ${{ github.repository }}
-          PR_NO: ${{ github.event.issue.number }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: "./.github/workflows/cypress.yml"
-        with:
-          cypress_host: "https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr"
-          smtp_host: "https://smtp.labonnealternance-preview.apprentissage.beta.gouv.fr"
-          branch: ${{ steps.get-branch.outputs.branch }}
+    uses: "./.github/workflows/cypress.yml"
+    with:
+      cypress_host: "https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr"
+      smtp_host: "https://smtp.labonnealternance-preview.apprentissage.beta.gouv.fr"
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
