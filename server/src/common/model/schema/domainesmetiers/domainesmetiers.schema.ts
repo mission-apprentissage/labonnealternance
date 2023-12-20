@@ -35,6 +35,11 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       default: [],
       description: "Les libellés des codes ROMEs associés au métier",
     },
+    intitules_romes_sans_accent: {
+      type: [String],
+      default: [],
+      description: "Les libellés des codes ROMEs associés au métier sans caractère accentué",
+    },
     codes_rncps: {
       type: [String],
       default: [],
@@ -45,10 +50,20 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       default: [],
       description: "Les libellés des codes RNCPs associés au métier",
     },
+    intitules_rncps_sans_accent: {
+      type: [String],
+      default: [],
+      description: "Les libellés des codes RNCPs associés au métier sans caractère accentué",
+    },
     mots_clefs: {
       type: String,
       require: true,
       description: "Les mots clefs associés au métier",
+    },
+    mots_clefs_sans_accent: {
+      type: String,
+      require: true,
+      description: "Les mots clefs associés au métier sans caractère accentué",
     },
     mots_clefs_specifiques: {
       type: String,
@@ -65,6 +80,11 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       require: true,
       description: "Mots clefs tirés des appellations associées à un code ROME",
     },
+    appellations_romes_sans_accent: {
+      type: String,
+      require: true,
+      description: "Mots clefs tirés des appellations associées à un code ROME sans caractère accentué",
+    },
     couples_appellations_rome_metier: {
       type: [Object],
       default: [],
@@ -80,10 +100,20 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       default: [],
       description: "Mots clefs issus des libellés FAP",
     },
+    intitules_fap_sans_accent: {
+      type: [String],
+      default: [],
+      description: "Mots clefs issus des libellés FAP sans caractère accentué",
+    },
     sous_domaine_onisep: {
       type: [String],
       default: [],
       description: "Les sous-domaines onisep",
+    },
+    sous_domaine_onisep_sans_accent: {
+      type: [String],
+      default: [],
+      description: "Les sous-domaines onisep sans caractère accentué",
     },
     couples_romes_metiers: {
       type: [Object],
