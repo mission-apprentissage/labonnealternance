@@ -1,7 +1,7 @@
 import { defineConfig } from "cypress"
 import * as dotenv from "dotenv"
 
-import { setupNodeEvents } from "./cypress/plugin/configure"
+import { setupNodeEvents } from "./cypress/cypress/plugin/configure"
 
 dotenv.config()
 
