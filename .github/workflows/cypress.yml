@@ -34,13 +34,6 @@ jobs:
       group: "cypress-${{ github.workflow }}-${{ github.ref }}"
     runs-on: ubuntu-latest
     steps:
-      - name: debug
-        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName' || echo 'main')"
-        env:
-          REPO: ${{ github.repository }}
-          PR_NO: ${{ github.event.issue.number }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - id: "get-branch"
         run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName' || echo 'main')" >> $GITHUB_OUTPUT
         env:
