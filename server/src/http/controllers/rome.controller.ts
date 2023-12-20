@@ -3,8 +3,8 @@ import { zRoutes } from "shared/index"
 
 import { getRomeDetailsFromDB } from "@/services/rome.service"
 
-import { getRomesAndLabelsFromTitleQuery } from "../../../services/metiers.service"
-import { Server } from "../../server"
+import { getRomesAndLabelsFromTitleQuery } from "../../services/metiers.service"
+import { Server } from "../server"
 
 // TODO: Remove duplicated routes
 /**

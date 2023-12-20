@@ -65,7 +65,7 @@ jobs:
         run: yarn install
 
       - name: Run cypress e2e tests
-        run: yarn plop:plop --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}},smtp=${{inputs.smtp_host}}
+        run: yarn e2e:headless --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}},smtp=${{inputs.smtp_host}}
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2

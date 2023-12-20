@@ -2,20 +2,20 @@ import Boom from "boom"
 import { zRoutes } from "shared/index"
 
 import config from "@/config"
+import { processApplicationWebhookEvent, processHardBounceWebhookEvent } from "@/services/application.service"
+import { processAppointmentToApplicantWebhookEvent, processAppointmentToCfaWebhookEvent } from "@/services/appointment.service"
 import { processEstablishmentWebhookEvent } from "@/services/etablissement.service"
 
-import { processApplicationWebhookEvent, processHardBounceWebhookEvent } from "../../services/application.service"
-import * as appointmentService from "../../services/appointment.service"
 import { Server } from "../server"
 
 const processWebhookEvent = async (payload) => {
   let shouldContinue = await processApplicationWebhookEvent(payload)
   if (!shouldContinue) return
 
-  shouldContinue = await appointmentService.processAppointmentToCfaWebhookEvent(payload)
+  shouldContinue = await processAppointmentToCfaWebhookEvent(payload)
   if (!shouldContinue) return
 
-  shouldContinue = await appointmentService.processAppointmentToApplicantWebhookEvent(payload)
+  shouldContinue = await processAppointmentToApplicantWebhookEvent(payload)
   if (!shouldContinue) return
 
   shouldContinue = await processEstablishmentWebhookEvent(payload)

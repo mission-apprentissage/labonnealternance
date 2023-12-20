@@ -1,11 +1,11 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
 
-import { checkIsDiffusible } from "@/services/etablissement.service.js"
+import { checkIsDiffusible } from "@/services/etablissement.service"
 
-import { LbaCompany } from "../../common/model/index.js"
+import { LbaCompany } from "../../common/model"
 import { logMessage } from "../../common/utils/logMessage"
 
-import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./lbaCompaniesUtils.js"
+import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./lbaCompaniesUtils"
 
 export const updateSAVECompanies = async () => {
   logMessage("info", "Starting updateSAVECompanies")
