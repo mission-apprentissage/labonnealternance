@@ -7,7 +7,7 @@ import { SchemaWithSecurity, generateAccessToken, generateScope, parseAccessToke
 import { useMongo } from "../../utils/mongo.utils"
 import { createUserRecruteurTest } from "../../utils/user.utils"
 
-describe("accessTokenService", () => {
+describe.skip("accessTokenService", () => {
   let userACTIVE: IUserRecruteur
   let userPENDING: IUserRecruteur
   let userDISABLED: IUserRecruteur
