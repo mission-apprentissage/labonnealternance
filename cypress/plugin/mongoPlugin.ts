@@ -9,9 +9,7 @@ const { MongoClient } = mongodb
 export const executeMongoDb =
   (config) =>
   async ({ commandName, args, collection }) => {
-    console.log(config)
     const { uri, database } = config.env("mongodb")
-    console.log({ uri, database })
     if (!uri || !database) {
       throw new Error("uri and database are required")
     }
@@ -19,7 +17,6 @@ export const executeMongoDb =
     try {
       // Connect the client to the server (optional starting in v4.7)
       await client.connect()
-      console.log({ commandName, args, collection })
       const result = await client
         .db(database)
         .collection(collection)

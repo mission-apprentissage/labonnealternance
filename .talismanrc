@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 61f784f3e931504011faa05180040616df5fd6f79f15203782579d0298804c9b
+  checksum: f982f2826e0517e9e99cb98e864fb6c3c63b0699b708af86a32e4866d8ba08bd
 - filename: cypress.local.env.json
   checksum: a639266c2bf3a91aa35b45f09dfaffcdadc64b78a81723c98fe2adb60527bcec
 - filename: cypress/e2e/create-cfa-account-autovalidated.cy.ts

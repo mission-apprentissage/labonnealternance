@@ -4,7 +4,8 @@ import { LoginBar } from "../pages/LoginBar"
 
 describe("create-cfa-account-autovalidated", () => {
   it("tests create-cfa-account-autovalidated", () => {
-    const { email: cfaEmail, siret: cfaSiret } = Cypress.env("cfa").autovalide
+    const cfaEmail = Cypress.env("CFA_AUTOVALIDE_EMAIL") || Cypress.env("cfa")?.autovalide?.email
+    const cfaSiret = Cypress.env("CFA_AUTOVALIDE_SIRET") || Cypress.env("cfa")?.autovalide?.siret
     const firstName = "John"
     const lastName = "Doe"
 
