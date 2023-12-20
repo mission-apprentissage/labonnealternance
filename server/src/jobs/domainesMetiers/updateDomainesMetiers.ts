@@ -3,7 +3,10 @@ import path from "path"
 
 import { oleoduc } from "oleoduc"
 import { ZDomainesMetiers } from "shared/models"
+import { removeAccents } from "shared/utils"
 import XLSX from "xlsx"
+
+import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
@@ -45,8 +48,8 @@ export default async function (optionalFileName?: string) {
     motsClefsSpecifiques,
     appellationsROMEs,
     coupleAppellationsRomeIntitules,
-    codesFAPs,
-    libellesFAPs,
+    codesFAPs: string[] = [],
+    libellesFAPs: string[] = [],
     sousDomainesOnisep
 
   const reset = () => {
@@ -92,14 +95,19 @@ export default async function (optionalFileName?: string) {
         libelles_fap,
       } = row
 
+      console.log("row : ", row)
+
       if (metier) {
         // cas de la ligne sur laquelle se trouve le nom du métier qui va marquer l'insertion d'une ligne dans la db
         step = 1
 
-        const paramsDomaineMetier = {
+        const paramsDomaineMetier: IDomainesMetiers = {
           domaine: domaine,
+          domaine_sans_accent: removeAccents(domaine),
           sous_domaine: metier,
+          sous_domaine_sans_accent: removeAccents(metier),
           mots_clefs_specifiques: [...new Set(motsClefsSpecifiques)].join(", "),
+          mots_clefs_specifiques_sans_accent: removeAccents([...new Set(motsClefsSpecifiques)].join(", ")),
           mots_clefs: [...new Set(motsClefsDomaine)].join(", "),
           appellations_romes: [...new Set(appellationsROMEs)].join(", "),
           couples_appellations_rome_metier: coupleAppellationsRomeIntitules,
@@ -111,6 +119,8 @@ export default async function (optionalFileName?: string) {
           codes_fap: [...new Set(codesFAPs)],
           intitules_fap: [...new Set(libellesFAPs)],
           sous_domaine_onisep: sousDomainesOnisep,
+          created_at: new Date(),
+          last_update_at: new Date(),
         }
 
         if (codesROMEs.length > 15) {

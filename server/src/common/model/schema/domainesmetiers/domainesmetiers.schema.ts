@@ -10,10 +10,20 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       require: true,
       description: "Le sous-domaine d'un métier",
     },
+    sous_domaine_sans_accent: {
+      type: String,
+      require: true,
+      description: "Le sous-domaine d'un métier sans caractère accentué",
+    },
     domaine: {
       type: String,
       default: null,
       description: "Le grand domaine d'un métier",
+    },
+    domaine_sans_accent: {
+      type: String,
+      default: null,
+      description: "Le grand domaine d'un métier sans caractère accentué",
     },
     codes_romes: {
       type: [String],
@@ -44,6 +54,11 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       type: String,
       require: true,
       description: "Les mots clefs associés à une ligne spécifique du métier",
+    },
+    mots_clefs_specifiques_sans_accent: {
+      type: String,
+      require: true,
+      description: "Les mots clefs associés à une ligne spécifique du métier sans caractère accentué",
     },
     appellations_romes: {
       type: String,
