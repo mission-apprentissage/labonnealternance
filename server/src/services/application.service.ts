@@ -3,25 +3,28 @@ import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS, ZApplication } from "shared"
-import { ApplicantIntention } from "shared/constants/application.js"
-import { RECRUITER_STATUS } from "shared/constants/recruteur.js"
-import { disableUrlsWith0WidthChar, prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common.js"
+import { ApplicantIntention } from "shared/constants/application"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { disableUrlsWith0WidthChar, prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { logger } from "../common/logger.js"
-import { Application, EmailBlacklist, LbaCompany, Recruiter, UserRecruteur } from "../common/model/index.js"
-import { decryptWithIV } from "../common/utils/encryptString.js"
-import { manageApiError } from "../common/utils/errorManager.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import config from "../config.js"
+import { logger } from "../common/logger"
+import { Application, EmailBlacklist, LbaCompany, Recruiter, UserRecruteur } from "../common/model"
+import { decryptWithIV } from "../common/utils/encryptString"
+import { manageApiError } from "../common/utils/errorManager"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
 
-import { createCancelJobLink, createLbaCompanyApplicationReplyLink, createProvidedJobLink, createUserRecruteurApplicationReplyLink } from "./appLinks.service.js"
-import { BrevoEventStatus } from "./brevo.service.js"
+import { createCancelJobLink, createLbaCompanyApplicationReplyLink, createProvidedJobLink, createUserRecruteurApplicationReplyLink } from "./appLinks.service"
+import { BrevoEventStatus } from "./brevo.service"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
-import mailer from "./mailer.service.js"
-import { validateCaller } from "./queryValidator.service.js"
+import mailer from "./mailer.service"
+import { validateCaller } from "./queryValidator.service"
+
+const MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT = 3
+const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
 
 const publicUrl = config.publicUrl
 
@@ -88,7 +91,7 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
  * @param {string} email
  * @returns {Promise<IApplication>}
  */
-const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
+export const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
   Application.findOne({ company_email: email, to_company_message_id: messageId })
 
 /**
@@ -166,7 +169,7 @@ export const sendApplication = async ({
       return { error: validationResult }
     }
 
-    validationResult = await checkUserApplicationCount(query.applicant_email.toLowerCase())
+    validationResult = await checkUserApplicationCount(query.applicant_email.toLowerCase(), query.company_siret)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -469,23 +472,32 @@ export const validateApplicationType = (validable: Partial<IApplicationUI>) => {
  * @param {string} applicantEmail
  * @return {Promise<string>}
  */
-const checkUserApplicationCount = async (applicantEmail: string): Promise<string> => {
+const checkUserApplicationCount = async (applicantEmail: string, company_siret: string): Promise<string> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
   const end = new Date()
   end.setHours(23, 59, 59, 999)
 
-  const appCount = await Application.countDocuments({
+  let appCount = await Application.countDocuments({
     applicant_email: applicantEmail.toLowerCase(),
     created_at: { $gte: start, $lt: end },
   })
 
-  if (appCount > config.maxApplicationPerDay) {
+  if (appCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
     return "max candidatures atteint"
-  } else {
-    return "ok"
   }
+
+  appCount = await Application.countDocuments({
+    applicant_email: applicantEmail.toLowerCase(),
+    company_siret,
+  })
+
+  if (appCount > MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT) {
+    return "max messages atteint pour cette société"
+  }
+
+  return "ok"
 }
 
 interface IApplicationFeedback {
@@ -566,44 +578,14 @@ export const sendMailToApplicant = async ({
 /**
  * @description updates application and triggers action from email webhook
  */
-export const updateApplicationStatus = async ({ payload }: { payload: any }): Promise<void> => {
-  /* Format payload cf. https://developers.brevo.com/docs/how-to-use-webhooks
-      {
-        "event": "delivered",
-        "email": "example@example.com",
-        "id": 26224,
-        "date": "YYYY-MM-DD HH:mm:ss",
-        "ts": 1598634509,
-        "message-id": "<xxxxxxxxxxxx.xxxxxxxxx@domain.com>",
-        "ts_event": 1598034509,
-        "subject": "Subject Line",
-        "tag": "[\"transactionalTag\"]",
-        "sending_ip": "185.41.28.109",
-        "ts_epoch": 1598634509223,
-        "tags": [
-          "myFirstTransactional"
-        ]
-      }
-  */
+export const updateApplicationStatusFromHardbounce = async ({ payload, application }: { payload: any; application: IApplication }): Promise<void> => {
+  /* Format payload cf. https://developers.brevo.com/docs/transactional-webhooks
+  https://developers.brevo.com/docs/marketing-webhooks */
 
-  const { event, subject, email } = payload
-
-  if (event !== BrevoEventStatus.HARD_BOUNCE) {
-    return
-  }
+  const { subject, email } = payload
 
   if (!subject.startsWith("Candidature en alternance") && !subject.startsWith("Candidature spontanée")) {
     // les messages qui ne sont pas de candidature vers une entreprise sont ignorés
-    return
-  }
-
-  const application = await findApplicationByMessageId({
-    messageId: payload["message-id"],
-    email,
-  })
-
-  if (!application) {
-    logger.error(`Application webhook : application not found. message_id=${payload["message-id"]} email=${email} subject=${subject}`)
     return
   }
 
@@ -691,4 +673,37 @@ export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][
   ])
 
   return applicationCountByCompany
+}
+
+/**
+ *  met à jour une candidature si l'événement reçu correspond à une hardbounce
+ */
+export const processApplicationWebhookEvent = async (payload) => {
+  const { event, email } = payload
+  const messageId = payload["message-id"]
+
+  // application
+  if (event === BrevoEventStatus.HARD_BOUNCE) {
+    const application = await findApplicationByMessageId({
+      messageId,
+      email,
+    })
+
+    if (application) {
+      await updateApplicationStatusFromHardbounce({ payload, application })
+      return false
+    }
+  }
+  return true
+}
+
+/**
+ *  réagit à un hardbounce non lié à aux autres processeurs de webhook email
+ */
+export const processHardBounceWebhookEvent = async (payload) => {
+  const { event, email } = payload
+
+  if (event === BrevoEventStatus.HARD_BOUNCE) {
+    await Promise.all([addEmailToBlacklist(email, "campaign"), removeEmailFromLbaCompanies(email)])
+  }
 }

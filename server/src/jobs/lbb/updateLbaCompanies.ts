@@ -1,7 +1,9 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
 import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
+import { checkIsDiffusible } from "@/services/etablissement.service"
+
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
 import { rebuildIndex } from "../../common/utils/esUtils"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -14,7 +16,7 @@ import {
   getCompanyMissingData,
   readCompaniesFromJson,
   removePredictionFile,
-} from "./lbaCompaniesUtils.js"
+} from "./lbaCompaniesUtils"
 import { insertSAVECompanies, removeSAVECompanies, updateSAVECompanies } from "./updateSAVECompanies"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
@@ -44,6 +46,10 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
 
   if (!rawCompany.enseigne) {
     logMessage("error", `Error processing company. Company ${rawCompany.siret} has no name`)
+    return null
+  }
+
+  if (await !checkIsDiffusible(rawCompany.siret)) {
     return null
   }
 

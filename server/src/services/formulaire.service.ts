@@ -1,9 +1,11 @@
 import Boom from "boom"
-import type { ObjectId } from "mongodb"
+import type { ObjectId as ObjectIdType } from "mongodb"
+import pkg from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
+import { db } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
@@ -18,6 +20,8 @@ import mailer from "./mailer.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
+const { ObjectId } = pkg
+
 interface IFormulaireExtended extends IRecruiter {
   entreprise_localite?: string
 }
@@ -31,7 +35,7 @@ export interface IOffreExtended extends IJob {
 /**
  * @description get formulaire by offer id
  */
-export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise<IFormulaireExtended | null> => {
+export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<IFormulaireExtended | null> => {
   const result = await getOffre(id)
 
   if (!result) {
@@ -69,7 +73,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
  * @param {number} payload.limit
  */
 export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
-  const response = await Recruiter.paginate({ query, ...select, page, limit, lean: true })
+  const response = await Recruiter.paginate({ query, select, page, limit, lean: true })
 
   return {
     pagination: {
@@ -318,7 +322,7 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @description Get job offer by job id
  * @param {IJob["_id"]} id
  */
-export async function getOffre(id: string | ObjectId) {
+export async function getOffre(id: string | ObjectIdType) {
   return Recruiter.findOne({ "jobs._id": id }).lean()
 }
 
@@ -341,7 +345,7 @@ export async function createOffre(id: IRecruiter["establishment_id"], payload: U
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+export async function updateOffre(id: string | ObjectIdType, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
   const recruiter = await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
@@ -363,21 +367,15 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object) => {
   const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
-  const recruiter = await Recruiter.findOneAndUpdate(
-    { "jobs._id": id },
+
+  await db.collection("recruiters").findOneAndUpdate(
+    { "jobs._id": new ObjectId(id.toString()) },
     {
       $inc: incPayload,
-    },
-    options
-  ).lean()
-
-  if (!recruiter) {
-    throw Boom.internal("Recruiter not found")
-  }
-
-  return recruiter
+    }
+  )
 }
 
 /**
@@ -533,7 +531,7 @@ export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecru
 /**
  * @description Get job offer by its id.
  */
-export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
+export const getJob = async (id: string | ObjectIdType): Promise<IJob | null> => {
   const offre = await getOffre(id)
   if (!offre) return null
   return offre.jobs.find((job) => job._id.toString() === id.toString()) ?? null

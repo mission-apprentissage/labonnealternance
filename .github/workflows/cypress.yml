@@ -7,10 +7,18 @@ on:
         description: host name
         type: string
         required: true
+      smtp_host:
+        description: host name of the mailpit
+        type: string
+        required: true
   workflow_call:
     inputs:
       cypress_host:
         description: host name
+        type: string
+        required: true
+      smtp_host:
+        description: host name of the mailpit
         type: string
         required: true
     secrets:
@@ -26,8 +34,17 @@ jobs:
       group: "cypress-${{ github.workflow }}-${{ github.ref }}"
     runs-on: ubuntu-latest
     steps:
+      - id: "get-branch"
+        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName' || echo 'main')" >> $GITHUB_OUTPUT
+        env:
+          REPO: ${{ github.repository }}
+          PR_NO: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout project
         uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.get-branch.outputs.branch }}
 
       - uses: actions/setup-node@v3
         with:
@@ -47,7 +64,7 @@ jobs:
         run: yarn install
 
       - name: Run cypress e2e tests
-        run: yarn e2e:headless --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}}
+        run: yarn e2e:headless --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}},smtp=${{inputs.smtp_host}}
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2

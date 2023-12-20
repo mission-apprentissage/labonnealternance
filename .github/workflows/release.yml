@@ -148,6 +148,7 @@ jobs:
     uses: "./.github/workflows/cypress.yml"
     with:
       cypress_host: "https://labonnealternance-recette.apprentissage.beta.gouv.fr"
+      smtp_host: "https://labonnealternance-recette.apprentissage.beta.gouv.fr/smtp"
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}

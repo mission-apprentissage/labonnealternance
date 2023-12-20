@@ -6,13 +6,13 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
 
-import { startSession, stopSession } from "../../../common/utils/session.service"
-import config from "../../../config"
-import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
-import { controlUserState } from "../../../services/login.service"
-import mailer from "../../../services/mailer.service"
-import { getUser, updateLastConnectionDate } from "../../../services/userRecruteur.service"
-import { Server } from "../../server"
+import { startSession, stopSession } from "../../common/utils/session.service"
+import config from "../../config"
+import { sendUserConfirmationEmail } from "../../services/etablissement.service"
+import { controlUserState } from "../../services/login.service"
+import mailer from "../../services/mailer.service"
+import { getUser, updateLastConnectionDate } from "../../services/userRecruteur.service"
+import { Server } from "../server"
 
 export default (server: Server) => {
   server.post(

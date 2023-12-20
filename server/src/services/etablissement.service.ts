@@ -1,3 +1,5 @@
+import { setTimeout } from "timers/promises"
+
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
@@ -249,7 +251,7 @@ export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIE
     const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
-    if (data.data.status_diffusion !== "diffusible") {
+    if (data.data.status_diffusion !== EDiffusibleStatus.DIFFUSIBLE) {
       return BusinessErrorCodes.NON_DIFFUSIBLE
     }
     return data
@@ -320,6 +322,21 @@ export const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
     sentryCaptureException(err)
   }
 }
+
+const MAX_RETRY = 100
+const DELAY = 100
+
+export const getDiffusionStatus = async (siret: string, count = 1) => {
+  const isDiffusible = await getEtablissementDiffusionStatus(siret)
+  if (isDiffusible === "quota") {
+    if (count > MAX_RETRY) throw Boom.internal(`Api entreprise or cache entreprise not availabe. Tried ${MAX_RETRY} times`)
+    await setTimeout(DELAY, "result")
+    return await getDiffusionStatus(siret, count++)
+  }
+  return isDiffusible
+}
+
+export const checkIsDiffusible = async (siret: string) => (await getDiffusionStatus(siret)) === EDiffusibleStatus.DIFFUSIBLE
 
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
@@ -864,4 +881,32 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
   } else {
     await sendUserConfirmationEmail(user)
   }
+}
+
+export const processEstablishmentWebhookEvent = async (payload) => {
+  const { date, event } = payload
+  const messageId = payload["message-id"]
+
+  const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
+
+  // If mail sent from etablissement model
+  const etablissementFound = await Etablissement.findOne({ "to_etablissement_emails.message_id": messageId })
+  if (etablissementFound && etablissementFound.to_etablissement_emails?.length) {
+    const firstEmailEvent = etablissementFound.to_etablissement_emails[0]
+
+    // adding one entry to Etablissement email message logs
+    await etablissementFound.update({
+      $push: {
+        to_etablissement_emails: {
+          campaign: firstEmailEvent.campaign,
+          status: event,
+          message_id: firstEmailEvent.message_id,
+          webhook_status_at: eventDate,
+        },
+      },
+    })
+    return false
+  }
+
+  return true
 }

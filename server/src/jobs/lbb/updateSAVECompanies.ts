@@ -1,9 +1,11 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
 
-import { LbaCompany } from "../../common/model/index.js"
+import { checkIsDiffusible } from "@/services/etablissement.service"
+
+import { LbaCompany } from "../../common/model"
 import { logMessage } from "../../common/utils/logMessage"
 
-import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./lbaCompaniesUtils.js"
+import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./lbaCompaniesUtils"
 
 export const updateSAVECompanies = async () => {
   logMessage("info", "Starting updateSAVECompanies")
@@ -47,7 +49,7 @@ export const updateSAVECompanies = async () => {
             }
           }
 
-          if (lbaCompany.rome_codes?.length) {
+          if (lbaCompany.rome_codes?.length && (await checkIsDiffusible(lbaCompany.siret))) {
             await lbaCompany.save()
           } else {
             await lbaCompany.remove()
@@ -81,6 +83,10 @@ export const insertSAVECompanies = async () => {
       { parallel: 2 }
     ),
     writeData(async (rawCompany) => {
+      if (await !checkIsDiffusible(rawCompany.siret)) {
+        return null
+      }
+
       const company = await getCompanyMissingData(rawCompany)
       if (company) {
         try {

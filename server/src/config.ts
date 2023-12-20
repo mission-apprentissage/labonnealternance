@@ -7,7 +7,6 @@ const config = {
   publicUrl: env.get("LBA_PUBLIC_URL").required().asString(),
   outputDir: env.get("LBA_OUTPUT_DIR").required().asString(),
   formationsEndPoint: "/api/v1/entity/formations",
-  maxApplicationPerDay: 100,
   publicEmail: "labonnealternance@apprentissage.beta.gouv.fr",
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
   disable_processors: env.get("LBA_DISABLE_PROCESSORS").required().asBool(),
