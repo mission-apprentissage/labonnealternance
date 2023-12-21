@@ -166,5 +166,6 @@ SEED_PASSPHRASE.txt
 seed.gz
 
 cypress.env.json
+cypress.env
 
 assets/*

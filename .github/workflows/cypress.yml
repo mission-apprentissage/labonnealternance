@@ -81,7 +81,7 @@ jobs:
 
       - name: Run cypress e2e tests
         run: |
-          source cypress.${{ inputs.environment }}.env
+          export $(cat cypress.${{ inputs.environment }}.env | xargs)
           yarn e2e:headless --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}},smtp=${{inputs.smtp_host}},MONGODB_DATABASE=preview_${{ github.event.issue.number }}
 
       - name: Notify failure on Slack
