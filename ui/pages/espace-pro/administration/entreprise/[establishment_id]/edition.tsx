@@ -11,7 +11,7 @@ import { AUTHTYPE } from "../../../../../common/contants"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise, Layout, LoadingEmptySpace } from "../../../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../theme/components/icons"
-import { getFormulaire, updateEntreprise, updateFormulaire } from "../../../../../utils/api"
+import { getFormulaire, updateEntrepriseAdmin, updateFormulaire } from "../../../../../utils/api"
 
 const Formulaire = ({
   last_name,
@@ -35,7 +35,7 @@ const Formulaire = ({
    * KBA 20230511 : values for recruiter collection are casted in api.js file directly. form values must remain as awaited in userRecruteur collection
    */
   // TODO
-  const entrepriseMutation = useMutation<any, unknown, any, unknown>(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
+  const entrepriseMutation = useMutation<any, unknown, any, unknown>(({ userId, establishment_id, values }) => updateEntrepriseAdmin(userId, establishment_id, values), {
     onSuccess: () => {
       toast({
         title: "Entreprise mise à jour avec succès.",

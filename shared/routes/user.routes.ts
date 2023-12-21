@@ -163,7 +163,6 @@ export const zUserRecruteurRoutes = {
         first_name: true,
         phone: true,
         email: true,
-        opco: true,
       })
         .partial()
         .strict(),
