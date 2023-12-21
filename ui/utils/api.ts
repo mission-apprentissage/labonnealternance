@@ -50,7 +50,7 @@ export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; 
  */
 export const getUser = (userId: string) => apiGet("/user/:userId", { params: { userId } })
 const updateUser = (userId: string, user) => apiPut("/user/:userId", { params: { userId }, body: user })
-const updateUserAdmin = (userId: string, user) => apiPut("/user/:userId", { params: { userId }, body: user })
+const updateUserAdmin = (userId: string, user) => apiPut("/admin/users/:userId", { params: { userId }, body: user })
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
 export const updateUserValidationHistory = (userId: string, state: IUserStatusValidationJson) =>
   apiPut("/user/:userId/history", { params: { userId }, body: state }).catch(errorHandler)
