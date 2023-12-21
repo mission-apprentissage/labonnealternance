@@ -9,7 +9,8 @@ const { MongoClient } = mongodb
 export const executeMongoDb =
   (config) =>
   async ({ commandName, args, collection }) => {
-    const { uri, database } = config.env("mongodb")
+    const uri = config.env("MONGODB_URI")
+    const database = config.env("MONGODB_DATABASE")
     if (!uri || !database) {
       throw new Error("uri and database are required")
     }
