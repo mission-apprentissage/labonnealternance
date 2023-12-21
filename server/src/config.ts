@@ -102,6 +102,11 @@ const config = {
     apiKey: env.get("LBA_ENTREPRISE_API_KEY").required().asString(),
     simulateError: env.get("LBA_ENTREPRISE_SIMULATE_ERROR").default("false").asBool(),
   },
+  franceCompetences: {
+    baseUrl: "https://api-preprod.francecompetences.fr",
+    apiKey: env.get("LBA_FRANCE_COMPETENCE_API_KEY").required().asString(),
+    bearerToken: env.get("LBA_sFRANCE_COMPETENCE_TOKEN").required().asString(),
+  },
 }
 
 export default config
