@@ -128,7 +128,10 @@ export const getMetiers = async ({
         })
       }
 
+      const termFilter: { $or: { $regex: any }[]; codes_romes?: string; codes_rncps?: string } = buildTermFilter(regexes)
+
       if (romes) {
+        termFilter.codes_romes = romes
         terms.push({
           bool: {
             must: {
@@ -141,6 +144,7 @@ export const getMetiers = async ({
       }
 
       if (rncps) {
+        termFilter.codes_rncps = rncps
         terms.push({
           bool: {
             must: {
@@ -168,8 +172,6 @@ export const getMetiers = async ({
         DomainesMetiers
       )
 
-      const termFilter = buildTermFilter(regexes)
-
       //console.log("mongoQuery : ", termFilter)
       let metiers: (IDomainesMetiers & { score?: number })[] = await db
         .collection("domainesmetiers")
@@ -183,6 +185,7 @@ export const getMetiers = async ({
       // console.log("---------")
       // metiers.map((labelAndRome) => console.log(labelAndRome.score, labelAndRome.sous_domaine))
       // console.log("---------")
+
       const labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] = response.map((labelAndRome) => ({
         label: labelAndRome._source.sous_domaine,
         romes: labelAndRome._source.codes_romes,
