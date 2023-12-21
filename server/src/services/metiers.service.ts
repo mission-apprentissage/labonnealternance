@@ -4,6 +4,7 @@ import { matchSorter } from "match-sorter"
 
 import { DiplomesMetiers, DomainesMetiers } from "@/common/model"
 import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
+import { db } from "@/common/mongodb"
 
 import { search } from "../common/esClient/index"
 
@@ -59,20 +60,57 @@ const getMultiMatchTermForDiploma = (term) => {
   }
 }
 
+const searchableFields = [
+  "sous_domaine_sans_accent",
+  "domaine_sans_accent",
+  "intitules_romes_sans_accent",
+  "intitules_rncps_sans_accent",
+  "mots_clefs_sans_accent",
+  "mots_clefs_specifiques_sans_accent",
+  "appellations_romes_sans_accent",
+  "intitules_fap_sans_accent",
+  "sous_domaine_onisep_sans_accent",
+]
+const buildMongoQuery = (regexes: any[]): { $or: any[] } => {
+  const query: { $or: any[] } = { $or: [] }
+
+  searchableFields.forEach((f) =>
+    regexes.forEach((r) => {
+      const fieldSearch: any = {}
+      fieldSearch[f] = { $regex: r }
+      console.log(fieldSearch)
+      query.$or.push(fieldSearch)
+    })
+  )
+
+  return query
+}
+
 /**
  * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. le retour respecte strictement les critères
  */
-export const getMetiers = async ({ title, romes, rncps }: { title: string; romes?: string; rncps?: string }): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] }> => {
+export const getMetiers = async ({
+  title,
+  romes,
+  rncps,
+}: {
+  title: string
+  romes?: string
+  rncps?: string
+}): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[]; labelsAndRomesMongo: Omit<IMetierEnrichi, "romeTitles">[] }> => {
   if (!title && !romes && !rncps) {
     throw Boom.badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
   } else {
     try {
       const terms: any[] = []
 
+      const regexes: any[] = []
+
       if (title) {
         title.split(" ").forEach((term, idx) => {
           if (idx === 0 || term.length > 2) {
             terms.push(getMultiMatchTerm(term))
+            regexes.push(new RegExp(`\\b${term}`, "i"))
           }
         })
       }
@@ -117,6 +155,11 @@ export const getMetiers = async ({ title, romes, rncps }: { title: string; romes
         DomainesMetiers
       )
 
+      const mongoQuery = buildMongoQuery(regexes)
+
+      console.log("mongoQuery : ", mongoQuery)
+      const responseMongo = await db.collection("domainesmetiers").find(mongoQuery, { sous_domaine: 1, codes_romes: 1, codes_rncps: 1, _id: 0 }).toArray()
+
       const labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] = response.map((labelAndRome) => ({
         label: labelAndRome._source.sous_domaine,
         romes: labelAndRome._source.codes_romes,
@@ -124,7 +167,14 @@ export const getMetiers = async ({ title, romes, rncps }: { title: string; romes
         type: "job",
       }))
 
-      return { labelsAndRomes }
+      const labelsAndRomesMongo: Omit<IMetierEnrichi, "romeTitles">[] = responseMongo.map((labelAndRome) => ({
+        label: labelAndRome.sous_domaine,
+        romes: labelAndRome.codes_romes,
+        rncps: labelAndRome.codes_rncps,
+        type: "job",
+      }))
+
+      return { labelsAndRomes, labelsAndRomesMongo }
     } catch (error) {
       const newError = Boom.internal("getting metiers from title romes and rncps")
       newError.cause = error
