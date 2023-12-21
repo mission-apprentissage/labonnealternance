@@ -20,6 +20,7 @@ import { createCancelJobLink, createLbaCompanyApplicationReplyLink, createProvid
 import { BrevoEventStatus } from "./brevo.service"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
+import { buildLbaCompanyAddress } from "./lbacompany.service"
 import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 
@@ -145,12 +146,6 @@ export const sendApplication = async ({
       return { error: validationResult }
     }
 
-    validationResult = await validateJobStatus(query)
-
-    if (validationResult !== "ok") {
-      return { error: validationResult }
-    }
-
     const company_email = shouldCheckSecret ? query.company_email : decryptWithIV(query.company_email, query.iv) // utilisation email de test ou decrypt vrai mail crypté
     const decrypted_email = shouldCheckSecret ? decryptWithIV(query.crypted_company_email, query.iv) : company_email // présent uniquement pour les tests utilisateurs
 
@@ -159,11 +154,13 @@ export const sendApplication = async ({
       decrypted_email,
     })
 
-    validationResult = await validateCompany(query, decrypted_email)
+    validationResult = await validateJob(query, decrypted_email)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
     }
+
+    validationResult = await validateCompany(query, decrypted_email)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -380,16 +377,29 @@ const getEmailTemplates = (applicationType: string): IApplicationTemplates => {
 }
 
 /**
- * @description checks if job applied to is still active or exists
+ * @description checks if job applied to is valid
  */
-export const validateJobStatus = async (validable: Partial<IApplicationUI>): Promise<"ok" | "offre expirée"> => {
-  const { company_type, job_id } = validable
+export const validateJob = async (validable: Partial<IApplicationUI>, job_email: string): Promise<"ok" | "offre expirée" | "offre manquante" | "offre altérée"> => {
+  const { company_type, job_id, company_name, company_address, company_naf, job_title } = validable
 
   if (company_type === "matcha" && job_id) {
     const job = await getOffreAvecInfoMandataire(job_id)
-
     if (!job || job.status !== RECRUITER_STATUS.ACTIF || job.jobs[0].job_status !== JOB_STATUS.ACTIVE) {
       return "offre expirée"
+    }
+
+    // TODO: pour api v2 supprimer ces contrôles et n'utiliser que les données en provenance de la db. (+modifier le modèle zod en entrée)
+    if (
+      job.email?.toLowerCase() !== job_email.toLowerCase() ||
+      !(job_title === job.jobs[0].rome_appellation_label || job_title === job.jobs[0].rome_label) ||
+      company_address !== job.address ||
+      company_naf !== job.naf_label ||
+      !(company_name === job.establishment_enseigne || company_name === job.establishment_raison_sociale || company_name === "Enseigne inconnue")
+    ) {
+      const err = new Error("Candidature offre altérée")
+      logger.error(err, { reason: `data de candidature à l'offre ${job_id} altérée` }, job_id, company_naf, job_title, company_name, company_address)
+      sentryCaptureException(err)
+      return "offre altérée"
     }
   }
 
@@ -397,17 +407,37 @@ export const validateJobStatus = async (validable: Partial<IApplicationUI>): Pro
 }
 
 /**
- * checks if company applied to exists in base
+ * checks if company applied to exists in base and is valid
  */
-export const validateCompany = async (validable: Partial<IApplicationUI>, company_email: string): Promise<"ok" | "société désinscrite" | "email société invalide"> => {
-  const { company_siret, company_type } = validable
+export const validateCompany = async (validable: Partial<IApplicationUI>, company_email: string): Promise<"ok" | "société désinscrite" | "info société invalide"> => {
+  const { company_siret, company_type, company_name, company_address, company_naf, job_title } = validable
 
   if (company_type === "lba") {
     const lbaCompany = await LbaCompany.findOne({ siret: company_siret })
     if (!lbaCompany) {
       return "société désinscrite"
-    } else if (lbaCompany.email?.toLowerCase() !== company_email.toLowerCase()) {
-      return "email société invalide"
+    }
+
+    // TODO: pour api v2 supprimer ces contrôles et n'utiliser que les données en provenance de la db. (+modifier le modèle zod en entrée)
+    if (
+      lbaCompany.email?.toLowerCase() !== company_email.toLowerCase() ||
+      job_title !== lbaCompany.enseigne ||
+      company_address !== buildLbaCompanyAddress(lbaCompany) ||
+      company_naf !== lbaCompany.naf_label ||
+      company_name !== lbaCompany.enseigne
+    ) {
+      const err = new Error("Candidature spontanée altérée")
+      logger.error(
+        err,
+        { reason: `data de candidature spontanée auprès de la société ${company_siret} altérée` },
+        company_siret,
+        company_naf,
+        job_title,
+        company_name,
+        company_address
+      )
+      sentryCaptureException(err)
+      return "info société invalide"
     }
   }
 
