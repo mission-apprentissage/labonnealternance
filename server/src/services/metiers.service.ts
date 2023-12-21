@@ -60,30 +60,43 @@ const getMultiMatchTermForDiploma = (term) => {
   }
 }
 
-const searchableFields = [
-  "sous_domaine_sans_accent",
-  "domaine_sans_accent",
-  "intitules_romes_sans_accent",
-  "intitules_rncps_sans_accent",
-  "mots_clefs_sans_accent",
-  "mots_clefs_specifiques_sans_accent",
-  "appellations_romes_sans_accent",
-  "intitules_fap_sans_accent",
-  "sous_domaine_onisep_sans_accent",
+const searchableWeightedFields = [
+  { field: "sous_domaine_sans_accent", score: 80 },
+  { field: "domaine_sans_accent", score: 3 },
+  { field: "intitules_romes_sans_accent", score: 7 },
+  { field: "intitules_rncps_sans_accent", score: 7 },
+  { field: "mots_clefs_sans_accent", score: 3 },
+  { field: "mots_clefs_specifiques_sans_accent", score: 40 },
+  { field: "appellations_romes_sans_accent", score: 15 },
+  { field: "intitules_fap_sans_accent", score: 1 },
+  { field: "sous_domaine_onisep_sans_accent", score: 1 },
 ]
-const buildMongoQuery = (regexes: any[]): { $or: any[] } => {
-  const query: { $or: any[] } = { $or: [] }
 
-  searchableFields.forEach((f) =>
+const buildTermFilter = (regexes: any[]): { $or: { $regex: any }[] } => {
+  const query: { $or: { $regex: any }[] } = { $or: [] }
+
+  searchableWeightedFields.forEach((f) =>
     regexes.forEach((r) => {
       const fieldSearch: any = {}
-      fieldSearch[f] = { $regex: r }
-      console.log(fieldSearch)
+      fieldSearch[f.field] = { $regex: r }
       query.$or.push(fieldSearch)
     })
   )
 
   return query
+}
+
+const applyWeightToResults = (results: (IDomainesMetiers & { score?: number })[], regexes: any[]) => {
+  results.map((result) =>
+    searchableWeightedFields.map(({ field, score }) =>
+      regexes.map((regex) => {
+        const valueToTest = result[field] instanceof Array ? result[field].join(" ") : result[field]
+        if (valueToTest.match(regex)) {
+          result.score = score + (result.score ?? 0)
+        }
+      })
+    )
+  )
 }
 
 /**
@@ -155,11 +168,21 @@ export const getMetiers = async ({
         DomainesMetiers
       )
 
-      const mongoQuery = buildMongoQuery(regexes)
+      const termFilter = buildTermFilter(regexes)
 
-      console.log("mongoQuery : ", mongoQuery)
-      const responseMongo = await db.collection("domainesmetiers").find(mongoQuery, { sous_domaine: 1, codes_romes: 1, codes_rncps: 1, _id: 0 }).toArray()
+      //console.log("mongoQuery : ", termFilter)
+      let metiers: (IDomainesMetiers & { score?: number })[] = await db
+        .collection("domainesmetiers")
+        .find(termFilter, { sous_domaine: 1, codes_romes: 1, codes_rncps: 1, _id: 0 })
+        .toArray()
+      applyWeightToResults(metiers, regexes)
+      metiers = metiers.sort((a: IDomainesMetiers & { score?: number }, b: IDomainesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
+      // console.log("*********")
+      // response.map((labelAndRome) => console.log(labelAndRome._score, labelAndRome._source.sous_domaine))
+      // console.log("---------")
+      // metiers.map((labelAndRome) => console.log(labelAndRome.score, labelAndRome.sous_domaine))
+      // console.log("---------")
       const labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] = response.map((labelAndRome) => ({
         label: labelAndRome._source.sous_domaine,
         romes: labelAndRome._source.codes_romes,
@@ -167,7 +190,7 @@ export const getMetiers = async ({
         type: "job",
       }))
 
-      const labelsAndRomesMongo: Omit<IMetierEnrichi, "romeTitles">[] = responseMongo.map((labelAndRome) => ({
+      const labelsAndRomesMongo: Omit<IMetierEnrichi, "romeTitles">[] = metiers.map((labelAndRome) => ({
         label: labelAndRome.sous_domaine,
         romes: labelAndRome.codes_romes,
         rncps: labelAndRome.codes_rncps,
