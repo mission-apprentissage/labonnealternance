@@ -64,7 +64,6 @@ const nextConfig = withImages({
   poweredByHeader: false,
   swcMinify: true,
   experimental: {
-    appDir: false,
     typedRoutes: true,
   },
   output: "standalone",
