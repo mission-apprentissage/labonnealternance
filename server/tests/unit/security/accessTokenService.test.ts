@@ -7,7 +7,7 @@ import { SchemaWithSecurity, generateAccessToken, generateScope, parseAccessToke
 import { useMongo } from "../../utils/mongo.utils"
 import { createUserRecruteurTest } from "../../utils/user.utils"
 
-describe.skip("accessTokenService", () => {
+describe("accessTokenService", () => {
   let userACTIVE: IUserRecruteur
   let userPENDING: IUserRecruteur
   let userDISABLED: IUserRecruteur
@@ -57,13 +57,12 @@ describe.skip("accessTokenService", () => {
 
   describe("valid tokens", () => {
     describe.each([
-      ["ACTIVE user", userACTIVE],
-      ["CFA", userCFA],
-      ["LBA COMPANY user", userLbaCompany],
-    ])("%s %o", (_name, identity) => {
-      console.log(_name, identity)
+      ["ACTIVE user", () => userACTIVE],
+      ["CFA", () => userCFA],
+      ["LBA COMPANY user", () => userLbaCompany],
+    ])("%s", (_name, getIdentity) => {
       it("should generate a token valid for a specific route", async () => {
-        const token = generateAccessToken(identity, [
+        const token = generateAccessToken(getIdentity(), [
           generateScope({
             schema,
             options,
@@ -72,7 +71,7 @@ describe.skip("accessTokenService", () => {
         await expectTokenValid(token)
       })
       it("should generate a token valid for a specific param and allow all querystring", async () => {
-        const token = generateAccessToken(identity, [
+        const token = generateAccessToken(getIdentity(), [
           generateScope({
             schema,
             options: {
@@ -92,14 +91,14 @@ describe.skip("accessTokenService", () => {
   })
   describe("invalid tokens", () => {
     describe.each([
-      ["ERROR user", userERROR],
-      ["PENDING user", userPENDING],
-      ["DISABLED user", userDISABLED],
-      ["CFA user", userCFA],
-      ["LBA COMPANY user", userLbaCompany],
-    ])("%s", (_name, identity) => {
+      ["ERROR user", () => userERROR],
+      ["PENDING user", () => userPENDING],
+      ["DISABLED user", () => userDISABLED],
+      ["CFA user", () => userCFA],
+      ["LBA COMPANY user", () => userLbaCompany],
+    ])("%s", (_name, getIdentity) => {
       it("should detect an invalid token that has a different param", async () => {
-        const token = generateAccessToken(identity, [
+        const token = generateAccessToken(getIdentity(), [
           generateScope({
             schema,
             options: {
@@ -114,7 +113,7 @@ describe.skip("accessTokenService", () => {
         await expectTokenInvalid(token)
       })
       it("should detect an invalid token that has a different querystring", async () => {
-        const token = generateAccessToken(identity, [
+        const token = generateAccessToken(getIdentity(), [
           generateScope({
             schema,
             options: {
@@ -129,7 +128,7 @@ describe.skip("accessTokenService", () => {
         await expectTokenInvalid(token)
       })
       it("should detect an invalid token that is for a different route", async () => {
-        const token = generateAccessToken(identity, [
+        const token = generateAccessToken(getIdentity(), [
           generateScope({
             schema: zRoutes.post["/admin/users"],
             options: "all",
@@ -138,7 +137,7 @@ describe.skip("accessTokenService", () => {
         await expectTokenInvalid(token)
       })
       it("should detect an invalid token that has an allowAll but not for all querystrings", async () => {
-        const token = generateAccessToken(identity, [
+        const token = generateAccessToken(getIdentity(), [
           generateScope({
             schema,
             options: {
