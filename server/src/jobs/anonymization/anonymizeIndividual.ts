@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 
 import { logger } from "../../common/logger"
-import { Application } from "../../common/model/index"
+import { AnonymizedUser, Application, User } from "../../common/model/index"
 
 const anonymizeApplication = async (_id: string) => {
   await Application.aggregate([
@@ -27,7 +27,22 @@ const anonymizeApplication = async (_id: string) => {
 
   await Application.deleteOne({ _id })
 
-  logger.info(`Anonymized application with ${_id}`)
+  logger.info(`Anonymized application ${_id}`)
+}
+
+const anonymizeUser = async (_id: string) => {
+  const user = await User.find({ _id }).lean()
+
+  await AnonymizedUser.create({
+    userId: user._id,
+    type: user.type,
+    role: user.role,
+    last_action_date: user.last_action_date,
+  })
+
+  await User.deleteOne({ _id })
+
+  logger.info(`Anonymized user ${_id}`)
 }
 
 export async function anonymizeIndividual(payload: { collection: string; id: string }): Promise<void> {
@@ -38,10 +53,11 @@ export async function anonymizeIndividual(payload: { collection: string; id: str
       await anonymizeApplication(id)
       break
     }
-    case "recruiters": {
+    case "users": {
+      await anonymizeUser(id)
       break
     }
-    case "userRecruteurs": {
+    case "userrecruteurs": {
       break
     }
     default:
