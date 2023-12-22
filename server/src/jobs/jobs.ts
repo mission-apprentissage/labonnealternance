@@ -372,8 +372,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return createMongoDBIndexes()
       case "fix-diffusible-companies":
         return fixDiffusibleCompanies(job.payload)
-      case "anonymize-individual":
-        return anonymizeIndividual(job.payload)
+      case "anonymize-individual": {
+        const { collection, id } = job.payload
+        return anonymizeIndividual({ collection, id })
+      }
       case "check-diffusible-companies":
         return checkDiffusibleCompanies()
       case "db:validate":

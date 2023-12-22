@@ -137,9 +137,7 @@ const anonymizeUserRecruterAndRecruiter = async (_id: string) => {
   }
 }
 
-export async function anonymizeIndividual(payload: { collection: string; id: string }): Promise<void> {
-  const { collection, id } = payload
-
+export async function anonymizeIndividual({ collection, id }: { collection: string; id: string }): Promise<void> {
   switch (collection) {
     case "applications": {
       await anonymizeApplication(id)
