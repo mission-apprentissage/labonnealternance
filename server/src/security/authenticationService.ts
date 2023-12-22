@@ -64,7 +64,9 @@ async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUs
     const userState = controlUserState(user.status)
 
     if (userState?.error) {
-      throw Boom.forbidden()
+      if (userState.reason !== "VALIDATION") {
+        throw Boom.forbidden()
+      }
     }
 
     return { type: "IUserRecruteur", value: user }

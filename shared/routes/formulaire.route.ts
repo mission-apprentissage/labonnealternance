@@ -119,7 +119,7 @@ export const zFormulaireRoute = {
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "job:manage",
+        access: { some: ["job:manage", "recruiter:add_job"] },
         resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
