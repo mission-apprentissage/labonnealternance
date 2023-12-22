@@ -173,6 +173,14 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("fix-diffusible-companies"))
 
+program
+  .command("anonymize-individual")
+  .description("Anonymize elements based on id")
+  .option("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
+  .option("-i, --id <string>", " <id> est l'identifiant de l'élément à anonymiser")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("anonymize-individual"))
+
 program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
 program
   .command("fix:duplicate:users")
