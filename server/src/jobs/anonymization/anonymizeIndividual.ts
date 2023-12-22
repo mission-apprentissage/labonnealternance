@@ -1,8 +1,10 @@
-import { ObjectId } from "mongodb"
+import pkg from "mongodb"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 
 import { logger } from "../../common/logger"
 import { AnonymizedUser, Application, Recruiter, User, UserRecruteur } from "../../common/model/index"
+
+const { ObjectId } = pkg
 
 const anonimizeUserRecruteur = (_id: string) =>
   UserRecruteur.aggregate([
