@@ -92,6 +92,6 @@ jobs:
           notification_title: "Les tests e2e ne sont pas passés : ${{ inputs.app_version }} en ${{ inputs.environment }}"
           message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`"
           notify_when: "failure"
-          mention_groups: "!channel"
+          mention_groups: "S0693U59FCK"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
