@@ -176,8 +176,8 @@ program
 program
   .command("anonymize-individual")
   .description("Anonymize elements based on id")
-  .option("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
-  .option("-i, --id <string>", " <id> est l'identifiant de l'élément à anonymiser")
+  .requiredOption("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
+  .requiredOption("-i, --id <string>", " <id> est l'identifiant de l'élément à anonymiser")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("anonymize-individual"))
 

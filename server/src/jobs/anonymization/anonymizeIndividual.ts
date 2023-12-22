@@ -1,10 +1,12 @@
+import { ObjectId } from "mongodb"
+
 import { logger } from "../../common/logger"
 import { Application } from "../../common/model/index"
 
 const anonymizeApplication = async (_id: string) => {
   await Application.aggregate([
     {
-      $match: { _id },
+      $match: { _id: new ObjectId(_id) },
     },
     {
       $project: {

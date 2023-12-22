@@ -4,6 +4,7 @@ import { create as createMigration, status as statusMigration, up as upMigration
 
 import { getLoggerWithContext } from "../common/logger"
 
+import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
