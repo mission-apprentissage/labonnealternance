@@ -31,18 +31,21 @@ const anonymizeApplication = async (_id: string) => {
 }
 
 const anonymizeUser = async (_id: string) => {
-  const user = await User.find({ _id }).lean()
+  const user = await User.findOne({ _id }).lean()
 
-  await AnonymizedUser.create({
-    userId: user._id,
-    type: user.type,
-    role: user.role,
-    last_action_date: user.last_action_date,
-  })
+  if (user) {
+    await AnonymizedUser.create({
+      userId: user._id,
+      type: user.type,
+      role: user.role,
+      last_action_date: user.last_action_date,
+    })
+    await User.deleteOne({ _id })
 
-  await User.deleteOne({ _id })
-
-  logger.info(`Anonymized user ${_id}`)
+    logger.info(`Anonymized user ${_id}`)
+  } else {
+    logger.info(`User not found ${_id}`)
+  }
 }
 
 export async function anonymizeIndividual(payload: { collection: string; id: string }): Promise<void> {
