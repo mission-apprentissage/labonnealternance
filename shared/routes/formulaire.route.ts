@@ -18,7 +18,7 @@ export const zFormulaireRoute = {
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "recruiter:manage",
+        access: { some: ["recruiter:manage", "recruiter:add_job"] },
         resources: {
           recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
