@@ -12,13 +12,11 @@ const getRules = () => {
       }
     case "recette":
     case "pentest":
+    default:
       return {
         userAgent: "*",
         disallow: "/",
       }
-
-    default:
-      break
   }
 }
 
