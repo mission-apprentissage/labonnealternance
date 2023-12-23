@@ -76,7 +76,6 @@ export const zMetiersRoutes = {
         200: z
           .object({
             labelsAndRomes: ZMetierEnrichiArray,
-            labelsAndRomesMongo: ZMetierEnrichiArray,
           })
           .strict(),
       },

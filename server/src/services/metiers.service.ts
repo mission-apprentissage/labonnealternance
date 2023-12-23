@@ -11,6 +11,15 @@ import { search } from "../common/esClient/index"
 import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
 
+let cacheMetiers: IDomainesMetiers[] = []
+
+const initializeCacheMetiers = async () => {
+  console.log("initializeCacheMetiers on first use")
+  cacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
+  const roughObjSize = JSON.stringify(cacheMetiers).length
+  console.log("cacheMetiers : ", roughObjSize)
+}
+
 /**
  * Retourne un ensemble de métiers et/ou diplômes et leurs codes romes et rncps associés en fonction de terme de recherches
  */
@@ -72,135 +81,76 @@ const searchableWeightedFields = [
   { field: "sous_domaine_onisep_sans_accent", score: 1 },
 ]
 
-const buildTermFilter = (regexes: any[]): { $or: { $regex: any }[] } => {
-  const query: { $or: { $regex: any }[] } = { $or: [] }
+const filterMetiers = async (regexes: any[], romes, rncps): Promise<(IDomainesMetiers & { score?: number })[]> => {
+  if (cacheMetiers.length === 0) {
+    await initializeCacheMetiers()
+  }
 
-  searchableWeightedFields.forEach((f) =>
-    regexes.forEach((r) => {
-      const fieldSearch: any = {}
-      fieldSearch[f.field] = { $regex: r }
-      query.$or.push(fieldSearch)
-    })
-  )
+  const results: (IDomainesMetiers & { score?: number })[] = []
 
-  return query
-}
+  cacheMetiers.map((metier) => {
+    if (romes) {
+      const romeList: string[] = romes.split(", ")
+      if (!romeList.some((rome) => metier.codes_romes.includes(rome))) {
+        return
+      }
+    }
 
-const applyWeightToResults = (results: (IDomainesMetiers & { score?: number })[], regexes: any[]) => {
-  results.map((result) =>
+    if (rncps) {
+      const rncpList: string[] = rncps.split(", ")
+      if (!rncpList.some((rncp) => metier.codes_rncps.includes(rncp))) {
+        return
+      }
+    }
+
+    if (!regexes.length && (romes || rncps)) {
+      results.push(metier)
+    }
+
     searchableWeightedFields.map(({ field, score }) =>
       regexes.map((regex) => {
-        const valueToTest = result[field] instanceof Array ? result[field].join(" ") : result[field]
+        const valueToTest = metier[field] instanceof Array ? metier[field].join(" ") : metier[field]
         if (valueToTest.match(regex)) {
-          result.score = score + (result.score ?? 0)
+          const matchingMetier: IDomainesMetiers & { score?: number } = metier
+          matchingMetier.score = score + (matchingMetier.score ?? 0)
+          results.push(matchingMetier)
         }
       })
     )
-  )
+  })
+
+  return results
 }
 
 /**
  * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. le retour respecte strictement les critères
  */
-export const getMetiers = async ({
-  title,
-  romes,
-  rncps,
-}: {
-  title: string
-  romes?: string
-  rncps?: string
-}): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[]; labelsAndRomesMongo: Omit<IMetierEnrichi, "romeTitles">[] }> => {
+export const getMetiers = async ({ title, romes, rncps }: { title: string; romes?: string; rncps?: string }): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] }> => {
   if (!title && !romes && !rncps) {
     throw Boom.badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
   } else {
     try {
-      const terms: any[] = []
-
       const regexes: any[] = []
 
       if (title) {
         title.split(" ").forEach((term, idx) => {
           if (idx === 0 || term.length > 2) {
-            terms.push(getMultiMatchTerm(term))
             regexes.push(new RegExp(`\\b${term}`, "i"))
           }
         })
       }
 
-      const termFilter: { $or: { $regex: any }[]; codes_romes?: string; codes_rncps?: string } = buildTermFilter(regexes)
-
-      if (romes) {
-        termFilter.codes_romes = romes
-        terms.push({
-          bool: {
-            must: {
-              match: {
-                codes_romes: romes,
-              },
-            },
-          },
-        })
-      }
-
-      if (rncps) {
-        termFilter.codes_rncps = rncps
-        terms.push({
-          bool: {
-            must: {
-              match: {
-                codes_rncps: rncps,
-              },
-            },
-          },
-        })
-      }
-
-      const response = await search(
-        {
-          index: "domainesmetiers",
-          size: 20,
-          _source_includes: ["sous_domaine", "codes_romes", "codes_rncps"],
-          body: {
-            query: {
-              bool: {
-                must: terms,
-              },
-            },
-          },
-        },
-        DomainesMetiers
-      )
-
-      //console.log("mongoQuery : ", termFilter)
-      let metiers: (IDomainesMetiers & { score?: number })[] = await db
-        .collection("domainesmetiers")
-        .find(termFilter, { sous_domaine: 1, codes_romes: 1, codes_rncps: 1, _id: 0 })
-        .toArray()
-      applyWeightToResults(metiers, regexes)
+      let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers(regexes, romes, rncps)
       metiers = metiers.sort((a: IDomainesMetiers & { score?: number }, b: IDomainesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
-      // console.log("*********")
-      // response.map((labelAndRome) => console.log(labelAndRome._score, labelAndRome._source.sous_domaine))
-      // console.log("---------")
-      // metiers.map((labelAndRome) => console.log(labelAndRome.score, labelAndRome.sous_domaine))
-      // console.log("---------")
-
-      const labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] = response.map((labelAndRome) => ({
-        label: labelAndRome._source.sous_domaine,
-        romes: labelAndRome._source.codes_romes,
-        rncps: labelAndRome._source.codes_rncps,
-        type: "job",
-      }))
-
-      const labelsAndRomesMongo: Omit<IMetierEnrichi, "romeTitles">[] = metiers.map((labelAndRome) => ({
+      const labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] = metiers.map((labelAndRome) => ({
         label: labelAndRome.sous_domaine,
         romes: labelAndRome.codes_romes,
         rncps: labelAndRome.codes_rncps,
         type: "job",
       }))
 
-      return { labelsAndRomes, labelsAndRomesMongo }
+      return { labelsAndRomes }
     } catch (error) {
       const newError = Boom.internal("getting metiers from title romes and rncps")
       newError.cause = error
