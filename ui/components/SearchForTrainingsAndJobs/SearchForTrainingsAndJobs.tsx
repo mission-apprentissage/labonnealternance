@@ -1,6 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react"
 import { useRouter } from "next/router"
-import React, { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
@@ -186,6 +186,7 @@ const SearchForTrainingsAndJobs = () => {
     }
 
     if (scopeContext.isJob) {
+      console.log({ values })
       searchForJobs({ values, searchTimestamp, followUpItem, selectFollowUpItem })
     }
     setIsFormVisible(false)
@@ -252,7 +253,6 @@ const SearchForTrainingsAndJobs = () => {
       setJobMarkers,
       factorJobsForMap,
       scopeContext,
-      widgetParameters,
       followUpItem,
       selectFollowUpItem,
       opcoFilter,
