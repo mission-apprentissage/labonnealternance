@@ -15,7 +15,6 @@ const anonymizeAppointments = (db) =>
         cfa_gestionnaire_siret: 1,
         cfa_formateur_siret: 1,
         cfa_read_appointment_details_date: 1,
-        applicant_reasons: 1,
         appointment_origin: 1,
         cle_ministere_educatif: 1,
         created_at: 1,
