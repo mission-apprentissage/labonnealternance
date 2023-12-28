@@ -2154,14 +2154,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/rate-limit@npm:^9.0.0":
-  version: 9.0.0
-  resolution: "@fastify/rate-limit@npm:9.0.0"
+"@fastify/rate-limit@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@fastify/rate-limit@npm:9.0.1"
   dependencies:
     "@lukeed/ms": ^2.0.1
     fastify-plugin: ^4.0.0
-    toad-cache: ^3.3.0
-  checksum: 2b8ab1ea8976287526d32284b22ee433bacc62424c708f7031c5fe022cfc718329e76a88b067ce52d8c0f6ce3c31c6a4cb7572a0e0709975badac8c4a4ec8fe7
+    toad-cache: ^3.3.1
+  checksum: 4dbc23b84544d7015118cb519a4265eee21f448bf19f3af0eba037f4ef1067485063dc3e6940a25b01acc9748f0c7483519473c12ea927b09df08f92e86a4cfb
   languageName: node
   linkType: hard
 
@@ -17683,7 +17683,7 @@ __metadata:
     "@elastic/elasticsearch": ^7.17.13
     "@fastify/cookie": ^9.1.0
     "@fastify/cors": ^8.4.0
-    "@fastify/rate-limit": ^9.0.0
+    "@fastify/rate-limit": ^9.0.1
     "@fastify/swagger": ^8.10.1
     "@fastify/swagger-ui": ^1.9.3
     "@immobiliarelabs/fastify-sentry": ^7.1.1
@@ -18936,6 +18936,13 @@ __metadata:
   version: 3.3.0
   resolution: "toad-cache@npm:3.3.0"
   checksum: 971bb91e0e3487494b0b7b00ad8614738e1925e536d897da26be36f03edb3298c82b2a5e18155d5323ed6258e7f1d90e99558c11e3610c87fce47b62dd7b167a
+  languageName: node
+  linkType: hard
+
+"toad-cache@npm:^3.3.1":
+  version: 3.4.1
+  resolution: "toad-cache@npm:3.4.1"
+  checksum: c679bd5af6883a70a251168d05b594709b11117a9a96f040673e0b993b49f59b0e6d3fcafff50b16839658f37533a91bd9dbb72b1d34c02b0f2021c603aa7fcc
   languageName: node
   linkType: hard
 
