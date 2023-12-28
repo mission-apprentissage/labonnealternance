@@ -3,7 +3,7 @@ import axios from "axios"
 import { logError } from "../../../utils/tools"
 
 import { storeJobsInSession } from "./handleSessionStorage"
-import { allJobSearchErrorText, jobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
+import { allJobSearchErrorText, getRomeFromParameters, jobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
 
 export const searchForJobsFunction = async ({
   values,
@@ -16,6 +16,7 @@ export const searchForJobsFunction = async ({
   setJobs,
   setJobMarkers,
   factorJobsForMap,
+  widgetParameters,
   scopeContext,
   followUpItem = undefined,
   selectFollowUpItem = undefined,
@@ -29,7 +30,7 @@ export const searchForJobsFunction = async ({
 
   try {
     const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
-    const romes = values?.job?.romes
+    const romes = getRomeFromParameters({ values, widgetParameters })
     const rncp = romes ? "" : values?.job?.rncp
 
     const params: {

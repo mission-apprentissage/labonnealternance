@@ -248,6 +248,7 @@ const SearchForTrainingsAndJobs = () => {
       setJobSearchError,
       setAllJobSearchError,
       computeMissingPositionAndDistance,
+      widgetParameters,
       setJobs,
       setJobMarkers,
       factorJobsForMap,
