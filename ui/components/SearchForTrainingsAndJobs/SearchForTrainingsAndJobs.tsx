@@ -186,7 +186,6 @@ const SearchForTrainingsAndJobs = () => {
     }
 
     if (scopeContext.isJob) {
-      console.log({ values })
       searchForJobs({ values, searchTimestamp, followUpItem, selectFollowUpItem })
     }
     setIsFormVisible(false)

@@ -2,6 +2,20 @@ import { getCampaignParameters } from "./campaignParameters"
 import { getItemQueryParameters } from "./getItemId"
 import { getSearchQueryParameters } from "./getSearchParameters"
 
+const buildQueryParams = ({ display, page, item, searchParameters, searchTimestamp, displayMap }) => {
+  const queryParams = [
+    display ? `display=${display}` : "",
+    page ? `page=${page}` : "",
+    item ? getItemQueryParameters(item) : "",
+    searchParameters ? getSearchQueryParameters(searchParameters) : "",
+    searchTimestamp ? `s=${searchTimestamp}` : "",
+    getCampaignParameters(),
+    displayMap === true ? "displayMap=true" : "",
+  ]
+
+  return queryParams.filter(Boolean).join("&")
+}
+
 const pushHistory = ({
   router,
   scopeContext,
@@ -13,19 +27,20 @@ const pushHistory = ({
   isReplace = false,
   displayMap = false,
 }) => {
-  const params = `${display ? `&display=${display}` : ""}${page ? `&page=${page}` : ""}${item ? `&${getItemQueryParameters(item)}` : ""}${
-    searchParameters ? `&${getSearchQueryParameters(searchParameters)}` : ""
-  }${searchTimestamp ? `&s=${searchTimestamp}` : ""}${getCampaignParameters()}${displayMap === true ? "&displayMap=true" : ""}`
+  const params = buildQueryParams({
+    display,
+    page,
+    item,
+    searchParameters,
+    searchTimestamp,
+    displayMap,
+  })
 
-  if (!isReplace) {
-    router.push(`${scopeContext.path}${params ? `?${params}` : ""}`, undefined, {
-      shallow: true,
-    })
-  } else {
-    router.replace(`${scopeContext.path}${params ? `?${params}` : ""}`, undefined, {
-      shallow: true,
-    })
-  }
+  const navigationMethod = isReplace ? router.replace : router.push
+
+  navigationMethod(`${scopeContext.path}${params ? `?${params}` : ""}`, undefined, {
+    shallow: true,
+  })
 }
 
 export default pushHistory
