@@ -62,6 +62,9 @@ export default function OptOutUnsubscribe() {
     await apiPost("/etablissements/:id/opt-out/unsubscribe", {
       params: { id },
       body: { opt_out_question },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     })
 
     window.scrollTo(0, 0)
