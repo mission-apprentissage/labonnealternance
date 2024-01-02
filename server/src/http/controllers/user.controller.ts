@@ -120,17 +120,19 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/admin/users/:userId"])],
     },
     async (req, res) => {
-      const userPayload = req.body
+      const { email, ...userPayload } = req.body
       const { userId } = req.params
+      const formattedEmail = email?.toLocaleLowerCase()
 
-      const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean()
+      const exist = await UserRecruteur.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
 
       if (exist) {
-        throw Boom.notFound()
+        return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
 
-      await updateUser({ _id: userId }, userPayload)
+      const update = { email: formattedEmail, ...userPayload }
 
+      await updateUser({ _id: userId }, update)
       return res.status(200).send({ ok: true })
     }
   )
@@ -212,16 +214,20 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/user/:userId"])],
     },
     async (req, res) => {
-      const userPayload = req.body
+      const { email, ...userPayload } = req.body
       const { userId } = req.params
 
-      const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean()
+      const formattedEmail = email?.toLocaleLowerCase()
+
+      const exist = await UserRecruteur.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
 
       if (exist) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
 
-      const user = await updateUser({ _id: userId }, userPayload)
+      const update = { email: formattedEmail, ...userPayload }
+
+      const user = await updateUser({ _id: userId }, update)
       return res.status(200).send(user)
     }
   )
