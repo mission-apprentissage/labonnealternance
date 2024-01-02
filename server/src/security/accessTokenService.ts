@@ -193,7 +193,7 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
     const userStatus = controlUserState(user?.status)
 
     if (userStatus.error) {
-      throw Boom.forbidden("Not Authorized")
+      throw Boom.forbidden()
     }
   }
   const scopeOpt = getAccessTokenScope(token, schema, params, querystring)
