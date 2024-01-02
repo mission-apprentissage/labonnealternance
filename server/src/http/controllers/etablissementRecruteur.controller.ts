@@ -248,8 +248,13 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/etablissement/:id"])],
     },
     async (req, res) => {
-      const result = await updateUser({ _id: req.params.id }, req.body)
-      return res.status(200).send(result)
+      const { _id, ...rest } = req.body
+      const exists = await UserRecruteur.findOne({ email: req.body.email?.toLocaleLowerCase(), _id: { $ne: _id } })
+      if (exists) {
+        throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
+      }
+      await updateUser({ _id: req.params.id }, rest)
+      return res.status(200).send({ ok: true })
     }
   )
 

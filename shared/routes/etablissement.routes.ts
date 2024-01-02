@@ -115,13 +115,16 @@ export const zEtablissementRoutes = {
     "/etablissements/:id/opt-out/unsubscribe": {
       method: "post",
       path: "/etablissements/:id/opt-out/unsubscribe",
-      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       body: z.union([z.object({ opt_out_question: z.string() }).strict(), z.object({}).strict()]),
       response: {
         "200": ZEtablissement,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
   },
   patch: {
