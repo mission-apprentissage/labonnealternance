@@ -1,6 +1,7 @@
 import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
+import Boom from "boom"
 
 import { getPeJob, getPeReferentiels, searchForPeJobs } from "@/common/apis/Pe"
 
@@ -287,25 +288,28 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
   try {
     const job = await getPeJob(id)
 
-    if (job.status === 204 || job.status === 400) {
+    if (!job) {
+      throw Boom.notFound()
+    }
+
+    if (job.status === 204 || job.status === 400 || job.data === "") {
       if (caller) {
         trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
       }
-
-      return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
-    } else {
-      const peJob = transformPeJob({ job })
-
-      if (caller) {
-        trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
-        // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-        if (peJob.company) {
-          peJob.company.siret = null
-        }
-      }
-
-      return { peJobs: [peJob] }
+      throw Boom.notFound()
     }
+
+    const peJob = transformPeJob({ job: job.data })
+
+    if (caller) {
+      trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
+      // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+      if (peJob.company) {
+        peJob.company.siret = null
+      }
+    }
+
+    return { peJobs: [peJob] }
   } catch (error) {
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
   }
