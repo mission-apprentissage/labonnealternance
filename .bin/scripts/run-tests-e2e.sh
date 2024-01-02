@@ -31,5 +31,5 @@ setCypressEnv > $LOG_FILE 2>&1
 export $(cat "$CYPRESS_ENV_FILE" | xargs)
 echo "env:" >> $LOG_FILE
 cat $CYPRESS_ENV_FILE >> $LOG_FILE
-yarn e2e:headless > $LOG_FILE 2>&1
+yarn e2e:headless >> $LOG_FILE 2>&1
 
