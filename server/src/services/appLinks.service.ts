@@ -227,7 +227,14 @@ export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string
     { type: "cfa", email, siret },
     [
       generateScope({
-        schema: zRoutes.get["/etablissements/:id/opt-out/unsubscribe"],
+        schema: zRoutes.get["/etablissements/:id"],
+        options: {
+          params: { id: etablissementId },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/etablissements/:id/opt-out/unsubscribe"],
         options: {
           params: { id: etablissementId },
           querystring: undefined,
