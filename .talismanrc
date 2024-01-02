@@ -1,4 +1,8 @@
 fileignoreconfig:
+- filename: .bin/scripts/log-decrypt.sh
+  checksum: b08bf639f9887d7687a2377d026325bc10689697bb85746264f6f85eb84f9174
+- filename: .bin/scripts/log-encrypt.sh
+  checksum: f7fec85d200d324b6d1f952aa43eec00d3286933eac794cfbde7f208d61eadd1
 - filename: .bin/scripts/seed-apply.sh
   checksum: 49afe4f96fa13b38cf799d931085437d540b4c62eb05b2f15bc12cd3fb43268b
 - filename: .bin/scripts/seed-update.sh
@@ -8,7 +12,7 @@ fileignoreconfig:
 - filename: .bin/scripts/setup-local-env.sh
   checksum: 47323f5183f73a794449666a816d5b797c7a5ed4c7ad219c3c885a57e2fcf1e9
 - filename: .github/workflows/cypress.yml
-  checksum: 39f98fb68fdebf6a36959706adb43a8219a4b7781ac35329f957dc1cfa8b6de0
+  checksum: adce05a47fde430b32f62d0ae12c036a814f7515400cb92e0ba3d00b5e2168dc
 - filename: .github/workflows/deploy_preview.yml
   checksum: f54398af24ac144eafc27e69d18c78b1844e0a23b317bd79748ac6d3412ba0ef
 - filename: .github/workflows/release.yml
