@@ -4,6 +4,7 @@ import { create as createMigration, status as statusMigration, up as upMigration
 
 import { getLoggerWithContext } from "../common/logger"
 
+import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
@@ -371,6 +372,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return createMongoDBIndexes()
       case "fix-diffusible-companies":
         return fixDiffusibleCompanies(job.payload)
+      case "anonymize-individual": {
+        const { collection, id } = job.payload
+        return anonymizeIndividual({ collection, id })
+      }
       case "check-diffusible-companies":
         return checkDiffusibleCompanies()
       case "db:validate":
