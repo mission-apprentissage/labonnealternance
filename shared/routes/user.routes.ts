@@ -163,9 +163,7 @@ export const zUserRecruteurRoutes = {
         first_name: true,
         phone: true,
         email: true,
-      })
-        .partial()
-        .strict(),
+      }).strict(),
       response: {
         "200": z.union([ZUserRecruteur, z.null()]),
         "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
@@ -185,6 +183,7 @@ export const zUserRecruteurRoutes = {
       body: ZUserRecruteurWritable.partial(),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
+        "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
       },
       securityScheme: {
         auth: "cookie-session",
