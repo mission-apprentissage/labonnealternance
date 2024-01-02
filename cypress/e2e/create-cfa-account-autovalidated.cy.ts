@@ -11,8 +11,8 @@ describe("create-cfa-account-autovalidated", () => {
 
     cy.viewport(1254, 721)
 
-    cy.deleteMany({ cfa_delegated_siret: cfaSiret }, { collection: "recruiters" })
-    cy.deleteMany({ establishment_siret: cfaSiret }, { collection: "userrecruteurs" })
+    // cy.deleteMany({ cfa_delegated_siret: cfaSiret }, { collection: "recruiters" })
+    // cy.deleteMany({ establishment_siret: cfaSiret }, { collection: "userrecruteurs" })
 
     FlowCreationCfa.page1.goTo()
     FlowCreationCfa.page1.fillSiret(cfaSiret)
