@@ -27,5 +27,5 @@ function setCypressEnv() {
 
 setCypressEnv 2> /tmp/setCypressEnv.log
 export $(cat "$CYPRESS_ENV_FILE" | xargs)
-yarn e2e:headless 2> /tmp/cypressRun.log
+yarn e2e:headless > /tmp/cypressRun.log 2>&1
 
