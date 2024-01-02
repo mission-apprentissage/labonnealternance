@@ -15,6 +15,10 @@ on:
         description: platform type. Values are 'recette'|'preview'
         type: string
         required: true
+      branch:
+        description: branche git
+        type: string
+        required: true
   workflow_call:
     inputs:
       cypress_host:
@@ -47,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: "get-branch"
-        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName' || echo 'main')" >> $GITHUB_OUTPUT
+        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName' || echo '${{ inputs.branch || 'main' }}')" >> $GITHUB_OUTPUT
         env:
           REPO: ${{ github.repository }}
           PR_NO: ${{ github.event.issue.number }}
