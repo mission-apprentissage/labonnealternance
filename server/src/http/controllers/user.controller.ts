@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, getUserStatus, zRoutes } from "shared/index"
 
 import { stopSession } from "@/common/utils/session.service"
@@ -163,6 +163,8 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      const loggedUser = getUserFromRequest(req, zRoutes.get["/user/:userId"]).value
+
       let jobs: IJob[] = []
 
       if (!user) return res.status(400).send({})
@@ -175,6 +177,11 @@ export default (server: Server) => {
           throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
         }
         jobs = response.jobs
+      }
+
+      // remove status data if not authorized to see it.
+      if ([ENTREPRISE, CFA].includes(loggedUser.type)) {
+        user.status = []
       }
 
       return res.status(200).send({ ...user, jobs })

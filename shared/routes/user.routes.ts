@@ -127,7 +127,7 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "user:manage",
+        access: { some: ["user:manage", "recruiter:add_job"] },
         resources: {
           user: [{ _id: { type: "params", key: "userId" } }],
         },

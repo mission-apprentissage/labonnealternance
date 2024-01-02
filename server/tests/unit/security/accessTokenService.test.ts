@@ -1,12 +1,32 @@
+import { IUserRecruteur, zRoutes } from "shared"
+import { ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { z } from "shared/helpers/zodWithOpenApi"
-import { zRoutes } from "shared/routes"
 import { describe, expect, it } from "vitest"
 
 import { SchemaWithSecurity, generateAccessToken, generateScope, parseAccessToken } from "../../../src/security/accessTokenService"
+import { useMongo } from "../../utils/mongo.utils"
+import { createUserRecruteurTest } from "../../utils/user.utils"
 
 describe("accessTokenService", () => {
+  let userACTIVE: IUserRecruteur
+  let userPENDING: IUserRecruteur
+  let userDISABLED: IUserRecruteur
+  let userERROR: IUserRecruteur
+  let userCFA
+  let userLbaCompany
+
+  const mockData = async () => {
+    userACTIVE = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.VALIDE)
+    userPENDING = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.ATTENTE)
+    userDISABLED = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.DESACTIVE)
+    userERROR = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.ERROR)
+    userCFA = { type: "cfa" as const, email: "plop@gmail.com", siret: "12343154300012" }
+    userLbaCompany = { type: "lba-company", email: "plop@gmail.com", siret: "12343154300012" }
+  }
+
+  useMongo(mockData, "beforeAll")
+
   // called route
-  const user = { type: "cfa" as const, email: "plop@gmail.com", siret: "12343154300012" }
   const schema = {
     method: "post",
     path: "path/:id",
@@ -33,100 +53,105 @@ describe("accessTokenService", () => {
     },
   } as const
   const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
-  const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).toThrow()
+  const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).rejects.toThrow()
 
   describe("valid tokens", () => {
-    it("should generate a token valid for a specific route", () => {
-      const token = generateAccessToken(user, [
-        generateScope({
-          schema,
-          options,
-        }),
-      ])
-      expectTokenValid(token)
-    })
-    it("should generate a token valid for a specific param and allow all querystring", () => {
-      const token = generateAccessToken(user, [
-        generateScope({
-          schema,
-          options: {
-            params: {
-              id: "123456",
+    describe.each([
+      ["ACTIVE user", () => userACTIVE],
+      ["CFA", () => userCFA],
+      ["LBA COMPANY user", () => userLbaCompany],
+    ])("%s", (_name, getIdentity) => {
+      it("should generate a token valid for a specific route", async () => {
+        const token = generateAccessToken(getIdentity(), [
+          generateScope({
+            schema,
+            options,
+          }),
+        ])
+        await expectTokenValid(token)
+      })
+      it("should generate a token valid for a specific param and allow all querystring", async () => {
+        const token = generateAccessToken(getIdentity(), [
+          generateScope({
+            schema,
+            options: {
+              params: {
+                id: "123456",
+              },
+              querystring: {
+                establishment_siret: { allowAll: true },
+                skip: { allowAll: true },
+              },
             },
-            querystring: {
-              establishment_siret: { allowAll: true },
-              skip: { allowAll: true },
-            },
-          },
-        }),
-      ])
-      expectTokenValid(token)
-    })
-    it("should generate a token valid for a generic route", () => {
-      const token = generateAccessToken(user, [
-        generateScope({
-          schema,
-          options: "all",
-        }),
-      ])
-      expectTokenValid(token)
+          }),
+        ])
+        await expectTokenValid(token)
+      })
     })
   })
   describe("invalid tokens", () => {
-    it("should detect an invalid token that has a different param", () => {
-      const token = generateAccessToken(user, [
-        generateScope({
-          schema,
-          options: {
-            params: {
-              ...options.params,
-              id: "other param value",
+    describe.each([
+      ["ERROR user", () => userERROR],
+      ["PENDING user", () => userPENDING],
+      ["DISABLED user", () => userDISABLED],
+      ["CFA user", () => userCFA],
+      ["LBA COMPANY user", () => userLbaCompany],
+    ])("%s", (_name, getIdentity) => {
+      it("should detect an invalid token that has a different param", async () => {
+        const token = generateAccessToken(getIdentity(), [
+          generateScope({
+            schema,
+            options: {
+              params: {
+                ...options.params,
+                id: "other param value",
+              },
+              querystring: options.querystring,
             },
-            querystring: options.querystring,
-          },
-        }),
-      ])
-      expectTokenInvalid(token)
-    })
-    it("should detect an invalid token that has a different querystring", () => {
-      const token = generateAccessToken(user, [
-        generateScope({
-          schema,
-          options: {
-            params: options.params,
-            querystring: {
-              ...options.querystring,
-              establishment_siret: "not the right siret",
+          }),
+        ])
+        await expectTokenInvalid(token)
+      })
+      it("should detect an invalid token that has a different querystring", async () => {
+        const token = generateAccessToken(getIdentity(), [
+          generateScope({
+            schema,
+            options: {
+              params: options.params,
+              querystring: {
+                ...options.querystring,
+                establishment_siret: "not the right siret",
+              },
             },
-          },
-        }),
-      ])
-      expectTokenInvalid(token)
-    })
-    it("should detect an invalid token that is for a different route", () => {
-      const token = generateAccessToken(user, [
-        generateScope({
-          schema: zRoutes.post["/admin/users"],
-          options: "all",
-        }),
-      ])
-      expectTokenInvalid(token)
-    })
-    it("should detect an invalid token that has an allowAll but not for all querystrings", () => {
-      const token = generateAccessToken(user, [
-        generateScope({
-          schema,
-          options: {
-            params: options.params,
-            querystring: {
-              ...options.querystring,
-              establishment_siret: "not the right siret",
-              skip: { allowAll: true },
+          }),
+        ])
+        await expectTokenInvalid(token)
+      })
+      it("should detect an invalid token that is for a different route", async () => {
+        const token = generateAccessToken(getIdentity(), [
+          generateScope({
+            schema: zRoutes.post["/admin/users"],
+            options: "all",
+          }),
+        ])
+        await expectTokenInvalid(token)
+      })
+      it("should detect an invalid token that has an allowAll but not for all querystrings", async () => {
+        const token = generateAccessToken(getIdentity(), [
+          generateScope({
+            schema,
+            options: {
+              params: options.params,
+              querystring: {
+                ...options.querystring,
+                establishment_siret: "not the right siret",
+                skip: { allowAll: true },
+              },
             },
-          },
-        }),
-      ])
-      expectTokenInvalid(token)
+          }),
+        ])
+        await expectTokenInvalid(token)
+      })
     })
   })
 })
