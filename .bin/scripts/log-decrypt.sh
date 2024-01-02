@@ -3,6 +3,20 @@
 set -euo pipefail
 
 if [ -z "${1:-}" ]; then
+  read -p "Veuillez renseigner l'ID du run: " RUN_ID
+else
+  readonly RUN_ID="$1"
+  shift
+fi
+
+if [ -z "${1:-}" ]; then
+  read -p "Veuillez renseigner le nom de l'archive log: " LOG_NAME
+else
+  readonly LOG_NAME="$1"
+  shift
+fi
+
+if [ -z "${1:-}" ]; then
   read -p "Veuillez renseigner le fichier log à déchiffrer: " LOG_FILE
 else
   readonly LOG_FILE="$1"
@@ -25,6 +39,7 @@ trap delete_cleartext EXIT
 
 
 rm -f $LOG_FILE
+gh run download "$RUN_ID" -n $LOG_NAME -D /tmp
 
 ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 

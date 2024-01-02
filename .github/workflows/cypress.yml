@@ -107,6 +107,10 @@ jobs:
           name: cypress-error-logs
           path: /tmp/cypressRun.log.gpg
 
+      - name: Debug command when failed
+        if: failure()
+        run: echo 'You can get error logs using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-error-logs /tmp/cypressRun.log.gpg`' >> $GITHUB_STEP_SUMMARY
+
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2
         if: ${{ failure() }} && ${{ inputs.environment }} == 'recette'
