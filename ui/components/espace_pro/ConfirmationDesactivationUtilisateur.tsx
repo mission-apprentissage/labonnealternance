@@ -21,7 +21,7 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { AUTHTYPE } from "../../common/contants"
 import useUserHistoryUpdate from "../../common/hooks/useUserHistoryUpdate"
 import { Close } from "../../theme/components/icons"
-import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from "../../utils/api"
+import { archiveDelegatedFormulaire, archiveFormulaire, updateEntrepriseAdmin } from "../../utils/api"
 
 export const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
@@ -51,7 +51,7 @@ export const ConfirmationDesactivationUtilisateur = ({
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
         if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
-          await Promise.all([updateEntreprise(_id, establishment_id, { opco: "inconnu" }), reassignUserToAdmin()])
+          await Promise.all([updateEntrepriseAdmin(_id, establishment_id, { opco: "inconnu" }), reassignUserToAdmin()])
         } else {
           await Promise.all([archiveFormulaire(establishment_id), disableUser()])
         }
