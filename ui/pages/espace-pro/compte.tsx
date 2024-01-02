@@ -43,24 +43,53 @@ function Compte() {
   }
 
   const { data, isLoading } = useQuery("user", () => getUser(user._id.toString()))
-
-  const userMutation = useMutation(({ userId, establishment_id, values }: any) => updateEntreprise(userId, establishment_id, values), {
-    onSuccess: () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const userMutation = useMutation(({ userId, establishment_id, values, email, setFieldError }: any) => updateEntreprise(userId, establishment_id, values), {
+    onSuccess: (_, variables) => {
       client.invalidateQueries("user")
+      toast({
+        title: "Mise à jour enregistrée avec succès",
+        position: "top-right",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      })
+
+      if (variables.email !== variables.values.email) {
+        ModificationEmailPopup.onOpen()
+      }
+    },
+    onError: (_, variables) => {
+      variables.setFieldError("email", "L'adresse mail est déjà associée à un compte La bonne alternance.")
     },
   })
 
   const partenaireMutation = useMutation(
-    ({ userId, values }: any) =>
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ({ userId, values, email, setFieldError }: any) =>
       apiPut("/etablissement/:id", {
         params: {
           id: userId,
         },
-        body: values,
+        body: { ...values, _id: user._id.toString() },
       }),
     {
-      onSuccess: () => {
+      onSuccess: (_, variables) => {
         client.invalidateQueries("user")
+        toast({
+          title: "Mise à jour enregistrée avec succès",
+          position: "top-right",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        })
+
+        if (variables.email !== variables.values.email) {
+          ModificationEmailPopup.onOpen()
+        }
+      },
+      onError: (error: any, variables) => {
+        variables.setFieldError("email", error.message)
       },
     }
   )
@@ -106,23 +135,12 @@ function Compte() {
                 .required("champ obligatoire"),
               email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
             })}
-            onSubmit={async (values, { setSubmitting }) => {
+            onSubmit={async (values, { setSubmitting, setFieldError }) => {
               setSubmitting(true)
               if (user.type === AUTHTYPE.ENTREPRISE) {
-                // @ts-expect-error: TODO
-                userMutation.mutate({ userId: data._id, establishment_id: auth.establishment_id, values })
+                userMutation.mutate({ userId: data._id, establishment_id: user.establishment_id, values, email: data.email, setFieldError })
               } else {
-                partenaireMutation.mutate({ userId: data._id, values })
-              }
-              toast({
-                title: "Mise à jour enregistrée avec succès",
-                position: "top-right",
-                status: "success",
-                duration: 2000,
-                isClosable: true,
-              })
-              if (data.data.email !== values.email) {
-                ModificationEmailPopup.onOpen()
+                partenaireMutation.mutate({ userId: data._id, values, email: data.email, setFieldError })
               }
               setSubmitting(false)
             }}
