@@ -31,8 +31,7 @@ export const searchForJobsFunction = async ({
   try {
     const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
     const romes = getRomeFromParameters({ values, widgetParameters })
-    // TODO
-    // const rncp = romes ? "" : getRncpFromParameters({ widgetParameters }) // on ne transmet pas romes ET rncp
+    const rncp = romes ? "" : values?.job?.rncp
 
     const params: {
       romes?: string
@@ -46,7 +45,7 @@ export const searchForJobsFunction = async ({
       diploma?: string
     } = {
       romes,
-      // rncp,
+      rncp,
       opco: opcoFilter,
       opcoUrl: opcoUrlFilter,
     }

@@ -89,7 +89,7 @@ export const extensions = {
         URL: z.string().nullish(),
         list_id: z.array(z.number()).nullish(),
         sender_email: z.string().nullish(),
-        is_returnpath: z.string().nullish(),
+        is_returnpath: z.boolean().nullish(),
         key: z.string().nullish(),
         content: z.array(z.string()).nullish(),
       })
