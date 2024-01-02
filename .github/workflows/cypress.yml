@@ -15,8 +15,8 @@ on:
         description: platform type. Values are 'recette'|'preview'
         type: string
         required: true
-      branch:
-        description: branche git
+      pr_no:
+        description: pull request number
         type: string
         required: true
   workflow_call:
@@ -50,11 +50,14 @@ jobs:
       group: "cypress-${{ github.workflow }}-${{ github.ref }}"
     runs-on: ubuntu-latest
     steps:
+      - id: "get-pr-no"
+        run: echo "PR_NO=${{ github.event.issue.number || inputs.pr_no }}" >> $GITHUB_OUTPUT
+
       - id: "get-branch"
-        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName' || echo '${{ inputs.branch || 'main' }}')" >> $GITHUB_OUTPUT
+        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName' || echo 'main')" >> $GITHUB_OUTPUT
         env:
           REPO: ${{ github.repository }}
-          PR_NO: ${{ github.event.issue.number }}
+          PR_NO: ${{ steps.get-pr-no.outputs.PR_NO }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout project
@@ -89,7 +92,7 @@ jobs:
           CYPRESS_ui: ${{ inputs.cypress_host }}
           CYPRESS_server: ${{ inputs.cypress_host }}
           CYPRESS_smtp: ${{ inputs.smtp_host }}
-          CYPRESS_MONGODB_DATABASE: preview_${{ github.event.issue.number }}
+          CYPRESS_MONGODB_DATABASE: preview_${{ steps.get-pr-no.outputs.PR_NO }}
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2
