@@ -11,6 +11,10 @@ on:
         description: host name of the mailpit
         type: string
         required: true
+      environment:
+        description: platform type. Values are 'recette'|'preview'
+        type: string
+        required: true
   workflow_call:
     inputs:
       cypress_host:
