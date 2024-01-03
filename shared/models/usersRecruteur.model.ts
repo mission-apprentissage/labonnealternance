@@ -53,7 +53,7 @@ export const ZUserRecruteurWritable = z
     last_connection: z.date().nullish().describe("Date de dernière connexion"),
     origin: z.string().nullish().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi"),
     status: z.array(ZUserStatusValidation).describe("Tableau des modifications de statut de l'utilisateur"),
-    is_qualiopi: z.boolean().describe("Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)"),
+    is_qualiopi: z.boolean().describe("Statut qualiopi d'un CFA (toujours à true pour les CFA, false pour les entreprises)"),
   })
   .strict()
 
