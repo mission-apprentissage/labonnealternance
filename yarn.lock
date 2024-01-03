@@ -13846,7 +13846,6 @@ __metadata:
     "@semantic-release/changelog": ^6.0.2
     "@semantic-release/exec": ^6.0.3
     "@semantic-release/git": ^10.0.1
-    "@types/mongodb": ^3.5.27
     "@types/node": 20.7.1
     "@typescript-eslint/eslint-plugin": ^6.7.2
     "@typescript-eslint/parser": ^6.7.2
@@ -13865,8 +13864,6 @@ __metadata:
     eslint-plugin-unused-imports: ^3.0.0
     husky: ^8.0.3
     lint-staged: ^14.0.1
-    mongodb: ^3.7.4
-    mongoose: ^5.13.20
     node-talisman: ^1.29.10
     prettier: ^3.0.3
     semantic-release: ^21.1.1

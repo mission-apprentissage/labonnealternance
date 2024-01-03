@@ -1,5 +1,3 @@
-import { addMongoPluginCommands } from "../plugin/mongoPluginCommands"
-
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -34,5 +32,3 @@ import { addMongoPluginCommands } from "../plugin/mongoPluginCommands"
         }
     );
 });*/
-
-addMongoPluginCommands()
