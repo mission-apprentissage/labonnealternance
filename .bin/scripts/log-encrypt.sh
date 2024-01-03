@@ -3,9 +3,9 @@
 set -euo pipefail
 
 if [ -z "${1:-}" ]; then
-  read -p "Veuillez renseigner le fichier log à encrypter: " LOG_FILE
+  read -p "Veuillez renseigner le fichier à encrypter: " TO_ENCRYPT_FILE
 else
-  readonly LOG_FILE="$1"
+  readonly TO_ENCRYPT_FILE="$1"
   shift
 fi
 
@@ -25,8 +25,6 @@ trap delete_cleartext EXIT
 
 ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 
-ls -la cypress/screenshots/*
-
 # Make sur the file exists
-touch $LOG_FILE
-gpg  -c --cipher-algo twofish --batch --passphrase-file "$PASSPHRASE" -o $LOG_FILE.gpg $LOG_FILE
+touch $TO_ENCRYPT_FILE
+gpg  -c --cipher-algo twofish --batch --passphrase-file "$PASSPHRASE" -o $TO_ENCRYPT_FILE.gpg $TO_ENCRYPT_FILE

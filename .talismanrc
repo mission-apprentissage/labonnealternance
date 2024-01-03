@@ -12,7 +12,7 @@ fileignoreconfig:
 - filename: .bin/scripts/setup-local-env.sh
   checksum: 47323f5183f73a794449666a816d5b797c7a5ed4c7ad219c3c885a57e2fcf1e9
 - filename: .github/workflows/cypress.yml
-  checksum: adce05a47fde430b32f62d0ae12c036a814f7515400cb92e0ba3d00b5e2168dc
+  checksum: 06cc6155c40e9fd9b1a54502a5b79b30f07314873a82543eff38e19054db44b9
 - filename: .github/workflows/deploy_preview.yml
   checksum: f54398af24ac144eafc27e69d18c78b1844e0a23b317bd79748ac6d3412ba0ef
 - filename: .github/workflows/release.yml

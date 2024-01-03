@@ -104,12 +104,31 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v3
         with:
-          name: cypress-error-logs
+          name: cypress-on-error
           path: /tmp/cypressRun.log.gpg
 
-      - name: Debug command when failed
+      - name: Encrypt screenshots
+        run: |
+          zip -r /tmp/screenshots.zip cypress/screenshots
+          .bin/mna-lba log:encrypt /tmp/screenshots.zip
         if: failure()
-        run: echo 'You can get error logs using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-error-logs /tmp/cypressRun.log.gpg`' >> $GITHUB_STEP_SUMMARY
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-on-error
+          path: /tmp/screenshots.zip.gpg
+
+      - name: Decrypt log command when failed
+        if: failure()
+        run: echo 'You can get error logs using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-on-error /tmp/cypressRun.log.gpg`' >> $GITHUB_STEP_SUMMARY
+
+      - name: Decrypt screenshots command when failed
+        if: failure()
+        run: echo 'You can get screenshots using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-on-error /tmp/screenshots.zip.gpg > screenshots.zip`' >> $GITHUB_STEP_SUMMARY
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2
