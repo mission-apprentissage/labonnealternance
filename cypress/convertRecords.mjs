@@ -1,8 +1,7 @@
-import { cypressStringifyChromeRecording } from "@cypress/chrome-recorder"
-
 import { readFileSync } from "node:fs"
-
 import { readdir, writeFile } from "node:fs/promises"
+
+import { cypressStringifyChromeRecording } from "@cypress/chrome-recorder"
 
 const convertRecords = async (dir_path) => {
   try {
@@ -21,3 +20,5 @@ const convertRecords = async (dir_path) => {
 }
 
 await convertRecords("ui")
+
+// test
