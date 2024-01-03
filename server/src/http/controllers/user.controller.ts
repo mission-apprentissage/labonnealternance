@@ -11,7 +11,7 @@ import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
 import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaire, reactivateRecruiter } from "../../services/formulaire.service"
 import mailer from "../../services/mailer.service"
-import { getUserAndRecruitersDataForOpcoUser } from "../../services/user.service"
+import { getUserAndRecruitersDataForOpcoUser, getValidatorIdentityFromStatus } from "../../services/user.service"
 import {
   createUser,
   getActiveUsers,
@@ -181,9 +181,11 @@ export default (server: Server) => {
         jobs = response.jobs
       }
 
-      // remove status data if not authorized to see it.
+      // remove status data if not authorized to see it, else get identity
       if ([ENTREPRISE, CFA].includes(loggedUser.type)) {
         user.status = []
+      } else {
+        user.status = await getValidatorIdentityFromStatus(user.status)
       }
 
       return res.status(200).send({ ...user, jobs })
