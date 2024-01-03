@@ -27,8 +27,10 @@ export const smtpClient = {
         headers,
       })
       .then((messagesResponse: Cypress.Response<MessagesResponse>) => {
-        const messageOpt = messagesResponse.body.messages.find((message) => message.To[0].Address === to.toLowerCase() && message.Subject.includes(includedSubject))
+        const { messages } = messagesResponse.body
+        const messageOpt = messages.find((message) => message.To[0].Address === to.toLowerCase() && message.Subject.includes(includedSubject))
         if (!messageOpt) {
+          console.error(messages)
           throw new Error(`could not find mail sent to ${to} with subject=${includedSubject}`)
         }
         return cy.request({

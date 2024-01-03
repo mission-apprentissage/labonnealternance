@@ -1,5 +1,5 @@
 export const FlowCreationCfa = {
-  page1: {
+  siretPage: {
     goTo() {
       cy.visit(`${Cypress.env("ui")}/espace-pro/creation/cfa`)
     },
@@ -11,7 +11,7 @@ export const FlowCreationCfa = {
       cy.get("button[type='submit']").click({ timeout: 10000 })
     },
   },
-  page2: {
+  personalInfosPage: {
     fillForm({ email, firstName, lastName, phone }: { firstName: string; lastName: string; email: string; phone: string }) {
       cy.get("input[name='last_name']").click()
       cy.get("input[name='last_name']").type(lastName)
@@ -24,6 +24,11 @@ export const FlowCreationCfa = {
     },
     submit() {
       cy.get("button[type='submit']").click()
+    },
+  },
+  emailSentPage: {
+    verify() {
+      cy.get("[data-testid='validation-email-title']").should("exist")
     },
   },
 }

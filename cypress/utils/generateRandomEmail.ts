@@ -1,4 +1,4 @@
-export const generateRandomEmail = (prefix, suffix, length) => {
+export const generateRandomString = (prefix, suffix, length) => {
   const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
   let randomString = ""
 

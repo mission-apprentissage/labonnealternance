@@ -1,11 +1,12 @@
 import { smtpClient } from "../api/smtpClient"
 import { FlowCreationCfa } from "../pages/FlowCreationCfa"
 import { LoginBar } from "../pages/LoginBar"
+import { generateRandomString } from "../utils/generateRandomEmail"
 
 describe("create-cfa-account-autovalidated", () => {
   it("tests create-cfa-account-autovalidated", () => {
-    const cfaEmail = Cypress.env("CFA_AUTOVALIDE_EMAIL") || Cypress.env("cfa")?.autovalide?.email
-    const cfaSiret = Cypress.env("CFA_AUTOVALIDE_SIRET") || Cypress.env("cfa")?.autovalide?.siret
+    const cfaEmail = generateRandomString("", `@${Cypress.env("CFA_AUTOVALIDE_EMAIL_DOMAIN")}`, 10)
+    const cfaSiret = Cypress.env("CFA_AUTOVALIDE_SIRET")
     const firstName = "John"
     const lastName = "Doe"
 
@@ -14,17 +15,18 @@ describe("create-cfa-account-autovalidated", () => {
     // cy.deleteMany({ cfa_delegated_siret: cfaSiret }, { collection: "recruiters" })
     // cy.deleteMany({ establishment_siret: cfaSiret }, { collection: "userrecruteurs" })
 
-    FlowCreationCfa.page1.goTo()
-    FlowCreationCfa.page1.fillSiret(cfaSiret)
-    FlowCreationCfa.page1.submit()
+    FlowCreationCfa.siretPage.goTo()
+    FlowCreationCfa.siretPage.fillSiret(cfaSiret)
+    FlowCreationCfa.siretPage.submit()
 
-    FlowCreationCfa.page2.fillForm({
+    FlowCreationCfa.personalInfosPage.fillForm({
       firstName,
       lastName,
       phone: "0700000000",
       email: cfaEmail,
     })
-    FlowCreationCfa.page2.submit()
+    FlowCreationCfa.personalInfosPage.submit()
+    FlowCreationCfa.emailSentPage.verify()
 
     smtpClient.getMail(cfaEmail, "Confirmez votre adresse mail").then((emailContent) => {
       const validationUrl = smtpClient.findUrlInBrackets(`${Cypress.env("ui")}/espace-pro/authentification/validation/*?token=*`, emailContent)

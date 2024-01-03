@@ -1,5 +1,5 @@
 import { smtpClient } from "../api/smtpClient"
-import { generateRandomEmail } from "../utils/generateRandomEmail"
+import { generateRandomString } from "../utils/generateRandomEmail"
 
 describe("send-job-application", () => {
   it("tests send-job-application on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
@@ -10,7 +10,7 @@ describe("send-job-application", () => {
     cy.intercept("GET", Cypress.env("server") + "/api/v1/jobs?*").as("submitJobCall")
     cy.intercept("POST", Cypress.env("server") + "/api/v1/application").as("submitApplication")
 
-    const randomEmail = generateRandomEmail("test-auto-", "@nexistepas.fr", 10)
+    const randomEmail = generateRandomString("test-auto-", "@nexistepas.fr", 10)
     cy.viewport(1254, 704)
     cy.visit(Cypress.env("ui") + "?displayMap=false")
     cy.get("#headerFormJobField-input").click()
