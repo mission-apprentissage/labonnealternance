@@ -21,6 +21,7 @@ import {
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { IUserStatusValidation } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
@@ -132,7 +133,7 @@ function DetailEntreprise() {
     return <LoadingEmptySpace />
   }
 
-  const [lastUserState] = userRecruteur.status.slice(-1)
+  const lastUserState: IUserStatusValidation = userRecruteur.status.at(-1)
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
 
   return (

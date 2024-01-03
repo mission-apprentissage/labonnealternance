@@ -140,4 +140,14 @@ const getUserAndRecruitersDataForOpcoUser = async (opco: string): Promise<TRetur
   return results
 }
 
-export { createUser, find, findOne, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, update }
+const getValidatorIdentityFromStatus = async (status: IUserRecruteur["status"]) => {
+  return await Promise.all(
+    status.map(async (state) => {
+      if (state.user === "SERVEUR") return state
+      const user = await UserRecruteur.findById(state.user).select({ first_name: 1, last_name: 1, _id: 0 }).lean()
+      return { ...state, user: `${user?.first_name} ${user?.last_name}` }
+    })
+  )
+}
+
+export { createUser, find, findOne, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, getValidatorIdentityFromStatus, update }

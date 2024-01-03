@@ -1,4 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
+import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
@@ -94,9 +95,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }), //  "message": "Unrecognized key(s) in object: '__v'"
+        "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -199,12 +198,9 @@ export const zUserRecruteurRoutes = {
         validation_type: true,
         status: true,
         reason: true,
-        user: true,
       }),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "200": ZUserRecruteur,
+        "200": ZUserRecruteur,
       },
       securityScheme: {
         auth: "cookie-session",

@@ -11,7 +11,7 @@ import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
 import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaire, reactivateRecruiter } from "../../services/formulaire.service"
 import mailer from "../../services/mailer.service"
-import { getUserAndRecruitersDataForOpcoUser } from "../../services/user.service"
+import { getUserAndRecruitersDataForOpcoUser, getValidatorIdentityFromStatus } from "../../services/user.service"
 import {
   createUser,
   getActiveUsers,
@@ -169,7 +169,7 @@ export default (server: Server) => {
 
       let jobs: IJob[] = []
 
-      if (!user) return res.status(400).send({})
+      if (!user) throw Boom.badRequest()
 
       if (user.type === ENTREPRISE) {
         const response = await Recruiter.findOne({ establishment_id: user.establishment_id as string })
@@ -181,9 +181,11 @@ export default (server: Server) => {
         jobs = response.jobs
       }
 
-      // remove status data if not authorized to see it.
+      // remove status data if not authorized to see it, else get identity
       if ([ENTREPRISE, CFA].includes(loggedUser.type)) {
         user.status = []
+      } else {
+        user.status = await getValidatorIdentityFromStatus(user.status)
       }
 
       return res.status(200).send({ ...user, jobs })
@@ -240,9 +242,10 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const history = req.body
-      const user = await updateUserValidationHistory(req.params.userId, history)
+      const validator = getUserFromRequest(req, zRoutes.put["/user/:userId/history"]).value
+      const user = await updateUserValidationHistory(req.params.userId, { ...history, user: validator._id.toString() })
 
-      if (!user) return res.status(400).send({})
+      if (!user) throw Boom.badRequest()
 
       const { email, last_name, first_name } = user
 
@@ -293,7 +296,7 @@ export default (server: Server) => {
           // le recruiter étant archivé on se contente de le rendre de nouveau Actif
           await reactivateRecruiter(establishment_id)
         } else {
-          // le compte se trouve validé et on procède à l'activation de la première offre et à la notification aux CFAs
+          // le compte se trouve validé, on procède à l'activation de la première offre et à la notification aux CFAs
           if (userFormulaire?.jobs?.length) {
             await activateEntrepriseRecruiterForTheFirstTime(userFormulaire)
           }
