@@ -25,6 +25,8 @@ trap delete_cleartext EXIT
 
 ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 
+ls -la cypress/screenshots/*
+
 # Make sur the file exists
 touch $LOG_FILE
 gpg  -c --cipher-algo twofish --batch --passphrase-file "$PASSPHRASE" -o $LOG_FILE.gpg $LOG_FILE
