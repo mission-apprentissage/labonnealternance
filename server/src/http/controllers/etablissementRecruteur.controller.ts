@@ -268,7 +268,7 @@ export default (server: Server) => {
       const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
 
       // Validate email
-      const userRecruteur = await validateEtablissementEmail(user.identity.email)
+      const userRecruteur = await validateEtablissementEmail(user.identity.email.toLocaleLowerCase())
 
       if (!userRecruteur) {
         throw Boom.badRequest("La validation de l'adresse mail à échoué. Merci de contacter le support La bonne alternance.")
