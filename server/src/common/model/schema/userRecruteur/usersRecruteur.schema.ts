@@ -123,8 +123,7 @@ export const nonPersonalInfosUserRecruteurSchema = new Schema({
   },
   is_qualiopi: {
     type: Boolean,
-    default: true,
-    description: "Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)",
+    description: "Statut qualiopi d'un CFA (toujours à true pour les type CFA, false pour les entreprises)",
   },
 })
 
