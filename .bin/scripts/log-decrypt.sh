@@ -16,13 +16,6 @@ else
   shift
 fi
 
-if [ -z "${1:-}" ]; then
-  read -p "Veuillez renseigner le fichier log à déchiffrer: " LOG_FILE
-else
-  readonly LOG_FILE="$1"
-  shift
-fi
-
 if [[ -z "${ANSIBLE_VAULT_PASSWORD_FILE:-}" ]]; then
   ansible_extra_opts+=("--vault-password-file" "${SCRIPT_DIR}/get-vault-password-client.sh")
 else
@@ -38,9 +31,15 @@ delete_cleartext() {
 trap delete_cleartext EXIT
 
 
-rm -f $LOG_FILE
-gh run download "$RUN_ID" -n $LOG_NAME -D /tmp
+rm -rf /tmp/decrypt
+gh run download "$RUN_ID" -n $LOG_NAME -D /tmp/decrypt
 
 ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 
-gpg -d --batch --passphrase-file "$PASSPHRASE" $LOG_FILE
+mkdir -p ./tmp
+
+for filename in $(ls /tmp/decrypt) ; do
+  targetFile="./tmp/${filename%.gpg}"
+  echo "decoding /tmp/decrypt/$filename into $targetFile"
+  gpg -d --batch --passphrase-file "$PASSPHRASE" /tmp/decrypt/$filename > $targetFile
+done

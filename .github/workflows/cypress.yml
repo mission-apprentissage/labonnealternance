@@ -124,11 +124,7 @@ jobs:
 
       - name: Decrypt log command when failed
         if: failure()
-        run: echo 'You can get error logs using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-on-error /tmp/cypressRun.log.gpg`' >> $GITHUB_STEP_SUMMARY
-
-      - name: Decrypt screenshots command when failed
-        if: failure()
-        run: echo 'You can get screenshots using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-on-error /tmp/screenshots.zip.gpg > screenshots.zip`' >> $GITHUB_STEP_SUMMARY
+        run: echo 'You can get error files using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-on-error`' >> $GITHUB_STEP_SUMMARY
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2

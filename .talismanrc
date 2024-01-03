@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .bin/scripts/log-decrypt.sh
-  checksum: b08bf639f9887d7687a2377d026325bc10689697bb85746264f6f85eb84f9174
+  checksum: 7e0d7a04e6d4de4b87fbad65253ff513254290b6200a681d045f12aaa42bc5da
 - filename: .bin/scripts/log-encrypt.sh
   checksum: f7fec85d200d324b6d1f952aa43eec00d3286933eac794cfbde7f208d61eadd1
 - filename: .bin/scripts/seed-apply.sh

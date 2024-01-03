@@ -169,3 +169,5 @@ cypress.env.json
 cypress.env
 
 assets/*
+tmp
+
