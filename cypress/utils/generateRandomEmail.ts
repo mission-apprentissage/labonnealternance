@@ -1,4 +1,4 @@
-export const generateRandomString = (prefix, suffix, length) => {
+export const generateRandomString = (length: number = 10) => {
   const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
   let randomString = ""
 
@@ -7,5 +7,5 @@ export const generateRandomString = (prefix, suffix, length) => {
     randomString += charset.charAt(randomIndex)
   }
 
-  return `${prefix}${randomString}${suffix}`
+  return randomString
 }

@@ -11,7 +11,7 @@ describe("send-job-application", () => {
     cy.intercept("GET", Cypress.env("server") + "/api/v1/jobs?*").as("submitJobCall")
     cy.intercept("POST", Cypress.env("server") + "/api/v1/application").as("submitApplication")
 
-    const randomEmail = generateRandomString("test-auto-", "@nexistepas.fr", 10)
+    const randomEmail = `test-auto-${generateRandomString()}@nexistepas.fr`
     cy.viewport(1254, 704)
     SearchForm.goToHome()
     SearchForm.fillSearch({
