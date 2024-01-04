@@ -1,8 +1,4 @@
 fileignoreconfig:
-- filename: .bin/scripts/log-decrypt.sh
-  checksum: 7e0d7a04e6d4de4b87fbad65253ff513254290b6200a681d045f12aaa42bc5da
-- filename: .bin/scripts/log-encrypt.sh
-  checksum: f7fec85d200d324b6d1f952aa43eec00d3286933eac794cfbde7f208d61eadd1
 - filename: .bin/scripts/seed-apply.sh
   checksum: 49afe4f96fa13b38cf799d931085437d540b4c62eb05b2f15bc12cd3fb43268b
 - filename: .bin/scripts/seed-update.sh
@@ -12,7 +8,7 @@ fileignoreconfig:
 - filename: .bin/scripts/setup-local-env.sh
   checksum: 47323f5183f73a794449666a816d5b797c7a5ed4c7ad219c3c885a57e2fcf1e9
 - filename: .github/workflows/cypress.yml
-  checksum: 06cc6155c40e9fd9b1a54502a5b79b30f07314873a82543eff38e19054db44b9
+  checksum: 39f98fb68fdebf6a36959706adb43a8219a4b7781ac35329f957dc1cfa8b6de0
 - filename: .github/workflows/deploy_preview.yml
   checksum: f54398af24ac144eafc27e69d18c78b1844e0a23b317bd79748ac6d3412ba0ef
 - filename: .github/workflows/release.yml
@@ -22,25 +18,17 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 9b807b0f3e971992317b53f00bcf2787dd596673b2db049749e5db59f00c708f
+  checksum: ff2667fc1c28f77a036260f684d5ed1b9e7e5e700eeee55b5aeaad117381ec92
 - filename: .infra/files/scripts/seed.sh
   checksum: ddafc86248e8fd5f7c24ca5a62be703083f7704395f17fb7b43bc8e44227d561
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: ef027e8ac1eb29407834eeadaa1e93df2f59aa75920b42eac4b9a51602fffea2
-- filename: cypress.local.env.json
-  checksum: a639266c2bf3a91aa35b45f09dfaffcdadc64b78a81723c98fe2adb60527bcec
-- filename: cypress/e2e/create-cfa-account-autovalidated.cy.ts
-  checksum: 9bcbb66c9d636350f718cfc401d08005fc6f371ea2f64b24dff7fc7911143053
-- filename: cypress/records/create-cfa-account-autovalidated.json
-  checksum: d035086e44ebe3588e2a491189a8ba45fc9001d7477f536caa9e5ba00d5872a4
-- filename: cypress/utils/generateRandomEmail.ts
-  checksum: 5dbf91e38257577b478ecaa42eaeb00db013ec2137f7278943c5698a72b225e2
+  checksum: 5075eab036fecc87ca01087fac712e175b4b0e56fdedc0b41061312e51f81851
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 403ca297bf064cc81749ca1568a7c9984684db1a55065c448676194a81a44777
+  checksum: 5da667c842b6afec68a287fa5b2f203c0fd369d417b2172c290e7f932890603f
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts
@@ -70,7 +58,7 @@ fileignoreconfig:
 - filename: server/tests/unit/external/zod.test.ts
   checksum: f77ba0fa55f1cbd5b708fdc9f0d5b229e84a1de6c433186d96aa94a7f6388f0c
 - filename: server/tests/unit/security/accessTokenService.test.ts
-  checksum: 93088af55c76063f108e38800fcbb1e2237ca797d4dd5bee6ceb763f74bd2d4e
+  checksum: 9c157ea55171c74fa50b493577f1529f5c5c005c8137b390c9dfa719f6ba87ba
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: server/tests/unit/util.test.ts
