@@ -31,9 +31,7 @@ const transformCompany = ({
     email?: string
     iv?: string
     phone?: string | null
-  } = {
-    ...encryptMailWithIV({ value: company.email !== "null" ? company.email : "" }),
-  }
+  } = encryptMailWithIV({ value: company.email !== "null" ? company.email : "" })
 
   if (contactAllowedOrigin) {
     contact.phone = company.phone
