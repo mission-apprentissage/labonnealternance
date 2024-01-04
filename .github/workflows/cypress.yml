@@ -126,12 +126,22 @@ jobs:
         if: failure()
         run: echo 'You can get error files using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-on-error`' >> $GITHUB_STEP_SUMMARY
 
-      - name: Comment PR Preview
-        if: steps.get-pr-no.outputs.PR_NO
+      - name: Comment PR Preview failure
+        if: steps.get-pr-no.outputs.PR_NO && !failure()
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            Cypress tests : ${{ failure() ? 'FAILURE' : 'OK' }}
+            Cypress tests : OK
+          comment_tag: cypress-tests
+          mode: recreate
+          pr_number: ${{ steps.get-pr-no.outputs.PR_NO }}
+
+      - name: Comment PR Preview failure
+        if: steps.get-pr-no.outputs.PR_NO && failure()
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Cypress tests : FAILURE
           comment_tag: cypress-tests
           mode: recreate
           pr_number: ${{ steps.get-pr-no.outputs.PR_NO }}
