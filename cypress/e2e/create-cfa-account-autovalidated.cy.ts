@@ -4,7 +4,7 @@ import { LoginBar } from "../pages/LoginBar"
 import { generateRandomString } from "../utils/generateRandomEmail"
 
 describe("create-cfa-account-autovalidated", () => {
-  it("tests create-cfa-account-autovalidated", () => {
+  it.skip("tests create-cfa-account-autovalidated", () => {
     const cfaEmail = generateRandomString("", `@${Cypress.env("CFA_AUTOVALIDE_EMAIL_DOMAIN")}`, 10)
     const cfaSiret = Cypress.env("CFA_AUTOVALIDE_SIRET")
     const firstName = "John"

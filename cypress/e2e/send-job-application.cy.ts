@@ -1,4 +1,5 @@
 import { smtpClient } from "../api/smtpClient"
+import { SearchForm } from "../pages/SearchForm"
 import { generateRandomString } from "../utils/generateRandomEmail"
 
 describe("send-job-application", () => {
@@ -12,16 +13,13 @@ describe("send-job-application", () => {
 
     const randomEmail = generateRandomString("test-auto-", "@nexistepas.fr", 10)
     cy.viewport(1254, 704)
-    cy.visit(Cypress.env("ui") + "?displayMap=false")
-    cy.get("#headerFormJobField-input").click()
-    cy.get("#headerFormJobField-input").type("gestion inf")
-    cy.get("#headerFormJobField-item-0").click()
-    cy.get("#headerFormJobField-input").should("have.value", "Gestion de projets informatiques")
-    cy.get("#headerFormPlaceField-input").click()
-    cy.get("#headerFormPlaceField-input").type("lill")
-    cy.get("#headerFormPlaceField-item-0").click()
-    cy.get("[data-testid='widget-form'] select[data-testid='locationRadius']").select("60")
-    cy.get("[data-testid='widget-form'] button").click()
+    SearchForm.goToHome()
+    SearchForm.fillSearch({
+      metier: "Gestion de projets informatiques",
+      location: "Lille 59160",
+      distance: 60,
+    })
+    SearchForm.submit()
 
     cy.wait("@submitJobCall").then(() => {
       cy.get(".resultCard.matcha").first().click()
