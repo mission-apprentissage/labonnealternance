@@ -105,7 +105,7 @@ const config = {
   franceCompetences: {
     baseUrl: "https://api-preprod.francecompetences.fr",
     apiKey: env.get("LBA_FRANCE_COMPETENCE_API_KEY").required().asString(),
-    bearerToken: env.get("LBA_sFRANCE_COMPETENCE_TOKEN").required().asString(),
+    bearerToken: env.get("LBA_FRANCE_COMPETENCE_TOKEN").required().asString(),
   },
 }
 

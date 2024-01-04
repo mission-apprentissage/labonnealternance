@@ -28,7 +28,7 @@ fileignoreconfig:
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 403ca297bf064cc81749ca1568a7c9984684db1a55065c448676194a81a44777
+  checksum: 5da667c842b6afec68a287fa5b2f203c0fd369d417b2172c290e7f932890603f
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts
