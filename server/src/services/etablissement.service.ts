@@ -8,7 +8,6 @@ import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
-import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 
@@ -193,27 +192,13 @@ export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Prom
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc: string } | undefined> => {
+export const getOpco = async (siret: string): Promise<ICFADock | null> => {
   try {
     const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
-    if (!data) {
-      return undefined
-    }
-    const { searchStatus, opcoName, idcc } = data
-    switch (searchStatus) {
-      case "OK": {
-        return { opco: opcoName, idcc: idcc.toString() }
-      }
-      case "MULTIPLE_OPCO": {
-        return { opco: "Opco multiple", idcc: "Opco multiple, IDCC non défini" }
-      }
-      default: {
-        return undefined
-      }
-    }
+    return data
   } catch (err: any) {
     sentryCaptureException(err)
-    return undefined
+    return null
   }
 }
 
@@ -602,33 +587,39 @@ export const isCompanyValid = async (userRecruteur: IUserRecruteur) => {
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })
 
-const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc: string } | undefined> => {
-  const idccResult = await getIdcc(siret)
-  if (!idccResult) return undefined
-  const convention = idccResult.conventions.at(0)
-  if (convention) {
-    const { num } = convention
-    const opcoByIdccResult = await getOpcoByIdcc(num)
-    if (opcoByIdccResult) {
-      return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc.toString() }
+const getOpcoDataRaw = async (siret: string) => {
+  const opcoResult: ICFADock | null = await getOpco(siret)
+  switch (opcoResult?.searchStatus) {
+    case "OK": {
+      return { opco: opcoResult.opcoName, idcc: opcoResult.idcc.toString() }
+    }
+    case "MULTIPLE_OPCO": {
+      return { opco: "Opco multiple", idcc: "Opco multiple, IDCC non défini" }
+    }
+    case null:
+    case "NOT_FOUND": {
+      const idccResult = await getIdcc(siret)
+      if (!idccResult) return undefined
+      const conventions = idccResult[0]?.conventions
+      if (conventions?.length) {
+        const num: number = conventions[0]?.num
+        const opcoByIdccResult = await getOpcoByIdcc(num)
+        if (opcoByIdccResult) {
+          return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc.toString() }
+        }
+      }
+      break
     }
   }
+  return undefined
 }
 
-const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string } | undefined> => {
-  const opcoOpt = await FCGetOpcoInfos(siret)
-  return opcoOpt ? { opco: opcoOpt } : undefined
-}
-
-const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
-  return (await getOpcoFromCfaDock(siret)) ?? (await getOpcoFromCfaDockByIdcc(siret)) ?? (await getOpcoFromFranceCompetences(siret))
-}
-
-export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc?: string | null } | undefined> => {
+export const getOpcoData = async (siret: string) => {
   const siren = siret.substring(0, 9)
   const opcoFromDB = await getOpcoBySirenFromDB(siren)
   if (opcoFromDB) {
-    return opcoFromDB
+    const { opco, idcc } = opcoFromDB
+    return { opco, idcc }
   } else {
     const result = await getOpcoDataRaw(siret)
     if (result) {

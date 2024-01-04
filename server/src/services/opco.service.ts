@@ -9,14 +9,10 @@ import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
 
 /**
  * @description get opco from database collection OPCOS
+ * @param {string} siren
+ * @returns {Promise<IOpco>}
  */
-export const getOpcoBySirenFromDB = async (siren: string) => {
-  const opcoFromDB = await Opco.findOne({ siren })
-  if (opcoFromDB) {
-    const { opco, idcc } = opcoFromDB
-    return { opco, idcc }
-  }
-}
+export const getOpcoBySirenFromDB = (siren) => Opco.findOne({ siren })
 
 /**
  * @description tente d'ajouter un opco en base et retourne une string indiquant le résultat
