@@ -2,11 +2,13 @@ import Boom from "boom"
 import { FastifyRequest } from "fastify"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, RecruiterRole, Role, UserWithType } from "shared/security/permissions"
+import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, PendingRecruiterRole, RecruiterRole, Role, UserWithType } from "shared/security/permissions"
 import { assertUnreachable } from "shared/utils"
 import { Primitive } from "type-fest"
 
 import { Application, Recruiter, UserRecruteur } from "@/common/model"
+
+import { controlUserState } from "../services/login.service"
 
 import { getUserFromRequest } from "./authenticationService"
 
@@ -173,6 +175,7 @@ export function getUserRole(userWithType: NonTokenUserWithType): Role | null {
   if (userWithType.type === "ICredential") {
     return OpcoRole
   }
+  const userState = controlUserState(userWithType.value.status)
 
   switch (userWithType.value.type) {
     case "ADMIN":
@@ -180,7 +183,12 @@ export function getUserRole(userWithType: NonTokenUserWithType): Role | null {
     case "CFA":
       return CfaRole
     case "ENTREPRISE":
-      return RecruiterRole
+      if (userState.error) {
+        if (userState.reason !== "VALIDATION") throw Boom.internal("Unexpected state during user role validation")
+        return PendingRecruiterRole
+      } else {
+        return RecruiterRole
+      }
     case "OPCO":
       return OpcoRole
     default:

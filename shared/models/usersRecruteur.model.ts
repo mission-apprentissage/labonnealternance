@@ -14,6 +14,7 @@ export const ZEtatUtilisateur = z.enum([etatUtilisateurValues[0], ...etatUtilisa
 export const ZUserStatusValidation = z
   .object({
     validation_type: z.enum(["AUTOMATIQUE", "MANUELLE"]).describe("Processus de validation lors de l'inscription de l'utilisateur"),
+    // TODO : check DB and remove nullish
     status: ZEtatUtilisateur.nullish(),
     reason: z.string().nullish().describe("Raison du changement de statut"),
     user: z.string().describe("Id de l'utilisateur ayant effectué la modification | 'SERVEUR' si le compte a été validé automatiquement"),
@@ -52,7 +53,7 @@ export const ZUserRecruteurWritable = z
     last_connection: z.date().nullish().describe("Date de dernière connexion"),
     origin: z.string().nullish().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi"),
     status: z.array(ZUserStatusValidation).describe("Tableau des modifications de statut de l'utilisateur"),
-    is_qualiopi: z.boolean().describe("Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)"),
+    is_qualiopi: z.boolean().describe("Statut qualiopi d'un CFA (toujours à true pour les CFA, false pour les entreprises)"),
   })
   .strict()
 

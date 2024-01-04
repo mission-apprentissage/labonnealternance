@@ -4,7 +4,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable, ZCfaReferentielData } from "../models/usersRecruteur.model"
+import { ZCfaReferentielData, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -215,18 +215,15 @@ export const zRecruiterRoutes = {
     "/etablissement/:id": {
       method: "put",
       path: "/etablissement/:id",
-      // TODO_SECURITY_FIX jwt en mode session + filtre sur la payload pour réduction
       params: z.object({ id: zObjectId }).strict(),
       body: ZUserRecruteurWritable.pick({
         last_name: true,
         first_name: true,
         phone: true,
         email: true,
-        is_email_checked: true,
-        last_connection: true,
-      }).partial(),
+      }).extend({ _id: zObjectId }),
       response: {
-        "2xx": z.union([ZUserRecruteur, z.null()]),
+        "200": z.object({ ok: z.boolean() }).strict(),
       },
       securityScheme: {
         auth: "cookie-session",

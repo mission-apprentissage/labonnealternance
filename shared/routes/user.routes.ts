@@ -1,4 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
+import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
@@ -94,9 +95,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }), //  "message": "Unrecognized key(s) in object: '__v'"
+        "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -127,7 +126,7 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "user:manage",
+        access: { some: ["user:manage", "recruiter:add_job"] },
         resources: {
           user: [{ _id: { type: "params", key: "userId" } }],
         },
@@ -163,10 +162,7 @@ export const zUserRecruteurRoutes = {
         first_name: true,
         phone: true,
         email: true,
-        opco: true,
-      })
-        .partial()
-        .strict(),
+      }).strict(),
       response: {
         "200": z.union([ZUserRecruteur, z.null()]),
         "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
@@ -186,6 +182,7 @@ export const zUserRecruteurRoutes = {
       body: ZUserRecruteurWritable.partial(),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
+        "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -201,12 +198,9 @@ export const zUserRecruteurRoutes = {
         validation_type: true,
         status: true,
         reason: true,
-        user: true,
       }),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "200": ZUserRecruteur,
+        "200": ZUserRecruteur,
       },
       securityScheme: {
         auth: "cookie-session",

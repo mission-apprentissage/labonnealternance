@@ -493,6 +493,7 @@ export default (server: Server) => {
     "/etablissements/:id/opt-out/unsubscribe",
     {
       schema: zRoutes.post["/etablissements/:id/opt-out/unsubscribe"],
+      onRequest: [server.auth(zRoutes.post["/etablissements/:id/opt-out/unsubscribe"])],
     },
     async (req, res) => {
       let etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()

@@ -9,6 +9,7 @@ import { ZodError } from "zod"
 // import { logger } from "@/common/logger"
 import config from "@/config"
 
+import { stopSession } from "../../common/utils/session.service"
 import { Server } from "../server"
 
 function getZodMessageError(error: ZodError, context: string): string {
@@ -54,8 +55,12 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
 }
 
 export function errorMiddleware(server: Server) {
-  server.setErrorHandler<FastifyError | ValidationError | Boom<unknown> | Error | ZodError, { Reply: IResError }>((rawError, _request, reply) => {
+  server.setErrorHandler<FastifyError | ValidationError | Boom<unknown> | Error | ZodError, { Reply: IResError }>(async (rawError, _request, reply) => {
     const error = boomify(rawError)
+
+    if (error.output.statusCode === 403) {
+      await stopSession(_request, reply)
+    }
 
     const payload: IResError = {
       statusCode: error.output.statusCode,

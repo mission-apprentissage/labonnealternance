@@ -29,15 +29,13 @@ export const ZLbaCompany = z
     created_at: z.date().describe("La date création de la demande"),
     last_update_at: z.date().describe("Date de dernières mise à jour"),
     distance: z.array(z.number()).nullish().describe("Distance de la société au centre de recherche en km"),
-    _id: zObjectId.nullish(),
-    __v: z.number().nullish(),
+    _id: zObjectId,
   })
   .strict()
   .openapi("LbaCompany")
 
 export const ZLbaCompanyNew = ZLbaCompany.omit({
   _id: true,
-  __v: true,
   created_at: true,
   last_update_at: true,
 }).strict()

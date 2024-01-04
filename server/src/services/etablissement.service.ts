@@ -763,7 +763,7 @@ export const entrepriseOnboardingWorkflow = {
       cfa_delegated_siret,
     })
     const formulaireId = formulaireInfo.establishment_id
-    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE, is_email_checked: false })
+    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE, is_email_checked: false, is_qualiopi: false })
 
     if (hasSiretError) {
       newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")
