@@ -7,8 +7,6 @@ import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomes
 import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
 import { db } from "@/common/mongodb"
 
-import { search } from "../common/esClient/index"
-
 import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
 
@@ -129,6 +127,20 @@ const filterDiplomas = async (regexes: any[]): Promise<(IDiplomesMetiers & { sco
 }
 
 /**
+ * construit les regex à partir du terme de recherche
+ */
+const buildRegexes = (searchTerm: string) => {
+  const regexes: any[] = []
+  searchTerm.split(" ").forEach((term, idx) => {
+    if (idx === 0 || term.length > 2) {
+      regexes.push(new RegExp(`\\b${term}`, "i"))
+    }
+  })
+
+  return regexes
+}
+
+/**
  * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. le retour respecte strictement les critères
  */
 export const getMetiers = async ({
@@ -145,14 +157,10 @@ export const getMetiers = async ({
   if (!title && !romes && !rncps) {
     throw Boom.badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
   } else {
-    const regexes: any[] = []
+    let regexes: any[] = []
 
     if (title) {
-      title.split(" ").forEach((term, idx) => {
-        if (idx === 0 || term.length > 2) {
-          regexes.push(new RegExp(`\\b${term}`, "i"))
-        }
-      })
+      regexes = buildRegexes(title)
     }
 
     let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers(regexes, romes, rncps)
@@ -184,13 +192,7 @@ export const getMetiers = async ({
  * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
  */
 const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ labelsAndRomesForDiplomas: IMetierEnrichi[] }> => {
-  const regexes: any[] = []
-
-  searchTerm.split(" ").forEach((term, idx) => {
-    if (idx === 0 || term.length > 2) {
-      regexes.push(new RegExp(`\\b${term}`, "i"))
-    }
-  })
+  const regexes: any[] = buildRegexes(searchTerm)
 
   let diplomas: (IDiplomesMetiers & { score?: number })[] = await filterDiplomas(regexes)
   diplomas = diplomas.sort((a: IDiplomesMetiers & { score?: number }, b: IDiplomesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
@@ -217,51 +219,17 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
  * @returns {Promise<IAppellationsRomes>}
  */
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
-  try {
-    const body = {
-      query: {
-        bool: {
-          must: [
-            {
-              nested: {
-                path: "couples_appellations_rome_metier",
-                query: {
-                  bool: {
-                    should: [
-                      {
-                        match: {
-                          "couples_appellations_rome_metier.appellation": {
-                            query: searchTerm,
-                            fuzziness: 4,
-                            operator: "and",
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
-      },
-    }
+  const regexes: any[] = buildRegexes(searchTerm)
 
-    const response = await search({ index: "domainesmetiers", body }, DomainesMetiers)
+  const metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers(regexes)
 
-    const domaineMetiers: IDomainesMetiers[] = response.map(({ _source }) => _source)
-    const coupleAppellationRomeMetier = domaineMetiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
-    const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
-    const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
-      keys: ["appellation"],
-      threshold: matchSorter.rankings.NO_MATCH,
-    })
-    return { coupleAppellationRomeMetier: sorted }
-  } catch (error) {
-    const newError = Boom.internal("getting intitule from title")
-    newError.cause = error
-    throw newError
-  }
+  const coupleAppellationRomeMetier = metiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
+  const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
+  const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
+    keys: ["appellation"],
+    threshold: matchSorter.rankings.NO_MATCH,
+  })
+  return { coupleAppellationRomeMetier: sorted }
 }
 
 const removeDuplicateDiplomas = (diplomas) => {
