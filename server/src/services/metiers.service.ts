@@ -192,8 +192,6 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
     }
   })
 
-  console.log("ici : ", regexes)
-
   let diplomas: (IDiplomesMetiers & { score?: number })[] = await filterDiplomas(regexes)
   diplomas = diplomas.sort((a: IDiplomesMetiers & { score?: number }, b: IDiplomesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
