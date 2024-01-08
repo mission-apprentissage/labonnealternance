@@ -28,7 +28,7 @@ const EmailInvalide = () => (
       Mail invalide
     </Heading>
     <Text fontSize="18px">
-      La validation de votre email à échoué. Merci de{" "}
+      La validation de votre email a échoué. Merci de{" "}
       <Link pl={2} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Authentification%20LBAR%20-%20Mail%20invalide" textDecoration="underline">
         Contacter l'équipe La bonne alternance
       </Link>
