@@ -7,16 +7,16 @@ import { logError } from "../utils/tools"
 
 import extractCandidatureParams from "./extractCandidatureParams"
 
-export default async function postCandidature(applicant_h, company_h, jobLabel = null, caller, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) {
+export default async function postCandidature({ applicantValues, company_h, jobLabel, caller }) {
   let res = ""
 
-  const candidatureApi = _apiEndpoint + "/v1/application"
+  const candidatureApi = apiEndpoint + "/v1/application"
 
   let response = null
   let isAxiosError = false
 
   try {
-    response = await _axios.post(candidatureApi, extractCandidatureParams(applicant_h, company_h, jobLabel, caller))
+    response = await axios.post(candidatureApi, extractCandidatureParams(applicantValues, company_h, jobLabel, caller))
   } catch (error) {
     response = error.response
 
@@ -33,10 +33,10 @@ export default async function postCandidature(applicant_h, company_h, jobLabel =
 
   if (isError) {
     if (isAxiosError) {
-      _logError("Candidature API error", `Candidature API error ${response.data.error}`)
+      logError("Candidature API error", `Candidature API error ${response.data.error}`)
       res = response.statusText
     } else if (isSimulatedError) {
-      _logError("Candidature API error simulated")
+      logError("Candidature API error simulated")
       res = "simulated_error"
     } else {
       res = "unexpected_error"
