@@ -105,18 +105,23 @@ const filterMetiers = async (regexes: any[], romes, rncps): Promise<(IDomainesMe
 
     if (!regexes.length && (romes || rncps)) {
       results.push(metier)
+      return
     }
+
+    const matchingMetier: IDomainesMetiers & { score?: number } = metier
 
     searchableWeightedFields.map(({ field, score }) =>
       regexes.map((regex) => {
         const valueToTest = metier[field] instanceof Array ? metier[field].join(" ") : metier[field]
         if (valueToTest.match(regex)) {
-          const matchingMetier: IDomainesMetiers & { score?: number } = metier
           matchingMetier.score = score + (matchingMetier.score ?? 0)
-          results.push(matchingMetier)
         }
       })
     )
+
+    if (matchingMetier.score) {
+      results.push(matchingMetier)
+    }
   })
 
   return results
