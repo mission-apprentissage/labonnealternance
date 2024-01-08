@@ -13,6 +13,8 @@ import config from "@/config"
 import { getSession } from "@/services/sessions.service"
 import { getUser as getUserRecruteur, updateLastConnectionDate } from "@/services/userRecruteur.service"
 
+import { controlUserState } from "../services/login.service"
+
 import { IAccessToken, parseAccessToken } from "./accessTokenService"
 
 export type IUserWithType = UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential> | UserWithType<"IAccessToken", IAccessToken>
@@ -58,6 +60,15 @@ async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUs
     if (!user) {
       return null
     }
+
+    const userState = controlUserState(user.status)
+
+    if (userState?.error) {
+      if (userState.reason !== "VALIDATION") {
+        throw Boom.forbidden()
+      }
+    }
+
     return { type: "IUserRecruteur", value: user }
   } catch (error) {
     captureException(error)
@@ -95,7 +106,7 @@ async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyReques
   if (token === null) {
     return null
   }
-  const parsedToken = parseAccessToken(token, schema, req.params as PathParam, req.query as QueryString)
+  const parsedToken = await parseAccessToken(token, schema, req.params as PathParam, req.query as QueryString)
   await updateLastConnectionDate(parsedToken.identity.email)
   return { type: "IAccessToken", value: parsedToken }
 }

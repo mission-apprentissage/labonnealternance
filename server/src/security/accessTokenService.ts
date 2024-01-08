@@ -10,6 +10,9 @@ import { AnyZodObject, z } from "zod"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
+import { controlUserState } from "../services/login.service"
+import { getUser } from "../services/userRecruteur.service"
+
 // cf https://www.sistrix.com/ask-sistrix/technical-seo/site-structure/url-length-how-long-can-a-url-be
 const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083
 const OUTLOOK_URL_MAX_LENGTH = 8192
@@ -171,17 +174,28 @@ export function getAccessTokenScope<Schema extends SchemaWithSecurity>(
   )
 }
 
-export function parseAccessToken<Schema extends SchemaWithSecurity>(
+export async function parseAccessToken<Schema extends SchemaWithSecurity>(
   accessToken: string,
   schema: Schema,
   params: PathParam | undefined,
   querystring: QueryString | undefined
-): IAccessToken<Schema> {
+): Promise<IAccessToken<Schema>> {
   const data = jwt.verify(accessToken, config.auth.user.jwtSecret, {
     complete: true,
     issuer: config.publicUrl,
   })
   const token = data.payload as IAccessToken<Schema>
+  if (token.identity.type === "IUserRecruteur") {
+    const user = await getUser({ _id: token.identity._id })
+
+    if (!user) throw Boom.unauthorized()
+
+    const userStatus = controlUserState(user?.status)
+
+    if (userStatus.error) {
+      throw Boom.forbidden()
+    }
+  }
   const scopeOpt = getAccessTokenScope(token, schema, params, querystring)
   if (!scopeOpt) {
     throw Boom.forbidden("Aucun scope ne correspond")

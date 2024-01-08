@@ -21,6 +21,7 @@ import {
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { IUserStatusValidation } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
@@ -42,7 +43,7 @@ import {
 import { OpcoSelect } from "../../../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
 import { authProvider, withAuth } from "../../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../../theme/components/icons"
-import { getUser, updateEntreprise } from "../../../../../../utils/api"
+import { getUser, updateEntrepriseAdmin } from "../../../../../../utils/api"
 
 function DetailEntreprise() {
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -59,7 +60,7 @@ function DetailEntreprise() {
     cacheTime: 0,
   })
 
-  const userMutation = useMutation(({ userId, establishment_id, values }: any) => updateEntreprise(userId, establishment_id, values), {
+  const userMutation = useMutation(({ userId, establishment_id, values }: any) => updateEntrepriseAdmin(userId, establishment_id, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
     },
@@ -132,7 +133,7 @@ function DetailEntreprise() {
     return <LoadingEmptySpace />
   }
 
-  const [lastUserState] = userRecruteur.status.slice(-1)
+  const lastUserState: IUserStatusValidation = userRecruteur.status.at(-1)
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
 
   return (

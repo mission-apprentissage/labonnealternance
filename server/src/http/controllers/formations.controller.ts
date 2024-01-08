@@ -1,8 +1,8 @@
-import { zRoutes } from "shared/index.js"
+import { zRoutes } from "shared"
 
-import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
-import { getFormationQuery, getFormationsQuery } from "../../../services/formation.service.js"
-import { Server } from "../../server"
+import { trackApiCall } from "../../common/utils/sendTrackingEvent"
+import { getFormationQuery, getFormationsQuery } from "../../services/formation.service"
+import { Server } from "../server"
 
 const config = {
   rateLimit: {

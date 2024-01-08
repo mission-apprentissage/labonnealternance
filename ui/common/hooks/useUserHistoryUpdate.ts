@@ -15,7 +15,6 @@ export default function useUserHistoryUpdate(userId: string, status: ETAT_UTILIS
   return useCallback(async () => {
     await updateUserValidationHistory(userId, {
       validation_type: VALIDATION_UTILISATEUR.MANUAL,
-      user: user._id.toString(),
       status,
       reason,
     })

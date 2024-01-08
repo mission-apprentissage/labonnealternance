@@ -119,7 +119,7 @@ export const searchForPeJobs = async (params: {
 export const getPeJob = async (id: string) => {
   tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
   try {
-    const { data } = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/${id}`, {
+    const result = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/${id}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -127,7 +127,7 @@ export const getPeJob = async (id: string) => {
       },
     })
 
-    return data // PEResponse
+    return result // PEResponse
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)

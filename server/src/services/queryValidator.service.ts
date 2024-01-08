@@ -1,8 +1,8 @@
-import { RncpRomes } from "../common/model/index.js"
-import { isOriginLocal } from "../common/utils/isOriginLocal.js"
-import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
+import { RncpRomes } from "../common/model/index"
+import { isOriginLocal } from "../common/utils/isOriginLocal"
+import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
 
-import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types.js"
+import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types"
 
 /**
  * Contrôle le format d'un code RNCP
@@ -12,7 +12,7 @@ import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service
  */
 const validateRncp = (rncp: string, error_messages: string[]) => {
   if (!/^RNCP\d{2,5}$/.test(rncp)) {
-    error_messages.push("rncp : Badly formatted rncp code. RNCP code must 'RNCP' followed by 2 to 5 digit number. ex : RNCP12, RNCP12345 ...")
+    error_messages.push("rncp : Badly formatted rncp code. RNCP code must include 'RNCP' prefix followed by 2 to 5 digit number. ex : RNCP12, RNCP12345 ...")
     return false
   } else {
     return true
@@ -29,6 +29,7 @@ const validateRncp = (rncp: string, error_messages: string[]) => {
  */
 const validateRomesOrRncp = async (query: TJobSearchQuery, error_messages: string[], romeLimit = 20) => {
   const { romes, rncp } = query
+
   // codes ROME : romes
   if (romes && rncp) {
     error_messages.push("romes or rncp : You must specify either a rncp code or 1 or more rome codes.")
@@ -38,11 +39,11 @@ const validateRomesOrRncp = async (query: TJobSearchQuery, error_messages: strin
       error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
   } else if (rncp) {
     if (validateRncp(rncp, error_messages)) {
-      const romesFromRncp = await RncpRomes.find({ rncp_code: rncp })
-      if (!romesFromRncp.length) {
+      const romesFromRncp = await RncpRomes.findOne({ rncp_code: rncp })
+      if (!romesFromRncp) {
         error_messages.push(`rncp : Rncp code not recognized. Please check that it exists. (${rncp})`)
       } else {
-        query.romes = romesFromRncp[0].rome_codes.join(",")
+        query.romes = romesFromRncp.rome_codes.join(",")
       }
     }
   } else {

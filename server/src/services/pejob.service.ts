@@ -1,18 +1,19 @@
 import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
+import Boom from "boom"
 
-import { getPeReferentiels, getPeJob, searchForPeJobs } from "@/common/apis/Pe.js"
+import { getPeJob, getPeReferentiels, searchForPeJobs } from "@/common/apis/Pe"
 
-import { IApiError, manageApiError } from "../common/utils/errorManager.js"
-import { roundDistance } from "../common/utils/geolib.js"
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
+import { IApiError, manageApiError } from "../common/utils/errorManager"
+import { roundDistance } from "../common/utils/geolib"
+import { trackApiCall } from "../common/utils/sendTrackingEvent"
 
-import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
-import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { ILbaItemCompany, ILbaItemContact, ILbaItemPeJob } from "./lbaitem.shared.service.types.js"
-import { filterJobsByOpco } from "./opco.service.js"
-import { PEJob, PEResponse } from "./pejob.service.types.js"
+import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service"
+import { TLbaItemResult } from "./jobOpportunity.service.types"
+import { ILbaItemCompany, ILbaItemContact, ILbaItemPeJob } from "./lbaitem.shared.service.types"
+import { filterJobsByOpco } from "./opco.service"
+import { PEJob, PEResponse } from "./pejob.service.types"
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
@@ -42,7 +43,7 @@ const getRoundedRadius = (radius: number) => {
 
 /**
  * Calcule la distance au centre de recherche lorsque l'information est manquante
- * Dépend de turf.js
+ * Dépend de turf
  * @param {PEJob} job l'offre géolocalisée dont nous n'avons pas la distance au centre
  * @param {string} latitude la latitude du centre de recherche
  * @param {string} longitude la longitude du centre de recherche
@@ -287,25 +288,28 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
   try {
     const job = await getPeJob(id)
 
-    if (job.status === 204 || job.status === 400) {
+    if (!job) {
+      throw Boom.notFound()
+    }
+
+    if (job.status === 204 || job.status === 400 || job.data === "") {
       if (caller) {
         trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
       }
-
-      return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
-    } else {
-      const peJob = transformPeJob({ job })
-
-      if (caller) {
-        trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
-        // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-        if (peJob.company) {
-          peJob.company.siret = null
-        }
-      }
-
-      return { peJobs: [peJob] }
+      throw Boom.notFound()
     }
+
+    const peJob = transformPeJob({ job: job.data })
+
+    if (caller) {
+      trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
+      // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+      if (peJob.company) {
+        peJob.company.siret = null
+      }
+    }
+
+    return { peJobs: [peJob] }
   } catch (error) {
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
   }

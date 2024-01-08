@@ -3,25 +3,25 @@ import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS, ZApplication } from "shared"
-import { ApplicantIntention } from "shared/constants/application.js"
-import { RECRUITER_STATUS } from "shared/constants/recruteur.js"
-import { disableUrlsWith0WidthChar, prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common.js"
+import { ApplicantIntention } from "shared/constants/application"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { disableUrlsWith0WidthChar, prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { logger } from "../common/logger.js"
-import { Application, EmailBlacklist, LbaCompany, Recruiter, UserRecruteur } from "../common/model/index.js"
-import { decryptWithIV } from "../common/utils/encryptString.js"
-import { manageApiError } from "../common/utils/errorManager.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import config from "../config.js"
+import { logger } from "../common/logger"
+import { Application, EmailBlacklist, LbaCompany, Recruiter, UserRecruteur } from "../common/model"
+import { decryptWithIV } from "../common/utils/encryptString"
+import { manageApiError } from "../common/utils/errorManager"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
 
-import { createCancelJobLink, createLbaCompanyApplicationReplyLink, createProvidedJobLink, createUserRecruteurApplicationReplyLink } from "./appLinks.service.js"
-import { BrevoEventStatus } from "./brevo.service.js"
+import { createCancelJobLink, createLbaCompanyApplicationReplyLink, createProvidedJobLink, createUserRecruteurApplicationReplyLink } from "./appLinks.service"
+import { BrevoEventStatus } from "./brevo.service"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
-import mailer from "./mailer.service.js"
-import { validateCaller } from "./queryValidator.service.js"
+import mailer from "./mailer.service"
+import { validateCaller } from "./queryValidator.service"
 
 const MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT = 3
 const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
@@ -295,7 +295,11 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   let userRecruteur
 
   if (recruiter) {
-    userRecruteur = await UserRecruteur.findOne({ establishment_id: recruiter.establishment_id }).lean()
+    if (recruiter.is_delegated) {
+      userRecruteur = await UserRecruteur.findOne({ establishment_siret: recruiter.cfa_delegated_siret }).lean()
+    } else {
+      userRecruteur = await UserRecruteur.findOne({ establishment_id: recruiter.establishment_id }).lean()
+    }
   }
 
   const urls = {
@@ -537,8 +541,8 @@ export const sendMailToApplicant = async ({
   company_feedback,
 }: {
   application: IApplication
-  email: string
-  phone: string
+  email: string | null
+  phone: string | null
   company_recruitment_intention: string
   company_feedback: string
 }): Promise<void> => {
