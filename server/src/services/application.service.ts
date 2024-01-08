@@ -292,7 +292,11 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   let userRecruteur
 
   if (recruiter) {
-    userRecruteur = await UserRecruteur.findOne({ establishment_id: recruiter.establishment_id }).lean()
+    if (recruiter.is_delegated) {
+      userRecruteur = await UserRecruteur.findOne({ establishment_siret: recruiter.cfa_delegated_siret }).lean()
+    } else {
+      userRecruteur = await UserRecruteur.findOne({ establishment_id: recruiter.establishment_id }).lean()
+    }
   }
 
   const urls = {
@@ -567,8 +571,8 @@ export const sendMailToApplicant = async ({
   company_feedback,
 }: {
   application: IApplication
-  email: string
-  phone: string
+  email: string | null
+  phone: string | null
   company_recruitment_intention: string
   company_feedback: string
 }): Promise<void> => {

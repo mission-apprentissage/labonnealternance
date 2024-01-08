@@ -1,6 +1,6 @@
 export type Permission = "recruiter:manage" | "user:validate" | "recruiter:add_job" | "job:manage" | "school:manage" | "application:manage" | "user:manage" | "admin"
 
-export type RoleNames = "opco" | "recruiter" | "cfa" | "admin"
+export type RoleNames = "opco" | "recruiter" | "cfa" | "admin" | "pending_recruiter"
 
 export interface Role {
   name: RoleNames
@@ -15,6 +15,11 @@ export const OpcoRole = {
 export const RecruiterRole = {
   name: "recruiter",
   permissions: ["recruiter:manage", "recruiter:add_job", "job:manage", "application:manage", "user:manage"],
+} satisfies Role
+
+export const PendingRecruiterRole = {
+  name: "pending_recruiter",
+  permissions: ["recruiter:add_job"],
 } satisfies Role
 
 export const CfaRole = {

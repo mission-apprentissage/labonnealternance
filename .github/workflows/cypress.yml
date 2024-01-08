@@ -21,6 +21,10 @@ on:
         description: host name of the mailpit
         type: string
         required: true
+      environment:
+        description: platform type. Values are 'recette'|'preview'
+        type: string
+        required: true
     secrets:
       CODECOV_TOKEN:
         description: Code coverrage token
@@ -28,6 +32,10 @@ on:
       SLACK_WEBHOOK:
         description: Webhook slack
         required: true
+      VAULT_PWD:
+        description: vault password
+        required: true
+
 jobs:
   cypress:
     concurrency:
@@ -63,8 +71,18 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Create vault pwd file
+        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
+
+      - name: Prepare env variables for cypress
+        run: .bin/mna-lba cypress:set-env ${{ inputs.environment }}
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+
       - name: Run cypress e2e tests
-        run: yarn e2e:headless --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}},smtp=${{inputs.smtp_host}}
+        run: |
+          source cypress.${{ inputs.environment }}.env
+          yarn e2e:headless --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}},smtp=${{inputs.smtp_host}}
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2
@@ -74,6 +92,6 @@ jobs:
           notification_title: "Les tests e2e ne sont pas passés : ${{ inputs.app_version }} en ${{ inputs.environment }}"
           message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`"
           notify_when: "failure"
-          mention_groups: "!channel"
+          mention_groups: "S0693U59FCK"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

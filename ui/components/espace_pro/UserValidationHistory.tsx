@@ -1,38 +1,11 @@
 import { Badge, Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
 import dayjs from "dayjs"
-import { useCallback, useEffect, useState } from "react"
 import { IUserStatusValidation } from "shared"
-
-import { getUser } from "@/utils/api"
 
 import LoadingEmptySpace from "./LoadingEmptySpace"
 
 export const UserValidationHistory = ({ histories }: { histories: IUserStatusValidation[] }) => {
-  const [historic, setHistoric] = useState<(IUserStatusValidation & { first_name?: string; last_name?: string })[]>([])
-
-  const getValidator = useCallback(async () => {
-    const buffer = await Promise.all(
-      histories.map(async (statusChange) => {
-        if (statusChange.user !== "SERVEUR") {
-          try {
-            const result = await getUser(statusChange.user)
-            const { first_name, last_name } = result
-            return { ...statusChange, first_name, last_name }
-          } catch (error) {
-            console.error(error)
-          }
-        }
-        return statusChange
-      })
-    )
-    setHistoric(buffer)
-  }, [])
-
-  useEffect(() => {
-    getValidator()
-  }, [historic.length > 0, histories])
-
-  if (historic.length === 0) {
+  if (histories.length === 0) {
     return <LoadingEmptySpace />
   }
 
@@ -69,15 +42,15 @@ export const UserValidationHistory = ({ histories }: { histories: IUserStatusVal
               </Tr>
             </Thead>
             <Tbody>
-              {historic
-                .map(({ date, status, first_name, last_name, validation_type, reason, user }, i) => {
+              {histories
+                .map(({ date, status, validation_type, reason, user }, i) => {
                   return (
                     <Tr key={i}>
                       <Td>{i + 1}</Td>
                       <Td>{dayjs(date).format("DD/MM/YYYY")}</Td>
                       <Td>{getStatut(status)}</Td>
                       <Td>{validation_type}</Td>
-                      <Td>{first_name && last_name ? `${first_name} ${last_name}` : <Badge>{user}</Badge>}</Td>
+                      <Td>{<Badge>{user}</Badge>}</Td>
                       <Td>{reason}</Td>
                     </Tr>
                   )

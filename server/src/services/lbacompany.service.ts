@@ -1,4 +1,5 @@
-import { ILbaCompany, ZLbaCompany } from "shared"
+import Boom from "boom"
+import { ILbaCompany } from "shared"
 
 import { search } from "../common/esClient/index"
 import { LbaCompany } from "../common/model/index"
@@ -386,28 +387,23 @@ export const getCompanyFromSiret = async ({
  * @param {string} phone
  * @returns {Promise<ILbaCompany | string>}
  */
-export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }) => {
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string | undefined; phone: string | undefined }) => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
 
     if (!lbaCompany) {
-      return "not_found"
-    } else {
-      if (email !== undefined) {
-        lbaCompany.email = email
-      }
-
-      if (phone !== undefined) {
-        lbaCompany.phone = phone
-      }
-
-      const leanLbaCompany = lbaCompany.toObject()
-      ZLbaCompany.parse(leanLbaCompany)
-
-      await lbaCompany.save() // obligatoire pour trigger la mise à jour de l'index ES. update ne le fait pas
-
-      return lbaCompany
+      throw Boom.badRequest()
     }
+
+    if (email !== undefined) {
+      lbaCompany.email = email
+    }
+
+    if (phone !== undefined) {
+      lbaCompany.phone = phone
+    }
+
+    await lbaCompany.save() // obligatoire pour trigger la mise à jour de l'index ES. update ne le fait pas
   } catch (err) {
     sentryCaptureException(err)
     throw err

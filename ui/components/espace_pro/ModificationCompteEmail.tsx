@@ -21,7 +21,7 @@ export default function ModificationCompteEmail(props) {
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0}>
         <ModalHeader>
           <Heading as="h2" fontSize="1.5rem">
-            <Text>Changement d'email détcté</Text>
+            <Text>Changement d'email détecté</Text>
           </Heading>
         </ModalHeader>
         <ModalBody pb={6}>
