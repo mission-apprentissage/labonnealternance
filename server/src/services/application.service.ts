@@ -541,8 +541,8 @@ export const sendMailToApplicant = async ({
   company_feedback,
 }: {
   application: IApplication
-  email: string
-  phone: string
+  email: string | null
+  phone: string | null
   company_recruitment_intention: string
   company_feedback: string
 }): Promise<void> => {
