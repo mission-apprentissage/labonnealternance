@@ -312,33 +312,6 @@ const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
  * @returns {IMetiers}
  */
 export const getTousLesMetiers = async (): Promise<IMetiers> => {
-  try {
-    const response = await search(
-      {
-        index: "domainesmetiers",
-        size: 200,
-        _source_includes: ["sous_domaine"],
-        body: {
-          query: {
-            match_all: {},
-          },
-        },
-      },
-      DomainesMetiers
-    )
-
-    const metiers: string[] = []
-
-    response.forEach((metier) => {
-      metiers.push(metier._source.sous_domaine)
-    })
-
-    metiers.sort()
-
-    return { metiers }
-  } catch (error) {
-    const newError = Boom.internal("getting all metiers")
-    newError.cause = error
-    throw newError
-  }
+  const metiers: string[] = (await DomainesMetiers.find({}, { sous_domaine: 1, _id: 0 }).lean()).map((metier: { sous_domaine: string }) => metier.sous_domaine).sort()
+  return { metiers }
 }
