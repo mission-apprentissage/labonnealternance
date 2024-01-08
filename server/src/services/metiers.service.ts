@@ -1,6 +1,7 @@
 import Boom from "boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
+import { removeAccents } from "shared/utils"
 
 import { DomainesMetiers } from "@/common/model"
 import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomesmetiers.types"
@@ -133,7 +134,7 @@ const buildRegexes = (searchTerm: string) => {
   const regexes: any[] = []
   searchTerm.split(" ").forEach((term, idx) => {
     if (idx === 0 || term.length > 2) {
-      regexes.push(new RegExp(`\\b${term}`, "i"))
+      regexes.push(new RegExp(`\\b${removeAccents(term)}`, "i"))
     }
   })
 
