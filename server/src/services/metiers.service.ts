@@ -77,7 +77,7 @@ const filterMetiers = async (regexes: any[], romes?: string, rncps?: string): Pr
       return
     }
 
-    const matchingMetier: IDomainesMetiers & { score?: number } = metier
+    const matchingMetier: IDomainesMetiers & { score?: number } = { ...metier }
 
     searchableWeightedFields.map(({ field, score }) =>
       regexes.map((regex) => {
@@ -109,9 +109,7 @@ const filterDiplomas = async (regexes: any[]): Promise<(IDiplomesMetiers & { sco
   const results: (IDiplomesMetiers & { score?: number })[] = []
 
   cacheDiplomas.map((diploma) => {
-    const matchingDiploma: IDiplomesMetiers & { score?: number } = diploma
-
-    //    console.log("diploma : ", diploma)
+    const matchingDiploma: IDiplomesMetiers & { score?: number } = { ...diploma }
 
     searchableWeightedDiplomaFields.map(({ field, score }) =>
       regexes.map((regex) => {
