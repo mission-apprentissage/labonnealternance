@@ -288,8 +288,7 @@ const removeDuplicateDiplomas = (diplomas) => {
  * @returns {Promise<IMetiers>}
  */
 export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMetiers> => {
-  const romeResponse = await getRomesFromCatalogue({ cfd })
-  const { romes } = romeResponse
+  const { romes } = await getRomesFromCatalogue({ cfd })
   const metiers = await getMetiersFromRomes(romes)
   return metiers
 }
@@ -300,23 +299,10 @@ export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMeti
  * @returns {IMetiers}
  */
 const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
-  const response = await search(
-    {
-      index: "domainesmetiers",
-      size: 20,
-      _source_includes: ["sous_domaine"],
-      body: {
-        query: {
-          match: {
-            codes_romes: romes.join(","),
-          },
-        },
-      },
-    },
-    DomainesMetiers
-  )
-  const metiers: string[] = response.map((metier) => {
-    return metier._source.sous_domaine
+  const metiersFromDb = await DomainesMetiers.find({ codes_romes: { $in: romes } })
+
+  const metiers: string[] = metiersFromDb.map((metier) => {
+    return metier.sous_domaine
   })
   return { metiers }
 }
