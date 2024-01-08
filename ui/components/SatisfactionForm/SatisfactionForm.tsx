@@ -144,7 +144,7 @@ const SatisfactionForm = () => {
     })
 
   const formik = useFormik({
-    initialValues: { company_feedback: "", email: "", phone: "" },
+    initialValues: { company_feedback: "", email: null, phone: null },
     validationSchema: getValidationSchema(),
     onSubmit: async (formikValues) => {
       await submitForm(formikValues)

@@ -13,6 +13,8 @@ fileignoreconfig:
   checksum: f54398af24ac144eafc27e69d18c78b1844e0a23b317bd79748ac6d3412ba0ef
 - filename: .github/workflows/release.yml
   checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
+- filename: .infra/.env_server
+  checksum: 2509954759774e6ca7f24d998911246e73a120bf09ad12e1443a8bddb4c2160c
 - filename: .infra/env.ini
   checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
@@ -24,7 +26,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 5075eab036fecc87ca01087fac712e175b4b0e56fdedc0b41061312e51f81851
+  checksum: cf78382379f57834fea67240bdb96ccc5937100914f28a56a90526be0896b8ec
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
