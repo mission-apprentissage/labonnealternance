@@ -25,7 +25,10 @@ interface IDomainesMetiers {
   intitules_fap_sans_accent: string[]
   sous_domaine_onisep: string[]
   sous_domaine_onisep_sans_accent: string[]
-  couples_romes_metiers: object[]
+  couples_romes_metiers: {
+    codeRome: string
+    intitule: string
+  }[]
   created_at: Date
   last_update_at: Date
 }
