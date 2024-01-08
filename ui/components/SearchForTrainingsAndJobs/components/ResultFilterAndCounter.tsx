@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Image } from "@chakra-ui/react"
-import React, { useContext } from "react"
+import { useContext } from "react"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
@@ -50,60 +50,71 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
   }
 
   const filterZoneProperties = {
-    justifyContent: "left",
+    justifyContent: ["left", "left", "space-between", "space-between"],
     paddingLeft: ["8px", "8px", "8px", "16px"],
     marginTop: "8px",
     marginBottom: "4px",
     maxWidth: "1275px",
-    alignItems: ["left", "left", "left", "center"],
+    alignItems: ["left", "left", "center", "center"],
+    mt: [0, 0, 2],
   }
 
   return (
-    <Box pt="0">
-      <Flex direction={["column", "column", "column", "row"]} wrap="wrap" {...filterZoneProperties}>
-        {!trainingLoading && !jobLoading && (
-          <Flex flexFlow="row wrap" justifyContent="flex-end" width="100%">
-            <Flex width="100%" flex="2 auto" flexWrap={["wrap", "wrap", "nowrap"]}>
-              {scopeContext.isJob && scopeContext.isTraining && (
-                <>
-                  <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilters.includes("jobs")} handleFilterButtonClicked={filterButtonClicked} />
-                  <FilterButton type="trainings" count={trainingCount} isActive={activeFilters.includes("trainings")} handleFilterButtonClicked={filterButtonClicked} />
-                  <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} />
-                </>
-              )}
-              <DisplayMapButton jobs={jobs} trainings={trainings} />
+    <Flex direction={["row", "row", "row", "row"]} flexWrap={["wrap", "wrap", "nowrap"]} {...filterZoneProperties}>
+      {!trainingLoading && !jobLoading && (
+        <>
+          {scopeContext.isJob && scopeContext.isTraining && (
+            <Box>
+              <FilterButton
+                type="jobs"
+                count={jobCount - partnerJobCount}
+                isActive={activeFilters.includes("jobs")}
+                handleFilterButtonClicked={filterButtonClicked}
+                label="Filtre offres d'emploi"
+              />
+              <FilterButton
+                type="trainings"
+                count={trainingCount}
+                isActive={activeFilters.includes("trainings")}
+                handleFilterButtonClicked={filterButtonClicked}
+                label="Filtre formations"
+              />
+              <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} label="Filtre partenaire" />
+            </Box>
+          )}
+          <Box>
+            <DisplayMapButton jobs={jobs} trainings={trainings} />
 
-              <Button
-                background="none"
-                border="none"
-                title="Accéder aux filtrage des résultats"
-                display={["flex", "flex", "none"]}
-                mt="-10px"
-                pt="15px"
-                px="0"
-                fontWeight="400"
-                fontSize="14px"
-                textDecoration="underline"
-                color="bluefrance.500"
-                onClick={showSearchForm}
-                _active={{
-                  background: "none",
-                }}
-                _focus={{
-                  background: "none",
-                }}
-                _hover={{
-                  background: "none",
-                }}
-              >
-                <Image width="24px" height="24px" src="/images/icons/filter.svg" alt="" />
-                Filtres
-              </Button>
-            </Flex>
-          </Flex>
-        )}
-      </Flex>
-    </Box>
+            <Button
+              background="none"
+              border="none"
+              title="Accéder aux filtrage des résultats"
+              display={["flex", "flex", "none"]}
+              mt="-10px"
+              pt="15px"
+              px="0"
+              fontWeight="400"
+              fontSize="14px"
+              textDecoration="underline"
+              color="bluefrance.500"
+              onClick={showSearchForm}
+              _active={{
+                background: "none",
+              }}
+              _focus={{
+                background: "none",
+              }}
+              _hover={{
+                background: "none",
+              }}
+            >
+              <Image width="24px" height="24px" src="/images/icons/filter.svg" alt="" />
+              Filtres
+            </Button>
+          </Box>
+        </>
+      )}
+    </Flex>
   )
 }
 
