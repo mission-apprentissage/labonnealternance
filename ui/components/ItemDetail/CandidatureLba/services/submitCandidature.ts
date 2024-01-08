@@ -3,12 +3,16 @@ import postCandidature from "../../../../services/postCandidature"
 
 export default async function submitCandidature({
   applicantValues,
-  setSendingState = (m: string) => {
-    console.log(m)
-  },
+  setSendingState,
   item = {},
   caller = null,
   jobLabel = null,
+}: {
+  applicantValues: any // TODO
+  setSendingState: (state: string) => void
+  item?: any // TODO
+  caller?: string | null
+  jobLabel?: string | null
 }) {
   setSendingState("currently_sending")
   let success = true
