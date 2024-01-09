@@ -21,6 +21,11 @@ export async function addJob({ name, payload, scheduled_for = new Date(), queued
     return 0
   }
 
+  // disable all jobs on pentest env
+  if (config.env === "pentest") {
+    return 0
+  }
+
   const job = await createJobSimple({
     name,
     payload,
