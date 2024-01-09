@@ -17,4 +17,6 @@ export const up = async (db: Db) => {
       },
     },
   ])
+
+  await db.collection("bonnesboites").createIndex({ geopoint: "2dsphere" })
 }
