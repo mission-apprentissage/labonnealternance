@@ -4,6 +4,7 @@ import { create as createMigration, status as statusMigration, up as upMigration
 
 import { getLoggerWithContext } from "../common/logger"
 
+import anonymizeOldAppointments from "./anonymization/anonumizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
@@ -198,6 +199,10 @@ export const CronsMap = {
     cron_string: "0 1 * * *",
     handler: () => addJob({ name: "user-recruteurs:anonymize", payload: {} }),
   },
+  "Anonymisation des appointments de plus de 1 an": {
+    cron_string: "30 1 * * *",
+    handler: () => addJob({ name: "anonymize:appointments", payload: {} }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -216,6 +221,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "anonymize:appointments":
+        return anonymizeOldAppointments()
       case "recruiters:delegations": // Temporaire, doit tourner une fois en production
         return resendDelegationEmailWithAccessToken()
       case "fix:duplicate:users": // Temporaire, doit tourner une fois en production

@@ -28,7 +28,7 @@
 
     - name: Prune Docker Images
       shell:
-        cmd: docker image prune --force
+        cmd: docker image prune --all --force
 
     - name: Prune Docker Volumes
       shell:
