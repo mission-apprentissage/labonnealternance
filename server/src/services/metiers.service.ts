@@ -38,15 +38,15 @@ export const getRomesAndLabelsFromTitleQuery = async ({ title, withRomeLabels }:
 }
 
 const searchableWeightedFields = [
-  { field: "sous_domaine_sans_accent", score: 80 },
-  { field: "domaine_sans_accent", score: 3 },
-  { field: "intitules_romes_sans_accent", score: 7 },
-  { field: "intitules_rncps_sans_accent", score: 7 },
-  { field: "mots_clefs_sans_accent", score: 3 },
-  { field: "mots_clefs_specifiques_sans_accent", score: 40 },
-  { field: "appellations_romes_sans_accent", score: 15 },
-  { field: "intitules_fap_sans_accent", score: 1 },
-  { field: "sous_domaine_onisep_sans_accent", score: 1 },
+  { field: "sous_domaine_sans_accent_computed", score: 80 },
+  { field: "domaine_sans_accent_computed", score: 3 },
+  { field: "intitules_romes_sans_accent_computed", score: 7 },
+  { field: "intitules_rncps_sans_accent_computed", score: 7 },
+  { field: "mots_clefs_sans_accent_computed", score: 3 },
+  { field: "mots_clefs_specifiques_sans_accent_computed", score: 40 },
+  { field: "appellations_romes_sans_accent_computed", score: 15 },
+  { field: "intitules_fap_sans_accent_computed", score: 1 },
+  { field: "sous_domaine_onisep_sans_accent_computed", score: 1 },
 ]
 
 const filterMetiers = async (regexes: any[], romes?: string, rncps?: string): Promise<(IDomainesMetiers & { score?: number })[]> => {
