@@ -147,11 +147,6 @@ export const appointmentSchema = new Schema<IAppointment>(
       default: null,
       description: "Adresse email CFA",
     },
-    is_anonymized: {
-      type: Boolean,
-      default: false,
-      description: "Si l'enregistrement est anonymisé",
-    },
   },
   {
     versionKey: false,
