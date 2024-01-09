@@ -95,8 +95,6 @@ export default async function (optionalFileName?: string) {
         libelles_fap,
       } = row
 
-      console.log("row : ", row)
-
       if (metier) {
         // cas de la ligne sur laquelle se trouve le nom du métier qui va marquer l'insertion d'une ligne dans la db
         step = 1
