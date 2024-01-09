@@ -12,7 +12,6 @@ import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
 import { DomainesMetiers } from "../../common/model/index"
 import { getFileFromS3Bucket } from "../../common/utils/awsUtils"
-import { resetIndexAndDb } from "../../common/utils/esUtils"
 import { readXLSXFile } from "../../common/utils/fileUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { createAssetsFolder } from "../lbb/lbaCompaniesUtils"
@@ -35,7 +34,8 @@ export default async function (optionalFileName?: string) {
 
   await downloadAndSaveFile(optionalFileName)
 
-  await resetIndexAndDb("domainesmetiers", DomainesMetiers, { requireAsciiFolding: true })
+  logger.info(`Clearing domainesmetiers...`)
+  await DomainesMetiers.deleteMany({})
 
   const workbookDomainesMetiers = readXLSXFile(FILEPATH)
 

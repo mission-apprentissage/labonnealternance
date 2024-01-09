@@ -2,7 +2,6 @@ import { ZDiplomesMetiersNew } from "shared/models"
 
 import { logger } from "../../common/logger"
 import { DiplomesMetiers, FormationCatalogue } from "../../common/model/index"
-import { resetIndexAndDb } from "../../common/utils/esUtils"
 
 const motsIgnores = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", "des", "et", "en"]
 const diplomesMetiers = {}
@@ -71,7 +70,8 @@ const getIntitulesFormations = async () => {
 export default async function () {
   logger.info(" -- Start of DiplomesMetiers initializer -- ")
 
-  await resetIndexAndDb("diplomesmetiers", DiplomesMetiers, { requireAsciiFolding: true })
+  logger.info(`Clearing diplomesmetiers...`)
+  await DiplomesMetiers.deleteMany({})
 
   logger.info(`Début traitement`)
 
