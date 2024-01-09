@@ -8,7 +8,7 @@ export const up = async (db: Db) => {
           type: "Point",
           coordinates: {
             $map: {
-              input: { $split: ["$geo_coordinates", ","] },
+              input: { $reverseArray: { $split: ["$geo_coordinates", ","] } },
               as: "coord",
               in: { $toDouble: "$$coord" },
             },
