@@ -1,3 +1,5 @@
+import { SearchForm } from "../pages/SearchForm"
+
 describe("send-spontaneous-application", () => {
   it("tests send-spontaneous-application on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
     cy.on("uncaught:exception", () => {
@@ -9,16 +11,13 @@ describe("send-spontaneous-application", () => {
 
     // cy.generateRandomEmail("test-auto-", "@nexistepas.fr", 10).then((randomEmail) => {
     cy.viewport(1254, 704)
-    cy.visit(Cypress.env("ui") + "?displayMap=false")
-    cy.get("#headerFormJobField-input").click()
-    cy.get("#headerFormJobField-input").type("Compta")
-    cy.get("#headerFormJobField-item-0").click()
-    cy.get("#headerFormJobField-input").should("have.value", "Comptabilité, gestion de paie")
-    cy.get("#headerFormPlaceField-input").click()
-    cy.get("#headerFormPlaceField-input").type("Marseil")
-    cy.get("#headerFormPlaceField-item-0").click()
-    cy.get("[data-testid='widget-form'] select[data-testid='diploma']").select("4 (BAC...)")
-    cy.get("[data-testid='widget-form'] button").click()
+    SearchForm.goToHome()
+    SearchForm.fillSearch({
+      metier: "Comptabilité, gestion de paie",
+      location: "Marseille",
+      niveauEtude: "4 (BAC...)",
+    })
+    SearchForm.submit()
 
     cy.wait("@submitJobCall").then(() => {
       // cy.get(".resultCard.lba.hasEmail").first().click()

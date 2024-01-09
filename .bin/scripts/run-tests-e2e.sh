@@ -17,6 +17,7 @@ fi
 
 readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
 CYPRESS_ENV_FILE="${ROOT_DIR}/cypress.${PLATFORM}.env"
+LOG_FILE=/tmp/cypressRun.log
 
 function setCypressEnv() {
   echo "writing Cypress env variables to $CYPRESS_ENV_FILE"
@@ -25,4 +26,10 @@ function setCypressEnv() {
   ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq -o=shell ".vault.$PLATFORM" | grep -E "^CYPRESS_" >> $CYPRESS_ENV_FILE
 }
 
-setCypressEnv 2> /tmp/setCypressEnv.log
+echo "" > $LOG_FILE
+setCypressEnv > $LOG_FILE 2>&1
+export $(cat "$CYPRESS_ENV_FILE" | xargs)
+echo "env:" >> $LOG_FILE
+cat $CYPRESS_ENV_FILE >> $LOG_FILE
+yarn e2e:headless >> $LOG_FILE 2>&1
+
