@@ -1,0 +1,20 @@
+import { Db } from "mongodb"
+
+export const up = async (db: Db) => {
+  await db.collection("bonnesboites").updateMany({}, [
+    {
+      $set: {
+        geopoint: {
+          type: "Point",
+          coordinates: {
+            $map: {
+              input: { $split: ["$geo_coordinates", ","] },
+              as: "coord",
+              in: { $toDouble: "$$coord" },
+            },
+          },
+        },
+      },
+    },
+  ])
+}
