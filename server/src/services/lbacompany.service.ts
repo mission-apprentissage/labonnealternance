@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { ILbaCompany } from "shared"
 
-import { search } from "../common/esClient/index"
+//import { search } from "../common/esClient/index"
 import { LbaCompany } from "../common/model/index"
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -46,7 +46,7 @@ const transformCompany = ({
     title: company.enseigne,
     contact,
     place: {
-      distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
+      distance: company.distance ? roundDistance(company.distance / 1000) ?? 0 : null,
       fullAddress: address,
       latitude: parseFloat(company.geo_coordinates.split(",")[0]),
       longitude: parseFloat(company.geo_coordinates.split(",")[1]),
@@ -112,34 +112,34 @@ const transformCompanies = ({
  * @param {number} limit le nombre maximum de sociétés à remonter
  * @returns {object}
  */
-const getCompanyEsQueryIndexFragment = (limit: number) => {
-  return {
-    //index: "mnaformation",
-    index: "bonnesboites",
-    size: limit,
-    _source_includes: [
-      "siret",
-      "recruitment_potential",
-      "raison_sociale",
-      "enseigne",
-      "naf_code",
-      "naf_label",
-      "rome_codes",
-      "street_number",
-      "street_name",
-      "insee_city_code",
-      "zip_code",
-      "city",
-      "geo_coordinates",
-      "email",
-      "phone",
-      "company_size",
-      "algorithm_origin",
-      "opco",
-      "opco_url",
-    ],
-  }
-}
+// const getCompanyEsQueryIndexFragment = (limit: number) => {
+//   return {
+//     //index: "mnaformation",
+//     index: "bonnesboites",
+//     size: limit,
+//     _source_includes: [
+//       "siret",
+//       "recruitment_potential",
+//       "raison_sociale",
+//       "enseigne",
+//       "naf_code",
+//       "naf_label",
+//       "rome_codes",
+//       "street_number",
+//       "street_name",
+//       "insee_city_code",
+//       "zip_code",
+//       "city",
+//       "geo_coordinates",
+//       "email",
+//       "phone",
+//       "company_size",
+//       "algorithm_origin",
+//       "opco",
+//       "opco_url",
+//     ],
+//   }
+// }
 
 /**
  * Retourne des sociétés issues de l'algo matchant les critères en paramètres
@@ -168,109 +168,198 @@ const getCompanies = async ({
   try {
     const distance = radius || 10
 
-    const mustTerm: object[] = [
-      {
-        match: {
-          rome_codes: romes?.split(",").join(" "),
-        },
-      },
-    ]
+    const query: any = {}
+
+    if (romes) {
+      query.rome_codes = { $in: romes?.split(",") }
+    }
 
     if (opco) {
-      mustTerm.push({
-        match: {
-          opco_short_name: opco.toUpperCase(),
-        },
-      })
+      query.opco_short_name = opco.toUpperCase()
     }
 
     if (opcoUrl) {
-      mustTerm.push({
-        match: {
-          opco_url: opcoUrl.toLowerCase(),
-        },
-      })
+      query.opco_url = opcoUrl.toLowerCase()
     }
 
-    const esQueryIndexFragment = getCompanyEsQueryIndexFragment(companyLimit)
-
-    const esQuerySort = {
-      sort: [
-        latitude
-          ? {
-              _geo_distance: {
-                geo_coordinates: [longitude ?? 0, latitude ?? 0],
-                order: "asc",
-                unit: "km",
-                mode: "min",
-                distance_type: "arc",
-                ignore_unmapped: true,
-              },
-            }
-          : "_score",
-      ],
-    }
-
-    let esQuery: any = {
-      query: {
-        bool: {
-          must: mustTerm,
-        },
-      },
-    }
+    let companies: ILbaCompany[] = []
 
     if (latitude) {
-      esQuery.query.bool.filter = {
-        geo_distance: {
-          distance: `${distance}km`,
-          geo_coordinates: {
-            lat: latitude,
-            lon: longitude,
+      companies = await LbaCompany.aggregate([
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [longitude, latitude] },
+            distanceField: "distance",
+            maxDistance: distance * 1000,
+            query,
           },
         },
-      }
+        {
+          $limit: companyLimit,
+        },
+      ])
     } else {
-      esQuery = {
-        query: {
-          function_score: esQuery,
-        },
-      }
+      // TODO randomisation du résultat
+      // esQuery = {
+      //   query: {
+      //     function_score: esQuery,
+      //   },
+      // }
+      companies = await LbaCompany.find(query).lean()
     }
 
-    const responseCompanies = await search(
-      {
-        ...esQueryIndexFragment,
-        body: {
-          ...esQuery,
-          ...esQuerySort,
-        },
-      },
-      LbaCompany
-    )
+    // responseCompanies.forEach((company) => {
+    //   companies.push({ ...company._source, distance: latitude ? company.sort : null })
+    // })
 
-    const companies: ILbaCompany[] = []
-
-    responseCompanies.forEach((company) => {
-      companies.push({ ...company._source, distance: latitude ? company.sort : null })
-    })
-
-    if (!latitude) {
-      companies.sort(function (a, b) {
-        if (!a || !a.enseigne) {
-          return -1
-        }
-        if (!b || !b.enseigne) {
-          return 1
-        }
-        return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
-      })
-    }
+    // if (!latitude) {
+    //   companies.sort(function (a, b) {
+    //     if (!a || !a.enseigne) {
+    //       return -1
+    //     }
+    //     if (!b || !b.enseigne) {
+    //       return 1
+    //     }
+    //     return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
+    //   })
+    // }
 
     return companies
   } catch (error) {
-    return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from local ES (${api})` })
+    return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from DB (${api})` })
   }
 }
+
+/**
+ * Retourne des sociétés issues de l'algo matchant les critères en paramètres
+ */
+// const getCompaniesFromES = async ({
+//   romes,
+//   latitude,
+//   longitude,
+//   radius,
+//   companyLimit,
+//   caller,
+//   opco,
+//   opcoUrl,
+//   api = "jobV1",
+// }: {
+//   romes?: string
+//   latitude?: number
+//   longitude?: number
+//   radius?: number
+//   companyLimit: number
+//   caller?: string | null
+//   opco?: string
+//   opcoUrl?: string
+//   api: string
+// }): Promise<ILbaCompany[] | IApiError> => {
+//   try {
+//     const distance = radius || 10
+
+//     const mustTerm: object[] = [
+//       {
+//         match: {
+//           rome_codes: romes?.split(",").join(" "),
+//         },
+//       },
+//     ]
+
+//     if (opco) {
+//       mustTerm.push({
+//         match: {
+//           opco_short_name: opco.toUpperCase(),
+//         },
+//       })
+//     }
+
+//     if (opcoUrl) {
+//       mustTerm.push({
+//         match: {
+//           opco_url: opcoUrl.toLowerCase(),
+//         },
+//       })
+//     }
+
+//     const esQueryIndexFragment = getCompanyEsQueryIndexFragment(companyLimit)
+
+//     const esQuerySort = {
+//       sort: [
+//         latitude
+//           ? {
+//               _geo_distance: {
+//                 geo_coordinates: [longitude ?? 0, latitude ?? 0],
+//                 order: "asc",
+//                 unit: "km",
+//                 mode: "min",
+//                 distance_type: "arc",
+//                 ignore_unmapped: true,
+//               },
+//             }
+//           : "_score",
+//       ],
+//     }
+
+//     let esQuery: any = {
+//       query: {
+//         bool: {
+//           must: mustTerm,
+//         },
+//       },
+//     }
+
+//     if (latitude) {
+//       esQuery.query.bool.filter = {
+//         geo_distance: {
+//           distance: `${distance}km`,
+//           geo_coordinates: {
+//             lat: latitude,
+//             lon: longitude,
+//           },
+//         },
+//       }
+//     } else {
+//       esQuery = {
+//         query: {
+//           function_score: esQuery,
+//         },
+//       }
+//     }
+
+//     const responseCompanies = await search(
+//       {
+//         ...esQueryIndexFragment,
+//         body: {
+//           ...esQuery,
+//           ...esQuerySort,
+//         },
+//       },
+//       LbaCompany
+//     )
+
+//     const companies: ILbaCompany[] = []
+
+//     responseCompanies.forEach((company) => {
+//       companies.push({ ...company._source, distance: latitude ? company.sort : null })
+//     })
+
+//     if (!latitude) {
+//       companies.sort(function (a, b) {
+//         if (!a || !a.enseigne) {
+//           return -1
+//         }
+//         if (!b || !b.enseigne) {
+//           return 1
+//         }
+//         return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
+//       })
+//     }
+
+//     return companies
+//   } catch (error) {
+//     return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from local ES (${api})` })
+//   }
+//}
 
 /**
  * Retourne des sociétés issues de l'algo au format unifié LBA

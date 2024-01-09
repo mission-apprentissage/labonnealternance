@@ -28,7 +28,7 @@ export const ZLbaCompany = z
     opco_url: z.string().nullable().describe("L'URL spécifique liée à l'OPCO de la société"),
     created_at: z.date().describe("La date création de la demande"),
     last_update_at: z.date().describe("Date de dernières mise à jour"),
-    distance: z.array(z.number()).nullish().describe("Distance de la société au centre de recherche en km"),
+    distance: z.number().nullish().describe("Distance de la société au centre de recherche en km"),
     _id: zObjectId,
   })
   .strict()
