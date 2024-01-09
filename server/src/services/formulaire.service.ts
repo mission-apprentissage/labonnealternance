@@ -22,7 +22,7 @@ import { getUser, getUserStatus } from "./userRecruteur.service"
 
 const { ObjectId } = pkg
 
-interface IFormulaireExtended extends IRecruiter {
+export interface IFormulaireExtended extends IRecruiter {
   entreprise_localite?: string
 }
 
@@ -35,33 +35,35 @@ export interface IOffreExtended extends IJob {
 /**
  * @description get formulaire by offer id
  */
-export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<IFormulaireExtended | null> => {
-  const result = await getOffre(id)
-
-  if (!result) {
+export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<{ recruiter: IFormulaireExtended; job: IJob } | null> => {
+  const recruiterOpt = await getOffre(id)
+  if (!recruiterOpt) {
     return null
   }
-
-  result.jobs = result.jobs.filter((x) => x._id.toString() === id.toString())
-
-  if (result.is_delegated && result.address) {
-    const [entreprise_localite] = result.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
-    const { cfa_delegated_siret } = result
+  const job = recruiterOpt.jobs.find((x) => x._id.toString() === id.toString())
+  if (!job) {
+    return null
+  }
+  recruiterOpt.jobs = [job]
+  if (recruiterOpt.is_delegated && recruiterOpt.address) {
+    const [entreprise_localite] = recruiterOpt.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
+    const { cfa_delegated_siret } = recruiterOpt
     if (cfa_delegated_siret) {
       const cfa = await getEtablissement({ establishment_siret: cfa_delegated_siret })
 
       if (cfa) {
-        result.phone = cfa.phone
-        result.email = cfa.email
-        result.last_name = cfa.last_name
-        result.first_name = cfa.first_name
-        result.establishment_raison_sociale = cfa.establishment_raison_sociale
-        result.address = cfa.address
-        return { ...result, entreprise_localite }
+        recruiterOpt.phone = cfa.phone
+        recruiterOpt.email = cfa.email
+        recruiterOpt.last_name = cfa.last_name
+        recruiterOpt.first_name = cfa.first_name
+        recruiterOpt.establishment_raison_sociale = cfa.establishment_raison_sociale
+        recruiterOpt.address = cfa.address
+        const finalRecruiter = { ...recruiterOpt, entreprise_localite }
+        return { recruiter: finalRecruiter, job }
       }
     }
   }
-  return result
+  return { recruiter: recruiterOpt, job }
 }
 
 /**

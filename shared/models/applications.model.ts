@@ -67,9 +67,9 @@ export const ZApplication = z
       description: "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
       example: "38 RUE DES HAMECONS, 75021 PARIS-21",
     }),
-    job_origin: z.string().nullable().openapi({
+    job_origin: z.enum(["lba", "lbb", "matcha"]).nullable().openapi({
       description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-      example: "lba|matcha",
+      example: "matcha",
     }),
     job_title: z.string().openapi({
       description:
@@ -90,7 +90,7 @@ export const ZApplication = z
   .strict()
   .openapi("Application")
 
-export const ZApplicationUI = ZApplication.extend({
+export const ZNewApplication = ZApplication.extend({
   message: ZApplication.shape.applicant_message_to_company.optional().transform((value) => disableUrlsWith0WidthChar(value)),
   applicant_file_name: ZApplication.shape.applicant_attachment_name,
   applicant_file_content: z.string().max(4215276).openapi({
@@ -115,6 +115,7 @@ export const ZApplicationUI = ZApplication.extend({
   }),
 })
   .omit({
+    _id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
@@ -128,6 +129,6 @@ export const ZApplicationUI = ZApplication.extend({
   })
   .openapi("ApplicationUi")
 
-export type IApplicationUI = z.output<typeof ZApplicationUI>
+export type INewApplication = z.output<typeof ZNewApplication>
 
 export type IApplication = z.output<typeof ZApplication>
