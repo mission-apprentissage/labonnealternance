@@ -18,11 +18,8 @@ function parseQueryString(value: string | string[]): string {
 
 export default function DepotRapideFin() {
   const router = useRouter()
-  console.log(router.query)
 
   if (!router.isReady) return
-
-  console.log("ready")
 
   const parsedQuery = z
     .object({
@@ -39,8 +36,6 @@ export default function DepotRapideFin() {
   if (parsedQuery.success === false) {
     throw new Error("Arguments incorrects")
   }
-
-  console.log(parsedQuery.data)
 
   return <FinComponent {...parsedQuery.data} />
 }
