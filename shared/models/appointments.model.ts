@@ -47,7 +47,6 @@ export const ZAppointment = z
     cle_ministere_educatif: z.string().nullish(),
     created_at: z.date().default(() => new Date()),
     cfa_recipient_email: z.string(),
-    is_anonymized: z.boolean().default(false),
   })
   .strict()
   .openapi("Appointment")
