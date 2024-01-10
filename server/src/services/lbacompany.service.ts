@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { ILbaCompany } from "shared"
 
-//import { search } from "../common/esClient/index"
+// import { search } from "../common/esClient/index"
 import { LbaCompany } from "../common/model/index"
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -185,6 +185,8 @@ const getCompanies = async ({
     let companies: ILbaCompany[] = []
 
     if (latitude) {
+      // console.log("query : ", query)
+      // console.log("longitude ", longitude, " latitude ", latitude, " distance ", distance, companyLimit)
       companies = await LbaCompany.aggregate([
         {
           $geoNear: {
@@ -358,7 +360,7 @@ const getCompanies = async ({
 //   } catch (error) {
 //     return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from local ES (${api})` })
 //   }
-//}
+// }
 
 /**
  * Retourne des sociétés issues de l'algo au format unifié LBA
@@ -389,6 +391,24 @@ export const getSomeCompanies = async ({
   const currentRadius = hasLocation ? radius : 21000
   const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
 
+  // const starttime = new Date().getTime()
+
+  // for (let i = 0; i < 49; ++i) {
+  //   // await getCompaniesFromES({
+  //   await getCompanies({
+  //     romes,
+  //     latitude,
+  //     longitude,
+  //     radius: currentRadius,
+  //     companyLimit,
+  //     caller,
+  //     api,
+  //     opco,
+  //     opcoUrl,
+  //   })
+  // }
+
+  // const companies = await getCompaniesFromES({
   const companies = await getCompanies({
     romes,
     latitude,
@@ -400,6 +420,10 @@ export const getSomeCompanies = async ({
     opco,
     opcoUrl,
   })
+
+  // const endtime = new Date().getTime()
+
+  // console.log("50 itération en ", endtime - starttime, "ms ", companies.length)
 
   if (!("error" in companies) && companies instanceof Array) {
     const sirets = companies.map(({ siret }) => siret)
