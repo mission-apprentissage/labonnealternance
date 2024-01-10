@@ -3,6 +3,7 @@ import { promisify } from "util"
 import ejs, { Data } from "ejs"
 import mjml from "mjml"
 import nodemailer, { Transporter } from "nodemailer"
+import { Address } from "nodemailer/lib/mailer"
 import SMTPTransport from "nodemailer/lib/smtp-transport"
 import nodemailerHtmlToText from "nodemailer-html-to-text"
 
@@ -49,7 +50,7 @@ const createMailer = () => {
       subject,
       template,
       data,
-      from = config.transactionalEmail,
+      from = { name: config.transactionalEmailSender, address: config.transactionalEmail },
       cc = undefined,
       attachments,
     }: {
@@ -57,13 +58,12 @@ const createMailer = () => {
       subject: string
       template: string
       data: object
-      from?: string
+      from?: string | Address
       cc?: string
       attachments?: object[]
     }): Promise<{ messageId: string; accepted?: string[] }> => {
       return transporter.sendMail({
         from,
-        sender: config.transactionalEmailSender,
         to,
         cc,
         subject,
