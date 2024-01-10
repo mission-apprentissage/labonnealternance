@@ -57,7 +57,7 @@ const Header = () => {
                   <Flex alignItems="center">
                     <Icon as={RiAccountCircleLine} color="bluefrance.500" />
                     <Box display={["none", "block"]} ml={2}>
-                      <Text color="bluefrance.500">
+                      <Text color="bluefrance.500" data-testid="logged-name">
                         {user.first_name} {user.last_name}
                       </Text>
                     </Box>

@@ -11,6 +11,14 @@ on:
         description: host name of the mailpit
         type: string
         required: true
+      environment:
+        description: platform type. Values are 'recette'|'preview'
+        type: string
+        required: true
+      pr_no:
+        description: pull request number
+        type: string
+        required: true
   workflow_call:
     inputs:
       cypress_host:
@@ -42,11 +50,14 @@ jobs:
       group: "cypress-${{ github.workflow }}-${{ github.ref }}"
     runs-on: ubuntu-latest
     steps:
+      - id: "get-pr-no"
+        run: echo "PR_NO=${{ github.event.issue.number || inputs.pr_no }}" >> $GITHUB_OUTPUT
+
       - id: "get-branch"
         run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName' || echo 'main')" >> $GITHUB_OUTPUT
         env:
           REPO: ${{ github.repository }}
-          PR_NO: ${{ github.event.issue.number }}
+          PR_NO: ${{ steps.get-pr-no.outputs.PR_NO }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout project
@@ -74,15 +85,66 @@ jobs:
       - name: Create vault pwd file
         run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
 
-      - name: Prepare env variables for cypress
-        run: .bin/mna-lba cypress:set-env ${{ inputs.environment }}
+      - name: Run end to end tests
+        run: .bin/mna-lba e2e:run ${{ inputs.environment }}
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+          CYPRESS_ui: ${{ inputs.cypress_host }}
+          CYPRESS_server: ${{ inputs.cypress_host }}
+          CYPRESS_smtp: ${{ inputs.smtp_host }}
+          CYPRESS_MONGODB_DATABASE: preview_${{ steps.get-pr-no.outputs.PR_NO }}
+
+      - name: Encrypt Error log on failure
+        run: .bin/mna-lba log:encrypt /tmp/cypressRun.log
+        if: failure()
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
 
-      - name: Run cypress e2e tests
+      - name: Upload failure logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-on-error
+          path: /tmp/cypressRun.log.gpg
+
+      - name: Encrypt screenshots
         run: |
-          source cypress.${{ inputs.environment }}.env
-          yarn e2e:headless --env ui=${{inputs.cypress_host}},server=${{inputs.cypress_host}},smtp=${{inputs.smtp_host}}
+          zip -r /tmp/screenshots.zip cypress/screenshots
+          .bin/mna-lba log:encrypt /tmp/screenshots.zip
+        if: failure()
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-on-error
+          path: /tmp/screenshots.zip.gpg
+
+      - name: Decrypt log command when failed
+        if: failure()
+        run: echo 'You can get error files using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-on-error`' >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment PR Preview failure
+        if: steps.get-pr-no.outputs.PR_NO && !failure()
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Cypress tests : OK
+          comment_tag: cypress-tests
+          mode: recreate
+          pr_number: ${{ steps.get-pr-no.outputs.PR_NO }}
+
+      - name: Comment PR Preview failure
+        if: steps.get-pr-no.outputs.PR_NO && failure()
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Cypress tests : FAILURE
+          comment_tag: cypress-tests
+          mode: recreate
+          pr_number: ${{ steps.get-pr-no.outputs.PR_NO }}
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2
