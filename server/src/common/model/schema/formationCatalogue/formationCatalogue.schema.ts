@@ -2,6 +2,7 @@ import { IFormationCatalogue } from "shared"
 
 import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
+import { geoPointSchema } from "../geopoint/geoPoint.schema"
 
 import { etablissementFormateurInfo } from "./etablissement.formateur.sub"
 import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub"
@@ -360,6 +361,11 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       type: String,
       implicit_type: "geo_point",
       description: "Latitude et longitude du lieu de formation",
+    },
+    lieu_formation_geopoint: {
+      type: geoPointSchema,
+      default: null,
+      description: "La géolocation du lieu de formation sous forme de geoPoint",
     },
     lieu_formation_adresse: {
       type: String,
