@@ -63,6 +63,7 @@ const createMailer = () => {
     }): Promise<{ messageId: string; accepted?: string[] }> => {
       return transporter.sendMail({
         from,
+        sender: config.transactionalEmailSender,
         to,
         cc,
         subject,
