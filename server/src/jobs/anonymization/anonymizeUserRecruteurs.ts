@@ -24,7 +24,6 @@ const anonymize = async () => {
         address_detail: 1,
         address: 1,
         geo_coordinates: 1,
-        scope: 1,
         is_email_checked: 1,
         type: 1,
         establishment_id: 1,
