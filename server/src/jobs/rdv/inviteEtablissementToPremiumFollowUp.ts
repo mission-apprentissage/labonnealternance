@@ -17,6 +17,7 @@ export const inviteEtablissementToPremiumFollowUp = async () => {
   logger.info("Cron #inviteEtablissementToPremiumFollowUp started.")
 
   const etablissementsFound = await Etablissement.find({
+    affelnet_perimetre: false,
     gestionnaire_email: {
       $ne: null,
     },
@@ -32,7 +33,6 @@ export const inviteEtablissementToPremiumFollowUp = async () => {
     "to_etablissement_emails.campaign": {
       $ne: mailType.PREMIUM_INVITE_FOLLOW_UP,
     },
-    affelnet_perimetre: null,
   })
 
   for (const etablissement of etablissementsFound) {

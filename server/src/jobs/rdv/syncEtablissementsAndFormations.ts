@@ -135,6 +135,7 @@ export const syncEtablissementsAndFormations = async () => {
             formateur_siret: formation.etablissement_formateur_siret,
           },
           {
+            affelnet_perimetre: false,
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             gestionnaire_email: emailDecisionnaire,
             raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,

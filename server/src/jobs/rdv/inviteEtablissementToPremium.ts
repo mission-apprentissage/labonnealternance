@@ -4,7 +4,7 @@ import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
-import { Etablissement, EligibleTrainingsForAppointment } from "../../common/model/index"
+import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
@@ -24,6 +24,7 @@ export const inviteEtablissementToPremium = async () => {
   }
 
   const etablissementsToInvite = await Etablissement.find({
+    affelnet_perimetre: false,
     gestionnaire_email: {
       $ne: null,
     },
