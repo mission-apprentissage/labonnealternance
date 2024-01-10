@@ -42,4 +42,4 @@ const modelMapper = (rawSchema) => {
   }).strict()`
 }
 
-console.log(modelMapper(schema))
+console.info(modelMapper(schema))
