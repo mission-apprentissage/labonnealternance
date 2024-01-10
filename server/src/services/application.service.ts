@@ -20,7 +20,7 @@ import config from "../config"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import { BrevoEventStatus } from "./brevo.service"
 import { scan } from "./clamav.service"
-import { IFormulaireExtended, getOffreAvecInfoMandataire } from "./formulaire.service"
+import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import { buildLbaCompanyAddress } from "./lbacompany.service"
 import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
@@ -226,15 +226,16 @@ export const sendApplication = async ({
  * Build url to access item detail on LBA ui
  */
 const buildUrlsOfDetail = (publicUrl: string, newApplication: INewApplication) => {
-  const { company_type, job_id } = newApplication
+  const { company_type, job_id, company_siret } = newApplication
   const urlSearchParams = new URLSearchParams()
   urlSearchParams.append("display", "list")
   urlSearchParams.append("page", "fiche")
   urlSearchParams.append("type", company_type)
   if (company_type === "matcha" && job_id) {
     urlSearchParams.append("itemId", job_id)
+  } else if (company_type === "lba") {
+    urlSearchParams.append("itemId", company_siret)
   }
-  // TODO quid des candidatures spontanées ?
   const paramsWithoutUtm = urlSearchParams.toString()
   if (company_type === "matcha") {
     urlSearchParams.append("utm_source", "jecandidate")
@@ -381,7 +382,7 @@ export const getEmailTemplate = (type = "mail-candidat"): string => {
   return getStaticFilePath(`./templates/${type}.mjml.ejs`)
 }
 
-type OffreOrLbbCompany = { type: "lba"; company: ILbaCompany } | { type: "matcha"; offre: IJob; recruiter: IFormulaireExtended }
+type OffreOrLbbCompany = { type: "lba"; company: ILbaCompany } | { type: "matcha"; offre: IJob; recruiter: IRecruiter }
 
 /**
  * @description checks if job applied to is valid

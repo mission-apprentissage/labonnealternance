@@ -22,10 +22,6 @@ import { getUser, getUserStatus } from "./userRecruteur.service"
 
 const { ObjectId } = pkg
 
-export interface IFormulaireExtended extends IRecruiter {
-  entreprise_localite?: string
-}
-
 export interface IOffreExtended extends IJob {
   candidatures: number
   pourvue: string
@@ -35,7 +31,7 @@ export interface IOffreExtended extends IJob {
 /**
  * @description get formulaire by offer id
  */
-export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<{ recruiter: IFormulaireExtended; job: IJob } | null> => {
+export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
   const recruiterOpt = await getOffre(id)
   if (!recruiterOpt) {
     return null
@@ -46,7 +42,6 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Pro
   }
   recruiterOpt.jobs = [job]
   if (recruiterOpt.is_delegated && recruiterOpt.address) {
-    const [entreprise_localite] = recruiterOpt.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
     const { cfa_delegated_siret } = recruiterOpt
     if (cfa_delegated_siret) {
       const cfa = await getEtablissement({ establishment_siret: cfa_delegated_siret })
@@ -58,8 +53,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Pro
         recruiterOpt.first_name = cfa.first_name
         recruiterOpt.establishment_raison_sociale = cfa.establishment_raison_sociale
         recruiterOpt.address = cfa.address
-        const finalRecruiter = { ...recruiterOpt, entreprise_localite }
-        return { recruiter: finalRecruiter, job }
+        return { recruiter: recruiterOpt, job }
       }
     }
   }
