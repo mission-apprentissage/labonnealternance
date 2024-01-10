@@ -76,7 +76,7 @@ const searchableWeightedFields = [
   { field: "sous_domaine_onisep_sans_accent_computed", score: 1 },
 ]
 
-const filterMetiers = async (regexes: any[], romes?: string, rncps?: string): Promise<(IDomainesMetiers & { score?: number })[]> => {
+const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string): Promise<(IDomainesMetiers & { score?: number })[]> => {
   if (cacheMetiers.length === 0) {
     await initializeCacheMetiers()
   }
@@ -120,7 +120,7 @@ const searchableWeightedDiplomaFields = [
   { field: "acronymes_intitule", score: 2 },
 ]
 
-const filterDiplomas = async (regexes: any[]): Promise<(IDiplomesMetiers & { score?: number })[]> => {
+const filterDiplomas = async (regexes: RegExp[]): Promise<(IDiplomesMetiers & { score?: number })[]> => {
   if (cacheDiplomas.length === 0) {
     await initializeCacheDiplomas()
   }
@@ -144,7 +144,7 @@ const filterDiplomas = async (regexes: any[]): Promise<(IDiplomesMetiers & { sco
  * construit les regex à partir du terme de recherche
  */
 const buildRegexes = (searchTerm: string) => {
-  const regexes: any[] = []
+  const regexes: RegExp[] = []
   searchTerm.split(" ").forEach((term, idx) => {
     if (idx === 0 || term.length > 2) {
       regexes.push(new RegExp(`\\b${removeAccents(term)}`, "i"))
@@ -171,7 +171,7 @@ export const getMetiers = async ({
   if (!title && !romes && !rncps) {
     throw Boom.badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
   } else {
-    let regexes: any[] = []
+    let regexes: RegExp[] = []
 
     if (title) {
       regexes = buildRegexes(title)
@@ -206,7 +206,7 @@ export const getMetiers = async ({
  * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
  */
 const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ labelsAndRomesForDiplomas: IMetierEnrichi[] }> => {
-  const regexes: any[] = buildRegexes(searchTerm)
+  const regexes: RegExp[] = buildRegexes(searchTerm)
 
   let diplomas: (IDiplomesMetiers & { score?: number })[] = await filterDiplomas(regexes)
   diplomas = diplomas.sort((a: IDiplomesMetiers & { score?: number }, b: IDiplomesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
@@ -233,7 +233,7 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
  * @returns {Promise<IAppellationsRomes>}
  */
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
-  const regexes: any[] = buildRegexes(searchTerm)
+  const regexes: RegExp[] = buildRegexes(searchTerm)
 
   const metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers(regexes)
 
