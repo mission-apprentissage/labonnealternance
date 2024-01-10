@@ -53,6 +53,17 @@ export const getRomesAndLabelsFromTitleQuery = async ({ title, withRomeLabels }:
   return { ...romesMetiers, ...romesDiplomes }
 }
 
+const computeScore = (document, searchableFields, regexes) => {
+  searchableFields.map(({ field, score }) =>
+    regexes.map((regex) => {
+      const valueToTest = document[field] instanceof Array ? document[field].join(" ") : document[field]
+      if (valueToTest.match(regex)) {
+        document.score = score + (document.score ?? 0)
+      }
+    })
+  )
+}
+
 const searchableWeightedFields = [
   { field: "sous_domaine_sans_accent_computed", score: 80 },
   { field: "domaine_sans_accent_computed", score: 3 },
@@ -94,14 +105,7 @@ const filterMetiers = async (regexes: any[], romes?: string, rncps?: string): Pr
 
     const matchingMetier: IDomainesMetiers & { score?: number } = { ...metier }
 
-    searchableWeightedFields.map(({ field, score }) =>
-      regexes.map((regex) => {
-        const valueToTest = metier[field] instanceof Array ? metier[field].join(" ") : metier[field]
-        if (valueToTest.match(regex)) {
-          matchingMetier.score = score + (matchingMetier.score ?? 0)
-        }
-      })
-    )
+    computeScore(matchingMetier, searchableWeightedFields, regexes)
 
     if (matchingMetier.score) {
       results.push(matchingMetier)
@@ -126,14 +130,7 @@ const filterDiplomas = async (regexes: any[]): Promise<(IDiplomesMetiers & { sco
   cacheDiplomas.map((diploma) => {
     const matchingDiploma: IDiplomesMetiers & { score?: number } = { ...diploma }
 
-    searchableWeightedDiplomaFields.map(({ field, score }) =>
-      regexes.map((regex) => {
-        const valueToTest = diploma[field] instanceof Array ? diploma[field].join(" ") : diploma[field]
-        if (valueToTest.match(regex)) {
-          matchingDiploma.score = score + (matchingDiploma.score ?? 0)
-        }
-      })
-    )
+    computeScore(matchingDiploma, searchableWeightedDiplomaFields, regexes)
 
     if (matchingDiploma.score) {
       results.push(matchingDiploma)
