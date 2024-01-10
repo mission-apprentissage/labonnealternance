@@ -83,7 +83,7 @@ const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string):
 
   const results: (IDomainesMetiers & { score?: number })[] = []
 
-  cacheMetiers.map((metier) => {
+  cacheMetiers.forEach((metier) => {
     if (romes) {
       const romeList: string[] = romes.split(", ")
       if (!romeList.some((rome) => metier.codes_romes.includes(rome))) {
@@ -127,7 +127,7 @@ const filterDiplomas = async (regexes: RegExp[]): Promise<(IDiplomesMetiers & { 
 
   const results: (IDiplomesMetiers & { score?: number })[] = []
 
-  cacheDiplomas.map((diploma) => {
+  cacheDiplomas.forEach((diploma) => {
     const matchingDiploma: IDiplomesMetiers & { score?: number } = { ...diploma }
 
     computeScore(matchingDiploma, searchableWeightedDiplomaFields, regexes)
