@@ -199,30 +199,29 @@ const getCompanies = async ({
         },
       ])
     } else {
-      // TODO randomisation du résultat
-      // esQuery = {
-      //   query: {
-      //     function_score: esQuery,
-      //   },
-      // }
-      companies = await LbaCompany.find(query).lean()
+      companies = await LbaCompany.aggregate([
+        {
+          $match: query,
+        },
+        {
+          $sample: {
+            size: companyLimit,
+          },
+        },
+      ])
     }
 
-    // responseCompanies.forEach((company) => {
-    //   companies.push({ ...company._source, distance: latitude ? company.sort : null })
-    // })
-
-    // if (!latitude) {
-    //   companies.sort(function (a, b) {
-    //     if (!a || !a.enseigne) {
-    //       return -1
-    //     }
-    //     if (!b || !b.enseigne) {
-    //       return 1
-    //     }
-    //     return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
-    //   })
-    // }
+    if (!latitude) {
+      companies.sort(function (a, b) {
+        if (!a || !a.enseigne) {
+          return -1
+        }
+        if (!b || !b.enseigne) {
+          return 1
+        }
+        return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
+      })
+    }
 
     return companies
   } catch (error) {
