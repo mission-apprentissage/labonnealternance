@@ -101,7 +101,7 @@ export const ZNewApplication = ZApplication.extend({
     description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
     example: "lba",
   }),
-  iv: z.string().openapi({
+  iv: z.string().optional().openapi({
     description: "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
     example: "...59c24c059b...",
   }),
