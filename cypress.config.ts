@@ -1,6 +1,8 @@
 import { defineConfig } from "cypress"
 import * as dotenv from "dotenv"
 
+import { setupNodeEvents } from "./cypress/plugin/configure"
+
 dotenv.config()
 
 export default defineConfig({
@@ -8,5 +10,6 @@ export default defineConfig({
   viewportWidth: 1366,
   e2e: {
     video: false,
+    setupNodeEvents,
   },
 })

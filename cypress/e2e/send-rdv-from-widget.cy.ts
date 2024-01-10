@@ -1,3 +1,5 @@
+import { SearchForm } from "../pages/SearchForm"
+
 describe("send-rdv-from-widget", () => {
   it("tests send-rdv-from-widget on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
     cy.intercept("GET", Cypress.env("server") + "/api/v1/formations?*").as("submitTrainingCall")
@@ -6,11 +8,10 @@ describe("send-rdv-from-widget", () => {
     // cy.generateRandomEmail("test-auto-", "@nexistepas.fr", 10).then((randomEmail) => {
     cy.viewport(1254, 704)
     cy.visit(Cypress.env("ui") + "/recherche-apprentissage-formation?displayMap=false")
-    cy.get("#headerFormJobField-input").click()
-    cy.get("#headerFormJobField-input").type("esth")
-    cy.get("#headerFormJobField-item-0").click()
-    cy.get("#headerFormJobField-input").should("have.value", "Esthétique")
-    cy.get("[data-testid='widget-form'] button").click()
+    SearchForm.fillSearch({
+      metier: "Esthétique",
+    })
+    SearchForm.submit()
 
     cy.wait("@submitTrainingCall").then(() => {
       // cy.get(".resultCard.training").first().click()

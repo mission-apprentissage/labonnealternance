@@ -42,7 +42,7 @@ const EmptySpace = () => (
     </Flex>
 
     <Box w={["100%", "100%", "100%", "600px"]}>
-      <Heading fontSize="2rem" pb={7}>
+      <Heading fontSize="2rem" pb={7} datatest-id="header-ajouter-entreprise">
         Ajoutez votre première entreprise partenaire
       </Heading>
       <Text fontSize="1.375rem">Une entreprise partenaire vous fait confiance pour gérer ses offres d’emploi ?</Text>
