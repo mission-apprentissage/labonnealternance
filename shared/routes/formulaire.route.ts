@@ -12,9 +12,15 @@ export const zFormulaireRoute = {
       path: "/formulaire/:establishment_id",
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "2xx": ZRecruiter,
+        "200": ZRecruiter.omit({
+          jobs: true,
+        }).extend({
+          jobs: z.array(
+            ZJob.extend({
+              candidatures: z.number(),
+            })
+          ),
+        }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -43,9 +49,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX faire un ZJobPublic sans la partie delegations
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        // "200": z.any(),
-        "2xx": ZJob,
+        "200": ZJob,
       },
       securityScheme: {
         auth: "cookie-session",
@@ -134,7 +138,7 @@ export const zFormulaireRoute = {
       body: ZRecruiterWritable.partial(),
       response: {
         // TODO ANY TO BE FIXED
-        "2xx": z.any(),
+        "200": z.any(),
         // "2xx": ZRecruiter,
       },
       securityScheme: {

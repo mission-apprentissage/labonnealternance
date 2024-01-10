@@ -20,11 +20,11 @@ const Formulaire = ({
   email,
   establishment_id,
 }: {
-  last_name: string
-  first_name: string
-  phone: string
-  email: string
-  establishment_id: string
+  last_name?: string
+  first_name?: string
+  phone?: string
+  email?: string
+  establishment_id?: string
 }) => {
   const toast = useToast()
   const { user } = useAuth()

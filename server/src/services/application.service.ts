@@ -53,7 +53,7 @@ const images: object = {
 /**
  * @description Get applications by job id
  */
-export const getApplication = (job_id: IApplication["job_id"]) => Application.find({ job_id }).lean()
+export const getApplicationsByJobId = (job_id: IApplication["job_id"]) => Application.find({ job_id }).lean()
 
 /**
  * @description Get applications count by job id
