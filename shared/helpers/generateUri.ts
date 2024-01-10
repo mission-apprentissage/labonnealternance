@@ -62,7 +62,7 @@ export function generatePath(originalPath: string, params: PathParam = {}): stri
     // Remove empty segments
     .filter((segment) => !!segment)
 
-  return prefix + segments.join("/")
+  return prefix + encodeURIComponent(segments.join("/"))
 }
 
 export function generateQueryString(query: QueryString = {}): string {
