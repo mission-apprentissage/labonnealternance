@@ -7,6 +7,8 @@ import { DomainesMetiers } from "@/common/model"
 import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomesmetiers.types"
 import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
 import { db } from "@/common/mongodb"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import config from "@/config"
 
 import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
@@ -18,6 +20,13 @@ const initializeCacheMetiers = async () => {
   console.log("initializeCacheMetiers on first use")
   cacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
   const roughObjSize = JSON.stringify(cacheMetiers).length
+  if (config.env === "production") {
+    notifyToSlack({
+      subject: `Cache domaines metiers chargé`,
+      message: `Cache domaines metiers chargé. Taille estimée ${roughObjSize} octets`,
+      error: false,
+    })
+  }
   console.log("cacheMetiers : ", roughObjSize)
 }
 
@@ -25,6 +34,13 @@ const initializeCacheDiplomas = async () => {
   console.log("initializeCacheDiplomas on first use")
   cacheDiplomas = await db.collection("diplomesmetiers").find({}).toArray()
   const roughObjSize = JSON.stringify(cacheDiplomas).length
+  if (config.env === "production") {
+    notifyToSlack({
+      subject: `Cache diplômes metiers chargé`,
+      message: `Cache diplômes metiers chargé. Taille estimée ${roughObjSize} octets`,
+      error: false,
+    })
+  }
   console.log("cacheDiplomas : ", roughObjSize)
 }
 
