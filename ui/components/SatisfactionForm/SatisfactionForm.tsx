@@ -154,14 +154,6 @@ const SatisfactionForm = () => {
     )
   }
 
-  const getFieldError = () => {
-    let message = ""
-    if (formik.touched.company_feedback && formik.errors.company_feedback) message = formik.errors.company_feedback
-    else if (sendingState === "not_sent_because_of_errors") message = "Une erreur technique empêche l'enregistrement de votre avis. Merci de réessayer ultérieurement"
-
-    return getErrorForMessage(message)
-  }
-
   const getPlaceHolderText = () => {
     switch (company_recruitment_intention) {
       case ApplicantIntention.NESAISPAS:
@@ -176,6 +168,7 @@ const SatisfactionForm = () => {
   }
 
   const getFieldStatus = (formikObj, target) => {
+    console.log(formikObj, target)
     let res = "is-not-validated"
     if (formikObj.errors[target]) {
       res = "is-valid-false"
@@ -208,10 +201,10 @@ const SatisfactionForm = () => {
                     onChange={formik.handleChange}
                     value={formik.values.company_feedback}
                     {...textAreaProperties}
-                    borderBottomColor={getFieldColor(commentFieldStatus)}
+                    borderBottomColor={formik.touched.company_feedback && formik.errors.company_feedback && getFieldColor(commentFieldStatus)}
                   />
                 </Box>
-                {getFieldError()}
+                {formik.touched.company_feedback && formik.errors.company_feedback && getErrorForMessage(formik.errors.company_feedback)}
 
                 {company_recruitment_intention !== ApplicantIntention.REFUS && (
                   <>
@@ -230,9 +223,9 @@ const SatisfactionForm = () => {
                           onBlur={formik.handleBlur}
                           value={formik.values.email}
                           {...inputProperties}
-                          borderBottomColor={getFieldColor(emailFieldStatus)}
+                          borderBottomColor={formik.touched.email && formik.errors.email && getFieldColor(emailFieldStatus)}
                         />
-                        {getErrorForMessage(formik.errors.email)}
+                        {formik.touched.email && formik.errors.email && getErrorForMessage(formik.errors.email)}
                         {testingParameters?.simulatedRecipient ? <div>Les emails seront envoyés à {testingParameters.simulatedRecipient}</div> : ""}
                       </Box>
                       <Spacer minWidth={4} />
@@ -248,9 +241,9 @@ const SatisfactionForm = () => {
                           onBlur={formik.handleBlur}
                           value={formik.values.phone}
                           {...inputProperties}
-                          borderBottomColor={getFieldColor(phoneFieldStatus)}
+                          borderBottomColor={formik.touched.phone && formik.errors.phone && getFieldColor(phoneFieldStatus)}
                         />
-                        {getErrorForMessage(formik.errors.phone)}
+                        {formik.touched.phone && formik.errors.phone && getErrorForMessage(formik.errors.phone)}
                       </Box>
                     </Flex>
                   </>
