@@ -48,18 +48,21 @@ const Formulaire = ({
     },
   })
 
-  const cfaMutation = useMutation<void, unknown, { establishment_id: string; values: any }, unknown>(({ establishment_id, values }) => updateFormulaire(establishment_id, values), {
-    onSuccess: () => {
-      toast({
-        title: "Entreprise mise à jour avec succès.",
-        position: "top-right",
-        status: "success",
-        duration: 4000,
-      })
-      router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
-      client.invalidateQueries("formulaire-edition")
-    },
-  })
+  const cfaMutation = useMutation<void, unknown, { establishment_id: string; values: any }, unknown>(
+    ({ establishment_id, values }) => updateFormulaire(establishment_id, values).then(() => {}),
+    {
+      onSuccess: () => {
+        toast({
+          title: "Entreprise mise à jour avec succès.",
+          position: "top-right",
+          status: "success",
+          duration: 4000,
+        })
+        router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
+        client.invalidateQueries("formulaire-edition")
+      },
+    }
+  )
 
   const submitForm = async (values, { setSubmitting, setFieldError }) => {
     if (user.type === AUTHTYPE.ENTREPRISE) {

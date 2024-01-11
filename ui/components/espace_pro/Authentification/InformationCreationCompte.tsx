@@ -2,6 +2,8 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormL
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
+import { IUserStatusValidationJson } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import { ApiError } from "@/utils/api.utils"
@@ -147,7 +149,6 @@ const FormulaireLayout = ({ left, right }) => {
 }
 
 export const InformationCreationCompte = () => {
-  // const location = useLocation()
   const router = useRouter()
   const validationPopup = useDisclosure()
   const [popupData, setPopupData] = useState({})
@@ -163,12 +164,16 @@ export const InformationCreationCompte = () => {
     }
     createEtablissement(payload)
       .then((data) => {
-        if (data.user.status[0].status === "VALIDÉ") {
+        if (!data) {
+          throw new Error("no data")
+        }
+        const statusArray: IUserStatusValidationJson[] = data.user?.status ?? []
+        if (statusArray?.at(0)?.status === ETAT_UTILISATEUR.VALIDE) {
           if (data.user.type === AUTHTYPE.ENTREPRISE) {
             // Dépot simplifié
             router.push({
               pathname: "/espace-pro/creation/offre",
-              query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id },
+              query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id.toString() },
             })
           } else {
             router.push({

@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 import { useQuery } from "react-query"
-import { IUserRecruteur } from "shared"
+import { IUserRecruteurJson } from "shared"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { Layout, LoadingEmptySpace } from "@/components/espace_pro"
@@ -17,11 +17,10 @@ const AdminUserView = ({ params }: Props) => {
     data: user,
     isLoading,
     refetch: refetchUser,
-  } = useQuery<IUserRecruteur>({
+  } = useQuery<IUserRecruteurJson>({
     queryKey: ["adminusersview"],
     queryFn: async () => {
       const user = await apiGet("/admin/users/:userId", { params })
-
       return user
     },
     enabled: !!params.userId,
