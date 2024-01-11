@@ -181,6 +181,7 @@ export const zFormationCatalogueSchema = z
     date_fin: z.array(z.string()).nullish(),
     modalites_entrees_sorties: z.array(z.boolean()).nullish(),
     num_tel: z.string().nullable().describe("Numéro de téléphone de contact"),
+    distance: z.number().nullish(),
   })
   .strict()
   .extend(etablissementFormateurSchema.shape)

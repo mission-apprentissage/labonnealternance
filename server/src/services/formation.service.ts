@@ -1,4 +1,3 @@
-import Boom from "boom"
 import dayjs from "dayjs"
 import { groupBy, maxBy } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
@@ -17,6 +16,7 @@ import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.share
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
 const formationResultLimit = 500
+const worldRadius = 21000
 
 const diplomaMap = {
   3: "3 (CAP...)",
@@ -31,7 +31,7 @@ const getDiplomaIndexName = (value) => {
 }
 
 /**
- * Récupère les formations matchant les critères en paramètre depuis Elasticsearch
+ * Récupère les formations matchant les critères en paramètre depuis la mongo
  */
 export const getFormations = async ({
   romes,
@@ -51,109 +51,72 @@ export const getFormations = async ({
   caller?: string
   api?: string
   options: "with_description"[]
-}): Promise<IFormationEsResult[]> => {
-  try {
-    const distance = radius || 30
+}): Promise<IFormationCatalogue[]> => {
+  const distance = radius || 30
 
-    const latitude = coords?.at(1)
-    const longitude = coords?.at(0)
+  const latitude = coords?.at(1)
+  const longitude = coords?.at(0)
 
-    const now = new Date()
-    const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
+  const now = new Date()
+  const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
 
-    const mustTerm: object[] = [
-      romes
-        ? {
-            match: {
-              rome_codes: romes.join(" "),
-            },
-          }
-        : {
-            multi_match: {
-              query: romeDomain,
-              fields: ["rome_codes"],
-              type: "phrase_prefix",
-              operator: "or",
-            },
-          },
-    ]
+  const query: any = {}
 
-    mustTerm.push({
-      match: {
-        tags: tags.join(" "),
-      },
-    })
-
-    if (diploma) {
-      mustTerm.push({
-        match_phrase: {
-          niveau: getDiplomaIndexName(diploma),
-        },
-      })
-    }
-
-    const esQuerySort = {
-      sort: [
-        coords
-          ? {
-              _geo_distance: {
-                lieu_formation_geo_coordonnees: coords,
-                order: "asc",
-                unit: "km",
-                mode: "min",
-                distance_type: "arc",
-                ignore_unmapped: true,
-              },
-            }
-          : "_score",
-      ],
-    }
-
-    const esQuery: any = {
-      query: {
-        bool: {
-          must: mustTerm,
-        },
-      },
-    }
-
-    if (coords) {
-      esQuery.query.bool.filter = {
-        geo_distance: {
-          distance: `${distance}km`,
-          lieu_formation_geo_coordonnees: {
-            lat: latitude,
-            lon: longitude,
-          },
-        },
-      }
-    }
-
-    const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit, options)
-
-    const responseFormations = await search(
-      {
-        ...esQueryIndexFragment,
-        body: {
-          ...esQuery,
-          ...esQuerySort,
-        },
-      },
-      FormationCatalogue
-    )
-
-    const formations: any[] = []
-
-    responseFormations.forEach((formation) => {
-      formations.push({ source: formation._source, sort: formation.sort, id: formation._id })
-    })
-
-    return formations
-  } catch (error) {
-    const newError = Boom.internal("getting trainings from Catalogue")
-    newError.cause = error
-    throw newError
+  if (romes) {
+    query.rome_codes = { $in: romes }
   }
+
+  if (romeDomain) {
+    query.rome_codes = {
+      $elemMatch: {
+        $regex: `/^${romeDomain}/`,
+        $options: "i",
+      },
+    }
+  }
+
+  query.tags = { $in: tags.map((tag) => tag.toString()) }
+
+  if (diploma) {
+    query.niveau = getDiplomaIndexName(diploma)
+  }
+
+  let formations: any[] = []
+
+  const stages: any[] = []
+
+  if (options.indexOf("with_description") < 0) {
+    stages.push({ $project: { objectif: 0, contenu: 0 } })
+  }
+
+  if (coords) {
+    stages.push({
+      $limit: limit,
+    })
+    stages.unshift({
+      $geoNear: {
+        near: { type: "Point", coordinates: [longitude, latitude] },
+        distanceField: "distance",
+        maxDistance: distance * 1000,
+        query,
+      },
+    })
+
+    formations = await FormationCatalogue.aggregate(stages)
+  } else {
+    stages.unshift({
+      $match: query,
+    })
+    stages.push({
+      $sample: {
+        size: formationResultLimit,
+      },
+    })
+
+    formations = await FormationCatalogue.aggregate(stages)
+  }
+
+  return formations
 }
 
 /**
@@ -161,24 +124,14 @@ export const getFormations = async ({
  * @param {string} id l'identifiant de la formation
  * @returns {Promise<IApiError | IFormationEsResult[]>}
  */
-const getFormation = async ({ id }: { id: string; caller?: string }): Promise<IFormationEsResult[]> => {
-  const formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id })
-
-  if (formation) {
-    return [{ source: formation }]
-  } else {
-    return []
-  }
-}
+const getFormation = async ({ id }: { id: string }) => FormationCatalogue.findOne({ cle_ministere_educatif: id })
 
 /**
  * Retourne une formation du catalogue transformée en LbaItem
  */
 const getOneFormationFromId = async ({ id }: { id: string }): Promise<ILbaItemFormation[]> => {
-  const rawEsFormations = await getFormation({ id })
-  const formations = transformFormationsForIdea(rawEsFormations)
-
-  return formations
+  const formation = await getFormation({ id })
+  return formation ? [transformFormationForIdea(formation)] : []
 }
 
 /**
@@ -295,58 +248,56 @@ const getAtLeastSomeFormations = async ({
   caller?: string
   options: "with_description"[]
 }): Promise<ILbaItemFormation[]> => {
-  let rawEsFormations: IFormationEsResult[]
-  let currentRadius = radius
-  let formationLimit = formationResultLimit
+  const currentRadius = radius
 
-  rawEsFormations = await getFormations({
+  let rawFormations: IFormationCatalogue[]
+  rawFormations = await getFormations({
     romes,
     romeDomain,
     coords,
     radius: currentRadius,
     diploma,
-    limit: formationLimit,
+    limit: formationResultLimit,
     caller,
     options,
   })
 
   // si pas de résultat on étend le rayon de recherche et on réduit le nombre de résultats autorisés
-  if (rawEsFormations instanceof Array && rawEsFormations.length === 0) {
-    formationLimit = maxOutLimitFormation // limite réduite car extension au delà du rayon de recherche
-    currentRadius = 20000
-    rawEsFormations = await getFormations({
+  if (rawFormations instanceof Array && rawFormations.length === 0) {
+    rawFormations = await getFormations({
       romes,
       romeDomain,
       coords,
-      radius: currentRadius,
+      radius: worldRadius,
       diploma,
-      limit: formationLimit,
+      limit: maxOutLimitFormation, // limite réduite car extension au delà du rayon de recherche
       caller,
       options,
     })
   }
 
-  rawEsFormations = deduplicateFormations(rawEsFormations)
-  const formations = transformFormationsForIdea(rawEsFormations)
+  rawFormations = deduplicateFormations(rawFormations)
+  const formations = transformFormationsForIdea(rawFormations)
+
   sortFormations(formations)
   return formations
 }
 
 /**
  * Retire les formations en doublon selon les critères arbitraires métiers visibles ci-dessous
- * @param {IFormationEsResult[]} formations les formations issues de la recherche elasticsearch
- * @return {IFormationEsResult[]}
+ * @param {IFormationCatalogue[]} formations les formations issues de la recherche elasticsearch
+ * @return {IFormationCatalogue[]}
  */
-export const deduplicateFormations = (formations: IFormationEsResult[]): IFormationEsResult[] => {
+export const deduplicateFormations = (formations: IFormationCatalogue[]): IFormationCatalogue[] => {
   if (formations instanceof Array && formations.length > 0) {
     return formations.reduce((acc: any[], formation) => {
       const found = acc.find((f) => {
         return (
-          f.source.intitule_long === formation.source.intitule_long &&
-          f.source.intitule_court === formation.source.intitule_court &&
-          f.source.etablissement_formateur_siret === formation.source.etablissement_formateur_siret &&
-          f.source.diplome === formation.source.diplome &&
-          f.source.code_postal === formation.source.code_postal
+          f.intitule_long === formation.intitule_long &&
+          f.intitule_court === formation.intitule_court &&
+          f.etablissement_formateur_siret === formation.etablissement_formateur_siret &&
+          f.diplome === formation.diplome &&
+          f.code_postal === formation.code_postal
         )
       })
 
@@ -364,7 +315,7 @@ export const deduplicateFormations = (formations: IFormationEsResult[]): IFormat
 /**
  * Retourne un ensemble de formations LbaItem à partir de formations issues d'elasticsearch ou de la mongo
  */
-const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILbaItemFormation[] => {
+const transformFormationsForIdea = (rawEsFormations: IFormationCatalogue[]): ILbaItemFormation[] => {
   const formations: ILbaItemFormation[] = []
 
   if (rawEsFormations.length) {
@@ -379,83 +330,81 @@ const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILba
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
-const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFormation => {
-  const geoSource = rawFormation.source.lieu_formation_geo_coordonnees
+const transformFormationForIdea = (rawFormation: IFormationCatalogue): ILbaItemFormation => {
+  const geoSource = rawFormation.lieu_formation_geo_coordonnees
   const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
-  const sessions = setSessions(rawFormation.source)
+  const sessions = setSessions(rawFormation)
   const duration = getDurationFromSessions(sessions)
 
   const resultFormation: ILbaItemFormation = {
     ideaType: "formation",
-    title: (rawFormation.source?.intitule_long || rawFormation.source.intitule_court) ?? null,
-    longTitle: rawFormation.source.intitule_long ?? null,
-    id: rawFormation.source.cle_ministere_educatif ?? null,
-    idRco: rawFormation.source.id_formation ?? null,
-    idRcoFormation: rawFormation.source.id_rco_formation ?? null,
+    title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
+    longTitle: rawFormation.intitule_long ?? null,
+    id: rawFormation.cle_ministere_educatif ?? null,
+    idRco: rawFormation.id_formation ?? null,
+    idRcoFormation: rawFormation.id_rco_formation ?? null,
 
     contact: {
-      phone: rawFormation.source.num_tel ?? null,
+      phone: rawFormation.num_tel ?? null,
     },
 
     place: {
-      distance: rawFormation.sort ? roundDistance(rawFormation.sort[0]) : null,
-      fullAddress: getTrainingAddress(rawFormation.source), // adresse postale reconstruite à partir des éléments d'adresse fournis
+      distance: rawFormation.distance ? roundDistance(rawFormation.distance / 1000) : rawFormation.distance === 0 ? 0 : null,
+      fullAddress: getTrainingAddress(rawFormation), // adresse postale reconstruite à partir des éléments d'adresse fournis
       latitude: latOpt ?? null,
       longitude: longOpt ?? null,
-      //city: formation.source.etablissement_formateur_localite,
-      city: rawFormation.source.localite ?? null,
-      address: `${rawFormation.source.lieu_formation_adresse}`,
-      cedex: rawFormation.source.etablissement_formateur_cedex,
-      zipCode: rawFormation.source.code_postal,
-      //trainingZipCode: formation.source.code_postal,
-      departementNumber: rawFormation.source.num_departement,
-      region: rawFormation.source.region,
-      insee: rawFormation.source.code_commune_insee,
-      remoteOnly: rawFormation.source.entierement_a_distance,
+      city: rawFormation.localite ?? null,
+      address: `${rawFormation.lieu_formation_adresse}`,
+      cedex: rawFormation.etablissement_formateur_cedex,
+      zipCode: rawFormation.code_postal,
+      departementNumber: rawFormation.num_departement,
+      region: rawFormation.region,
+      insee: rawFormation.code_commune_insee,
+      remoteOnly: rawFormation.entierement_a_distance,
     },
 
     company: {
-      name: getSchoolName(rawFormation.source), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
-      siret: rawFormation.source.etablissement_formateur_siret,
-      id: rawFormation.source.etablissement_formateur_id,
-      uai: rawFormation.source.etablissement_formateur_uai,
+      name: getSchoolName(rawFormation), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
+      siret: rawFormation.etablissement_formateur_siret,
+      id: rawFormation.etablissement_formateur_id,
+      uai: rawFormation.etablissement_formateur_uai,
       headquarter: {
         // uniquement pour formation
-        id: rawFormation.source.etablissement_gestionnaire_id ?? null,
-        uai: rawFormation.source.etablissement_gestionnaire_uai ?? null,
-        siret: rawFormation.source.etablissement_gestionnaire_siret ?? null,
-        type: rawFormation.source.etablissement_gestionnaire_type ?? null,
-        hasConvention: rawFormation.source.etablissement_gestionnaire_conventionne ?? null,
+        id: rawFormation.etablissement_gestionnaire_id ?? null,
+        uai: rawFormation.etablissement_gestionnaire_uai ?? null,
+        siret: rawFormation.etablissement_gestionnaire_siret ?? null,
+        type: rawFormation.etablissement_gestionnaire_type ?? null,
+        hasConvention: rawFormation.etablissement_gestionnaire_conventionne ?? null,
         place: {
-          address: `${rawFormation.source.etablissement_gestionnaire_adresse}${
-            rawFormation.source.etablissement_gestionnaire_complement_adresse ? ", " + rawFormation.source.etablissement_gestionnaire_complement_adresse : ""
+          address: `${rawFormation.etablissement_gestionnaire_adresse}${
+            rawFormation.etablissement_gestionnaire_complement_adresse ? ", " + rawFormation.etablissement_gestionnaire_complement_adresse : ""
           }`,
-          cedex: rawFormation.source.etablissement_gestionnaire_cedex,
-          zipCode: rawFormation.source.etablissement_gestionnaire_code_postal,
-          city: rawFormation.source.etablissement_gestionnaire_localite,
+          cedex: rawFormation.etablissement_gestionnaire_cedex,
+          zipCode: rawFormation.etablissement_gestionnaire_code_postal,
+          city: rawFormation.etablissement_gestionnaire_localite,
         },
-        name: rawFormation.source.etablissement_gestionnaire_entreprise_raison_sociale ?? null,
+        name: rawFormation.etablissement_gestionnaire_entreprise_raison_sociale ?? null,
       },
       place: {
-        city: rawFormation.source.etablissement_formateur_localite,
+        city: rawFormation.etablissement_formateur_localite,
       },
     },
 
-    diplomaLevel: rawFormation.source.niveau ?? null,
-    diploma: rawFormation.source.diplome ?? null,
-    cleMinistereEducatif: rawFormation.source.cle_ministere_educatif ?? null,
-    cfd: rawFormation.source.cfd ?? null,
-    rncpCode: rawFormation.source.rncp_code ?? null,
-    rncpLabel: rawFormation.source.rncp_intitule ?? null,
-    rncpEligibleApprentissage: rawFormation.source.rncp_eligible_apprentissage,
+    diplomaLevel: rawFormation.niveau ?? null,
+    diploma: rawFormation.diplome ?? null,
+    cleMinistereEducatif: rawFormation.cle_ministere_educatif ?? null,
+    cfd: rawFormation.cfd ?? null,
+    rncpCode: rawFormation.rncp_code ?? null,
+    rncpLabel: rawFormation.rncp_intitule ?? null,
+    rncpEligibleApprentissage: rawFormation.rncp_eligible_apprentissage,
     period: null,
-    capacity: rawFormation.source.capacite ?? null,
-    onisepUrl: rawFormation.source.onisep_url ?? null,
+    capacity: rawFormation.capacite ?? null,
+    onisepUrl: rawFormation.onisep_url ?? null,
 
-    romes: rawFormation.source.rome_codes && rawFormation.source.rome_codes.length ? rawFormation.source.rome_codes.map((rome) => ({ code: rome })) : null,
+    romes: rawFormation.rome_codes && rawFormation.rome_codes.length ? rawFormation.rome_codes.map((rome) => ({ code: rome })) : null,
     training: {
-      objectif: rawFormation.source?.objectif?.trim() ?? null,
-      description: rawFormation.source?.contenu?.trim() ?? null,
+      objectif: rawFormation?.objectif?.trim() ?? null,
+      description: rawFormation?.contenu?.trim() ?? null,
       sessions,
       duration,
     },
@@ -594,7 +543,6 @@ export const getFormationsQuery = async ({
 
 /**
  * Retourne une formation identifiée par son id
- * TODO: passer directement du controller à getOneFormationFromId
  */
 export const getFormationQuery = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { results: ILbaItemFormation[] }> => {
   try {
@@ -664,71 +612,6 @@ export const getFormationsParRegionQuery = async ({
     }
 
     return { error: "internal_error" }
-  }
-}
-
-/**
- * Construit le bloc de requête elasticsearch de base pour la recherche de formations :
- * index visé, nb de résultats à retourner, champs souhaités
- * @param {number} limit le nombre de résultats max retournés par la requête
- * @param {string[]} options une liste d'options permettant de moduler le fragment de requête
- * @returns {{ index: string; size: number; _source_includes: string[] }}
- */
-const getFormationEsQueryIndexFragment = (limit: number, options: "with_description"[]): { index: string; size: number; _source_includes: string[] } => {
-  return {
-    index: "formationcatalogues",
-    size: limit,
-    _source_includes: [
-      "etablissement_formateur_siret",
-      "onisep_url",
-      "_id",
-      "email",
-      "niveau",
-      "lieu_formation_geo_coordonnees",
-      "intitule_long",
-      "intitule_court",
-      "lieu_formation_adresse",
-      "localite",
-      "code_postal",
-      "num_departement",
-      "region",
-      "diplome",
-      "created_at",
-      "last_update_at",
-      "etablissement_formateur_id",
-      "etablissement_formateur_uai",
-      "etablissement_formateur_adresse",
-      "etablissement_formateur_code_postal",
-      "etablissement_formateur_localite",
-      "etablissement_formateur_entreprise_raison_sociale",
-      "etablissement_formateur_cedex",
-      "etablissement_formateur_complement_adresse",
-      "etablissement_gestionnaire_id",
-      "etablissement_gestionnaire_uai",
-      "etablissement_gestionnaire_conventionne",
-      "etablissement_gestionnaire_type",
-      "etablissement_gestionnaire_siret",
-      "etablissement_gestionnaire_adresse",
-      "etablissement_gestionnaire_code_postal",
-      "etablissement_gestionnaire_localite",
-      "etablissement_gestionnaire_entreprise_raison_sociale",
-      "etablissement_gestionnaire_cedex",
-      "etablissement_gestionnaire_complement_adresse",
-      "code_commune_insee",
-      "rome_codes",
-      "cfd",
-      "rncp_code",
-      "rncp_intitule",
-      "rncp_eligible_apprentissage",
-      "modalites_entrees_sorties",
-      "date_debut",
-      "date_fin",
-      "capacite",
-      "id_rco_formation",
-      "id_formation",
-      "cle_ministere_educatif",
-      "num_tel",
-    ].concat(options.indexOf("with_description") >= 0 ? ["objectif", "contenu"] : []),
   }
 }
 
