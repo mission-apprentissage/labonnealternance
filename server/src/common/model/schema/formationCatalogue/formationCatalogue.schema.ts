@@ -101,6 +101,7 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     niveau: {
       type: String,
       description: "Niveau de la formation",
+      index: true,
     },
     onisep_url: {
       type: String,
@@ -213,6 +214,7 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     rome_codes: {
       type: [String],
       description: "Codes ROME",
+      index: true,
     },
     date_debut: {
       type: [Date],
@@ -407,6 +409,7 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     tags: {
       type: [String],
       description: "Tableau de tags (2020, 2021, etc.)",
+      index: true,
     },
     libelle_court: {
       type: String,
