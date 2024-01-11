@@ -5,6 +5,24 @@ import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteu
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
+const ZUserForOpco = ZUserRecruteur.pick({
+  _id: true,
+  first_name: true,
+  last_name: true,
+  establishment_id: true,
+  establishment_raison_sociale: true,
+  establishment_siret: true,
+  createdAt: true,
+  email: true,
+  phone: true,
+  type: true,
+}).extend({
+  jobs_count: z.number(),
+  origin: z.string(),
+})
+
+export type IUserForOpco = z.output<typeof ZUserForOpco>
+
 export const zUserRecruteurRoutes = {
   get: {
     "/user/opco": {
@@ -18,9 +36,9 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z
           .object({
-            awaiting: z.array(z.any()),
-            active: z.array(z.any()),
-            disable: z.array(z.any()),
+            awaiting: z.array(ZUserForOpco),
+            active: z.array(ZUserForOpco),
+            disable: z.array(ZUserForOpco),
           })
           .strict(),
       },
