@@ -22,7 +22,7 @@ const AmeliorerLBA = () => {
               Racontez-nous votre expérience !
             </strong>
           </Text>
-          <Text>Nous vous invitions à participer à un échange vidéo avec un membre de notre équipe. Vous pourrez nous partagez votre avis, et nous pourrons répondre à vos questions sur l’utilisation du service.</Text>
+          <Text>Nous vous invitions à participer à un échange vidéo avec un membre de notre équipe. Vous pourrez nous partager votre avis, et nous pourrons répondre à vos questions sur l’utilisation du service.</Text>
           <Box mt="7">
             <Link
               href="https://calendly.com/claire-arnaud-beta-gouv/la-bonne-alternance"
