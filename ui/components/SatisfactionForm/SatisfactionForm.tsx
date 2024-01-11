@@ -46,6 +46,8 @@ const SatisfactionForm = () => {
     token: string | undefined
   }
 
+  const isRefusedState = company_recruitment_intention === ApplicantIntention.REFUS
+
   const getFeedbackText = () => {
     const firstName = fn
     const lastName = ln
@@ -111,24 +113,6 @@ const SatisfactionForm = () => {
 
   const [sendingState, setSendingState] = useState("not_sent")
 
-  const getValidationSchema = () => {
-    let res = Yup.object({})
-    if (company_recruitment_intention === ApplicantIntention.REFUS) {
-      res = Yup.object({
-        company_feedback: Yup.string().nullable().required("Veuillez remplir le message"),
-      })
-    } else {
-      res = Yup.object({
-        company_feedback: Yup.string().required("Veuillez remplir le message"),
-        email: Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
-        phone: Yup.string()
-          .matches(/^[0-9]{10}$/, "⚠ Le numéro de téléphone doit avoir exactement 10 chiffres")
-          .required("⚠ Le téléphone est obligatoire"),
-      })
-    }
-    return res
-  }
-
   const submitForm = async ({ email, phone, company_feedback }) =>
     await apiPost("/application/intentionComment/:id", {
       params: { id },
@@ -144,8 +128,16 @@ const SatisfactionForm = () => {
     })
 
   const formik = useFormik({
-    initialValues: { company_feedback: "", email: null, phone: null },
-    validationSchema: getValidationSchema(),
+    initialValues: { company_feedback: "", email: "", phone: "" },
+    validationSchema: Yup.object().shape({
+      company_feedback: Yup.string().nullable().required("Veuillez remplir le message"),
+      email: isRefusedState ? Yup.string() : Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
+      phone: isRefusedState
+        ? Yup.string()
+        : Yup.string()
+            .matches(/^[0-9]{10}$/, "⚠ Le numéro de téléphone doit avoir exactement 10 chiffres")
+            .required("⚠ Le téléphone est obligatoire"),
+    }),
     onSubmit: async (formikValues) => {
       await submitForm(formikValues)
         .then(() => setSendingState("ok_sent"))
@@ -236,7 +228,7 @@ const SatisfactionForm = () => {
                           type="email"
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          value={formik.values.email || ""}
+                          value={formik.values.email}
                           {...inputProperties}
                           borderBottomColor={getFieldColor(emailFieldStatus)}
                         />
@@ -250,10 +242,11 @@ const SatisfactionForm = () => {
                           id="phone"
                           data-testid="phone"
                           name="phone"
-                          type="text"
+                          type="tel"
+                          maxLength={10}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          value={formik.values.phone || ""}
+                          value={formik.values.phone}
                           {...inputProperties}
                           borderBottomColor={getFieldColor(phoneFieldStatus)}
                         />
