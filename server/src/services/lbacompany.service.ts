@@ -1,7 +1,6 @@
 import Boom from "boom"
 import { ILbaCompany } from "shared"
 
-// import { search } from "../common/esClient/index"
 import { LbaCompany } from "../common/model/index"
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -108,40 +107,6 @@ const transformCompanies = ({
 }
 
 /**
- * Retourn le bloc de paramètres commun à toutes les recherches ES sur les sociétés issues de l'algo
- * @param {number} limit le nombre maximum de sociétés à remonter
- * @returns {object}
- */
-// const getCompanyEsQueryIndexFragment = (limit: number) => {
-//   return {
-//     //index: "mnaformation",
-//     index: "bonnesboites",
-//     size: limit,
-//     _source_includes: [
-//       "siret",
-//       "recruitment_potential",
-//       "raison_sociale",
-//       "enseigne",
-//       "naf_code",
-//       "naf_label",
-//       "rome_codes",
-//       "street_number",
-//       "street_name",
-//       "insee_city_code",
-//       "zip_code",
-//       "city",
-//       "geo_coordinates",
-//       "email",
-//       "phone",
-//       "company_size",
-//       "algorithm_origin",
-//       "opco",
-//       "opco_url",
-//     ],
-//   }
-// }
-
-/**
  * Retourne des sociétés issues de l'algo matchant les critères en paramètres
  */
 const getCompanies = async ({
@@ -185,8 +150,6 @@ const getCompanies = async ({
     let companies: ILbaCompany[] = []
 
     if (latitude) {
-      // console.log("query : ", query)
-      // console.log("longitude ", longitude, " latitude ", latitude, " distance ", distance, companyLimit)
       companies = await LbaCompany.aggregate([
         {
           $geoNear: {
@@ -232,137 +195,6 @@ const getCompanies = async ({
 }
 
 /**
- * Retourne des sociétés issues de l'algo matchant les critères en paramètres
- */
-// const getCompaniesFromES = async ({
-//   romes,
-//   latitude,
-//   longitude,
-//   radius,
-//   companyLimit,
-//   caller,
-//   opco,
-//   opcoUrl,
-//   api = "jobV1",
-// }: {
-//   romes?: string
-//   latitude?: number
-//   longitude?: number
-//   radius?: number
-//   companyLimit: number
-//   caller?: string | null
-//   opco?: string
-//   opcoUrl?: string
-//   api: string
-// }): Promise<ILbaCompany[] | IApiError> => {
-//   try {
-//     const distance = radius || 10
-
-//     const mustTerm: object[] = [
-//       {
-//         match: {
-//           rome_codes: romes?.split(",").join(" "),
-//         },
-//       },
-//     ]
-
-//     if (opco) {
-//       mustTerm.push({
-//         match: {
-//           opco_short_name: opco.toUpperCase(),
-//         },
-//       })
-//     }
-
-//     if (opcoUrl) {
-//       mustTerm.push({
-//         match: {
-//           opco_url: opcoUrl.toLowerCase(),
-//         },
-//       })
-//     }
-
-//     const esQueryIndexFragment = getCompanyEsQueryIndexFragment(companyLimit)
-
-//     const esQuerySort = {
-//       sort: [
-//         latitude
-//           ? {
-//               _geo_distance: {
-//                 geo_coordinates: [longitude ?? 0, latitude ?? 0],
-//                 order: "asc",
-//                 unit: "km",
-//                 mode: "min",
-//                 distance_type: "arc",
-//                 ignore_unmapped: true,
-//               },
-//             }
-//           : "_score",
-//       ],
-//     }
-
-//     let esQuery: any = {
-//       query: {
-//         bool: {
-//           must: mustTerm,
-//         },
-//       },
-//     }
-
-//     if (latitude) {
-//       esQuery.query.bool.filter = {
-//         geo_distance: {
-//           distance: `${distance}km`,
-//           geo_coordinates: {
-//             lat: latitude,
-//             lon: longitude,
-//           },
-//         },
-//       }
-//     } else {
-//       esQuery = {
-//         query: {
-//           function_score: esQuery,
-//         },
-//       }
-//     }
-
-//     const responseCompanies = await search(
-//       {
-//         ...esQueryIndexFragment,
-//         body: {
-//           ...esQuery,
-//           ...esQuerySort,
-//         },
-//       },
-//       LbaCompany
-//     )
-
-//     const companies: ILbaCompany[] = []
-
-//     responseCompanies.forEach((company) => {
-//       companies.push({ ...company._source, distance: latitude ? company.sort : null })
-//     })
-
-//     if (!latitude) {
-//       companies.sort(function (a, b) {
-//         if (!a || !a.enseigne) {
-//           return -1
-//         }
-//         if (!b || !b.enseigne) {
-//           return 1
-//         }
-//         return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
-//       })
-//     }
-
-//     return companies
-//   } catch (error) {
-//     return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from local ES (${api})` })
-//   }
-// }
-
-/**
  * Retourne des sociétés issues de l'algo au format unifié LBA
  * Les sociétés retournées sont celles matchant les critères en paramètres
  */
@@ -391,24 +223,6 @@ export const getSomeCompanies = async ({
   const currentRadius = hasLocation ? radius : 21000
   const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
 
-  // const starttime = new Date().getTime()
-
-  // for (let i = 0; i < 49; ++i) {
-  //   // await getCompaniesFromES({
-  //   await getCompanies({
-  //     romes,
-  //     latitude,
-  //     longitude,
-  //     radius: currentRadius,
-  //     companyLimit,
-  //     caller,
-  //     api,
-  //     opco,
-  //     opcoUrl,
-  //   })
-  // }
-
-  // const companies = await getCompaniesFromES({
   const companies = await getCompanies({
     romes,
     latitude,
@@ -420,10 +234,6 @@ export const getSomeCompanies = async ({
     opco,
     opcoUrl,
   })
-
-  // const endtime = new Date().getTime()
-
-  // console.log("50 itération en ", endtime - starttime, "ms ", companies.length)
 
   if (!("error" in companies) && companies instanceof Array) {
     const sirets = companies.map(({ siret }) => siret)

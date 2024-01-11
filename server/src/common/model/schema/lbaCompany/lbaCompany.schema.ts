@@ -41,6 +41,7 @@ export const lbaCompanySchema = new Schema<ILbaCompany>(
       type: [String],
       default: [],
       description: "Liste des codes ROMEs au sein de l'entreprise",
+      index: true,
     },
     street_number: {
       type: String,
