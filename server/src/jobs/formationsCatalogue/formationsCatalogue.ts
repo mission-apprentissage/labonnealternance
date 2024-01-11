@@ -3,7 +3,7 @@ import { zFormationCatalogueSchemaNew } from "shared/models"
 
 import { logger } from "../../common/logger"
 import { FormationCatalogue } from "../../common/model/index"
-import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils"
+// import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.service"
@@ -60,11 +60,12 @@ export const importCatalogueFormationJob = async () => {
       return
     }
 
-    await resetIndexAndDb("formationcatalogues", FormationCatalogue, { requireAsciiFolding: true })
+    //await resetIndexAndDb("formationcatalogues", FormationCatalogue, { requireAsciiFolding: true })
+    await FormationCatalogue.deleteMany({})
 
     const stats = await importFormations()
 
-    await rebuildIndex(FormationCatalogue)
+    //await rebuildIndex(FormationCatalogue)
 
     logger.info(`Fin traitement`)
 
