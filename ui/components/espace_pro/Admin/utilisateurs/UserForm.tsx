@@ -34,7 +34,7 @@ const DisableUserButton = ({ confirmationDesactivationUtilisateur }) => {
 }
 
 const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisateur, onUpdate) => {
-  switch (userHistory.status) {
+  switch (userHistory?.status) {
     case ETAT_UTILISATEUR.ATTENTE:
       return (
         <>
@@ -192,7 +192,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
           <HStack mb={4} alignItems="baseline">
             <Box w="300px">Statut du compte </Box>=
             <HStack spacing={6}>
-              <Box> {lastUserState.status}</Box> {getActionButtons(lastUserState, user._id, confirmationDesactivationUtilisateur, onUpdate)}{" "}
+              <Box> {lastUserState?.status}</Box> {getActionButtons(lastUserState, user._id, confirmationDesactivationUtilisateur, onUpdate)}{" "}
               <Box>
                 <Button variant="outline" colorScheme="red" borderRadius="none" onClick={onDeleteClicked}>
                   Supprimer l&apos;utilisateur
