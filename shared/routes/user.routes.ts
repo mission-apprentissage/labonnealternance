@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob } from "../models"
+import { ZJob, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
+import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -40,13 +40,14 @@ export const zUserRecruteurRoutes = {
       // TODO_SECURITY_FIX session admin only et changer le chemin vers /admin/user
       // => /admin/user-recruteur?
       response: {
-        "200": z.any(),
-        // "200": z.object({
-        //   awaiting: z.array(ZUserRecruteur),
-        //   active: z.array(ZUserRecruteur),
-        //   disabled: z.array(ZUserRecruteur),
-        //   error: z.array(ZUserRecruteur),
-        // }),
+        "200": z
+          .object({
+            awaiting: z.array(ZUserRecruteurForAdmin),
+            active: z.array(ZUserRecruteurForAdmin),
+            disabled: z.array(ZUserRecruteurForAdmin),
+            error: z.array(ZUserRecruteurForAdmin),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -57,9 +58,12 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "get",
       path: "/admin/users",
-      // TODO ANY TO BE FIXED
       response: {
-        "200": z.any(),
+        "200": z
+          .object({
+            users: z.array(ZUserRecruteur),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -75,9 +79,10 @@ export const zUserRecruteurRoutes = {
           userId: z.string(),
         })
         .strict(),
-      // TODO ANY TO BE FIXED
       response: {
-        "200": z.any(),
+        "200": ZUserRecruteur.extend({
+          jobs: ZRecruiter.shape.jobs,
+        }),
       },
       securityScheme: {
         auth: "cookie-session",

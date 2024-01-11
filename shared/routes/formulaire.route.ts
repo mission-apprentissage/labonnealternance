@@ -95,9 +95,7 @@ export const zFormulaireRoute = {
       // TODO nonstrict TO BE FIXED on the frontend
       body: ZJobWrite.nonstrict(),
       response: {
-        // TODO ANY TO BE FIXED
-        // "2xx": ZRecruiter,
-        "200": z.any(),
+        "200": ZRecruiter,
       },
       securityScheme: {
         auth: "cookie-session",
@@ -117,9 +115,7 @@ export const zFormulaireRoute = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "2xx": ZRecruiter,
+        "200": ZRecruiter,
       },
       securityScheme: {
         auth: "cookie-session",
@@ -137,9 +133,7 @@ export const zFormulaireRoute = {
       params: z.object({ establishment_id: z.string() }).strict(),
       body: ZRecruiterWritable.partial(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "2xx": ZRecruiter,
+        "200": ZRecruiter,
       },
       securityScheme: {
         auth: "cookie-session",
