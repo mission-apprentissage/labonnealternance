@@ -9,6 +9,7 @@ const config = {
   formationsEndPoint: "/api/v1/entity/formations",
   publicEmail: "labonnealternance@apprentissage.beta.gouv.fr",
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
+  transactionalEmailSender: "La bonne alternance",
   disable_processors: env.get("LBA_DISABLE_PROCESSORS").required().asBool(),
   log: {
     level: env.get("LBA_LOG_LEVEL").required().asString(),
