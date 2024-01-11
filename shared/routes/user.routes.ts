@@ -54,7 +54,6 @@ export const zUserRecruteurRoutes = {
     "/user": {
       method: "get",
       path: "/user",
-      // TODO ANY TO BE FIXED
       // TODO_SECURITY_FIX session admin only et changer le chemin vers /admin/user
       // => /admin/user-recruteur?
       response: {
