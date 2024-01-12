@@ -38,4 +38,24 @@ export const up = async (db: Db) => {
   ])
 
   await db.collection("formationcatalogues").createIndex({ lieu_formation_geopoint: "2dsphere" })
+
+  await db.collection("recruiters").updateMany({}, [
+    {
+      $set: {
+        geopoint: {
+          type: "Point",
+          coordinates: {
+            $map: {
+              input: { $reverseArray: { $split: ["$geo_coordinates", ","] } },
+              as: "coord",
+              in: { $toDouble: "$$coord" },
+            },
+          },
+        },
+      },
+    },
+  ])
+  await db.collection("recruiters").updateMany({ "geopoint.coordinates": { $eq: null } }, { $set: { geopoint: { type: "Point", coordinates: [0, 0] } } })
+
+  await db.collection("recruiters").createIndex({ geopoint: "2dsphere" })
 }
