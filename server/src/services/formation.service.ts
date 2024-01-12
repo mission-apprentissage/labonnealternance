@@ -2,7 +2,6 @@ import dayjs from "dayjs"
 import { groupBy, maxBy } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
 
-import { search } from "../common/esClient/index"
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -68,10 +67,7 @@ export const getFormations = async ({
 
   if (romeDomain) {
     query.rome_codes = {
-      $elemMatch: {
-        $regex: `/^${romeDomain}/`,
-        $options: "i",
-      },
+      $regex: new RegExp(`^${romeDomain}`, "i"),
     }
   }
 
@@ -165,61 +161,53 @@ const getRegionFormations = async ({
   options: "with_description"[]
   caller?: string
 }): Promise<IFormationEsResult[]> => {
-  const mustTerm: any[] = []
+  const query: any = {}
 
-  if (departement)
-    mustTerm.push({
-      multi_match: {
-        query: departement,
-        fields: ["code_postal"],
-        type: "phrase_prefix",
-        operator: "or",
-      },
-    })
+  if (romes?.length) {
+    query.rome_codes = { $in: romes }
+  }
 
-  if (region) mustTerm.push(getEsRegionTermFragment(region))
+  if (romeDomain) {
+    query.rome_codes = {
+      $regex: new RegExp(`^${romeDomain}`, "i"),
+    }
+  }
 
-  if (romes.length)
-    mustTerm.push({
-      match: {
-        rome_codes: romes.join(" "),
-      },
-    })
+  if (departement) {
+    query.code_postal = {
+      $regex: new RegExp(`^${departement}`, "i"),
+    }
+  } else if (region) {
+    query.code_postal = getRegionQueryFragment(region)
+  }
 
-  if (romeDomain)
-    mustTerm.push({
-      multi_match: {
-        query: romeDomain,
-        fields: ["rome_codes"],
-        type: "phrase_prefix",
-        operator: "or",
-      },
-    })
+  const now = new Date()
+  const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
+  query.tags = { $in: tags.map((tag) => tag.toString()) }
 
-  if (diploma)
-    mustTerm.push({
-      match: {
-        niveau: getDiplomaIndexName(diploma),
-      },
-    })
+  if (diploma) {
+    query.niveau = getDiplomaIndexName(diploma)
+  }
 
-  const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit, options)
+  let formations: any[] = []
 
-  const responseFormations = await search(
-    {
-      ...esQueryIndexFragment,
-      body: {
-        query: {
-          bool: {
-            must: mustTerm,
-          },
-        },
-      },
+  const stages: any[] = []
+
+  if (options.indexOf("with_description") < 0) {
+    stages.push({ $project: { objectif: 0, contenu: 0 } })
+  }
+
+  stages.unshift({
+    $match: query,
+  })
+  stages.push({
+    $sample: {
+      size: limit,
     },
-    FormationCatalogue
-  )
+  })
 
-  const formations: IFormationEsResult[] = responseFormations.map((formation) => ({ source: formation._source, sort: formation.sort, id: formation._id }))
+  formations = await FormationCatalogue.aggregate(stages)
+
   if (formations.length === 0 && !caller) {
     await notifyToSlack({ subject: "FORMATION", message: `Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.` })
   }
@@ -616,28 +604,13 @@ export const getFormationsParRegionQuery = async ({
 }
 
 /**
- * retourne le morceau de requête elasticsearch correspondant à un filtrage sur une région donné
+ * retourne le morceau de requête mongo correspondant à un filtrage sur une région donné
  * @param {string} region le code de la région
  * @returns {object}
  */
-const getEsRegionTermFragment = (region: string): object => {
-  const departements: object[] = []
-
-  regionCodeToDepartmentList[region].forEach((departement) => {
-    departements.push({
-      multi_match: {
-        query: departement,
-        fields: ["code_postal"],
-        type: "phrase_prefix",
-        operator: "or",
-      },
-    })
-  })
-
+const getRegionQueryFragment = (region: string): object => {
   return {
-    bool: {
-      should: departements,
-    },
+    $in: regionCodeToDepartmentList[region].map((departement) => new RegExp(`^${departement}`)),
   }
 }
 
