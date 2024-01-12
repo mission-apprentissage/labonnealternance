@@ -150,7 +150,6 @@ export const getLbaJobs = async ({
     }
 
     const jobs = await getJobs(params)
-    console.log("jobs ", jobs.at(0))
 
     const ids: string[] = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
 
@@ -238,7 +237,6 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
   if (!recruiter.jobs) {
     return []
   }
-  console.log("recruiter : ", recruiter)
 
   return recruiter.jobs.map((offre, idx): ILbaItemLbaJob => {
     const email = encryptMailWithIV({ value: recruiter.email })
