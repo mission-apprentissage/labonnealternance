@@ -65,7 +65,7 @@
       async: 1800
       poll: 10
 
-    - name: "Create MongoDB & ElasticSearch Indexes"
+    - name: "Create MongoDB Indexes"
       shell:
         chdir: /opt/app
         cmd: "sudo /opt/app/scripts/sync-index.sh"

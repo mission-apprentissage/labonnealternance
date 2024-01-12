@@ -173,7 +173,7 @@ export const getLbaJobs = async ({
 }
 
 /**
- * Converti les offres issues de l'elasticsearch ou de la mongo en objet de type ILbaItem
+ * Converti les offres issues de la mongo en objet de type ILbaItem
  */
 function transformLbaJobs({ jobs, applicationCountByJob }: { jobs: IRecruiter[]; applicationCountByJob: IApplicationCount[] }): {
   results: ILbaItemLbaJob[]

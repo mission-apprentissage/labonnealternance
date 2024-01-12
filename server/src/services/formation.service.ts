@@ -131,7 +131,7 @@ const getOneFormationFromId = async ({ id }: { id: string }): Promise<ILbaItemFo
 }
 
 /**
- * Récupère les formations matchant les critères en paramètre depuis Elasticsearch sur une région ou un département donné
+ * Récupère les formations matchant les critères en paramètre sur une région ou un département donné
  * @param {string[]} romes un tableau de codes ROME
  * @param {string} romeDomain un domaine de ROME
  * @param {string} region le code région sur lequel filtrer la recherche
@@ -273,7 +273,7 @@ const getAtLeastSomeFormations = async ({
 
 /**
  * Retire les formations en doublon selon les critères arbitraires métiers visibles ci-dessous
- * @param {IFormationCatalogue[]} formations les formations issues de la recherche elasticsearch
+ * @param {IFormationCatalogue[]} formations les formations issues de la recherche
  * @return {IFormationCatalogue[]}
  */
 export const deduplicateFormations = (formations: IFormationCatalogue[]): IFormationCatalogue[] => {
@@ -301,7 +301,7 @@ export const deduplicateFormations = (formations: IFormationCatalogue[]): IForma
 }
 
 /**
- * Retourne un ensemble de formations LbaItem à partir de formations issues d'elasticsearch ou de la mongo
+ * Retourne un ensemble de formations LbaItem à partir de formations issues de la mongo
  */
 const transformFormationsForIdea = (rawEsFormations: IFormationCatalogue[]): ILbaItemFormation[] => {
   const formations: ILbaItemFormation[] = []
