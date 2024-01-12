@@ -45,9 +45,9 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
       ],
     })
   }
-  // clauses.push({ "jobs.job_status": JOB_STATUS.ACTIVE })
+  clauses.push({ "jobs.job_status": JOB_STATUS.ACTIVE })
   clauses.push({ "jobs.rome_code": { $in: romes } })
-  // clauses.push({ status: RECRUITER_STATUS.ACTIF })
+  clauses.push({ status: RECRUITER_STATUS.ACTIF })
 
   const stages: any[] = [
     {
@@ -90,7 +90,7 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
       }
 
       x.jobs.forEach((o) => {
-        if (romes.some((item) => o.rome_code.includes(item)) /*&& o.job_status === JOB_STATUS.ACTIVE*/) {
+        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === JOB_STATUS.ACTIVE) {
           o.rome_label = o.rome_appellation_label ?? o.rome_label
           if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === o.job_level_label || niveau === o.job_level_label) {
             jobs.push(o)
