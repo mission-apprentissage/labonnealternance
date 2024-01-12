@@ -1,6 +1,5 @@
 import { ILbaCompany } from "shared"
 
-import { mongoosastic } from "../../../esClient/index"
 import { Schema, model } from "../../../mongodb"
 import { geoPointSchema } from "../geopoint/geoPoint.schema"
 
@@ -132,7 +131,5 @@ export const lbaCompanySchema = new Schema<ILbaCompany>(
     versionKey: false,
   }
 )
-
-lbaCompanySchema.plugin(mongoosastic, { index: "bonnesboites" })
 
 export default model<ILbaCompany>("bonnesboites", lbaCompanySchema)
