@@ -1,8 +1,8 @@
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter } from "@/common/model"
 
-import { search } from "../common/esClient/index"
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -10,11 +10,10 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
-import { ACTIVE, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
+import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getEtablissement } from "./etablissement.service"
 import { getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
-import { ILbaJobEsResult } from "./lbajob.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
 const JOB_SEARCH_LIMIT = 250
@@ -22,140 +21,76 @@ const JOB_SEARCH_LIMIT = 250
 const coordinatesOfFrance = [2.213749, 46.227638]
 
 /**
- * @description get filtered jobs from elastic search index
+ * @description get filtered jobs from mongo
  * @param {Object} payload
  * @param {number} payload.distance
  * @param {string} payload.lat
  * @param {string} payload.long
  * @param {string[]} payload.romes
  * @param {string} payload.niveau
- * @returns {Promise<ILbaJobEsResult[]>}
+ * @returns {Promise<IRecruiter[]>}
  */
-export const getJobsFromElasticSearch = async ({
-  distance,
-  lat,
-  lon,
-  romes,
-  niveau,
-}: {
-  distance: number
-  lat: string
-  lon: string
-  romes: string[]
-  niveau: string
-}): Promise<ILbaJobEsResult[]> => {
-  const filter: Array<object> = [
-    {
-      geo_distance: {
-        distance: `${distance}km`,
-        geo_coordinates: {
-          lat,
-          lon,
+export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance: number; lat: string; lon: string; romes: string[]; niveau: string }): Promise<IRecruiter[]> => {
+  const clauses: any[] = []
+
+  if (niveau && niveau !== "Indifférent") {
+    clauses.push({
+      $or: [
+        {
+          "jobs.job_level_label": niveau,
         },
-      },
+        {
+          "jobs.job_level_label": NIVEAUX_POUR_LBA["INDIFFERENT"],
+        },
+      ],
+    })
+  }
+  // clauses.push({ "jobs.job_status": JOB_STATUS.ACTIVE })
+  clauses.push({ "jobs.rome_code": { $in: romes } })
+  // clauses.push({ status: RECRUITER_STATUS.ACTIF })
+
+  const stages: any[] = [
+    {
+      $limit: JOB_SEARCH_LIMIT,
     },
   ]
 
-  if (niveau && niveau !== "Indifférent") {
-    filter.push({
-      nested: {
-        path: "jobs",
-        query: {
-          bool: {
-            should: [
-              {
-                match_phrase: {
-                  "jobs.job_level_label": niveau,
-                },
-              },
-              {
-                match_phrase: {
-                  "jobs.job_level_label": NIVEAUX_POUR_LBA["INDIFFERENT"],
-                },
-              },
-            ],
-          },
-        },
-      },
-    })
-  }
+  const query: any = { $and: clauses }
 
-  const body = {
-    query: {
-      bool: {
-        must: [
-          {
-            nested: {
-              path: "jobs",
-              query: {
-                bool: {
-                  must: [
-                    {
-                      match: {
-                        "jobs.rome_code": romes.join(" "),
-                      },
-                    },
-                    {
-                      match: {
-                        "jobs.job_status": ACTIVE,
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-          },
-          {
-            match: {
-              status: "Actif",
-            },
-          },
-        ],
-        filter: filter,
-      },
+  stages.unshift({
+    $geoNear: {
+      near: { type: "Point", coordinates: [lon, lat] },
+      distanceField: "distance",
+      maxDistance: distance * 1000,
+      query,
     },
-    sort: [
-      {
-        _geo_distance: {
-          geo_coordinates: {
-            lat,
-            lon,
-          },
-          order: "asc",
-          unit: "km",
-          mode: "min",
-          distance_type: "arc",
-          ignore_unmapped: true,
-        },
-      },
-    ],
-  }
+  })
 
-  const result = await search({ size: JOB_SEARCH_LIMIT, index: "recruiters", body }, Recruiter)
+  const jobs: IRecruiter[] = await Recruiter.aggregate(stages)
 
   const filteredJobs = await Promise.all(
-    result.map(async (x) => {
+    jobs.map(async (x) => {
       const jobs: any[] = []
 
-      if (x._source.jobs.length === 0) {
+      if (x.jobs.length === 0) {
         return
       }
 
-      if (x._source.is_delegated) {
-        const [establishment_location] = x._source.address.match(/([0-9]{5})[ ,] ?([a-zA-Z-]*)/) ?? [""]
-        const cfa = await getEtablissement({ establishment_siret: x._source.cfa_delegated_siret })
+      if (x.is_delegated) {
+        const [establishment_location] = x.address.match(/([0-9]{5})[ ,] ?([a-zA-Z-]*)/) ?? [""]
+        const cfa = await getEtablissement({ establishment_siret: x.cfa_delegated_siret })
 
-        x._source.phone = cfa?.phone
-        x._source.email = cfa?.email
-        x._source.last_name = cfa?.last_name
-        x._source.first_name = cfa?.first_name
-        x._source.establishment_raison_sociale = cfa?.establishment_raison_sociale
-        x._source.address = cfa?.address
-        x._source.establishment_location = establishment_location
+        x.phone = cfa?.phone
+        x.email = cfa?.email
+        x.last_name = cfa?.last_name
+        x.first_name = cfa?.first_name
+        x.establishment_raison_sociale = cfa?.establishment_raison_sociale
+        x.address = cfa?.address
+        x.establishment_location = establishment_location
       }
 
-      x._source.jobs.forEach((o) => {
-        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === JOB_STATUS.ACTIVE) {
+      x.jobs.forEach((o) => {
+        if (romes.some((item) => o.rome_code.includes(item)) /*&& o.job_status === JOB_STATUS.ACTIVE*/) {
           o.rome_label = o.rome_appellation_label ?? o.rome_label
           if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === o.job_level_label || niveau === o.job_level_label) {
             jobs.push(o)
@@ -163,7 +98,7 @@ export const getJobsFromElasticSearch = async ({
         }
       })
 
-      x._source.jobs = jobs
+      x.jobs = jobs
       return x
     })
   )
@@ -214,9 +149,10 @@ export const getLbaJobs = async ({
       params.niveau = NIVEAUX_POUR_LBA[diploma]
     }
 
-    const jobs = await getJobsFromElasticSearch(params)
+    const jobs = await getJobs(params)
+    console.log("jobs ", jobs.at(0))
 
-    const ids: string[] = jobs.flatMap(({ _source }) => (_source?.jobs ? _source.jobs.map(({ _id }) => _id.toString()) : []))
+    const ids: string[] = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
@@ -240,14 +176,13 @@ export const getLbaJobs = async ({
 /**
  * Converti les offres issues de l'elasticsearch ou de la mongo en objet de type ILbaItem
  */
-function transformLbaJobs({ jobs, applicationCountByJob }: { jobs: ILbaJobEsResult[]; applicationCountByJob: IApplicationCount[] }): {
+function transformLbaJobs({ jobs, applicationCountByJob }: { jobs: IRecruiter[]; applicationCountByJob: IApplicationCount[] }): {
   results: ILbaItemLbaJob[]
 } {
   return {
     results: jobs.flatMap((job) =>
       transformLbaJob({
-        recruiter: job._source,
-        distance: job.sort ? job.sort[0] : undefined,
+        recruiter: job,
         applicationCountByJob,
       })
     ),
@@ -299,26 +234,19 @@ const getCity = (recruiter) => {
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
-function transformLbaJob({
-  recruiter,
-  distance,
-  applicationCountByJob,
-}: {
-  recruiter: Partial<IRecruiter>
-  distance?: number
-  applicationCountByJob: IApplicationCount[]
-}): ILbaItemLbaJob[] {
+function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Partial<IRecruiter>; applicationCountByJob: IApplicationCount[] }): ILbaItemLbaJob[] {
   if (!recruiter.jobs) {
     return []
   }
+  console.log("recruiter : ", recruiter)
 
   return recruiter.jobs.map((offre, idx): ILbaItemLbaJob => {
     const email = encryptMailWithIV({ value: recruiter.email })
     const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
     const romes = offre.rome_code.map((code) => ({ code, label: null }))
 
-    const latitude = parseFloat(recruiter.geo_coordinates ? recruiter.geo_coordinates.split(",")[0] : "0")
-    const longitude = parseFloat(recruiter.geo_coordinates ? recruiter.geo_coordinates.split(",")[1] : "0")
+    const latitude = recruiter?.geopoint?.coordinates ? recruiter.geopoint.coordinates[1] : 0
+    const longitude = recruiter?.geopoint?.coordinates ? recruiter.geopoint.coordinates[0] : 0
 
     const resultJob: ILbaItemLbaJob = {
       ideaType: "matcha",
@@ -331,7 +259,7 @@ function transformLbaJob({
       },
       place: {
         //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
-        distance: distance !== undefined ? roundDistance(distance) : null,
+        distance: recruiter.distance ?? false ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
         fullAddress: recruiter.is_delegated ? null : recruiter.address,
         address: recruiter.is_delegated ? null : recruiter.address,
         latitude,
