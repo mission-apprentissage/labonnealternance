@@ -9,7 +9,7 @@ const ZAcademie = z
 
 const Z2DCoord = z.tuple([z.number(), z.number()])
 
-const ZPointGeometry = z
+export const ZPointGeometry = z
   .object({
     coordinates: Z2DCoord,
     type: z.literal("Point"),

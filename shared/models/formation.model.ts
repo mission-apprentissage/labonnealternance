@@ -1,5 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 
+import { ZPointGeometry } from "./address.model"
 import { ZAppointment } from "./appointments.model"
 import { zObjectId } from "./common"
 
@@ -153,6 +154,7 @@ export const zFormationCatalogueSchema = z
     to_update: z.boolean().nullish(),
     update_error: z.string().nullish(),
     lieu_formation_geo_coordonnees: z.string().nullish(),
+    lieu_formation_geopoint: ZPointGeometry.nullish(),
     lieu_formation_adresse: z.string().nullish(),
     lieu_formation_adresse_computed: z.string().nullish(),
     lieu_formation_siret: z.string().nullish(),

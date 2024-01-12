@@ -1,6 +1,7 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
+import { ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
 
 export const ZLbaCompany = z
@@ -18,6 +19,7 @@ export const ZLbaCompany = z
     zip_code: z.string().nullable().describe("Code postal"),
     city: z.string().nullable().describe("Ville"),
     geo_coordinates: z.string().describe("Latitude et longitude de l'établissement"),
+    geopoint: ZPointGeometry.nullish().describe("Latitude et longitude de l'établissement"),
     email: z.string().nullable().describe("Adresse email de contact"),
     phone: extensions.phone().nullable().describe("Numéro de téléphone de contact"),
     company_size: z.string().nullable().describe("Tranche effectif de l'entreprise"),
