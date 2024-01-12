@@ -251,14 +251,6 @@ program
 
 /********************/
 
-program
-  .command("index")
-  .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch.")
-  .option("-i, --index_list <string>", " <index_list> est la liste des index séparés par des ,")
-  .option("--recreate", " supprime et recrée tous les indexes", false)
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("indexes:generate"))
-
 //yarn cli create-user --first_name a --last_name b --email ab@fr.fr --scope beta --establishment_raison_sociale beta --type ADMIN
 program
   .command("create-user")
