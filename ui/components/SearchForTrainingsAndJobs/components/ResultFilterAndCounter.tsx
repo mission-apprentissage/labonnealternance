@@ -65,21 +65,9 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
         <>
           {scopeContext.isJob && scopeContext.isTraining && (
             <Box>
-              <FilterButton
-                type="jobs"
-                count={jobCount - partnerJobCount}
-                isActive={activeFilters.includes("jobs")}
-                handleFilterButtonClicked={filterButtonClicked}
-                label="Filtre offres d'emploi"
-              />
-              <FilterButton
-                type="trainings"
-                count={trainingCount}
-                isActive={activeFilters.includes("trainings")}
-                handleFilterButtonClicked={filterButtonClicked}
-                label="Filtre formations"
-              />
-              <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} label="Filtre partenaire" />
+              <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilters.includes("jobs")} handleFilterButtonClicked={filterButtonClicked} />
+              <FilterButton type="trainings" count={trainingCount} isActive={activeFilters.includes("trainings")} handleFilterButtonClicked={filterButtonClicked} />
+              <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} />
             </Box>
           )}
           <Box>

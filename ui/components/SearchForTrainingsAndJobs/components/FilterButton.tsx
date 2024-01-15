@@ -1,6 +1,6 @@
 import { Box, Checkbox } from "@chakra-ui/react"
 
-const FilterButton = ({ type, count, isActive, handleFilterButtonClicked, label }) => {
+const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
   const handleClick = (e) => {
     e.preventDefault()
     handleFilterButtonClicked(type)
@@ -26,7 +26,7 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked, label 
   }
 
   return (
-    <Checkbox aria-label={label} spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
+    <Checkbox spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
       <Box onClick={handleClick}>{getText()}</Box>
     </Checkbox>
   )
