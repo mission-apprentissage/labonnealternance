@@ -46,6 +46,8 @@ const SatisfactionForm = () => {
     token: string | undefined
   }
 
+  const isRefusedState = company_recruitment_intention === ApplicantIntention.REFUS
+
   const getFeedbackText = () => {
     const firstName = fn
     const lastName = ln
@@ -111,24 +113,6 @@ const SatisfactionForm = () => {
 
   const [sendingState, setSendingState] = useState("not_sent")
 
-  const getValidationSchema = () => {
-    let res = Yup.object({})
-    if (company_recruitment_intention === ApplicantIntention.REFUS) {
-      res = Yup.object({
-        company_feedback: Yup.string().nullable().required("Veuillez remplir le message"),
-      })
-    } else {
-      res = Yup.object({
-        company_feedback: Yup.string().required("Veuillez remplir le message"),
-        email: Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
-        phone: Yup.string()
-          .matches(/^[0-9]{10}$/, "⚠ Le numéro de téléphone doit avoir exactement 10 chiffres")
-          .required("⚠ Le téléphone est obligatoire"),
-      })
-    }
-    return res
-  }
-
   const submitForm = async ({ email, phone, company_feedback }) =>
     await apiPost("/application/intentionComment/:id", {
       params: { id },
@@ -144,8 +128,16 @@ const SatisfactionForm = () => {
     })
 
   const formik = useFormik({
-    initialValues: { company_feedback: "", email: null, phone: null },
-    validationSchema: getValidationSchema(),
+    initialValues: { company_feedback: "", email: "", phone: "" },
+    validationSchema: Yup.object().shape({
+      company_feedback: Yup.string().nullable().required("Veuillez remplir le message"),
+      email: isRefusedState ? Yup.string() : Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
+      phone: isRefusedState
+        ? Yup.string()
+        : Yup.string()
+            .matches(/^[0-9]{10}$/, "⚠ Le numéro de téléphone doit avoir exactement 10 chiffres")
+            .required("⚠ Le téléphone est obligatoire"),
+    }),
     onSubmit: async (formikValues) => {
       await submitForm(formikValues)
         .then(() => setSendingState("ok_sent"))
@@ -162,14 +154,6 @@ const SatisfactionForm = () => {
     )
   }
 
-  const getFieldError = () => {
-    let message = ""
-    if (formik.touched.company_feedback && formik.errors.company_feedback) message = formik.errors.company_feedback
-    else if (sendingState === "not_sent_because_of_errors") message = "Une erreur technique empêche l'enregistrement de votre avis. Merci de réessayer ultérieurement"
-
-    return getErrorForMessage(message)
-  }
-
   const getPlaceHolderText = () => {
     switch (company_recruitment_intention) {
       case ApplicantIntention.NESAISPAS:
@@ -184,6 +168,7 @@ const SatisfactionForm = () => {
   }
 
   const getFieldStatus = (formikObj, target) => {
+    console.log(formikObj, target)
     let res = "is-not-validated"
     if (formikObj.errors[target]) {
       res = "is-valid-false"
@@ -216,10 +201,10 @@ const SatisfactionForm = () => {
                     onChange={formik.handleChange}
                     value={formik.values.company_feedback}
                     {...textAreaProperties}
-                    borderBottomColor={getFieldColor(commentFieldStatus)}
+                    borderBottomColor={formik.touched.company_feedback && formik.errors.company_feedback && getFieldColor(commentFieldStatus)}
                   />
                 </Box>
-                {getFieldError()}
+                {formik.touched.company_feedback && formik.errors.company_feedback && getErrorForMessage(formik.errors.company_feedback)}
 
                 {company_recruitment_intention !== ApplicantIntention.REFUS && (
                   <>
@@ -236,11 +221,11 @@ const SatisfactionForm = () => {
                           type="email"
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          value={formik.values.email || ""}
+                          value={formik.values.email}
                           {...inputProperties}
-                          borderBottomColor={getFieldColor(emailFieldStatus)}
+                          borderBottomColor={formik.touched.email && formik.errors.email && getFieldColor(emailFieldStatus)}
                         />
-                        {getErrorForMessage(formik.errors.email)}
+                        {formik.touched.email && formik.errors.email && getErrorForMessage(formik.errors.email)}
                         {testingParameters?.simulatedRecipient ? <div>Les emails seront envoyés à {testingParameters.simulatedRecipient}</div> : ""}
                       </Box>
                       <Spacer minWidth={4} />
@@ -250,14 +235,15 @@ const SatisfactionForm = () => {
                           id="phone"
                           data-testid="phone"
                           name="phone"
-                          type="text"
+                          type="tel"
+                          maxLength={10}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                          value={formik.values.phone || ""}
+                          value={formik.values.phone}
                           {...inputProperties}
-                          borderBottomColor={getFieldColor(phoneFieldStatus)}
+                          borderBottomColor={formik.touched.phone && formik.errors.phone && getFieldColor(phoneFieldStatus)}
                         />
-                        {getErrorForMessage(formik.errors.phone)}
+                        {formik.touched.phone && formik.errors.phone && getErrorForMessage(formik.errors.phone)}
                       </Box>
                     </Flex>
                   </>
