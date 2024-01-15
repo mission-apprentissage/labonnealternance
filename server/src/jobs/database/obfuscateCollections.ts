@@ -97,7 +97,7 @@ const obfuscateFormations = async () => {
   )
 }
 
-const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`.toLowerCase()
+const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
 const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
 const obfuscateRecruiter = async () => {
