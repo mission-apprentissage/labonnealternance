@@ -60,7 +60,7 @@ function FinComponent(props) {
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isFetched } = useQuery("userdetail", () => getUserStatus(encodeURIComponent(userId.toString())), {
+  const { isFetched } = useQuery("userdetail", () => getUserStatus(userId.toString()), {
     enabled: Boolean(userId),
     onSettled: (data) => {
       if (data?.status_current === "ERROR") {
@@ -90,7 +90,7 @@ function FinComponent(props) {
   }
 
   const resendMail = () => {
-    sendValidationLink(encodeURIComponent(userId.toString()))
+    sendValidationLink(userId.toString())
       .then(() => {
         toast({
           title: "Email envoyé.",
@@ -137,7 +137,7 @@ function FinComponent(props) {
    */
   const onClose = async () => {
     await client.invalidateQueries("offre-liste")
-    await router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
+    await router.push(`/espace-pro/administration/entreprise/${establishment_id.toString()}`)
   }
 
   const ValidatedAccountDescription = () => {
