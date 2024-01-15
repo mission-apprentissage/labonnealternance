@@ -31,7 +31,7 @@ const coordinatesOfFrance = [2.213749, 46.227638]
  * @returns {Promise<IRecruiter[]>}
  */
 export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance: number; lat: string; lon: string; romes: string[]; niveau: string }): Promise<IRecruiter[]> => {
-  const clauses: any[] = []
+  const clauses: any[] = [{ "jobs.job_status": JOB_STATUS.ACTIVE }, { "jobs.rome_code": { $in: romes } }, { status: RECRUITER_STATUS.ACTIF }]
 
   if (niveau && niveau !== "Indifférent") {
     clauses.push({
@@ -45,9 +45,6 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
       ],
     })
   }
-  clauses.push({ "jobs.job_status": JOB_STATUS.ACTIVE })
-  clauses.push({ "jobs.rome_code": { $in: romes } })
-  clauses.push({ status: RECRUITER_STATUS.ACTIF })
 
   const stages: any[] = [
     {
