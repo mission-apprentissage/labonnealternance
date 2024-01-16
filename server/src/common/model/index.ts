@@ -1,7 +1,8 @@
 import { captureException } from "@sentry/node"
 
+import { db, mongooseInstance } from "@/common/mongodb"
+
 import { logger } from "../logger"
-import { mongooseInstance } from "../mongodb"
 
 import AnonymizedUser from "./schema/anonymizedUsers/anonymizedUsers.schema"
 import ApiCalls from "./schema/apiCall/apiCall.schema"
@@ -36,6 +37,12 @@ import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema"
 import User from "./schema/user/user.schema"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema"
 
+const createSpecialIndexes = async () => {
+  await db.collection("bonnesboites").createIndex({ geopoint: "2dsphere" })
+  await db.collection("formationcatalogues").createIndex({ lieu_formation_geopoint: "2dsphere" })
+  await db.collection("recruiters").createIndex({ geopoint: "2dsphere" })
+}
+
 export async function createMongoDBIndexes() {
   const results = await Promise.allSettled(
     mongooseInstance.modelNames().map(async (name) => {
@@ -53,6 +60,8 @@ export async function createMongoDBIndexes() {
       })
     })
   )
+
+  await createSpecialIndexes()
 
   const errors = results.reduce((acc, r) => {
     if (r.status === "rejected") {
