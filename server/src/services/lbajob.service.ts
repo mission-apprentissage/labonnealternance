@@ -74,16 +74,14 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
       }
 
       if (x.is_delegated) {
-        const [establishment_location] = x.address.match(/([0-9]{5})[ ,] ?([a-zA-Z-]*)/) ?? [""]
         const cfa = await getEtablissement({ establishment_siret: x.cfa_delegated_siret })
 
         x.phone = cfa?.phone
-        x.email = cfa?.email
+        x.email = cfa?.email || ""
         x.last_name = cfa?.last_name
         x.first_name = cfa?.first_name
         x.establishment_raison_sociale = cfa?.establishment_raison_sociale
         x.address = cfa?.address
-        x.establishment_location = establishment_location
       }
 
       x.jobs.forEach((o) => {
@@ -240,8 +238,8 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
     const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
     const romes = offre.rome_code.map((code) => ({ code, label: null }))
 
-    const latitude = recruiter?.geopoint?.coordinates ? recruiter.geopoint.coordinates[1] : 0
-    const longitude = recruiter?.geopoint?.coordinates ? recruiter.geopoint.coordinates[0] : 0
+    const latitude = recruiter?.geopoint?.coordinates[1] ?? 0
+    const longitude = recruiter?.geopoint?.coordinates[0] ?? 0
 
     const resultJob: ILbaItemLbaJob = {
       ideaType: "matcha",
