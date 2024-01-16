@@ -4,7 +4,6 @@ import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 import { checkIsDiffusible } from "@/services/etablissement.service"
 
 import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
-import { rebuildIndex } from "../../common/utils/esUtils"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
@@ -84,14 +83,12 @@ const processCompanies = async () => {
 export default async function updateLbaCompanies({
   UseAlgoFile = false,
   ClearMongo = false,
-  BuildIndex = false,
   UseSave = false,
   ForceRecreate = false,
   SourceFile = null,
 }: {
   UseAlgoFile?: boolean
   ClearMongo?: boolean
-  BuildIndex?: boolean
   UseSave?: boolean
   ForceRecreate?: boolean
   SourceFile?: string | null
@@ -99,7 +96,7 @@ export default async function updateLbaCompanies({
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
-    console.log("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - BuildIndex : ", BuildIndex, " - UseSave : ", UseSave, " - ForceRecreate : ", ForceRecreate)
+    console.log("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - UseSave : ", UseSave, " - ForceRecreate : ", ForceRecreate)
 
     if (UseAlgoFile) {
       if (!ForceRecreate) {
@@ -136,10 +133,6 @@ export default async function updateLbaCompanies({
       await insertSAVECompanies()
       await updateSAVECompanies()
       await removeSAVECompanies()
-    }
-
-    if (BuildIndex) {
-      await rebuildIndex(LbaCompany, { skipNotFound: true, recreate: true })
     }
 
     logMessage("info", `End updating lbb db`)

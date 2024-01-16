@@ -176,7 +176,7 @@ export const CronsMap = {
   },
   "Mise à jour des sociétés issues de l'algo": {
     cron_string: "0 5 * * 7",
-    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
+    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true } }),
   },
   "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
     cron_string: "0 0 1 * *",
