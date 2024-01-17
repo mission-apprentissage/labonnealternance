@@ -6,6 +6,7 @@ import { RECRUITER_STATUS } from "../../../../services/constant.service"
 import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
+import { geoPointSchema } from "../geopoint/geoPoint.schema"
 import { jobsSchema } from "../jobs/jobs.schema"
 
 const personalInfosRecruiterSchema = new Schema({
@@ -66,6 +67,11 @@ export const nonPersonalInfosRecruiterSchema = new Schema({
     type: String,
     default: null,
     description: "Latitude/Longitude (inversion lié à LBA) de l'adresse de l'entreprise",
+  },
+  geopoint: {
+    type: geoPointSchema,
+    default: null,
+    description: "La géolocation de l'adresse de l'entreprise sous forme de geoPoint",
   },
   is_delegated: {
     type: Boolean,

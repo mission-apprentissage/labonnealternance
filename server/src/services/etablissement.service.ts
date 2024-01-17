@@ -521,6 +521,10 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
     address_detail: d.adresse,
     address: d.adresse?.label,
     geo_coordinates: `${coords[1]},${coords[0]}`,
+    geopoint: {
+      type: "Point",
+      coordinates: coords,
+    },
   }
   const validation = ZCfaReferentielData.safeParse(referentielData)
   if (!validation.success) {
@@ -684,7 +688,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
   const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
   const { latitude, longitude } = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
-  return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}` }
+  return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}`, geopoint: { type: "Point", coordinates: [longitude, latitude] } }
 }
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string, shouldValidate = true) => {

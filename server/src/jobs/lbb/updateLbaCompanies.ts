@@ -70,7 +70,6 @@ const processCompanies = async () => {
       try {
         if (lbaCompany) {
           const parsedCompany = ZLbaCompany.parse(lbaCompany.toObject())
-          // contourne mongoose pour éviter la réindexation systématique à chaque insertion.
           await LbaCompany.collection.insertOne(new LbaCompany(parsedCompany))
         }
       } catch (err) {
