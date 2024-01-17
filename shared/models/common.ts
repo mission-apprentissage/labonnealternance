@@ -1,6 +1,6 @@
 import BSON, { type ObjectId } from "bson"
 import type { IndexOptions, IndexSpecification } from "mongodb"
-import { z, ZodType } from "zod"
+import { ZodType, z } from "zod"
 
 export type CollectionName = "users" | "jobs" | "organisations" | "persons" | "events" | "sessions" | "documents" | "documentContents" | "mailingLists"
 
@@ -13,7 +13,7 @@ export interface IModelDescriptor {
 export const zObjectId = z
   .custom<ObjectId | string>((v) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return BSON.ObjectId.isValid(v as any)
+    return BSON.ObjectID.isValid(v as any)
   })
-  .transform((v) => new BSON.ObjectId(v))
+  .transform((v) => new BSON.ObjectID(v))
   .describe("Identifiant unique")
