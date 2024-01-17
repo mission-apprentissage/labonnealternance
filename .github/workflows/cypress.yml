@@ -92,7 +92,6 @@ jobs:
           CYPRESS_ui: ${{ inputs.cypress_host }}
           CYPRESS_server: ${{ inputs.cypress_host }}
           CYPRESS_smtp: ${{ inputs.smtp_host }}
-          CYPRESS_MONGODB_DATABASE: preview_${{ steps.get-pr-no.outputs.PR_NO }}
 
       - name: Encrypt Error log on failure
         run: .bin/mna-lba log:encrypt /tmp/cypressRun.log
