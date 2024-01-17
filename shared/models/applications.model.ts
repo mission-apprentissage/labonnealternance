@@ -129,6 +129,21 @@ export const ZNewApplication = ZApplication.extend({
   })
   .openapi("ApplicationUi")
 
-export type INewApplication = z.output<typeof ZNewApplication>
+export const ZUsedNewApplication = ZNewApplication.pick({
+  caller: true,
+  applicant_email: true,
+  company_siret: true,
+  applicant_file_content: true,
+  searched_for_job_label: true,
+  job_id: true,
+  company_type: true,
+  applicant_first_name: true,
+  applicant_last_name: true,
+  applicant_file_name: true,
+  message: true,
+  applicant_phone: true,
+})
+
+export type INewApplication = z.output<typeof ZUsedNewApplication>
 
 export type IApplication = z.output<typeof ZApplication>
