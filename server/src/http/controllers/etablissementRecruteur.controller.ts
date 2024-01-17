@@ -271,7 +271,7 @@ export default (server: Server) => {
       const userRecruteur = await validateEtablissementEmail(user.identity.email.toLocaleLowerCase())
 
       if (!userRecruteur) {
-        throw Boom.badRequest("La validation de l'adresse mail à échoué. Merci de contacter le support La bonne alternance.")
+        throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
 
       const isUserAwaiting = getUserStatus(userRecruteur.status) === ETAT_UTILISATEUR.ATTENTE
