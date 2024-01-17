@@ -7,6 +7,8 @@ import { DomainesMetiers } from "@/common/model"
 import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomesmetiers.types"
 import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
 import { db } from "@/common/mongodb"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import config from "@/config"
 
 import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
@@ -18,6 +20,13 @@ const initializeCacheMetiers = async () => {
   console.log("initializeCacheMetiers on first use")
   cacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
   const roughObjSize = JSON.stringify(cacheMetiers).length
+  if (config.env === "production") {
+    notifyToSlack({
+      subject: `Cache domaines metiers chargé`,
+      message: `Cache domaines metiers chargé. Taille estimée ${roughObjSize} octets`,
+      error: false,
+    })
+  }
   console.log("cacheMetiers : ", roughObjSize)
 }
 
@@ -25,6 +34,13 @@ const initializeCacheDiplomas = async () => {
   console.log("initializeCacheDiplomas on first use")
   cacheDiplomas = await db.collection("diplomesmetiers").find({}).toArray()
   const roughObjSize = JSON.stringify(cacheDiplomas).length
+  if (config.env === "production") {
+    notifyToSlack({
+      subject: `Cache diplômes metiers chargé`,
+      message: `Cache diplômes metiers chargé. Taille estimée ${roughObjSize} octets`,
+      error: false,
+    })
+  }
   console.log("cacheDiplomas : ", roughObjSize)
 }
 
@@ -35,6 +51,17 @@ export const getRomesAndLabelsFromTitleQuery = async ({ title, withRomeLabels }:
   // nominal case
   const [romesMetiers, romesDiplomes] = await Promise.all([getMetiers({ title, withRomeLabels }), getLabelsAndRomesForDiplomas(title)])
   return { ...romesMetiers, ...romesDiplomes }
+}
+
+const computeScore = (document, searchableFields, regexes) => {
+  searchableFields.map(({ field, score }) =>
+    regexes.map((regex) => {
+      const valueToTest = document[field] instanceof Array ? document[field].join(" ") : document[field]
+      if (valueToTest.match(regex)) {
+        document.score = score + (document.score ?? 0)
+      }
+    })
+  )
 }
 
 const searchableWeightedFields = [
@@ -49,7 +76,7 @@ const searchableWeightedFields = [
   { field: "sous_domaine_onisep_sans_accent_computed", score: 1 },
 ]
 
-const filterMetiers = async (regexes: any[], romes?: string, rncps?: string): Promise<(IDomainesMetiers & { score?: number })[]> => {
+const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string): Promise<(IDomainesMetiers & { score?: number })[]> => {
   if (cacheMetiers.length === 0) {
     await initializeCacheMetiers()
   }
@@ -78,14 +105,7 @@ const filterMetiers = async (regexes: any[], romes?: string, rncps?: string): Pr
 
     const matchingMetier: IDomainesMetiers & { score?: number } = { ...metier }
 
-    searchableWeightedFields.map(({ field, score }) =>
-      regexes.map((regex) => {
-        const valueToTest = metier[field] instanceof Array ? metier[field].join(" ") : metier[field]
-        if (valueToTest.match(regex)) {
-          matchingMetier.score = score + (matchingMetier.score ?? 0)
-        }
-      })
-    )
+    computeScore(matchingMetier, searchableWeightedFields, regexes)
 
     if (matchingMetier.score) {
       results.push(matchingMetier)
@@ -100,24 +120,17 @@ const searchableWeightedDiplomaFields = [
   { field: "acronymes_intitule", score: 2 },
 ]
 
-const filterDiplomas = async (regexes: any[]): Promise<(IDiplomesMetiers & { score?: number })[]> => {
+const filterDiplomas = async (regexes: RegExp[]): Promise<(IDiplomesMetiers & { score?: number })[]> => {
   if (cacheDiplomas.length === 0) {
     await initializeCacheDiplomas()
   }
 
   const results: (IDiplomesMetiers & { score?: number })[] = []
 
-  cacheDiplomas.map((diploma) => {
+  cacheDiplomas.forEach((diploma) => {
     const matchingDiploma: IDiplomesMetiers & { score?: number } = { ...diploma }
 
-    searchableWeightedDiplomaFields.map(({ field, score }) =>
-      regexes.map((regex) => {
-        const valueToTest = diploma[field] instanceof Array ? diploma[field].join(" ") : diploma[field]
-        if (valueToTest.match(regex)) {
-          matchingDiploma.score = score + (matchingDiploma.score ?? 0)
-        }
-      })
-    )
+    computeScore(matchingDiploma, searchableWeightedDiplomaFields, regexes)
 
     if (matchingDiploma.score) {
       results.push(matchingDiploma)
@@ -131,7 +144,7 @@ const filterDiplomas = async (regexes: any[]): Promise<(IDiplomesMetiers & { sco
  * construit les regex à partir du terme de recherche
  */
 const buildRegexes = (searchTerm: string) => {
-  const regexes: any[] = []
+  const regexes: RegExp[] = []
   searchTerm.split(" ").forEach((term, idx) => {
     if (idx === 0 || term.length > 2) {
       regexes.push(new RegExp(`\\b${removeAccents(term)}`, "i"))
@@ -158,7 +171,7 @@ export const getMetiers = async ({
   if (!title && !romes && !rncps) {
     throw Boom.badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
   } else {
-    let regexes: any[] = []
+    let regexes: RegExp[] = []
 
     if (title) {
       regexes = buildRegexes(title)
@@ -193,7 +206,7 @@ export const getMetiers = async ({
  * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
  */
 const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ labelsAndRomesForDiplomas: IMetierEnrichi[] }> => {
-  const regexes: any[] = buildRegexes(searchTerm)
+  const regexes: RegExp[] = buildRegexes(searchTerm)
 
   let diplomas: (IDiplomesMetiers & { score?: number })[] = await filterDiplomas(regexes)
   diplomas = diplomas.sort((a: IDiplomesMetiers & { score?: number }, b: IDiplomesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
@@ -220,7 +233,7 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
  * @returns {Promise<IAppellationsRomes>}
  */
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
-  const regexes: any[] = buildRegexes(searchTerm)
+  const regexes: RegExp[] = buildRegexes(searchTerm)
 
   const metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers(regexes)
 
