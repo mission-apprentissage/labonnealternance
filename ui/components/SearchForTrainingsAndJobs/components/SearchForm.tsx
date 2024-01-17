@@ -141,6 +141,7 @@ const SearchForm = (props) => {
                     </Text>
                     <Box>
                       <Select
+                        aria-label="Rayon de recherche"
                         onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
                         value={locationRadius}
                         id="locationRadius-search"
@@ -163,7 +164,13 @@ const SearchForm = (props) => {
                     <Text as="label" htmlFor="diploma-search" variant="defaultAutocomplete">
                       Niveau d&apos;études visé
                     </Text>
-                    <Select onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")} value={diploma} id="diploma-search" {...selectProperties}>
+                    <Select
+                      aria-label="Liste des diplômes"
+                      onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")}
+                      value={diploma}
+                      id="diploma-search"
+                      {...selectProperties}
+                    >
                       {buildAvailableDiplomasOptions(diplomas)}
                     </Select>
                   </Box>
