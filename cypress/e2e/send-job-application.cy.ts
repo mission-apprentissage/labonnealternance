@@ -3,7 +3,7 @@ import { SearchForm } from "../pages/SearchForm"
 import { generateRandomString } from "../utils/generateRandomEmail"
 
 describe("send-job-application", () => {
-  it("tests send-job-application on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
+  it("tests send-job-application", () => {
     cy.on("uncaught:exception", () => {
       return false
     })
