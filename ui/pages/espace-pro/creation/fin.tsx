@@ -137,7 +137,7 @@ function FinComponent(props) {
    */
   const onClose = async () => {
     await client.invalidateQueries("offre-liste")
-    await router.push(`/espace-pro/administration/entreprise/${establishment_id.toString()}`)
+    await router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
   }
 
   const ValidatedAccountDescription = () => {
