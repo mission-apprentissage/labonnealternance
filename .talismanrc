@@ -65,12 +65,14 @@ fileignoreconfig:
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: server/tests/unit/util.test.ts
   checksum: d38ae060280f0cb1579894ac2fcbfdd0a48b49eafc54f7ba3c7db0e422230547
+- filename: server/tests/unit/validateSendApplication.test.ts
+  checksum: 997c5eb4940ea43126f96169dc22fcee7f1890ed19b23aa8b3bffd3522ff7b04
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: 9358c7f8155efcfc5687be3f01ae3516a05988118304c124a3358094aa966363
+  checksum: 2da5fe77017ba6e542d1681dd0d7ab88fd86739b31e580fc5a21a01b9c0800bd
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts

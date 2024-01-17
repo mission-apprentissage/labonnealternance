@@ -1,6 +1,6 @@
 import { Button, Flex, FormControl, Image, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
-import React, { useContext } from "react"
+import { useContext } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
@@ -35,7 +35,7 @@ const DisplayMapButton = (props) => {
   }
 
   return (
-    <Flex flex="1 auto" mt={[0, 0, 2]} alignItems="center" justifyContent="flex-end" display={["none", "none", "flex"]}>
+    <Flex flex="1 auto" alignItems="center" justifyContent="flex-end" display={["none", "none", "flex"]}>
       <FormControl flex="0" justifyContent="flex-end" alignItems="center">
         <Button
           aria-checked={displayMap}

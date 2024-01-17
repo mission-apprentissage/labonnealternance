@@ -2,7 +2,7 @@ import { IUserRecruteur } from "shared/models"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
-import { generateAccessToken, generateScope } from "@/security/accessTokenService"
+import { UserForAccessToken, generateAccessToken, generateScope } from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: IUserRecruteur) {
   return generateAccessToken(user, [
@@ -109,9 +109,7 @@ export function createProvidedJobLink(user: IUserRecruteur, jobId: string, utmDa
       generateScope({
         schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
         options: {
-          params: {
-            jobId: jobId,
-          },
+          params: { jobId },
           querystring: undefined,
         },
       }),
@@ -303,27 +301,21 @@ export function createRdvaShortRecapToken(email: string, appointmentId: string) 
   return token
 }
 
-/**
- * Secured link for application replies
- */
-export function createLbaCompanyApplicationReplyLink(email, siret, intention, application) {
-  const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
-  const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
-
-  const token = generateAccessToken(
-    { type: "lba-company", siret, email },
+export function generateApplicationReplyToken(tokenUser: UserForAccessToken, applicationId: string) {
+  return generateAccessToken(
+    tokenUser,
     [
       generateScope({
         schema: zRoutes.post["/application/intention/:id"],
         options: {
-          params: { id: application._id },
+          params: { id: applicationId },
           querystring: undefined,
         },
       }),
       generateScope({
         schema: zRoutes.post["/application/intentionComment/:id"],
         options: {
-          params: { id: application._id },
+          params: { id: applicationId },
           querystring: undefined,
         },
       }),
@@ -332,40 +324,4 @@ export function createLbaCompanyApplicationReplyLink(email, siret, intention, ap
       expiresIn: "30d",
     }
   )
-
-  return `${config.publicUrl}/formulaire-intention?company_recruitment_intention=${intention}&id=${application.id}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(
-    token
-  )}`
-}
-
-export function createUserRecruteurApplicationReplyLink(user, intention, application) {
-  const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
-  const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
-
-  const token = generateAccessToken(
-    user,
-    [
-      generateScope({
-        schema: zRoutes.post["/application/intention/:id"],
-        options: {
-          params: { id: application._id },
-          querystring: undefined,
-        },
-      }),
-      generateScope({
-        schema: zRoutes.post["/application/intentionComment/:id"],
-        options: {
-          params: { id: application._id },
-          querystring: undefined,
-        },
-      }),
-    ],
-    {
-      expiresIn: "30d",
-    }
-  )
-
-  return `${config.publicUrl}/formulaire-intention?company_recruitment_intention=${intention}&id=${application.id}${candidateData}${utmRecruiterData}&token=${encodeURIComponent(
-    token
-  )}`
 }
