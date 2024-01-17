@@ -3,7 +3,6 @@ import { randomUUID } from "crypto"
 import { IRecruiter } from "shared"
 
 import { RECRUITER_STATUS } from "../../../../services/constant.service"
-import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
 import { geoPointSchema } from "../geopoint/geoPoint.schema"
@@ -134,6 +133,5 @@ export const recruiterSchema = new Schema<IRecruiter>(
 
 recruiterSchema.index({ "jobs._id": 1 })
 recruiterSchema.plugin(mongoosePagination)
-recruiterSchema.plugin(mongoosastic, { index: "recruiters" })
 
 export default model<IRecruiter, Pagination<IRecruiter>>("recruiter", recruiterSchema)
