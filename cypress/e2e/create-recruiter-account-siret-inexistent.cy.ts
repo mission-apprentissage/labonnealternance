@@ -1,5 +1,5 @@
 import { FlowCreationEntreprise } from "../pages/FlowCreationEntreprise"
-import { generateRandomString } from "../utils/generateRandomEmail"
+import { generateRandomString } from "../utils/generateRandomString"
 
 describe("create-recruiter-account-siret-inexistent", () => {
   it("tests create-recruiter-account-siret-inexistent", () => {
