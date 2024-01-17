@@ -57,6 +57,9 @@ export const getFormations = async ({
   const longitude = coords?.at(0)
 
   const now = new Date()
+
+  // tags contient les années de démarrage des sessions. règle métier : année en cours, année à venir et année passée OU année + 2 selon qu'on
+  // est en septembre ou plus tôt dans l'année
   const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
 
   const query: any = {}
