@@ -1,7 +1,7 @@
 import { smtpClient } from "../api/smtpClient"
 import { FlowCreationCfa } from "../pages/FlowCreationCfa"
 import { LoginBar } from "../pages/LoginBar"
-import { generateRandomString } from "../utils/generateRandomEmail"
+import { generateRandomString } from "../utils/generateRandomString"
 
 describe("create-cfa-account-autovalidated", () => {
   it.skip("tests create-cfa-account-autovalidated", () => {

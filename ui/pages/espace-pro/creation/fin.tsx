@@ -3,6 +3,8 @@ import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
+import { zObjectId } from "shared/models/common"
+import { z } from "zod"
 
 import { AuthentificationLayout, LoadingEmptySpace } from "../../../components/espace_pro"
 import { WidgetContext } from "../../../context/contextWidget"
@@ -15,49 +17,65 @@ function parseQueryString(value: string | string[]): string {
 }
 
 export default function DepotRapideFin() {
+  const router = useRouter()
+
+  if (!router.isReady) return
+
+  const parsedQuery = z
+    .object({
+      job: z.string(),
+      email: z.string(),
+      withDelegation: z.enum(["true", "false"]).transform((value) => value === "true"),
+      fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
+      userId: zObjectId,
+      establishment_id: z.string(),
+    })
+    .strict()
+    .safeParse(router.query)
+
+  if (parsedQuery.success === false) {
+    throw new Error("Arguments incorrects")
+  }
+
+  return <FinComponent {...parsedQuery.data} />
+}
+
+function FinComponent(props) {
   const [disableLink, setDisableLink] = useState(false)
   const [userIsValidated, setUserIsValidated] = useState(false)
   const [userIsInError, setUserIsInError] = useState(false)
   const [title, setTitle] = useState("")
   const router = useRouter()
+
   const toast = useToast()
   const client = useQueryClient()
 
   const { widget } = useContext(WidgetContext)
-  const {
-    job: jobString,
-    email,
-    withDelegation,
-    fromDashboard,
-    userId,
-    establishment_id,
-  } = router.query as { job: string; email: string; withDelegation: string; fromDashboard: string; userId: string; establishment_id: string }
-  const fromDashboardString = parseQueryString(fromDashboard)
+
+  const { job: jobString, email, withDelegation, fromDashboard, userId, establishment_id } = props
 
   const job = JSON.parse(parseQueryString(jobString) ?? "{}")
-  const fromDash = fromDashboardString === "true"
-  const withDelegationBoolean = withDelegation === "true"
 
   /**
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isFetched } = useQuery("userdetail", () => getUserStatus(userId), {
+  const { isFetched } = useQuery("userdetail", () => getUserStatus(userId.toString()), {
     enabled: Boolean(userId),
     onSettled: (data) => {
       if (data?.status_current === "ERROR") {
         setUserIsInError(true)
         setTitle("Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte.")
-      } else if (data?.status_current === "VALIDÉ" || fromDash === true) {
+      } else if (data?.status_current === "VALIDÉ" || fromDashboard === true) {
         setUserIsValidated(true)
         setTitle(
-          withDelegationBoolean
+          withDelegation
             ? "Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés."
             : "Félicitations,<br>votre offre a bien été créée!"
         )
       } else {
         setTitle(
-          withDelegationBoolean
+          withDelegation
             ? "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
             : "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte."
         )
@@ -65,14 +83,14 @@ export default function DepotRapideFin() {
     },
   })
 
-  if (!job && !email && !withDelegation && !fromDash && !userId) return <></>
+  if (!job && !email && !withDelegation && !fromDashboard && !userId) return <></>
 
   if (!isFetched && userId) {
     return <LoadingEmptySpace />
   }
 
   const resendMail = () => {
-    sendValidationLink(userId)
+    sendValidationLink(userId.toString())
       .then(() => {
         toast({
           title: "Email envoyé.",
@@ -119,7 +137,7 @@ export default function DepotRapideFin() {
    */
   const onClose = async () => {
     await client.invalidateQueries("offre-liste")
-    await router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
+    await router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
   }
 
   const ValidatedAccountDescription = () => {
@@ -195,14 +213,14 @@ export default function DepotRapideFin() {
   }
 
   return (
-    <AuthentificationLayout fromDashboard={fromDash} onClose={onClose}>
+    <AuthentificationLayout fromDashboard={fromDashboard} onClose={onClose}>
       <Flex direction={["column", widget?.mobile ? "column" : "row"]} align={widget?.mobile ? "center" : "flex-start"} border="1px solid #000091" mt={[4, 8]} p={[4, 8]}>
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
-          {fromDash ? null : userIsInError ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
+          {fromDashboard ? null : userIsInError ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
           <Box bg="#F6F6F6" p={4}>
             <Stack direction="column" spacing="16px">
               <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>

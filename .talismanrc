@@ -20,13 +20,13 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: ff2667fc1c28f77a036260f684d5ed1b9e7e5e700eeee55b5aeaad117381ec92
+  checksum: f3da269202d63aa1ad66b8eaa148076cf0135eec6b7fabe2394fcc3eabb466d2
 - filename: .infra/files/scripts/seed.sh
   checksum: ddafc86248e8fd5f7c24ca5a62be703083f7704395f17fb7b43bc8e44227d561
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: a368f0b5facfef8039545728c8cd7b5c6ae1588f6b316e84cbf4231df6d975c5
+  checksum: d4e9efc30b80d1fc09e57f62884346914626050dba35c2e9d12ce6f5c233de6b
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test

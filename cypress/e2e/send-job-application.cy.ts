@@ -1,9 +1,10 @@
 import { smtpClient } from "../api/smtpClient"
+import { givenAMatchaOffer } from "../pages/givenAMatchaOffer"
 import { SearchForm } from "../pages/SearchForm"
-import { generateRandomString } from "../utils/generateRandomEmail"
+import { generateRandomString } from "../utils/generateRandomString"
 
 describe("send-job-application", () => {
-  it("tests send-job-application on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
+  it("tests send-job-application", () => {
     cy.on("uncaught:exception", () => {
       return false
     })
@@ -12,11 +13,15 @@ describe("send-job-application", () => {
     cy.intercept("POST", Cypress.env("server") + "/api/v1/application").as("submitApplication")
 
     const randomEmail = `test-auto-${generateRandomString()}@nexistepas.fr`
+
     cy.viewport(1254, 704)
+
+    givenAMatchaOffer()
+
     SearchForm.goToHome()
     SearchForm.fillSearch({
-      metier: "Gestion de projets informatiques",
-      location: "Lille 59160",
+      metier: "Exploitation agricole",
+      location: "Roubaix 59100",
       distance: 60,
     })
     SearchForm.submit()
