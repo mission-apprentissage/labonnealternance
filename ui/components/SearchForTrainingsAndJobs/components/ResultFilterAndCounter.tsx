@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Image } from "@chakra-ui/react"
-import React, { useContext } from "react"
+import { useContext } from "react"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
@@ -52,7 +52,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
   const filterZoneProperties = {
     justifyContent: "left",
     paddingLeft: ["8px", "8px", "8px", "16px"],
-    marginTop: "8px",
+    marginTop: "12px",
     marginBottom: "4px",
     maxWidth: "1275px",
     alignItems: ["left", "left", "left", "center"],
