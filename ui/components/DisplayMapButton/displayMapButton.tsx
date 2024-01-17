@@ -35,11 +35,12 @@ const DisplayMapButton = (props) => {
   }
 
   return (
-    <Flex display={["none", "none", "flex"]}>
-      <FormControl flex={["", "", "", "", "0"]}>
+    <Flex flex="1 auto" alignItems="center" justifyContent="flex-end" display={["none", "none", "flex"]}>
+      <FormControl flex="0" justifyContent="flex-end" alignItems="center">
         <Button
           aria-checked={displayMap}
           role="switch"
+          mr={[4, 4, 4, 12]}
           mt={0}
           display="flex"
           _hover={{ bg: "none" }}
@@ -48,7 +49,7 @@ const DisplayMapButton = (props) => {
           border="none"
           onClick={toggleMapDisplay}
         >
-          <Text as="span" fontWeight={400} mr={4} mb="0" fontSize="1rem">
+          <Text as="span" fontWeight={400} mr={8} mb="0" fontSize="1rem">
             Afficher la carte
           </Text>{" "}
           <Image mb="2px" mr="5px" src={displayMap ? "/images/switch-on.svg" : "/images/switch-off.svg"} alt="" />
