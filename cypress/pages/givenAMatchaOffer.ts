@@ -1,7 +1,7 @@
 import { generateRandomString } from "../utils/generateRandomString"
 
 export const givenAMatchaOffer = () => {
-  const apiKey = "mna-d0cd64b7-6d27-42ca-9a13-4fb3100dbf7a"
+  const apiKey = Cypress.env("SERVER_API_KEY")
 
   cy.request({
     method: "POST",
@@ -14,7 +14,7 @@ export const givenAMatchaOffer = () => {
       last_name: "Doe",
       phone: "0612345678",
       email: `john.doe+${generateRandomString(10)}@gmail.com`,
-      establishment_siret: "42476141900045",
+      establishment_siret: "42476141900045", // ovh
     },
   }).then((response) => {
     const entreprise = response.body
