@@ -34,7 +34,7 @@ export default async function postCandidature({ applicantValues, company_h, jobL
   if (isError) {
     if (isAxiosError) {
       logError("Candidature API error", `Candidature API error ${response.data.error}`)
-      res = response.statusText
+      res = response.data.error
     } else if (isSimulatedError) {
       logError("Candidature API error simulated")
       res = "simulated_error"
