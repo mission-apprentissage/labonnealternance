@@ -1,7 +1,7 @@
 import { smtpClient } from "../api/smtpClient"
 import { givenAMatchaOffer } from "../pages/givenAMatchaOffer"
 import { SearchForm } from "../pages/SearchForm"
-import { generateRandomString } from "../utils/generateRandomEmail"
+import { generateRandomString } from "../utils/generateRandomString"
 
 describe("send-job-application", () => {
   it("tests send-job-application", () => {

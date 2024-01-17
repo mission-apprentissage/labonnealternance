@@ -1,4 +1,4 @@
-import { generateRandomString } from "../utils/generateRandomEmail"
+import { generateRandomString } from "../utils/generateRandomString"
 
 export const givenAMatchaOffer = () => {
   const apiKey = "mna-d0cd64b7-6d27-42ca-9a13-4fb3100dbf7a"
