@@ -566,8 +566,7 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 }
 
 export const isCompanyValid = async (userRecruteur: IUserRecruteur) => {
-  const { establishment_siret: siret, email, _id } = userRecruteur
-
+  const { establishment_siret: siret, email } = userRecruteur
   if (!siret) {
     return false
   }
