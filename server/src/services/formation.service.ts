@@ -143,7 +143,7 @@ const getOneFormationFromId = async ({ id }: { id: string }): Promise<ILbaItemFo
  * @param {number} limit le nombre de résultats max à produire
  * @param {string} caller l'identifiant fourni par l'exploitant de l'api
  * @param {string[]} options un tableau d'options modulant la recherche
- * @returns {Promise<IFormationEsResult[]>}
+ * @returns {Promise<IFormationCatalogue[]>}
  */
 const getRegionFormations = async ({
   romes,
@@ -163,7 +163,7 @@ const getRegionFormations = async ({
   limit?: number
   options: "with_description"[]
   caller?: string
-}): Promise<IFormationEsResult[]> => {
+}): Promise<IFormationCatalogue[]> => {
   const query: any = {}
 
   if (romes?.length) {
@@ -306,12 +306,12 @@ export const deduplicateFormations = (formations: IFormationCatalogue[]): IForma
 /**
  * Retourne un ensemble de formations LbaItem à partir de formations issues de la mongo
  */
-const transformFormationsForIdea = (rawEsFormations: IFormationCatalogue[]): ILbaItemFormation[] => {
+const transformFormationsForIdea = (rawFormations: IFormationCatalogue[]): ILbaItemFormation[] => {
   const formations: ILbaItemFormation[] = []
 
-  if (rawEsFormations.length) {
-    for (let i = 0; i < rawEsFormations.length; ++i) {
-      formations.push(transformFormationForIdea(rawEsFormations[i]))
+  if (rawFormations.length) {
+    for (let i = 0; i < rawFormations.length; ++i) {
+      formations.push(transformFormationForIdea(rawFormations[i]))
     }
   }
 
@@ -582,7 +582,7 @@ export const getFormationsParRegionQuery = async ({
   }
 
   try {
-    const rawEsFormations = await getRegionFormations({
+    const rawFormations = await getRegionFormations({
       romes: romes ? romes.split(",") : [],
       region: region,
       departement: departement,
@@ -592,7 +592,7 @@ export const getFormationsParRegionQuery = async ({
       options: options === "with_description" ? ["with_description"] : [],
     })
 
-    const formations = transformFormationsForIdea(rawEsFormations)
+    const formations = transformFormationsForIdea(rawFormations)
     sortFormations(formations)
 
     return { results: formations }
