@@ -36,7 +36,7 @@ describe("create-recruiter-account-siret-inexistent", () => {
       jobDurationInMonths: 12,
     })
     FlowCreationEntreprise.offerPage.submit()
-    FlowCreationEntreprise.delegationPage.selectCFAs(["UNIVERSITE D'ANGERS"])
+    FlowCreationEntreprise.delegationPage.selectCFAs(["UNIVERSITE GRENOBLE ALPES"])
     FlowCreationEntreprise.delegationPage.submit()
     FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase(), romeLabel, studyLevel])
     FlowCreationEntreprise.emailSentPage.goBackHome()

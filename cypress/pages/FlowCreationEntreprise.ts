@@ -23,7 +23,7 @@ export const FlowCreationEntreprise = {
       cy.get("input[name='email'").type(email)
     },
     submit() {
-      cy.get("button[type='submit']").click()
+      cy.get("button[type='submit']").click({ timeout: 10000 })
     },
   },
   offerPage: {
@@ -67,6 +67,7 @@ export const FlowCreationEntreprise = {
           cy.get("[data-testid='offre-job-count'] [data-testid='+']").click()
         }
         cy.get("[data-testid='offre-job-count'] [data-testid='-']").click()
+        cy.get("[data-testid='offre-job-count-value']").should("have.text", jobCount.toString())
       }
       cy.get("input[name='job_duration']").clear()
       cy.get("input[name='job_duration']").type(jobDurationInMonths.toString())
@@ -81,7 +82,7 @@ export const FlowCreationEntreprise = {
         cy.get(`[data-testid='cfa-${index}'] input[type='checkbox']`).uncheck({ force: true })
       })
       cfas.forEach((cfa) => {
-        cy.contains(cfa).parents("[data-testid^='cfa-']").find("input[type='checkbox']").check({ force: true })
+        cy.contains(cfa).should("have.text", cfa).parents("[data-testid^='cfa-']").find("input[type='checkbox']").check({ force: true })
       })
     },
     submit() {
