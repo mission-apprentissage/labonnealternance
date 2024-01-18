@@ -498,7 +498,7 @@ function geometryToGeoCoord(geometry: any): [number, number] {
   } else if (type === "Polygon") {
     return geometry.coordinates[0][0]
   } else {
-    assertUnreachable(type)
+    throw new Error(`Badly formatted geometry. type=${type}`)
   }
 }
 
