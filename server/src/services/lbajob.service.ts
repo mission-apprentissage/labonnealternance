@@ -69,10 +69,6 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
     jobs.map(async (x) => {
       const jobs: any[] = []
 
-      if (x.jobs.length === 0) {
-        return
-      }
-
       if (x.is_delegated) {
         const cfa = await getEtablissement({ establishment_siret: x.cfa_delegated_siret })
 
