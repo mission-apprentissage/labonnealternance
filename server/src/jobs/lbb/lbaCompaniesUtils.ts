@@ -24,13 +24,9 @@ const PREDICTION_FILE = path.join(currentDirname, "./assets/bonnesboites.json")
 const s3File = config.algoBonnesBoites.s3File
 
 export const createAssetsFolder = async () => {
-  try {
-    const assetsPath = path.join(currentDirname, "./assets")
-    if (!(await fs.existsSync(assetsPath))) {
-      await fs.mkdirSync(assetsPath)
-    }
-  } catch (err) {
-    logger.error("Error creating assets directory", err)
+  const assetsPath = path.join(currentDirname, "./assets")
+  if (!(await fs.existsSync(assetsPath))) {
+    await fs.mkdirSync(assetsPath)
   }
 }
 
@@ -84,6 +80,7 @@ export const downloadSAVEFile = async ({ key }) => {
 }
 
 export const downloadFile = async ({ from, to }) => {
+  await createAssetsFolder()
   await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(to))
 }
 

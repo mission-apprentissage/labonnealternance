@@ -197,7 +197,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
     const applicationCountByJob = await getApplicationByJobCount([id])
 
     const job = transformLbaJob({
-      recruiter: rawJob,
+      recruiter: rawJob.recruiter,
       applicationCountByJob,
     })
 

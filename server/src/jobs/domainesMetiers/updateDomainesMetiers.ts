@@ -22,6 +22,7 @@ const FILEPATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
 const downloadAndSaveFile = async (from = "currentDomainesMetiers.xlsx") => {
   logger.info(`Downloading and save file ${from} from S3 Bucket...`)
 
+  await createAssetsFolder()
   await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(FILEPATH))
 }
 
@@ -29,8 +30,6 @@ export default async function (optionalFileName?: string) {
   let step = 0
 
   logger.info(" -- Start of DomainesMetiers initializer -- ")
-
-  await createAssetsFolder()
 
   await downloadAndSaveFile(optionalFileName)
 

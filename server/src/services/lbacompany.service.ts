@@ -13,6 +13,9 @@ import { getApplicationByCompanyCount, IApplicationCount } from "./application.s
 import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
+export const buildLbaCompanyAddress = (company: ILbaCompany) =>
+  `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
+
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo
  */
@@ -36,7 +39,7 @@ const transformCompany = ({
     contact.phone = company.phone
   }
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
-  const address = `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
+  const address = buildLbaCompanyAddress(company)
 
   const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
 

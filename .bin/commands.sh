@@ -18,7 +18,9 @@ function Help() {
    echo "  seed:apply                                 Apply seed to a database"
    echo "  deploy:log:encrypt                         Encrypt Github ansible logs"
    echo "  deploy:log:dencrypt                        Decrypt Github ansible logs"
-   echo "  cypress:set-env                            Create Cypress env file"
+   echo "  log:encrypt <log_file>                     Encrypt log file"
+   echo "  log:decrypt <encrypted_log_file>           Decrypt log file"
+   echo "  e2e:run                                    Run end to end tests"
    echo
    echo
 }
@@ -80,6 +82,14 @@ function deploy:log:decrypt() {
   "${SCRIPT_DIR}/deploy-log-decrypt.sh" "$@"
 }
 
-function cypress:set-env() {
-  "${SCRIPT_DIR}/set-cypress-env.sh" "$@"
+function e2e:run() {
+  "${SCRIPT_DIR}/run-tests-e2e.sh" "$@"
+}
+
+function log:encrypt() {
+  "${SCRIPT_DIR}/log-encrypt.sh" "$@"
+}
+
+function log:decrypt() {
+  "${SCRIPT_DIR}/log-decrypt.sh" "$@"
 }

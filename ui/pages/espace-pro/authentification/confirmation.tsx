@@ -11,7 +11,7 @@ export default function ConfirmationCreationCompte() {
   return (
     <AuthentificationLayout>
       <Box px={["6", "8"]} pt={["6w", "12w"]}>
-        <Heading fontSize={["32px", "40px"]} as="h1">
+        <Heading fontSize={["32px", "40px"]} as="h1" data-testid="validation-email-title">
           Vérifier votre messagerie
         </Heading>
         <Box fontSize={["16px", "22px"]}>

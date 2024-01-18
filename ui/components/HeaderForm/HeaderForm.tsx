@@ -70,7 +70,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
             <Flex>
               <Box {...focusWithin}>
                 <AutoCompleteField
-                  kind="Métier ou diplôme *"
+                  kind="Métier ou diplôme"
                   id="headerFormJobField"
                   items={[]}
                   hasError={errors.job}
@@ -91,23 +91,21 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   ]}
                 />
               </Box>
-              <Box ml={3}>
-                <Box {...focusWithin}>
-                  <AutoCompleteField
-                    id="headerFormPlaceField"
-                    kind="Lieu"
-                    items={[]}
-                    hasError={errors.location}
-                    initialSelectedItem={contextFormValues?.location ?? null}
-                    itemToStringFunction={autoCompleteToStringFunction}
-                    onSelectedItemChangeFunction={partialRight(formikUpdateValue, "location")}
-                    compareItemFunction={compareAutoCompleteValues}
-                    onInputValueChangeFunction={addressChanged}
-                    name="placeField"
-                    placeholder={isHome ? "A quel endroit ?" : "Adresse, ville ou code postal"}
-                    searchPlaceholder="Indiquez le lieu recherché ci-dessus"
-                  />
-                </Box>
+              <Box {...focusWithin} ml={3}>
+                <AutoCompleteField
+                  id="headerFormPlaceField"
+                  kind="Lieu"
+                  items={[]}
+                  hasError={errors.location}
+                  initialSelectedItem={contextFormValues?.location ?? null}
+                  itemToStringFunction={autoCompleteToStringFunction}
+                  onSelectedItemChangeFunction={partialRight(formikUpdateValue, "location")}
+                  compareItemFunction={compareAutoCompleteValues}
+                  onInputValueChangeFunction={addressChanged}
+                  name="placeField"
+                  placeholder={isHome ? "A quel endroit ?" : "Adresse, ville ou code postal"}
+                  searchPlaceholder="Indiquez le lieu recherché ci-dessus"
+                />
               </Box>
               <Box {...focusWithin} ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
                 <Text as="label" htmlFor="locationRadius-header" variant="defaultAutocomplete">

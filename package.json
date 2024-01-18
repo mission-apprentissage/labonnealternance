@@ -57,7 +57,7 @@
     "e2e:recette": "cypress run --env ui=https://labonnealternance-recette.apprentissage.beta.gouv.fr,server=https://labonnealternance-recette.apprentissage.beta.gouv.fr",
     "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
     "e2e:convert2": "node cypress/convertRecords.mjs",
-    "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-rdv-from-widget.cy.js --env ui=http://localhost:3000,server=http://localhost:5001"
+    "e2e:specific": "cypress run --spec=./cypress/e2e/create-cfa-account-autovalidated.cy.ts"
   },
   "dependencies": {
     "husky": "^8.0.3"
@@ -70,6 +70,7 @@
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "@types/node": "20.7.1",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
     "@typescript-eslint/parser": "^6.7.2",
     "cross-env": "^7.0.3",

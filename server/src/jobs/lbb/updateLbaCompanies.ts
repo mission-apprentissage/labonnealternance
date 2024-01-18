@@ -7,15 +7,7 @@ import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-import {
-  checkIfAlgoFileIsNew,
-  countCompaniesInFile,
-  createAssetsFolder,
-  downloadAlgoCompanyFile,
-  getCompanyMissingData,
-  readCompaniesFromJson,
-  removePredictionFile,
-} from "./lbaCompaniesUtils"
+import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils"
 import { insertSAVECompanies, removeSAVECompanies, updateSAVECompanies } from "./updateSAVECompanies"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
@@ -101,8 +93,6 @@ export default async function updateLbaCompanies({
       if (!ForceRecreate) {
         await checkIfAlgoFileIsNew("algo companies")
       }
-
-      await createAssetsFolder()
 
       await downloadAlgoCompanyFile(SourceFile)
 
