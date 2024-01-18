@@ -604,7 +604,7 @@ const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ err
 const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc: string } | undefined> => {
   const idccResult = await getIdcc(siret)
   if (!idccResult) return undefined
-  const convention = idccResult.conventions.at(0)
+  const convention = idccResult.conventions?.at(0)
   if (convention) {
     const { num } = convention
     const opcoByIdccResult = await getOpcoByIdcc(num)
