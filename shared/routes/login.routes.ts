@@ -56,8 +56,7 @@ export const zLoginRoutes = {
       method: "get",
       path: "/auth/session",
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
+        "200": ZUserRecruteurPublic,
       },
       securityScheme: {
         auth: "cookie-session",
@@ -69,8 +68,7 @@ export const zLoginRoutes = {
       method: "get",
       path: "/auth/logout",
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
+        "200": z.object({}).strict(),
       },
       securityScheme: null,
     },

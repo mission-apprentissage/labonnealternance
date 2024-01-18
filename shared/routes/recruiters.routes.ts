@@ -4,7 +4,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZCfaReferentielData, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
+import { ZCfaReferentielData, ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -161,23 +161,12 @@ export const zRecruiterRoutes = {
           ),
       ]),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "2xx": z.union([
-        //   z
-        //     .object({
-        //       formulaire: ZRecruiter,
-        //       user: ZUserRecruteur.extend({
-        //         type: z.literal("ENTREPRISE"),
-        //       }),
-        //     })
-        //     .strict(),
-        //   z
-        //     .object({
-        //       user: ZUserRecruteur,
-        //     })
-        //     .strict(),
-        // ]),
+        "200": z
+          .object({
+            formulaire: ZRecruiter.optional(),
+            user: ZUserRecruteur,
+          })
+          .strict(),
       },
       securityScheme: null,
     },

@@ -1,6 +1,7 @@
 import type { FilterQuery } from "mongoose"
-import { IRecruiter, IUser, IUserRecruteur } from "shared"
+import { IUser, IUserRecruteur } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { IUserForOpco } from "shared/routes/user.routes"
 
 import { Recruiter, User, UserRecruteur } from "../common/model/index"
 
@@ -62,40 +63,34 @@ const find = (conditions: FilterQuery<IUser>) => User.find(conditions)
  */
 const findOne = (conditions: FilterQuery<IUser>) => User.findOne(conditions)
 
-type IUserRecruterPicked = Pick<
-  IUserRecruteur,
-  "_id" | "first_name" | "last_name" | "establishment_id" | "establishment_raison_sociale" | "establishment_siret" | "createdAt" | "email" | "phone" | "type"
->
-
-type TReturnedType = {
-  awaiting: Array<IUserRecruterPicked & { jobs_count: number; origin: string }>
-  active: Array<IUserRecruterPicked & { jobs_count: number; origin: string }>
-  disable: Array<IUserRecruterPicked & { jobs_count: number; origin: string }>
-}
-
-const getUserAndRecruitersDataForOpcoUser = async (opco: string): Promise<TReturnedType> => {
-  const [users, recruiters]: [Array<IUserRecruterPicked & { status: IUserRecruteur["status"] }>, Pick<IRecruiter, "establishment_id" | "origin" | "jobs" | "_id">[]] =
-    await Promise.all([
-      UserRecruteur.find({
-        $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
-        opco,
+const getUserAndRecruitersDataForOpcoUser = async (
+  opco: string
+): Promise<{
+  awaiting: IUserForOpco[]
+  active: IUserForOpco[]
+  disable: IUserForOpco[]
+}> => {
+  const [users, recruiters] = await Promise.all([
+    UserRecruteur.find({
+      $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
+      opco,
+    })
+      .select({
+        _id: 1,
+        first_name: 1,
+        last_name: 1,
+        establishment_id: 1,
+        establishment_raison_sociale: 1,
+        establishment_siret: 1,
+        createdAt: 1,
+        email: 1,
+        phone: 1,
+        status: 1,
+        type: 1,
       })
-        .select({
-          _id: 1,
-          first_name: 1,
-          last_name: 1,
-          establishment_id: 1,
-          establishment_raison_sociale: 1,
-          establishment_siret: 1,
-          createdAt: 1,
-          email: 1,
-          phone: 1,
-          status: 1,
-          type: 1,
-        })
-        .lean(),
-      Recruiter.find({ opco }).select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 }).lean(),
-    ])
+      .lean(),
+    Recruiter.find({ opco }).select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 }).lean(),
+  ])
 
   const recruiterPerEtablissement = new Map()
   for (const recruiter of recruiters) {
@@ -105,37 +100,42 @@ const getUserAndRecruitersDataForOpcoUser = async (opco: string): Promise<TRetur
   const results = users.reduce(
     (acc, user) => {
       const status = user.status?.at(-1)?.status ?? null
-
       if (status === null) {
         return acc
       }
-
       const form = recruiterPerEtablissement.get(user.establishment_id)
 
-      const { status: _status, ...rest } = user
-      const u = {
-        ...rest,
+      const { _id, first_name, last_name, establishment_id, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type } = user
+      const userForOpco: IUserForOpco = {
+        _id,
+        first_name,
+        last_name,
+        establishment_id,
+        establishment_raison_sociale,
+        establishment_siret,
+        createdAt,
+        email,
+        phone,
+        type,
         jobs_count: form?.jobs?.length ?? 0,
         origin: form?.origin ?? "",
       }
-
       if (status === ETAT_UTILISATEUR.ATTENTE) {
-        acc.awaiting.push(u)
+        acc.awaiting.push(userForOpco)
       }
       if (status === ETAT_UTILISATEUR.VALIDE) {
-        acc.active.push(u)
+        acc.active.push(userForOpco)
       }
       if (status === ETAT_UTILISATEUR.DESACTIVE) {
-        acc.disable.push(u)
+        acc.disable.push(userForOpco)
       }
-
       return acc
     },
     {
-      awaiting: [],
-      active: [],
-      disable: [],
-    } as TReturnedType
+      awaiting: [] as IUserForOpco[],
+      active: [] as IUserForOpco[],
+      disable: [] as IUserForOpco[],
+    }
   )
   return results
 }
