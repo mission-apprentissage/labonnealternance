@@ -491,7 +491,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
   }
 }
 
-function geometryToGeoCoord(geometry: IGeometry): [number, number] {
+function geometryToGeoCoord(geometry: any): [number, number] {
   const { type } = geometry
   if (type === "Point") {
     return geometry.coordinates
