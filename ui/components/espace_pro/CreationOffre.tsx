@@ -81,7 +81,7 @@ export default function CreationOffre() {
           )}
         </Breadcrumb>
       </Box>
-      <AjouterVoeux fromDashboard handleSave={handleSave} {...data?.data} />
+      <AjouterVoeux fromDashboard handleSave={handleSave} {...data} />
     </Container>
   )
 }

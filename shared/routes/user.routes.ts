@@ -1,9 +1,27 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob } from "../models"
+import { ZJob, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
+import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
+
+const ZUserForOpco = ZUserRecruteur.pick({
+  _id: true,
+  first_name: true,
+  last_name: true,
+  establishment_id: true,
+  establishment_raison_sociale: true,
+  establishment_siret: true,
+  createdAt: true,
+  email: true,
+  phone: true,
+  type: true,
+}).extend({
+  jobs_count: z.number(),
+  origin: z.string(),
+})
+
+export type IUserForOpco = z.output<typeof ZUserForOpco>
 
 export const zUserRecruteurRoutes = {
   get: {
@@ -18,9 +36,9 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z
           .object({
-            awaiting: z.array(z.any()),
-            active: z.array(z.any()),
-            disable: z.array(z.any()),
+            awaiting: z.array(ZUserForOpco),
+            active: z.array(ZUserForOpco),
+            disable: z.array(ZUserForOpco),
           })
           .strict(),
       },
@@ -36,17 +54,17 @@ export const zUserRecruteurRoutes = {
     "/user": {
       method: "get",
       path: "/user",
-      // TODO ANY TO BE FIXED
       // TODO_SECURITY_FIX session admin only et changer le chemin vers /admin/user
       // => /admin/user-recruteur?
       response: {
-        "200": z.any(),
-        // "200": z.object({
-        //   awaiting: z.array(ZUserRecruteur),
-        //   active: z.array(ZUserRecruteur),
-        //   disabled: z.array(ZUserRecruteur),
-        //   error: z.array(ZUserRecruteur),
-        // }),
+        "200": z
+          .object({
+            awaiting: z.array(ZUserRecruteurForAdmin),
+            active: z.array(ZUserRecruteurForAdmin),
+            disabled: z.array(ZUserRecruteurForAdmin),
+            error: z.array(ZUserRecruteurForAdmin),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -57,9 +75,12 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "get",
       path: "/admin/users",
-      // TODO ANY TO BE FIXED
       response: {
-        "200": z.any(),
+        "200": z
+          .object({
+            users: z.array(ZUserRecruteur),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -75,9 +96,10 @@ export const zUserRecruteurRoutes = {
           userId: z.string(),
         })
         .strict(),
-      // TODO ANY TO BE FIXED
       response: {
-        "200": z.any(),
+        "200": ZUserRecruteur.extend({
+          jobs: ZRecruiter.shape.jobs,
+        }),
       },
       securityScheme: {
         auth: "cookie-session",

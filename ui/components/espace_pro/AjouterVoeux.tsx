@@ -169,7 +169,7 @@ const AjouterVoeuxForm = (props) => {
       setHaveProposals(false)
       return
     }
-    const [latitude, longitude] = geo_coordinates.split(",")
+    const [latitude, longitude] = geo_coordinates.split(",").map((str) => parseFloat(str))
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
