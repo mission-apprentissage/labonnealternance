@@ -2002,6 +2002,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 "description": "Date de creation",
                 "type": "string",
               },
+              "distance": {
+                "type": [
+                  "number",
+                  "null",
+                ],
+              },
               "updatedAt": {
                 "description": "Date de mise à jour",
                 "type": "string",
@@ -2087,6 +2093,31 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Coordonnées geographique de l'établissement",
             "type": [
               "string",
+              "null",
+            ],
+          },
+          "geopoint": {
+            "additionalProperties": false,
+            "description": "Coordonnées geographique de l'établissement",
+            "properties": {
+              "coordinates": {
+                "items": {
+                  "type": "number",
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+              },
+              "type": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "coordinates",
+              "type",
+            ],
+            "type": [
+              "object",
               "null",
             ],
           },
