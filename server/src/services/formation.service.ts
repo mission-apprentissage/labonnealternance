@@ -10,7 +10,6 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { notifyToSlack } from "../common/utils/slackUtils"
 
-import type { IFormationEsResult } from "./formation.service.types"
 import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
@@ -121,7 +120,7 @@ export const getFormations = async ({
 /**
  * Retourne une formation provenant de la collection des formationsCatalogues
  * @param {string} id l'identifiant de la formation
- * @returns {Promise<IApiError | IFormationEsResult[]>}
+ * @returns {Promise<IApiError | IFormationCatalogue[]>}
  */
 const getFormation = async ({ id }: { id: string }) => FormationCatalogue.findOne({ cle_ministere_educatif: id })
 
