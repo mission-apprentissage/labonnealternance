@@ -3,6 +3,7 @@ import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 import { removeAccents } from "shared/utils"
 
+import { logger } from "@/common/logger"
 import { DomainesMetiers } from "@/common/model"
 import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomesmetiers.types"
 import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
@@ -57,8 +58,12 @@ const computeScore = (document, searchableFields, regexes) => {
   searchableFields.map(({ field, score }) =>
     regexes.map((regex) => {
       const valueToTest = document[field] instanceof Array ? document[field].join(" ") : document[field]
-      if (valueToTest.match(regex)) {
+      if (valueToTest?.match(regex)) {
         document.score = score + (document.score ?? 0)
+      } else {
+        if (!valueToTest) {
+          logger.info(`Value to test not exists ${document?.sous_domaine}, ${field}`)
+        }
       }
     })
   )
@@ -104,7 +109,6 @@ const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string):
     }
 
     const matchingMetier: IDomainesMetiers & { score?: number } = { ...metier }
-
     computeScore(matchingMetier, searchableWeightedFields, regexes)
 
     if (matchingMetier.score) {
