@@ -55,9 +55,9 @@ export const up = async (db: Db) => {
   ])
   await db.collection("recruiters").updateMany({ "geopoint.coordinates": { $eq: null } }, { $set: { geopoint: { type: "Point", coordinates: [0, 0] } } })
 
-  await addJob({ name: "diplomes-metiers:update", queued: true, payload: {} })
+  await addJob({ name: "diplomes-metiers:update", payload: {} })
 
-  await addJob({ name: "domaines-metiers:update", queued: true, payload: {} })
+  await addJob({ name: "domaines-metiers:update", payload: {} })
 
-  await addJob({ name: "mongodb:indexes:create", queued: true, payload: {} })
+  await addJob({ name: "mongodb:indexes:create", payload: {} })
 }
