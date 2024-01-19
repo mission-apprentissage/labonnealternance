@@ -18,7 +18,7 @@ let cacheMetiers: IDomainesMetiers[] = []
 let cacheDiplomas: IDiplomesMetiers[] = []
 
 const initializeCacheMetiers = async () => {
-  console.log("initializeCacheMetiers on first use")
+  logger.info("initializeCacheMetiers on first use")
   cacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
   const roughObjSize = JSON.stringify(cacheMetiers).length
   if (config.env === "production") {
@@ -28,11 +28,11 @@ const initializeCacheMetiers = async () => {
       error: false,
     })
   }
-  console.log("cacheMetiers : ", roughObjSize)
+  logger.info("cacheMetiers : ", roughObjSize)
 }
 
 const initializeCacheDiplomas = async () => {
-  console.log("initializeCacheDiplomas on first use")
+  logger.info("initializeCacheDiplomas on first use")
   cacheDiplomas = await db.collection("diplomesmetiers").find({}).toArray()
   const roughObjSize = JSON.stringify(cacheDiplomas).length
   if (config.env === "production") {
@@ -42,7 +42,7 @@ const initializeCacheDiplomas = async () => {
       error: false,
     })
   }
-  console.log("cacheDiplomas : ", roughObjSize)
+  logger.info("cacheDiplomas : ", roughObjSize)
 }
 
 /**
@@ -60,11 +60,11 @@ const computeScore = (document, searchableFields, regexes) => {
       const valueToTest = document[field] instanceof Array ? document[field].join(" ") : document[field]
       if (valueToTest?.match(regex)) {
         document.score = score + (document.score ?? 0)
-      } else {
+      } /*else {
         if (!valueToTest) {
           logger.info(`Value to test not exists ${document?.sous_domaine}, ${field}`)
         }
-      }
+      }*/
     })
   )
 }
@@ -84,9 +84,13 @@ const searchableWeightedFields = [
 const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string): Promise<(IDomainesMetiers & { score?: number })[]> => {
   if (cacheMetiers.length === 0) {
     await initializeCacheMetiers()
+  } else {
+    logger.info("Cache métier déjà initialisé ", cacheMetiers.length)
   }
 
   const results: (IDomainesMetiers & { score?: number })[] = []
+
+  let i = 0
 
   cacheMetiers.map((metier) => {
     if (romes) {
@@ -114,6 +118,12 @@ const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string):
     if (matchingMetier.score) {
       results.push(matchingMetier)
     }
+
+    if (i === 0) {
+      logger.info(`metier initial : ${metier.sous_domaine}. Champs vérifiés : ${searchableWeightedFields}. regex ? ${regexes}`)
+    }
+
+    i++
   })
 
   return results
