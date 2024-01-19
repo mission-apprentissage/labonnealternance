@@ -4,6 +4,7 @@ export const geoPointSchema = new Schema<{
   type: string
   coordinates: number[]
 }>({
+  _id: false,
   type: { type: String, default: "Point" },
   coordinates: {
     type: [Number],
