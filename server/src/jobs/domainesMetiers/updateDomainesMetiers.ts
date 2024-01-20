@@ -7,6 +7,7 @@ import { removeAccents } from "shared/utils"
 import XLSX from "xlsx"
 
 import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
+import { initializeCacheMetiers } from "@/services/metiers.service"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
@@ -230,6 +231,9 @@ export default async function (optionalFileName?: string) {
 
     logger.info("Deleting downloaded file frome assets")
     await fs.unlinkSync(FILEPATH)
+
+    logger.info("Reloading domainesMetiers cache")
+    await initializeCacheMetiers()
 
     logger.info(`Fin traitement`)
 

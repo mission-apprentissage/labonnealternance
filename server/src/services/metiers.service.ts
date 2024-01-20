@@ -17,7 +17,7 @@ import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "
 let cacheMetiers: IDomainesMetiers[] = []
 let cacheDiplomas: IDiplomesMetiers[] = []
 
-const initializeCacheMetiers = async () => {
+export const initializeCacheMetiers = async () => {
   logger.info("initializeCacheMetiers on first use")
   cacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
   const roughObjSize = JSON.stringify(cacheMetiers).length
@@ -31,7 +31,7 @@ const initializeCacheMetiers = async () => {
   logger.info("cacheMetiers : ", roughObjSize)
 }
 
-const initializeCacheDiplomas = async () => {
+export const initializeCacheDiplomas = async () => {
   logger.info("initializeCacheDiplomas on first use")
   cacheDiplomas = await db.collection("diplomesmetiers").find({}).toArray()
   const roughObjSize = JSON.stringify(cacheDiplomas).length

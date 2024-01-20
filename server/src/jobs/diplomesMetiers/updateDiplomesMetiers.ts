@@ -1,5 +1,7 @@
 import { ZDiplomesMetiersNew } from "shared/models"
 
+import { initializeCacheDiplomas } from "@/services/metiers.service"
+
 import { logger } from "../../common/logger"
 import { DiplomesMetiers, FormationCatalogue } from "../../common/model/index"
 
@@ -89,6 +91,9 @@ export default async function () {
       }
     }
   }
+
+  logger.info("Reloading diplomesMetiers cache")
+  await initializeCacheDiplomas()
 
   logger.info(`Fin traitement`)
 }
