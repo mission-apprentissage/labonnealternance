@@ -60,11 +60,7 @@ const computeScore = (document, searchableFields, regexes) => {
       const valueToTest = document[field] instanceof Array ? document[field].join(" ") : document[field]
       if (valueToTest?.match(regex)) {
         document.score = score + (document.score ?? 0)
-      } /*else {
-        if (!valueToTest) {
-          logger.info(`Value to test not exists ${document?.sous_domaine}, ${field}`)
-        }
-      }*/
+      }
     })
   )
 }
@@ -84,13 +80,9 @@ const searchableWeightedFields = [
 const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string): Promise<(IDomainesMetiers & { score?: number })[]> => {
   if (cacheMetiers.length === 0) {
     await initializeCacheMetiers()
-  } else {
-    logger.info("Cache métier déjà initialisé ", cacheMetiers.length)
   }
 
   const results: (IDomainesMetiers & { score?: number })[] = []
-
-  let i = 0
 
   cacheMetiers.map((metier) => {
     if (romes) {
@@ -118,12 +110,6 @@ const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string):
     if (matchingMetier.score) {
       results.push(matchingMetier)
     }
-
-    if (i === 0) {
-      logger.info(`metier initial : ${metier.sous_domaine}. Champs vérifiés : ${searchableWeightedFields}. regex ? ${regexes}`)
-    }
-
-    i++
   })
 
   return results
