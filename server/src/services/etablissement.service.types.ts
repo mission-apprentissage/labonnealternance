@@ -355,7 +355,7 @@ interface IFilters {
 }
 
 export interface ISIRET2IDCC {
-  conventions: IConvention[]
+  conventions?: IConvention[]
   siret: string
 }
 

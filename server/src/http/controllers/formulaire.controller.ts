@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
-import { getApplication } from "../../services/application.service"
+import { getApplicationsByJobId } from "../../services/application.service"
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
   archiveDelegatedFormulaire,
@@ -32,20 +32,19 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
-      const result = await getFormulaire({ establishment_id: req.params.establishment_id })
-
-      if (!result) {
-        return res.status(401).send({})
+      const { establishment_id } = req.params
+      const recruiterOpt = await getFormulaire({ establishment_id })
+      if (!recruiterOpt) {
+        throw Boom.notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
       }
-
-      result.jobs = await Promise.all(
-        result.jobs.map(async (job) => {
-          const candidatures = await getApplication(job._id.toString())
-          return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : undefined }
+      const jobsWithCandidatures = await Promise.all(
+        recruiterOpt.jobs.map(async (job) => {
+          const candidatures = await getApplicationsByJobId(job._id.toString())
+          return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : 0 }
         })
       )
 
-      return res.status(200).send(result)
+      return res.status(200).send({ ...recruiterOpt, jobs: jobsWithCandidatures })
     }
   )
 

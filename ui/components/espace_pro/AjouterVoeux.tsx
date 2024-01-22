@@ -57,7 +57,7 @@ const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
         <Button onClick={() => handleChange(name, value - 1)} isDisabled={value === 1} variant="secondary" data-testid="-">
           <Minus />
         </Button>
-        <Text minW="50px" my={3} textAlign="center">
+        <Text minW="50px" my={3} textAlign="center" data-testid={`${dataTestId}-value`}>
           {value}
         </Text>
         <Button onClick={() => handleChange(name, value + 1)} isDisabled={value === max} variant="secondary" data-testid="+">
@@ -169,7 +169,7 @@ const AjouterVoeuxForm = (props) => {
       setHaveProposals(false)
       return
     }
-    const [latitude, longitude] = geo_coordinates.split(",")
+    const [latitude, longitude] = geo_coordinates.split(",").map((str) => parseFloat(str))
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }

@@ -59,7 +59,6 @@ export const validationOrganisation = async (siret: string, email: string): Prom
           },
         }
       )
-
       return data // is_valid: boolean, on: string "domain"|"email"
     } catch (error: any) {
       sentryCaptureException(error)

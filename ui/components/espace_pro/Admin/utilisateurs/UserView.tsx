@@ -1,7 +1,7 @@
 import { Heading } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { FC } from "react"
-import { IUserRecruteur } from "shared"
+import { IUserRecruteurJson } from "shared"
 
 import { Breadcrumb } from "../../common/components/Breadcrumb"
 import UserValidationHistory from "../../UserValidationHistory"
@@ -9,7 +9,7 @@ import UserValidationHistory from "../../UserValidationHistory"
 import UserForm from "./UserForm"
 
 interface Props {
-  user: IUserRecruteur
+  user: IUserRecruteurJson
   refetchUser: any
 }
 
