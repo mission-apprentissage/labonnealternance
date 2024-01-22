@@ -15,34 +15,44 @@ import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
 
 let globalCacheMetiers: IDomainesMetiers[] = []
-let cacheDiplomas: IDiplomesMetiers[] = []
+let cacheMetierLoading = false
+let globalCacheDiplomas: IDiplomesMetiers[] = []
+let cacheDiplomaLoading = false
 
 export const initializeCacheMetiers = async () => {
-  logger.info("initializeCacheMetiers on first use")
-  globalCacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
-  const roughObjSize = JSON.stringify(globalCacheMetiers).length
-  if (config.env === "production") {
-    notifyToSlack({
-      subject: `Cache domaines metiers chargé`,
-      message: `Cache domaines metiers chargé. Taille estimée ${roughObjSize} octets`,
-      error: false,
-    })
+  if (!cacheMetierLoading) {
+    cacheMetierLoading = true
+    logger.info("initializeCacheMetiers on first use")
+    globalCacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
+    cacheMetierLoading = false
+    const roughObjSize = JSON.stringify(globalCacheMetiers).length
+    if (config.env === "production") {
+      notifyToSlack({
+        subject: `Cache domaines metiers chargé`,
+        message: `Cache domaines metiers chargé. Taille estimée ${roughObjSize} octets`,
+        error: false,
+      })
+    }
+    logger.info("cacheMetiers : ", roughObjSize)
   }
-  logger.info("cacheMetiers : ", roughObjSize)
 }
 
 export const initializeCacheDiplomas = async () => {
-  logger.info("initializeCacheDiplomas on first use")
-  cacheDiplomas = await db.collection("diplomesmetiers").find({}).toArray()
-  const roughObjSize = JSON.stringify(cacheDiplomas).length
-  if (config.env === "production") {
-    notifyToSlack({
-      subject: `Cache diplômes metiers chargé`,
-      message: `Cache diplômes metiers chargé. Taille estimée ${roughObjSize} octets`,
-      error: false,
-    })
+  if (!cacheDiplomaLoading) {
+    cacheDiplomaLoading = true
+    logger.info("initializeCacheDiplomas on first use")
+    globalCacheDiplomas = await db.collection("diplomesmetiers").find({}).toArray()
+    cacheDiplomaLoading = false
+    const roughObjSize = JSON.stringify(globalCacheDiplomas).length
+    if (config.env === "production") {
+      notifyToSlack({
+        subject: `Cache diplômes metiers chargé`,
+        message: `Cache diplômes metiers chargé. Taille estimée ${roughObjSize} octets`,
+        error: false,
+      })
+    }
+    logger.info("cacheDiplomas : ", roughObjSize)
   }
-  logger.info("cacheDiplomas : ", roughObjSize)
 }
 
 const getCacheMetiers = async () => {
@@ -54,11 +64,11 @@ const getCacheMetiers = async () => {
 }
 
 const getCacheDiplomes = async () => {
-  if (cacheDiplomas.length === 0) {
+  if (globalCacheDiplomas.length === 0) {
     await initializeCacheDiplomas()
   }
 
-  return cacheDiplomas
+  return globalCacheDiplomas
 }
 
 /**
