@@ -34,7 +34,7 @@ export default function DropdownCombobox(props) {
   })
 
   return (
-    <div>
+    <div data-testid={props["data-testid"]}>
       <div {...getComboboxProps()}>
         <CustomInput pb="0" required={false} name={name} placeholder={placeholder || "sélectionner un métier"} {...getInputProps()} />
       </div>
@@ -59,6 +59,7 @@ export default function DropdownCombobox(props) {
             <li
               style={highlightedIndex === index ? { backgroundColor: "lightGrey", width: "100%", padding: "0.5rem" } : { width: "100%", padding: "0.5rem" }}
               key={`${item}${index}`}
+              data-testid={item.appellation}
               {...getItemProps({ item, index })}
             >
               <Text fontSize="16px" fontWeight="700">
