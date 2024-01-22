@@ -319,11 +319,11 @@ export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMeti
  * @returns {IMetiers}
  */
 const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
-  const metiersFromDb = await DomainesMetiers.find({ codes_romes: { $in: romes } })
+  const metiers = (await getCacheMetiers())
+    .filter((metier) => metier.codes_romes.some((rome) => romes.includes(rome)))
+    .map((metier: { sous_domaine: string }) => metier.sous_domaine)
+    .sort()
 
-  const metiers: string[] = metiersFromDb.map((metier) => {
-    return metier.sous_domaine
-  })
   return { metiers }
 }
 
