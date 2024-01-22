@@ -570,8 +570,7 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 }
 
 export const isCompanyValid = async (userRecruteur: IUserRecruteur) => {
-  const { establishment_siret: siret, email, _id } = userRecruteur
-
+  const { establishment_siret: siret, email } = userRecruteur
   if (!siret) {
     return false
   }
@@ -609,7 +608,7 @@ const errorFactory = (message: string, errorCode?: BusinessErrorCodes): IBusines
 const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc: string } | undefined> => {
   const idccResult = await getIdcc(siret)
   if (!idccResult) return undefined
-  const convention = idccResult.conventions.at(0)
+  const convention = idccResult.conventions?.at(0)
   if (convention) {
     const { num } = convention
     const opcoByIdccResult = await getOpcoByIdcc(num)
