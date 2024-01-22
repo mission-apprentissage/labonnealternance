@@ -93,7 +93,10 @@ const searchableWeightedMetiersFields = [
   { field: "sous_domaine_onisep_sans_accent_computed", score: 1 },
 ]
 
-const searchableWeightedAppellationFields = [{ field: "intitules_romes_sans_accent_computed", score: 1 }]
+const searchableWeightedAppellationFields = [
+  { field: "intitules_romes_sans_accent_computed", score: 1 },
+  { field: "appellations_romes_sans_accent_computed", score: 1 },
+]
 
 const filterMetiers = async ({
   regexes,
@@ -259,15 +262,18 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
   const regexes: RegExp[] = buildRegexes(searchTerm)
 
-  const metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({ regexes, searchableFields: searchableWeightedAppellationFields })
+  let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({ regexes, searchableFields: searchableWeightedAppellationFields })
+  metiers = metiers.sort((a: IDomainesMetiers & { score?: number }, b: IDomainesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
   const coupleAppellationRomeMetier = metiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
   const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
+
   const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
     keys: ["appellation"],
     threshold: matchSorter.rankings.NO_MATCH,
   })
-  return { coupleAppellationRomeMetier: sorted }
+
+  return { coupleAppellationRomeMetier: sorted.slice(0, 100) }
 }
 
 const removeDuplicateDiplomas = (diplomas) => {
