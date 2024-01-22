@@ -27,8 +27,10 @@
             </mj-column>
           </mj-section>
           <mj-text font-size="18px" font-weight="700">Vous souhaitez répondre ?</mj-text>
-          <mj-text font-size="16px" line-height="24px">Email : coucou@cfa.fr</mj-text>
-          <mj-text font-size="16px" line-height="24px">Téléphone : 00.00.00.00.00</mj-text>
+          <mj-text font-size="16px" line-height="24px">Email : <%= data.cfa_email %></mj-text>
+          <% if (data.cfa_phone) { %>
+          <mj-text font-size="16px" line-height="24px">Téléphone : <%= data.cfa_phone %></mj-text>
+          <% } %>
           <mj-text font-size="16px" line-height="24px"><i>Pensez à vous présenter et à redonner le contexte de vos échanges dans votre message afin que le destinataire puisse vous répondre au mieux.</i></mj-text>
         </mj-column>
       </mj-section>

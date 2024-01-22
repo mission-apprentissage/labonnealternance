@@ -347,6 +347,8 @@ export default (server: Server) => {
             message: cfa_message_to_applicant,
             nom_formation: eligibleTrainingsForAppointment.training_intitule_long,
             nom_cfa: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
+            cfa_email: eligibleTrainingsForAppointment.lieu_formation_email,
+            cfa_phone: null,
           },
         })
       }
