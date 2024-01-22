@@ -53,6 +53,8 @@ fileignoreconfig:
   checksum: 2183e326a88ae3c10193a7033ab5fd421ce576cd1e234c323df247da335f74d7
 - filename: server/src/services/application.service.ts
   checksum: 935cd8f213565ba7bcc2925fca149aaa6cbe9bb5e393a13ab3525dff6ad17234
+- filename: server/src/services/userRecruteur.service.ts
+  checksum: fb8fc73f5ac4491b2a7be99ceaebf96c79bffa63fa6b164eed6e2d3d9fe5dae0
 - filename: server/tests/integration/http/formationV1.test.ts
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
@@ -87,6 +89,8 @@ fileignoreconfig:
   checksum: f9d2657f85f9f885deddf2ed1fd006d8278d27174659f0ed5a35e4d11343bb3a
 - filename: shared/routes/v1Jobs.routes.ts
   checksum: aa0fb2458520f24921a48af03ad05c3f4a92052374182851f24a3afa7421a5b8
+- filename: shared/utils/objectUtils.ts
+  checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
 - filename: ui/components/ItemDetail/ItemDetail.tsx
