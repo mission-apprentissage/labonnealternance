@@ -1,7 +1,7 @@
 import { SearchForm } from "../pages/SearchForm"
 
 describe("send-spontaneous-application", () => {
-  it("tests send-spontaneous-application on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
+  it("tests send-spontaneous-application", () => {
     cy.on("uncaught:exception", () => {
       return false
     })
