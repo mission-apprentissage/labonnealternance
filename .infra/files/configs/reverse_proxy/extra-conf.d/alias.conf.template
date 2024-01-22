@@ -42,26 +42,11 @@ map $host $privkeyAlias {
 }
 
 server {
-    listen ${SSL_PORT} ssl;
-
     server_name {{ alias_dns_name }};
 
     ssl_certificate $fullchainAlias;
     ssl_certificate_key $privkeyAlias;
-    ssl_session_timeout 1d;
-    ssl_session_cache shared:MozSSL:10m;
-    ssl_session_tickets off;
-
-    ssl_dhparam /etc/ssl/certs/dhparam-${PROXY_SSL_DH_BITS}.pem;
-
-    ssl_protocols ${PROXY_SSL_PROTOCOLS};
-    ssl_ciphers ${PROXY_SSL_CIPHERS};
-    ssl_prefer_server_ciphers ${PROXY_SSL_PREFER_CIPHERS};
-
-    ssl_stapling ${PROXY_SSL_OCSP_STAPLING};
-    ssl_stapling_verify ${PROXY_SSL_OCSP_STAPLING};
-
-    ssl_verify_client ${PROXY_SSL_VERIFY};
+    include includes/ssl.conf;
 
     include includes/location_acme.conf;
     include includes/location_maintenance.conf;
