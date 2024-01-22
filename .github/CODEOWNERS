@@ -1,6 +1,11 @@
-.github/ @mission-apprentissage/mna
-.infra/ @mission-apprentissage/mna
+* @mission-apprentissage/lba
+
 .bin/ @mission-apprentissage/mna
-server/ @mission-apprentissage/lba
-ui/ @mission-apprentissage/lba
-shared/ @mission-apprentissage/lba
+
+.husky/ @mission-apprentissage/mna
+
+.infra/ @mission-apprentissage/mna
+.infra/files/configs/mongodb/seed.gpg @mission-apprentissage/lba
+.infra/vault/vault.yml @mission-apprentissage/lba
+.infra/vault/.env_server @mission-apprentissage/lba
+.infra/vault/.env_ui @mission-apprentissage/lba
