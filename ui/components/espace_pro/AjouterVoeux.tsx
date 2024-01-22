@@ -49,18 +49,18 @@ import DropdownCombobox from "./DropdownCombobox"
 const DATE_FORMAT = "YYYY-MM-DD"
 const URL_LBA = publicConfig.apiEndpoint
 
-const ChampNombre = ({ value, max, name, handleChange, label }) => {
+const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
   return (
-    <Flex align="center">
+    <Flex align="center" data-testid={dataTestId}>
       <Text flexGrow={2}>{label}</Text>
       <Stack direction="row" align="center">
-        <Button onClick={() => handleChange(name, value - 1)} isDisabled={value === 1} variant="secondary">
+        <Button onClick={() => handleChange(name, value - 1)} isDisabled={value === 1} variant="secondary" data-testid="-">
           <Minus />
         </Button>
-        <Text minW="50px" my={3} textAlign="center">
+        <Text minW="50px" my={3} textAlign="center" data-testid={`${dataTestId}-value`}>
           {value}
         </Text>
-        <Button onClick={() => handleChange(name, value + 1)} isDisabled={value === max} variant="secondary">
+        <Button onClick={() => handleChange(name, value + 1)} isDisabled={value === max} variant="secondary" data-testid="+">
           <Plus />
         </Button>
       </Stack>
@@ -235,6 +235,7 @@ const AjouterVoeuxForm = (props) => {
                 name="rome_label"
                 value={values.rome_appellation_label}
                 placeholder="Rechercher un métier.."
+                data-testid="offre-metier"
               />
             </FormControl>
             <FormControl mt={6}>
@@ -258,10 +259,10 @@ const AjouterVoeuxForm = (props) => {
                 value={values.job_type}
                 defaultValue={["Apprentissage"]}
               >
-                <Stack direction="row" spacing={5}>
+                <Stack direction="row" spacing={5} data-testid="offre-job-type">
                   {Object.values(TRAINING_CONTRACT_TYPE).map((label) => (
                     <Checkbox key={label} value={label}>
-                      {label}
+                      <span data-testid={label}>{label}</span>
                     </Checkbox>
                   ))}
                 </Stack>
@@ -297,7 +298,7 @@ const AjouterVoeuxForm = (props) => {
               </FormControl>
             )}
             <FormControl mt={6}>
-              <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} />
+              <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
             </FormControl>
             {/* @ts-expect-error: TODO */}
             <FormControl mt={6} isInvalid={errors.job_duration}>
@@ -349,7 +350,14 @@ const AjouterVoeuxForm = (props) => {
               <Button variant="secondary" onClick={() => router.back()} mr={4}>
                 Annuler
               </Button>
-              <Button leftIcon={<ArrowRightLine />} variant="form" isDisabled={!(isValid && dirty) || isSubmitting} isActive={isValid && dirty} onClick={submitForm}>
+              <Button
+                leftIcon={<ArrowRightLine />}
+                variant="form"
+                isDisabled={!(isValid && dirty) || isSubmitting}
+                isActive={isValid && dirty}
+                onClick={submitForm}
+                data-testid="creer-offre"
+              >
                 {props._id ? "Mettre à jour" : "Créer l'offre"}
               </Button>
             </Flex>

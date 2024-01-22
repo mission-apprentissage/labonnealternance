@@ -97,9 +97,9 @@ export default function CreationMiseEnRelation() {
             </GridItem>
             {etablissements && (
               <GridItem rowStart={["auto", 2]}>
-                {etablissements.map((etablissement) => {
+                {etablissements.map((etablissement, index) => {
                   return (
-                    <Flex borderStyle="solid" borderWidth="1px" borderColor="#000091" py={4} key={etablissement._id} mb={4}>
+                    <Flex borderStyle="solid" borderWidth="1px" borderColor="#000091" py={4} key={etablissement._id} mb={4} data-testid={`cfa-${index}`}>
                       <Center w="70px">
                         <Checkbox
                           defaultChecked={etablissement.checked}
