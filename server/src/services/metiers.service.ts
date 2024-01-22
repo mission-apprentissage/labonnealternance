@@ -4,7 +4,6 @@ import { matchSorter } from "match-sorter"
 import { removeAccents } from "shared/utils"
 
 import { logger } from "@/common/logger"
-import { DomainesMetiers } from "@/common/model"
 import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomesmetiers.types"
 import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
 import { db } from "@/common/mongodb"
