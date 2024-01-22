@@ -14,13 +14,13 @@ import config from "@/config"
 import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
 
-let cacheMetiers: IDomainesMetiers[] = []
+let globalCacheMetiers: IDomainesMetiers[] = []
 let cacheDiplomas: IDiplomesMetiers[] = []
 
 export const initializeCacheMetiers = async () => {
   logger.info("initializeCacheMetiers on first use")
-  cacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
-  const roughObjSize = JSON.stringify(cacheMetiers).length
+  globalCacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
+  const roughObjSize = JSON.stringify(globalCacheMetiers).length
   if (config.env === "production") {
     notifyToSlack({
       subject: `Cache domaines metiers chargé`,
@@ -45,6 +45,22 @@ export const initializeCacheDiplomas = async () => {
   logger.info("cacheDiplomas : ", roughObjSize)
 }
 
+const getCacheMetiers = async () => {
+  if (globalCacheMetiers.length === 0) {
+    await initializeCacheMetiers()
+  }
+
+  return globalCacheMetiers
+}
+
+const getCacheDiplomes = async () => {
+  if (cacheDiplomas.length === 0) {
+    await initializeCacheDiplomas()
+  }
+
+  return cacheDiplomas
+}
+
 /**
  * Retourne un ensemble de métiers et/ou diplômes et leurs codes romes et rncps associés en fonction de terme de recherches
  */
@@ -65,7 +81,7 @@ const computeScore = (document, searchableFields, regexes) => {
   )
 }
 
-const searchableWeightedFields = [
+const searchableWeightedMetiersFields = [
   { field: "sous_domaine_sans_accent_computed", score: 80 },
   { field: "domaine_sans_accent_computed", score: 3 },
   { field: "intitules_romes_sans_accent_computed", score: 7 },
@@ -77,10 +93,20 @@ const searchableWeightedFields = [
   { field: "sous_domaine_onisep_sans_accent_computed", score: 1 },
 ]
 
-const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string): Promise<(IDomainesMetiers & { score?: number })[]> => {
-  if (cacheMetiers.length === 0) {
-    await initializeCacheMetiers()
-  }
+const searchableWeightedAppellationFields = [{ field: "intitules_romes_sans_accent_computed", score: 1 }]
+
+const filterMetiers = async ({
+  regexes,
+  romes,
+  rncps,
+  searchableFields = searchableWeightedMetiersFields,
+}: {
+  regexes: RegExp[]
+  romes?: string
+  rncps?: string
+  searchableFields?: { field: string; score: number }[]
+}): Promise<(IDomainesMetiers & { score?: number })[]> => {
+  const cacheMetiers = await getCacheMetiers()
 
   const results: (IDomainesMetiers & { score?: number })[] = []
 
@@ -105,7 +131,7 @@ const filterMetiers = async (regexes: RegExp[], romes?: string, rncps?: string):
     }
 
     const matchingMetier: IDomainesMetiers & { score?: number } = { ...metier }
-    computeScore(matchingMetier, searchableWeightedFields, regexes)
+    computeScore(matchingMetier, searchableFields, regexes)
 
     if (matchingMetier.score) {
       results.push(matchingMetier)
@@ -121,13 +147,11 @@ const searchableWeightedDiplomaFields = [
 ]
 
 const filterDiplomas = async (regexes: RegExp[]): Promise<(IDiplomesMetiers & { score?: number })[]> => {
-  if (cacheDiplomas.length === 0) {
-    await initializeCacheDiplomas()
-  }
+  const cacheDiplomes = await getCacheDiplomes()
 
   const results: (IDiplomesMetiers & { score?: number })[] = []
 
-  cacheDiplomas.forEach((diploma) => {
+  cacheDiplomes.forEach((diploma) => {
     const matchingDiploma: IDiplomesMetiers & { score?: number } = { ...diploma }
 
     computeScore(matchingDiploma, searchableWeightedDiplomaFields, regexes)
@@ -177,7 +201,7 @@ export const getMetiers = async ({
       regexes = buildRegexes(title)
     }
 
-    let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers(regexes, romes, rncps)
+    let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({ regexes, romes, rncps })
     metiers = metiers.sort((a: IDomainesMetiers & { score?: number }, b: IDomainesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
     const labelsAndRomes: IMetierEnrichi[] = []
@@ -235,7 +259,7 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
   const regexes: RegExp[] = buildRegexes(searchTerm)
 
-  const metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers(regexes)
+  const metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({ regexes, searchableFields: searchableWeightedAppellationFields })
 
   const coupleAppellationRomeMetier = metiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
   const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
