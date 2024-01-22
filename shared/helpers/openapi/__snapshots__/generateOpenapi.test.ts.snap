@@ -5719,6 +5719,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "required": true,
             "schema": {
               "example": "50022137",
+              "minLength": 1,
               "type": "string",
             },
           },
