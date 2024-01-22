@@ -2,8 +2,9 @@ import { randomUUID } from "crypto"
 
 import Boom from "boom"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation } from "shared"
+import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -221,21 +222,7 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
   })
 }
 
-const projection = {
-  _id: 1,
-  establishment_id: 1,
-  establishment_raison_sociale: 1,
-  establishment_siret: 1,
-  type: 1,
-  first_name: 1,
-  last_name: 1,
-  email: 1,
-  phone: 1,
-  createdAt: 1,
-  origin: 1,
-  opco: 1,
-  status: 1,
-}
+const projection = entriesToTypedRecord(typedKeys(UserRecruteurForAdminProjection).map((key) => [key, 1 as const]))
 
 export const getAdminUsers = () => UserRecruteur.find({ type: ADMIN }).lean()
 

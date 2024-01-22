@@ -70,24 +70,25 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/admin/users/:userId"])],
     },
     async (req, res) => {
-      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      const { userId } = req.params
+      const userRecruteur = await UserRecruteur.findOne({ _id: userId }).lean()
       let jobs: IJob[] = []
 
-      if (!user) return res.status(400).send({})
+      if (!userRecruteur) throw Boom.notFound(`user with id=${userId} not found`)
 
-      const { establishment_id } = user
-      if (user.type === ENTREPRISE) {
+      const { establishment_id } = userRecruteur
+      if (userRecruteur.type === ENTREPRISE) {
         if (!establishment_id) {
-          throw Boom.internal("Unexpected: no establishment_id in userRecruteur of type ENTREPRISE", { userId: user._id })
+          throw Boom.internal("Unexpected: no establishment_id in userRecruteur of type ENTREPRISE", { userId: userRecruteur._id })
         }
-        const response = await Recruiter.findOne({ establishment_id }).select({ jobs: 1, _id: 0 }).lean()
-        if (!response) {
-          throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
+        const recruiterOpt = await Recruiter.findOne({ establishment_id }).select({ jobs: 1, _id: 0 }).lean()
+        if (!recruiterOpt) {
+          throw Boom.internal("Get establishement from user failed to fetch", { userId: userRecruteur._id })
         }
-        jobs = response.jobs
+        jobs = recruiterOpt.jobs
       }
 
-      return res.status(200).send({ ...user, jobs })
+      return res.status(200).send({ ...userRecruteur, jobs })
     }
   )
 

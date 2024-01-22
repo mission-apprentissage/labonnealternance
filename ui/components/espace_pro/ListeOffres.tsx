@@ -30,6 +30,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
+import { IJob } from "shared"
 
 import { useAuth } from "@/context/UserContext"
 
@@ -87,7 +88,8 @@ export default function ListeOffres() {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  const { jobs = [], establishment_raison_sociale, establishment_siret, geo_coordinates, _id: dataId } = data ?? {}
+  const { establishment_raison_sociale, establishment_siret, geo_coordinates, _id: dataId } = data
+  const jobs: (IJob & { candidatures: number })[] = data.jobs ?? []
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreCreationUrl = () => {
@@ -131,7 +133,7 @@ export default function ListeOffres() {
     )
   }
 
-  const jobsWithGeoCoords = jobs?.map((job) => ({ ...job, geo_coordinates })) ?? []
+  const jobsWithGeoCoords = jobs.map((job) => ({ ...job, geo_coordinates }))
 
   const offresTermine = jobsWithGeoCoords.filter((x) => x.job_status === "Annulée")
   const offresTermineNbr = offresTermine.length
