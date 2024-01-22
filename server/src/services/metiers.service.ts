@@ -332,6 +332,6 @@ const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
  * @returns {IMetiers}
  */
 export const getTousLesMetiers = async (): Promise<IMetiers> => {
-  const metiers: string[] = (await DomainesMetiers.find({}, { sous_domaine: 1, _id: 0 }).lean()).map((metier: { sous_domaine: string }) => metier.sous_domaine).sort()
+  const metiers = (await getCacheMetiers()).map((metier: { sous_domaine: string }) => metier.sous_domaine).sort()
   return { metiers }
 }
