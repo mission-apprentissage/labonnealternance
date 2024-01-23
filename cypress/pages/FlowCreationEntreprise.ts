@@ -85,8 +85,11 @@ export const FlowCreationEntreprise = {
         cy.contains(cfa).should("have.text", cfa).parents("[data-testid^='cfa-']").find("input[type='checkbox']").check({ force: true })
       })
     },
+    submitNoDelegation() {
+      cy.get("[data-testid='pass-delegation']").click()
+    },
     submit() {
-      cy.get("button").contains("Envoyer ma demande").click()
+      cy.get("[data-testid='submit-delegation']").click()
     },
   },
   emailSentPage: {
