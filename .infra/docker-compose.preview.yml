@@ -50,7 +50,7 @@ services:
     <<: *default
     image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
     container_name: lba_{{pr_number}}_jobs_processor
-    command: ["yarn", "cli", "job_processor:start"]
+    command: ["yarn", "cli", "job_processor:start", "--expose-gc"]
     env_file: .env_server
     volumes:
       - server:/data
