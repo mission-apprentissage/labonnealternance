@@ -55,7 +55,7 @@ services:
       resources:
         limits:
           memory: 2g
-    command: ["yarn", "cli", "job_processor:start", "--expose-gc"]
+    command: ["yarn", "cli", "job_processor:start"]
     env_file: .env_server
     volumes:
       - /opt/app/data/server:/data
