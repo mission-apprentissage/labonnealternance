@@ -1,6 +1,6 @@
 import Boom from "boom"
 import * as _ from "lodash-es"
-import { IAppointment, zRoutes } from "shared"
+import { zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -462,7 +462,7 @@ export default (server: Server) => {
       const { id, appointmentId } = params
 
       // eslint-disable-next-line prefer-const
-      let [etablissement, appointment]: [any, IAppointment | null] = await Promise.all([Etablissement.findById(id), Appointment.findById(appointmentId)])
+      let [etablissement, appointment] = await Promise.all([Etablissement.findById(id), Appointment.findById(appointmentId)])
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -477,12 +477,12 @@ export default (server: Server) => {
         await appointmentService.updateAppointment(appointmentId.toString(), { cfa_read_appointment_details_date: dayjs().toDate() })
       }
 
-      appointment = (await Appointment.findById(appointmentId, etablissementProjection).lean()) as IAppointment | null
+      appointment = await Appointment.findById(appointmentId, etablissementProjection).lean()
       if (!appointment) {
         throw new Error(`unexpected: could not find appointment with id=${appointmentId}`)
       }
 
-      res.send(appointment)
+      res.send({})
     }
   )
 

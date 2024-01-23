@@ -25,8 +25,6 @@ export default function CfaCandidatInformationPage() {
 
   const [currentState, setCurrentState] = useState("initial")
 
-  const utmSource = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("utm_source") : ""
-
   const formik = useFormik({
     initialValues: {
       message: "",
@@ -91,15 +89,13 @@ export default function CfaCandidatInformationPage() {
   useEffect(() => {
     const fetchData = async () => {
       if (appointmentId && establishmentId) {
-        if (utmSource === "mail") {
-          await apiPatch("/etablissements/:id/appointments/:appointmentId", {
-            params: { id: establishmentId, appointmentId },
-            body: { has_been_read: true },
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          })
-        }
+        await apiPatch("/etablissements/:id/appointments/:appointmentId", {
+          params: { id: establishmentId, appointmentId },
+          body: { has_been_read: true },
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        })
 
         const response = await apiGet("/appointment-request/context/recap", {
           querystring: { appointmentId },
@@ -111,7 +107,7 @@ export default function CfaCandidatInformationPage() {
       }
     }
     fetchData().catch(console.error)
-  }, [utmSource, appointmentId])
+  }, [appointmentId, establishmentId])
 
   return (
     <FormLayoutComponent

@@ -1,6 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment, ZEtablissement } from "../models"
+import { ZEtablissement } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
@@ -150,7 +150,7 @@ export const zEtablissementRoutes = {
       body: z.object({ has_been_read: z.boolean() }).strict(),
       params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),
       response: {
-        "200": ZAppointment,
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "access-token",
