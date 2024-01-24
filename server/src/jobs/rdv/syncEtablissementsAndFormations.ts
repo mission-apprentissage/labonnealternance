@@ -149,7 +149,7 @@ export const syncEtablissementsAndFormations = async () => {
           }
         )
       },
-      { parallel: 500 }
+      { parallel: 10 }
     )
   )
 
