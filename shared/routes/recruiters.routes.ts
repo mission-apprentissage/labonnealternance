@@ -191,7 +191,7 @@ export const zRecruiterRoutes = {
       method: "post",
       path: "/etablissement/validation",
       response: {
-        "2xx": ZUserRecruteurPublic,
+        "200": ZUserRecruteurPublic,
       },
       securityScheme: {
         auth: "access-token",
