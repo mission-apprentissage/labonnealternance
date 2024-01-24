@@ -44,10 +44,11 @@ import { authProvider, withAuth } from "../../../../../components/espace_pro/wit
  */
 function EditPage() {
   const router = useRouter()
-  const { id } = router.query
+  const { id: idParam } = router.query
+  const id = idParam as string
   const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState<IEligibleTrainingsForAppointmentJson[]>([])
   const [etablissement, setEtablissement] = useState<IEtablissementJson>()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const toast = useToast()
 
   const title = "Gestion de l'établissement"
@@ -59,11 +60,18 @@ function EditPage() {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const [eligibleTrainingsForAppointmentsResponse, etablissementResponse] = await Promise.all([getEligibleTrainingsForAppointments(id), getEtablissement(id)])
-
-      const { parameters: parametersResponse } = eligibleTrainingsForAppointmentsResponse
-      setEligibleTrainingsForAppointmentResult(parametersResponse)
-      setEtablissement(etablissementResponse)
+      const [eligibleTrainingsForAppointmentsResponse, etablissementResponse] = await Promise.all([
+        getEligibleTrainingsForAppointments(id).catch(() => null),
+        getEtablissement(id).catch(() => null),
+      ])
+      if (eligibleTrainingsForAppointmentsResponse && etablissementResponse) {
+        const { parameters: parametersResponse } = eligibleTrainingsForAppointmentsResponse
+        setEligibleTrainingsForAppointmentResult(parametersResponse)
+        setEtablissement(etablissementResponse)
+      } else {
+        setEligibleTrainingsForAppointmentResult(null)
+        setEtablissement(null)
+      }
     } catch (error) {
       toast({
         title: "Une erreur est survenue durant la récupération des informations.",
@@ -83,10 +91,6 @@ function EditPage() {
     if (id) fetchData()
   }, [id, toast])
 
-  /**
-   * @description Refresh parameters.
-   * @returns {Promise<void>}
-   */
   const refreshParameters = async () => {
     const eligibleTrainingsForAppointmentsResponse = await getEligibleTrainingsForAppointments(id)
 
@@ -94,19 +98,10 @@ function EditPage() {
     setEligibleTrainingsForAppointmentResult(parametersResponse)
   }
 
-  /**
-   * @description Returns all parameters from given sirent.
-   * @param {String} id
-   * @returns {Promise<*>}
-   */
-  const getEligibleTrainingsForAppointments = (id) => apiGet("/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret", { params: { siret: id } })
+  const getEligibleTrainingsForAppointments = (siret: string) =>
+    apiGet("/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret", { params: { siret: siret } })
 
-  /**
-   * @description Returns etablissement from its SIRET.
-   * @param {String} siret
-   * @returns {Promise<*>}
-   */
-  const getEtablissement = (siret) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })
+  const getEtablissement = (siret: string) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })
 
   /**
    * @description Patch eligibleTrainingsForAppointments.
@@ -195,7 +190,7 @@ function EditPage() {
     }
   }
 
-  if (!eligibleTrainingsForAppointmentResult) {
+  if (loading) {
     return (
       <Layout footer={false} rdva>
         <Spinner display="block" mx="auto" mt="10rem" />
@@ -214,9 +209,9 @@ function EditPage() {
         {title}
       </Heading>
       <Box>
-        {eligibleTrainingsForAppointmentResult && etablissement && !loading && (
+        {eligibleTrainingsForAppointmentResult ? (
           <>
-            <EtablissementComponent id={etablissement._id} />
+            <EtablissementComponent id={etablissement?._id.toString()} />
             <Flex bg="white" mt={10} border="1px solid #E0E5ED" borderRadius="4px" borderBottom="none">
               <Text flex="1" fontSize="16px" p={5}>
                 Formations
@@ -362,6 +357,8 @@ function EditPage() {
               </Table>
             </Box>
           </>
+        ) : (
+          <Text>Etablissement introuvable</Text>
         )}
       </Box>
     </Layout>

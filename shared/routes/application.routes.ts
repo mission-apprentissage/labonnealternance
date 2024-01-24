@@ -2,7 +2,7 @@ import { disableUrlsWith0WidthChar } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models"
-import { ZApplicationUI } from "../models/applications.model"
+import { ZNewApplication } from "../models/applications.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -11,7 +11,7 @@ export const zApplicationRoutes = {
     "/v1/application": {
       path: "/v1/application",
       method: "post",
-      body: ZApplicationUI.omit({ _id: true }),
+      body: ZNewApplication,
       response: {
         "200": z
           .object({
@@ -67,8 +67,8 @@ export const zApplicationRoutes = {
         .object({
           company_feedback: z.string().transform((value) => disableUrlsWith0WidthChar(value)),
           company_recruitment_intention: z.string(),
-          email: z.string().email().nullable(),
-          phone: extensions.phone().nullable(),
+          email: z.string().email().or(z.literal("")),
+          phone: extensions.phone().or(z.literal("")),
         })
         .strict(),
       response: {

@@ -3,7 +3,18 @@ import { setTimeout } from "timers/promises"
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { ICfaReferentielData, IEtablissement, IGeometry, ILbaCompany, IRecruiter, IReferentielOpco, IUserRecruteur, ZCfaReferentielData, assertUnreachable } from "shared"
+import {
+  IBusinessError,
+  ICfaReferentielData,
+  IEtablissement,
+  IGeometry,
+  ILbaCompany,
+  IRecruiter,
+  IReferentielOpco,
+  IUserRecruteur,
+  ZCfaReferentielData,
+  assertUnreachable,
+} from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -566,8 +577,7 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 }
 
 export const isCompanyValid = async (userRecruteur: IUserRecruteur) => {
-  const { establishment_siret: siret, email, _id } = userRecruteur
-
+  const { establishment_siret: siret, email } = userRecruteur
   if (!siret) {
     return false
   }
@@ -600,12 +610,12 @@ export const isCompanyValid = async (userRecruteur: IUserRecruteur) => {
   }
 }
 
-const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })
+const errorFactory = (message: string, errorCode?: BusinessErrorCodes): IBusinessError => ({ error: true, message, errorCode })
 
 const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc: string } | undefined> => {
   const idccResult = await getIdcc(siret)
   if (!idccResult) return undefined
-  const convention = idccResult.conventions.at(0)
+  const convention = idccResult.conventions?.at(0)
   if (convention) {
     const { num } = convention
     const opcoByIdccResult = await getOpcoByIdcc(num)
@@ -741,7 +751,7 @@ export const entrepriseOnboardingWorkflow = {
     }: {
       isUserValidated?: boolean
     } = {}
-  ) => {
+  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUserRecruteur }> => {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
