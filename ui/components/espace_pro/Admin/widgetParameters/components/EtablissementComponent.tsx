@@ -36,27 +36,18 @@ import { dayjs, formatDate } from "../../../../../common/dayjs"
 import { Disquette } from "../../../../../theme/components/icons"
 import { emailStatus } from "../constants/email"
 
-/**
- * @description Etablissement component.
- * @param {string} id
- * @returns {JSX.Element}
- */
-const EtablissementComponent = ({ id }) => {
+const EtablissementComponent = ({ id }: { id?: string }) => {
   const emailGestionnaireFocusRef = createRef()
   const emailGestionnaireRef = createRef()
 
-  const [etablissement, setEtablissement]: [any, (t: any) => void] = useState()
+  const [etablissement, setEtablissement]: [any, (t: any) => void] = useState(undefined)
   const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  /**
-   * @description Initial fetching.
-   * @return {Promise<void>}
-   */
   const fetchData = async () => {
     try {
       const response = await apiGet("/admin/etablissements/:id", { params: { id } })
-      setEtablissement(response)
+      setEtablissement(response ?? null)
     } catch (error) {
       toast({
         title: "Une erreur est survenue durant la récupération des informations.",
@@ -64,8 +55,6 @@ const EtablissementComponent = ({ id }) => {
         isClosable: true,
         position: "bottom-right",
       })
-    } finally {
-      //
     }
   }
 
@@ -110,6 +99,10 @@ const EtablissementComponent = ({ id }) => {
     } catch (error) {
       putError()
     }
+  }
+
+  if (etablissement === null) {
+    return <Text>Etablissement introuvable</Text>
   }
 
   return (
