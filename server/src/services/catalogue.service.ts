@@ -271,7 +271,7 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
 
     instance.defaults.headers.common["Cookie"] = response?.headers["set-cookie"]?.[0]
   } catch (error: any) {
-    logger.error(error.response)
+    sentryCaptureException(error)
   }
 
   return instance
