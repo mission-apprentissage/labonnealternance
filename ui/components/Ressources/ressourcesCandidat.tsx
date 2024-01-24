@@ -1,4 +1,4 @@
-import { Box, Grid, GridItem } from "@chakra-ui/react"
+import { Box, Flex, Grid, GridItem, Image } from "@chakra-ui/react"
 
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 
@@ -6,7 +6,9 @@ const RessourcesCandidat = () => {
   return (
     <Box>
       La bonne alternance vous propose un ensemble d’outils et de liens pour vous aider dans vos démarches de recherche de formation et d’emploi en alternance.
-      <Box as="h2">Testez vos connaissances</Box>
+      <Flex as="h2" fontSize={32} fontWeight={700} mt={6}>
+        Testez vos connaissances
+      </Flex>
       Entraînez-vous avec nos 4 parcours de mise en situation :
       <Grid>
         <GridItem>Vous recherchez votre formation ? Préparez-vous à échanger avec une école</GridItem>
@@ -14,7 +16,10 @@ const RessourcesCandidat = () => {
         <GridItem>Vous avez bientôt un entretien d’embauche ? Entraînez-vous pour avoir plus de chances d'être retenu</GridItem>
         <GridItem>Vous allez bientôt démarrer votre contrat ? Familiarisez-vous avec la posture à adopter en entreprise</GridItem>
       </Grid>
-      <h2>Conseils et astuces</h2>
+      <Flex as="h2" fontSize={32} fontWeight={700} mt={8}>
+        <Image src="/images/pages_ressources/conseils et astuces.svg" mr={4} alt="" aria-hidden="true" />
+        Conseils et astuces
+      </Flex>
       <ConseilsEtAstuces />
       <Box>
         Suivre ses candidatures est essentiel pour penser à relancer à temps les recruteurs et savoir quelles entreprises ont déjà été contactées. Pour vous aider dans le suivi de

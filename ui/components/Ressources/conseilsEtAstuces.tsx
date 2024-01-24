@@ -6,7 +6,6 @@ const ConseilsEtAstuces = () => {
       <AccordionItem>
         <AccordionButton>Pour définir votre projet</AccordionButton>
         <AccordionPanel>
-          é
           <ul>
             <li>
               Vous ne savez pas vers quel métier vous orienter ? Faites le point avec Diagoriente, un service qui vous accompagne dans la construction de votre orientation
