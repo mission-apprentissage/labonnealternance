@@ -63,6 +63,7 @@ const Home = () => {
       <Box {...blockCssProperties} py={12}>
         <AlgoHome />
       </Box>
+
       <Box {...blockCssProperties} pb={12}>
         <PromoRessources target="candidat" />
       </Box>

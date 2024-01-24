@@ -12,6 +12,7 @@ import OffresGratuites from "../components/HomeComponents/OffresGratuites"
 import OrganismesMandataires from "../components/HomeComponents/OrganismesMandataires"
 import PostezVotreOffre from "../components/HomeComponents/PostezVotreOffre"
 import Navigation from "../components/navigation"
+import PromoRessources from "../components/Ressources/promoRessources"
 import ScrollToTop from "../components/ScrollToTop"
 
 const AccesRecruteur = () => (
@@ -38,6 +39,10 @@ const AccesRecruteur = () => (
 
       <Box>
         <AlgoRecruiter withLinks={true} />
+      </Box>
+
+      <Box as="section" backgroundColor="white" pb={12}>
+        <PromoRessources target="recruteur" />
       </Box>
 
       <Box as="section" pb={24} backgroundColor="white">
