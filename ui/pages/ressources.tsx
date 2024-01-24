@@ -133,13 +133,13 @@ const Ressources = () => {
         <Grid templateColumns="repeat(5, 1fr)">
           <GridItem display={{ base: "none", lg: "block" }} colSpan={{ base: 0, lg: 1 }}>
             <List>
-              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "Candidat" ? selectedVerticalTabCssProperties : {}}>
+              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "candidat" ? selectedVerticalTabCssProperties : {}}>
                 {getButton({ type: "candidat", alignment: "vertical" })}
               </ListItem>
-              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "Recruteur" ? selectedVerticalTabCssProperties : {}}>
+              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "recruteur" ? selectedVerticalTabCssProperties : {}}>
                 {getButton({ type: "recruteur", alignment: "vertical" })}
               </ListItem>
-              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "Organisme de formation" ? selectedVerticalTabCssProperties : {}}>
+              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "cfa" ? selectedVerticalTabCssProperties : {}}>
                 {getButton({ type: "cfa", alignment: "vertical" })}
               </ListItem>
             </List>

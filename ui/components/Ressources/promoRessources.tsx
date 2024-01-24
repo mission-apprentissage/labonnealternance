@@ -3,7 +3,7 @@ import React from "react"
 
 import Link from "../Link"
 
-const PromoRessources = () => {
+const PromoRessources = ({ target }) => {
   return (
     <>
       <Container textAlign="center" variant="responsiveContainer">
@@ -12,7 +12,7 @@ const PromoRessources = () => {
           La bonne alternance recense une liste d’outils et de liens utiles pour vous aider dans vos démarches de recherche d’alternance.
         </Text>
         <Box mt="7">
-          <Link href="/ressources" color="#000091" border="1px solid #000091" padding="10px 24px">
+          <Link href={`/ressources#${target}`} color="#000091" border="1px solid #000091" padding="10px 24px">
             Découvrir les ressources
           </Link>
         </Box>
