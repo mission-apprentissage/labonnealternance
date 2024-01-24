@@ -1,6 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment, ZEtablissement } from "../models"
+import { ZEtablissement } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
@@ -141,20 +141,6 @@ export const zEtablissementRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        resources: {},
-      },
-    },
-    "/etablissements/:id/appointments/:appointmentId": {
-      method: "patch",
-      path: "/etablissements/:id/appointments/:appointmentId",
-      body: z.object({ has_been_read: z.boolean() }).strict(),
-      params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),
-      response: {
-        "200": ZAppointment,
-      },
-      securityScheme: {
-        auth: "access-token",
-        access: null,
         resources: {},
       },
     },
