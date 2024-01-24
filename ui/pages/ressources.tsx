@@ -51,20 +51,42 @@ const selectedHorizontalButtonProperties = {
 }
 
 const Ressources = () => {
-  const [tabIndex, setTabIndex] = useState("candidat")
+  const [tabIndex, setTabIndex] = useState("Candidat")
 
   const getTabContent = () => {
     switch (tabIndex) {
-      case "recruteur": {
+      case "Recruteur": {
         return <RessourcesRecruteur />
       }
-      case "cfa": {
+      case "Organisme de formation": {
         return <RessourcesCFA />
       }
       default: {
         return <RessourcesCandidat />
       }
     }
+  }
+
+  const getButton = ({ type, alignment }: { type: string; alignment: string }) => {
+    return (
+      <Button
+        _hover={hoverTabCssProperties}
+        justifyContent="left"
+        style={
+          tabIndex === type
+            ? alignment === "vertical"
+              ? selectedVerticalButtonProperties
+              : selectedHorizontalButtonProperties
+            : alignment === "vertical"
+              ? verticalButtonProperties
+              : horizontalButtonProperties
+        }
+        onClick={() => setTabIndex(type)}
+        aria-label={`Afficher les ressources pour ${type}`}
+      >
+        {type}
+      </Button>
+    )
   }
 
   return (
@@ -85,70 +107,23 @@ const Ressources = () => {
         <Grid templateColumns="repeat(5, 1fr)">
           <GridItem display={{ base: "none", lg: "block" }} colSpan={{ base: 0, lg: 1 }}>
             <List>
-              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "candidat" ? selectedVerticalTabCssProperties : {}}>
-                <Button
-                  _hover={hoverTabCssProperties}
-                  justifyContent="left"
-                  style={tabIndex === "candidat" ? selectedVerticalButtonProperties : verticalButtonProperties}
-                  onClick={() => setTabIndex("candidat")}
-                  aria-label="Afficher les ressources pour les candidats"
-                >
-                  Candidat
-                </Button>
+              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "Candidat" ? selectedVerticalTabCssProperties : {}}>
+                {getButton({ type: "Candidat", alignment: "vertical" })}
               </ListItem>
-              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "recruteur" ? selectedVerticalTabCssProperties : {}}>
-                <Button
-                  _hover={hoverTabCssProperties}
-                  justifyContent="left"
-                  style={tabIndex === "recruteur" ? selectedVerticalButtonProperties : verticalButtonProperties}
-                  onClick={() => setTabIndex("recruteur")}
-                  aria-label="Afficher les ressources pour les recruteurs"
-                >
-                  Recruteur
-                </Button>
+              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "Recruteur" ? selectedVerticalTabCssProperties : {}}>
+                {getButton({ type: "Recruteur", alignment: "vertical" })}
               </ListItem>
-              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "cfa" ? selectedVerticalTabCssProperties : {}}>
-                <Button
-                  _hover={hoverTabCssProperties}
-                  justifyContent="left"
-                  style={tabIndex === "cfa" ? selectedVerticalButtonProperties : verticalButtonProperties}
-                  onClick={() => setTabIndex("cfa")}
-                  aria-label="Afficher les ressources pour les organismes de formation"
-                >
-                  Organisme de formation
-                </Button>
+              <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "Organisme de formation" ? selectedVerticalTabCssProperties : {}}>
+                {getButton({ type: "Organisme de formation", alignment: "vertical" })}
               </ListItem>
             </List>
           </GridItem>
           <GridItem colSpan={{ base: 5, lg: 4 }}>
             <Box>
               <Box display={{ base: "block", lg: "none" }} mb={6}>
-                <Button
-                  _hover={hoverTabCssProperties}
-                  style={tabIndex === "candidat" ? selectedHorizontalButtonProperties : horizontalButtonProperties}
-                  onClick={() => setTabIndex("candidat")}
-                  aria-label="Afficher les ressources pour les candidats"
-                >
-                  Candidat
-                </Button>
-                <Button
-                  _hover={hoverTabCssProperties}
-                  style={tabIndex === "recruteur" ? selectedHorizontalButtonProperties : horizontalButtonProperties}
-                  onClick={() => setTabIndex("recruteur")}
-                  aria-label="Afficher les ressources pour les recruteurs"
-                >
-                  Recruteur
-                </Button>
-                <Button
-                  _hover={hoverTabCssProperties}
-                  style={tabIndex === "cfa" ? selectedHorizontalButtonProperties : horizontalButtonProperties}
-                  onClick={() => setTabIndex("cfa")}
-                  aria-label="Afficher les ressources pour les organismes de formation"
-                >
-                  Organisme
-                  <br />
-                  de formation
-                </Button>
+                {getButton({ type: "Candidat", alignment: "horizontal" })}
+                {getButton({ type: "Recruteur", alignment: "horizontal" })}
+                {getButton({ type: "Organisme de formation", alignment: "horizontal" })}
               </Box>
               <Box style={{ clear: "both" }}>{getTabContent()}</Box>
             </Box>
