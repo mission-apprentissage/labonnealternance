@@ -1,6 +1,7 @@
 import { Box, Button, Container, Grid, GridItem, List, ListItem, Text } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 
 import RessourcesCandidat from "@/components/Ressources/ressourcesCandidat"
 import RessourcesCFA from "@/components/Ressources/ressourcesCFA"
@@ -51,14 +52,21 @@ const selectedHorizontalButtonProperties = {
 }
 
 const Ressources = () => {
-  const [tabIndex, setTabIndex] = useState("Candidat")
+  const { asPath } = useRouter()
+
+  const [tabIndex, setTabIndex] = useState("candidat")
+
+  useEffect(() => {
+    const hash = asPath.split("#")[1]
+    setTabIndex(hash || "candidat")
+  }, [asPath])
 
   const getTabContent = () => {
     switch (tabIndex) {
-      case "Recruteur": {
+      case "recruteur": {
         return <RessourcesRecruteur />
       }
-      case "Organisme de formation": {
+      case "cfa": {
         return <RessourcesCFA />
       }
       default: {
@@ -68,6 +76,21 @@ const Ressources = () => {
   }
 
   const getButton = ({ type, alignment }: { type: string; alignment: string }) => {
+    let text = "Candidat"
+
+    switch (type) {
+      case "recruteur": {
+        text = "Recruteur"
+        break
+      }
+      case "cfa": {
+        text = "Organisme de formation"
+        break
+      }
+      default:
+        break
+    }
+
     return (
       <Button
         _hover={hoverTabCssProperties}
@@ -81,10 +104,13 @@ const Ressources = () => {
               ? verticalButtonProperties
               : horizontalButtonProperties
         }
-        onClick={() => setTabIndex(type)}
-        aria-label={`Afficher les ressources pour ${type}`}
+        onClick={() => {
+          window.location.hash = type
+          setTabIndex(type)
+        }}
+        aria-label={`Afficher les ressources pour ${text}`}
       >
-        {type}
+        {text}
       </Button>
     )
   }
@@ -108,22 +134,22 @@ const Ressources = () => {
           <GridItem display={{ base: "none", lg: "block" }} colSpan={{ base: 0, lg: 1 }}>
             <List>
               <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "Candidat" ? selectedVerticalTabCssProperties : {}}>
-                {getButton({ type: "Candidat", alignment: "vertical" })}
+                {getButton({ type: "candidat", alignment: "vertical" })}
               </ListItem>
               <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "Recruteur" ? selectedVerticalTabCssProperties : {}}>
-                {getButton({ type: "Recruteur", alignment: "vertical" })}
+                {getButton({ type: "recruteur", alignment: "vertical" })}
               </ListItem>
               <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "Organisme de formation" ? selectedVerticalTabCssProperties : {}}>
-                {getButton({ type: "Organisme de formation", alignment: "vertical" })}
+                {getButton({ type: "cfa", alignment: "vertical" })}
               </ListItem>
             </List>
           </GridItem>
           <GridItem colSpan={{ base: 5, lg: 4 }}>
             <Box>
               <Box display={{ base: "block", lg: "none" }} mb={6}>
-                {getButton({ type: "Candidat", alignment: "horizontal" })}
-                {getButton({ type: "Recruteur", alignment: "horizontal" })}
-                {getButton({ type: "Organisme de formation", alignment: "horizontal" })}
+                {getButton({ type: "candidat", alignment: "horizontal" })}
+                {getButton({ type: "recruteur", alignment: "horizontal" })}
+                {getButton({ type: "cfa", alignment: "horizontal" })}
               </Box>
               <Box style={{ clear: "both" }}>{getTabContent()}</Box>
             </Box>

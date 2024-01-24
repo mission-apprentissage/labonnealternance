@@ -8,7 +8,7 @@ import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
 import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
-import PromoRessources from "../components/Ressources/PromoRessources"
+import PromoRessources from "../components/Ressources/promoRessources"
 import ScrollToTop from "../components/ScrollToTop"
 import config from "../config/config"
 import { ParameterContext } from "../context/ParameterContextProvider"
@@ -64,7 +64,7 @@ const Home = () => {
         <AlgoHome />
       </Box>
       <Box {...blockCssProperties} pb={12}>
-        <PromoRessources />
+        <PromoRessources target="candidat" />
       </Box>
 
       {config.shouldDisplayCallForHelp && (
