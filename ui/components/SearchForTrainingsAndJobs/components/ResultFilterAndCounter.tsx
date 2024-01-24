@@ -68,7 +68,9 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
                 <>
                   <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilters.includes("jobs")} handleFilterButtonClicked={filterButtonClicked} />
                   <FilterButton type="trainings" count={trainingCount} isActive={activeFilters.includes("trainings")} handleFilterButtonClicked={filterButtonClicked} />
-                  <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} />
+                  {partnerJobCount > 0 && (
+                    <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} />
+                  )}
                 </>
               )}
               <DisplayMapButton jobs={jobs} trainings={trainings} />
