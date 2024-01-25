@@ -3,17 +3,16 @@ import querystring from "node:querystring"
 import axios, { AxiosInstance } from "axios"
 import Boom from "boom"
 import { got } from "got"
-import * as _ from "lodash-es"
 import { sortBy } from "lodash-es"
 import { compose } from "oleoduc"
 
-import { search } from "../common/esClient/index"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+
 import { logger } from "../common/logger"
 import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
 import { getDistanceInKm } from "../common/utils/geolib"
 import { fetchStream } from "../common/utils/httpUtils"
 import { isValidEmail } from "../common/utils/isValidEmail"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { streamJsonArray } from "../common/utils/streamUtils"
 import config from "../config"
 
@@ -329,14 +328,6 @@ export type IRomeResult = {
   romes: string[]
 }
 
-const getFormationEsQueryIndexFragment = () => {
-  return {
-    index: "formationcatalogues",
-    size: 1000,
-    _source_includes: ["rome_codes"],
-  }
-}
-
 /**
  * @description récupère les romes associés à un cfd de formation ou à un siret d'établissement
  * @param {string} cfd
@@ -344,63 +335,27 @@ const getFormationEsQueryIndexFragment = () => {
  * @returns {Promise<IRomeResult>}
  */
 export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
-  try {
-    const mustTerm = [] as any[]
+  const query: { cfd?: string; etablissement_formateur_siret?: string } = {}
 
-    if (cfd) {
-      mustTerm.push({
-        match: {
-          cfd,
-        },
-      })
+  if (cfd) query.cfd = cfd
+  if (siret) query.etablissement_formateur_siret = siret
+
+  const formationsFromDb = await FormationCatalogue.find(query)
+
+  const romes: Set<string> = new Set()
+
+  formationsFromDb.forEach((formation) => {
+    if (formation.rome_codes) {
+      formation.rome_codes.forEach((rome) => romes.add(rome))
     }
+  })
 
-    if (siret) {
-      mustTerm.push({
-        match: {
-          etablissement_formateur_siret: siret,
-        },
-      })
-    }
+  const result: IRomeResult = { romes: [...romes] }
 
-    const esQueryIndexFragment = getFormationEsQueryIndexFragment()
-
-    const responseFormations = await search(
-      {
-        ...esQueryIndexFragment,
-        body: {
-          query: {
-            bool: {
-              must: mustTerm,
-            },
-          },
-        },
-      },
-      FormationCatalogue
-    )
-
-    const romes: Set<string> = new Set()
-
-    responseFormations.forEach((formation) => {
-      formation._source.rome_codes.forEach((rome) => romes.add(rome))
-    })
-
-    const result: IRomeResult = { romes: [...romes] }
-
-    if (!result.romes.length) {
-      throw new Error("not found")
-    }
-    return result
-  } catch (err: any) {
-    if (err.message === "not found") throw Boom.notFound("No training found")
-    const error_msg = _.get(err, "meta.body", err.message)
-    console.error("Error getting trainings from romes ", error_msg)
-    if (_.get(err, "meta.meta.connection.status") === "dead") {
-      console.error("Elastic search is down or unreachable")
-    }
-    sentryCaptureException(err)
-    throw Boom.internal(error_msg)
+  if (!result.romes.length) {
+    throw Boom.notFound("No training found")
   }
+  return result
 }
 
 /**
