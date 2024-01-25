@@ -76,15 +76,15 @@ const Ressources = () => {
   }
 
   const getButton = ({ type, alignment }: { type: string; alignment: string }) => {
-    let text = "Candidat"
+    let text = "Candidats"
 
     switch (type) {
       case "recruteur": {
-        text = "Recruteur"
+        text = "Recruteurs"
         break
       }
       case "cfa": {
-        text = "Organisme de formation"
+        text = "Organismes de formation"
         break
       }
       default:
