@@ -1,10 +1,15 @@
-import { Accordion, AccordionButton, AccordionItem, AccordionPanel } from "@chakra-ui/react"
+import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Box } from "@chakra-ui/react"
 
 const ConseilsEtAstuces = () => {
   return (
     <Accordion defaultIndex={[0]} allowMultiple>
-      <AccordionItem>
-        <AccordionButton>Pour définir votre projet</AccordionButton>
+      <AccordionItem borderTop="1px solid" borderTopColor="#DDD">
+        <AccordionButton>
+          <Box as="span" flex="1" textAlign="left">
+            Pour définir votre projet
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
         <AccordionPanel>
           <ul>
             <li>
@@ -21,9 +26,14 @@ const ConseilsEtAstuces = () => {
         </AccordionPanel>
       </AccordionItem>
 
-      <AccordionItem>
-        <AccordionButton>Pour vous faire accompagner par des conseillers</AccordionButton>
-        <AccordionPanel>
+      <AccordionItem borderTop="1px solid" borderTopColor="#DDD">
+        <AccordionButton>
+          <Box as="span" flex="1" textAlign="left">
+            Pour vous faire accompagner par des conseillers
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
+        <AccordionPanel paddingInlineStart={10} paddingLeft={6}>
           <ul>
             <li>Contactez la Mission locale de votre secteur. Des conseillers vous aideront dans vos recherches d'entreprise. Trouver ma mission locale </li>
             <li>
@@ -38,8 +48,13 @@ const ConseilsEtAstuces = () => {
         </AccordionPanel>
       </AccordionItem>
 
-      <AccordionItem>
-        <AccordionButton>À propos des formations en alternance</AccordionButton>
+      <AccordionItem borderTop="1px solid" borderTopColor="#DDD">
+        <AccordionButton>
+          <Box as="span" flex="1" textAlign="left">
+            À propos des formations en alternance
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
         <AccordionPanel>
           La plupart des organismes de formations font des journées portes ouvertes : vous y trouverez l'occasion d'échanger avec des alternants ! Combien de personnes ont trouvé
           un emploi dans les 6 mois après avoir obtenu le diplôme que vous souhaitez préparer ? La réponse ici ! En savoir plus Certains établissements de formation obtiennent des
@@ -47,8 +62,13 @@ const ConseilsEtAstuces = () => {
         </AccordionPanel>
       </AccordionItem>
 
-      <AccordionItem>
-        <AccordionButton>Pour trouver un employeur</AccordionButton>
+      <AccordionItem borderTop="1px solid" borderTopColor="#DDD">
+        <AccordionButton>
+          <Box as="span" flex="1" textAlign="left">
+            Pour trouver un employeur
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
         <AccordionPanel>
           Tout au long de l'année, il existe des salons de recrutement (physiques ou virtuels) spécialisés pour l'alternance : renseignez-vous ! Voir les salons l’Étudiant Voir les
           salons Studyrama France Travail recense de nombreux évènements (conférences, salons, job dating, conférences en ligne…) pour vous aider dans vos recherches de contrat. En
@@ -57,8 +77,14 @@ const ConseilsEtAstuces = () => {
           savoir plus Plus d’un employeur sur deux recrute sans déposer d'offre d'emploi : optimisez vos chances en adressant aussi des candidatures spontanées !
         </AccordionPanel>
       </AccordionItem>
-      <AccordionItem>
-        <AccordionButton>Pour préparer vos candidatures</AccordionButton>
+
+      <AccordionItem borderTop="1px solid" borderTopColor="#DDD">
+        <AccordionButton>
+          <Box as="span" flex="1" textAlign="left">
+            Pour préparer vos candidatures
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
         <AccordionPanel>
           Besoin d'aide pour construire un CV à partir de vos expériences ? Inscrivez-vous gratuitement sur Diagoriente et laissez-vous guider dans la construction d'un CV
           pertinent, mettant en lumière vos compétences. En savoir plus Besoin d'aide pour concevoir un beau CV ? Vous pouvez le faire gratuitement sur CVdesignr. En savoir plus
@@ -68,8 +94,14 @@ const ConseilsEtAstuces = () => {
           ne suis pas disponible pour le moment, laissez-moi un message et je vous rappellerai dès que possible. Merci !”)
         </AccordionPanel>
       </AccordionItem>
-      <AccordionItem>
-        <AccordionButton>À propos de votre rémunération</AccordionButton>
+
+      <AccordionItem borderTop="1px solid" borderTopColor="#DDD">
+        <AccordionButton>
+          <Box as="span" flex="1" textAlign="left">
+            À propos de votre rémunération
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
         <AccordionPanel>
           Les employeurs qui embauchent des alternants reçoivent des aides, jusqu’à 6000€ selon le dernier décret : c'est un bon argument pour convaincre une entreprise qui ne
           connaît pas l'alternance de vous embaucher ! Télécharger le fichier de suivi de candidatures Pour faciliter le suivi de vos candidatures, téléchargez et complétez notre
@@ -80,8 +112,14 @@ const ConseilsEtAstuces = () => {
           documentaires et méthodologiques communes.
         </AccordionPanel>
       </AccordionItem>
-      <AccordionItem>
-        <AccordionButton>À propos des aides financières et matérielles</AccordionButton>
+
+      <AccordionItem borderTop="1px solid" borderTopColor="#DDD">
+        <AccordionButton>
+          <Box as="span" flex="1" textAlign="left">
+            À propos des aides financières et matérielles
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
         <AccordionPanel>
           Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aide dès maintenant. En savoir plus Certaines communes mettent à disposition des logements pour
           l'hébergement des alternants. Renseignez-vous en contactant la mairie de votre lieu de résidence. Vous devez quitter le domicile familial pour vos études ? Action
