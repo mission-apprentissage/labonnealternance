@@ -7,6 +7,8 @@ import * as _ from "lodash-es"
 import { sortBy } from "lodash-es"
 import { compose } from "oleoduc"
 
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+
 import { logger } from "../common/logger"
 import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
 import { getDistanceInKm } from "../common/utils/geolib"
