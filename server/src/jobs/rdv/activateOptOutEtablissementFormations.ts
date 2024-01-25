@@ -76,17 +76,6 @@ export const activateOptOutEtablissementFormations = async () => {
             linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
           },
         },
-        disableSanitize: {
-          images: {
-            logoLba: true,
-            logoFooter: true,
-            optOutLbaIntegrationExample: true,
-            informationIcon: true,
-          },
-          etablissement: {
-            linkToUnsubscribe: true,
-          },
-        },
       })
 
       const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointmentService.find({
@@ -131,19 +120,6 @@ export const activateOptOutEtablissementFormations = async () => {
               },
               user: {
                 destinataireEmail: email,
-              },
-            },
-            disableSanitize: {
-              url: true,
-              replyTo: true,
-              images: {
-                logoLba: true,
-                logoFooter: true,
-                peopleLaptop: true,
-                optOutLbaIntegrationExample: true,
-              },
-              user: {
-                destinataireEmail: true,
               },
             },
           })

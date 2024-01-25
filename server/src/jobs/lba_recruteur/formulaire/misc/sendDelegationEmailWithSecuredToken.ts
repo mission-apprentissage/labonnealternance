@@ -10,7 +10,7 @@ import { db } from "../../../../common/mongodb"
 import { getStaticFilePath } from "../../../../common/utils/getStaticFilePath"
 import config from "../../../../config"
 import { createCfaUnsubscribeToken, createViewDelegationLink } from "../../../../services/appLinks.service"
-import mailer from "../../../../services/mailer.service"
+import mailer, { sanitizeForEmail } from "../../../../services/mailer.service"
 
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
@@ -27,24 +27,16 @@ export async function sendDelegationMailToCFAERRATUM(email: string, offre: IJob,
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      enterpriseName: recruiter.establishment_raison_sociale,
-      jobName: offre.rome_appellation_label,
-      contractType: (offre.job_type ?? []).join(", "),
-      trainingLevel: offre.job_level_label,
-      startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
+      enterpriseName: sanitizeForEmail(recruiter.establishment_raison_sociale),
+      jobName: sanitizeForEmail(offre.rome_appellation_label),
+      contractType: sanitizeForEmail((offre.job_type ?? []).join(", ")),
+      trainingLevel: sanitizeForEmail(offre.job_level_label),
+      startDate: sanitizeForEmail(dayjs(offre.job_start_date).format("DD/MM/YYYY")),
       duration: offre.job_duration,
-      rhythm: offre.job_rythm,
+      rhythm: sanitizeForEmail(offre.job_rythm),
       offerButton: createViewDelegationLink(email, recruiter.establishment_id, offre._id.toString(), siret_code),
       createAccountButton: `${config.publicUrl}/espace-pro/creation/cfa`,
       unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe?token=${unsubscribeToken}`,
-    },
-    disableSanitize: {
-      images: {
-        logoLba: true,
-      },
-      offerButton: true,
-      createAccountButton: true,
-      unsubscribeUrl: true,
     },
   })
 }

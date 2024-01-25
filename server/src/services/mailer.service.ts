@@ -12,45 +12,12 @@ import config from "../config"
 const htmlToText = nodemailerHtmlToText.htmlToText
 const renderFile: (path: string, data: Data) => Promise<string> = promisify(ejs.renderFile)
 
-type EmailData = Record<string | symbol, any>
-
-type UnpackArray<T> = T extends (infer U)[] ? U : T
-
-type ObjectDeepMap<Obj, MappedValue> = Obj extends Array<any>
-  ? ObjectDeepMap<UnpackArray<Obj>, MappedValue>
-  : Obj extends object
-    ? {
-        [P in keyof Obj]?: ObjectDeepMap<Obj[P], MappedValue>
-      }
-    : MappedValue
-
-type DisableSanitizer<Data extends object> = ObjectDeepMap<Data, true>
-
-const sanitizeForEmail = (text: string) => {
+export const sanitizeForEmail = (text: string | null | undefined) => {
+  if (!text) return ""
   text = text.replaceAll(/(<([^>]+)>)/gi, "")
   text = text.replaceAll(/\./g, "\u200B.\u200B")
   text = encodeURIComponent(text)
   return text
-}
-
-const sanitizeObject = <Data extends EmailData>(obj: Data, disableSanitize?: DisableSanitizer<Data>) => {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => {
-      if (!value) {
-        return [key, value]
-      }
-      const sanitizeOption = disableSanitize?.[key]
-      if (typeof value === "object") {
-        value = sanitizeObject(value, sanitizeOption)
-      } else if (Array.isArray(value)) {
-        value = value.map((subValue) => sanitizeObject(subValue, sanitizeOption))
-      } else if (typeof value === "string") {
-        const shouldSanitize = sanitizeOption === true
-        value = shouldSanitize ? sanitizeForEmail(value) : value
-      }
-      return [key, value]
-    })
-  )
 }
 
 const createTransporter = (): Transporter => {
@@ -86,12 +53,11 @@ const createMailer = () => {
      * Process template ejs and mjml template.
      */
     renderEmail,
-    sendEmail: async <Data extends EmailData>({
+    sendEmail: async ({
       to,
       subject,
       template,
       data,
-      disableSanitize,
       from = { name: config.transactionalEmailSender, address: config.transactionalEmail },
       cc = undefined,
       attachments,
@@ -99,19 +65,17 @@ const createMailer = () => {
       to: string
       subject: string
       template: string
-      data: Data
-      disableSanitize?: DisableSanitizer<Data>
+      data: object
       from?: string | Address
       cc?: string
       attachments?: object[]
     }): Promise<{ messageId: string; accepted?: string[] }> => {
-      const sanitizedData = sanitizeObject(data, disableSanitize)
       return transporter.sendMail({
         from,
         to,
         cc,
         subject,
-        html: await renderEmail(template, sanitizedData),
+        html: await renderEmail(template, data),
         list: {},
         attachments,
       })

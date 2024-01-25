@@ -22,7 +22,7 @@ export const relanceOpco = async () => {
   if (!userAwaitingValidation.length) return
 
   // count user to validate per opco
-  const userList = userAwaitingValidation.reduce((acc, user) => {
+  const userList = userAwaitingValidation.reduce<Record<string, number>>((acc, user) => {
     if (user.opco) {
       if (user.opco in acc) {
         acc[user.opco]++
@@ -47,11 +47,6 @@ export const relanceOpco = async () => {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           count: userList[opco],
-        },
-        disableSanitize: {
-          images: {
-            logoLba: true,
-          },
         },
       })
     })

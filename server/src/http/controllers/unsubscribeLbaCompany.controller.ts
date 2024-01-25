@@ -71,12 +71,6 @@ export default function (server: Server) {
               logoRF: `${imagePath}logo_rf.png`,
             },
           },
-          disableSanitize: {
-            images: {
-              logoLba: true,
-              logoRF: true,
-            },
-          },
         })
       }
 

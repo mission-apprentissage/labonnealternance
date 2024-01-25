@@ -10,7 +10,7 @@ import { startSession, stopSession } from "../../common/utils/session.service"
 import config from "../../config"
 import { sendUserConfirmationEmail } from "../../services/etablissement.service"
 import { controlUserState } from "../../services/login.service"
-import mailer from "../../services/mailer.service"
+import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { getUser, updateLastConnectionDate } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
@@ -50,7 +50,7 @@ export default (server: Server) => {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
 
-      const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
+      const { email: userEmail, first_name, last_name, is_email_checked } = user || {}
 
       const userState = controlUserState(user.status)
       if (userState?.error) {
@@ -73,15 +73,9 @@ export default (server: Server) => {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
-          last_name: removeUrlsFromText(last_name),
-          first_name: removeUrlsFromText(first_name),
+          last_name: sanitizeForEmail(removeUrlsFromText(last_name)),
+          first_name: sanitizeForEmail(removeUrlsFromText(first_name)),
           connexion_url: createAuthMagicLink(user),
-        },
-        disableSanitize: {
-          images: {
-            logoLba: true,
-          },
-          connexion_url: true,
         },
       })
       return res.status(200).send({})

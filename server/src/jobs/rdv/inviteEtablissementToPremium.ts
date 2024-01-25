@@ -62,16 +62,6 @@ export const inviteEtablissementToPremium = async () => {
           linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
         },
       },
-      disableSanitize: {
-        images: {
-          logoLba: true,
-          exempleParcoursup: true,
-        },
-        etablissement: {
-          email: true,
-          linkToForm: true,
-        },
-      },
     })
 
     await Etablissement.updateOne(

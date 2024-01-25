@@ -10,7 +10,7 @@ import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"
 import { createCancelJobLink, createProvidedJobLink } from "../../../services/appLinks.service"
 import dayjs from "../../../services/dayjs.service"
-import mailer from "../../../services/mailer.service"
+import mailer, { sanitizeForEmail } from "../../../services/mailer.service"
 
 export const relanceFormulaire = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
   const recruiters = await Recruiter.find({
@@ -62,31 +62,20 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
         },
-        last_name: contactCFA?.last_name ?? contactEntreprise?.last_name,
-        first_name: contactCFA?.first_name ?? contactEntreprise?.first_name,
-        establishment_raison_sociale,
+        last_name: sanitizeForEmail(contactCFA?.last_name ?? contactEntreprise?.last_name),
+        first_name: sanitizeForEmail(contactCFA?.first_name ?? contactEntreprise?.first_name),
+        establishment_raison_sociale: sanitizeForEmail(establishment_raison_sociale),
         is_delegated,
         offres: jobsWithRecruiter.map((job) => ({
-          rome_appellation_label: job.rome_appellation_label ?? job.rome_label,
+          rome_appellation_label: sanitizeForEmail(job.rome_appellation_label ?? job.rome_label),
           job_type: job.job_type,
-          job_level_label: job.job_level_label,
+          job_level_label: sanitizeForEmail(job.job_level_label),
           job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
           supprimer: createCancelJobLink(contactCFA ?? contactEntreprise, job._id.toString()),
           pourvue: createProvidedJobLink(contactCFA ?? contactEntreprise, job._id.toString()),
         })),
         threshold,
         url: `${config.publicUrl}/espace-pro/authentification`,
-      },
-      disableSanitize: {
-        images: {
-          logoLba: true,
-          logoFooter: true,
-        },
-        offres: {
-          supprimer: true,
-          pourvue: true,
-        },
-        url: true,
       },
     })
   })

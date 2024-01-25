@@ -12,7 +12,7 @@ import config from "../../config"
 import * as appointmentService from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import mailer from "../../services/mailer.service"
+import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { Server } from "../server"
 
 const etablissementProjection = {
@@ -133,18 +133,6 @@ export default (server: Server) => {
                 destinataireEmail: email,
               },
             },
-            disableSanitize: {
-              url: true,
-              replyTo: true,
-              images: {
-                logoLba: true,
-                logoFooter: true,
-                peopleLaptop: true,
-              },
-              user: {
-                destinataireEmail: true,
-              },
-            },
           })
         )
       )
@@ -250,18 +238,6 @@ export default (server: Server) => {
                 destinataireEmail: email,
               },
             },
-            disableSanitize: {
-              url: true,
-              replyTo: true,
-              images: {
-                logoLba: true,
-                logoFooter: true,
-                peopleLaptop: true,
-              },
-              user: {
-                destinataireEmail: true,
-              },
-            },
           })
         )
       )
@@ -332,16 +308,6 @@ export default (server: Server) => {
             email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
-        },
-        disableSanitize: {
-          images: {
-            informationIcon: true,
-            logoLba: true,
-            logoFooter: true,
-          },
-          etablissement: {
-            email: true,
-          },
         },
       })
 
@@ -416,16 +382,6 @@ export default (server: Server) => {
             email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
-        },
-        disableSanitize: {
-          images: {
-            informationIcon: true,
-            logoLba: true,
-            logoFooter: true,
-          },
-          etablissement: {
-            email: true,
-          },
         },
       })
 
@@ -522,13 +478,7 @@ export default (server: Server) => {
               formateur_address: etablissement.formateur_address,
               formateur_zip_code: etablissement.formateur_zip_code,
               formateur_city: etablissement.formateur_city,
-              opt_out_question: req.body.opt_out_question,
-            },
-          },
-          disableSanitize: {
-            images: {
-              logoLba: true,
-              logoFooter: true,
+              opt_out_question: sanitizeForEmail(req.body.opt_out_question),
             },
           },
           from: config.transactionalEmail,
@@ -573,12 +523,6 @@ export default (server: Server) => {
             formateur_zip_code: etablissement.formateur_zip_code,
             formateur_city: etablissement.formateur_city,
             siret: etablissement.formateur_siret,
-          },
-        },
-        disableSanitize: {
-          images: {
-            logoLba: true,
-            logoFooter: true,
           },
         },
       })

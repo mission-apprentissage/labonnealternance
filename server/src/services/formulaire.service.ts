@@ -16,7 +16,7 @@ import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
-import mailer from "./mailer.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
@@ -548,24 +548,16 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      enterpriseName: recruiter.establishment_raison_sociale,
-      jobName: offre.rome_appellation_label,
+      enterpriseName: sanitizeForEmail(recruiter.establishment_raison_sociale),
+      jobName: sanitizeForEmail(offre.rome_appellation_label),
       contractType: (offre.job_type ?? []).join(", "),
-      trainingLevel: offre.job_level_label,
+      trainingLevel: sanitizeForEmail(offre.job_level_label),
       startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
       duration: offre.job_duration,
-      rhythm: offre.job_rythm,
+      rhythm: sanitizeForEmail(offre.job_rythm),
       offerButton: createViewDelegationLink(email, recruiter.establishment_id, offre._id.toString(), siret_code),
       createAccountButton: `${config.publicUrl}/espace-pro/creation/cfa`,
       unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe?token=${unsubscribeToken}`,
-    },
-    disableSanitize: {
-      images: {
-        logoLba: true,
-      },
-      offerButton: true,
-      createAccountButton: true,
-      unsubscribeUrl: true,
     },
   })
 }
@@ -586,23 +578,17 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      nom: is_delegated ? contactCFA?.last_name : last_name,
-      prenom: is_delegated ? contactCFA?.first_name : first_name,
-      raison_sociale: establishmentTitle,
+      nom: sanitizeForEmail(is_delegated ? contactCFA?.last_name : last_name),
+      prenom: sanitizeForEmail(is_delegated ? contactCFA?.first_name : first_name),
+      raison_sociale: sanitizeForEmail(establishmentTitle),
       mandataire: recruiter.is_delegated,
       offre: {
-        rome_appellation_label: job.rome_appellation_label,
+        rome_appellation_label: sanitizeForEmail(job.rome_appellation_label),
         job_type: job.job_type,
-        job_level_label: job.job_level_label,
+        job_level_label: sanitizeForEmail(job.job_level_label),
         job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
       },
       lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
-    },
-    disableSanitize: {
-      images: {
-        logoLba: true,
-      },
-      lba_url: true,
     },
   })
 }

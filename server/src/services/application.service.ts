@@ -22,7 +22,7 @@ import { BrevoEventStatus } from "./brevo.service"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import { buildLbaCompanyAddress } from "./lbacompany.service"
-import mailer from "./mailer.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 
 const MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT = 3
@@ -174,13 +174,7 @@ export const sendApplication = async ({
         to: application.company_email,
         subject: buildTopic(newApplication.company_type, application.job_title),
         template: getEmailTemplate("mail-candidature"),
-        data: { ...application.toObject(), ...images, ...recruiterEmailUrls, searched_for_job_label, urlOfDetail, urlOfDetailNoUtm },
-        disableSanitize: {
-          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
-          ...Object.fromEntries(Object.entries(recruiterEmailUrls).map(([key]) => [key, true])),
-          urlOfDetail: true,
-          urlOfDetailNoUtm: true,
-        },
+        data: { ...application.toObject(), ...images, ...recruiterEmailUrls, searched_for_job_label: sanitizeForEmail(searched_for_job_label), urlOfDetail, urlOfDetailNoUtm },
         attachments: [
           {
             filename: application.applicant_attachment_name,
@@ -193,12 +187,6 @@ export const sendApplication = async ({
         subject: `Votre candidature chez ${application.company_name}`,
         template: getEmailTemplate(offreType === "matcha" ? "mail-candidat-matcha" : "mail-candidat"),
         data: { ...application.toObject(), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
-        disableSanitize: {
-          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
-          publicUrl: true,
-          urlOfDetail: true,
-          urlOfDetailNoUtm: true,
-        },
         attachments: [
           {
             filename: application.applicant_attachment_name,
@@ -528,11 +516,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse positive de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
-        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: company_feedback },
-        disableSanitize: {
-          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
-          email: true,
-        },
+        data: { ...application, ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
@@ -541,11 +525,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
-        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: company_feedback },
-        disableSanitize: {
-          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
-          email: true,
-        },
+        data: { ...application, ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
@@ -554,10 +534,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...application, ...images, comment: company_feedback },
-        disableSanitize: {
-          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
-        },
+        data: { ...application, ...images, comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
@@ -600,9 +577,6 @@ const notifyHardbounceToApplicant = async ({ application }: { application: Enfor
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
     data: { ...application.toObject(), ...images },
-    disableSanitize: {
-      ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
-    },
   })
 }
 
@@ -615,9 +589,6 @@ const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: E
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-matcha-hardbounce"),
     data: { ...application.toObject(), ...images },
-    disableSanitize: {
-      ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
-    },
   })
 }
 

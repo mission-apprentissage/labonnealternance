@@ -33,7 +33,7 @@ import {
   ISIRET2IDCC,
 } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
-import mailer from "./mailer.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { autoValidateUser, createUser, getUser, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
 
@@ -851,15 +851,9 @@ export const sendUserConfirmationEmail = async (user: IUserRecruteur) => {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      last_name: user.last_name,
-      first_name: user.first_name,
+      last_name: sanitizeForEmail(user.last_name),
+      first_name: sanitizeForEmail(user.first_name),
       confirmation_url: url,
-    },
-    disableSanitize: {
-      images: {
-        logoLba: true,
-      },
-      confirmation_url: true,
     },
   })
 }
@@ -883,24 +877,17 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         },
-        nom: user.last_name,
-        prenom: user.first_name,
-        email: user.email,
+        nom: sanitizeForEmail(user.last_name),
+        prenom: sanitizeForEmail(user.first_name),
+        email: sanitizeForEmail(user.email),
         confirmation_url: url,
         offre: {
-          rome_appellation_label: offre.rome_appellation_label,
+          rome_appellation_label: sanitizeForEmail(offre.rome_appellation_label),
           job_type: offre.job_type,
-          job_level_label: offre.job_level_label,
+          job_level_label: sanitizeForEmail(offre.job_level_label),
           job_start_date: dayjs(offre.job_start_date).format("DD/MM/YY"),
         },
         isUserAwaiting,
-      },
-      disableSanitize: {
-        images: {
-          logoLba: true,
-        },
-        email: true,
-        confirmation_url: true,
       },
     })
   } else {
@@ -963,15 +950,6 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
         gestionnaire_email: etablissement.gestionnaire_email,
       },
       activationDate: dayjs().format("DD/MM"),
-    },
-    disableSanitize: {
-      images: {
-        logoLba: true,
-        logoFooter: true,
-      },
-      etablissement: {
-        gestionnaire_email: true,
-      },
     },
   })
 }
