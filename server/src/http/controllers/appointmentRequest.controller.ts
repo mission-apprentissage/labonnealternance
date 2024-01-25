@@ -271,7 +271,9 @@ export default (server: Server) => {
         throw Boom.notFound()
       }
 
-      await Appointment.findByIdAndUpdate(appointmentId, { cfa_read_appointment_details_date: new Date() })
+      if (!appointment.cfa_read_appointment_details_date) {
+        await Appointment.findByIdAndUpdate(appointmentId, { cfa_read_appointment_details_date: new Date() })
+      }
 
       const [etablissement, user] = await Promise.all([
         EligibleTrainingsForAppointment.findOne(
