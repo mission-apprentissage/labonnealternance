@@ -1,7 +1,7 @@
 import { ILbaCompany } from "shared"
 
-import { mongoosastic } from "../../../esClient/index"
 import { Schema, model } from "../../../mongodb"
+import { geoPointSchema } from "../geopoint/geoPoint.schema"
 
 export const lbaCompanySchema = new Schema<ILbaCompany>(
   {
@@ -40,6 +40,7 @@ export const lbaCompanySchema = new Schema<ILbaCompany>(
       type: [String],
       default: [],
       description: "Liste des codes ROMEs au sein de l'entreprise",
+      index: true,
     },
     street_number: {
       type: String,
@@ -70,6 +71,11 @@ export const lbaCompanySchema = new Schema<ILbaCompany>(
       type: String,
       implicit_type: "geo_point",
       description: "Latitude et longitude de l'établissement",
+    },
+    geopoint: {
+      type: geoPointSchema,
+      default: null,
+      description: "La géolocation du lieu sous forme de geoPoint",
     },
     email: {
       type: String,
@@ -125,7 +131,5 @@ export const lbaCompanySchema = new Schema<ILbaCompany>(
     versionKey: false,
   }
 )
-
-lbaCompanySchema.plugin(mongoosastic, { index: "bonnesboites" })
 
 export default model<ILbaCompany>("bonnesboites", lbaCompanySchema)

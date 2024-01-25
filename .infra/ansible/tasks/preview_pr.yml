@@ -95,7 +95,7 @@
         chdir: "/opt/app/projects/{{ pr_number }}"
         cmd: "docker compose run --rm server yarn cli migrations:up"
 
-    - name: "Create MongoDB & ElasticSearch Indexes"
+    - name: "Create MongoDB Indexes"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
         cmd: "flock --verbose --close /tmp/deployment_index.lock /opt/app/scripts/sync-index.sh"

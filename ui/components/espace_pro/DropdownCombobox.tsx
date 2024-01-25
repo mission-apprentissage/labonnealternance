@@ -5,6 +5,8 @@ import debounce from "lodash/debounce"
 
 import CustomInput from "./CustomInput"
 
+let debouncedOnInputValueChange = null
+
 export default function DropdownCombobox(props) {
   const { saveSelectedItem, setInputItems, handleSearch, value, placeholder, inputItems, name } = props
   const [, , helpers] = useField(props.name)
@@ -26,7 +28,12 @@ export default function DropdownCombobox(props) {
 
   const { isOpen, getMenuProps, getInputProps, getComboboxProps, highlightedIndex, getItemProps, reset } = useCombobox({
     itemToString,
-    onInputValueChange: debounce(onInputValueChange, 500),
+    onInputValueChange: async ({ inputValue }) => {
+      if (!debouncedOnInputValueChange) {
+        debouncedOnInputValueChange = debounce(onInputValueChange, 300)
+      }
+      debouncedOnInputValueChange({ inputValue })
+    },
     onSelectedItemChange,
     stateReducer,
     items: inputItems,
