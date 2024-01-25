@@ -15,6 +15,9 @@ function generateSiteMap(dataJobs, props) {
     <url><loc>${host}/contact</loc></url>
     <url><loc>${host}/developpeurs</loc></url>
     <url><loc>${host}/faq</loc></url>
+    <url><loc>${host}/ressources#recruteur</loc></url>
+    <url><loc>${host}/ressources#candidat</loc></url>
+    <url><loc>${host}/ressources#cfa</loc></url>
     <url><loc>${host}/mentions-legales</loc></url>
     <url><loc>${host}/metiers</loc></url>
     <url><loc>${host}/organisme-de-formation</loc></url>
