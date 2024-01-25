@@ -1,6 +1,7 @@
-import { Box, Flex, Grid, GridItem, Image } from "@chakra-ui/react"
+import { Box, Flex, Image } from "@chakra-ui/react"
 
 import ConseilsEtAstuces from "./conseilsEtAstuces"
+import MisesEnSituation from "./misesEnSituation"
 
 const RessourcesCFA = () => {
   return (
@@ -10,12 +11,7 @@ const RessourcesCFA = () => {
         <Flex as="h2" fontSize={32} fontWeight={700} mt={6}>
           Liens utiles pour accompagner vos candidats
         </Flex>
-        Proposez-leur de s’entraîner avec nos 3 parcours de mise en situation :
-        <Grid>
-          <GridItem>Vous recherchez votre employeur ? Apprenez à bien cibler les entreprises</GridItem>
-          <GridItem>Vous avez bientôt un entretien d’embauche ? Entraînez-vous pour avoir plus de chances d'être retenu</GridItem>
-          <GridItem>Vous allez bientôt démarrer votre contrat ? Familiarisez-vous avec la posture à adopter en entreprise</GridItem>
-        </Grid>
+        <MisesEnSituation target="cfa" />
         Partagez-leurs des conseils et astuces pour les aider dans leurs démarches de recherche de formation et d’emploi en alternance :
         <ConseilsEtAstuces />
         <Flex as="h2" fontSize={32} fontWeight={700} mt={8}>

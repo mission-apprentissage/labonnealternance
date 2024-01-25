@@ -1,6 +1,7 @@
-import { Box, Flex, Grid, GridItem, Image } from "@chakra-ui/react"
+import { Box, Flex, Image } from "@chakra-ui/react"
 
 import ConseilsEtAstuces from "./conseilsEtAstuces"
+import MisesEnSituation from "./misesEnSituation"
 
 const RessourcesCandidat = () => {
   return (
@@ -9,13 +10,7 @@ const RessourcesCandidat = () => {
       <Flex as="h2" fontSize={32} fontWeight={700} mt={6}>
         Testez vos connaissances
       </Flex>
-      Entraînez-vous avec nos 4 parcours de mise en situation :
-      <Grid>
-        <GridItem>Vous recherchez votre formation ? Préparez-vous à échanger avec une école</GridItem>
-        <GridItem>Vous recherchez votre employeur ? Apprenez à bien cibler les entreprises</GridItem>
-        <GridItem>Vous avez bientôt un entretien d’embauche ? Entraînez-vous pour avoir plus de chances d'être retenu</GridItem>
-        <GridItem>Vous allez bientôt démarrer votre contrat ? Familiarisez-vous avec la posture à adopter en entreprise</GridItem>
-      </Grid>
+      <MisesEnSituation target="candidat" />
       <Flex as="h2" fontSize={32} fontWeight={700} mt={8}>
         <Image src="/images/pages_ressources/conseils et astuces.svg" mr={4} alt="" aria-hidden="true" />
         Conseils et astuces
