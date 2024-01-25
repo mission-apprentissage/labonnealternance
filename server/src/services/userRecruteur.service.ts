@@ -219,6 +219,13 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
       is_delegated: type === CFA,
       url: createAuthMagicLink(userRecruteur),
     },
+    disableSanitize: {
+      images: {
+        logoLba: true,
+      },
+      email: true,
+      url: true,
+    },
   })
 }
 

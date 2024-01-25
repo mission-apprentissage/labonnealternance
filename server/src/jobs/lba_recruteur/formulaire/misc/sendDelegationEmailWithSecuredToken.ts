@@ -38,6 +38,14 @@ export async function sendDelegationMailToCFAERRATUM(email: string, offre: IJob,
       createAccountButton: `${config.publicUrl}/espace-pro/creation/cfa`,
       unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe?token=${unsubscribeToken}`,
     },
+    disableSanitize: {
+      images: {
+        logoLba: true,
+      },
+      offerButton: true,
+      createAccountButton: true,
+      unsubscribeUrl: true,
+    },
   })
 }
 

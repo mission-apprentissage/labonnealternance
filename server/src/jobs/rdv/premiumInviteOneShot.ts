@@ -70,6 +70,25 @@ export const premiumInviteOneShot = async () => {
             destinataireEmail: etablissement.gestionnaire_email,
           },
         },
+        disableSanitize: {
+          replyTo: true,
+          url: true,
+          images: {
+            logoLba: true,
+            logoParcoursup: true,
+            logoFooter: true,
+            peopleLaptop: true,
+            informationIcon: true,
+          },
+          etablissement: {
+            email: true,
+            linkToForm: true,
+            emailGestionnaire: true,
+          },
+          user: {
+            destinataireEmail: true,
+          },
+        },
       })
 
       await Etablissement.updateOne(

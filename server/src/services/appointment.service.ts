@@ -83,11 +83,25 @@ export const sendCandidateAppointmentEmail = async (
   referrerObj: ReferrerObject,
   subjectPrefix?: string
 ) => {
+  const data = getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)
+  const { images } = data
   const email = await mailer.sendEmail({
     to: candidate.email,
     subject: `${subjectPrefix ?? ""}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
     template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
-    data: getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
+    data,
+    disableSanitize: {
+      ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
+      etablissement: {
+        email: true,
+      },
+      appointment: {
+        referrerLink: true,
+      },
+      user: {
+        email: true,
+      },
+    },
   })
   await findOneAndUpdate(
     { _id: appointment._id },
@@ -131,6 +145,19 @@ export const sendFormateurAppointmentEmail = async (
     data: {
       ...mailData,
       link: createRdvaAppointmentIdPageLink(toEmail, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
+    },
+    disableSanitize: {
+      ...Object.fromEntries(Object.entries(mailData.images).map(([key]) => [key, true])),
+      etablissement: {
+        email: true,
+      },
+      appointment: {
+        referrerLink: true,
+      },
+      user: {
+        email: true,
+      },
+      link: true,
     },
   })
   await findOneAndUpdate(

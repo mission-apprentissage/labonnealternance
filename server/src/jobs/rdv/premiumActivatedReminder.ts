@@ -83,6 +83,24 @@ export const premiumActivatedReminder = async () => {
               destinataireEmail: email,
             },
           },
+          disableSanitize: {
+            url: true,
+            replyTo: true,
+            images: {
+              logoLba: true,
+              logoParcoursup: true,
+              logoFooter: true,
+              peopleLaptop: true,
+              integrationExample: true,
+            },
+            etablissement: {
+              email: true,
+              emailGestionnaire: true,
+            },
+            user: {
+              destinataireEmail: true,
+            },
+          },
         })
 
         await Etablissement.updateOne(

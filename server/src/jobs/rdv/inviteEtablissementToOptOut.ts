@@ -96,6 +96,20 @@ export const inviteEtablissementToOptOut = async () => {
             destinataireEmail: emailDecisionaire,
           },
         },
+        disableSanitize: {
+          images: {
+            logoLba: true,
+            logoFooter: true,
+            peopleLaptop: true,
+            optOutLbaIntegrationExample: true,
+          },
+          etablissement: {
+            linkToUnsubscribe: true,
+          },
+          user: {
+            destinataireEmail: true,
+          },
+        },
       })
 
       await Etablissement.update({
@@ -147,6 +161,21 @@ export const inviteEtablissementToOptOut = async () => {
               },
               user: {
                 destinataireEmail: email,
+              },
+            },
+            disableSanitize: {
+              url: true,
+              replyTo: true,
+              images: {
+                logoLba: true,
+                logoFooter: true,
+                peopleLaptop: true,
+              },
+              etablissement: {
+                emailGestionnaire: true,
+              },
+              user: {
+                destinataireEmail: true,
               },
             },
           })

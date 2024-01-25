@@ -4,6 +4,7 @@ import { IAppointment, zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
 
 import { mailType } from "../../common/model/constants/etablissement"
 import { Appointment, Etablissement } from "../../common/model/index"
@@ -76,27 +77,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Gestionnaire email not found")
       }
 
-      const mailAffelnet = await mailer.sendEmail({
-        to: etablissement.gestionnaire_email,
-        subject: `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e`,
-        template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
-        data: {
-          isAffelnet: true,
-          images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-          },
-          etablissement: {
-            name: etablissement.raison_sociale,
-            formateur_address: etablissement.formateur_address,
-            formateur_zip_code: etablissement.formateur_zip_code,
-            formateur_city: etablissement.formateur_city,
-            formateur_siret: etablissement.formateur_siret,
-            gestionnaire_email: etablissement.gestionnaire_email,
-          },
-          activationDate: dayjs().format("DD/MM"),
-        },
-      })
+      const mailAffelnet = await sendMailCfaPremiumStart(etablissement, "affelnet")
 
       const [eligibleTrainingsForAppointmentsAffelnetFound, etablissementAffelnetUpdated] = await Promise.all([
         eligibleTrainingsForAppointmentService.find({
@@ -152,6 +133,18 @@ export default (server: Server) => {
                 destinataireEmail: email,
               },
             },
+            disableSanitize: {
+              url: true,
+              replyTo: true,
+              images: {
+                logoLba: true,
+                logoFooter: true,
+                peopleLaptop: true,
+              },
+              user: {
+                destinataireEmail: true,
+              },
+            },
           })
         )
       )
@@ -198,27 +191,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Gestionnaire email not found")
       }
 
-      const mailParcoursup = await mailer.sendEmail({
-        to: etablissement.gestionnaire_email,
-        subject: `La prise de RDV est activée pour votre CFA sur Parcoursup`,
-        template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
-        data: {
-          isParcoursup: true,
-          images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-          },
-          etablissement: {
-            name: etablissement.raison_sociale,
-            formateur_address: etablissement.formateur_address,
-            formateur_zip_code: etablissement.formateur_zip_code,
-            formateur_city: etablissement.formateur_city,
-            formateur_siret: etablissement.formateur_siret,
-            gestionnaire_email: etablissement.gestionnaire_email,
-          },
-          activationDate: dayjs().format("DD/MM"),
-        },
-      })
+      const mailParcoursup = await sendMailCfaPremiumStart(etablissement, "parcoursup")
 
       const [eligibleTrainingsForAppointmentsParcoursupFound, etablissementParcoursupUpdated] = await Promise.all([
         eligibleTrainingsForAppointmentService.find({
@@ -275,6 +248,18 @@ export default (server: Server) => {
               },
               user: {
                 destinataireEmail: email,
+              },
+            },
+            disableSanitize: {
+              url: true,
+              replyTo: true,
+              images: {
+                logoLba: true,
+                logoFooter: true,
+                peopleLaptop: true,
+              },
+              user: {
+                destinataireEmail: true,
               },
             },
           })
@@ -347,6 +332,16 @@ export default (server: Server) => {
             email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
+        },
+        disableSanitize: {
+          images: {
+            informationIcon: true,
+            logoLba: true,
+            logoFooter: true,
+          },
+          etablissement: {
+            email: true,
+          },
         },
       })
 
@@ -421,6 +416,16 @@ export default (server: Server) => {
             email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
+        },
+        disableSanitize: {
+          images: {
+            informationIcon: true,
+            logoLba: true,
+            logoFooter: true,
+          },
+          etablissement: {
+            email: true,
+          },
         },
       })
 
@@ -519,8 +524,11 @@ export default (server: Server) => {
               formateur_city: etablissement.formateur_city,
               opt_out_question: req.body.opt_out_question,
             },
-            user: {
-              destinataireEmail: etablissement.gestionnaire_email,
+          },
+          disableSanitize: {
+            images: {
+              logoLba: true,
+              logoFooter: true,
             },
           },
           from: config.transactionalEmail,
@@ -566,8 +574,11 @@ export default (server: Server) => {
             formateur_city: etablissement.formateur_city,
             siret: etablissement.formateur_siret,
           },
-          user: {
-            destinataireEmail: etablissement.gestionnaire_email,
+        },
+        disableSanitize: {
+          images: {
+            logoLba: true,
+            logoFooter: true,
           },
         },
       })

@@ -6,7 +6,7 @@ import { oleoduc, writeData } from "oleoduc"
 import { IApplication, IJob, ILbaCompany, INewApplication, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
-import { disableUrlsWith0WidthChar, prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { UserForAccessToken } from "@/security/accessTokenService"
@@ -175,6 +175,12 @@ export const sendApplication = async ({
         subject: buildTopic(newApplication.company_type, application.job_title),
         template: getEmailTemplate("mail-candidature"),
         data: { ...application.toObject(), ...images, ...recruiterEmailUrls, searched_for_job_label, urlOfDetail, urlOfDetailNoUtm },
+        disableSanitize: {
+          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
+          ...Object.fromEntries(Object.entries(recruiterEmailUrls).map(([key]) => [key, true])),
+          urlOfDetail: true,
+          urlOfDetailNoUtm: true,
+        },
         attachments: [
           {
             filename: application.applicant_attachment_name,
@@ -187,6 +193,12 @@ export const sendApplication = async ({
         subject: `Votre candidature chez ${application.company_name}`,
         template: getEmailTemplate(offreType === "matcha" ? "mail-candidat-matcha" : "mail-candidat"),
         data: { ...application.toObject(), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
+        disableSanitize: {
+          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
+          publicUrl: true,
+          urlOfDetail: true,
+          urlOfDetailNoUtm: true,
+        },
         attachments: [
           {
             filename: application.applicant_attachment_name,
@@ -350,8 +362,8 @@ const offreOrCompanyToCompanyFields = (offreOrCompany: OffreOrLbbCompany): Parti
 
 const cleanApplicantFields = (newApplication: INewApplication): Partial<IApplication> => {
   return {
-    applicant_first_name: disableUrlsWith0WidthChar(newApplication.applicant_first_name),
-    applicant_last_name: disableUrlsWith0WidthChar(newApplication.applicant_last_name),
+    applicant_first_name: newApplication.applicant_first_name,
+    applicant_last_name: newApplication.applicant_last_name,
     applicant_attachment_name: newApplication.applicant_file_name,
     applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.message),
@@ -516,7 +528,11 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse positive de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
-        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: disableUrlsWith0WidthChar(company_feedback) },
+        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: company_feedback },
+        disableSanitize: {
+          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
+          email: true,
+        },
       })
       break
     }
@@ -525,7 +541,11 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
-        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: disableUrlsWith0WidthChar(company_feedback) },
+        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: company_feedback },
+        disableSanitize: {
+          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
+          email: true,
+        },
       })
       break
     }
@@ -534,7 +554,10 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...application, ...images, comment: disableUrlsWith0WidthChar(company_feedback) },
+        data: { ...application, ...images, comment: company_feedback },
+        disableSanitize: {
+          ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
+        },
       })
       break
     }
@@ -577,6 +600,9 @@ const notifyHardbounceToApplicant = async ({ application }: { application: Enfor
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
     data: { ...application.toObject(), ...images },
+    disableSanitize: {
+      ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
+    },
   })
 }
 
@@ -589,6 +615,9 @@ const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: E
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-matcha-hardbounce"),
     data: { ...application.toObject(), ...images },
+    disableSanitize: {
+      ...Object.fromEntries(Object.entries(images).map(([key]) => [key, true])),
+    },
   })
 }
 

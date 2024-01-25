@@ -559,6 +559,14 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
       createAccountButton: `${config.publicUrl}/espace-pro/creation/cfa`,
       unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe?token=${unsubscribeToken}`,
     },
+    disableSanitize: {
+      images: {
+        logoLba: true,
+      },
+      offerButton: true,
+      createAccountButton: true,
+      unsubscribeUrl: true,
+    },
   })
 }
 
@@ -589,6 +597,12 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
       },
       lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
+    },
+    disableSanitize: {
+      images: {
+        logoLba: true,
+      },
+      lba_url: true,
     },
   })
 }

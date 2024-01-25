@@ -264,9 +264,15 @@ export default (server: Server) => {
             },
             last_name,
             first_name,
-            email,
             reason: history.reason,
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
+          },
+          disableSanitize: {
+            images: {
+              accountDisabled: true,
+              logoLba: true,
+            },
+            emailSupport: true,
           },
         })
         return res.status(200).send(user)

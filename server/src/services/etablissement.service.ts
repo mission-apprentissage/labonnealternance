@@ -862,6 +862,12 @@ export const sendUserConfirmationEmail = async (user: IUserRecruteur) => {
       first_name: user.first_name,
       confirmation_url: url,
     },
+    disableSanitize: {
+      images: {
+        logoLba: true,
+      },
+      confirmation_url: true,
+    },
   })
 }
 
@@ -896,6 +902,13 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
         },
         isUserAwaiting,
       },
+      disableSanitize: {
+        images: {
+          logoLba: true,
+        },
+        email: true,
+        confirmation_url: true,
+      },
     })
   } else {
     await sendUserConfirmationEmail(user)
@@ -928,4 +941,44 @@ export const processEstablishmentWebhookEvent = async (payload) => {
   }
 
   return true
+}
+
+export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "affelnet" | "parcoursup") => {
+  if (!etablissement.gestionnaire_email) {
+    throw Boom.badRequest("Gestionnaire email not found")
+  }
+
+  const subject =
+    type === "affelnet" ? `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e` : `La prise de RDV est activée pour votre CFA sur Parcoursup`
+
+  return mailer.sendEmail({
+    to: etablissement.gestionnaire_email,
+    subject,
+    template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
+    data: {
+      ...(type === "affelnet" ? { isAffelnet: true } : type === "parcoursup" ? { isParcoursup: true } : {}),
+      images: {
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+      },
+      etablissement: {
+        name: etablissement.raison_sociale,
+        formateur_address: etablissement.formateur_address,
+        formateur_zip_code: etablissement.formateur_zip_code,
+        formateur_city: etablissement.formateur_city,
+        formateur_siret: etablissement.formateur_siret,
+        gestionnaire_email: etablissement.gestionnaire_email,
+      },
+      activationDate: dayjs().format("DD/MM"),
+    },
+    disableSanitize: {
+      images: {
+        logoLba: true,
+        logoFooter: true,
+      },
+      etablissement: {
+        gestionnaire_email: true,
+      },
+    },
+  })
 }

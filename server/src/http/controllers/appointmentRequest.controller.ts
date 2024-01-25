@@ -348,6 +348,9 @@ export default (server: Server) => {
             nom_formation: eligibleTrainingsForAppointment.training_intitule_long,
             nom_cfa: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
           },
+          disableSanitize: {
+            logoLba: true,
+          },
         })
       }
       await appointmentService.updateAppointment(appointment_id, { cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })

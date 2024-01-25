@@ -77,6 +77,17 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
         threshold,
         url: `${config.publicUrl}/espace-pro/authentification`,
       },
+      disableSanitize: {
+        images: {
+          logoLba: true,
+          logoFooter: true,
+        },
+        offres: {
+          supprimer: true,
+          pourvue: true,
+        },
+        url: true,
+      },
     })
   })
 }

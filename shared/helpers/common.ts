@@ -21,7 +21,5 @@ export const disableUrlsWith0WidthChar = (text: string | null | undefined) => {
 
 export const prepareMessageForMail = (text: string | null | undefined) => {
   if (!text) return ""
-  let result: string = text.replace(/(<([^>]+)>)/gi, "")
-  result = disableUrlsWith0WidthChar(result)
-  return result ? result.replace(/\r\n|\r|\n/gi, "<br />") : result
+  return text ? text.replaceAll(/\r\n|\r|\n/gi, "<br />") : text
 }

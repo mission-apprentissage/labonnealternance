@@ -77,6 +77,12 @@ export default (server: Server) => {
           first_name: removeUrlsFromText(first_name),
           connexion_url: createAuthMagicLink(user),
         },
+        disableSanitize: {
+          images: {
+            logoLba: true,
+          },
+          connexion_url: true,
+        },
       })
       return res.status(200).send({})
     }

@@ -38,7 +38,6 @@ export const relanceOpco = async () => {
     const users = await UserRecruteur.find({ scope: opco, type: "OPCO" })
 
     await asyncForEach(users, async (user: IUserRecruteur) => {
-      // send mail to recipient
       await mailer.sendEmail({
         to: user.email,
         subject: "Nouveaux comptes entreprises à valider",
@@ -48,6 +47,11 @@ export const relanceOpco = async () => {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           count: userList[opco],
+        },
+        disableSanitize: {
+          images: {
+            logoLba: true,
+          },
         },
       })
     })

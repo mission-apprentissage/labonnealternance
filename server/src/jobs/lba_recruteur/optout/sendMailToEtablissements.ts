@@ -60,6 +60,12 @@ runScript(async () => {
           raison_sociale: etablissement.raison_sociale,
           url: createOptoutValidateMagicLink(email, etablissement.siret),
         },
+        disableSanitize: {
+          images: {
+            logoLba: true,
+          },
+          url: true,
+        },
       })
     } catch (errror) {
       console.log(`ERROR : ${email} - ${etablissement.siret}`, "-----", error)
