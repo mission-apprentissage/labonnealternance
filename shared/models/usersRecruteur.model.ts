@@ -5,7 +5,7 @@ import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { ZGlobalAddress } from "./address.model"
+import { ZGlobalAddress, ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
 
 const etatUtilisateurValues = Object.values(ETAT_UTILISATEUR)
@@ -90,6 +90,7 @@ export const ZCfaReferentielData = z
     address_detail: ZGlobalAddress,
     address: z.string(),
     geo_coordinates: z.string().max(40).nullish(),
+    geopoint: ZPointGeometry.nullish(),
   })
   .strict()
 

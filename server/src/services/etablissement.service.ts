@@ -3,18 +3,7 @@ import { setTimeout } from "timers/promises"
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import {
-  IBusinessError,
-  ICfaReferentielData,
-  IEtablissement,
-  IGeometry,
-  ILbaCompany,
-  IRecruiter,
-  IReferentielOpco,
-  IUserRecruteur,
-  ZCfaReferentielData,
-  assertUnreachable,
-} from "shared"
+import { IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, IUserRecruteur, ZCfaReferentielData } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -502,14 +491,14 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
   }
 }
 
-function geometryToGeoCoord(geometry: IGeometry): [number, number] {
+function geometryToGeoCoord(geometry: any): [number, number] {
   const { type } = geometry
   if (type === "Point") {
     return geometry.coordinates
   } else if (type === "Polygon") {
     return geometry.coordinates[0][0]
   } else {
-    assertUnreachable(type)
+    throw new Error(`Badly formatted geometry. type=${type}`)
   }
 }
 
@@ -532,6 +521,10 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
     address_detail: d.adresse,
     address: d.adresse?.label,
     geo_coordinates: `${coords[1]},${coords[0]}`,
+    geopoint: {
+      type: "Point",
+      coordinates: coords,
+    },
   }
   const validation = ZCfaReferentielData.safeParse(referentielData)
   if (!validation.success) {
@@ -694,7 +687,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
   const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
   const { latitude, longitude } = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
-  return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}` }
+  return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}`, geopoint: { type: "Point", coordinates: [longitude, latitude] } }
 }
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string, shouldValidate = true) => {

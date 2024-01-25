@@ -37,7 +37,6 @@ import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
-import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
 import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
@@ -75,10 +74,6 @@ import { controlAppointments } from "./verifications/controlAppointments"
 const logger = getLoggerWithContext("script")
 
 export const CronsMap = {
-  "Reindex formulaire collection": {
-    cron_string: "5 1 * * *",
-    handler: () => addJob({ name: "indexes:generate", payload: { index_list: "recruiters" } }),
-  },
   "Create offre collection for metabase": {
     cron_string: "55 0 * * *",
     handler: () => addJob({ name: "metabase:offre:create", payload: {} }),
@@ -181,7 +176,7 @@ export const CronsMap = {
   },
   "Mise à jour des sociétés issues de l'algo": {
     cron_string: "0 5 * * 7",
-    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
+    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true } }),
   },
   "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
     cron_string: "0 0 1 * *",
@@ -247,8 +242,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return removeVersionKeyFromAllCollections()
       case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
         return removeIsDelegatedFromJobs()
-      case "indexes:generate":
-        return generateIndexes(job.payload)
       case "user:create": {
         const { first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope } = job.payload
         return createUserFromCLI(
