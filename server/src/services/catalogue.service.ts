@@ -13,7 +13,6 @@ import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
 import { getDistanceInKm } from "../common/utils/geolib"
 import { fetchStream } from "../common/utils/httpUtils"
 import { isValidEmail } from "../common/utils/isValidEmail"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { streamJsonArray } from "../common/utils/streamUtils"
 import config from "../config"
 
