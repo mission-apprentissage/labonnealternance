@@ -37,30 +37,27 @@ export const up = async (db: Db) => {
     },
   ])
 
-  await db.collection("recruiters").updateMany({ geo_coordinates: "anonymized" }, [
+  await db.collection("recruiters").updateMany(
     {
-      $set: {
-        geo_coordinates: "0,0",
-      },
+      $and: [{ geo_coordinates: { $ne: null } }, { geo_coordinates: { $ne: "NOT FOUND" } }, { geo_coordinates: { $ne: "anonymized" } }],
     },
-  ])
-
-  await db.collection("recruiters").updateMany({}, [
-    {
-      $set: {
-        geopoint: {
-          type: "Point",
-          coordinates: {
-            $map: {
-              input: { $reverseArray: { $split: ["$geo_coordinates", ","] } },
-              as: "coord",
-              in: { $toDouble: "$$coord" },
+    [
+      {
+        $set: {
+          geopoint: {
+            type: "Point",
+            coordinates: {
+              $map: {
+                input: { $reverseArray: { $split: ["$geo_coordinates", ","] } },
+                as: "coord",
+                in: { $toDouble: "$$coord" },
+              },
             },
           },
         },
       },
-    },
-  ])
+    ]
+  )
   await db.collection("recruiters").updateMany({ "geopoint.coordinates": { $eq: null } }, { $set: { geopoint: { type: "Point", coordinates: [0, 0] } } })
 
   await addJob({ name: "diplomes-metiers:update", payload: {} })
