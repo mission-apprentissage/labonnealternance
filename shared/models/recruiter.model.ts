@@ -5,6 +5,7 @@ import { Jsonify } from "type-fest"
 import { RECRUITER_STATUS } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 
+import { ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
 import { ZJob } from "./job.model"
 
@@ -21,6 +22,7 @@ export const ZRecruiterWritable = z
     address_detail: z.any().describe("Détail de l'adresse de l'établissement"),
     address: z.string().nullish().describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Coordonnées geographique de l'établissement"),
+    geopoint: ZPointGeometry.nullish().describe("Coordonnées geographique de l'établissement"),
     is_delegated: z.boolean().default(false),
     cfa_delegated_siret: z.string().nullish().describe("Siret de l'organisme de formation gestionnaire des offres de l'entreprise"),
     last_name: z.string().nullish().describe("Nom du contact"),
@@ -45,6 +47,7 @@ export const ZRecruiterWritable = z
 
 export const ZRecruiter = ZRecruiterWritable.extend({
   _id: zObjectId,
+  distance: z.number().nullish(),
   createdAt: z.date().describe("Date de creation"),
   updatedAt: z.date().describe("Date de mise à jour"),
 }).openapi("Recruiter")
@@ -60,6 +63,7 @@ export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
   address_detail: true,
   address: true,
   geo_coordinates: true,
+  geopoint: true,
   is_delegated: true,
   cfa_delegated_siret: true,
   jobs: true,

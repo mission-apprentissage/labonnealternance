@@ -4,6 +4,8 @@ import path from "path"
 import { compose, oleoduc, writeData } from "oleoduc"
 import { ILbaCompany, ZGeoLocation } from "shared/models"
 
+import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
+
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
 import { EmailBlacklist, GeoLocation, Opco, LbaCompany } from "../../common/model/index"
@@ -121,6 +123,7 @@ export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | n
     company.city = geo.city
     company.zip_code = geo.zip_code
     company.geo_coordinates = geo.geo_coordinates
+    company.geopoint = convertStringCoordinatesToGeoPoint(geo.geo_coordinates)
   }
 
   if (rawCompany.rome_codes) {

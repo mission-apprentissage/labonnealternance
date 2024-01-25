@@ -9,10 +9,10 @@ const ZAcademie = z
 
 const Z2DCoord = z.tuple([z.number(), z.number()])
 
-const ZPointGeometry = z
+export const ZPointGeometry = z
   .object({
     coordinates: Z2DCoord,
-    type: z.literal("Point"),
+    type: z.string(),
   })
   .strict()
 
@@ -109,3 +109,4 @@ export const ZGlobalAddress = z.union([ZAdresseCFA, ZAdresseV2, ZAdresseV3])
 export type IAdresseV3 = z.input<typeof ZAdresseV3>
 export type IAdresseCFA = z.input<typeof ZAdresseCFA>
 export type IGlobalAddress = z.input<typeof ZGlobalAddress>
+export type IGeoPoint = z.input<typeof ZPointGeometry>

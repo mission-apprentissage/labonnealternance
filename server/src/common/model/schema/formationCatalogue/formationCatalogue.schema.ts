@@ -1,7 +1,7 @@
 import { IFormationCatalogue } from "shared"
 
-import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
+import { geoPointSchema } from "../geopoint/geoPoint.schema"
 
 import { etablissementFormateurInfo } from "./etablissement.formateur.sub"
 import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub"
@@ -100,6 +100,7 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     niveau: {
       type: String,
       description: "Niveau de la formation",
+      index: true,
     },
     onisep_url: {
       type: String,
@@ -212,6 +213,7 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     rome_codes: {
       type: [String],
       description: "Codes ROME",
+      index: true,
     },
     date_debut: {
       type: [Date],
@@ -361,6 +363,11 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       implicit_type: "geo_point",
       description: "Latitude et longitude du lieu de formation",
     },
+    lieu_formation_geopoint: {
+      type: geoPointSchema,
+      default: null,
+      description: "La géolocation du lieu de formation sous forme de geoPoint",
+    },
     lieu_formation_adresse: {
       type: String,
       description: "Adresse du lieu de formation",
@@ -401,6 +408,7 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     tags: {
       type: [String],
       description: "Tableau de tags (2020, 2021, etc.)",
+      index: true,
     },
     libelle_court: {
       type: String,
@@ -477,7 +485,5 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     versionKey: false,
   }
 )
-
-mnaFormationSchema.plugin(mongoosastic, { index: "formationcatalogues" })
 
 export default model<IFormationCatalogue>("formationcatalogues", mnaFormationSchema)
