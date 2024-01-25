@@ -8,7 +8,7 @@ const RessourcesCFA = () => {
     <Box>
       <Box>
         La bonne alternance vous propose un ensemble d’outils pour soutenir vos démarches d’accompagnement auprès des jeunes et de vos entreprises partenaires.
-        <Flex as="h2" fontSize={32} fontWeight={700} mt={6}>
+        <Flex as="h2" fontSize={32} fontWeight={700} mt={6} mb={4}>
           Liens utiles pour accompagner vos candidats
         </Flex>
         <MisesEnSituation target="cfa" />

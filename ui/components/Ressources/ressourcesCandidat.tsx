@@ -7,7 +7,7 @@ const RessourcesCandidat = () => {
   return (
     <Box>
       La bonne alternance vous propose un ensemble d’outils et de liens pour vous aider dans vos démarches de recherche de formation et d’emploi en alternance.
-      <Flex as="h2" fontSize={32} fontWeight={700} mt={6}>
+      <Flex as="h2" fontSize={32} fontWeight={700} mt={6} mb={4}>
         Testez vos connaissances
       </Flex>
       <MisesEnSituation target="candidat" />
