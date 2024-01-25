@@ -37,6 +37,14 @@ export const up = async (db: Db) => {
     },
   ])
 
+  await db.collection("recruiters").updateMany({ geo_coordinates: "anonymized" }, [
+    {
+      $set: {
+        geo_coordinates: "0,0",
+      },
+    },
+  ])
+
   await db.collection("recruiters").updateMany({}, [
     {
       $set: {
