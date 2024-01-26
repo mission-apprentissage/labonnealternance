@@ -1,14 +1,13 @@
 import Boom from "boom"
 import * as _ from "lodash-es"
-import { IAppointment, zRoutes } from "shared"
+import { zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { mailType } from "../../common/model/constants/etablissement"
-import { Appointment, Etablissement } from "../../common/model/index"
+import { Etablissement } from "../../common/model/index"
 import config from "../../config"
-import * as appointmentService from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import mailer from "../../services/mailer.service"
@@ -444,45 +443,6 @@ export default (server: Server) => {
         throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
       }
       return res.send(etablissementParcoursupUpdated)
-    }
-  )
-
-  /**
-   * Patch etablissement appointment.
-   */
-  server.patch(
-    "/etablissements/:id/appointments/:appointmentId",
-    {
-      schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
-      onRequest: [server.auth(zRoutes.patch["/etablissements/:id/appointments/:appointmentId"])],
-    },
-    async ({ body, params }, res) => {
-      const { has_been_read } = body
-
-      const { id, appointmentId } = params
-
-      // eslint-disable-next-line prefer-const
-      let [etablissement, appointment]: [any, IAppointment | null] = await Promise.all([Etablissement.findById(id), Appointment.findById(appointmentId)])
-
-      if (!etablissement) {
-        throw Boom.badRequest("Etablissement not found.")
-      }
-
-      if (!appointment || appointment.cfa_formateur_siret !== etablissement.formateur_siret) {
-        throw Boom.badRequest("Appointment not found.")
-      }
-
-      // Save current date
-      if (!appointment.cfa_read_appointment_details_date && has_been_read) {
-        await appointmentService.updateAppointment(appointmentId.toString(), { cfa_read_appointment_details_date: dayjs().toDate() })
-      }
-
-      appointment = (await Appointment.findById(appointmentId, etablissementProjection).lean()) as IAppointment | null
-      if (!appointment) {
-        throw new Error(`unexpected: could not find appointment with id=${appointmentId}`)
-      }
-
-      res.send(appointment)
     }
   )
 
