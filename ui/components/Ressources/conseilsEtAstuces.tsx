@@ -21,7 +21,7 @@ const ConseilsEtAstuces = () => {
                 Faites le point avec Diagoriente, un service qui vous accompagne dans la construction de votre orientation professionnelle.{" "}
                 <Link href="https://diagoriente.beta.gouv.fr/" aria-label="Accéder au site de Diagoriente" isExternal variant="basicUnderlinedBlue">
                   C'est parti ! <ExternalLinkIcon mb="3px" ml="2px" />
-                </Link>{" "}
+                </Link>
               </ListItem>
               <ListItem mb={4}>
                 <Text as="span" fontWeight={700}>
@@ -63,25 +63,41 @@ const ConseilsEtAstuces = () => {
                 <Text as="span" fontWeight={700}>
                   Contactez la Mission locale de votre secteur.
                 </Text>{" "}
-                Des conseillers vous aideront dans vos recherches d'entreprise. Trouver ma mission locale
+                Des conseillers vous aideront dans vos recherches d'entreprise.{" "}
+                <Link href="https://www.unml.info/le-reseau/annuaire/" aria-label="Accéder au site pour trouver une mission locale" isExternal variant="basicUnderlinedBlue">
+                  Trouver ma mission locale <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
               </ListItem>
-              https://www.unml.info/le-reseau/annuaire/
+
               <ListItem mb={4}>
                 <Text as="span" fontWeight={700}>
                   L'ANAF (Association Nationale des Apprentis de France)
                 </Text>{" "}
-                peut vous aider à tout moment de votre parcours et pour toute question que vous vous posez ! En savoir plus{" "}
+                peut vous aider à tout moment de votre parcours et pour toute question que vous vous posez !{" "}
+                <Link href="https://www.anaf.fr/apprentissage/" aria-label="Accéder au site de l'ANAF" isExternal variant="basicUnderlinedBlue">
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
               </ListItem>
-              https://www.anaf.fr/apprentissage/
               <ListItem mb={4}>
                 <Text as="span" fontWeight={700}>
                   Un mentor (ancien alternant ou adulte actif inséré dans la vie professionnelle)
                 </Text>{" "}
-                peut vous épauler tout au long de votre parcours et suivant vos besoins ! En savoir plus
+                peut vous épauler tout au long de votre parcours et suivant vos besoins !{" "}
+                <Link href="https://www.mentorat-apprentissage.fr/" aria-label="Accéder au site mentorat apprentissage point fr" isExternal variant="basicUnderlinedBlue">
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
               </ListItem>
-              https://www.mentorat-apprentissage.fr/
-              <ListItem mb={4}>Profitez d'un accompagnement proche de chez vous pour votre parcours et vos démarches avec 1 jeune 1 solution</ListItem>
-              https://www.1jeune1solution.gouv.fr/accompagnement%20En%20savoir%20plus
+              <ListItem mb={4}>
+                Profitez d'un accompagnement proche de chez vous pour votre parcours et vos démarches avec{" "}
+                <Link
+                  href="https://www.1jeune1solution.gouv.fr/accompagnement%20En%20savoir%20plus"
+                  aria-label="Accéder au site d'un jeune une solution"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  1 jeune 1 solution <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
+              </ListItem>
             </UnorderedList>
           </Box>
         </AccordionPanel>
@@ -104,16 +120,23 @@ const ConseilsEtAstuces = () => {
                 vous y trouverez l'occasion d'échanger avec des alternants !
               </ListItem>
               <ListItem mb={4}>
-                {" "}
-                Combien de personnes ont trouvé un emploi dans les 6 mois après avoir obtenu le diplôme que vous souhaitez préparer ? La réponse ici ! En savoir plus
+                Combien de personnes ont trouvé un emploi dans les 6 mois après avoir obtenu le diplôme que vous souhaitez préparer ? La réponse ici !{" "}
+                <Link href="https://www.inserjeunes.education.gouv.fr/diffusion/accueil" aria-label="Accéder au site d'inserjeunes" isExternal variant="basicUnderlinedBlue">
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
               </ListItem>
-              https://www.inserjeunes.education.gouv.fr/diffusion/accueil
+
               <ListItem mb={4}>
-                {" "}
-                Certains établissements de formation obtiennent des labels d'excellence, c'est par exemple le cas des CMQ (Campus des Métiers et Qualifications d'excellence). En
-                savoir plus
+                Certains établissements de formation obtiennent des labels d'excellence, c'est par exemple le cas des CMQ (Campus des Métiers et Qualifications d'excellence).{" "}
+                <Link
+                  href="https://www.education.gouv.fr/les-campus-des-metiers-et-des-qualifications-5075"
+                  aria-label="Accéder au site des campus métier"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
               </ListItem>
-              https://www.education.gouv.fr/les-campus-des-metiers-et-des-qualifications-5075
             </UnorderedList>
           </Box>
         </AccordionPanel>
@@ -130,19 +153,40 @@ const ConseilsEtAstuces = () => {
           <Box>
             <UnorderedList>
               <ListItem mb={4}>
-                Tout au long de l'année, il existe des salons de recrutement (physiques ou virtuels) spécialisés pour l'alternance : renseignez-vous ! Voir les salons l’Étudiant
-                https://www.letudiant.fr/etudes/salons.html Voir les salons Studyrama https://www.studyrama.com/salons
+                Tout au long de l'année, il existe des salons de recrutement (physiques ou virtuels) spécialisés pour l'alternance : renseignez-vous ! <br />
+                <Link
+                  href="https://www.letudiant.fr/etudes/salons.html"
+                  aria-label="Accéder à la liste des salons recensés par l'étudiant"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  Voir les salons l’Étudiant <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
+                <br />
+                <Link href="https://www.studyrama.com/salons" aria-label="Accéder à la liste des salons recensés par studyrama" isExternal variant="basicUnderlinedBlue">
+                  Voir les salons Studyrama <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
               </ListItem>
               <ListItem mb={4}>
-                {" "}
-                France Travail recense de nombreux évènements (conférences, salons, job dating, conférences en ligne…) pour vous aider dans vos recherches de contrat. En savoir
-                plus
+                France Travail recense de nombreux évènements (conférences, salons, job dating, conférences en ligne…) pour vous aider dans vos recherches de contrat.{" "}
+                <Link
+                  href="https://mesevenementsemploi.pole-emploi.fr/mes-evenements-emploi/evenements"
+                  aria-label="Accéder au site des événement recencsé par France Travail"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
               </ListItem>
-              https://mesevenementsemploi.pole-emploi.fr/mes-evenements-emploi/evenements
-              <ListItem mb={4}>Le secteur public (mairies, ministères, départements, régions, ...) recrute aussi des alternants, pensez-y ! En savoir plus</ListItem>
-              https://www.pass.fonction-publique.gouv.fr/
+
               <ListItem mb={4}>
-                {" "}
+                Le secteur public (mairies, ministères, départements, régions, ...) recrute aussi des alternants, pensez-y !{" "}
+                <Link href="https://www.pass.fonction-publique.gouv.fr/" aria-label="Accéder au site pass fonction publique" isExternal variant="basicUnderlinedBlue">
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
+              </ListItem>
+
+              <ListItem mb={4}>
                 Plus d’un employeur sur deux recrute sans déposer d'offre d'emploi : optimisez vos chances en adressant aussi des candidatures spontanées !
               </ListItem>
             </UnorderedList>
@@ -161,28 +205,45 @@ const ConseilsEtAstuces = () => {
           <Box>
             <UnorderedList>
               <ListItem mb={4}>
-                {" "}
                 Besoin d'aide pour construire un CV à partir de vos expériences ? Inscrivez-vous gratuitement sur Diagoriente et laissez-vous guider dans la construction d'un CV
-                pertinent, mettant en lumière vos compétences. En savoir plus
+                pertinent, mettant en lumière vos compétences.{" "}
+                <Link
+                  href="https://web-app.diagoriente.beta.gouv.fr/#/inscription?utm_source=lba&utm_campaign=lba-dec2021"
+                  aria-label="Accéder au guide CV de Diagoriente"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
               </ListItem>
-              https://web-app.diagoriente.beta.gouv.fr/#/inscription?utm_source=lba&utm_campaign=lba-dec2021
-              <ListItem mb={4}> Besoin d'aide pour concevoir un beau CV ? Vous pouvez le faire gratuitement sur CVdesignr. En savoir plus</ListItem>
-              https://cvdesignr.com/fr
+
               <ListItem mb={4}>
-                {" "}
+                Besoin d'aide pour concevoir un beau CV ? Vous pouvez le faire gratuitement sur CVdesignr.{" "}
+                <Link href="https://cvdesignr.com/fr" aria-label="Accéder au site cv designer point com" isExternal variant="basicUnderlinedBlue">
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
+              </ListItem>
+
+              <ListItem mb={4}>
                 Motivation, Dynamisme et Présentation soignée : 3 qualités recherchées par les employeurs de jeunes candidats. Mettez-les en avant dans votre candidature !
               </ListItem>
               <ListItem mb={4}>
-                {" "}
                 Les recruteurs font attention à de petits détails ! Professionnalisez vos candidatures en utilisant une adresse email adaptée aux contacts professionnels (par
                 exemple : nom.prenom@email.fr et en personnalisant votre messagerie vocale sur votre téléphone (par exemple : “Bonjour, vous êtes bien sur la messagerie vocale de
                 [prénom+nom]. Je ne suis pas disponible pour le moment, laissez-moi un message et je vous rappellerai dès que possible. Merci !”)
               </ListItem>
               <ListItem mb={4}>
-                Les employeurs qui embauchent des alternants reçoivent des aides, jusqu’à 6000€ selon le dernier décret : c'est un bon argument pour convaincre une entreprise qui
-                ne connaît pas l'alternance de vous embaucher !
+                Les employeurs qui embauchent des alternants reçoivent des aides,{" "}
+                <Link
+                  href="https://entreprendre.service-public.fr/vosdroits/F23556"
+                  aria-label="Accéder au décret précisant les aides à l'embauche d'alternant"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  jusqu’à 6000€ selon le dernier décret <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>{" "}
+                : c'est un bon argument pour convaincre une entreprise qui ne connaît pas l'alternance de vous embaucher !
               </ListItem>
-              https://entreprendre.service-public.fr/vosdroits/F23556
             </UnorderedList>
           </Box>
         </AccordionPanel>
@@ -201,14 +262,31 @@ const ConseilsEtAstuces = () => {
               <ListItem mb={4}>
                 Se former en alternance ne vous coûte rien ! En plus de percevoir une rémunération, votre employeur prend en charge le financement de votre formation.
               </ListItem>
-              <ListItem mb={4}> Quel sera votre salaire en alternance ? Faites une simulation sur le portail de l’alternance. En savoir plus </ListItem>
-              https://www.alternance.emploi.gouv.fr/simulateur-alternant/etape-1
               <ListItem mb={4}>
-                Le Précis de l’apprentissage vous présente des repères sur l’apprentissage. Il est issu des travaux de la DGEFP et d’une consultation des acteurs institutionnels de
-                l’apprentissage. Il répond à l’objectif d’harmoniser les pratiques des acteurs de l’apprentissage et vise à donner des repères juridiques et des clefs de
-                compréhension autour de bases documentaires et méthodologiques communes.
+                Quel sera votre salaire en alternance ? Faites une simulation sur le portail de l’alternance.{" "}
+                <Link
+                  href="https://www.alternance.emploi.gouv.fr/simulateur-alternant/etape-1"
+                  aria-label="Accéder au simulateur de salaire en alternance"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
               </ListItem>
-              https://travail-emploi.gouv.fr/IMG/pdf/precis-apprentissage.pdf
+
+              <ListItem mb={4}>
+                <Link
+                  href="https://travail-emploi.gouv.fr/IMG/pdf/precis-apprentissage.pdf"
+                  aria-label="Accéder au précis de l'apprentissage"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  Le Précis de l’apprentissage <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>{" "}
+                vous présente des repères sur l’apprentissage. Il est issu des travaux de la DGEFP et d’une consultation des acteurs institutionnels de l’apprentissage. Il répond à
+                l’objectif d’harmoniser les pratiques des acteurs de l’apprentissage et vise à donner des repères juridiques et des clefs de compréhension autour de bases
+                documentaires et méthodologiques communes.
+              </ListItem>
             </UnorderedList>
           </Box>
         </AccordionPanel>
@@ -224,21 +302,43 @@ const ConseilsEtAstuces = () => {
         <AccordionPanel>
           <Box>
             <UnorderedList>
-              <ListItem mb={4}>Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aide dès maintenant. En savoir plus</ListItem>
-              https://mes-aides.pole-emploi.fr/transport-et-mobilite/financer-mon-permis
               <ListItem mb={4}>
-                {" "}
+                Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aide dès maintenant.{" "}
+                <Link
+                  href="https://mes-aides.pole-emploi.fr/transport-et-mobilite/financer-mon-permis"
+                  aria-label="Accéder au site mes aides de France travail"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
+              </ListItem>
+
+              <ListItem mb={4}>
                 Certaines communes mettent à disposition des logements pour l'hébergement des alternants. Renseignez-vous en contactant la mairie de votre lieu de résidence.
               </ListItem>
-              <ListItem mb={4}> Vous devez quitter le domicile familial pour vos études ? Action Logement vous aide à vous installer. En savoir plus</ListItem>
-              https://www.actionlogement.fr/moment-de-vie/trouver-un-logement
               <ListItem mb={4}>
-                {" "}
+                Vous devez quitter le domicile familial pour vos études ? Action Logement vous aide à vous installer.{" "}
+                <Link href="https://www.actionlogement.fr/moment-de-vie/trouver-un-logement" aria-label="Accéder au site actionlogement" isExternal variant="basicUnderlinedBlue">
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
+              </ListItem>
+
+              <ListItem mb={4}>
                 La plupart des régions aident au financement des abonnements en transport en commun pour les alternants : renseignez-vous auprès de votre mairie et de votre
                 opérateur de transport !
               </ListItem>
-              <ListItem mb={4}> De nombreuses aides existent pour les jeunes : pour les connaître, faites une simulation sur 1 jeune 1 solution ! En savoir plus</ListItem>
-              https://mes-aides.1jeune1solution.beta.gouv.fr/?utm_source=labonnealternance
+              <ListItem mb={4}>
+                De nombreuses aides existent pour les jeunes : pour les connaître, faites une simulation sur 1 jeune 1 solution !{" "}
+                <Link
+                  href="https://mes-aides.1jeune1solution.beta.gouv.fr/?utm_source=labonnealternance"
+                  aria-label="Accéder au site de un jeune une solution"
+                  isExternal
+                  variant="basicUnderlinedBlue"
+                >
+                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
+              </ListItem>
             </UnorderedList>
           </Box>
         </AccordionPanel>
