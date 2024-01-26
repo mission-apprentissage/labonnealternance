@@ -81,7 +81,7 @@ const RessourcesRecruteur = () => {
             et méthodologiques communes.
           </ListItem>
         </UnorderedList>
-        <Flex mt={12}>
+        <Flex mt={12} mb={12}>
           <Image src="/images/pages_ressources/recruteur.svg" alt="" mr={4} aria-hidden="true" />
           <Center>
             <Box>
