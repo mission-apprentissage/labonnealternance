@@ -1,6 +1,7 @@
 import { Box, Flex, Image } from "@chakra-ui/react"
 
 import ConseilsEtAstuces from "./conseilsEtAstuces"
+import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import MisesEnSituation from "./misesEnSituation"
 
 const RessourcesCandidat = () => {
@@ -21,6 +22,7 @@ const RessourcesCandidat = () => {
         vos candidatures, La bonne alternance vous propose un exemple de tableau : Tableau de suivi - Excel Tableau de suivi - Numbers Tableau de suivi - LibreOffice Vous avez une
         question sur le fonctionnement de notre plateforme ? Consulter la FAQ
       </Box>
+      <FonctionnementPlateforme />
     </Box>
   )
 }
