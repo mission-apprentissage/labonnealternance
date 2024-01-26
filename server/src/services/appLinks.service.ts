@@ -254,13 +254,6 @@ export function createRdvaAppointmentIdPageLink(email: string, siret: string, et
     { type: "cfa", email, siret },
     [
       generateScope({
-        schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
-        options: {
-          params: { id: etablissementId, appointmentId },
-          querystring: undefined,
-        },
-      }),
-      generateScope({
         schema: zRoutes.get["/appointment-request/context/recap"],
         options: {
           params: undefined,
