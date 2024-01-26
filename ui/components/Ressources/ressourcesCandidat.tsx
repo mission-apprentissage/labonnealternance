@@ -1,4 +1,4 @@
-import { Box, Center, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { Box, Center, Flex, Image, Link, List, ListItem, Text } from "@chakra-ui/react"
 
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
@@ -33,41 +33,47 @@ const RessourcesCandidat = () => {
               <Text as="div" mb={2}>
                 Pour vous aider dans le suivi de vos candidatures, La bonne alternance vous propose un exemple de tableau :
               </Text>
-              <Link
-                href="https://www.notion.so/mission-apprentissage/Candidat-926be3cd35b241e48b684c6210e4b9c1?pvs=4#9ab541f2375f45aa87f3e5cefff46143"
-                isExternal
-                data-tracking-id="telecharger-fichier-suivi-candid"
-                variant="basicUnderlinedBlue"
-              >
-                <Flex>
-                  <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
-                  Tableau de suivi - Excel
-                </Flex>
-              </Link>
-              <br />
-              <Link
-                href="https://www.notion.so/mission-apprentissage/Candidat-926be3cd35b241e48b684c6210e4b9c1?pvs=4#7db9b82f19114042898e94e1b1bf0d39"
-                isExternal
-                data-tracking-id="telecharger-fichier-suivi-candid"
-                variant="basicUnderlinedBlue"
-              >
-                <Flex>
-                  <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
-                  Tableau de suivi - Numbers
-                </Flex>
-              </Link>
-              <br />
-              <Link
-                href="https://www.notion.so/mission-apprentissage/Candidat-926be3cd35b241e48b684c6210e4b9c1?pvs=4#7132e64eee174be3923bdadeec9927c9"
-                isExternal
-                data-tracking-id="telecharger-fichier-suivi-candid"
-                variant="basicUnderlinedBlue"
-              >
-                <Flex>
-                  <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
-                  Tableau de suivi - LibreOffice
-                </Flex>
-              </Link>
+              <List>
+                <ListItem mb={2}>
+                  <Link
+                    href="https://www.notion.so/mission-apprentissage/Candidat-926be3cd35b241e48b684c6210e4b9c1?pvs=4#9ab541f2375f45aa87f3e5cefff46143"
+                    isExternal
+                    data-tracking-id="telecharger-fichier-suivi-candid"
+                    variant="basicUnderlinedBlue"
+                  >
+                    <Flex>
+                      <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
+                      Tableau de suivi - Excel
+                    </Flex>
+                  </Link>
+                </ListItem>
+                <ListItem mb={2}>
+                  <Link
+                    href="https://www.notion.so/mission-apprentissage/Candidat-926be3cd35b241e48b684c6210e4b9c1?pvs=4#7db9b82f19114042898e94e1b1bf0d39"
+                    isExternal
+                    data-tracking-id="telecharger-fichier-suivi-candid"
+                    variant="basicUnderlinedBlue"
+                  >
+                    <Flex>
+                      <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
+                      Tableau de suivi - Numbers
+                    </Flex>
+                  </Link>
+                </ListItem>
+                <ListItem>
+                  <Link
+                    href="https://www.notion.so/mission-apprentissage/Candidat-926be3cd35b241e48b684c6210e4b9c1?pvs=4#7132e64eee174be3923bdadeec9927c9"
+                    isExternal
+                    data-tracking-id="telecharger-fichier-suivi-candid"
+                    variant="basicUnderlinedBlue"
+                  >
+                    <Flex>
+                      <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
+                      Tableau de suivi - LibreOffice
+                    </Flex>
+                  </Link>
+                </ListItem>
+              </List>
             </Box>
           </Center>
         </Flex>
