@@ -1,11 +1,11 @@
-import { Box, Text, UnorderedList, ListItem } from "@chakra-ui/react"
+import { Box, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import * as Yup from "yup"
 
 import { reasons } from "@/components/RDV/types"
-import { apiGet, apiPatch, apiPost } from "@/utils/api.utils"
+import { apiGet, apiPost } from "@/utils/api.utils"
 
 import { formatDate } from "../../../../../common/utils/dateUtils"
 import { FormLayoutComponent } from "../../../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
@@ -20,12 +20,10 @@ import { CfaCandidatInformationUnreachable } from "../../../../../components/esp
  */
 export default function CfaCandidatInformationPage() {
   const router = useRouter()
-  const { establishmentId, appointmentId, token } = router.query as { establishmentId: string; appointmentId: string; token: string }
+  const { appointmentId, token } = router.query as { establishmentId: string; appointmentId: string; token: string }
   const [data, setData] = useState(null)
 
   const [currentState, setCurrentState] = useState("initial")
-
-  const utmSource = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("utm_source") : ""
 
   const formik = useFormik({
     initialValues: {
@@ -90,28 +88,16 @@ export default function CfaCandidatInformationPage() {
    */
   useEffect(() => {
     const fetchData = async () => {
-      if (appointmentId && establishmentId) {
-        if (utmSource === "mail") {
-          await apiPatch("/etablissements/:id/appointments/:appointmentId", {
-            params: { id: establishmentId, appointmentId },
-            body: { has_been_read: true },
-            headers: {
-              authorization: `Bearer ${token}`,
-            },
-          })
-        }
-
-        const response = await apiGet("/appointment-request/context/recap", {
-          querystring: { appointmentId },
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        })
-        setData(response)
-      }
+      const response = await apiGet("/appointment-request/context/recap", {
+        querystring: { appointmentId },
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+      setData(response)
     }
     fetchData().catch(console.error)
-  }, [utmSource, appointmentId])
+  }, [appointmentId])
 
   return (
     <FormLayoutComponent
