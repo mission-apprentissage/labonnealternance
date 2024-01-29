@@ -356,6 +356,7 @@ const cleanApplicantFields = (newApplication: INewApplication): Partial<IApplica
     applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.message),
     applicant_phone: newApplication.applicant_phone,
+    caller: newApplication.caller,
   }
 }
 
