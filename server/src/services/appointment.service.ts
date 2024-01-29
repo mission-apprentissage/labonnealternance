@@ -60,7 +60,7 @@ const getMailData = (candidate: IUser, appointment: IAppointment, eligibleTraini
       email: eligibleTrainingsForAppointment.lieu_formation_email,
     },
     formation: {
-      intitule: sanitizeForEmail(eligibleTrainingsForAppointment.training_intitule_long),
+      intitule: eligibleTrainingsForAppointment.training_intitule_long,
     },
     appointment: {
       reasons: appointment.applicant_reasons,

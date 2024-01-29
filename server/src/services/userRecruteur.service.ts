@@ -212,7 +212,7 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      establishment_raison_sociale: sanitizeForEmail(establishment_raison_sociale),
+      establishment_raison_sociale: establishment_raison_sociale,
       last_name: sanitizeForEmail(last_name),
       first_name: sanitizeForEmail(first_name),
       email: sanitizeForEmail(email),
