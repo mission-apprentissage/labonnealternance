@@ -6,7 +6,7 @@ import { zRoutes } from "shared/index"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { Appointment, EligibleTrainingsForAppointment, Etablissement, ReferentielOnisep, User } from "../../common/model/index"
+import { Appointment, EligibleTrainingsForAppointment, Etablissement, FormationCatalogue, ReferentielOnisep, User } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import config from "../../config"
@@ -330,9 +330,10 @@ export default (server: Server) => {
         throw Boom.internal("Applicant id not found.")
       }
 
+      const { cle_ministere_educatif } = appointment
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
-          cleMinistereEducatif: appointment.cle_ministere_educatif,
+          cleMinistereEducatif: cle_ministere_educatif,
         }),
         users.getUserById(appointment.applicant_id),
       ])
@@ -340,6 +341,8 @@ export default (server: Server) => {
       if (!user || !eligibleTrainingsForAppointment) throw Boom.notFound()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
+        const formationCatalogue = cle_ministere_educatif ? await FormationCatalogue.findOne({ cle_ministere_educatif }) : undefined
+
         await mailer.sendEmail({
           to: user.email,
           subject: `[La bonne alternance] Le centre de formation vous répond`,
@@ -351,6 +354,8 @@ export default (server: Server) => {
             message: cfa_message_to_applicant,
             nom_formation: eligibleTrainingsForAppointment.training_intitule_long,
             nom_cfa: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
+            cfa_email: eligibleTrainingsForAppointment.lieu_formation_email,
+            cfa_phone: formationCatalogue?.num_tel,
           },
         })
       }
