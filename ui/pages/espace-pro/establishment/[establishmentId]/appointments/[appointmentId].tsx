@@ -87,6 +87,7 @@ export default function CfaCandidatInformationPage() {
    * @returns {Promise<void>}
    */
   useEffect(() => {
+    if (!router.isReady) return
     const fetchData = async () => {
       const response = await apiGet("/appointment-request/context/recap", {
         querystring: { appointmentId },

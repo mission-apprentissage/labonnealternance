@@ -271,7 +271,7 @@ export default (server: Server) => {
         throw Boom.notFound()
       }
 
-      if (!appointment.cfa_read_appointment_details_date) {
+      if (appointment.cfa_read_appointment_details_date === null) {
         await Appointment.findByIdAndUpdate(appointmentId, { cfa_read_appointment_details_date: new Date() })
       }
 
