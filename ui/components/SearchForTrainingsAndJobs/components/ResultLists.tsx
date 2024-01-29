@@ -255,7 +255,7 @@ const ResultLists = ({
         display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}
         bg="beige"
       >
-        <Box margin="auto" maxWidth="1310px">
+        <Box margin="auto" maxWidth="1310px" pb={10}>
           {getTrainingResult()}
           {getJobResult()}
         </Box>
