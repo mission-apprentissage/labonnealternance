@@ -1,4 +1,3 @@
-import { mongoosastic } from "../../../esClient/index"
 import { Schema, model } from "../../../mongodb"
 
 import { IDomainesMetiers } from "./domainesmetiers.types"
@@ -10,10 +9,20 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       require: true,
       description: "Le sous-domaine d'un métier",
     },
+    sous_domaine_sans_accent_computed: {
+      type: String,
+      require: true,
+      description: "Le sous-domaine d'un métier sans caractère accentué",
+    },
     domaine: {
       type: String,
       default: null,
       description: "Le grand domaine d'un métier",
+    },
+    domaine_sans_accent_computed: {
+      type: String,
+      default: null,
+      description: "Le grand domaine d'un métier sans caractère accentué",
     },
     codes_romes: {
       type: [String],
@@ -25,6 +34,11 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       default: [],
       description: "Les libellés des codes ROMEs associés au métier",
     },
+    intitules_romes_sans_accent_computed: {
+      type: [String],
+      default: [],
+      description: "Les libellés des codes ROMEs associés au métier sans caractère accentué",
+    },
     codes_rncps: {
       type: [String],
       default: [],
@@ -35,20 +49,40 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       default: [],
       description: "Les libellés des codes RNCPs associés au métier",
     },
+    intitules_rncps_sans_accent_computed: {
+      type: [String],
+      default: [],
+      description: "Les libellés des codes RNCPs associés au métier sans caractère accentué",
+    },
     mots_clefs: {
       type: String,
       require: true,
       description: "Les mots clefs associés au métier",
+    },
+    mots_clefs_sans_accent_computed: {
+      type: String,
+      require: true,
+      description: "Les mots clefs associés au métier sans caractère accentué",
     },
     mots_clefs_specifiques: {
       type: String,
       require: true,
       description: "Les mots clefs associés à une ligne spécifique du métier",
     },
+    mots_clefs_specifiques_sans_accent_computed: {
+      type: String,
+      require: true,
+      description: "Les mots clefs associés à une ligne spécifique du métier sans caractère accentué",
+    },
     appellations_romes: {
       type: String,
       require: true,
       description: "Mots clefs tirés des appellations associées à un code ROME",
+    },
+    appellations_romes_sans_accent_computed: {
+      type: String,
+      require: true,
+      description: "Mots clefs tirés des appellations associées à un code ROME sans caractère accentué",
     },
     couples_appellations_rome_metier: {
       type: [Object],
@@ -65,10 +99,20 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
       default: [],
       description: "Mots clefs issus des libellés FAP",
     },
+    intitules_fap_sans_accent_computed: {
+      type: [String],
+      default: [],
+      description: "Mots clefs issus des libellés FAP sans caractère accentué",
+    },
     sous_domaine_onisep: {
       type: [String],
       default: [],
       description: "Les sous-domaines onisep",
+    },
+    sous_domaine_onisep_sans_accent_computed: {
+      type: [String],
+      default: [],
+      description: "Les sous-domaines onisep sans caractère accentué",
     },
     couples_romes_metiers: {
       type: [Object],
@@ -90,7 +134,5 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>(
     versionKey: false,
   }
 )
-
-domainesMetiersSchema.plugin(mongoosastic, { index: "domainesmetiers" })
 
 export default model<IDomainesMetiers>("domainesmetiers", domainesMetiersSchema)

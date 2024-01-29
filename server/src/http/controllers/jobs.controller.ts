@@ -348,7 +348,7 @@ export default (server: Server) => {
         return res.status(500).send(result)
       }
 
-      if ("matchas" in result) {
+      if ("matchas" in result && result.matchas) {
         const { matchas } = result
         await incrementLbaJobsViewCount(matchas)
       }

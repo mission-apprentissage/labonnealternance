@@ -11,7 +11,7 @@ import mailer from "../../services/mailer.service"
 export const inviteEtablissementAffelnetToPremium = async () => {
   logger.info("Cron #inviteEtablissementAffelnetToPremium started.")
 
-  const startInvitationPeriod = dayjs().month(3).date(1)
+  const startInvitationPeriod = dayjs().month(3).date(2)
   const endInvitationPeriod = dayjs().month(7).date(31)
   if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
     logger.info("Stopped because we are not between the 01/03 and the 31/08 (eligible period).")
@@ -41,7 +41,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         isAffelnet: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_affelnet.png?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
