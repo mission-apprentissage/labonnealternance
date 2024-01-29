@@ -19,7 +19,7 @@ import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
-import { updateFormationCatalogue } from "./formationsCatalogue/updateFormationCatalogue"
+import { updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection } from "./formationsCatalogue/updateFormationCatalogue"
 import { addJob, executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
@@ -320,7 +320,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "catalogue:trainings:sync":
         return importCatalogueFormationJob()
       case "catalogue:trainings:sync:extra":
-        return updateFormationCatalogue()
+        return updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection()
       case "brevo:blocked:sync":
         return updateBrevoBlockedEmails(job.payload)
       case "applications:anonymize":
