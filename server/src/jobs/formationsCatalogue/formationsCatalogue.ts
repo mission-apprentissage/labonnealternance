@@ -26,7 +26,7 @@ const importFormations = async () => {
         try {
           // use MongoDB to add only add selected field from getAllFormationFromCatalogue() function and speedup the process
           delete formation._id // break parsing / insertion otherwise
-          formation.lieu_formation_geopoint = convertStringCoordinatesToGeoPoint(formation.$lieu_formation_geo_coordonnees)
+          formation.lieu_formation_geopoint = convertStringCoordinatesToGeoPoint(formation.lieu_formation_geo_coordonnees)
           const parsedFormation = zFormationCatalogueSchemaNew.parse(formation)
 
           await FormationCatalogue.collection.insertOne(parsedFormation)
