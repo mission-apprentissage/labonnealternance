@@ -2,7 +2,7 @@ import { oleoduc, writeData } from "oleoduc"
 import { referrers } from "shared/constants/referers"
 
 import { logger } from "../../common/logger"
-import { Etablissement, FormationCatalogue } from "../../common/model/index"
+import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
 import { isEmailBlacklisted } from "../../services/application.service"
 import { getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service"
 import dayjs from "../../services/dayjs.service"
@@ -34,21 +34,25 @@ export const syncEtablissementsAndFormations = async () => {
     }).cursor(),
     writeData(
       async (formation) => {
-        const [eligibleTrainingsForAppointment, etablissement, formationMinistereEducatif] = await Promise.all([
-          eligibleTrainingsForAppointmentService.findOne({
-            cle_ministere_educatif: formation.cle_ministere_educatif,
-          }),
-          Etablissement.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
+        const [eligibleTrainingsForAppointment, etablissement, formationMinistereEducatif, existInReferentielOnisep] = await Promise.all([
+          eligibleTrainingsForAppointmentService
+            .findOne({
+              cle_ministere_educatif: formation.cle_ministere_educatif,
+            })
+            .lean(),
+          Etablissement.findOne({ gestionnaire_siret: formation.etablissement_gestionnaire_siret }).lean(),
           catalogueMinistereEducatif.find((formationMe) => formationMe.cle_ministere_educatif === formation.cle_ministere_educatif),
+          ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])
 
         // Activate opt_out referrers
         const referrersToActivate: any[] = []
         if (etablissement?.optout_activation_date) {
           referrersToActivate.push(referrers.LBA.name)
-          referrersToActivate.push(referrers.ONISEP.name)
-          referrersToActivate.push(referrers.PFR_PAYS_DE_LA_LOIRE.name)
           referrersToActivate.push(referrers.JEUNE_1_SOLUTION.name)
+          if (existInReferentielOnisep) {
+            referrersToActivate.push(referrers.ONISEP.name)
+          }
         }
 
         // Activate premium referrers
