@@ -15,7 +15,6 @@ _mna-lba_completion() {
    "vault\:password:'Get vault password'"
    "seed\:update:'Update seed using a database'"
    "seed\:apply:'Apply seed to a database'"
-   "seed\:es:'Seed ElasticSearch with data'"
    "deploy\:log\:encrypt:'Encrypt Github ansible logs'"
    "deploy\:log\:dencrypt:'Decrypt Github ansible logs'"
   )

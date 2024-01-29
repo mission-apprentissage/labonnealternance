@@ -20,27 +20,6 @@ services:
       retries: 12
       start_period: 10s
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.15
-    container_name: lba_elasticsearch
-    environment:
-      - ES_JAVA_OPTS=-Xmx512m -Xms512m
-      - discovery.type=single-node
-      - cluster.name=docker-cluster
-      - network.host=0.0.0.0
-      - discovery.zen.minimum_master_nodes=1
-    mem_limit: 3g
-    ports:
-      - "9200:9200"
-    volumes:
-      - lba_elasticsearch_data:/usr/share/elasticsearch/data
-    healthcheck:
-      test: ["CMD", "curl", "http://localhost:9200/_cat/health > /dev/null || exit 1"]
-      interval: 30s
-      retries: 5
-      timeout: 10s
-      start_period: 2m
-
   clamav:
     image: clamav/clamav:latest
     restart: unless-stopped
@@ -66,9 +45,6 @@ services:
       - lba_smtp_data:/data
 
 volumes:
-  lba_elasticsearch_data:
-    driver: local
-    name: lba_elasticsearch_data
   lba_mongodb_data:
     driver: local
     name: lba_mongodb_data

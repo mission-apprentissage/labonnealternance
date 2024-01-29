@@ -10,12 +10,15 @@ export const zMetiersRoutes = {
       path: "/v1/metiers/metiersParFormation/:cfd",
       params: z
         .object({
-          cfd: z.string().openapi({
-            param: {
-              description: "L'identifiant CFD de la formation.",
-            },
-            example: "50022137",
-          }),
+          cfd: z
+            .string()
+            .min(1)
+            .openapi({
+              param: {
+                description: "L'identifiant CFD de la formation.",
+              },
+              example: "50022137",
+            }),
         })
         .strict(),
       response: {
