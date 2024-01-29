@@ -1,6 +1,5 @@
 import { IFormationCatalogue } from "shared"
 
-import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
 
 import { etablissementFormateurInfo } from "./etablissement.formateur.sub"
@@ -456,7 +455,5 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     versionKey: false,
   }
 )
-
-mnaFormationSchema.plugin(mongoosastic, { index: "formationcatalogues" })
 
 export default model<IFormationCatalogue>("formationcatalogues", mnaFormationSchema)

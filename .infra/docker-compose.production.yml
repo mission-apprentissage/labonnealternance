@@ -120,35 +120,6 @@ services:
         tag: docker.json.lba.{{env_type}}.metabase
         fluentd-async: "true"
 
-  elasticsearch:
-    <<: *default
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.15
-    deploy:
-      <<: *deploy-default
-      resources:
-        limits:
-          memory: 3g
-    environment:
-      - ES_JAVA_OPTS=-Xmx{{es_mem}} -Xms{{es_mem}}
-      - discovery.type=single-node
-      - cluster.name=docker-cluster
-      - network.host=0.0.0.0
-      - discovery.zen.minimum_master_nodes=1
-    healthcheck:
-      test: ["CMD", "curl", "http://localhost:9200/_cat/health > /dev/null || exit 1"]
-      interval: 30s
-      retries: 5
-      timeout: 10s
-      start_period: 2m
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: docker.txt.lba.{{env_type}}.elasticsearch
-        fluentd-async: "true"
-    volumes:
-      - lba_elasticsearch_data:/usr/share/elasticsearch/data
-
   clamav:
     <<: *default
     image: clamav/clamav:latest
@@ -170,8 +141,3 @@ services:
         fluentd-async: "true"
     volumes:
       - /opt/app/data/clamav:/var/lib/clamav
-
-volumes:
-  lba_elasticsearch_data:
-    driver: local
-    name: lba_elasticsearch_data

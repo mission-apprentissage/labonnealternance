@@ -1,5 +1,6 @@
 import distance from "@turf/distance"
 import { round } from "lodash-es"
+import { IGeoPoint } from "shared/models/address.model"
 
 type Coordinate = {
   origin: { latitude: number; longitude: number }
@@ -16,3 +17,12 @@ export const getDistanceInKm = (coordinate: Coordinate): number => {
 }
 
 export const roundDistance = (distance: number, precision = 2): number => round(distance, precision)
+
+export const convertStringCoordinatesToGeoPoint = (coordinates: string): IGeoPoint => {
+  const coords = coordinates.split(",")
+
+  return {
+    type: "Point",
+    coordinates: [parseFloat(coords[1]), parseFloat(coords[0])],
+  }
+}
