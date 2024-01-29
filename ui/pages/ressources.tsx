@@ -31,7 +31,7 @@ const buttonProperties = {
 const verticalButtonProperties = {
   ...buttonProperties,
   width: "100%",
-  paddingRight: "50px",
+  paddingRight: "12px",
 }
 
 const selectedVerticalButtonProperties = {
@@ -130,7 +130,7 @@ const Ressources = () => {
             Ressources
           </Text>
         </Box>
-        <Grid templateColumns="repeat(5, 1fr)">
+        <Grid templateColumns="repeat(5, 1fr)" gap={10}>
           <GridItem display={{ base: "none", lg: "block" }} colSpan={{ base: 0, lg: 1 }}>
             <List>
               <ListItem borderLeft="3px solid" borderLeftColor="white" style={tabIndex === "candidat" ? selectedVerticalTabCssProperties : {}}>
