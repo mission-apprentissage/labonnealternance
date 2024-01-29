@@ -181,11 +181,19 @@ const filterDiplomas = async (regexes: RegExp[]): Promise<(IDiplomesMetiers & { 
  */
 const buildRegexes = (searchTerm: string) => {
   const regexes: RegExp[] = []
-  searchTerm.split(" ").forEach((term, idx) => {
-    if (idx === 0 || term.length > 2) {
-      regexes.push(new RegExp(`\\b${removeAccents(term)}`, "i"))
+
+  // recherche sur les sous éléments de la chaine de recherche
+  const withoutAccentSearchTerm = removeAccents(searchTerm)
+  withoutAccentSearchTerm.split(/[.,:*+?^${}()|[\]\\ ]/g).forEach((term, idx) => {
+    if (idx === 0 || term.length > 1) {
+      regexes.push(new RegExp(`\\b${term}`, "i"))
     }
   })
+
+  // ajout de la chaîne entière pour match complet
+  if (searchTerm.indexOf(" ") > 0) {
+    regexes.push(new RegExp(`\\b${withoutAccentSearchTerm}`, "i"))
+  }
 
   return regexes
 }
