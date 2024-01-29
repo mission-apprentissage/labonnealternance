@@ -64,7 +64,7 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
         },
         last_name: sanitizeForEmail(contactCFA?.last_name ?? contactEntreprise?.last_name),
         first_name: sanitizeForEmail(contactCFA?.first_name ?? contactEntreprise?.first_name),
-        establishment_raison_sociale: establishment_raison_sociale,
+        establishment_raison_sociale,
         is_delegated,
         offres: jobsWithRecruiter.map((job) => ({
           rome_appellation_label: job.rome_appellation_label ?? job.rome_label,
