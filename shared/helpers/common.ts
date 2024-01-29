@@ -14,11 +14,6 @@ export const removeUrlsFromText = (text: string | null | undefined) => {
   return linkRegexes.reduce((processedText, regex) => processedText.replace(regex, ""), text)
 }
 
-export const disableUrlsWith0WidthChar = (text: string | null | undefined) => {
-  if (!text) return ""
-  return linkRegexes.reduce((processedText, regex) => processedText.replace(regex, (url) => url.replace(/\./g, "\u200B.\u200B")), text)
-}
-
 export const prepareMessageForMail = (text: string | null | undefined) => {
   if (!text) return ""
   return text ? text.replaceAll(/\r\n|\r|\n/gi, "<br />") : text

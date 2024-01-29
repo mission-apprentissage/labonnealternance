@@ -16,7 +16,6 @@ export const sanitizeForEmail = (text: string | null | undefined) => {
   if (!text) return ""
   text = text.replaceAll(/(<([^>]+)>)/gi, "")
   text = text.replaceAll(/\./g, "\u200B.\u200B")
-  text = encodeURIComponent(text)
   return text
 }
 
