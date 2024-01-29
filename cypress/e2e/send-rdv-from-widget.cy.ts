@@ -1,7 +1,7 @@
 import { SearchForm } from "../pages/SearchForm"
 
 describe("send-rdv-from-widget", () => {
-  it("tests send-rdv-from-widget on " + Cypress.env("ui") + "  ---  " + Cypress.env("server"), () => {
+  it("test send-rdv-from-widget", () => {
     cy.intercept("GET", Cypress.env("server") + "/api/v1/formations?*").as("submitTrainingCall")
     cy.intercept("POST", Cypress.env("server") + "/api/appointment-request/validate").as("submitRdv")
 
