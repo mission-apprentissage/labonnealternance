@@ -60,6 +60,16 @@ const ResultLists = ({
     }
   }
 
+  const getListEndText = () => {
+    return (
+      <Box mt={4} textAlign="center" color="grey.425" fontWeight={14} fontStyle="italic">
+        Vous êtes arrivés au bout de la liste.
+        <br />
+        Pour voir d’autres possibilités, revenez plus tard ou changez vos critères de recherche
+      </Box>
+    )
+  }
+
   const getTrainingList = () => {
     if (trainings.length) {
       return (
@@ -105,6 +115,7 @@ const ResultLists = ({
           return (
             <Box bg="beige" id="jobList">
               {mergedJobList ? <>{mergedJobList}</> : ""}
+              {getListEndText()}
             </Box>
           )
         } else {
@@ -116,7 +127,7 @@ const ResultLists = ({
                 <>
                   {jobList}
                   {lbbCompanyList}
-                  {jobCount < 100 ? <ExtendedSearchButton title="Voir plus de résultats" handleExtendedSearch={handleExtendedSearch} /> : ""}
+                  {jobCount < 100 ? <ExtendedSearchButton title="Voir plus de résultats" handleExtendedSearch={handleExtendedSearch} /> : getListEndText()}
                 </>
               ) : (
                 <Box m={6}>
