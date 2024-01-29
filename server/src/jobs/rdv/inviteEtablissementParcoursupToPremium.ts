@@ -4,20 +4,23 @@ import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
-import { Etablissement, EligibleTrainingsForAppointment } from "../../common/model/index"
+import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
 
 /**
- * @description Invite all "etablissements" to Premium.
+ * @description Invite all "etablissements" to Parcoursup Premium.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToPremium = async () => {
+export const inviteEtablissementParcoursupToPremium = async () => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
-  const startInvitationPeriod = dayjs().month(0).date(8)
-  const endInvitationPeriod = dayjs().month(7).date(31)
+  const { startDay, startMonth } = config.parcoursupPeriods.start
+  const { endDay, endMonth } = config.parcoursupPeriods.end
+
+  const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
+  const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
   if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
     logger.info("Stopped because we are not between the 08/01 and the 31/08 (eligible period).")
     return
@@ -28,7 +31,7 @@ export const inviteEtablissementToPremium = async () => {
       $ne: null,
     },
     premium_activation_date: null,
-    "to_etablissement_emails.campaign": { $ne: mailType.PREMIUM_INVITE },
+    premium_invitation_date: null,
   }).lean()
 
   logger.info("Cron #inviteEtablissementToPremium / Etablissement: ", etablissementsToInvite.length)
@@ -36,12 +39,12 @@ export const inviteEtablissementToPremium = async () => {
   for (const etablissement of etablissementsToInvite) {
     // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
     const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
-      etablissement_formateur_siret: etablissement.formateur_siret,
+      etablissement_gestionnaire_siret: etablissement.gestionnaire_siret,
       lieu_formation_email: { $ne: null },
       parcoursup_id: { $ne: null },
     }).lean()
 
-    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.formateur_siret) {
+    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.gestionnaire_siret || !etablissement.gestionnaire_email) {
       continue
     }
 
@@ -59,25 +62,22 @@ export const inviteEtablissementToPremium = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
-          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
+          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.gestionnaire_siret, etablissement._id.toString()),
         },
       },
     })
 
-    await Etablissement.updateOne(
-      { formateur_siret: etablissement.formateur_siret },
-      {
-        premium_invitation_date: dayjs().toDate(),
-        $push: {
-          to_etablissement_emails: {
-            campaign: mailType.PREMIUM_INVITE,
-            status: null,
-            message_id: messageId,
-            email_sent_at: dayjs().toDate(),
-          },
+    await Etablissement.findByIdAndUpdate(etablissement._id, {
+      premium_invitation_date: dayjs().toDate(),
+      $push: {
+        to_etablissement_emails: {
+          campaign: mailType.PREMIUM_INVITE,
+          status: null,
+          message_id: messageId,
+          email_sent_at: dayjs().toDate(),
         },
-      }
-    )
+      },
+    })
   }
 
   logger.info("Cron #inviteEtablissementToPremium done.")

@@ -54,9 +54,9 @@ import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
+import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
+import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { inviteEtablissementToPremium } from "./rdv/inviteEtablissementToPremium"
-import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementToPremiumAffelnet"
 import { inviteEtablissementToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUp"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUpAffelnet"
 import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
@@ -293,8 +293,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return activateOptOutEtablissementFormations()
       case "etablissement:invite:opt-out":
         return inviteEtablissementToOptOut()
-      case "etablissement:invite:premium":
-        return inviteEtablissementToPremium()
+      case "etablissement:invite:premium:parcoursup":
+        return inviteEtablissementParcoursupToPremium()
       case "etablissement:invite:premium:affelnet":
         return inviteEtablissementAffelnetToPremium()
       case "etablissement:invite:premium:follow-up":
