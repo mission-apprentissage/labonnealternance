@@ -1,7 +1,7 @@
 import Boom from "boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
-import { removeAccents } from "shared/utils"
+import { removeAccents, removeRegexChars } from "shared/utils"
 
 import { logger } from "@/common/logger"
 import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomesmetiers.types"
@@ -192,7 +192,7 @@ const buildRegexes = (searchTerm: string) => {
 
   // ajout de la chaîne entière pour match complet
   if (searchTerm.indexOf(" ") > 0) {
-    regexes.push(new RegExp(`\\b${withoutAccentSearchTerm}`, "i"))
+    regexes.push(new RegExp(`\\b${removeRegexChars(withoutAccentSearchTerm)}`, "i"))
   }
 
   return regexes
