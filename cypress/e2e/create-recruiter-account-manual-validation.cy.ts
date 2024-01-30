@@ -1,17 +1,17 @@
+import { smtpClient } from "../api/smtpClient"
 import { FlowCreationEntreprise } from "../pages/FlowCreationEntreprise"
 import { generateRandomString } from "../utils/generateRandomString"
 
 describe("create-recruiter-account-siret-inexistent", () => {
-  it("test create-recruiter-account-siret-inexistent", () => {
+  it("tests create-recruiter-account-siret-inexistent", () => {
     cy.viewport(1271, 721)
 
-    const emailDomain = Cypress.env("ENTREPRISE_AUTOVALIDE_EMAIL_DOMAIN")
-    const email = `${generateRandomString()}@${emailDomain}`
+    const email = `cypress-manual-validation-${generateRandomString()}@mail.com`
     const siret = Cypress.env("ENTREPRISE_AUTOVALIDE_SIRET")
     const firstName = "John"
     const lastName = "Doe"
-    const romeLabel = "Net surfeur / Net surfeuse"
-    const studyLevel = "Cap, autres formations niveau (Infrabac)"
+    const romeLabel = "Adjoint / Adjointe au responsable des ressources humaines"
+    const studyLevel = "Indifférent"
 
     FlowCreationEntreprise.siretPage.goTo()
     FlowCreationEntreprise.siretPage.fillSiret(siret)
@@ -24,6 +24,8 @@ describe("create-recruiter-account-siret-inexistent", () => {
       email,
     })
     FlowCreationEntreprise.personalInfosPage.submit()
+    FlowCreationEntreprise.personalInfosPage.confirmAccountCreation()
+    FlowCreationEntreprise.offerPage.assertUrl()
     FlowCreationEntreprise.offerPage.fillForm({
       romeLabel,
       contractType: {
@@ -36,10 +38,10 @@ describe("create-recruiter-account-siret-inexistent", () => {
       jobDurationInMonths: 12,
     })
     FlowCreationEntreprise.offerPage.submit()
-    FlowCreationEntreprise.delegationPage.selectCFAs(["UNIVERSITE GRENOBLE ALPES"])
+    FlowCreationEntreprise.delegationPage.selectCFAs(["SAS L'ACADEMIE DE MANAGEMENT"])
     FlowCreationEntreprise.delegationPage.submit()
     FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase(), romeLabel, studyLevel])
     FlowCreationEntreprise.emailSentPage.goBackHome()
+    smtpClient.getMail(email, "Confirmez votre adresse mail")
   })
 })
-//# recorderSourceMap=BCBDBEBFBGBHA

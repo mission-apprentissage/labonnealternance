@@ -1,8 +1,8 @@
 import { FlowCreationEntreprise } from "../pages/FlowCreationEntreprise"
 import { generateRandomString } from "../utils/generateRandomString"
 
-describe("create-recruiter-account-siret-inexistent", () => {
-  it("test create-recruiter-account-siret-inexistent", () => {
+describe("create-entreprise-account-no-delegation", () => {
+  it("test create-entreprise-account-no-delegation", () => {
     cy.viewport(1271, 721)
 
     const emailDomain = Cypress.env("ENTREPRISE_AUTOVALIDE_EMAIL_DOMAIN")
@@ -36,10 +36,9 @@ describe("create-recruiter-account-siret-inexistent", () => {
       jobDurationInMonths: 12,
     })
     FlowCreationEntreprise.offerPage.submit()
-    FlowCreationEntreprise.delegationPage.selectCFAs(["UNIVERSITE GRENOBLE ALPES"])
-    FlowCreationEntreprise.delegationPage.submit()
+    FlowCreationEntreprise.delegationPage.selectCFAs([])
+    FlowCreationEntreprise.delegationPage.submitNoDelegation()
     FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase(), romeLabel, studyLevel])
     FlowCreationEntreprise.emailSentPage.goBackHome()
   })
 })
-//# recorderSourceMap=BCBDBEBFBGBHA

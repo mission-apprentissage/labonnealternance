@@ -10,7 +10,6 @@ import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
 import PromoRessources from "../components/Ressources/promoRessources"
 import ScrollToTop from "../components/ScrollToTop"
-import config from "../config/config"
 import { ParameterContext } from "../context/ParameterContextProvider"
 import { initParametersFromQuery } from "../services/config"
 
@@ -75,6 +74,7 @@ const Home = () => {
           <AmeliorerLBA />
         </Box>
       )}
+
       <Footer />
     </Box>
   )
