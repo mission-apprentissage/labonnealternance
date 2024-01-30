@@ -1,7 +1,6 @@
 import { Box, Heading, Link, Text, useBoolean } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
-import { IUserRecruteurPublic } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { useAuth } from "@/context/UserContext"
@@ -49,11 +48,11 @@ export default function ConfirmationValidationEmail() {
     const fetchData = async () => {
       setLoading.on()
       if (token) {
-        const user = (await apiPost("/etablissement/validation", {
+        const user = await apiPost("/etablissement/validation", {
           headers: {
             authorization: `Bearer ${token}`,
           },
-        })) as IUserRecruteurPublic
+        })
         if (user.status_current === ETAT_UTILISATEUR.ATTENTE) {
           setLoading.off()
           setIsInvalid.off()
