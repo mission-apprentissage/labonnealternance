@@ -49,6 +49,7 @@ import buildSAVE from "./lbb/buildSAVE"
 import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
+import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { activateOptOutEtablissementFormations } from "./rdv/activateOptOutEtablissementFormations"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeUsers } from "./rdv/anonymizeUsers"
@@ -198,6 +199,10 @@ export const CronsMap = {
     cron_string: "30 1 * * *",
     handler: () => addJob({ name: "anonymize:appointments", payload: {} }),
   },
+  "Lancement du garbage collector": {
+    cron_string: "30 3 * * *",
+    handler: () => addJob({ name: "garbage-collector:run", payload: {} }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -216,6 +221,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "garbage-collector:run":
+        return runGarbageCollector()
       case "anonymize:appointments":
         return anonymizeOldAppointments()
       case "recruiters:delegations": // Temporaire, doit tourner une fois en production
