@@ -209,7 +209,6 @@ const ChoiceColumn = ({
       <Box display={displayProperty} width={{ base: "75%", lg: "60%", xl: "50%" }} margin="auto" pt={12}>
         <Flex>
           <Image src="/images/dosearch.svg" alt="" aria-hidden="true" />
-          {/* @ts-expect-error: TODO */}
           <Box pl={12} pt={12}>
             <Box textAlign="left">
               <Text as="h1" fontSize={32} mb={2} fontWeight={700}>
