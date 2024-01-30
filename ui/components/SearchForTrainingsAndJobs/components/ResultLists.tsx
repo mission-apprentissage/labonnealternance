@@ -63,9 +63,9 @@ const ResultLists = ({
   const getListEndText = () => {
     return (
       <Box mt={4} textAlign="center" color="grey.425" fontWeight={14} fontStyle="italic">
-        Vous êtes arrivés au bout de la liste.
+        Vous êtes arrivé.e au bout de la liste.
         <br />
-        Pour voir d’autres possibilités, revenez plus tard ou changez vos critères de recherche
+        Pour voir d'autres possibilités, revenez plus tard ou changez vos critères de recherche
       </Box>
     )
   }
