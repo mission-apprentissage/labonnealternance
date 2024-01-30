@@ -75,7 +75,7 @@ const ResultLists = ({
       return (
         <>
           {searchRadius < trainings[0].place.distance && (
-            <Box fontWeight={700} ml={4} px={4} py={4}>
+            <Box fontWeight={700} textAlign="center" ml={4} px={4} py={4}>
               Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
             </Box>
           )}
@@ -127,12 +127,12 @@ const ResultLists = ({
                 <>
                   {jobList}
                   {lbbCompanyList}
-                  {jobCount < 100 ? <ExtendedSearchButton title="Voir plus de résultats" handleExtendedSearch={handleExtendedSearch} /> : getListEndText()}
+                  {jobCount < 100 ? <ExtendedSearchButton title="Peu de résultats dans votre zone de recherche" handleExtendedSearch={handleExtendedSearch} /> : getListEndText()}
                 </>
               ) : (
                 <Box m={6}>
                   <NoJobResult />
-                  <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={handleExtendedSearch} />
+                  <ExtendedSearchButton handleExtendedSearch={handleExtendedSearch} />
                 </Box>
               )}
             </Box>
@@ -145,7 +145,7 @@ const ResultLists = ({
           return (
             <Box m={6}>
               <NoJobResult />
-              <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={handleExtendedSearch} />
+              <ExtendedSearchButton handleExtendedSearch={handleExtendedSearch} />
             </Box>
           )
       }
