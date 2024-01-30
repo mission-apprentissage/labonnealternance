@@ -687,7 +687,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
   const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
   const { latitude, longitude } = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
-  return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}`, geopoint: { type: "Point", coordinates: [longitude, latitude] } }
+  return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}`, geopoint: { type: "Point", coordinates: [longitude, latitude] as [number, number] } }
 }
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string, shouldValidate = true) => {

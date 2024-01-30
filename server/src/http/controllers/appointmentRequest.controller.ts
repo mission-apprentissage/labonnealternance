@@ -265,6 +265,7 @@ export default (server: Server) => {
         cfa_intention_to_applicant: 1,
         cfa_message_to_applicant: 1,
         cfa_message_to_applicant_date: 1,
+        cfa_read_appointment_details_date: 1,
       }).lean()
 
       if (!appointment) {
