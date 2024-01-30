@@ -12,6 +12,7 @@ import { getJobCount } from "../services/utils"
 
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
+import RechercheCDICDD from "./rechercheCDDCDI"
 import ResultFilterAndCounter from "./ResultFilterAndCounter"
 import ResultListsLoading from "./ResultListsLoading"
 
@@ -116,6 +117,7 @@ const ResultLists = ({
             <Box bg="beige" id="jobList">
               {mergedJobList ? <>{mergedJobList}</> : ""}
               {getListEndText()}
+              {jobCount < 100 && <RechercheCDICDD />}
             </Box>
           )
         } else {
@@ -127,12 +129,20 @@ const ResultLists = ({
                 <>
                   {jobList}
                   {lbbCompanyList}
-                  {jobCount < 100 ? <ExtendedSearchButton title="Peu de résultats dans votre zone de recherche" handleExtendedSearch={handleExtendedSearch} /> : getListEndText()}
+                  {jobCount < 100 ? (
+                    <>
+                      <ExtendedSearchButton title="Peu de résultats dans votre zone de recherche" handleExtendedSearch={handleExtendedSearch} />
+                      <RechercheCDICDD />
+                    </>
+                  ) : (
+                    getListEndText()
+                  )}
                 </>
               ) : (
                 <Box m={6}>
                   <NoJobResult />
                   <ExtendedSearchButton handleExtendedSearch={handleExtendedSearch} />
+                  <RechercheCDICDD />
                 </Box>
               )}
             </Box>
@@ -140,12 +150,18 @@ const ResultLists = ({
         }
       } else {
         if (extendedSearch) {
-          return <NoJobResult />
+          return (
+            <>
+              <NoJobResult />
+              <RechercheCDICDD />
+            </>
+          )
         } else
           return (
             <Box m={6}>
               <NoJobResult />
               <ExtendedSearchButton handleExtendedSearch={handleExtendedSearch} />
+              <RechercheCDICDD />
             </Box>
           )
       }
