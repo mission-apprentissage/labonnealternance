@@ -38,7 +38,6 @@ mkdir -p "$ROOT_DIR/.infra/files/mongodb"
 yarn build:dev
 yarn cli migrations:up
 yarn cli mongodb:indexes:create
-yarn cli index
 
 docker compose -f "$ROOT_DIR/docker-compose.yml" exec -it mongodb mongodump --uri "$TARGET_DB" --gzip --archive > "$SEED_GZ" 
 rm -f "$SEED_GPG"
