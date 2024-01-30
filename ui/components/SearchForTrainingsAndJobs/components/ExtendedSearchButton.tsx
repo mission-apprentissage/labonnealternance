@@ -18,7 +18,7 @@ const ExtendedSearchButton = ({ title, handleExtendedSearch }: { title?: string;
       </Button>
     </Box>
   ) : (
-    ""
+    <></>
   )
 }
 
