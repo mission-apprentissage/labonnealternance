@@ -73,7 +73,7 @@ export const ConfirmationCreationCompte = (props) => {
           <Button variant="secondary" mr={3} onClick={deleteAccount}>
             Annuler
           </Button>
-          <Button variant="primary" onClick={validateAccountCreation}>
+          <Button variant="primary" onClick={validateAccountCreation} data-testid="confirm-account-creation">
             Envoyer ma demande
           </Button>
         </ModalFooter>

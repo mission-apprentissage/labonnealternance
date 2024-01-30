@@ -2,7 +2,7 @@ import { Jsonify } from "type-fest"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZRecruiter } from "../models"
+import { ZPointGeometry, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
 import { ZCfaReferentielData, ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
@@ -22,6 +22,7 @@ export const ZEntrepriseInformations = z
     establishment_size: z.string().nullish(),
     establishment_creation_date: z.date().nullish(),
     geo_coordinates: z.string().nullish(),
+    geopoint: ZPointGeometry.nullish().describe("Coordonnées geographique de l'établissement"),
   })
   .strict()
 
@@ -191,7 +192,7 @@ export const zRecruiterRoutes = {
       method: "post",
       path: "/etablissement/validation",
       response: {
-        "2xx": ZUserRecruteurPublic,
+        "200": ZUserRecruteurPublic,
       },
       securityScheme: {
         auth: "access-token",

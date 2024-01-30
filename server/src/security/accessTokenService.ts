@@ -190,7 +190,7 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
 
     const userStatus = controlUserState(user?.status)
 
-    if (userStatus.error) {
+    if (userStatus.error && schema.path !== "/etablissement/validation") {
       throw Boom.forbidden()
     }
   }
