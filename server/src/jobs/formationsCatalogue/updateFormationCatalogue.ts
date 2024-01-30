@@ -7,7 +7,7 @@ import { FormationCatalogue } from "../../common/model/index"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { getFormationsFromCatalogueMe } from "../../services/catalogue.service"
 
-export const updateFormationCatalogue = async () => {
+export const updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection = async () => {
   logger.info("--- update formation catalogue data --- start")
   const formations = await FormationCatalogue.find({ $and: [{ affelnet_statut: null }, { parcoursup_id: null }] }).lean()
 

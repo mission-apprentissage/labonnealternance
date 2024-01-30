@@ -358,13 +358,13 @@ program
   .action(createJobAction("etablissement:invite:opt-out"))
 
 program
-  .command("invite-etablissement-to-premium")
+  .command("etablissement:invite:premium:parcoursup")
   .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissement:invite:premium"))
+  .action(createJobAction("etablissement:invite:premium:parcoursup"))
 
 program
-  .command("invite-etablissement-affelnet-to-premium")
+  .command("etablissement:invite:premium:affelnet")
   .description("Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissement:invite:premium:affelnet"))
