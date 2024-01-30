@@ -36,7 +36,7 @@ const RessourcesCandidat = () => {
               <List>
                 <ListItem mb={2}>
                   <Link
-                    href="https://www.notion.so/mission-apprentissage/Candidat-926be3cd35b241e48b684c6210e4b9c1?pvs=4#9ab541f2375f45aa87f3e5cefff46143"
+                    href="https://resana.numerique.gouv.fr/public/information/consulterAccessUrl?cle_url=800809065AGoCYgYKUGxcMQNlVTtXdwc5XGFSc1U8Vj1WawNiCzEDMgc2WjoBZVFkAzVSZg=="
                     isExternal
                     data-tracking-id="telecharger-fichier-suivi-candid"
                     variant="basicUnderlinedBlue"
@@ -49,7 +49,7 @@ const RessourcesCandidat = () => {
                 </ListItem>
                 <ListItem mb={2}>
                   <Link
-                    href="https://www.notion.so/mission-apprentissage/Candidat-926be3cd35b241e48b684c6210e4b9c1?pvs=4#7db9b82f19114042898e94e1b1bf0d39"
+                    href="https://resana.numerique.gouv.fr/public/information/consulterAccessUrl?cle_url=1373806905VT8CYgAMAz8EaVQyUT9Xd1FvDTAAIVI7UToAPQFgWGJQYQIzVzdSNgcyVGIKOg=="
                     isExternal
                     data-tracking-id="telecharger-fichier-suivi-candid"
                     variant="basicUnderlinedBlue"
@@ -62,7 +62,7 @@ const RessourcesCandidat = () => {
                 </ListItem>
                 <ListItem>
                   <Link
-                    href="https://www.notion.so/mission-apprentissage/Candidat-926be3cd35b241e48b684c6210e4b9c1?pvs=4#7132e64eee174be3923bdadeec9927c9"
+                    href="https://resana.numerique.gouv.fr/public/information/consulterAccessUrl?cle_url=2103990102CGIEZFFdBDhVOFUzVjgAIFVrAD0GJ1E4AmlZZFQ1DjQENQU0BmYIbFZjATQCMA=="
                     isExternal
                     data-tracking-id="telecharger-fichier-suivi-candid"
                     variant="basicUnderlinedBlue"
