@@ -15,6 +15,7 @@ const StartForm = () => {
   const { setShouldExecuteSearch } = useContext(ParameterContext)
 
   const handleSearchSubmit = ({ values }) => {
+    console.log("ICI C", pick(values, ["job", "location", "radius", "diploma"]))
     setFormValues(pick(values, ["job", "location", "radius", "diploma"]))
     setShouldExecuteSearch(true)
     router.push("/recherche-apprentissage")

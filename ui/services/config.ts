@@ -76,6 +76,8 @@ export const getWidgetParameters = () => {
     widgetParameters.applyFormValues = true
   }
 
+  console.log("WIDGETPARAMETERS : ", widgetParameters)
+
   return widgetParameters
 }
 
@@ -147,22 +149,6 @@ export const initTestingParameters = () => {
   }
 }
 
-/* à conserver
-export const buildFormValuesFromParameterString = (urlParams) =>
-{
-  let params = {};
-  params.lat = parseFloat(urlParams.get("lat"));
-  params.lon = parseFloat(urlParams.get("lon"));
-  params.jobName = urlParams.get("job_name");
-  params.zipcode = urlParams.get("zipcode");
-  params.insee = urlParams.get("insee");
-  params.diploma = urlParams.get("diploma");
-  params.address = urlParams.get("address");
-  params.romes = urlParams.get("romes");
-  params.radius = urlParams.get("radius");
-  return buildFormValuesFromParameters(params);
-}*/
-
 const buildFormValuesFromParameters = (params) => {
   const location = params.lon
     ? {
@@ -191,13 +177,15 @@ const buildFormValuesFromParameters = (params) => {
   return formValues
 }
 
-export const initParametersFromQuery = ({ router, shouldPush = undefined, parameterContext }) => {
+export const initParametersFromQuery = ({ router, shouldPush = undefined, parameterContext, setFormValues }) => {
   let hasParameters = false
 
   const widgetParameters = getWidgetParameters()
   if (widgetParameters?.applyWidgetParameters) {
     if (widgetParameters.applyFormValues) {
       widgetParameters.formValues = buildFormValuesFromParameters(widgetParameters.parameters)
+      console.log("Ici D", widgetParameters.formValues)
+      setFormValues(widgetParameters.formValues)
     }
     parameterContext.setWidgetParameters(widgetParameters)
   }

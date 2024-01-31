@@ -2,6 +2,8 @@ import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
 import React, { useEffect } from "react"
 
+import { DisplayContext } from "@/context/DisplayContextProvider"
+
 import SearchForTrainingsAndJobs from "../components/SearchForTrainingsAndJobs"
 import { ParameterContext } from "../context/ParameterContextProvider"
 import { ScopeContextProvider } from "../context/ScopeContext"
@@ -12,9 +14,10 @@ const RechercheApprentissage = () => {
   const router = useRouter()
 
   const parameterContext = React.useContext(ParameterContext)
+  const { setFormValues } = React.useContext(DisplayContext)
 
   useEffect(() => {
-    initParametersFromQuery({ router, parameterContext })
+    initParametersFromQuery({ router, parameterContext, setFormValues })
   }, [])
 
   return (

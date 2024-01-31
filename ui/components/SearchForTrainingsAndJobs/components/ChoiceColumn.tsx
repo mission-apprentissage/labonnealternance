@@ -138,6 +138,7 @@ const ChoiceColumn = ({
 
     formValues.location = newCenter
 
+    console.log("ICI B", formValues)
     setFormValues(formValues)
 
     // mise à jour des infos de distance des formations par rapport au nouveau centre de recherche
