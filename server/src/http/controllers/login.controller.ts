@@ -50,11 +50,11 @@ export default (server: Server) => {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
 
-      const { email: userEmail, first_name, last_name, is_email_checked } = user || {}
+      const { email: userEmail, first_name, last_name, is_email_checked } = user
 
       const userState = controlUserState(user.status)
       if (userState?.error) {
-        res.status(400).send(userState)
+        return res.status(400).send(userState)
       }
 
       if (!is_email_checked) {

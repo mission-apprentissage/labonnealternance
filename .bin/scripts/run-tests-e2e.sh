@@ -35,4 +35,4 @@ echo "env:" >> $LOG_FILE
 cat $CYPRESS_ENV_FILE >> $LOG_FILE
 echo "Starting Cypress tests"
 yarn e2e:headless >> $LOG_FILE 2>&1
-
+echo "End of Cypress tests"

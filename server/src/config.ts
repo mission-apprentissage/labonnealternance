@@ -108,6 +108,16 @@ const config = {
     apiKey: env.get("LBA_FRANCE_COMPETENCE_API_KEY").required().asString(),
     bearerToken: env.get("LBA_FRANCE_COMPETENCE_TOKEN").required().asString(),
   },
+  parcoursupPeriods: {
+    start: {
+      startMonth: 0, // January = 0
+      startDay: 2,
+    },
+    end: {
+      endMonth: 7,
+      endDay: 31,
+    },
+  },
 }
 
 export default config

@@ -19,7 +19,7 @@ import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
-import { updateFormationCatalogue } from "./formationsCatalogue/updateFormationCatalogue"
+import { updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection } from "./formationsCatalogue/updateFormationCatalogue"
 import { addJob, executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
@@ -55,9 +55,9 @@ import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
+import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
+import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { inviteEtablissementToPremium } from "./rdv/inviteEtablissementToPremium"
-import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementToPremiumAffelnet"
 import { inviteEtablissementToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUp"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUpAffelnet"
 import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
@@ -300,8 +300,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return activateOptOutEtablissementFormations()
       case "etablissement:invite:opt-out":
         return inviteEtablissementToOptOut()
-      case "etablissement:invite:premium":
-        return inviteEtablissementToPremium()
+      case "etablissement:invite:premium:parcoursup":
+        return inviteEtablissementParcoursupToPremium()
       case "etablissement:invite:premium:affelnet":
         return inviteEtablissementAffelnetToPremium()
       case "etablissement:invite:premium:follow-up":
@@ -327,7 +327,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "catalogue:trainings:sync":
         return importCatalogueFormationJob()
       case "catalogue:trainings:sync:extra":
-        return updateFormationCatalogue()
+        return updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection()
       case "brevo:blocked:sync":
         return updateBrevoBlockedEmails(job.payload)
       case "applications:anonymize":
