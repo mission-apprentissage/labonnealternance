@@ -5,9 +5,9 @@ import React from "react"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const buildPeUrl = (formValues) => {
-  let peUrl = "https://candidat.pole-emploi.fr/offres/recherche?typeContrat=CDI,CDD"
+  let peUrl = "https://candidat.pole-emploi.fr/offres/recherche?typeContrat=CDI,CDD&offresPartenaires=true&tri=0"
   if (formValues.job) {
-    peUrl += `&motCles=${formValues.job.romes}`
+    peUrl += `&motsCles=${formValues.job.romes}`
   }
   if (formValues?.location?.insee) {
     peUrl += `&lieux=${formValues.location.insee}&rayon=${formValues.radius}`
