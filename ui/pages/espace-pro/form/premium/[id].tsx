@@ -149,7 +149,13 @@ export default function PremiumForm() {
               </Stack>
               <Text mt={6}>
                 Je prends acte du fait que la{" "}
-                <a style={{ textDecoration: "underline", cursor: "pointer" }} href="https://mission-apprentissage.gitbook.io/general/" target="_blank" rel="noreferrer">
+                <a
+                  style={{ textDecoration: "underline", cursor: "pointer" }}
+                  href="https://mission-apprentissage.gitbook.io/general/"
+                  target="_blank"
+                  rel="noreferrer"
+                  title="Mission interministérielle pour l’apprentissage - nouvelle fenêtre"
+                >
                   Mission interministérielle pour l’apprentissage
                 </a>{" "}
                 pourra prendre toutes les mesures utiles pour mesurer le fait que cet engagement soit tenu (dont enquêtes en ligne ou orales auprès des candidats et des CFA).

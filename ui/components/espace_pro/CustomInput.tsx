@@ -24,6 +24,7 @@ export const CustomInput = (props) => {
               </Flex>
               <Link
                 href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles"
+                title="contacter l'équipe labonnealternance - nouvelle fenêtre"
                 target="_blank"
                 textColor="bluefrance.500"
                 textDecoration="underline"

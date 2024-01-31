@@ -140,13 +140,13 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
           </Text>
           <Text>
             En remplissant ce formulaire, vous acceptez les{" "}
-            <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank">
+            <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank" title="Conditions générales d'utilisation - nouvelle fenêtre">
               Conditions générales d&apos;utilisation
             </Link>{" "}
             du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}.
             <br />
             Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-            <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank">
+            <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank" title="politique de confidentialité - nouvelle fenêtre">
               Politique de confidentialité
             </Link>{" "}
             de La bonne alternance.

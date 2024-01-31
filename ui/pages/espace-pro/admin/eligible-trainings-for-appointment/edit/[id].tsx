@@ -260,7 +260,7 @@ function EditPage() {
                             </Box>
                             <Link
                               href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
-                              title="Lien vers la formation du Catalogue"
+                              title="La formation du Catalogue - nouvelle fenêtre"
                               target="_blank"
                               rel="noreferrer"
                               fontWeight="bold"
