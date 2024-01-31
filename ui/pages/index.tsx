@@ -68,12 +68,10 @@ const Home = () => {
         <PromoRessources target="candidat" />
       </Box>
 
-      {config.shouldDisplayCallForHelp && (
-        // @ts-expect-error: TODO
-        <Box {...blockCssProperties}>
-          <AmeliorerLBA />
-        </Box>
-      )}
+      {/* @ts-expect-error: TODO */}
+      <Box {...blockCssProperties}>
+        <AmeliorerLBA />
+      </Box>
 
       <Footer />
     </Box>
