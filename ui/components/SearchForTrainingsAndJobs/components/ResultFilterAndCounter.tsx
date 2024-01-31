@@ -31,7 +31,9 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
     }
   }
 
-  if (allJobSearchError && trainingSearchError) return ""
+  if (allJobSearchError && trainingSearchError) {
+    return <></>
+  }
 
   const jobLoading = ""
   let jobCount = 0
