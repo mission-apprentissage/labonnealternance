@@ -36,6 +36,7 @@ const ResultLists = ({
   stubbedIsFormVisible = undefined,
 }) => {
   const scopeContext = useContext(ScopeContext)
+  const { formValues } = useContext(DisplayContext)
 
   let [extendedSearch, hasSearch, isFormVisible] = [false, false, false]
 
@@ -57,7 +58,7 @@ const ResultLists = ({
         </Box>
       )
     } else {
-      return ""
+      return <></>
     }
   }
 
@@ -99,75 +100,71 @@ const ResultLists = ({
   }
 
   const getJobResult = () => {
-    if (hasSearch && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
-      if (allJobSearchError) return ""
-
+    if (hasSearch && !allJobSearchError && !isJobSearchLoading && activeFilters.includes("jobs")) {
       const jobCount = getJobCount(jobs)
 
       if (jobCount) {
+        let consolidatedJobList = <></>
+
         if (!activeFilters.includes("jobs")) {
-          return (
-            <Box bg="beige" id="jobList">
-              {getPartnerJobList()}
-            </Box>
-          )
+          consolidatedJobList = getPartnerJobList()
         } else if (extendedSearch) {
-          const mergedJobList = getMergedJobList()
-          return (
-            <Box bg="beige" id="jobList">
-              {mergedJobList ? <>{mergedJobList}</> : ""}
-              {getListEndText()}
-              {jobCount < 100 && <RechercheCDICDD />}
-            </Box>
-          )
+          consolidatedJobList = getMergedJobList()
         } else {
-          const jobList = getJobList()
+          const lbaJobList = getJobList()
           const lbbCompanyList = getLbbCompanyList()
-          return (
-            <Box bg="beige" id="jobList" textAlign="center">
-              {jobList || lbbCompanyList ? (
-                <>
-                  {jobList}
-                  {lbbCompanyList}
-                  {jobCount < 100 ? (
-                    <>
-                      <ExtendedSearchButton title="Peu de résultats dans votre zone de recherche" handleExtendedSearch={handleExtendedSearch} />
-                      <RechercheCDICDD />
-                    </>
-                  ) : (
-                    getListEndText()
-                  )}
-                </>
-              ) : (
-                <Box m={6}>
-                  <NoJobResult />
-                  <ExtendedSearchButton handleExtendedSearch={handleExtendedSearch} />
-                  <RechercheCDICDD />
-                </Box>
-              )}
-            </Box>
-          )
+
+          if (lbaJobList || lbbCompanyList) {
+            consolidatedJobList = (
+              <>
+                {lbaJobList}
+                {lbbCompanyList}
+              </>
+            )
+          }
         }
-      } else {
-        if (extendedSearch) {
-          return (
-            <>
-              <NoJobResult />
-              <RechercheCDICDD />
-            </>
-          )
-        } else
-          return (
-            <Box m={6}>
-              <NoJobResult />
-              <ExtendedSearchButton handleExtendedSearch={handleExtendedSearch} />
-              <RechercheCDICDD />
-            </Box>
-          )
+
+        return (
+          <Box bg="beige" id="jobList">
+            {consolidatedJobList}
+          </Box>
+        )
       }
-    } else {
-      return ""
     }
+
+    return <></>
+  }
+
+  const isJobCondition = () => {
+    return scopeContext.isJob && !isJobSearchLoading && activeFilters.includes("jobs")
+  }
+  const getListFooter = () => {
+    if (hasSearch) {
+      const trainingCount = scopeContext.isTraining && activeFilters.includes("trainings") ? trainings.length : 0
+
+      let jobCount = 0
+
+      if (!allJobSearchError && !isJobSearchLoading && activeFilters.includes("jobs")) {
+        jobCount = getJobCount(jobs)
+      }
+
+      const shouldShowFTJobs = isJobCondition() && jobCount < 100 // scope offre, moins de 100 offres
+      const shouldShowExtendSearchButton = isJobCondition() && jobCount < 100 && !extendedSearch && formValues.location // scope offre, moins de 100 offres pas déjà étendu, pas recherche france entière
+      const shouldShowNoJob = isJobCondition() && jobCount === 0 // scope offre, pas d'offre
+      const shouldShowListEndText = !shouldShowFTJobs && !shouldShowExtendSearchButton && !shouldShowNoJob && jobCount + trainingCount > 0 // des offres ou des formations et pas les autres messages
+
+      return (
+        <Box m={6}>
+          {shouldShowListEndText && getListEndText()}
+          {shouldShowNoJob && <NoJobResult />}
+          {shouldShowExtendSearchButton && (
+            <ExtendedSearchButton title={jobCount ? "Peu de résultats dans votre zone de recherche" : ""} handleExtendedSearch={handleExtendedSearch} />
+          )}
+          {shouldShowFTJobs && <RechercheCDICDD />}
+        </Box>
+      )
+    }
+    return <></>
   }
 
   const getPartnerJobList = () => {
@@ -181,7 +178,7 @@ const ResultLists = ({
         </>
       )
     } else {
-      return ""
+      return <></>
     }
   }
 
@@ -228,7 +225,7 @@ const ResultLists = ({
         </>
       )
     } else {
-      return ""
+      return <></>
     }
   }
 
@@ -285,6 +282,7 @@ const ResultLists = ({
         <Box margin="auto" maxWidth="1310px" pb={10}>
           {getTrainingResult()}
           {getJobResult()}
+          {getListFooter()}
         </Box>
       </Box>
     </Flex>
