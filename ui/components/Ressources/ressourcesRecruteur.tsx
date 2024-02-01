@@ -21,7 +21,7 @@ const RessourcesRecruteur = () => {
             </Text>{" "}
             pour votre entreprise avec le simulateur de l’URSSAF.{" "}
             <Link
-              href="https://www.alternance.emploi.gouv.fr/simulateur-alternant/etape-1"
+              href="https://www.alternance.emploi.gouv.fr/simulateur-employeur/etape-1"
               aria-label="Accéder au simulateur de coût d'un alternant"
               isExternal
               variant="basicUnderlinedBlue"
