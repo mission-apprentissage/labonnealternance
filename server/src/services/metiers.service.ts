@@ -1,7 +1,7 @@
 import Boom from "boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
-import { removeAccents } from "shared/utils"
+import { removeAccents, removeRegexChars } from "shared/utils"
 
 import { logger } from "@/common/logger"
 import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomesmetiers.types"
@@ -17,6 +17,8 @@ let globalCacheMetiers: IDomainesMetiers[] = []
 let cacheMetierLoading = false
 let globalCacheDiplomas: IDiplomesMetiers[] = []
 let cacheDiplomaLoading = false
+
+const SEARCH_TERM_START_POSITION_BONUS_SCORE = 20 // valeur arbitraire
 
 export const initializeCacheMetiers = async () => {
   if (!cacheMetierLoading) {
@@ -111,11 +113,13 @@ const filterMetiers = async ({
   regexes,
   romes,
   rncps,
+  searchTerm = "",
   searchableFields = searchableWeightedMetiersFields,
 }: {
   regexes: RegExp[]
   romes?: string
   rncps?: string
+  searchTerm?: string
   searchableFields?: { field: string; score: number }[]
 }): Promise<(IDomainesMetiers & { score?: number })[]> => {
   const cacheMetiers = await getCacheMetiers()
@@ -144,6 +148,11 @@ const filterMetiers = async ({
 
     const matchingMetier: IDomainesMetiers & { score?: number } = { ...metier }
     computeScore(matchingMetier, searchableFields, regexes)
+
+    // ajout d'un score bonus si le sous domaine commence par la chaîne de recherche
+    if (matchingMetier.sous_domaine_sans_accent_computed.toLowerCase().startsWith(searchTerm.toLowerCase())) {
+      matchingMetier.score = (matchingMetier.score || 0) + SEARCH_TERM_START_POSITION_BONUS_SCORE
+    }
 
     if (matchingMetier.score) {
       results.push(matchingMetier)
@@ -181,11 +190,19 @@ const filterDiplomas = async (regexes: RegExp[]): Promise<(IDiplomesMetiers & { 
  */
 const buildRegexes = (searchTerm: string) => {
   const regexes: RegExp[] = []
-  searchTerm.split(" ").forEach((term, idx) => {
-    if (idx === 0 || term.length > 2) {
-      regexes.push(new RegExp(`\\b${removeAccents(term)}`, "i"))
+
+  // recherche sur les sous éléments de la chaine de recherche
+  const withoutAccentSearchTerm = removeAccents(searchTerm)
+  withoutAccentSearchTerm.split(/[.,:*+?^${}()|[\]\\ ]/g).forEach((term, idx) => {
+    if (idx === 0 || term.length > 1) {
+      regexes.push(new RegExp(`\\b${term}`, "i"))
     }
   })
+
+  // ajout de la chaîne entière pour match complet
+  if (searchTerm.indexOf(" ") > 0) {
+    regexes.push(new RegExp(`\\b${removeRegexChars(withoutAccentSearchTerm)}`, "i"))
+  }
 
   return regexes
 }
@@ -213,7 +230,7 @@ export const getMetiers = async ({
       regexes = buildRegexes(title)
     }
 
-    let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({ regexes, romes, rncps })
+    let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({ regexes, romes, rncps, searchTerm: removeAccents(title) })
     metiers = metiers.sort((a: IDomainesMetiers & { score?: number }, b: IDomainesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
     const labelsAndRomes: IMetierEnrichi[] = []
@@ -271,7 +288,11 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ label
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
   const regexes: RegExp[] = buildRegexes(searchTerm)
 
-  let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({ regexes, searchableFields: searchableWeightedAppellationFields })
+  let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({
+    regexes,
+    searchTerm: removeAccents(searchTerm),
+    searchableFields: searchableWeightedAppellationFields,
+  })
   metiers = metiers.sort((a: IDomainesMetiers & { score?: number }, b: IDomainesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
   const coupleAppellationRomeMetier = metiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
