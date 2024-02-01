@@ -135,10 +135,11 @@ export const CronsMap = {
     cron_string: "10 0 1 * *",
     handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
   },
-  "Récupère la liste de toutes les formations Affelnet du Catalogue et les enregistre en base de données.": {
-    cron_string: "15 8 * * *",
-    handler: () => addJob({ name: "etablissements:formations:affelnet:sync", payload: {} }),
-  },
+  // 20240201 KEVIN - A CORRIGER AVANT DE REACTIVER
+  // "Récupère la liste de toutes les formations Affelnet du Catalogue et les enregistre en base de données.": {
+  //   cron_string: "15 8 * * *",
+  //   handler: () => addJob({ name: "etablissements:formations:affelnet:sync", payload: {} }),
+  // },
   // "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
   //   cron_string: "15 9 * * *",
   //   handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
