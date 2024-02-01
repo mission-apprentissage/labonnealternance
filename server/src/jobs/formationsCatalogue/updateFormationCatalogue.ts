@@ -4,8 +4,8 @@ import { db } from "@/common/mongodb"
 
 import { logger } from "../../common/logger"
 import { FormationCatalogue } from "../../common/model/index"
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import { getFormationFromCatalogueMe } from "../../services/catalogue.service"
+import { asyncForEach, delay } from "../../common/utils/asyncUtils"
+import { getFormationsFromCatalogueMe } from "../../services/catalogue.service"
 
 export const updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection = async () => {
   logger.info("--- update formation catalogue data --- start")
@@ -19,9 +19,12 @@ export const updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection =
       select: { parcoursup_id: 1, affelnet_statut: 1 },
     })
 
-    if (!formationME) return
+    if (!formationME.length) {
+      await delay(300)
+      return
+    }
 
-    const { parcoursup_id, affelnet_statut } = formationME
+    const { parcoursup_id, affelnet_statut } = formationME[0]
 
     await db.collection("formationcatalogues").updateOne({ cle_ministere_educatif: formation.cle_ministere_educatif }, { $set: { parcoursup_id, affelnet_statut } })
   })
