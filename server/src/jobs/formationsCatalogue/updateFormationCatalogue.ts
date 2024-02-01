@@ -19,6 +19,9 @@ export const updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection =
       query: { cle_ministere_educatif: formation.cle_ministere_educatif },
       select: { parcoursup_id: 1, affelnet_statut: 1 },
     })
+
+    if (!formationME.length) return
+
     const { parcoursup_id, affelnet_statut } = formationME[0]
 
     await db.collection("formationcatalogues").updateOne({ cle_ministere_educatif: formation.cle_ministere_educatif }, { $set: { parcoursup_id, affelnet_statut } })
