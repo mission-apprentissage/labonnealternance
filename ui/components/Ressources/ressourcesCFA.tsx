@@ -80,7 +80,7 @@ const RessourcesCFA = () => {
               <Text as="div" fontWeight={700} mb={4}>
                 Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emplois
               </Text>
-              <NextLink legacyBehavior passHref href="/">
+              <NextLink legacyBehavior passHref href="/organisme-de-formation">
                 <Link aria-label="Accès à la page d'accueil" variant="basicUnderlinedBlue">
                   Accéder à la page d’accueil →
                 </Link>

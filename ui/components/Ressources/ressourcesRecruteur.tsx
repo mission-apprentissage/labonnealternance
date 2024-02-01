@@ -88,7 +88,7 @@ const RessourcesRecruteur = () => {
               <Text as="div" fontWeight={700} mb={4}>
                 Diffusez simplement et gratuitement vos offres en alternance
               </Text>
-              <NextLink legacyBehavior passHref href="/">
+              <NextLink legacyBehavior passHref href="/acces-recruteur">
                 <Link aria-label="Accès à la page d'accueil" variant="basicUnderlinedBlue">
                   Accéder à la page d’accueil →
                 </Link>
