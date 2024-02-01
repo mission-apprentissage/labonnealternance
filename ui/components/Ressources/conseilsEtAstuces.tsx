@@ -89,12 +89,7 @@ const ConseilsEtAstuces = () => {
               </ListItem>
               <ListItem mb={4}>
                 Profitez d'un accompagnement proche de chez vous pour votre parcours et vos démarches avec{" "}
-                <Link
-                  href="https://www.1jeune1solution.gouv.fr/accompagnement%20En%20savoir%20plus"
-                  aria-label="Accéder au site d'un jeune une solution"
-                  isExternal
-                  variant="basicUnderlinedBlue"
-                >
+                <Link href="https://www.1jeune1solution.gouv.fr/accompagnement" aria-label="Accéder au site d'un jeune une solution" isExternal variant="basicUnderlinedBlue">
                   1 jeune 1 solution <ExternalLinkIcon mb="3px" ml="2px" />
                 </Link>
               </ListItem>
@@ -175,13 +170,6 @@ const ConseilsEtAstuces = () => {
                   isExternal
                   variant="basicUnderlinedBlue"
                 >
-                  En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
-                </Link>
-              </ListItem>
-
-              <ListItem mb={4}>
-                Le secteur public (mairies, ministères, départements, régions, ...) recrute aussi des alternants, pensez-y !{" "}
-                <Link href="https://www.pass.fonction-publique.gouv.fr/" aria-label="Accéder au site pass fonction publique" isExternal variant="basicUnderlinedBlue">
                   En savoir plus <ExternalLinkIcon mb="3px" ml="2px" />
                 </Link>
               </ListItem>
