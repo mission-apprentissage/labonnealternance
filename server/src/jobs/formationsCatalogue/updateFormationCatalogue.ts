@@ -14,7 +14,8 @@ export const updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection =
   logger.info(`${formations.length} à contrôler...`)
 
   await asyncForEach(formations, async (formation: IFormationCatalogue) => {
-    const formationME = await getFormationFromCatalogueMe({
+    const formationME = await getFormationsFromCatalogueMe({
+      limit: 1,
       query: { cle_ministere_educatif: formation.cle_ministere_educatif },
       select: { parcoursup_id: 1, affelnet_statut: 1 },
     })
