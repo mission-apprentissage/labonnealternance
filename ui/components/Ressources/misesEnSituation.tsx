@@ -49,7 +49,7 @@ const MisesEnSituation = ({ target }) => {
           imageUrl: "/images/pages_ressources/didask-module3.svg",
           text: "Vous avez bientôt un entretien d’embauche ?",
           link: "https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac",
-          linkTitle: "Entraînez-vous pour avoir plus de chances d'être retenu",
+          linkTitle: "Entraînez-vous pour avoir plus de chances de réussite",
         })}
         {miseEnSituation({
           imageUrl: "/images/pages_ressources/didask-module4.svg",
