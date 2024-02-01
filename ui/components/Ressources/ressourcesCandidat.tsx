@@ -36,7 +36,7 @@ const RessourcesCandidat = () => {
               <List>
                 <ListItem mb={2}>
                   <Link
-                    href="https://resana.numerique.gouv.fr/public/information/consulterAccessUrl?cle_url=800809065AGoCYgYKUGxcMQNlVTtXdwc5XGFSc1U8Vj1WawNiCzEDMgc2WjoBZVFkAzVSZg=="
+                    href="/ressources/Tableau de suivi des candidatures - La bonne alternance - Excel.xlsx"
                     isExternal
                     data-tracking-id="telecharger-fichier-suivi-candid"
                     variant="basicUnderlinedBlue"
@@ -49,7 +49,7 @@ const RessourcesCandidat = () => {
                 </ListItem>
                 <ListItem mb={2}>
                   <Link
-                    href="https://resana.numerique.gouv.fr/public/information/consulterAccessUrl?cle_url=1373806905VT8CYgAMAz8EaVQyUT9Xd1FvDTAAIVI7UToAPQFgWGJQYQIzVzdSNgcyVGIKOg=="
+                    href="/ressources/Tableau de suivi des candidatures - La bonne alternance - Numbers.numbers"
                     isExternal
                     data-tracking-id="telecharger-fichier-suivi-candid"
                     variant="basicUnderlinedBlue"
@@ -62,7 +62,7 @@ const RessourcesCandidat = () => {
                 </ListItem>
                 <ListItem>
                   <Link
-                    href="https://resana.numerique.gouv.fr/public/information/consulterAccessUrl?cle_url=2103990102CGIEZFFdBDhVOFUzVjgAIFVrAD0GJ1E4AmlZZFQ1DjQENQU0BmYIbFZjATQCMA=="
+                    href="/ressources/Tableau de suivi des candidatures - La bonne alternance - LibreOffice.ods"
                     isExternal
                     data-tracking-id="telecharger-fichier-suivi-candid"
                     variant="basicUnderlinedBlue"
