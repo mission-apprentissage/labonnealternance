@@ -100,7 +100,7 @@ const ResultLists = ({
   }
 
   const getJobResult = () => {
-    if (hasSearch && !allJobSearchError && !isJobSearchLoading && activeFilters.includes("jobs")) {
+    if (hasSearch && !allJobSearchError && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
       const jobCount = getJobCount(jobs)
 
       if (jobCount) {
@@ -135,22 +135,20 @@ const ResultLists = ({
     return <></>
   }
 
-  const isJobCondition = () => {
-    return scopeContext.isJob && !isJobSearchLoading && activeFilters.includes("jobs")
-  }
   const getListFooter = () => {
     if (hasSearch) {
       const trainingCount = scopeContext.isTraining && activeFilters.includes("trainings") ? trainings.length : 0
 
       let jobCount = 0
 
-      if (!allJobSearchError && !isJobSearchLoading && activeFilters.includes("jobs")) {
+      if (!allJobSearchError && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
         jobCount = getJobCount(jobs)
       }
 
-      const shouldShowFTJobs = isJobCondition() && jobCount < 100 // scope offre, moins de 100 offres
-      const shouldShowExtendSearchButton = isJobCondition() && jobCount < 100 && !extendedSearch && formValues.location // scope offre, moins de 100 offres pas déjà étendu, pas recherche france entière
-      const shouldShowNoJob = isJobCondition() && jobCount === 0 // scope offre, pas d'offre
+      const isJobElement = scopeContext.isJob && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))
+      const shouldShowFTJobs = isJobElement && jobCount < 100 // scope offre, moins de 100 offres
+      const shouldShowExtendSearchButton = isJobElement && jobCount < 100 && !extendedSearch && formValues.location // scope offre, moins de 100 offres pas déjà étendu, pas recherche france entière
+      const shouldShowNoJob = isJobElement && jobCount === 0 // scope offre, pas d'offre
       const shouldShowListEndText = !shouldShowFTJobs && !shouldShowExtendSearchButton && !shouldShowNoJob && jobCount + trainingCount > 0 // des offres ou des formations et pas les autres messages
 
       return (
