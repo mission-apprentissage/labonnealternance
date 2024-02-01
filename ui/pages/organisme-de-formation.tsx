@@ -59,7 +59,7 @@ const Organisme = () => {
         <FollowLinkedIn />
       </Container>
 
-      <Footer />
+      <Footer ressources="cfa" />
     </Box>
   )
 }

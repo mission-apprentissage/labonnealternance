@@ -17,7 +17,7 @@ const basicLink = {
   paddingLeft: { base: 0, lg: 4 },
 }
 
-const Footer = () => {
+const Footer = ({ ressources = "" }: { ressources?: string }) => {
   return (
     <Box as="footer" borderTop="1px solid" borderTopColor="info" paddingTop={6} marginTop={12}>
       <Box maxWidth="1350px" mx="auto" pl={{ base: 0, lg: 6 }}>
@@ -90,7 +90,7 @@ const Footer = () => {
                   </NextLink>
                 </ListItem>
                 <ListItem {...basicLink}>
-                  <NextLink legacyBehavior passHref href="/ressources">
+                  <NextLink legacyBehavior passHref href={`/ressources${ressources ? "#" + ressources : ""}`}>
                     <Link aria-label="Accès à la page Contact">Ressources</Link>
                   </NextLink>
                 </ListItem>

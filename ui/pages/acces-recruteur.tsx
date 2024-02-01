@@ -59,7 +59,7 @@ const AccesRecruteur = () => (
       <FollowLinkedIn />
     </Container>
     <Box mb={3}>&nbsp;</Box>
-    <Footer />
+    <Footer ressources="recruteur" />
   </Box>
 )
 
