@@ -324,6 +324,21 @@ export const getFormationsFromCatalogueMe = async ({
   }
 }
 
+export const getFormationFromCatalogueMe = async ({ query, select }: { query: object; select?: object }) => {
+  if (api === null) {
+    api = await createCatalogueMeAPI()
+  }
+
+  const params = { query: JSON.stringify(query), select: JSON.stringify(select) }
+
+  try {
+    const response = await api.get(`/entity/formation`, { params })
+    return response.data
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
 export type IRomeResult = {
   romes: string[]
 }
