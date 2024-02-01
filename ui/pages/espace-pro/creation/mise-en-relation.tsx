@@ -170,7 +170,7 @@ export default function CreationMiseEnRelation() {
           <Box p={5}>
             <Grid gap={4}>
               <GridItem mb={0}>
-                <Button variant="secondary" onClick={skip} mr={4} my={2}>
+                <Button variant="secondary" onClick={skip} mr={4} my={2} data-testid="pass-delegation">
                   Passer cette étape
                 </Button>
                 <Button
@@ -181,6 +181,7 @@ export default function CreationMiseEnRelation() {
                   isLoading={isSubmitLoading}
                   onClick={submit}
                   my={1}
+                  data-testid="submit-delegation"
                 >
                   Envoyer ma demande
                 </Button>
