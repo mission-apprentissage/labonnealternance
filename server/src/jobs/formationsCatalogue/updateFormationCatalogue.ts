@@ -9,7 +9,7 @@ import { getFormationsFromCatalogueMe } from "../../services/catalogue.service"
 
 export const updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection = async () => {
   logger.info("--- update formation catalogue data --- start")
-  const formations = await FormationCatalogue.find({ $or: [{ affelnet_statut: null }, { parcoursup_id: null }] }).lean()
+  const formations = await FormationCatalogue.find({ $or: [{ affelnet_statut: null }, { parcoursup_id: null }, { parcoursup_statut: null }] }).lean()
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
     limit: 1000,
     query: {
