@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { groupBy, maxBy } from "lodash-es"
+import { chain } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
 
 import { FormationCatalogue } from "../common/model/index"
@@ -10,6 +10,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { notifyToSlack } from "../common/utils/slackUtils"
 
+import { isEmailBlacklisted } from "./application.service"
 import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
@@ -651,7 +652,19 @@ export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_for
     { email: 1 }
   ).lean()
 
-  const emailGroups = groupBy(formations, "email")
-  const mostFrequentGroup = maxBy(Object.values(emailGroups), "length")
-  return mostFrequentGroup?.length ? mostFrequentGroup[0].email ?? null : null
+  const mostFrequentEmail = chain(formations)
+    .groupBy("email")
+    .map((group, email) => ({ email, group: group.length }))
+    .orderBy("count", "desc")
+
+  return await findFirstNonBlacklistedEmail(mostFrequentEmail)
+}
+
+const findFirstNonBlacklistedEmail = async (emails) => {
+  for (const { email } of emails) {
+    if (!(await isEmailBlacklisted(email))) {
+      return email
+    }
+  }
+  return null // All emails are blacklisted
 }

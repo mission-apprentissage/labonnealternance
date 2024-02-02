@@ -4,7 +4,7 @@ import { referrers } from "shared/constants/referers"
 import { logger } from "../../common/logger"
 import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
 import { isEmailBlacklisted } from "../../services/application.service"
-import { getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service"
+import { getEmailFromCatalogueField } from "../../services/catalogue.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
@@ -16,32 +16,19 @@ import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.s
 export const syncEtablissementsAndFormations = async () => {
   logger.info("Cron #syncEtablissementsAndFormations started.")
 
-  const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
-    limit: 1000,
-    query: {
-      parcoursup_id: { $ne: null },
-      cle_ministere_educatif: { $ne: null },
-      parcoursup_statut: "publié",
-      published: true,
-      catalogue_published: true,
-    },
-    select: { parcoursup_id: 1, cle_ministere_educatif: 1 },
-  })
-
   await oleoduc(
     FormationCatalogue.find({
       cle_ministere_educatif: { $ne: null },
     }).cursor(),
     writeData(
       async (formation) => {
-        const [eligibleTrainingsForAppointment, etablissement, formationMinistereEducatif, existInReferentielOnisep] = await Promise.all([
+        const [eligibleTrainingsForAppointment, etablissement, existInReferentielOnisep] = await Promise.all([
           eligibleTrainingsForAppointmentService
             .findOne({
               cle_ministere_educatif: formation.cle_ministere_educatif,
             })
             .lean(),
           Etablissement.findOne({ gestionnaire_siret: formation.etablissement_gestionnaire_siret }).lean(),
-          catalogueMinistereEducatif.find((formationMe) => formationMe.cle_ministere_educatif === formation.cle_ministere_educatif),
           ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])
 
@@ -56,7 +43,7 @@ export const syncEtablissementsAndFormations = async () => {
         }
 
         // Activate premium referrers
-        if (etablissement?.premium_activation_date && formationMinistereEducatif?.parcoursup_id) {
+        if (etablissement?.premium_activation_date && formation.parcoursup_id && formation.parcoursup_statut === "publié") {
           referrersToActivate.push(referrers.PARCOURSUP.name)
         }
 
@@ -67,8 +54,8 @@ export const syncEtablissementsAndFormations = async () => {
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
             emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
               email: formation.email,
-              etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
-              etablissement_formateur_siret: formation.etablissement_formateur_siret,
+              etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
+              etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             })
           }
 
@@ -79,7 +66,7 @@ export const syncEtablissementsAndFormations = async () => {
             {
               training_id_catalogue: formation._id,
               lieu_formation_email: emailRdv,
-              parcoursup_id: formationMinistereEducatif?.parcoursup_id,
+              parcoursup_id: formation.parcoursup_id,
               cle_ministere_educatif: formation.cle_ministere_educatif,
               training_code_formation_diplome: formation.cfd,
               etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
@@ -102,8 +89,8 @@ export const syncEtablissementsAndFormations = async () => {
         } else {
           const emailRdv = await getEmailForRdv({
             email: formation.email,
-            etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
-            etablissement_formateur_siret: formation.etablissement_formateur_siret,
+            etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
+            etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv as string)
@@ -111,7 +98,7 @@ export const syncEtablissementsAndFormations = async () => {
           await eligibleTrainingsForAppointmentService.create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
-            parcoursup_id: formationMinistereEducatif?.parcoursup_id,
+            parcoursup_id: formation.parcoursup_id,
             cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
             training_intitule_long: formation.intitule_long,
@@ -133,12 +120,10 @@ export const syncEtablissementsAndFormations = async () => {
 
         const emailDecisionnaire = getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel)?.toLowerCase() || etablissement?.gestionnaire_email
 
-        // Update etablissement model (upsert)
-        return Etablissement.updateMany(
-          {
-            formateur_siret: formation.etablissement_formateur_siret,
-          },
-          {
+        if (etablissement) {
+          await Etablissement.findByIdAndUpdate(etablissement._id, { gestionnaire_email: emailDecisionnaire })
+        } else {
+          await Etablissement.create({
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             gestionnaire_email: emailDecisionnaire,
             raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
@@ -147,11 +132,8 @@ export const syncEtablissementsAndFormations = async () => {
             formateur_zip_code: formation.etablissement_formateur_code_postal,
             formateur_city: formation.etablissement_formateur_localite,
             last_catalogue_sync_date: dayjs().toDate(),
-          },
-          {
-            upsert: true,
-          }
-        )
+          })
+        }
       },
       { parallel: 10 }
     )

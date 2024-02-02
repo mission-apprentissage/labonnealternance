@@ -114,7 +114,7 @@ fileignoreconfig:
 - filename: server/tests/unit/utils/isValidEmail.test.ts
   checksum: dd0ea5aa2cf75c61cc8f179723bec24e2c1a1599b838bd4940244d913dfed2d1
 - filename: server/tests/unit/services/eligibleTrainingsForAppointment.service.test.ts
-  checksum: 299eeda8ed5d9f46feaf1e0988b5a739008ace169f220634aa345d22da7a5005
+  checksum: b4d6c4bc3706ba86b4aba6e0c2b73349c63139b9db6e8c0cdb232ba0ca163f16
 scopeconfig:
 - scope: node
 custom_patterns:
