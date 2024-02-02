@@ -147,7 +147,7 @@ const ResultLists = ({
 
       const isJobElement = scopeContext.isJob && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))
       const shouldShowFTJobs = isJobElement && jobCount < 100 // scope offre, moins de 100 offres
-      const shouldShowExtendSearchButton = isJobElement && jobCount < 100 && !extendedSearch && formValues.location // scope offre, moins de 100 offres pas déjà étendu, pas recherche france entière
+      const shouldShowExtendSearchButton = isJobElement && jobCount < 100 && !extendedSearch && formValues?.location?.value // scope offre, moins de 100 offres pas déjà étendu, pas recherche france entière
       const shouldShowNoJob = isJobElement && jobCount === 0 // scope offre, pas d'offre
       const shouldShowListEndText = !shouldShowFTJobs && !shouldShowExtendSearchButton && !shouldShowNoJob && jobCount + trainingCount > 0 // des offres ou des formations et pas les autres messages
 
