@@ -3,7 +3,6 @@ import { referrers } from "shared/constants/referers"
 
 import { logger } from "../../common/logger"
 import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
-import { isEmailBlacklisted } from "../../services/application.service"
 import { getEmailFromCatalogueField } from "../../services/catalogue.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
@@ -59,8 +58,6 @@ export const syncEtablissementsAndFormations = async () => {
             })
           }
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv as string)
-
           await eligibleTrainingsForAppointmentService.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
             {
@@ -71,7 +68,7 @@ export const syncEtablissementsAndFormations = async () => {
               training_code_formation_diplome: formation.cfd,
               etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
               training_intitule_long: formation.intitule_long,
-              referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
+              referrers: emailRdv ? referrersToActivate : [],
               is_catalogue_published: formation.published,
               rco_formation_id: formation.id_rco_formation,
               last_catalogue_sync_date: dayjs().format(),
@@ -93,8 +90,6 @@ export const syncEtablissementsAndFormations = async () => {
             etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv as string)
-
           await eligibleTrainingsForAppointmentService.create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
@@ -102,7 +97,7 @@ export const syncEtablissementsAndFormations = async () => {
             cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
             training_intitule_long: formation.intitule_long,
-            referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
+            referrers: emailRdv ? referrersToActivate : [],
             is_catalogue_published: formation.published,
             rco_formation_id: formation.id_rco_formation,
             lieu_formation_street: formation.lieu_formation_adresse,
