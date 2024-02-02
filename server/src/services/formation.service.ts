@@ -643,11 +643,11 @@ const sortFormations = (formations: ILbaItemFormation[]) => {
 /**
  * Retourne l'email le plus présent parmi toutes les formations du catalogue ayant un même "etablissement_formateur_siret".
  */
-export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_formateur_siret: string | undefined): Promise<string | null> => {
+export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_gestionnaire_siret: string | undefined): Promise<string | null> => {
   const formations = await FormationCatalogue.find(
     {
       email: { $ne: null },
-      etablissement_formateur_siret,
+      etablissement_gestionnaire_siret,
     },
     { email: 1 }
   ).lean()
