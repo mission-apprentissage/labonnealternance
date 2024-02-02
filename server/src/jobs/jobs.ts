@@ -123,10 +123,10 @@ export const CronsMap = {
   //   cron_string: "30 9 * * *",
   //   handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
   // },
-  "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
-    cron_string: "10 2 * * *",
-    handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
-  },
+  // "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
+  //   cron_string: "10 2 * * *",
+  //   handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
+  // },
   "Historisation des formations éligibles à la prise de rendez-vous.": {
     cron_string: "55 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
