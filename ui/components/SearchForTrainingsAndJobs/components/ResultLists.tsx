@@ -91,7 +91,7 @@ const ResultLists = ({
     } else if (!isTrainingSearchLoading) {
       if (trainings.length === 0) {
         return (
-          <Box mx={6} my={4} fontWeight={700}>
+          <Box mx={6} textAlign="center" my={4} fontWeight={700}>
             Aucune formation en alternance disponible pour ce métier
           </Box>
         )
