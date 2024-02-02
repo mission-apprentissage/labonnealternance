@@ -41,6 +41,8 @@ export const premiumInviteOneShot = async () => {
         continue
       }
 
+      if (!email) return
+
       const { messageId } = await mailer.sendEmail({
         to: email,
         subject: `Trouvez et recrutez vos candidats sur Parcoursup`,

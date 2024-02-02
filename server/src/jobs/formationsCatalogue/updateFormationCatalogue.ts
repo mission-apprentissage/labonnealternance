@@ -4,7 +4,7 @@ import { db } from "@/common/mongodb"
 
 import { logger } from "../../common/logger"
 import { FormationCatalogue } from "../../common/model/index"
-import { asyncForEach } from "../../common/utils/asyncUtils"
+import { asyncForEach, delay } from "../../common/utils/asyncUtils"
 import { getFormationsFromCatalogueMe } from "../../services/catalogue.service"
 
 export const updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection = async () => {
@@ -20,7 +20,10 @@ export const updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection =
       select: { parcoursup_id: 1, affelnet_statut: 1 },
     })
 
-    if (!formationME.length) return
+    if (!formationME.length) {
+      await delay(300)
+      return
+    }
 
     const { parcoursup_id, affelnet_statut } = formationME[0]
 

@@ -409,7 +409,7 @@ const transformFormationForIdea = (rawFormation: IFormationCatalogue): ILbaItemF
  */
 const setSessions = (formation: Partial<IFormationCatalogue>): ILbaItemTrainingSession[] => {
   const { date_debut, date_fin, modalites_entrees_sorties } = formation ?? {}
-  if (date_debut?.length && date_fin?.length && modalites_entrees_sorties?.length) {
+  if (date_debut?.length && date_debut?.length === date_fin?.length && date_debut?.length === modalites_entrees_sorties?.length) {
     return (date_debut ?? []).map((startDate, idx) => ({
       startDate: new Date(startDate),
       endDate: new Date(date_fin[idx]),
