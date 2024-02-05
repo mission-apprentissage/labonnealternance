@@ -55,6 +55,7 @@ export const activateOptOutEtablissementFormations = async () => {
         return
       }
 
+      if (!etablissement.gestionnaire_email) return
       // Send email
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,

@@ -52,8 +52,8 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
             emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
               email: formation.email,
-              etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
-              etablissement_formateur_siret: formation.etablissement_formateur_siret,
+              etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
+              etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             })
           }
 
@@ -89,8 +89,8 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
         } else {
           const emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
             email: formation.email,
-            etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
-            etablissement_formateur_siret: formation.etablissement_formateur_siret,
+            etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
+            etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
           let emailBlacklisted
 
