@@ -131,7 +131,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
                         <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
                       )}
                       {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
-                      {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
+                      {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed type={kind} sendingState={sendingState} />}
                     </form>
                   </ModalContent>
                 </Modal>
