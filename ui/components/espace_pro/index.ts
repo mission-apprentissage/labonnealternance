@@ -19,7 +19,6 @@ import InformationOpco from "./InformationOpco"
 import InfoTooltip from "./InfoToolTip"
 import Layout from "./Layout"
 import LoadingEmptySpace from "./LoadingEmptySpace"
-// import MailActionsOnOffre from "./MailActionsOnOffre"
 // import MatchaLbaOverlay from "./MatchaLbaOverlay"
 import Pagination from "./Pagination"
 // import PaginationReactQuery from "./PaginationReactQuery"
@@ -42,7 +41,6 @@ export {
   CustomInput,
   AuthentificationLayout,
   // Etablissement,
-  // MailActionsOnOffre,
   Bandeau,
   ConfirmationCreationCompte,
   Table,

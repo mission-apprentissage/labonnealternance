@@ -1,4 +1,4 @@
-import { Container, Flex } from "@chakra-ui/react"
+import { Box, Container, Flex } from "@chakra-ui/react"
 
 import Footer from "@/components/footer"
 
@@ -32,12 +32,12 @@ export default function Layout({
     <Container maxW="full" p="0">
       <Flex direction="column" h="100vh">
         {!widget && (
-          <>
+          <Box as="header">
             {header && <Header />}
             {displayNavigationMenu && <NavigationMenu rdva={rdva} />}
-          </>
+          </Box>
         )}
-        <Container maxW="container.xl" flexGrow="1">
+        <Container as="main" maxW="container.xl" flexGrow="1">
           {children}
         </Container>
         {!widget && footer && <Footer />}
