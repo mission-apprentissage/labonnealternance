@@ -32,7 +32,7 @@ const selectProperties = {
   border: "none !important",
 }
 
-const SearchForm = (props) => {
+const SearchFormResponsive = (props) => {
   const { hasSearch } = useContext(SearchResultContext)
   const { widgetParameters } = React.useContext(ParameterContext)
   const { formValues, isFormVisible } = React.useContext(DisplayContext)
@@ -93,7 +93,7 @@ const SearchForm = (props) => {
                   <Box {...focusWithin}>
                     <AutoCompleteField
                       id="searchFormJobField"
-                      kind="Métier ou diplôme *"
+                      kind="Métier B ou diplôme *"
                       items={[]}
                       hasError={errors.job}
                       initialSelectedItem={contextFormValues?.job || null}
@@ -230,4 +230,4 @@ const SearchForm = (props) => {
   )
 }
 
-export default SearchForm
+export default SearchFormResponsive

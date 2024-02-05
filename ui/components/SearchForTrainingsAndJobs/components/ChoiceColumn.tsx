@@ -18,7 +18,7 @@ import { defaultFilters } from "../services/utils"
 import { insertWhisper } from "../services/whispers"
 
 import ResultLists from "./ResultLists"
-import SearchForm from "./SearchForm"
+import SearchFormResponsive from "./SearchFormResponsive"
 
 const ChoiceColumn = ({
   showResultList,
@@ -138,7 +138,6 @@ const ChoiceColumn = ({
 
     formValues.location = newCenter
 
-    console.log("ICI B", formValues)
     setFormValues(formValues)
 
     // mise à jour des infos de distance des formations par rapport au nouveau centre de recherche
@@ -198,7 +197,7 @@ const ChoiceColumn = ({
   const getSearchForm = () => {
     return (
       <Box background="white" padding="0.5rem 1rem 2rem" display={isFormVisible ? ["block", "block", "none"] : "none"}>
-        <SearchForm showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
+        <SearchFormResponsive showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
       </Box>
     )
   }

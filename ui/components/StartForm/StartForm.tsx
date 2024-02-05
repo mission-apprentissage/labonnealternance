@@ -5,7 +5,7 @@ import React, { useContext } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
-import SearchForm from "../SearchForTrainingsAndJobs/components/SearchForm"
+import SearchFormResponsive from "../SearchForTrainingsAndJobs/components/SearchFormResponsive"
 import WidgetHeader from "../WidgetHeader/WidgetHeader"
 
 const StartForm = () => {
@@ -15,7 +15,6 @@ const StartForm = () => {
   const { setShouldExecuteSearch } = useContext(ParameterContext)
 
   const handleSearchSubmit = ({ values }) => {
-    console.log("ICI C", pick(values, ["job", "location", "radius", "diploma"]))
     setFormValues(pick(values, ["job", "location", "radius", "diploma"]))
     setShouldExecuteSearch(true)
     router.push("/recherche-apprentissage")
@@ -28,7 +27,7 @@ const StartForm = () => {
   return (
     <>
       <Box display={["block", "block", "block", "none"]}>
-        <SearchForm handleSearchSubmit={handleSearchSubmitFunction} isHome={true} showResultList={() => {}} />
+        <SearchFormResponsive handleSearchSubmit={handleSearchSubmitFunction} isHome={true} showResultList={() => {}} />
       </Box>
       <Box display={["none", "none", "none", "block"]}>
         <WidgetHeader handleSearchSubmit={handleSearchSubmit} isHome={true} />

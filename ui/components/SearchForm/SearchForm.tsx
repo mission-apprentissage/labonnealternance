@@ -31,7 +31,7 @@ const selectProperties = {
   border: "none !important",
 }
 
-const HeaderForm = ({ handleSearchSubmit, isHome }) => {
+const SearchForm = ({ handleSearchSubmit, isHome }) => {
   const { widgetParameters } = React.useContext(ParameterContext)
   const { formValues } = React.useContext(DisplayContext)
 
@@ -42,6 +42,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
     setDiploma(contextFormValues?.diploma ?? "")
     // @ts-expect-error: TODO
   }, [widgetParameters?.applyFormValues])
+
   // @ts-expect-error: TODO
   const contextFormValues = widgetParameters?.applyFormValues && widgetParameters?.formValues ? widgetParameters.formValues : formValues
 
@@ -64,7 +65,11 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
 
   const renderFormik = () => {
     return (
-      <Formik validate={(values) => validateFormik(values, widgetParameters)} initialValues={{ job: {}, location: {}, radius: 30, diploma: "" }} onSubmit={handleSearchSubmit}>
+      <Formik
+        validate={(values) => validateFormik(values, widgetParameters)}
+        initialValues={{ job: {}, location: contextFormValues?.location ?? null, radius: contextFormValues?.radius ?? 30, diploma: contextFormValues?.diploma ?? "" }}
+        onSubmit={handleSearchSubmit}
+      >
         {({ isSubmitting, setFieldValue, errors }) => (
           <Form data-testid="widget-form">
             <Flex>
@@ -159,4 +164,4 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
   return <Box>{domainError || diplomaError ? <DomainError position="header" setDomainError={setDomainError} setDiplomaError={setDiplomaError} /> : renderFormik()}</Box>
 }
 
-export default HeaderForm
+export default SearchForm
