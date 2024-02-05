@@ -71,7 +71,7 @@ const SearchFormResponsive = (props) => {
     return (
       <Formik
         validate={(values) => validateFormik(values, widgetParameters)}
-        initialValues={{ job: {}, location: {}, radius: 30, diploma: "" }}
+        initialValues={{ job: {}, location: {}, radius: contextFormValues?.radius ?? 30, diploma: contextFormValues?.diploma ?? "" }}
         onSubmit={props.handleSearchSubmit}
       >
         {({ isSubmitting, setFieldValue, errors }) => (

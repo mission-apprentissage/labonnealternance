@@ -67,7 +67,7 @@ const SearchForm = ({ handleSearchSubmit, isHome }) => {
     return (
       <Formik
         validate={(values) => validateFormik(values, widgetParameters)}
-        initialValues={{ job: {}, location: contextFormValues?.location ?? null, radius: contextFormValues?.radius ?? 30, diploma: contextFormValues?.diploma ?? "" }}
+        initialValues={{ job: {}, location: {}, radius: contextFormValues?.radius ?? 30, diploma: contextFormValues?.diploma ?? "" }}
         onSubmit={handleSearchSubmit}
       >
         {({ isSubmitting, setFieldValue, errors }) => (
