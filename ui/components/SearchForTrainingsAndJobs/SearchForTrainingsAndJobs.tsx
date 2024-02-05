@@ -179,7 +179,6 @@ const SearchForTrainingsAndJobs = () => {
 
     flyToCenter(values)
 
-    console.log("ICI A ", values)
     setFormValues({ ...values })
 
     if (scopeContext.isTraining) {
