@@ -23,10 +23,16 @@ export const FlowCreationEntreprise = {
       cy.get("input[name='email'").type(email)
     },
     submit() {
-      cy.get("button[type='submit']").click({ timeout: 10000 })
+      cy.get("button[type='submit']").click()
+    },
+    confirmAccountCreation() {
+      cy.get("[data-testid='confirm-account-creation']", { timeout: 20000 }).click()
     },
   },
   offerPage: {
+    assertUrl() {
+      cy.url().should("contain", "/espace-pro/creation/offre?")
+    },
     fillForm({
       romeLabel,
       studyLevel,
@@ -45,7 +51,7 @@ export const FlowCreationEntreprise = {
       jobDurationInMonths: number
     }) {
       cy.get("[data-testid='offre-metier'] input").click()
-      cy.get("[data-testid='offre-metier'] input").type(romeLabel.substring(0, 12))
+      cy.get("[data-testid='offre-metier'] input").type(romeLabel.substring(0, romeLabel.length - 10))
       cy.get(`[data-testid='offre-metier'] #downshift-1-item-0 p:first-of-type`, { timeout: 10000 }).should("have.text", romeLabel)
       cy.get(`[data-testid='offre-metier'] [data-testid='${romeLabel}']`).click()
 
@@ -85,8 +91,11 @@ export const FlowCreationEntreprise = {
         cy.contains(cfa).should("have.text", cfa).parents("[data-testid^='cfa-']").find("input[type='checkbox']").check({ force: true })
       })
     },
+    submitNoDelegation() {
+      cy.get("[data-testid='pass-delegation']").click()
+    },
     submit() {
-      cy.get("button").contains("Envoyer ma demande").click()
+      cy.get("[data-testid='submit-delegation']").click()
     },
   },
   emailSentPage: {

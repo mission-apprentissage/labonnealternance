@@ -14,4 +14,3 @@ describe("create-recruiter-account-siret-malformate", () => {
     cy.get("button[type='submit']").should("be.disabled")
   })
 })
-//# recorderSourceMap=BCBDBEBFBGBHA
