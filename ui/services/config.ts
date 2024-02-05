@@ -76,8 +76,6 @@ export const getWidgetParameters = () => {
     widgetParameters.applyFormValues = true
   }
 
-  console.log("WIDGETPARAMETERS : ", widgetParameters)
-
   return widgetParameters
 }
 
@@ -177,15 +175,13 @@ const buildFormValuesFromParameters = (params) => {
   return formValues
 }
 
-export const initParametersFromQuery = ({ router, shouldPush = undefined, parameterContext, setFormValues }) => {
+export const initParametersFromQuery = ({ router, shouldPush = undefined, parameterContext }) => {
   let hasParameters = false
 
   const widgetParameters = getWidgetParameters()
   if (widgetParameters?.applyWidgetParameters) {
     if (widgetParameters.applyFormValues) {
       widgetParameters.formValues = buildFormValuesFromParameters(widgetParameters.parameters)
-      console.log("Ici D", widgetParameters.formValues)
-      setFormValues(widgetParameters.formValues)
     }
     parameterContext.setWidgetParameters(widgetParameters)
   }

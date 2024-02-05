@@ -2,8 +2,6 @@ import { Box, Image } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 
-import { DisplayContext } from "@/context/DisplayContextProvider"
-
 import Footer from "../components/footer"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
 import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
@@ -35,10 +33,9 @@ const Home = () => {
   const router = useRouter()
 
   const parameterContext = React.useContext(ParameterContext)
-  const { setFormValues } = React.useContext(DisplayContext)
 
   useEffect(() => {
-    initParametersFromQuery({ router, shouldPush: "shouldPushPathname", parameterContext, setFormValues })
+    initParametersFromQuery({ router, shouldPush: "shouldPushPathname", parameterContext })
   }, [])
 
   return (

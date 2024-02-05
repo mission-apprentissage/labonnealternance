@@ -93,7 +93,7 @@ const SearchFormResponsive = (props) => {
                   <Box {...focusWithin}>
                     <AutoCompleteField
                       id="searchFormJobField"
-                      kind="Métier B ou diplôme *"
+                      kind="Métier ou diplôme *"
                       items={[]}
                       hasError={errors.job}
                       initialSelectedItem={contextFormValues?.job || null}
