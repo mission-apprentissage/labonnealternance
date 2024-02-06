@@ -5,6 +5,7 @@ import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 import { IApplication, IJob, ILbaCompany, INewApplication, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 
@@ -460,7 +461,7 @@ const checkUserApplicationCount = async (applicantEmail: string, company_siret: 
   })
 
   if (appCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
-    return "max candidatures atteint"
+    return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY
   }
 
   appCount = await Application.countDocuments({
@@ -468,8 +469,8 @@ const checkUserApplicationCount = async (applicantEmail: string, company_siret: 
     company_siret,
   })
 
-  if (appCount > MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT) {
-    return "max messages atteint pour cette société"
+  if (appCount >= MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT) {
+    return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_COMPANY
   }
 
   return "ok"
