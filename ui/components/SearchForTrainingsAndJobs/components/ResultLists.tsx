@@ -12,6 +12,7 @@ import { getJobCount } from "../services/utils"
 
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
+import RechercheCDICDD from "./rechercheCDDCDI"
 import ResultFilterAndCounter from "./ResultFilterAndCounter"
 import ResultListsLoading from "./ResultListsLoading"
 
@@ -35,6 +36,7 @@ const ResultLists = ({
   stubbedIsFormVisible = undefined,
 }) => {
   const scopeContext = useContext(ScopeContext)
+  const { formValues } = useContext(DisplayContext)
 
   let [extendedSearch, hasSearch, isFormVisible] = [false, false, false]
 
@@ -56,8 +58,18 @@ const ResultLists = ({
         </Box>
       )
     } else {
-      return ""
+      return <></>
     }
+  }
+
+  const getListEndText = () => {
+    return (
+      <Box mt={4} textAlign="center" color="grey.425" fontWeight={14} fontStyle="italic">
+        Vous êtes arrivé.e au bout de la liste.
+        <br />
+        Pour voir d'autres possibilités, revenez plus tard ou changez vos critères de recherche
+      </Box>
+    )
   }
 
   const getTrainingList = () => {
@@ -65,7 +77,7 @@ const ResultLists = ({
       return (
         <>
           {searchRadius < trainings[0].place.distance && (
-            <Box fontWeight={700} ml={4} px={4} py={4}>
+            <Box fontWeight={700} textAlign="center" ml={4} px={4} py={4}>
               Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
             </Box>
           )}
@@ -79,7 +91,7 @@ const ResultLists = ({
     } else if (!isTrainingSearchLoading) {
       if (trainings.length === 0) {
         return (
-          <Box mx={6} my={4} fontWeight={700}>
+          <Box mx={6} textAlign="center" my={4} fontWeight={700}>
             Aucune formation en alternance disponible pour ce métier
           </Box>
         )
@@ -88,59 +100,69 @@ const ResultLists = ({
   }
 
   const getJobResult = () => {
-    if (hasSearch && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
-      if (allJobSearchError) return ""
-
+    if (hasSearch && !allJobSearchError && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
       const jobCount = getJobCount(jobs)
 
       if (jobCount) {
+        let consolidatedJobList = <></>
+
         if (!activeFilters.includes("jobs")) {
-          return (
-            <Box bg="beige" id="jobList">
-              {getPartnerJobList()}
-            </Box>
-          )
+          consolidatedJobList = getPartnerJobList()
         } else if (extendedSearch) {
-          const mergedJobList = getMergedJobList()
-          return (
-            <Box bg="beige" id="jobList">
-              {mergedJobList ? <>{mergedJobList}</> : ""}
-            </Box>
-          )
+          consolidatedJobList = getMergedJobList()
         } else {
-          const jobList = getJobList()
+          const lbaJobList = getJobList()
           const lbbCompanyList = getLbbCompanyList()
-          return (
-            <Box bg="beige" id="jobList" textAlign="center">
-              {jobList || lbbCompanyList ? (
-                <>
-                  {jobList}
-                  {lbbCompanyList}
-                  {jobCount < 100 ? <ExtendedSearchButton title="Voir plus de résultats" handleExtendedSearch={handleExtendedSearch} /> : ""}
-                </>
-              ) : (
-                <Box m={6}>
-                  <NoJobResult />
-                  <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={handleExtendedSearch} />
-                </Box>
-              )}
-            </Box>
-          )
+
+          if (lbaJobList || lbbCompanyList) {
+            consolidatedJobList = (
+              <>
+                {lbaJobList}
+                {lbbCompanyList}
+              </>
+            )
+          }
         }
-      } else {
-        if (extendedSearch) {
-          return <NoJobResult />
-        } else
-          return (
-            <Box m={6}>
-              <NoJobResult />
-              <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={handleExtendedSearch} />
-            </Box>
-          )
+
+        return (
+          <Box bg="beige" id="jobList">
+            {consolidatedJobList}
+          </Box>
+        )
       }
-    } else {
-      return ""
     }
+
+    return <></>
+  }
+
+  const getListFooter = () => {
+    if (hasSearch) {
+      const trainingCount = scopeContext.isTraining && activeFilters.includes("trainings") ? trainings.length : 0
+
+      let jobCount = 0
+
+      if (!allJobSearchError && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
+        jobCount = getJobCount(jobs)
+      }
+
+      const isJobElement = scopeContext.isJob && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))
+      const shouldShowFTJobs = isJobElement && jobCount < 100 // scope offre, moins de 100 offres
+      const shouldShowExtendSearchButton = isJobElement && jobCount < 100 && !extendedSearch && formValues?.location?.value // scope offre, moins de 100 offres pas déjà étendu, pas recherche france entière
+      const shouldShowNoJob = isJobElement && jobCount === 0 // scope offre, pas d'offre
+      const shouldShowListEndText = !shouldShowFTJobs && !shouldShowExtendSearchButton && !shouldShowNoJob && jobCount + trainingCount > 0 // des offres ou des formations et pas les autres messages
+
+      return (
+        <Box m={6}>
+          {shouldShowListEndText && getListEndText()}
+          {shouldShowNoJob && <NoJobResult />}
+          {shouldShowExtendSearchButton && (
+            <ExtendedSearchButton title={jobCount ? "Peu de résultats dans votre zone de recherche" : ""} handleExtendedSearch={handleExtendedSearch} />
+          )}
+          {shouldShowFTJobs && <RechercheCDICDD />}
+        </Box>
+      )
+    }
+    return <></>
   }
 
   const getPartnerJobList = () => {
@@ -154,7 +176,7 @@ const ResultLists = ({
         </>
       )
     } else {
-      return ""
+      return <></>
     }
   }
 
@@ -201,7 +223,7 @@ const ResultLists = ({
         </>
       )
     } else {
-      return ""
+      return <></>
     }
   }
 
@@ -255,9 +277,10 @@ const ResultLists = ({
         display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}
         bg="beige"
       >
-        <Box margin="auto" maxWidth="1310px">
+        <Box margin="auto" maxWidth="1310px" pb={10}>
           {getTrainingResult()}
           {getJobResult()}
+          {getListFooter()}
         </Box>
       </Box>
     </Flex>

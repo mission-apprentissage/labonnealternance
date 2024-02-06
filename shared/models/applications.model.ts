@@ -106,6 +106,10 @@ export const ZNewApplication = ZApplication.extend({
     example: "...59c24c059b...",
   }),
   secret: z.string().nullish(),
+  company_email: z.string().nullish().openapi({
+    description: "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
+    example: "fake@dummy.com",
+  }),
   crypted_company_email: z.string().nullish(),
   caller: zCallerParam.nullish(),
   job_id: ZApplication.shape.job_id.optional(),
@@ -142,6 +146,8 @@ export const ZUsedNewApplication = ZNewApplication.pick({
   applicant_file_name: true,
   message: true,
   applicant_phone: true,
+  secret: true,
+  company_email: true,
 })
 
 export type INewApplication = z.output<typeof ZUsedNewApplication>
