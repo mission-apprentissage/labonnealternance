@@ -16,31 +16,35 @@ function parseQueryString(value: string | string[]): string {
   return Array.isArray(value) ? value[0] : value
 }
 
+const ZComponentProps = z
+  .object({
+    job: z.string(),
+    email: z.string(),
+    withDelegation: z.enum(["true", "false"]).transform((value) => value === "true"),
+    fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
+    userId: z.union([z.string(), zObjectId]),
+    establishment_id: z.string(),
+  })
+  .strict()
+
+type ComponentProps = z.output<typeof ZComponentProps>
+
 export default function DepotRapideFin() {
   const router = useRouter()
 
   if (!router.isReady) return
 
-  const parsedQuery = z
-    .object({
-      job: z.string(),
-      email: z.string(),
-      withDelegation: z.enum(["true", "false"]).transform((value) => value === "true"),
-      fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
-      userId: zObjectId,
-      establishment_id: z.string(),
-    })
-    .strict()
-    .safeParse(router.query)
+  const parsedQuery = ZComponentProps.safeParse(router.query)
 
   if (parsedQuery.success === false) {
+    console.error(parsedQuery.error)
     throw new Error("Arguments incorrects")
   }
 
   return <FinComponent {...parsedQuery.data} />
 }
 
-function FinComponent(props) {
+function FinComponent(props: ComponentProps) {
   const [disableLink, setDisableLink] = useState(false)
   const [userIsValidated, setUserIsValidated] = useState(false)
   const [userIsInError, setUserIsInError] = useState(false)
