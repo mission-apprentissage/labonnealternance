@@ -55,7 +55,7 @@ const CandidatureLbaFailed = ({ sendingState }) => {
   return (
     <Container data-testid="CandidatureSpontaneeFailed">
       <Text as="h1" mb={10} fontSize="1.5rem" fontWeight={700}>
-        Candidature spontanée
+        Erreur
       </Text>
       <Flex direction="row" alignItems="center">
         <Image src="/images/icons/input_value_error.svg" mr={4} alt="" />
