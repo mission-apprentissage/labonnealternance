@@ -19,7 +19,7 @@ import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
-import { updateFormationCatalogue } from "./formationsCatalogue/updateFormationCatalogue"
+import { updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection } from "./formationsCatalogue/updateFormationCatalogue"
 import { addJob, executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
@@ -49,14 +49,15 @@ import buildSAVE from "./lbb/buildSAVE"
 import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
+import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { activateOptOutEtablissementFormations } from "./rdv/activateOptOutEtablissementFormations"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
+import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
+import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { inviteEtablissementToPremium } from "./rdv/inviteEtablissementToPremium"
-import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementToPremiumAffelnet"
 import { inviteEtablissementToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUp"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUpAffelnet"
 import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
@@ -122,10 +123,10 @@ export const CronsMap = {
   //   cron_string: "30 9 * * *",
   //   handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
   // },
-  "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
-    cron_string: "10 2 * * *",
-    handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
-  },
+  // "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
+  //   cron_string: "10 2 * * *",
+  //   handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
+  // },
   "Historisation des formations éligibles à la prise de rendez-vous.": {
     cron_string: "55 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
@@ -134,10 +135,11 @@ export const CronsMap = {
     cron_string: "10 0 1 * *",
     handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
   },
-  "Récupère la liste de toutes les formations Affelnet du Catalogue et les enregistre en base de données.": {
-    cron_string: "15 8 * * *",
-    handler: () => addJob({ name: "etablissements:formations:affelnet:sync", payload: {} }),
-  },
+  // 20240201 KEVIN - A CORRIGER AVANT DE REACTIVER
+  // "Récupère la liste de toutes les formations Affelnet du Catalogue et les enregistre en base de données.": {
+  //   cron_string: "15 8 * * *",
+  //   handler: () => addJob({ name: "etablissements:formations:affelnet:sync", payload: {} }),
+  // },
   // "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
   //   cron_string: "15 9 * * *",
   //   handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
@@ -198,6 +200,10 @@ export const CronsMap = {
     cron_string: "30 1 * * *",
     handler: () => addJob({ name: "anonymize:appointments", payload: {} }),
   },
+  "Lancement du garbage collector": {
+    cron_string: "30 3 * * *",
+    handler: () => addJob({ name: "garbage-collector:run", payload: {} }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -216,6 +222,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "garbage-collector:run":
+        return runGarbageCollector()
       case "anonymize:appointments":
         return anonymizeOldAppointments()
       case "recruiters:delegations": // Temporaire, doit tourner une fois en production
@@ -293,8 +301,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return activateOptOutEtablissementFormations()
       case "etablissement:invite:opt-out":
         return inviteEtablissementToOptOut()
-      case "etablissement:invite:premium":
-        return inviteEtablissementToPremium()
+      case "etablissement:invite:premium:parcoursup":
+        return inviteEtablissementParcoursupToPremium()
       case "etablissement:invite:premium:affelnet":
         return inviteEtablissementAffelnetToPremium()
       case "etablissement:invite:premium:follow-up":
@@ -320,7 +328,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "catalogue:trainings:sync":
         return importCatalogueFormationJob()
       case "catalogue:trainings:sync:extra":
-        return updateFormationCatalogue()
+        return updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection()
       case "brevo:blocked:sync":
         return updateBrevoBlockedEmails(job.payload)
       case "applications:anonymize":

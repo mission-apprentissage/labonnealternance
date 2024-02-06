@@ -91,7 +91,7 @@ const runner = async (job: IInternalJobs, jobFunc: () => Promise<unknown>): Prom
   } catch (err: any) {
     captureException(err)
     jobLogger.error({ err, writeErrors: err.writeErrors, error: err }, "job error")
-    await notifyToSlack({ subject: `Job ${job.name}`, message: `error while running job with id=${job._id}` })
+    await notifyToSlack({ subject: `Job ${job.name}`, message: `error while running job with id=${job._id}`, error: true })
     error = err?.stack
   }
 
