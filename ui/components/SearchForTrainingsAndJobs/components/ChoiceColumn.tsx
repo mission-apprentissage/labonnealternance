@@ -1,4 +1,4 @@
-import { Box, Image, Text } from "@chakra-ui/react"
+import { Box, Flex, Image, Text } from "@chakra-ui/react"
 import distance from "@turf/distance"
 import { round } from "lodash"
 import { useRouter } from "next/router"
@@ -205,29 +205,26 @@ const ChoiceColumn = ({
   const getInitialDesktopText = () => {
     const displayProperty = shouldShowWelcomeMessage ? ["none", "none", "block"] : "none"
 
-    const noSearchTextProperties = {
-      margin: "auto",
-      width: "80%",
-      minWidth: "250px",
-      maxWidth: "600px",
-      background: "white",
-      boxShadow: "0px 0px 12px 2px rgba(0, 0, 0, 0.21)",
-      borderRadius: "8px",
-      textAlign: "center",
-    }
-
     return (
-      <Box display={displayProperty} width="75%" margin="auto" pt={12}>
-        <Image margin="auto" width="75%" maxWidth="600px" src="/images/dosearch.svg" alt="" />
-        {/* @ts-expect-error: TODO */}
-        <Box pl={12} pr={8} py={4} {...noSearchTextProperties}>
-          <Box textAlign="left">
-            <Text fontSize="1.7rem" mb={2} fontWeight={700}>
-              Faites une recherche
-            </Text>
-            <Text>Renseignez les champs de recherche ci-dessus pour trouver la formation et l&apos;entreprise pour réaliser votre projet d&apos;alternance</Text>
+      <Box display={displayProperty} width={{ base: "75%", lg: "60%", xl: "50%" }} margin="auto" pt={12}>
+        <Flex>
+          <Image src="/images/dosearch.svg" alt="" aria-hidden="true" />
+          <Box pl={12} pt={12}>
+            <Box textAlign="left">
+              <Text as="h1" fontSize={32} mb={2} fontWeight={700}>
+                Trouvez votre{" "}
+                <Text as="span" color="#6A6AF4">
+                  alternance
+                </Text>
+              </Text>
+              <Text fontWeight={20} lineHeight="32px">
+                Démarrez une recherche pour trouver votre
+                <br />
+                {scopeContext.isJob && scopeContext.isTraining ? "formation ou votre emploi" : scopeContext.isJob ? "emploi" : "formation"} en alternance
+              </Text>
+            </Box>
           </Box>
-        </Box>
+        </Flex>
       </Box>
     )
   }

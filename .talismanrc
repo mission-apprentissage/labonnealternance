@@ -55,6 +55,8 @@ fileignoreconfig:
   checksum: 935cd8f213565ba7bcc2925fca149aaa6cbe9bb5e393a13ab3525dff6ad17234
 - filename: server/src/services/userRecruteur.service.ts
   checksum: fb8fc73f5ac4491b2a7be99ceaebf96c79bffa63fa6b164eed6e2d3d9fe5dae0
+- filename: server/static/templates/mail-bienvenue.mjml.ejs
+  checksum: 40c4c93702c7727cd8d76f5eb340b6566c31ef36698866261316be9ed0684150
 - filename: server/tests/integration/http/formationV1.test.ts
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
@@ -65,8 +67,12 @@ fileignoreconfig:
   checksum: 9c157ea55171c74fa50b493577f1529f5c5c005c8137b390c9dfa719f6ba87ba
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
+- filename: server/tests/unit/services/eligibleTrainingsForAppointment.service.test.ts
+  checksum: b4d6c4bc3706ba86b4aba6e0c2b73349c63139b9db6e8c0cdb232ba0ca163f16
 - filename: server/tests/unit/util.test.ts
   checksum: d38ae060280f0cb1579894ac2fcbfdd0a48b49eafc54f7ba3c7db0e422230547
+- filename: server/tests/unit/utils/isValidEmail.test.ts
+  checksum: dd0ea5aa2cf75c61cc8f179723bec24e2c1a1599b838bd4940244d913dfed2d1
 - filename: server/tests/unit/validateSendApplication.test.ts
   checksum: 997c5eb4940ea43126f96169dc22fcee7f1890ed19b23aa8b3bffd3522ff7b04
 - filename: shared/constants/recruteur.ts
@@ -111,10 +117,6 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-- filename: server/tests/unit/utils/isValidEmail.test.ts
-  checksum: dd0ea5aa2cf75c61cc8f179723bec24e2c1a1599b838bd4940244d913dfed2d1
-- filename: server/tests/unit/services/eligibleTrainingsForAppointment.service.test.ts
-  checksum: b4d6c4bc3706ba86b4aba6e0c2b73349c63139b9db6e8c0cdb232ba0ca163f16
 scopeconfig:
 - scope: node
 custom_patterns:
