@@ -35,7 +35,7 @@ const sendingStateValues = {
   },
 }
 
-const CandidatureLbaFailed = ({ type, sendingState }) => {
+const CandidatureLbaFailed = ({ sendingState }) => {
   const errorReasonText = () => {
     return (
       <>
@@ -55,7 +55,7 @@ const CandidatureLbaFailed = ({ type, sendingState }) => {
   return (
     <Container data-testid="CandidatureSpontaneeFailed">
       <Text as="h1" mb={10} fontSize="1.5rem" fontWeight={700}>
-        {type === "matcha" ? "Candidature à une offre" : "Candidature spontanée"}
+        Erreur
       </Text>
       {errorReasonText()}
     </Container>
