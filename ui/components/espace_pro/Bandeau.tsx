@@ -1,6 +1,14 @@
 import { Box, Center, Heading, Icon, Link, Stack, Text } from "@chakra-ui/react"
+import { assertUnreachable } from "shared"
 
 import { CircleCheck, OctogoneCross } from "../../theme/components/icons"
+
+export type BandeauProps = {
+  header: React.ReactNode
+  description: React.ReactNode
+  lien?: string
+  type: "success" | "error"
+}
 
 const Bandeau = ({ header, description, lien = null, type }) => {
   const color = getBannerColor(type)
@@ -27,13 +35,14 @@ const Bandeau = ({ header, description, lien = null, type }) => {
   )
 }
 
-const getBannerColor = (type) => {
+const getBannerColor = (type: "success" | "error") => {
   switch (type) {
     case "success":
       return "#18753C"
     case "error":
       return "red.500"
     default:
+      assertUnreachable(type)
       return ""
   }
 }

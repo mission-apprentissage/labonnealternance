@@ -13,13 +13,29 @@ import { LogoContext } from "../../../context/contextLogo"
 import { WidgetContext } from "../../../context/contextWidget"
 import { SearchLine } from "../../../theme/components/icons"
 import { getCfaInformation, getEntrepriseInformation, getEntrepriseOpco } from "../../../utils/api"
+import { BandeauProps } from "../Bandeau"
 import { Section } from "../common/components/Section"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
 import { AnimationContainer, AuthentificationLayout, Bandeau, CustomInput, InformationLegaleEntreprise } from "../index"
+import { InformationLegaleEntrepriseProps } from "../InformationLegaleEntreprise"
 
-const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
+const CreationCompteForm = ({
+  type,
+  setQualiopi,
+  setBandeau,
+  origin,
+  isWidget,
+}: {
+  type: AUTHTYPE.ENTREPRISE | AUTHTYPE.CFA
+  isWidget: boolean
+  origin: string
+  setQualiopi: (props: InformationLegaleEntrepriseProps) => void
+  setBandeau: (props: BandeauProps) => void
+}) => {
   const router = useRouter()
   const [isCfa, setIsCfa] = useState(false)
+
+  const nextUri = isWidget ? "/espace-pro/widget/entreprise/detail" : "/espace-pro/creation/detail"
 
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
     setBandeau(null)
@@ -30,7 +46,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
         if (entrepriseData.error === true) {
           if (entrepriseData.statusCode >= 500) {
             router.push({
-              pathname: "/espace-pro/creation/detail",
+              pathname: nextUri,
               query: { type, origin, informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
             })
           } else {
@@ -41,7 +57,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
         } else if (entrepriseData.error === false) {
           setSubmitting(true)
           router.push({
-            pathname: "/espace-pro/creation/detail",
+            pathname: nextUri,
             query: { informationSiret: JSON.stringify({ ...entrepriseData.data, ...opcoInfos }), type, origin },
           })
         }
@@ -51,7 +67,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
         .then((data) => {
           setSubmitting(false)
           router.push({
-            pathname: "/espace-pro/creation/detail",
+            pathname: nextUri,
             query: { informationSiret: JSON.stringify(data), type, origin },
           })
         })
@@ -158,11 +174,11 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
   )
 }
 
-export default function CreationCompte({ type, widget = false, origin = "lba" }) {
+export default function CreationCompte({ type, widget = false, origin = "lba" }: { type: AUTHTYPE.ENTREPRISE | AUTHTYPE.CFA; widget?: boolean; origin?: string }) {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
-  const [qualiopi, setQualiopi] = useState(null)
-  const [bandeau, setBandeau] = useState(null)
+  const [qualiopi, setQualiopi] = useState<InformationLegaleEntrepriseProps>(null)
+  const [bandeau, setBandeau] = useState<BandeauProps>(null)
   const router = useRouter()
   const mobile = router.query.mobile === "true" ? true : false
 
@@ -177,7 +193,7 @@ export default function CreationCompte({ type, widget = false, origin = "lba" })
   return (
     <AuthentificationLayout>
       <AnimationContainer>
-        {bandeau && <Bandeau {...(bandeau as any)} />}
+        {bandeau && <Bandeau {...bandeau} />}
         <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 0, 0, "75px"]} mt={wid.isWidget ? 0 : 12}>
           <Box>
             {wid.isWidget && (
@@ -189,7 +205,7 @@ export default function CreationCompte({ type, widget = false, origin = "lba" })
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
               Nous avons besoin du numéro SIRET de votre {type === AUTHTYPE.ENTREPRISE ? "entreprise" : "organisme de formation"} afin de vous identifier.
             </Text>
-            <CreationCompteForm type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} origin={origin} />
+            <CreationCompteForm type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} origin={origin} isWidget={widget} />
           </Box>
           <Box mt={[4, 4, 4, 0]}>
             {qualiopi ? (

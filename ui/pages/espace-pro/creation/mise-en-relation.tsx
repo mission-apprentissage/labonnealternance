@@ -9,7 +9,7 @@ import { createEtablissementDelegation, getRelatedEtablissementsFromRome } from 
  * @description "Mise en relation" page.
  * @return {JSX.Element}
  */
-export default function CreationMiseEnRelation() {
+function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
   const router = useRouter()
 
   const [etablissements, setEtablissements] = useState(null)
@@ -33,7 +33,7 @@ export default function CreationMiseEnRelation() {
 
   const goToEndStep = ({ withDelegation }) => {
     router.replace({
-      pathname: "/espace-pro/creation/fin",
+      pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
       query: { job: JSON.stringify(job), email, withDelegation, fromDashboard, userId, establishment_id },
     })
   }
@@ -193,3 +193,5 @@ export default function CreationMiseEnRelation() {
     </>
   )
 }
+
+export default CreationMiseEnRelationPage
