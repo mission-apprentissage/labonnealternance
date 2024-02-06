@@ -10,7 +10,7 @@ import { startSession, stopSession } from "../../common/utils/session.service"
 import config from "../../config"
 import { sendUserConfirmationEmail } from "../../services/etablissement.service"
 import { controlUserState } from "../../services/login.service"
-import mailer from "../../services/mailer.service"
+import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { getUser, updateLastConnectionDate } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
@@ -73,8 +73,8 @@ export default (server: Server) => {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
-          last_name: removeUrlsFromText(last_name),
-          first_name: removeUrlsFromText(first_name),
+          last_name: sanitizeForEmail(removeUrlsFromText(last_name)),
+          first_name: sanitizeForEmail(removeUrlsFromText(first_name)),
           connexion_url: createAuthMagicLink(user),
         },
       })

@@ -5,8 +5,9 @@ import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 import { IApplication, IJob, ILbaCompany, INewApplication, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
-import { disableUrlsWith0WidthChar, prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { UserForAccessToken } from "@/security/accessTokenService"
@@ -22,7 +23,7 @@ import { BrevoEventStatus } from "./brevo.service"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import { buildLbaCompanyAddress } from "./lbacompany.service"
-import mailer from "./mailer.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 
 const MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT = 3
@@ -171,10 +172,20 @@ export const sendApplication = async ({
 
       // Sends acknowledge email to "candidate" and application email to "company"
       const emailCompany = await mailer.sendEmail({
-        to: application.company_email,
+        to:
+          newApplication.company_email && newApplication.secret && newApplication.secret === config.secretUpdateRomesMetiers
+            ? newApplication.company_email
+            : application.company_email,
         subject: buildTopic(newApplication.company_type, application.job_title),
         template: getEmailTemplate("mail-candidature"),
-        data: { ...application.toObject(), ...images, ...recruiterEmailUrls, searched_for_job_label, urlOfDetail, urlOfDetailNoUtm },
+        data: {
+          ...sanitizeApplicationForEmail(application.toObject()),
+          ...images,
+          ...recruiterEmailUrls,
+          searched_for_job_label: sanitizeForEmail(searched_for_job_label),
+          urlOfDetail,
+          urlOfDetailNoUtm,
+        },
         attachments: [
           {
             filename: application.applicant_attachment_name,
@@ -186,7 +197,7 @@ export const sendApplication = async ({
         to: application.applicant_email,
         subject: `Votre candidature chez ${application.company_name}`,
         template: getEmailTemplate(offreType === "matcha" ? "mail-candidat-matcha" : "mail-candidat"),
-        data: { ...application.toObject(), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
+        data: { ...sanitizeApplicationForEmail(application.toObject()), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
         attachments: [
           {
             filename: application.applicant_attachment_name,
@@ -350,8 +361,8 @@ const offreOrCompanyToCompanyFields = (offreOrCompany: OffreOrLbbCompany): Parti
 
 const cleanApplicantFields = (newApplication: INewApplication): Partial<IApplication> => {
   return {
-    applicant_first_name: disableUrlsWith0WidthChar(newApplication.applicant_first_name),
-    applicant_last_name: disableUrlsWith0WidthChar(newApplication.applicant_last_name),
+    applicant_first_name: newApplication.applicant_first_name,
+    applicant_last_name: newApplication.applicant_last_name,
     applicant_attachment_name: newApplication.applicant_file_name,
     applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.message),
@@ -453,7 +464,7 @@ const checkUserApplicationCount = async (applicantEmail: string, company_siret: 
   })
 
   if (appCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
-    return "max candidatures atteint"
+    return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY
   }
 
   appCount = await Application.countDocuments({
@@ -461,8 +472,8 @@ const checkUserApplicationCount = async (applicantEmail: string, company_siret: 
     company_siret,
   })
 
-  if (appCount > MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT) {
-    return "max messages atteint pour cette société"
+  if (appCount >= MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT) {
+    return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_COMPANY
   }
 
   return "ok"
@@ -516,7 +527,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse positive de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
-        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: disableUrlsWith0WidthChar(company_feedback) },
+        data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
@@ -525,7 +536,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
-        data: { ...application, ...images, email, phone: removeUrlsFromText(phone), comment: disableUrlsWith0WidthChar(company_feedback) },
+        data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
@@ -534,7 +545,7 @@ export const sendMailToApplicant = async ({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...application, ...images, comment: disableUrlsWith0WidthChar(company_feedback) },
+        data: { ...sanitizeApplicationForEmail(application), ...images, comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
@@ -576,7 +587,7 @@ const notifyHardbounceToApplicant = async ({ application }: { application: Enfor
     to: application.applicant_email,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
-    data: { ...application.toObject(), ...images },
+    data: { ...sanitizeApplicationForEmail(application.toObject()), ...images },
   })
 }
 
@@ -588,7 +599,7 @@ const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: E
     to: config.transactionalEmail,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-matcha-hardbounce"),
-    data: { ...application.toObject(), ...images },
+    data: { ...sanitizeApplicationForEmail(application.toObject()), ...images },
   })
 }
 
@@ -673,5 +684,52 @@ export const processHardBounceWebhookEvent = async (payload) => {
 
   if (event === BrevoEventStatus.HARD_BOUNCE) {
     await Promise.all([addEmailToBlacklist(email, "campaign"), removeEmailFromLbaCompanies(email)])
+  }
+}
+
+const sanitizeApplicationForEmail = (application: IApplication) => {
+  const {
+    applicant_email,
+    applicant_first_name,
+    applicant_last_name,
+    applicant_phone,
+    applicant_attachment_name,
+    applicant_message_to_company,
+    company_recruitment_intention,
+    company_feedback,
+    company_feedback_date,
+    company_siret,
+    company_email,
+    company_name,
+    company_naf,
+    company_address,
+    job_origin,
+    job_title,
+    job_id,
+    caller,
+    created_at,
+    last_update_at,
+  } = application
+  return {
+    applicant_email: sanitizeForEmail(applicant_email),
+    applicant_first_name: sanitizeForEmail(applicant_first_name),
+    applicant_last_name: sanitizeForEmail(applicant_last_name),
+    applicant_phone: sanitizeForEmail(applicant_phone),
+    applicant_attachment_name: sanitizeForEmail(applicant_attachment_name),
+    applicant_message_to_company: sanitizeForEmail(applicant_message_to_company),
+    company_recruitment_intention: sanitizeForEmail(company_recruitment_intention),
+    company_feedback: sanitizeForEmail(company_feedback),
+    company_feedback_date: company_feedback_date,
+    company_siret: company_siret,
+    company_email: sanitizeForEmail(company_email),
+    company_name: company_name,
+    company_naf: company_naf,
+    company_address: company_address,
+    job_origin: job_origin,
+    job_title: sanitizeForEmail(job_title),
+    job_id: job_id,
+    caller: sanitizeForEmail(caller),
+    created_at: created_at,
+    last_update_at: last_update_at,
   }
 }

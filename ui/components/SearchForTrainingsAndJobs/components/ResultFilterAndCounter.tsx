@@ -19,8 +19,9 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
 
   const filterButtonClicked = (filterButton) => {
     let filters = activeFilters
+
     filters.includes(filterButton) ? filters.splice(filters.indexOf(filterButton), 1) : filters.push(filterButton)
-    if (!filters.length) {
+    if (!filters.length || (!partnerJobCount && filters.length === 1 && filters[0] === "duo")) {
       filters = ["jobs", "trainings", "duo"]
     }
 
@@ -31,7 +32,9 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
     }
   }
 
-  if (allJobSearchError && trainingSearchError) return ""
+  if (allJobSearchError && trainingSearchError) {
+    return <></>
+  }
 
   const jobLoading = ""
   let jobCount = 0

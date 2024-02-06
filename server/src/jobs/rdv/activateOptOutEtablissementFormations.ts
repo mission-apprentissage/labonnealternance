@@ -76,9 +76,6 @@ export const activateOptOutEtablissementFormations = async () => {
             formateur_siret: etablissement.formateur_siret,
             linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
           },
-          user: {
-            destinataireEmail: etablissement.gestionnaire_email,
-          },
         },
       })
 

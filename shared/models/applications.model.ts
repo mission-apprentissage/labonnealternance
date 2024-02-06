@@ -1,4 +1,4 @@
-import { disableUrlsWith0WidthChar, removeUrlsFromText } from "../helpers/common"
+import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zCallerParam } from "../routes/_params"
@@ -91,7 +91,7 @@ export const ZApplication = z
   .openapi("Application")
 
 export const ZNewApplication = ZApplication.extend({
-  message: ZApplication.shape.applicant_message_to_company.optional().transform((value) => disableUrlsWith0WidthChar(value)),
+  message: ZApplication.shape.applicant_message_to_company.optional(),
   applicant_file_name: ZApplication.shape.applicant_attachment_name,
   applicant_file_content: z.string().max(4215276).openapi({
     description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
@@ -106,6 +106,10 @@ export const ZNewApplication = ZApplication.extend({
     example: "...59c24c059b...",
   }),
   secret: z.string().nullish(),
+  company_email: z.string().nullish().openapi({
+    description: "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
+    example: "fake@dummy.com",
+  }),
   crypted_company_email: z.string().nullish(),
   caller: zCallerParam.nullish(),
   job_id: ZApplication.shape.job_id.optional(),
@@ -142,6 +146,8 @@ export const ZUsedNewApplication = ZNewApplication.pick({
   applicant_file_name: true,
   message: true,
   applicant_phone: true,
+  secret: true,
+  company_email: true,
 })
 
 export type INewApplication = z.output<typeof ZUsedNewApplication>

@@ -2,6 +2,8 @@ import { Box, Container, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React from "react"
 
+import PromoRessources from "@/components/Ressources/promoRessources"
+
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
 import BientotCFA from "../components/HomeComponents/BientotCFA"
@@ -41,7 +43,11 @@ const Organisme = () => {
           <BientotCFA />
         </Box>
 
-        <Box my={12}>
+        <Box as="section" backgroundColor="white" py={12}>
+          <PromoRessources target="cfa" />
+        </Box>
+
+        <Box mt={4} mb={12}>
           <Text as="h2" textAlign="center" fontSize="32" fontWeight={700}>
             Vous souhaitez attirer de nouveaux candidats?
           </Text>
@@ -53,7 +59,7 @@ const Organisme = () => {
         <FollowLinkedIn />
       </Container>
 
-      <Footer />
+      <Footer ressources="cfa" />
     </Box>
   )
 }
