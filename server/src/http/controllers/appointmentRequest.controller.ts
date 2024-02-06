@@ -15,7 +15,7 @@ import * as appointmentService from "../../services/appointment.service"
 import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import mailer from "../../services/mailer.service"
+import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import * as users from "../../services/user.service"
 import { Server } from "../server"
 
@@ -350,9 +350,9 @@ export default (server: Server) => {
           template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
           data: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            prenom: user.firstname,
-            nom: user.lastname,
-            message: cfa_message_to_applicant,
+            prenom: sanitizeForEmail(user.firstname),
+            nom: sanitizeForEmail(user.lastname),
+            message: sanitizeForEmail(cfa_message_to_applicant),
             nom_formation: eligibleTrainingsForAppointment.training_intitule_long,
             nom_cfa: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
             cfa_email: eligibleTrainingsForAppointment.lieu_formation_email,
