@@ -125,35 +125,33 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
     >
       {({ values, isValid, isSubmitting, setFieldValue, submitForm }) => {
         return (
-          <>
-            <Form>
-              <CustomInput required={false} name="establishment_siret" label="SIRET" type="text" value={values.establishment_siret} />
-              {isCfa && (
-                <Alert status="info" variant="top-accent">
-                  <AlertIcon />
-                  <Text>
-                    Pour les organismes de formation,{" "}
-                    <Link
-                      variant="classic"
-                      onClick={() => {
-                        setIsCfa(false)
-                        setFieldValue("establishment_siret", values.establishment_siret)
-                        router.push("/espace-pro/creation/cfa")
-                        submitForm()
-                      }}
-                    >
-                      veuillez utiliser ce lien
-                    </Link>
-                  </Text>
-                </Alert>
-              )}
-              <Flex justify="flex-end" mt={5}>
-                <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
-                  Chercher
-                </Button>
-              </Flex>
-            </Form>
-          </>
+          <Form>
+            <CustomInput required={false} name="establishment_siret" label="SIRET" type="text" value={values.establishment_siret} />
+            {isCfa && (
+              <Alert status="info" variant="top-accent">
+                <AlertIcon />
+                <Text>
+                  Pour les organismes de formation,{" "}
+                  <Link
+                    variant="classic"
+                    onClick={() => {
+                      setIsCfa(false)
+                      setFieldValue("establishment_siret", values.establishment_siret)
+                      router.push("/espace-pro/creation/cfa")
+                      submitForm()
+                    }}
+                  >
+                    veuillez utiliser ce lien
+                  </Link>
+                </Text>
+              </Alert>
+            )}
+            <Flex justify="flex-end" mt={5}>
+              <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
+                Chercher
+              </Button>
+            </Flex>
+          </Form>
         )
       }}
     </Formik>

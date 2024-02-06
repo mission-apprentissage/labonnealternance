@@ -1,6 +1,7 @@
 import { Container, Flex } from "@chakra-ui/react"
 
 import Footer from "@/components/footer"
+import { WidgetFooter } from "@/components/WidgetFooter/WidgetFooter"
 
 import Header from "./Header"
 import NavigationMenu from "./NavigationMenu"
@@ -40,7 +41,7 @@ export default function Layout({
         <Container maxW="container.xl" flexGrow="1">
           {children}
         </Container>
-        {!widget && footer && <Footer />}
+        {footer && (widget ? <WidgetFooter /> : <Footer />)}
       </Flex>
     </Container>
   )
