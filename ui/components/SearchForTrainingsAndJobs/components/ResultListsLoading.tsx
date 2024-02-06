@@ -6,7 +6,9 @@ import { ScopeContext } from "../../../context/ScopeContext"
 const ResultListsLoading = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading }) => {
   const scopeContext = useContext(ScopeContext)
 
-  if (allJobSearchError && trainingSearchError) return ""
+  if (allJobSearchError && trainingSearchError) {
+    return <></>
+  }
 
   let jobLoading = <></>
 

@@ -4,7 +4,20 @@ import React from "react"
 
 import { publicConfig } from "../config.public"
 
-const Footer = () => {
+const firstBasicLink = {
+  mt: { base: 3, lg: 0 },
+  display: { base: "inherit", lg: "inline-block" },
+  borderRight: { base: "none", lg: "1px solid" },
+  borderRightColor: { base: "none", lg: "grey.300" },
+  paddingRight: { base: 0, lg: 4 },
+}
+
+const basicLink = {
+  ...firstBasicLink,
+  paddingLeft: { base: 0, lg: 4 },
+}
+
+const Footer = ({ ressources = "" }: { ressources?: string }) => {
   return (
     <Box as="footer" borderTop="1px solid" borderTopColor="info" paddingTop={6} marginTop={12}>
       <Box maxWidth="1350px" mx="auto" pl={{ base: 0, lg: 6 }}>
@@ -51,121 +64,57 @@ const Footer = () => {
           <Grid>
             <GridItem>
               <UnorderedList listStyleType="none" color="grey.425" fontSize={12} marginInlineStart={0}>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...firstBasicLink}>
                   <NextLink legacyBehavior passHref href="/mentions-legales">
                     <Link aria-label="Accès aux mentions légales">Mentions légales</Link>
                   </NextLink>
                 </ListItem>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href="/cgu">
                     <Link aria-label="Accès aux conditions générales d'utilisation">CGU</Link>
                   </NextLink>
                 </ListItem>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href="/politique-de-confidentialite">
                     <Link aria-label="Accès à la politique de confidentialité">Politique de confidentialité</Link>
                   </NextLink>
                 </ListItem>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href="/stats">
                     <Link aria-label="Accès aux statistiques du service">Statistiques</Link>
                   </NextLink>
                 </ListItem>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href="/faq">
                     <Link aria-label="Accès à la foire aux questions">FAQ</Link>
                   </NextLink>
                 </ListItem>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...basicLink}>
+                  <NextLink legacyBehavior passHref href={`/ressources${ressources ? "#" + ressources : ""}`}>
+                    <Link aria-label="Accès à la page Contact">Ressources</Link>
+                  </NextLink>
+                </ListItem>
+                <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href="/contact">
                     <Link aria-label="Accès à la page Contact">Contact</Link>
                   </NextLink>
                 </ListItem>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href="/metiers">
                     <Link aria-label="Accès à la page Métiers">Métiers</Link>
                   </NextLink>
                 </ListItem>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href="/a-propos">
                     <Link aria-label="Accès à la page A propos">A propos</Link>
                   </NextLink>
                 </ListItem>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href="/developpeurs">
                     <Link aria-label="Accès à la page Développeurs">Développeurs</Link>
                   </NextLink>
                 </ListItem>
-                <ListItem
-                  mt={{ base: 3, lg: 0 }}
-                  display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
-                  borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
-                >
+                <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href="/accessibilite">
                     <Link aria-label="Accès à la déclaration d'accessibilité">Accessibilité: non conforme</Link>
                   </NextLink>
