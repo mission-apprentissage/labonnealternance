@@ -324,6 +324,21 @@ export const getFormationsFromCatalogueMe = async ({
   }
 }
 
+export const getFormationFromCatalogueMe = async ({ query, select }: { query: object; select?: object }) => {
+  if (api === null) {
+    api = await createCatalogueMeAPI()
+  }
+
+  const params = { query: JSON.stringify(query), select: JSON.stringify(select) }
+
+  try {
+    const response = await api.get(`/entity/formation`, { params })
+    return response.data
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
 export type IRomeResult = {
   romes: string[]
 }
@@ -358,22 +373,9 @@ export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; sire
   return result
 }
 
-/**
- * Gets email from catalogue field.
- * These email fields can contain "not valid email", "emails separated by ##" or be null.
- * @param {string|null} email
- * @return {string|null}
- */
-export const getEmailFromCatalogueField = (email) => {
+export const getEmailFromCatalogueField = (email: string | null | undefined) => {
   if (!email) {
     return null
-  }
-
-  const divider = "##"
-  if (email?.includes(divider)) {
-    const emailSplit = email.split(divider).at(-1).toLowerCase()
-
-    return isValidEmail(emailSplit) ? emailSplit : null
   }
 
   return isValidEmail(email) ? email.toLowerCase() : null
