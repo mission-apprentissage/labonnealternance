@@ -10,7 +10,7 @@ import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"
 import { createCancelJobLink, createProvidedJobLink } from "../../../services/appLinks.service"
 import dayjs from "../../../services/dayjs.service"
-import mailer from "../../../services/mailer.service"
+import mailer, { sanitizeForEmail } from "../../../services/mailer.service"
 
 export const relanceFormulaire = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
   const recruiters = await Recruiter.find({
@@ -62,8 +62,8 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
         },
-        last_name: contactCFA?.last_name ?? contactEntreprise?.last_name,
-        first_name: contactCFA?.first_name ?? contactEntreprise?.first_name,
+        last_name: sanitizeForEmail(contactCFA?.last_name ?? contactEntreprise?.last_name),
+        first_name: sanitizeForEmail(contactCFA?.first_name ?? contactEntreprise?.first_name),
         establishment_raison_sociale,
         is_delegated,
         offres: jobsWithRecruiter.map((job) => ({

@@ -16,7 +16,7 @@ const encrypt = ({ value, iv, secret }) => {
 }
 
 // caller est un paramètre optionnel passé aux appels apis pour identifier la source
-const encryptMailWithIV = ({ value }): { email: string; iv?: string } => {
+export const encryptMailWithIV = ({ value }): { email: string; iv?: string } => {
   const iv = crypto.randomBytes(16)
 
   if (value) {
@@ -26,31 +26,3 @@ const encryptMailWithIV = ({ value }): { email: string; iv?: string } => {
     }
   } else return { email: "" }
 }
-
-const encryptIdWithIV = (id) => {
-  const iv = crypto.randomBytes(16)
-
-  if (id) {
-    return {
-      id: encrypt({ value: id, iv, secret: secretLba }),
-      iv: iv.toString(outputEncoding),
-    }
-  } else return { id: "" }
-}
-
-const decrypt = ({ value, iv, secret }) => {
-  const decipher = crypto.createDecipheriv(algo, secret, iv)
-  let decrypted = decipher.update(value, outputEncoding, inputEncoding)
-  decrypted += decipher.final(inputEncoding)
-
-  const decryptedString = decrypted.toString()
-
-  return decryptedString
-}
-
-const decryptWithIV = (value, ivHex) => {
-  const iv = Buffer.from(ivHex, "hex")
-  return decrypt({ value, iv, secret: secretLba })
-}
-
-export { encrypt, encryptMailWithIV, encryptIdWithIV, decrypt, decryptWithIV }

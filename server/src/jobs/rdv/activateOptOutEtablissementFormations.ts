@@ -55,6 +55,7 @@ export const activateOptOutEtablissementFormations = async () => {
         return
       }
 
+      if (!etablissement.gestionnaire_email) return
       // Send email
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
@@ -74,9 +75,6 @@ export const activateOptOutEtablissementFormations = async () => {
             formateur_city: etablissement.formateur_city,
             formateur_siret: etablissement.formateur_siret,
             linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
-          },
-          user: {
-            destinataireEmail: etablissement.gestionnaire_email,
           },
         },
       })
