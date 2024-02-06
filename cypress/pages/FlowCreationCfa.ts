@@ -1,5 +1,8 @@
 export const FlowCreationCfa = {
   siretPage: {
+    verify() {
+      cy.url().should("contain", "/espace-pro/creation/cfa")
+    },
     goTo() {
       cy.visit(`${Cypress.env("ui")}/espace-pro/creation/cfa`)
     },

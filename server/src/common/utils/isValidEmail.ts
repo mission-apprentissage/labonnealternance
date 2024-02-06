@@ -1,10 +1,3 @@
-import joi from "joi"
+import { z } from "zod"
 
-const emailSchema = joi.string().email()
-
-/**
- * @description Checks if given email is valid or not.
- * @param {string} email
- * @return {boolean}
- */
-export const isValidEmail = (email: unknown): email is string => !emailSchema.validate(email)?.error
+export const isValidEmail = (email: string | null | undefined) => z.string().email().safeParse(email).success

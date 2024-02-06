@@ -42,7 +42,7 @@ export const zLoginRoutes = {
       method: "post",
       path: "/login/verification",
       response: {
-        "2xx": ZUserRecruteurPublic,
+        "200": ZUserRecruteurPublic,
       },
       securityScheme: {
         auth: "access-token",

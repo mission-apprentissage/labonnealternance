@@ -5,6 +5,7 @@ import mongoose from "mongoose"
 import { IInternalJobs, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { db } from "@/common/mongodb"
 import { sleep } from "@/common/utils/asyncUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 import { getLoggerWithContext } from "../common/logger"
 import config from "../config"
@@ -90,6 +91,7 @@ const runner = async (job: IInternalJobs, jobFunc: () => Promise<unknown>): Prom
   } catch (err: any) {
     captureException(err)
     jobLogger.error({ err, writeErrors: err.writeErrors, error: err }, "job error")
+    await notifyToSlack({ subject: `Job ${job.name}`, message: `error while running job with id=${job._id}`, error: true })
     error = err?.stack
   }
 

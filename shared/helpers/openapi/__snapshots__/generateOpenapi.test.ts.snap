@@ -96,9 +96,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "company_email": {
-            "description": "L'adresse email de la société pour postuler. Vous devez impérativement utiliser les valeurs émises par l'API LBA avec le vecteur d'initialisation correspondant à l'adresse.",
-            "example": "...f936e4352b5ae5...",
-            "type": "string",
+            "description": "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
+            "example": "fake@dummy.com",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "company_naf": {
             "description": "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
@@ -178,7 +181,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_last_name",
           "applicant_phone",
           "company_siret",
-          "company_email",
           "company_name",
           "company_naf",
           "job_title",
@@ -2002,6 +2004,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 "description": "Date de creation",
                 "type": "string",
               },
+              "distance": {
+                "type": [
+                  "number",
+                  "null",
+                ],
+              },
               "updatedAt": {
                 "description": "Date de mise à jour",
                 "type": "string",
@@ -2087,6 +2095,31 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Coordonnées geographique de l'établissement",
             "type": [
               "string",
+              "null",
+            ],
+          },
+          "geopoint": {
+            "additionalProperties": false,
+            "description": "Coordonnées geographique de l'établissement",
+            "properties": {
+              "coordinates": {
+                "items": {
+                  "type": "number",
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+              },
+              "type": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "coordinates",
+              "type",
+            ],
+            "type": [
+              "object",
               "null",
             ],
           },
@@ -5688,6 +5721,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "required": true,
             "schema": {
               "example": "50022137",
+              "minLength": 1,
               "type": "string",
             },
           },

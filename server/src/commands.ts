@@ -5,7 +5,6 @@ import HttpTerminator from "lil-http-terminator"
 import { closeMongoConnection } from "@/common/mongodb"
 
 import { closeMemoryCache } from "./common/apis/client"
-import { closeElasticSearch } from "./common/esClient"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
@@ -71,7 +70,7 @@ program
     logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await Promise.all([closeMongoConnection(), closeElasticSearch(), closeMemoryCache()])
+    await Promise.all([closeMongoConnection(), closeMemoryCache()])
     await closeSentry()
 
     setTimeout(async () => {
@@ -251,14 +250,6 @@ program
 
 /********************/
 
-program
-  .command("index")
-  .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch.")
-  .option("-i, --index_list <string>", " <index_list> est la liste des index séparés par des ,")
-  .option("--recreate", " supprime et recrée tous les indexes", false)
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("indexes:generate"))
-
 //yarn cli create-user --first_name a --last_name b --email ab@fr.fr --scope beta --establishment_raison_sociale beta --type ADMIN
 program
   .command("create-user")
@@ -367,13 +358,13 @@ program
   .action(createJobAction("etablissement:invite:opt-out"))
 
 program
-  .command("invite-etablissement-to-premium")
+  .command("etablissement:invite:premium:parcoursup")
   .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissement:invite:premium"))
+  .action(createJobAction("etablissement:invite:premium:parcoursup"))
 
 program
-  .command("invite-etablissement-affelnet-to-premium")
+  .command("etablissement:invite:premium:affelnet")
   .description("Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissement:invite:premium:affelnet"))
@@ -481,7 +472,6 @@ program
   .description("Met à jour la liste des sociétés bonnes alternances")
   .option("-use-algo-file, [UseAlgoFile]", "télécharge et traite le fichier issu de l'algo", false)
   .option("-clear-mongo, [ClearMongo]", "vide la collection des bonnes alternances", false)
-  .option("-build-index, [BuildIndex]", "réindex les bonnes boîtes", false)
   .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
   .option("-source-file, [SourceFile]", "fichier source alternatif")

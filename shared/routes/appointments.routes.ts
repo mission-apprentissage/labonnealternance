@@ -202,6 +202,7 @@ export const zAppointmentsRoute = {
                 applicant_reasons: ZAppointment.shape.applicant_reasons,
                 cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
                 applicant_id: ZAppointment.shape.applicant_id,
+                cfa_read_appointment_details_date: ZAppointment.shape.cfa_read_appointment_details_date,
               })
               .strict(),
             user: z

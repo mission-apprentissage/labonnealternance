@@ -48,6 +48,17 @@ const Link = {
         textUnderlineOffset: "5px",
       },
     },
+    basicUnderlinedBlue: {
+      color: "bluefrance.500",
+      textDecoration: "underline",
+      textUnderlineOffset: "5px",
+      wordBreak: "break-word",
+      _hover: {
+        color: "bluefrance.500",
+        textDecoration: "underline",
+        textUnderlineOffset: "5px",
+      },
+    },
   },
 }
 

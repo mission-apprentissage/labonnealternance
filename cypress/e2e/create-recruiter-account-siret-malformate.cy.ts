@@ -1,7 +1,7 @@
 import { FlowCreationEntreprise } from "../pages/FlowCreationEntreprise"
 
 describe("create-recruiter-account-siret-malformate", () => {
-  it("tests create-recruiter-account-siret-malformate", () => {
+  it("test create-recruiter-account-siret-malformate", () => {
     cy.viewport(1271, 721)
 
     const siret = "12345678900012"
@@ -14,4 +14,3 @@ describe("create-recruiter-account-siret-malformate", () => {
     cy.get("button[type='submit']").should("be.disabled")
   })
 })
-//# recorderSourceMap=BCBDBEBFBGBHA

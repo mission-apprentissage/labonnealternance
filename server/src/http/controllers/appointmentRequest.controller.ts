@@ -6,7 +6,7 @@ import { zRoutes } from "shared/index"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { Appointment, EligibleTrainingsForAppointment, Etablissement, ReferentielOnisep, User } from "../../common/model/index"
+import { Appointment, EligibleTrainingsForAppointment, Etablissement, FormationCatalogue, ReferentielOnisep, User } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import config from "../../config"
@@ -15,7 +15,7 @@ import * as appointmentService from "../../services/appointment.service"
 import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import mailer from "../../services/mailer.service"
+import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import * as users from "../../services/user.service"
 import { Server } from "../server"
 
@@ -265,10 +265,15 @@ export default (server: Server) => {
         cfa_intention_to_applicant: 1,
         cfa_message_to_applicant: 1,
         cfa_message_to_applicant_date: 1,
+        cfa_read_appointment_details_date: 1,
       }).lean()
 
       if (!appointment) {
         throw Boom.notFound()
+      }
+
+      if (!appointment.cfa_read_appointment_details_date) {
+        await Appointment.findByIdAndUpdate(appointmentId, { cfa_read_appointment_details_date: new Date() })
       }
 
       const [etablissement, user] = await Promise.all([
@@ -326,9 +331,10 @@ export default (server: Server) => {
         throw Boom.internal("Applicant id not found.")
       }
 
+      const { cle_ministere_educatif } = appointment
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
-          cleMinistereEducatif: appointment.cle_ministere_educatif,
+          cleMinistereEducatif: cle_ministere_educatif,
         }),
         users.getUserById(appointment.applicant_id),
       ])
@@ -336,17 +342,21 @@ export default (server: Server) => {
       if (!user || !eligibleTrainingsForAppointment) throw Boom.notFound()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
+        const formationCatalogue = cle_ministere_educatif ? await FormationCatalogue.findOne({ cle_ministere_educatif }) : undefined
+
         await mailer.sendEmail({
           to: user.email,
           subject: `[La bonne alternance] Le centre de formation vous répond`,
           template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
           data: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            prenom: user.firstname,
-            nom: user.lastname,
-            message: cfa_message_to_applicant,
+            prenom: sanitizeForEmail(user.firstname),
+            nom: sanitizeForEmail(user.lastname),
+            message: sanitizeForEmail(cfa_message_to_applicant),
             nom_formation: eligibleTrainingsForAppointment.training_intitule_long,
             nom_cfa: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
+            cfa_email: eligibleTrainingsForAppointment.lieu_formation_email,
+            cfa_phone: formationCatalogue?.num_tel,
           },
         })
       }

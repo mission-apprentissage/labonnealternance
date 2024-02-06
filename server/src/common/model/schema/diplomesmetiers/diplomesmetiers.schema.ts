@@ -1,4 +1,3 @@
-import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
 
 import { IDiplomesMetiers } from "./diplomesmetiers.types"
@@ -40,7 +39,5 @@ export const diplomesMetiersSchema = new Schema<IDiplomesMetiers>(
     versionKey: false,
   }
 )
-
-diplomesMetiersSchema.plugin(mongoosastic, { index: "diplomesmetiers" })
 
 export default model<IDiplomesMetiers>("diplomesmetiers", diplomesMetiersSchema)
