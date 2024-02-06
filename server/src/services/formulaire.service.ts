@@ -16,7 +16,7 @@ import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
-import mailer from "./mailer.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
@@ -578,8 +578,8 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      nom: is_delegated ? contactCFA?.last_name : last_name,
-      prenom: is_delegated ? contactCFA?.first_name : first_name,
+      nom: sanitizeForEmail(is_delegated ? contactCFA?.last_name : last_name),
+      prenom: sanitizeForEmail(is_delegated ? contactCFA?.first_name : first_name),
       raison_sociale: establishmentTitle,
       mandataire: recruiter.is_delegated,
       offre: {
