@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
-import { IUser, IUserRecruteur } from "shared"
+import { IRecruiter, IUser, IUserRecruteur } from "shared"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
@@ -17,9 +17,12 @@ import {
   FormationCatalogue,
   LbaCompany,
   Optout,
+  Recruiter,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 import { db } from "@/common/mongodb"
+
+const fakeEmail = "faux_email@faux-domaine-compagnie.com"
 
 async function reduceModel<T>(model: Model<T> | Pagination<T>, limit = 20000) {
   logger.info(`reducing collection ${model.collection.name} to ${limit} latest documents`)
@@ -48,7 +51,7 @@ const obfuscateApplications = async () => {
       applicant_attachment_name: "titre_cv.pdf",
       applicant_message_to_company: "Cher recruteur, embauchez moi ...",
       company_feedback: "Cher candidat ...",
-      company_email: "faux_email@faux-domaine-compagnie.com",
+      company_email: fakeEmail,
     }
   )
 }
@@ -69,7 +72,7 @@ const obfuscateAppointments = async () => {
     {
       cfa_message_to_applicant: "Réponse du cfa ...",
       applicant_message_to_cfa: "Message du candidat ...",
-      cfa_recipient_email: "faux_email@faux-domaine-compagnie.com",
+      cfa_recipient_email: fakeEmail,
     }
   )
 }
@@ -79,7 +82,7 @@ const obfuscateLbaCompanies = async () => {
   await LbaCompany.updateMany(
     {},
     {
-      email: "faux_email@faux-domaine-compagnie.com",
+      email: fakeEmail,
       phone: "0601010106",
     }
   )
@@ -90,13 +93,13 @@ const obfuscateElligibleTrainingsForAppointment = async () => {
   await EligibleTrainingsForAppointment.updateMany(
     {},
     {
-      lieu_formation_email: "faux_email@faux-domaine-compagnie.com",
+      lieu_formation_email: fakeEmail,
     }
   )
   await eligibleTrainingsForAppointmentHistory.updateMany(
     {},
     {
-      lieu_formation_email: "faux_email@faux-domaine-compagnie.com",
+      lieu_formation_email: fakeEmail,
     }
   )
 }
@@ -106,7 +109,7 @@ const obfuscateEtablissements = async () => {
   await Etablissement.updateMany(
     {},
     {
-      gestionnaire_email: "faux_email@faux-domaine-compagnie.com",
+      gestionnaire_email: fakeEmail,
     }
   )
 }
@@ -116,9 +119,9 @@ const obfuscateFormations = async () => {
   await FormationCatalogue.updateMany(
     {},
     {
-      email: "faux_email@faux-domaine-compagnie.com",
-      etablissement_gestionnaire_courriel: "faux_email@faux-domaine-compagnie.com",
-      etablissement_formateur_courriel: "faux_email@faux-domaine-compagnie.com",
+      email: fakeEmail,
+      etablissement_gestionnaire_courriel: fakeEmail,
+      etablissement_formateur_courriel: fakeEmail,
       num_tel: "0601010106",
     }
   )
@@ -181,6 +184,24 @@ const obfuscateRecruiter = async () => {
   for await (const user of remainingUsers) {
     const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
     db.collection("recruiters").findOneAndUpdate({ _id: user._id }, replacement)
+  }
+
+  const recruitersWithDelegations = Recruiter.find({ "jobs.delegations.0": { $exists: true } })
+  for await (const recruiter of recruitersWithDelegations) {
+    let shouldSave = false
+    if (recruiter.jobs) {
+      recruiter.jobs.forEach((job) => {
+        if (job.delegations) {
+          shouldSave = true
+          job.delegations.forEach((delegation) => {
+            delegation.email = fakeEmail
+          })
+        }
+      })
+    }
+    if (shouldSave) {
+      await Recruiter.updateOne({ _id: recruiter._id }, { $set: { ...recruiter } })
+    }
   }
 
   logger.info(`obfuscating recruiters done`)
