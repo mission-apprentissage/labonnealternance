@@ -5,7 +5,17 @@ import { IUser, IUserRecruteur } from "shared"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
-import { AnonymizedApplication, ApiCalls, Application, Appointment, EligibleTrainingsForAppointment, Etablissement, FormationCatalogue, LbaCompany } from "@/common/model/index"
+import {
+  AnonymizedApplication,
+  ApiCalls,
+  Application,
+  Appointment,
+  EligibleTrainingsForAppointment,
+  eligibleTrainingsForAppointmentHistory,
+  Etablissement,
+  FormationCatalogue,
+  LbaCompany,
+} from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 import { db } from "@/common/mongodb"
 
@@ -67,6 +77,12 @@ const obfuscateLbaCompanies = async () => {
 const obfuscateElligibleTrainingsForAppointment = async () => {
   logger.info(`obfuscating elligible trainings for appointments`)
   await EligibleTrainingsForAppointment.updateMany(
+    {},
+    {
+      lieu_formation_email: "faux_email@faux-domaine-compagnie.com",
+    }
+  )
+  await eligibleTrainingsForAppointmentHistory.updateMany(
     {},
     {
       lieu_formation_email: "faux_email@faux-domaine-compagnie.com",
