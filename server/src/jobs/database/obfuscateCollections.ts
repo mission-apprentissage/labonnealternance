@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
-import { IRecruiter, IUser, IUserRecruteur } from "shared"
+import { IEmailBlacklist, IRecruiter, IUser, IUserRecruteur } from "shared"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
@@ -55,14 +55,16 @@ const obfuscateApplications = async () => {
     }
   )
 }
+
 const obfuscateEmailBlackList = async () => {
   logger.info(`obfuscating email blacklist`)
-  await EmailBlacklist.updateMany(
-    {},
-    {
-      email: "faux_email@faux-domaine.fr",
-    }
-  )
+  const emails: AsyncIterable<IEmailBlacklist> = await db.collection("emailblacklists").find({})
+  for await (const ebl of emails) {
+    const email = getFakeEmail()
+    const replacement = { $set: { email } }
+    await db.collection("emailblacklists").findOneAndUpdate({ _id: ebl._id }, replacement)
+  }
+  logger.info(`obfuscating email blacklist done`)
 }
 
 const obfuscateAppointments = async () => {
@@ -225,7 +227,6 @@ export async function obfuscateCollections(): Promise<void> {
   await reduceModel(AnonymizedApplication, 5000)
   await reduceModel(Appointment, 10000)
   await reduceModel(EmailBlacklist, 100)
-
   await obfuscateApplications()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
@@ -235,6 +236,5 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateFormations()
   await obfuscateRecruiter()
   await obfuscateUser()
-
   await Optout.deleteMany({})
 }
