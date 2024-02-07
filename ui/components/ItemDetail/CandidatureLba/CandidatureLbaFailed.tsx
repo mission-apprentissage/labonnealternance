@@ -36,7 +36,7 @@ const sendingStateValues = {
     text: "Vous pourrez en envoyer de nouveau demain",
     dataTestId: "CandidatureSpontaneeFailedTempEmailTitle",
   },
-  [BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_COMPANY]: {
+  [BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER]: {
     title: "Vous avez déjà atteint la limite de 3 candidatures envoyées à cette opportunité d’emploi.",
     text: "",
     dataTestId: "CandidatureSpontaneeFailedTooManyApplicationsPerCompany",
