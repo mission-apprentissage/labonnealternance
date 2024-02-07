@@ -147,22 +147,6 @@ export const initTestingParameters = () => {
   }
 }
 
-/* à conserver
-export const buildFormValuesFromParameterString = (urlParams) =>
-{
-  let params = {};
-  params.lat = parseFloat(urlParams.get("lat"));
-  params.lon = parseFloat(urlParams.get("lon"));
-  params.jobName = urlParams.get("job_name");
-  params.zipcode = urlParams.get("zipcode");
-  params.insee = urlParams.get("insee");
-  params.diploma = urlParams.get("diploma");
-  params.address = urlParams.get("address");
-  params.romes = urlParams.get("romes");
-  params.radius = urlParams.get("radius");
-  return buildFormValuesFromParameters(params);
-}*/
-
 const buildFormValuesFromParameters = (params) => {
   const location = params.lon
     ? {

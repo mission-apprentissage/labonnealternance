@@ -5,7 +5,7 @@ import React, { useContext } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
-import SearchForm from "../SearchForTrainingsAndJobs/components/SearchForm"
+import SearchFormResponsive from "../SearchForTrainingsAndJobs/components/SearchFormResponsive"
 import WidgetHeader from "../WidgetHeader/WidgetHeader"
 
 const StartForm = () => {
@@ -27,7 +27,7 @@ const StartForm = () => {
   return (
     <>
       <Box display={["block", "block", "block", "none"]}>
-        <SearchForm handleSearchSubmit={handleSearchSubmitFunction} isHome={true} showResultList={() => {}} />
+        <SearchFormResponsive handleSearchSubmit={handleSearchSubmitFunction} isHome={true} showResultList={() => {}} />
       </Box>
       <Box display={["none", "none", "none", "block"]}>
         <WidgetHeader handleSearchSubmit={handleSearchSubmit} isHome={true} />
