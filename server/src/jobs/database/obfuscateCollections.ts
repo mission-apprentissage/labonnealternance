@@ -12,6 +12,7 @@ import {
   Appointment,
   EligibleTrainingsForAppointment,
   eligibleTrainingsForAppointmentHistory,
+  EmailBlacklist,
   Etablissement,
   FormationCatalogue,
   LbaCompany,
@@ -47,6 +48,15 @@ const obfuscateApplications = async () => {
       applicant_message_to_company: "Cher recruteur, embauchez moi ...",
       company_feedback: "Cher candidat ...",
       company_email: "faux_email@faux-domaine-compagnie.com",
+    }
+  )
+}
+const obfuscateEmailBlackList = async () => {
+  logger.info(`obfuscating email blacklist`)
+  await EmailBlacklist.updateMany(
+    {},
+    {
+      email: "faux_email@faux-domaine.fr",
     }
   )
 }
@@ -192,8 +202,10 @@ export async function obfuscateCollections(): Promise<void> {
   await reduceModel(Application, 50000)
   await reduceModel(AnonymizedApplication, 5000)
   await reduceModel(Appointment, 10000)
+  await reduceModel(EmailBlacklist, 100)
 
   await obfuscateApplications()
+  await obfuscateEmailBlackList()
   await obfuscateAppointments()
   await obfuscateLbaCompanies()
   await obfuscateElligibleTrainingsForAppointment()
