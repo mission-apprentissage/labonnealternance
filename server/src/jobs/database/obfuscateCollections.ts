@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
-import { IEmailBlacklist, IRecruiter, IUser, IUserRecruteur } from "shared"
+import { IEmailBlacklist, IUser, IUserRecruteur } from "shared"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
@@ -21,6 +21,7 @@ import {
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 import { db } from "@/common/mongodb"
+import config from "@/config"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
 
@@ -222,6 +223,10 @@ const obfuscateUser = async () => {
 }
 
 export async function obfuscateCollections(): Promise<void> {
+  if (config.env === "production") {
+    // prévention :)
+    return
+  }
   await reduceModel(ApiCalls, 20000)
   await reduceModel(Application, 50000)
   await reduceModel(AnonymizedApplication, 5000)
