@@ -16,6 +16,7 @@ import {
   Etablissement,
   FormationCatalogue,
   LbaCompany,
+  Optout,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 import { db } from "@/common/mongodb"
@@ -213,4 +214,6 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateFormations()
   await obfuscateRecruiter()
   await obfuscateUser()
+
+  await Optout.deleteMany({})
 }
