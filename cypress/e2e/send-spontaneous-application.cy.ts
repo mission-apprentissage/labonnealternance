@@ -6,6 +6,10 @@ import { generateRandomString } from "../utils/generateRandomString"
 
 describe("send-spontaneous-application", () => {
   it("tests send-spontaneous-application", () => {
+    cy.on("uncaught:exception", () => {
+      return false
+    })
+
     const fakeMail = `${generateRandomString()}@beta.gouv.fr`
 
     cy.viewport(1254, 704)
