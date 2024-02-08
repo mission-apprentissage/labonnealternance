@@ -94,7 +94,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
                   description: (
                     <>
                       <Link
-                        aria-label="Contact de l'équipe La bonne alternance par email"
+                        aria-label="Contact de l'équipe La bonne alternance par email - nouvelle fenêtre"
                         isExternal
                         textDecoration="underline"
                         href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}

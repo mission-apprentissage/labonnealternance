@@ -27,7 +27,7 @@ const AmeliorerLBA = () => {
           <Box mt="7">
             <Link
               href="https://calendly.com/claire-arnaud-beta-gouv/la-bonne-alternance"
-              aria-label="Prendre rendez-vous"
+              aria-label="Prendre rendez-vous - nouvelle fenêtre"
               title="Je participe à l'étude"
               color="#000091"
               border="1px solid #000091"

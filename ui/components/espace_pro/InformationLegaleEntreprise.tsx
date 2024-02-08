@@ -50,7 +50,7 @@ export const InformationLegaleEntreprise = (props) => {
             type === AUTHTYPE.ENTREPRISE ? (
               <InfoPopover>
                 La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en suivant{" "}
-                <Link textDecoration="underline" isExternal href="https://www.insee.fr/fr/information/2015441">
+                <Link textDecoration="underline" isExternal href="https://www.insee.fr/fr/information/2015441" aria-label="Accès au site de l'INSEE - nouvelle fenêtre">
                   la marche à suivre.
                 </Link>
               </InfoPopover>

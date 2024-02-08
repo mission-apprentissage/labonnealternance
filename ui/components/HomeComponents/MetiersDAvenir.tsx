@@ -79,7 +79,7 @@ const MetiersDAvenir = () => {
               <Text textAlign="center" mb="5">
                 Ces suggestions sont issues du service Diagoriente, qui oeuvre à l'orientation et l'insertion professionnelle.
               </Text>
-              <Link variant="editorialContentLink" isExternal href={diagorienteLink}>
+              <Link variant="editorialContentLink" isExternal href={diagorienteLink} aria-label="Site de Diagoriente - nouvelle fenêtre">
                 En savoir plus
               </Link>
             </Box>

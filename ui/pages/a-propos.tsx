@@ -19,7 +19,7 @@ const ServiceCard = ({ logo, title, text, url, mt, mb = undefined, imageMT, imag
             {title}
           </Text>
           <Text color="grey.600">{text}</Text>
-          <Link textDecoration="underline" color="grey.600" aria-label={`Accès au site ${url}`} href={url} isExternal>
+          <Link textDecoration="underline" color="grey.600" aria-label={`Accès au site ${url} - nouvelle fenêtre`} href={url} isExternal>
             En savoir plus
           </Link>
         </Box>
@@ -28,14 +28,14 @@ const ServiceCard = ({ logo, title, text, url, mt, mb = undefined, imageMT, imag
   )
 }
 
-const StartupCard = ({ logoUrl, url, title }) => {
+const StartupCard = ({ logoUrl, url, title, ariaLabel }) => {
   return (
     <Box mx={4} mt={4} mb={6} py={4} px={3} bg="white" boxShadow="0px 0px 12px rgb(0 0 0 / 21%)" borderRadius="10px">
       <Box height="80px" display="flex" alignItems="center" justifyContent="center">
         <Image src={logoUrl} width="134px" alt="" />
       </Box>
       <Box pl={2}>
-        <Link href={url} isExternal>
+        <Link href={url} isExternal aria-label={ariaLabel}>
           {title}
         </Link>
       </Box>
@@ -43,14 +43,14 @@ const StartupCard = ({ logoUrl, url, title }) => {
   )
 }
 
-const ServiceLink = ({ url, text, title }) => {
+const ServiceLink = ({ url, text, title, ariaLabel }) => {
   return (
     <Grid templateColumns="repeat(12, 1fr)">
       <GridItem sx={{ marginTop: "-7px" }} pr={4} colSpan={1} fontSize="25px">
         •
       </GridItem>
       <GridItem ml={4} colSpan={[11, 11, 4]}>
-        <Link sx={{ "text-underline-offset": "3px" }} textDecoration="underline" textDecorationThickness="2px" fontWeight="700" href={url} isExternal>
+        <Link sx={{ "text-underline-offset": "3px" }} textDecoration="underline" textDecorationThickness="2px" fontWeight="700" href={url} isExternal aria-label={ariaLabel}>
           {title}
         </Link>
       </GridItem>
@@ -117,7 +117,12 @@ const APropos = () => (
           <Text as="p" mb={4}>
             La bonne alternance est d’abord une start-up interne de Pôle emploi créée et développée par des conseillers. <br />
             Reprise par la{" "}
-            <Link variant="editorialContentLink" aria-label="Accès au Gitbook de la mission apprentissage" href="https://mission-apprentissage.gitbook.io/general/" isExternal>
+            <Link
+              variant="editorialContentLink"
+              aria-label="Accès au Gitbook de la mission apprentissage - nouvelle fenêtre"
+              href="https://mission-apprentissage.gitbook.io/general/"
+              isExternal
+            >
               Mission apprentissage
             </Link>{" "}
             en 2020, le site ajoute désormais des informations sur les formations en apprentissage et les offres d&apos;emploi en alternance.
@@ -162,13 +167,13 @@ const APropos = () => (
             <StartupCard
               logoUrl="/images/logo-lbb.svg"
               url="https://labonneboite.pole-emploi.fr/"
-              aria-label="Accès au site La bonne boite"
+              ariaLabel="Accès au site La bonne boite - nouvelle fenêtre"
               title="Trouver des entreprises qui recrutent sans déposer d'offres d'emploi"
             />
             <StartupCard
               logoUrl="/images/logo-avril.svg"
               url="https://avril.pole-emploi.fr/"
-              aria-label="Accès au site Avril"
+              ariaLabel="Accès au site Avril - nouvelle fenêtre"
               title="Trouvez une formation en fonction de votre profil ET du marché du travail"
             />
           </SimpleGrid>
@@ -180,42 +185,42 @@ const APropos = () => (
           <VStack>
             <ServiceLink
               url="https://diagoriente.beta.gouv.fr/"
-              aria-label="Accès au site Diagoriente"
+              ariaLabel="Accès au site Diagoriente - nouvelle fenêtre"
               text="Outil d'orientation complet qui permet d'accéder à des pistes métiers en adéquation avec ses intérêts."
               title="Diagoriente"
             />
 
             <ServiceLink
               url="https://www.parcoursup.fr/index.php?desc=formations_apprentissage"
-              aria-label="Accès au site Parcoursup et ses conseils pour entrer en apprentissage"
+              ariaLabel="Accès au site Parcoursup et ses conseils pour entrer en apprentissage - nouvelle fenêtre"
               text="Les conseils de parcoursup pour entrer en apprentissage."
               title="Parcoursup"
             />
 
             <ServiceLink
               url="https://www.parcoursup.fr/index.php?desc=services_numeriques"
-              aria-label="Accès au site Parcoursup et son service d'aide à l'orientation"
+              ariaLabel="Accès au site Parcoursup et son service d'aide à l'orientation - nouvelle fenêtre"
               text="Les services d’aide à l’orientation vers les études supérieures proposés par Parcoursup."
               title="Parcoursup"
             />
 
             <ServiceLink
               url="https://www.myjobglasses.com/"
-              aria-label="Accès au site My job glasses"
+              ariaLabel="Accès au site My job glasses - nouvelle fenêtre"
               text="Myjobglasses vous aide à identifier le métier qui vous correspond."
               title="Myjobglasses"
             />
 
             <ServiceLink
               url="https://openclassrooms.com/fr/courses/6003601-decouvrez-lalternance"
-              aria-label="Accès au site Openclassroom"
+              ariaLabel="Accès au site Openclassroom - nouvelle fenêtre"
               text="Profitez d’un cours en ligne gratuit pour découvrir l'alternance."
               title="Openclassrooms"
             />
 
             <ServiceLink
               url="https://www.1jeune1solution.gouv.fr/"
-              aria-label="Accès au site un jeune une solution"
+              ariaLabel="Accès au site un jeune une solution - nouvelle fenêtre"
               text="Je suis jeune, je découvre toutes les solutions pour préparer mon avenir."
               title="#1jeune1solution"
             />

@@ -16,13 +16,24 @@ export const InformationsSiret = ({ type }) => {
           <UnorderedList>
             <ListItem mx={10} mb={5}>
               <span style={{ fontWeight: "700" }}>Être référencé dans</span>{" "}
-              <CatalogueLink url="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements">le catalogue des offres de formations en apprentissage</CatalogueLink>.
-              Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la
-              page suivante : <CatalogueLink url="https://reseau.intercariforef.org/referencer-son-offre-de-formation">référencer son offre de formation</CatalogueLink>
+              <CatalogueLink
+                url="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements"
+                aria-label="Catalogue des offres de formations en apprentissage - nouvelle fenêtre"
+              >
+                le catalogue des offres de formations en apprentissage
+              </CatalogueLink>
+              . Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur
+              la page suivante :{" "}
+              <CatalogueLink url="https://reseau.intercariforef.org/referencer-son-offre-de-formation" arial-label="Site intercariforef.org - nouvelle fenêtre">
+                référencer son offre de formation
+              </CatalogueLink>
             </ListItem>
             <ListItem mx={10}>
               <span style={{ fontWeight: "700" }}>Être certifié Qualiopi.</span>{" "}
-              <CatalogueLink url="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs">
+              <CatalogueLink
+                url="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs"
+                aria-label="Site travail-emploi.gouv.fr - nouvelle fenêtre"
+              >
                 La certification Qualiopi <ExternalLinkLine h={3} />
               </CatalogueLink>{" "}
               est l’unique moyen d’accéder au fichier national des organismes de formation référencés et de permettre à vos entreprises clientes de faire financer vos actions avec
@@ -40,7 +51,7 @@ export const InformationsSiret = ({ type }) => {
           {type === AUTHTYPE.ENTREPRISE ? (
             <>
               Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
-              <CatalogueLink url="https://annuaire-entreprises.data.gouv.fr/" bold={true}>
+              <CatalogueLink url="https://annuaire-entreprises.data.gouv.fr/" bold={true} aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
                 l’annuaire des entreprises
               </CatalogueLink>{" "}
               ou bien sur les registres de votre entreprise.
@@ -48,7 +59,11 @@ export const InformationsSiret = ({ type }) => {
           ) : (
             <>
               Le numéro d’identification de votre organisme peut être trouvé sur{" "}
-              <CatalogueLink url="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements" bold={true}>
+              <CatalogueLink
+                url="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements"
+                bold={true}
+                aria-label="Site du catalogue des offres de formations en apprentissage - nouvelle fenêtre"
+              >
                 le catalogue des offres de formations en apprentissage
               </CatalogueLink>{" "}
               ou bien sur les registres de votre organisme de formation.
@@ -69,9 +84,9 @@ export const InformationsSiret = ({ type }) => {
   )
 }
 
-const CatalogueLink = ({ url, children, bold = false }) => {
+const CatalogueLink = ({ url, children, bold = false, ...rest }) => {
   return (
-    <Link href={url} {...(bold ? { variant: "classic" } : {})} isExternal style={bold ? {} : { textDecoration: "underline" }}>
+    <Link href={url} {...(bold ? { variant: "classic" } : {})} isExternal style={bold ? {} : { textDecoration: "underline" }} {...rest}>
       {children} <ExternalLinkLine h={3} />
     </Link>
   )

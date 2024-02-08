@@ -93,8 +93,10 @@ fileignoreconfig:
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/ItemDetail/DidYouKnow.tsx
+  checksum: d6649949682369b511dbb278ca3ad2ad2771e73a72816a96d8310f013c8e4f63
 - filename: ui/components/ItemDetail/ItemDetail.tsx
-  checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
+  checksum: 94562589347550c59a72397c399f3461599357797e72535ff7576736d0e5bb26
 - filename: ui/components/RDV/DemandeDeContact.tsx
   checksum: 582deb8ea90744169ada7572a14d3d8f3d846925bed5655761fa7b250546f580
 - filename: ui/components/SearchForTrainingsAndJobs/services/handleSessionStorage.ts

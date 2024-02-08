@@ -367,7 +367,7 @@ const WidgetTester = () => {
           La documentation est ici :{" "}
           <Link
             href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation"
-            aria-label="Accès à la documentation"
+            aria-label="Accès à la documentation - nouvelle fenêtre"
             target="docIdea"
             isExternal
             fontSize={14}

@@ -17,11 +17,21 @@ export const FormCreatePageFooter = () => {
             <Box pl={{ base: 0, lg: 4 }} mt={{ base: 8, lg: 0 }} height="100%" display="flex" alignItems={{ base: "start", lg: "center" }}>
               <Box fontSize="12px" color="#161616" pl={{ base: 0, lg: 5 }}>
                 <Text as="strong">Le service de prise de rendez-vous</Text> est proposé par{" "}
-                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Accès au site labonnealternance" isExternal textDecoration="underline">
+                <Link
+                  href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+                  aria-label="Accès au site labonnealternance - nouvelle fenêtre"
+                  isExternal
+                  textDecoration="underline"
+                >
                   La bonne alternance
                 </Link>
                 . Il est développé par la{" "}
-                <Link href="https://mission-apprentissage.gitbook.io/general/" aria-label="Lien vers la mission interministérielle" isExternal textDecoration="underline">
+                <Link
+                  href="https://mission-apprentissage.gitbook.io/general/"
+                  aria-label="Lien vers la mission interministérielle - nouvelle fenêtre"
+                  isExternal
+                  textDecoration="underline"
+                >
                   Mission interministérielle pour l'apprentissage
                 </Link>
                 .
@@ -108,7 +118,7 @@ export const FormCreatePageFooter = () => {
                 Sauf mention contraire, tous les contenus de ce site sont sous licence{" "}
                 <Link
                   href="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
-                  aria-label="Accès au site Etalab"
+                  aria-label="Accès au site Etalab - nouvelle fenêtre"
                   textDecoration="underline"
                   isExternal
                 >

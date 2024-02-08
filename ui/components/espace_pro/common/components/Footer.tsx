@@ -22,7 +22,12 @@ const Footer = () => {
             <Text>
               Mandatée par le Ministère du Travail, de l'Emploi et de l'Insertion, le Ministère de la Transformation et de la Fonction publiques, le Ministère de l'Education
               Nationale, de la Jeunesse et des Sports, le Ministère de la Recherche, de l'Enseignement Supérieur et de l'Innovation, la{" "}
-              <Link href="https://beta.gouv.fr/startups/?incubateur=mission-apprentissage" textDecoration="underline" isExternal>
+              <Link
+                href="https://beta.gouv.fr/startups/?incubateur=mission-apprentissage"
+                textDecoration="underline"
+                isExternal
+                aria-label="Site de la mission interministérielle pour l'apprentissage - nouvelle fenêtre"
+              >
                 Mission interministérielle pour l'apprentissage
               </Link>{" "}
               développe plusieurs services destinés à faciliter les entrées en apprentissage.
@@ -30,22 +35,22 @@ const Footer = () => {
             <br />
             <List textStyle="sm" fontWeight="700" flexDirection="row" flexWrap="wrap" mb={[3, 3, 0]} display="flex">
               <ListItem>
-                <Link href="https://www.legifrance.gouv.fr/" mr={4} isExternal>
+                <Link href="https://www.legifrance.gouv.fr/" mr={4} isExternal aria-label="Site de legifrance.gouv.fr - nouvelle fenêtre">
                   legifrance.gouv.fr
                 </Link>
               </ListItem>
               <ListItem>
-                <Link href="https://www.gouvernement.fr/" mr={4} isExternal>
+                <Link href="https://www.gouvernement.fr/" mr={4} isExternal aria-label="Site gouvernement.fr - nouvelle fenêtre">
                   gouvernement.fr
                 </Link>
               </ListItem>
               <ListItem>
-                <Link href="https://www.service-public.fr/" mr={4} isExternal>
+                <Link href="https://www.service-public.fr/" mr={4} isExternal aria-label="Site service-public.fr - nouvelle fenêtre">
                   service-public.fr
                 </Link>
               </ListItem>
               <ListItem>
-                <Link href="https://www.data.gouv.fr/fr/" isExternal>
+                <Link href="https://www.data.gouv.fr/fr/" isExternal aria-label="Site data.gouv.fr - nouvelle fenêtre">
                   data.gouv.fr
                 </Link>
               </ListItem>
@@ -70,19 +75,19 @@ const Footer = () => {
                 <Link href="/widget/tutorial">Intégration du Widget</Link>
               </ListItem>
               <ListItem _after={{ content: "'|'", marginLeft: "0.5rem", marginRight: "0.5rem" }}>
-                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/contact" isExternal>
+                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/contact" isExternal aria-label="Page de contact - nouvelle fenêtre">
                   Contact
                   <ExternalLinkLine w="0.55rem" h="0.55rem" mb="0.125rem" ml={1} />
                 </Link>
               </ListItem>
               <ListItem _after={{ content: "'|'", marginLeft: "0.5rem", marginRight: "0.5rem" }}>
-                <Link href="https://mission-apprentissage.gitbook.io/rendez-vous-apprentissage-inscription/" isExternal>
+                <Link href="https://mission-apprentissage.gitbook.io/rendez-vous-apprentissage-inscription/" isExternal aria-label="TODO lien cassé">
                   Connaitre le service
                   <ExternalLinkLine w="0.55rem" h="0.55rem" mb="0.125rem" ml={1} />
                 </Link>
               </ListItem>
               <ListItem _after={{ content: "''", marginLeft: "0.5rem", marginRight: "0.5rem" }}>
-                <Link href="https://github.com/mission-apprentissage/prise-de-rdv" isExternal>
+                <Link href="https://github.com/mission-apprentissage/prise-de-rdv" isExternal aria-label="TODO lien obsolète">
                   Code source
                   <ExternalLinkLine w="0.55rem" h="0.55rem" mb="0.125rem" ml={1} />
                 </Link>

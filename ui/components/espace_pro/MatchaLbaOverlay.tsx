@@ -24,7 +24,15 @@ export default function MatchaLbaOverlay() {
                 successives surviendront sur le site internet Matcha dans les prochains mois.
               </Text>
             </Box>
-            <Button as={Link} bg="#8585F6" borderRadius="0px" mt={[5, 5, 5, 5, 0]} href="https://labonnealternance.apprentissage.beta.gouv.fr/" isExternal>
+            <Button
+              as={Link}
+              bg="#8585F6"
+              borderRadius="0px"
+              mt={[5, 5, 5, 5, 0]}
+              href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+              isExternal
+              aria-label="Site de la bonne alternance - nouvelle fenêtre"
+            >
               Accéder au site La bonne alternance
             </Button>
           </Flex>

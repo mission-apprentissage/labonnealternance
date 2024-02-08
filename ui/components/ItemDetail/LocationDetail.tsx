@@ -73,7 +73,7 @@ const LocationDetail = ({ item, isCfa }) => {
             <Box width="30px" minWidth="30px" pl="1px" mr={2}>
               <Image mt="2px" mr={2} src="/images/icons/small_map_point.svg" alt="" />
             </Box>
-            <Link isExternal variant="basicUnderlined" href={getCompanyPathLink(item)}>
+            <Link isExternal variant="basicUnderlined" href={getCompanyPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
               Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
             </Link>
           </Flex>
@@ -101,7 +101,7 @@ const LocationDetail = ({ item, isCfa }) => {
           <Box width="30px" minWidth="30px" pl="1px" mr={2}>
             <Image mt="2px" src="/images/icons/small_map_point.svg" alt="" />
           </Box>
-          <Link isExternal variant="basicUnderlined" href={getPathLink(item)}>
+          <Link isExternal variant="basicUnderlined" href={getPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
             Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
           </Link>
         </Flex>
@@ -113,7 +113,7 @@ const LocationDetail = ({ item, isCfa }) => {
             </Box>
             <Text as="span">
               En savoir plus sur
-              <Link ml="2px" isExternal variant="basicUnderlined" href={item?.company?.url}>
+              <Link ml="2px" isExternal variant="basicUnderlined" href={item?.company?.url} aria-label="Site de l'entreprise - nouvelle fenêtre">
                 {item?.company?.url} <ExternalLinkIcon mb="3px" ml="2px" />
               </Link>
             </Text>
@@ -125,7 +125,7 @@ const LocationDetail = ({ item, isCfa }) => {
             <Box width="30px" minWidth="30px" mr={2}>
               <Image mt="2px" src="/images/icons/small_email.svg" alt="" />
             </Box>
-            <Link ml="2px" isExternal variant="basicUnderlined" href={`mailto:${item.contact.email}`}>
+            <Link ml="2px" isExternal variant="basicUnderlined" href={`mailto:${item.contact.email}`} aria-label="Contacter par email - nouvelle fenêtre">
               {item.contact.email}
             </Link>
           </Flex>
@@ -136,7 +136,7 @@ const LocationDetail = ({ item, isCfa }) => {
             <Box width="30px" pl="2px" minWidth="30px" mr={2}>
               <Image mt="2px" src="/images/icons/small_phone.svg" alt="" />
             </Box>
-            <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${item.contact.phone}`}>
+            <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${item.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
               {item.contact.phone}
             </Link>
           </Flex>
@@ -176,7 +176,7 @@ const LocationDetail = ({ item, isCfa }) => {
                 isExternal
                 variant="basicUnderlined"
                 href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
-                aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
+                aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA - nouvelle fenêtre"
               >
                 Préparez votre premier contact avec un CFA&nbsp;
                 <ExternalLinkIcon mb="3px" ml="2px" />
@@ -193,7 +193,13 @@ const LocationDetail = ({ item, isCfa }) => {
               </Box>
               <Text as="span">
                 En savoir plus sur
-                <Link ml="2px" isExternal variant="basicUnderlined" href={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}>
+                <Link
+                  ml="2px"
+                  isExternal
+                  variant="basicUnderlined"
+                  href={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}
+                  aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre"
+                >
                   {item.company.name} <ExternalLinkIcon mb="3px" ml="2px" />
                 </Link>
               </Text>

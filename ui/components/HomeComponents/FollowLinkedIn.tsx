@@ -16,7 +16,7 @@ const FollowLinkedIn = () => {
         <GridItem mt="4" colSpan={{ base: 1, lg: 3 }} display="flex" justifyContent="center" alignItems="center">
           <Link
             href="https://www.linkedin.com/company/mission-apprentissage/posts/?feedView=all"
-            aria-label="Accès à la page Linkedin de la mission interministérielle pour l’apprentissage"
+            aria-label="Accès à la page Linkedin de la mission interministérielle pour l’apprentissage - nouvelle fenêtre"
             bg="bluefrance.500"
             color="white"
             width={209}

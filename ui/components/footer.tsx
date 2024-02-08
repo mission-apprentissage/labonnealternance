@@ -27,16 +27,40 @@ const Footer = () => {
                   La bonne alternance est proposée par les services suivants :
                 </Box>
                 <Flex flexDirection={{ base: "column", lg: "row" }} mt="6">
-                  <Link href="https://pole-emploi.fr" aria-label="Accès au site de Pôle emploi" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
+                  <Link
+                    href="https://pole-emploi.fr"
+                    aria-label="Accès au site de Pôle emploi - nouvelle fenêtre"
+                    isExternal
+                    fontSize={14}
+                    fontWeight={700}
+                    color="grey.425"
+                    mr={4}
+                  >
                     pole-emploi.fr
                   </Link>
-                  <Link href="https://gouvernement.fr" aria-label="Accès au site gouvernement.fr" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
+                  <Link
+                    href="https://gouvernement.fr"
+                    aria-label="Accès au site gouvernement.fr - nouvelle fenêtre"
+                    isExternal
+                    fontSize={14}
+                    fontWeight={700}
+                    color="grey.425"
+                    mr={4}
+                  >
                     gouvernement.fr
                   </Link>
-                  <Link href="https://service-public.fr" aria-label="Accès au site service-public.fr" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
+                  <Link
+                    href="https://service-public.fr"
+                    aria-label="Accès au site service-public.fr - nouvelle fenêtre"
+                    isExternal
+                    fontSize={14}
+                    fontWeight={700}
+                    color="grey.425"
+                    mr={4}
+                  >
                     service-public.fr
                   </Link>
-                  <Link href="https://data.gouv.fr" aria-label="Accès au site data.gouv" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
+                  <Link href="https://data.gouv.fr" aria-label="Accès au site data.gouv - nouvelle fenêtre" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
                     data.gouv.fr
                   </Link>
                 </Flex>
@@ -177,7 +201,7 @@ const Footer = () => {
                 Sauf mention contraire, tous les contenus de ce site sont sous licence{" "}
                 <Link
                   href="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
-                  aria-label="Accès au site Etalab"
+                  aria-label="Accès au site Etalab - nouvelle fenêtre"
                   textDecoration="underline"
                   isExternal
                   mr={4}

@@ -114,7 +114,11 @@ export default function CreationMiseEnRelation() {
                         <Text size="12px" lineHeight="25px" color="#666666" textTransform="capitalize" pr={3}>
                           {etablissement?.numero_voie} {etablissement?.type_voie} {etablissement?.nom_voie}, {etablissement?.code_postal} {etablissement?.nom_departement}
                         </Text>
-                        <Link href={`https://catalogue.apprentissage.beta.gouv.fr/etablissement/${etablissement._id}`} isExternal>
+                        <Link
+                          href={`https://catalogue.apprentissage.beta.gouv.fr/etablissement/${etablissement._id}`}
+                          isExternal
+                          aria-label="Etablissement sur le site du catalogue des formations en apprentissage - nouvelle fenêtre"
+                        >
                           <Flex>
                             <Text lineHeight="25px">
                               <u>En savoir plus</u>
