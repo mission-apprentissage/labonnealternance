@@ -3,9 +3,9 @@ import { referrers } from "shared/constants/referers"
 
 import { logger } from "../../common/logger"
 import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
-import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
+import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
 /**
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
@@ -32,7 +32,12 @@ export const syncEtablissementsAndFormations = async () => {
 
         const hasOptOutActivation = etablissements.some((etab) => etab.optout_activation_date !== null && etab.optout_activation_date !== undefined)
         const hasPremiumActivation = etablissements.some((etab) => etab.premium_activation_date !== null && etab.premium_activation_date !== undefined)
-        const gestionnaireEmail = etablissements[0]?.gestionnaire_email ?? null
+        const emailArray = etablissements.map((etab) => {
+          return { email: etab.gestionnaire_email }
+        })
+        let gestionnaireEmail = await findFirstNonBlacklistedEmail(emailArray)
+
+        console.log({ optout: hasOptOutActivation, premium: hasPremiumActivation, etablissements, p: formation.parcoursup_statut })
 
         // Activate opt_out referrers
         const referrersToActivate: any[] = []
@@ -113,23 +118,25 @@ export const syncEtablissementsAndFormations = async () => {
           })
         }
 
-        const emailDecisionnaire =
-          (await getEmailForRdv({
-            email: gestionnaireEmail,
-            etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
-          })) ?? null
+        if (!gestionnaireEmail) {
+          gestionnaireEmail =
+            (await getEmailForRdv({
+              email: gestionnaireEmail,
+              etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
+            })) ?? null
+        }
 
         await Etablissement.updateMany(
-          { gestionnaire_siret: formation.etablissement_gestionnaire_siret },
+          { formateur_siret: formation.etablissement_formateur_siret },
           {
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            gestionnaire_email: emailDecisionnaire,
+            gestionnaire_email: gestionnaireEmail,
             raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
             formateur_siret: formation.etablissement_formateur_siret,
             formateur_address: formation.etablissement_formateur_adresse,
             formateur_zip_code: formation.etablissement_formateur_code_postal,
             formateur_city: formation.etablissement_formateur_localite,
-            last_catalogue_sync_date: dayjs().toDate(),
+            last_catalogue_sync_date: new Date(),
           },
           {
             upsert: true,
