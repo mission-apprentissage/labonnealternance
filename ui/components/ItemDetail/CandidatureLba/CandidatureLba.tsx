@@ -106,6 +106,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
                     {/* @ts-expect-error: Chakra error */}
                     <ModalHeader paddingTop="8px" paddingBottom="0" align="right">
                       <Button
+                        data-testid="close-application-form"
                         fontSize="14px"
                         color="bluefrance.500"
                         fontWeight={400}
