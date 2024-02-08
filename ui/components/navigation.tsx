@@ -12,7 +12,7 @@ const Navigation = ({ currentPage = undefined }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
-    <Box>
+    <Box as="header">
       <Container variant="responsiveContainer">
         <Flex py={2} direction={["column", "column", "column", "row"]} justify="space-between">
           <Flex alignItems="center" wrap="wrap">
