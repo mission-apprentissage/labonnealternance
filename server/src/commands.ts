@@ -428,6 +428,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:onisep:import"))
 
+program
+  .command("remove:duplicate:etablissements")
+  .description("Supprime les doublon de la collection Etablissements généré par le script de synchronisation (lié au parallélisme)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("remove:duplicates:etablissements"))
+
 /**
  *
  *

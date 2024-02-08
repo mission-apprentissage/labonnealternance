@@ -64,6 +64,7 @@ import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
 import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
+import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsAndFormationsAffelnet"
 import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
@@ -127,6 +128,10 @@ export const CronsMap = {
   //   cron_string: "10 2 * * *",
   //   handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
   // },
+  "Suppression des etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
+    cron_string: "30 3 * * *",
+    handler: () => addJob({ name: "remove:duplicates:etablissements", payload: {} }),
+  },
   "Historisation des formations éligibles à la prise de rendez-vous.": {
     cron_string: "55 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
@@ -222,6 +227,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "remove:duplicates:etablissements":
+        return removeDuplicateEtablissements()
       case "garbage-collector:run":
         return runGarbageCollector()
       case "anonymize:appointments":
