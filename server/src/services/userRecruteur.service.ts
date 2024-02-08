@@ -13,7 +13,7 @@ import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
 import { ADMIN } from "./constant.service"
-import mailer from "./mailer.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
 
 /**
  * @description generate an API key
@@ -212,10 +212,10 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      establishment_raison_sociale,
-      last_name,
-      first_name,
-      email,
+      establishment_raison_sociale: establishment_raison_sociale,
+      last_name: sanitizeForEmail(last_name),
+      first_name: sanitizeForEmail(first_name),
+      email: sanitizeForEmail(email),
       is_delegated: type === CFA,
       url: createAuthMagicLink(userRecruteur),
     },

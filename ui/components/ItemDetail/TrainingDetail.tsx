@@ -178,7 +178,7 @@ const getTrainingDetails = (training) => {
         </Flex>
       )}
 
-      {training["sessions"] && training["sessions"].length && (
+      {training["sessions"]?.length ? (
         <Flex alignItems="flex-start" mt={10}>
           <Image src="/images/icons/training-academic-cap.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
@@ -195,6 +195,8 @@ const getTrainingDetails = (training) => {
                 ))}
           </Box>
         </Flex>
+      ) : (
+        <></>
       )}
 
       {getTrainingSessions(training)}
@@ -237,7 +239,7 @@ const getTrainingSessions = (training) => {
       )
     )
   } else {
-    return ""
+    return <></>
   }
 }
 

@@ -14,7 +14,7 @@ import { addEmailToBlacklist } from "./application.service"
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import { BrevoEventStatus } from "./brevo.service"
 import * as eligibleTrainingsForAppointmentService from "./eligibleTrainingsForAppointment.service"
-import mailer from "./mailer.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
 
 export type NewAppointment = Pick<
   IAppointment,
@@ -46,11 +46,11 @@ const getMailData = (candidate: IUser, appointment: IAppointment, eligibleTraini
   const mailData = {
     appointmentId: appointment._id,
     user: {
-      firstname: candidate.firstname,
-      lastname: candidate.lastname,
-      phone: candidate.phone,
-      email: candidate.email,
-      applicant_message_to_cfa: appointment.applicant_message_to_cfa,
+      firstname: sanitizeForEmail(candidate.firstname),
+      lastname: sanitizeForEmail(candidate.lastname),
+      phone: sanitizeForEmail(candidate.phone),
+      email: sanitizeForEmail(candidate.email),
+      applicant_message_to_cfa: sanitizeForEmail(appointment.applicant_message_to_cfa),
     },
     etablissement: {
       name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
@@ -65,7 +65,7 @@ const getMailData = (candidate: IUser, appointment: IAppointment, eligibleTraini
     appointment: {
       reasons: appointment.applicant_reasons,
       referrerLink: referrerObj.url,
-      appointment_origin: referrerObj.full_name,
+      appointment_origin: sanitizeForEmail(referrerObj.full_name),
     },
     images: {
       logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
@@ -121,7 +121,6 @@ export const sendFormateurAppointmentEmail = async (
   if (eligibleTrainingsForAppointment.lieu_formation_zip_code) {
     emailCfaSubject = `${emailCfaSubject} - [${eligibleTrainingsForAppointment.lieu_formation_zip_code.slice(0, 2)}]`
   }
-  const mailData = getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)
   const toEmail = appointment.cfa_recipient_email
 
   const email = await mailer.sendEmail({
@@ -129,7 +128,7 @@ export const sendFormateurAppointmentEmail = async (
     subject: emailCfaSubject,
     template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
     data: {
-      ...mailData,
+      ...getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
       link: createRdvaAppointmentIdPageLink(toEmail, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
     },
   })

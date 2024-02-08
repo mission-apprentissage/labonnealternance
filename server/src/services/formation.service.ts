@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { groupBy, maxBy } from "lodash-es"
+import { chain } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
 
 import { FormationCatalogue } from "../common/model/index"
@@ -10,6 +10,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { notifyToSlack } from "../common/utils/slackUtils"
 
+import { isEmailBlacklisted } from "./application.service"
 import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
@@ -409,7 +410,7 @@ const transformFormationForIdea = (rawFormation: IFormationCatalogue): ILbaItemF
  */
 const setSessions = (formation: Partial<IFormationCatalogue>): ILbaItemTrainingSession[] => {
   const { date_debut, date_fin, modalites_entrees_sorties } = formation ?? {}
-  if (date_debut?.length && date_fin?.length && modalites_entrees_sorties?.length) {
+  if (date_debut?.length && date_debut?.length === date_fin?.length && date_debut?.length === modalites_entrees_sorties?.length) {
     return (date_debut ?? []).map((startDate, idx) => ({
       startDate: new Date(startDate),
       endDate: new Date(date_fin[idx]),
@@ -642,16 +643,28 @@ const sortFormations = (formations: ILbaItemFormation[]) => {
 /**
  * Retourne l'email le plus présent parmi toutes les formations du catalogue ayant un même "etablissement_formateur_siret".
  */
-export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_formateur_siret: string | undefined): Promise<string | null> => {
+export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_gestionnaire_siret: string | undefined): Promise<string | null> => {
   const formations = await FormationCatalogue.find(
     {
       email: { $ne: null },
-      etablissement_formateur_siret,
+      etablissement_gestionnaire_siret,
     },
     { email: 1 }
   ).lean()
 
-  const emailGroups = groupBy(formations, "email")
-  const mostFrequentGroup = maxBy(Object.values(emailGroups), "length")
-  return mostFrequentGroup?.length ? mostFrequentGroup[0].email ?? null : null
+  const mostFrequentEmail = chain(formations)
+    .groupBy("email")
+    .map((group, email) => ({ email, group: group.length }))
+    .orderBy("count", "desc")
+
+  return await findFirstNonBlacklistedEmail(mostFrequentEmail)
+}
+
+const findFirstNonBlacklistedEmail = async (emails) => {
+  for (const { email } of emails) {
+    if (!(await isEmailBlacklisted(email))) {
+      return email
+    }
+  }
+  return null // All emails are blacklisted
 }

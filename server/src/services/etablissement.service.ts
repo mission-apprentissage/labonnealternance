@@ -33,7 +33,7 @@ import {
   ISIRET2IDCC,
 } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
-import mailer from "./mailer.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { autoValidateUser, createUser, getUser, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
 
@@ -851,8 +851,8 @@ export const sendUserConfirmationEmail = async (user: IUserRecruteur) => {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      last_name: user.last_name,
-      first_name: user.first_name,
+      last_name: sanitizeForEmail(user.last_name),
+      first_name: sanitizeForEmail(user.first_name),
       confirmation_url: url,
     },
   })
@@ -877,9 +877,9 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         },
-        nom: user.last_name,
-        prenom: user.first_name,
-        email: user.email,
+        nom: sanitizeForEmail(user.last_name),
+        prenom: sanitizeForEmail(user.first_name),
+        email: sanitizeForEmail(user.email),
         confirmation_url: url,
         offre: {
           rome_appellation_label: offre.rome_appellation_label,
@@ -921,4 +921,35 @@ export const processEstablishmentWebhookEvent = async (payload) => {
   }
 
   return true
+}
+
+export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "affelnet" | "parcoursup") => {
+  if (!etablissement.gestionnaire_email) {
+    throw Boom.badRequest("Gestionnaire email not found")
+  }
+
+  const subject =
+    type === "affelnet" ? `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e` : `La prise de RDV est activée pour votre CFA sur Parcoursup`
+
+  return mailer.sendEmail({
+    to: etablissement.gestionnaire_email,
+    subject,
+    template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
+    data: {
+      ...(type === "affelnet" ? { isAffelnet: true } : type === "parcoursup" ? { isParcoursup: true } : {}),
+      images: {
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+      },
+      etablissement: {
+        name: etablissement.raison_sociale,
+        formateur_address: etablissement.formateur_address,
+        formateur_zip_code: etablissement.formateur_zip_code,
+        formateur_city: etablissement.formateur_city,
+        formateur_siret: etablissement.formateur_siret,
+        gestionnaire_email: etablissement.gestionnaire_email,
+      },
+      activationDate: dayjs().format("DD/MM"),
+    },
+  })
 }

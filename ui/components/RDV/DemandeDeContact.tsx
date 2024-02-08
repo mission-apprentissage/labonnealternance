@@ -28,7 +28,7 @@ import {
 } from "@chakra-ui/react"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
@@ -38,6 +38,7 @@ import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
 import { PaperPlane } from "@/theme/components/icons/PaperPlane"
 import { apiGet, apiPost } from "@/utils/api.utils"
+import { SendPlausibleEvent } from "@/utils/plausible"
 
 type Props = {
   context: IAppointmentRequestContextCreateFormAvailableResponseSchema
@@ -55,6 +56,14 @@ const DemandeDeContact = (props: Props) => {
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
   const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState(null)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (isOpen) {
+      SendPlausibleEvent("Clic Prendre RDV - Fiche formation", {
+        info_fiche: `${props.context.cle_ministere_educatif}`,
+      })
+    }
+  }, [props.context.cle_ministere_educatif, isOpen])
 
   const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -121,6 +130,9 @@ const DemandeDeContact = (props: Props) => {
           },
         })
 
+        SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
+          info_fiche: `${props.context.cle_ministere_educatif}`,
+        })
         setOnSuccessSubmitResponse(response)
       } catch (json) {
         setError(json?.message || "Une erreur inattendue est survenue.")

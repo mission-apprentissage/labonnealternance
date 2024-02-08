@@ -8,7 +8,7 @@ const NoJobResult = () => {
 
   return (
     scopeContext.isJob && (
-      <Box id="jobList" fontWeight={700}>
+      <Box id="jobList" textAlign="center" mb={6} fontWeight={700}>
         Aucune entreprise trouvée pour votre recherche
       </Box>
     )

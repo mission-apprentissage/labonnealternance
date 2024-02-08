@@ -10,7 +10,7 @@ import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
 import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaire, reactivateRecruiter } from "../../services/formulaire.service"
-import mailer from "../../services/mailer.service"
+import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { getUserAndRecruitersDataForOpcoUser, getValidatorIdentityFromStatus } from "../../services/user.service"
 import {
   createUser,
@@ -262,10 +262,9 @@ export default (server: Server) => {
               accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             },
-            last_name,
-            first_name,
-            email,
-            reason: history.reason,
+            last_name: sanitizeForEmail(last_name),
+            first_name: sanitizeForEmail(first_name),
+            reason: sanitizeForEmail(history.reason),
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })

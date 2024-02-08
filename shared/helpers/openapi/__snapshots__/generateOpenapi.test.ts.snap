@@ -96,9 +96,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "company_email": {
-            "description": "L'adresse email de la société pour postuler. Vous devez impérativement utiliser les valeurs émises par l'API LBA avec le vecteur d'initialisation correspondant à l'adresse.",
-            "example": "...f936e4352b5ae5...",
-            "type": "string",
+            "description": "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
+            "example": "fake@dummy.com",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "company_naf": {
             "description": "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
@@ -178,7 +181,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_last_name",
           "applicant_phone",
           "company_siret",
-          "company_email",
           "company_name",
           "company_naf",
           "job_title",
