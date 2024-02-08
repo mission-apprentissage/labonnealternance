@@ -55,26 +55,6 @@ const Organisme = () => {
             <Box ml="4" display="flex" justifyContent="center" mt={2}>
               <ConnectionActions service="cfa" />
             </Box>
-
-            <Box as="section" bg="beige" borderRadius={10} p={{ base: 3, md: 6, lg: 12 }} mt={16}>
-              <PostezVotreOffreAlternance />
-              <GerezEntreprise />
-              <OffresGratuites />
-              <ReseauEntreprise />
-            </Box>
-
-            <Box as="section">
-              <BientotCFA />
-            </Box>
-
-            <Box my={12}>
-              <Text as="h2" textAlign="center" fontSize="32" fontWeight={700}>
-                Vous souhaitez attirer de nouveaux candidats?
-              </Text>
-              <Box ml="4" display="flex" justifyContent="center" mt={2}>
-                <ConnectionActions service="cfa" />
-              </Box>
-            </Box>
           </Box>
 
           <FollowLinkedIn />

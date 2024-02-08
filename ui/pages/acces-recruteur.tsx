@@ -55,7 +55,7 @@ const AccesRecruteur = () => (
           </Box>
         </Box>
 
-        <GerezOffres />
+        <Box as="section"></Box>
 
         <FollowLinkedIn />
       </Container>
