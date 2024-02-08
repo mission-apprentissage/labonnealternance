@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Image, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import React from "react"
 
@@ -18,15 +19,15 @@ const OffresGratuites = () => {
               href="https://labonnealternance.apprentissage.beta.gouv.fr"
               isExternal
             >
-              La bonne alternance
+              La bonne alternance <ExternalLinkIcon mx="2px" />
             </Link>
             ,{" "}
             <Link variant="homeEditorialLink" aria-label="Accès au site un jeune une solution - nouvelle fenêtre" href="https://www.1jeune1solution.gouv.fr" isExternal>
-              1jeune1solution
+              1jeune1solution <ExternalLinkIcon mx="2px" />
             </Link>
             ,{" "}
             <Link variant="homeEditorialLink" aria-label="Accès au site Parcoursup - nouvelle fenêtre" href="https://www.parcoursup.fr" isExternal>
-              parcoursup
+              parcoursup <ExternalLinkIcon mx="2px" />
             </Link>{" "}
             et bien d’autres.
           </Box>

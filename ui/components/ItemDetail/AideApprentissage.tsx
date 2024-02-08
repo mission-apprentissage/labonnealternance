@@ -1,5 +1,5 @@
-import { Box, Image, Link, Text } from "@chakra-ui/react"
-import React from "react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Link, Text } from "@chakra-ui/react"
 
 const AideApprentissage = ({ item }) => {
   const kind = item?.ideaType
@@ -22,8 +22,7 @@ const AideApprentissage = ({ item }) => {
           aria-label="Accès à l'outil de simulation de 1jeune1solution - nouvelle fenêtre"
           isExternal
         >
-          l’outil de simulation 1jeune1solution
-          <Image src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" display="inline-block" pl="1" />
+          l’outil de simulation 1jeune1solution <ExternalLinkIcon mx="2px" />
         </Link>
       </Box>
     </Box>

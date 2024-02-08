@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Center, Checkbox, Container, Divider, Flex, Grid, GridItem, Heading, Link, Spinner, Square, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -121,7 +122,7 @@ export default function CreationMiseEnRelation() {
                         >
                           <Flex>
                             <Text lineHeight="25px">
-                              <u>En savoir plus</u>
+                              <u>En savoir plus</u> <ExternalLinkIcon mx="2px" />
                             </Text>
                           </Flex>
                         </Link>

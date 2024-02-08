@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Container, Flex, List, ListItem, Text } from "@chakra-ui/react"
 import React from "react"
 
@@ -28,7 +29,7 @@ const Footer = () => {
                 isExternal
                 aria-label="Site de la mission interministérielle pour l'apprentissage - nouvelle fenêtre"
               >
-                Mission interministérielle pour l'apprentissage
+                Mission interministérielle pour l'apprentissage <ExternalLinkIcon mx="2px" />
               </Link>{" "}
               développe plusieurs services destinés à faciliter les entrées en apprentissage.
             </Text>
@@ -36,22 +37,22 @@ const Footer = () => {
             <List textStyle="sm" fontWeight="700" flexDirection="row" flexWrap="wrap" mb={[3, 3, 0]} display="flex">
               <ListItem>
                 <Link href="https://www.legifrance.gouv.fr/" mr={4} isExternal aria-label="Site de legifrance.gouv.fr - nouvelle fenêtre">
-                  legifrance.gouv.fr
+                  legifrance.gouv.fr <ExternalLinkIcon mx="2px" />
                 </Link>
               </ListItem>
               <ListItem>
                 <Link href="https://www.gouvernement.fr/" mr={4} isExternal aria-label="Site gouvernement.fr - nouvelle fenêtre">
-                  gouvernement.fr
+                  gouvernement.fr <ExternalLinkIcon mx="2px" />
                 </Link>
               </ListItem>
               <ListItem>
                 <Link href="https://www.service-public.fr/" mr={4} isExternal aria-label="Site service-public.fr - nouvelle fenêtre">
-                  service-public.fr
+                  service-public.fr <ExternalLinkIcon mx="2px" />
                 </Link>
               </ListItem>
               <ListItem>
                 <Link href="https://www.data.gouv.fr/fr/" isExternal aria-label="Site data.gouv.fr - nouvelle fenêtre">
-                  data.gouv.fr
+                  data.gouv.fr <ExternalLinkIcon mx="2px" />
                 </Link>
               </ListItem>
             </List>

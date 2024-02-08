@@ -104,7 +104,7 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/ItemDetail.tsx
   checksum: 94562589347550c59a72397c399f3461599357797e72535ff7576736d0e5bb26
 - filename: ui/components/RDV/DemandeDeContact.tsx
-  checksum: 582deb8ea90744169ada7572a14d3d8f3d846925bed5655761fa7b250546f580
+  checksum: 2f5d579fbe659f5c59a98cb2bee5a4bcb0f74c98005cdd96aff832bf5b3bf82b
 - filename: ui/components/SearchForTrainingsAndJobs/services/handleSessionStorage.ts
   checksum: c3c1aceede1040a9001bdc27cebbec7b3aeb0bb251b8b4264bb9d33da074af60
 - filename: ui/components/espace_pro/Admin/utilisateurs/UserList.tsx

@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
 import React from "react"
 
@@ -22,6 +23,7 @@ const FollowLinkedIn = () => {
             width={209}
             display="flex"
             justifyContent="center"
+            alignItems="center"
             py={4}
             fontSize={18}
             isExternal
@@ -29,6 +31,7 @@ const FollowLinkedIn = () => {
           >
             Voir notre page &nbsp;
             <Image src="/images/icons/linkedin.svg" alt=""></Image>
+            <ExternalLinkIcon mx="2px" />
           </Link>
         </GridItem>
       </Grid>

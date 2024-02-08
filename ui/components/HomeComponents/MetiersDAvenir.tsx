@@ -1,4 +1,4 @@
-import { ArrowForwardIcon } from "@chakra-ui/icons"
+import { ArrowForwardIcon, ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Container, Divider, Flex, Grid, GridItem, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import axios from "axios"
 import NextLink from "next/link"
@@ -80,7 +80,7 @@ const MetiersDAvenir = () => {
                 Ces suggestions sont issues du service Diagoriente, qui oeuvre à l'orientation et l'insertion professionnelle.
               </Text>
               <Link variant="editorialContentLink" isExternal href={diagorienteLink} aria-label="Site de Diagoriente - nouvelle fenêtre">
-                En savoir plus
+                En savoir plus <ExternalLinkIcon mx="2px" />
               </Link>
             </Box>
           </GridItem>

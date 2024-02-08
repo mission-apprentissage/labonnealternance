@@ -286,14 +286,14 @@ const DemandeDeContact = (props: Props) => {
         </Text>
         <Text mt={4}>
           En remplissant ce formulaire, vous acceptez les{" "}
-          <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank" title="Conditions générales d'utilisation - nouvelle fenêtre">
-            Conditions générales d&apos;utilisation
+          <Link href="/cgu" color="grey.800" textDecoration="underline" isExternal title="Conditions générales d'utilisation - nouvelle fenêtre">
+            Conditions générales d&apos;utilisation <ExternalLinkIcon mx="2px" />
           </Link>{" "}
           du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {props.context.etablissement_formateur_entreprise_raison_sociale}.
           <br />
           Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-          <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank" title="politique de confidentialité - nouvelle fenêtre">
-            Politique de confidentialité
+          <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" isExternal title="politique de confidentialité - nouvelle fenêtre">
+            Politique de confidentialité <ExternalLinkIcon mx="2px" />
           </Link>{" "}
           de La bonne alternance.
         </Text>
@@ -351,7 +351,7 @@ const DemandeDeContact = (props: Props) => {
           </Text>
           <Text fontSize="16px" mt="12px">
             <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
-            <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" target="_blank" title="Prendre contact avec une école - nouvelle fenêtre">
+            <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" isExternal title="Prendre contact avec une école - nouvelle fenêtre">
               <u>Prendre contact avec une école</u> <ExternalLinkIcon mt="-5px" />
             </Link>
           </Text>

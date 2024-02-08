@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input } from "@chakra-ui/react"
 import { useField } from "formik"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -29,7 +30,7 @@ export const CustomInput = (props) => {
                 textColor="bluefrance.500"
                 textDecoration="underline"
               >
-                Contacter le support pour en savoir plus
+                Contacter le support pour en savoir plus <ExternalLinkIcon mx="2px" />
               </Link>
             </Box>
           ) : (

@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Container, Flex, Heading, Link, Text, useBoolean } from "@chakra-ui/react"
 
 import { Close } from "../../theme/components/icons"
@@ -33,7 +34,7 @@ export default function MatchaLbaOverlay() {
               isExternal
               aria-label="Site de la bonne alternance - nouvelle fenêtre"
             >
-              Accéder au site La bonne alternance
+              Accéder au site La bonne alternance <ExternalLinkIcon mx="2px" />
             </Button>
           </Flex>
         </Container>

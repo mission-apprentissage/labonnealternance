@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Grid, GridItem, Box, Image, Link, Text, UnorderedList, ListItem } from "@chakra-ui/react"
 
 export const FormCreatePageFooter = () => {
@@ -23,7 +24,7 @@ export const FormCreatePageFooter = () => {
                   isExternal
                   textDecoration="underline"
                 >
-                  La bonne alternance
+                  La bonne alternance <ExternalLinkIcon mx="2px" />
                 </Link>
                 . Il est développé par la{" "}
                 <Link
@@ -32,7 +33,7 @@ export const FormCreatePageFooter = () => {
                   isExternal
                   textDecoration="underline"
                 >
-                  Mission interministérielle pour l'apprentissage
+                  Mission interministérielle pour l'apprentissage <ExternalLinkIcon mx="2px" />
                 </Link>
                 .
               </Box>
@@ -122,8 +123,7 @@ export const FormCreatePageFooter = () => {
                   textDecoration="underline"
                   isExternal
                 >
-                  etalab-2.0
-                  <Image src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" display="inline-block" pl="1" />
+                  etalab-2.0 <ExternalLinkIcon mx="2px" />
                 </Link>
               </Box>
             </GridItem>

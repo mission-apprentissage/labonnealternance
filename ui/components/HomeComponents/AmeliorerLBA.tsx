@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
 import React from "react"
 
@@ -34,7 +35,7 @@ const AmeliorerLBA = () => {
               padding="10px 24px"
               isExternal
             >
-              Je participe à l'étude
+              Je participe à l'étude <ExternalLinkIcon mx="2px" />
             </Link>
           </Box>
           <Box mt="3">&nbsp;</Box>

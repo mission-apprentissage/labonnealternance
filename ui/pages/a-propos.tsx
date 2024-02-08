@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Container, Divider, Flex, Grid, GridItem, Image, Link, SimpleGrid, Text, VStack } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React from "react"
@@ -20,7 +21,7 @@ const ServiceCard = ({ logo, title, text, url, mt, mb = undefined, imageMT, imag
           </Text>
           <Text color="grey.600">{text}</Text>
           <Link textDecoration="underline" color="grey.600" aria-label={`Accès au site ${url} - nouvelle fenêtre`} href={url} isExternal>
-            En savoir plus
+            En savoir plus <ExternalLinkIcon mx="2px" />
           </Link>
         </Box>
       </Flex>
@@ -36,7 +37,7 @@ const StartupCard = ({ logoUrl, url, title, ariaLabel }) => {
       </Box>
       <Box pl={2}>
         <Link href={url} isExternal aria-label={ariaLabel}>
-          {title}
+          {title} <ExternalLinkIcon mx="2px" />
         </Link>
       </Box>
     </Box>
@@ -51,7 +52,7 @@ const ServiceLink = ({ url, text, title, ariaLabel }) => {
       </GridItem>
       <GridItem ml={4} colSpan={[11, 11, 4]}>
         <Link sx={{ "text-underline-offset": "3px" }} textDecoration="underline" textDecorationThickness="2px" fontWeight="700" href={url} isExternal aria-label={ariaLabel}>
-          {title}
+          {title} <ExternalLinkIcon mx="2px" />
         </Link>
       </GridItem>
       <GridItem colSpan={[12, 12, 7]} pl={[0, 0, 8]}>
@@ -123,7 +124,7 @@ const APropos = () => (
               href="https://mission-apprentissage.gitbook.io/general/"
               isExternal
             >
-              Mission apprentissage
+              Mission apprentissage <ExternalLinkIcon mx="2px" />
             </Link>{" "}
             en 2020, le site ajoute désormais des informations sur les formations en apprentissage et les offres d&apos;emploi en alternance.
           </Text>

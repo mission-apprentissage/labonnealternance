@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Divider, Flex, Grid, GridItem, Image, Link, ListItem, UnorderedList } from "@chakra-ui/react"
 import NextLink from "next/link"
 import React from "react"
@@ -49,7 +50,7 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                     color="grey.425"
                     mr={4}
                   >
-                    pole-emploi.fr
+                    pole-emploi.fr <ExternalLinkIcon mx="2px" />
                   </Link>
                   <Link
                     href="https://gouvernement.fr"
@@ -60,7 +61,7 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                     color="grey.425"
                     mr={4}
                   >
-                    gouvernement.fr
+                    gouvernement.fr <ExternalLinkIcon mx="2px" />
                   </Link>
                   <Link
                     href="https://service-public.fr"
@@ -71,10 +72,10 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                     color="grey.425"
                     mr={4}
                   >
-                    service-public.fr
+                    service-public.fr <ExternalLinkIcon mx="2px" />
                   </Link>
                   <Link href="https://data.gouv.fr" aria-label="Accès au site data.gouv - nouvelle fenêtre" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
-                    data.gouv.fr
+                    data.gouv.fr <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Flex>
               </Box>
@@ -155,8 +156,7 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                   isExternal
                   mr={4}
                 >
-                  etalab-2.0
-                  <Image src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" display="inline-block" pl="1" />
+                  etalab-2.0 <ExternalLinkIcon mx="2px" />
                 </Link>
               </Box>
               <Box color="grey.425" fontSize={12} mt={6} pb={12}>

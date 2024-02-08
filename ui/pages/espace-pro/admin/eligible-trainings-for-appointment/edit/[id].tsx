@@ -261,7 +261,7 @@ function EditPage() {
                             <Link
                               href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
                               title="La formation du Catalogue - nouvelle fenêtre"
-                              target="_blank"
+                              isExternal
                               rel="noreferrer"
                               fontWeight="bold"
                             >

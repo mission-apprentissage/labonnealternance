@@ -126,7 +126,7 @@ const LocationDetail = ({ item, isCfa }) => {
               <Image mt="2px" src="/images/icons/small_email.svg" alt="" />
             </Box>
             <Link ml="2px" isExternal variant="basicUnderlined" href={`mailto:${item.contact.email}`} aria-label="Contacter par email - nouvelle fenêtre">
-              {item.contact.email}
+              {item.contact.email} <ExternalLinkIcon mx="2px" />
             </Link>
           </Flex>
         )}
@@ -137,7 +137,7 @@ const LocationDetail = ({ item, isCfa }) => {
               <Image mt="2px" src="/images/icons/small_phone.svg" alt="" />
             </Box>
             <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${item.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
-              {item.contact.phone}
+              {item.contact.phone} <ExternalLinkIcon mx="2px" />
             </Link>
           </Flex>
         )}

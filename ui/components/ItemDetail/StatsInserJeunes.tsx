@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Link, Text } from "@chakra-ui/react"
 import React from "react"
 
@@ -60,7 +61,7 @@ const StatsInserJeunes = ({ stats }) => {
             isExternal
             aria-label="Site inserjeunes.beta.gouv.fr - nouvelle fenêtre"
           >
-            dispositif InserJeunes promotion {stats.millesime.replace("_", "/")}
+            dispositif InserJeunes promotion {stats.millesime.replace("_", "/")} <ExternalLinkIcon mx="2px" />
           </Link>
         </Text>
       </Box>

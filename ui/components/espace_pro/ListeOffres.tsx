@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import {
   Badge,
   Box,
@@ -256,7 +257,7 @@ export default function ListeOffres() {
                           href={`${publicConfig.baseUrl}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}
                           aria-label="Lien vers les formations - nouvelle fenêtre"
                         >
-                          Voir les centres de formations
+                          Voir les centres de formations <ExternalLinkIcon mx="2px" />
                         </Link>
                       </MenuItem>
                     )}
