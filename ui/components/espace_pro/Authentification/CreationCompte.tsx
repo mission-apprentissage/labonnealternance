@@ -19,6 +19,8 @@ import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
 import { AnimationContainer, AuthentificationLayout, Bandeau, CustomInput, InformationLegaleEntreprise } from "../index"
 import { InformationLegaleEntrepriseProps } from "../InformationLegaleEntreprise"
 
+type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
+
 const CreationCompteForm = ({
   type,
   setQualiopi,
@@ -26,7 +28,7 @@ const CreationCompteForm = ({
   origin,
   isWidget,
 }: {
-  type: AUTHTYPE.ENTREPRISE | AUTHTYPE.CFA
+  type: EntrepriseOrCfaType
   isWidget: boolean
   origin: string
   setQualiopi: (props: InformationLegaleEntrepriseProps) => void
@@ -174,7 +176,7 @@ const CreationCompteForm = ({
   )
 }
 
-export default function CreationCompte({ type, widget = false, origin = "lba" }: { type: AUTHTYPE.ENTREPRISE | AUTHTYPE.CFA; widget?: boolean; origin?: string }) {
+export default function CreationCompte({ type, widget = false, origin = "lba" }: { type: EntrepriseOrCfaType; widget?: boolean; origin?: string }) {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const [qualiopi, setQualiopi] = useState<InformationLegaleEntrepriseProps>(null)
