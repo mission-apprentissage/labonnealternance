@@ -1,4 +1,7 @@
+import { smtpClient } from "../api/smtpClient"
 import { FlowCreationEntreprise } from "../pages/FlowCreationEntreprise"
+import { JobPage } from "../pages/JobPage"
+import { LoginBar } from "../pages/LoginBar"
 import { generateRandomString } from "../utils/generateRandomString"
 
 describe("create-recruiter-account-siret-inexistent", () => {
@@ -8,8 +11,8 @@ describe("create-recruiter-account-siret-inexistent", () => {
     const emailDomain = Cypress.env("ENTREPRISE_AUTOVALIDE_EMAIL_DOMAIN")
     const email = `${generateRandomString()}@${emailDomain}`
     const siret = Cypress.env("ENTREPRISE_AUTOVALIDE_SIRET")
-    const firstName = "John"
-    const lastName = "Doe"
+    const firstName = `John-${generateRandomString()}`
+    const lastName = `Doe-${generateRandomString()}`
     const romeLabel = "Net surfeur / Net surfeuse"
     const studyLevel = "Cap, autres formations niveau (Infrabac)"
 
@@ -39,6 +42,21 @@ describe("create-recruiter-account-siret-inexistent", () => {
     FlowCreationEntreprise.delegationPage.selectCFAs(["UNIVERSITE GRENOBLE ALPES"])
     FlowCreationEntreprise.delegationPage.submit()
     FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase(), romeLabel, studyLevel])
-    FlowCreationEntreprise.emailSentPage.goBackHome()
+    FlowCreationEntreprise.emailSentPage.getJobId().then((jobId) => {
+      FlowCreationEntreprise.emailSentPage.goBackHome()
+
+      // verifie que l'offre est visible
+      JobPage.goTo(jobId)
+      cy.contains(romeLabel)
+      JobPage.expectPublished()
+
+      // vérifie que le recruteur peut se connecter
+      smtpClient.getMail(email, "Confirmez votre adresse mail").then((mailContent) => {
+        const url = smtpClient.findUrlInBrackets(`${Cypress.env("ui")}/espace-pro/authentification/validation/*`, mailContent)
+        cy.visit(url)
+        cy.url().should("contain", "/espace-pro/administration/entreprise/")
+        LoginBar.expectLoggedAs(firstName, lastName)
+      })
+    })
   })
 })

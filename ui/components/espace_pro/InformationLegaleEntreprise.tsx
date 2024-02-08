@@ -9,12 +9,14 @@ import { InfoCircle } from "../../theme/components/icons"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
 
+export type InformationLegaleEntrepriseProps = any
+
 /**
  * KBA 20230511 : use address_detail field to display address information :
  * Migrate CFA entries in collection to have the same format as companies
  * Use the address API for all type of establishment
  */
-export const InformationLegaleEntreprise = (props) => {
+export const InformationLegaleEntreprise = (props: InformationLegaleEntrepriseProps) => {
   const { user } = useAuth()
   const { establishment_enseigne, establishment_raison_sociale, rue, establishment_siret, commune, code_postal, opco, establishment_size, type, address, is_qualiopi } = props
   const hasDetailedAddress = Boolean(rue)
