@@ -2,8 +2,6 @@ import Boom from "boom"
 import mongoose from "mongoose"
 import { zRoutes } from "shared/index"
 
-import config from "@/config"
-
 import { Application } from "../../common/model/index"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { sendMailToApplicant } from "../../services/application.service"
@@ -21,8 +19,7 @@ export default function (server: Server) {
     "/application/intentionComment/:id",
     {
       schema: zRoutes.post["/application/intentionComment/:id"],
-      // KBA 2023-12-14 : Activate in production 1st of february
-      onRequest: config.env !== "production" ? server.auth(zRoutes.post["/application/intentionComment/:id"]) : async () => {},
+      onRequest: server.auth(zRoutes.post["/application/intentionComment/:id"]),
       config: rateLimitConfig,
     },
     async (req, res) => {
@@ -56,8 +53,7 @@ export default function (server: Server) {
     "/application/intention/:id",
     {
       schema: zRoutes.post["/application/intention/:id"],
-      // KBA 2023-12-14 : Activate in production 1st of february
-      onRequest: config.env !== "production" ? server.auth(zRoutes.post["/application/intention/:id"]) : async () => {},
+      onRequest: server.auth(zRoutes.post["/application/intention/:id"]),
       config: rateLimitConfig,
     },
     async (req, res) => {

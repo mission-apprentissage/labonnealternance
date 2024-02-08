@@ -8,6 +8,7 @@ import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
 import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
+import PromoRessources from "../components/Ressources/promoRessources"
 import ScrollToTop from "../components/ScrollToTop"
 import { ParameterContext } from "../context/ParameterContextProvider"
 import { initParametersFromQuery } from "../services/config"
@@ -64,10 +65,16 @@ const Home = () => {
         </Box>
 
         {/* @ts-expect-error: TODO */}
+        <Box {...blockCssProperties} pb={12}>
+          <PromoRessources target="candidat" />
+        </Box>
+
+        {/* @ts-expect-error: TODO */}
         <Box {...blockCssProperties}>
           <AmeliorerLBA />
         </Box>
       </Box>
+
       <Footer />
     </Box>
   )

@@ -4,7 +4,7 @@ import React from "react"
 
 const AlgoRecruiter = ({ withLinks }) => {
   return (
-    <Box as="section" pb={24} backgroundColor="white">
+    <Box as="section" pb={12} backgroundColor="white">
       <Box py={12} backgroundColor="#f5f5fe">
         {/* @ts-expect-error: TODO */}
         <Grid templateColumns={{ base: "repeat(1, 1fr)", lg: "repeat(5, 1fr)" }} spacing="20px">
