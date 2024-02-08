@@ -22,7 +22,7 @@ export const relanceOpco = async () => {
   if (!userAwaitingValidation.length) return
 
   // count user to validate per opco
-  const userList = userAwaitingValidation.reduce((acc, user) => {
+  const userList = userAwaitingValidation.reduce<Record<string, number>>((acc, user) => {
     if (user.opco) {
       if (user.opco in acc) {
         acc[user.opco]++
@@ -38,7 +38,6 @@ export const relanceOpco = async () => {
     const users = await UserRecruteur.find({ scope: opco, type: "OPCO" })
 
     await asyncForEach(users, async (user: IUserRecruteur) => {
-      // send mail to recipient
       await mailer.sendEmail({
         to: user.email,
         subject: "Nouveaux comptes entreprises à valider",

@@ -20,7 +20,8 @@ export const getSearchQueryParameters = (searchParameters) => {
 
   let locationParams = ""
   if (location?.value) {
-    const { coordinates, zipcode = "", insee = "", label: locationLabel } = location.value
+    const { coordinates } = location.value
+    const { zipcode = "", insee = "", label: locationLabel } = location
     locationParams = `&lat=${coordinates[1]}&lon=${coordinates[0]}&zipcode=${zipcode}&insee=${insee}&address=${locationLabel ? encodeURIComponent(locationLabel) : ""}`
   }
 
