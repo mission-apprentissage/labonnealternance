@@ -26,24 +26,26 @@ const DesinscriptionRecruteur = () => {
 
       <ScrollToTop />
       <Navigation currentPage="desinscription" />
-      <Breadcrumb forPage="desinscription" label="Désinscription" />
+      <Box as="main">
+        <Breadcrumb forPage="desinscription" label="Désinscription" />
 
-      <Container my={0} px={0} variant="pageContainer" bg="white">
-        {!isSuccess ? (
-          <>
-            <FormulaireDesinscription handleUnsubscribeSuccess={handleUnsubscribeSuccess} />
+        <Container my={0} px={0} variant="pageContainer" bg="white">
+          {!isSuccess ? (
+            <>
+              <FormulaireDesinscription handleUnsubscribeSuccess={handleUnsubscribeSuccess} />
 
-            <Box>
-              <AlgoRecruiter withLinks={false} />
-            </Box>
-          </>
-        ) : (
-          <>
-            <SuccesDesinscription />
-          </>
-        )}
-      </Container>
-      <Box mb={3}>&nbsp;</Box>
+              <Box>
+                <AlgoRecruiter withLinks={false} />
+              </Box>
+            </>
+          ) : (
+            <>
+              <SuccesDesinscription />
+            </>
+          )}
+        </Container>
+        <Box mb={3}>&nbsp;</Box>
+      </Box>
       <Footer />
     </Box>
   )

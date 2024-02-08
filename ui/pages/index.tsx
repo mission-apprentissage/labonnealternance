@@ -43,34 +43,36 @@ const Home = () => {
     <Box>
       <ScrollToTop />
       <Navigation />
-      {/* @ts-expect-error: TODO */}
-      <Box background="beige" {...blockCssProperties}>
+      <Box as="main">
         {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle1.svg" {...circleImgCssProperties} top="60px" left="50px" alt="" />
+        <Box background="beige" {...blockCssProperties}>
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle1.svg" {...circleImgCssProperties} top="60px" left="50px" alt="" />
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle2.svg" {...circleImgCssProperties} bottom="-28px" left="444px" alt="" />
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle3.svg" {...circleImgCssProperties} top="182px" right="512px" alt="" />
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle4.svg" {...circleImgCssProperties} top="12px" right="312px" alt="" />
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle5.svg" {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
+          <HomeHero />
+          <HowTo />
+        </Box>
         {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle2.svg" {...circleImgCssProperties} bottom="-28px" left="444px" alt="" />
-        {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle3.svg" {...circleImgCssProperties} top="182px" right="512px" alt="" />
-        {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle4.svg" {...circleImgCssProperties} top="12px" right="312px" alt="" />
-        {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle5.svg" {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
-        <HomeHero />
-        <HowTo />
-      </Box>
-      {/* @ts-expect-error: TODO */}
-      <Box {...blockCssProperties} py={12}>
-        <AlgoHome />
-      </Box>
+        <Box {...blockCssProperties} py={12}>
+          <AlgoHome />
+        </Box>
 
-      {/* @ts-expect-error: TODO */}
-      <Box {...blockCssProperties} pb={12}>
-        <PromoRessources target="candidat" />
-      </Box>
+        {/* @ts-expect-error: TODO */}
+        <Box {...blockCssProperties} pb={12}>
+          <PromoRessources target="candidat" />
+        </Box>
 
-      {/* @ts-expect-error: TODO */}
-      <Box {...blockCssProperties}>
-        <AmeliorerLBA />
+        {/* @ts-expect-error: TODO */}
+        <Box {...blockCssProperties}>
+          <AmeliorerLBA />
+        </Box>
       </Box>
 
       <Footer />
