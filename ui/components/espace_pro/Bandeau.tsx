@@ -10,7 +10,7 @@ export type BandeauProps = {
   type: "success" | "error"
 }
 
-const Bandeau = ({ header, description, lien = null, type }) => {
+const Bandeau = ({ header, description, lien = null, type }: BandeauProps) => {
   const color = getBannerColor(type)
 
   return (
