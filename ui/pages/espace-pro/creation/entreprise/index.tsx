@@ -6,7 +6,7 @@ import CreationCompte from "../../../../components/espace_pro/Authentification/C
 export default function CreationEntreprise() {
   return (
     <DepotSimplifieLayout>
-      <CreationCompte type={AUTHTYPE.ENTREPRISE} widget={false} />
+      <CreationCompte type={AUTHTYPE.ENTREPRISE} isWidget={false} />
     </DepotSimplifieLayout>
   )
 }

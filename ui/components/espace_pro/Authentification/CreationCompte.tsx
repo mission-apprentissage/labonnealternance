@@ -176,7 +176,7 @@ const CreationCompteForm = ({
   )
 }
 
-export default function CreationCompte({ type, widget = false, origin = "lba" }: { type: EntrepriseOrCfaType; widget?: boolean; origin?: string }) {
+export default function CreationCompte({ type, isWidget = false, origin = "lba" }: { type: EntrepriseOrCfaType; isWidget?: boolean; origin?: string }) {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const [qualiopi, setQualiopi] = useState<InformationLegaleEntrepriseProps>(null)
@@ -185,7 +185,7 @@ export default function CreationCompte({ type, widget = false, origin = "lba" }:
   const mobile = router.query.mobile === "true" ? true : false
 
   useEffect(() => {
-    if (widget) {
+    if (isWidget) {
       setWidget({ isWidget: true, mobile: mobile ?? false })
       setOrganisation(origin ?? "matcha")
     }
@@ -207,7 +207,7 @@ export default function CreationCompte({ type, widget = false, origin = "lba" }:
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
               Nous avons besoin du numéro SIRET de votre {type === AUTHTYPE.ENTREPRISE ? "entreprise" : "organisme de formation"} afin de vous identifier.
             </Text>
-            <CreationCompteForm type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} origin={origin} isWidget={widget} />
+            <CreationCompteForm type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} origin={origin} isWidget={isWidget} />
           </Box>
           <Box mt={[4, 4, 4, 0]}>
             {qualiopi ? (

@@ -11,7 +11,7 @@ export default function Widget() {
   const { origin } = router.query
   return (
     <Box>
-      <CreationCompte type={AUTHTYPE.ENTREPRISE} widget={true} origin={origin as string} />
+      <CreationCompte type={AUTHTYPE.ENTREPRISE} isWidget={true} origin={origin as string} />
       <WidgetFooter />
     </Box>
   )
