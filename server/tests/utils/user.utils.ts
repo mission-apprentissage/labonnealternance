@@ -1,11 +1,11 @@
 import { ObjectId } from "mongodb"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur, ZApplication, ZCredential, ZRecruiter, ZUserRecruteur } from "shared/models"
+import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, IUserRecruteur, ZApplication, ZCredential, ZEmailBlacklist, ZRecruiter, ZUserRecruteur } from "shared/models"
 import { zObjectId } from "shared/models/common"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Credential, Recruiter, UserRecruteur } from "@/common/model"
+import { Application, Credential, EmailBlacklist, Recruiter, UserRecruteur } from "@/common/model"
 
 let seed = 0
 function getFixture() {
@@ -71,6 +71,15 @@ export async function createRecruteurTest(data: Partial<IRecruiter>, jobsData: P
 export async function createApplicationTest(data: Partial<IApplication>) {
   const u = new Application({
     ...getFixture().fromSchema(ZApplication),
+    ...data,
+  })
+  await u.save()
+  return u
+}
+
+export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
+  const u = new EmailBlacklist({
+    ...getFixture().fromSchema(ZEmailBlacklist),
     ...data,
   })
   await u.save()
