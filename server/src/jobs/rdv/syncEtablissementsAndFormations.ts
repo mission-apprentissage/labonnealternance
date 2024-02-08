@@ -37,8 +37,6 @@ export const syncEtablissementsAndFormations = async () => {
         })
         let gestionnaireEmail = await findFirstNonBlacklistedEmail(emailArray)
 
-        console.log({ optout: hasOptOutActivation, premium: hasPremiumActivation, etablissements, p: formation.parcoursup_statut })
-
         // Activate opt_out referrers
         const referrersToActivate: any[] = []
         if (hasOptOutActivation) {
