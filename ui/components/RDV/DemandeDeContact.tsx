@@ -155,7 +155,6 @@ const DemandeDeContact = (props: Props) => {
   const submitForm = async (e) => {
     e.preventDefault()
     await formik.submitForm()
-    formik.resetForm()
   }
 
   const formElement = () => (
