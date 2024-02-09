@@ -9,4 +9,9 @@ export const FlowItemList = {
       cy.get(".resultCard.matcha").first().click()
     },
   },
+  formations: {
+    openFirst() {
+      cy.get(".resultCard.training").first().click()
+    },
+  },
 }
