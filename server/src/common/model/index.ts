@@ -11,6 +11,7 @@ import Application from "./schema/application/applications.schema"
 import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
 import Appointment from "./schema/appointments/appointment.schema"
 import Credential from "./schema/credentials/credential.schema"
+import CustomEmailETFA from "./schema/customEmailETFA/customEmailETFA.schema"
 import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema"
 import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema"
@@ -80,13 +81,14 @@ export async function createMongoDBIndexes() {
 }
 
 export {
-  ApiCalls,
   AnonymizedApplication,
+  AnonymizedUser,
+  ApiCalls,
   Application,
   Appointment,
   AppointmentDetailed,
   Credential,
-  SiretDiffusibleStatus,
+  CustomEmailETFA,
   DiplomesMetiers,
   DomainesMetiers,
   EligibleTrainingsForAppointment,
@@ -106,10 +108,10 @@ export {
   ReferentielOpco,
   RncpRomes,
   Session,
+  SiretDiffusibleStatus,
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
-  AnonymizedUser,
   UserRecruteur,
   eligibleTrainingsForAppointmentHistory,
 }
