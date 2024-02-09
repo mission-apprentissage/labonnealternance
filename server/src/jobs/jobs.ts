@@ -114,7 +114,7 @@ export const CronsMap = {
     handler: () => addJob({ name: "etablissement:formations:activate:opt-out", payload: {} }),
   },
   // "Invite les établissements (via email gestionnaire) à l'opt-out.": {
-  //   cron_string: "35 0 * * *",
+  //   cron_string: "0 9 * * *",
   //   handler: () => addJob({ name: "etablissement:invite:opt-out", payload: {} }),
   // },
   // "Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
