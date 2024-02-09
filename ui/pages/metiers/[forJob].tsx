@@ -33,61 +33,64 @@ export default function ForJob(props) {
         description={`Villes où chercher des emplois et formations en alternance pour le métier ${currentJob.name}`}
       />
       <Navigation />
-      <Breadcrumb items={navigationItems} />
-      <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
-        <Text variant="editorialContentH1" as="h1">
-          <Text as="span" color="black">
-            Tous les emplois et formations
-          </Text>
-          <br />
-          en alternance en <i>{currentJob.name}</i>
-        </Text>
-        <Divider variant="pageTitleDivider" my={12} />
 
-        <Box as="p">Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La bonne alternance :</Box>
-        <VStack mt={2} align="flex-start">
-          <Text>
-            Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{currentJob.name}</i>
+      <Box as="main">
+        <Breadcrumb items={navigationItems} />
+        <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
+          <Text variant="editorialContentH1" as="h1">
+            <Text as="span" color="black">
+              Tous les emplois et formations
+            </Text>
+            <br />
+            en alternance en <i>{currentJob.name}</i>
           </Text>
-          <Text>
-            Liste d’entreprises qui recrutent en alternance en <i>{currentJob.name}</i>
-          </Text>
-          <Text>
-            Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{currentJob.name}</i>
-          </Text>
+          <Divider variant="pageTitleDivider" my={12} />
 
-          <Text marginTop="0px" mb={[2, 2, 2, 0]}>
-            <Text as="span">Emploi en alternance et formation en alternance en </Text>
-            <NextLink legacyBehavior href={buildLinkForTownAndJob({ name: "France" }, currentJob)} passHref>
-              <Link
-                title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} sur l'ensemble du territoire`}
-                textDecoration="underline"
-                fontWeight={700}
-              >
-                {currentJob.name} sur l'ensemble du territoire
-              </Link>
-            </NextLink>
-          </Text>
+          <Box as="p">Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La bonne alternance :</Box>
+          <VStack mt={2} align="flex-start">
+            <Text>
+              Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{currentJob.name}</i>
+            </Text>
+            <Text>
+              Liste d’entreprises qui recrutent en alternance en <i>{currentJob.name}</i>
+            </Text>
+            <Text>
+              Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{currentJob.name}</i>
+            </Text>
 
-          {sortedTowns.map((currentTown, index) => {
-            return (
-              <Text key={index} marginTop="0px" mb={[2, 2, 2, 0]}>
-                <Text as="span">Emploi en alternance et formation en alternance en </Text>
-                <NextLink legacyBehavior href={buildLinkForTownAndJob(currentTown, currentJob)} passHref>
-                  <Link
-                    title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} à ${currentTown.name}`}
-                    textDecoration="underline"
-                    fontWeight={700}
-                    href={buildLinkForTownAndJob(currentTown, currentJob)}
-                  >
-                    {currentJob.name} à {currentTown.name}
-                  </Link>
-                </NextLink>
-              </Text>
-            )
-          })}
-        </VStack>
-      </Container>
+            <Text marginTop="0px" mb={[2, 2, 2, 0]}>
+              <Text as="span">Emploi en alternance et formation en alternance en </Text>
+              <NextLink legacyBehavior href={buildLinkForTownAndJob({ name: "France" }, currentJob)} passHref>
+                <Link
+                  title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} sur l'ensemble du territoire`}
+                  textDecoration="underline"
+                  fontWeight={700}
+                >
+                  {currentJob.name} sur l'ensemble du territoire
+                </Link>
+              </NextLink>
+            </Text>
+
+            {sortedTowns.map((currentTown, index) => {
+              return (
+                <Text key={index} marginTop="0px" mb={[2, 2, 2, 0]}>
+                  <Text as="span">Emploi en alternance et formation en alternance en </Text>
+                  <NextLink legacyBehavior href={buildLinkForTownAndJob(currentTown, currentJob)} passHref>
+                    <Link
+                      title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} à ${currentTown.name}`}
+                      textDecoration="underline"
+                      fontWeight={700}
+                      href={buildLinkForTownAndJob(currentTown, currentJob)}
+                    >
+                      {currentJob.name} à {currentTown.name}
+                    </Link>
+                  </NextLink>
+                </Text>
+              )
+            })}
+          </VStack>
+        </Container>
+      </Box>
       <Footer />
     </Box>
   )

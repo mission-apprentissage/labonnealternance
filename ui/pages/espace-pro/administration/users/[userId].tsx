@@ -268,7 +268,7 @@ function DetailEntreprise() {
                       <InformationLegaleEntreprise {...userRecruteur} />
                     </Box>
                   </SimpleGrid>
-                  {[AUTHTYPE.ADMIN, AUTHTYPE.OPCO].includes(user.type) && (
+                  {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
                     <Box mb={12}>
                       <UserValidationHistory histories={userRecruteur.status} />
                     </Box>

@@ -136,6 +136,7 @@ yarn-error.log
 
 
 **/.vault-password.gpg
+**/.*.gpg
 **/habilitations.yml
 
 scripts/ovh/ovh-nodejs-client/.yarn/

@@ -148,7 +148,7 @@ const FormulaireLayout = ({ left, right }) => {
   )
 }
 
-export const InformationCreationCompte = () => {
+export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boolean }) => {
   const router = useRouter()
   const validationPopup = useDisclosure()
   const [popupData, setPopupData] = useState({})
@@ -172,7 +172,7 @@ export const InformationCreationCompte = () => {
           if (data.user.type === AUTHTYPE.ENTREPRISE) {
             // Dépot simplifié
             router.push({
-              pathname: "/espace-pro/creation/offre",
+              pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
               query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id.toString() },
             })
           } else {
@@ -199,7 +199,7 @@ export const InformationCreationCompte = () => {
 
   return (
     <AnimationContainer>
-      <ConfirmationCreationCompte {...popupData} {...validationPopup} />
+      <ConfirmationCreationCompte {...popupData} {...validationPopup} isWidget={isWidget} />
       <AuthentificationLayout>
         <Formulaire submitForm={submitForm} />
       </AuthentificationLayout>
