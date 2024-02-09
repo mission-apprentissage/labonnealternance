@@ -31,6 +31,13 @@ export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
 export const ADMIN = "ADMIN"
 
+export const AUTHTYPE = {
+  OPCO: "OPCO",
+  CFA,
+  ENTREPRISE,
+  ADMIN,
+} as const
+
 export const REGEX = {
   SIRET: /^([0-9]{9}|[0-9]{14})$/,
   GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,

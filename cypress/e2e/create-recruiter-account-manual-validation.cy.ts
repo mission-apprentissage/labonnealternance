@@ -1,5 +1,7 @@
+import { loginClient } from "../api/loginClient"
 import { smtpClient } from "../api/smtpClient"
 import { FlowCreationEntreprise } from "../pages/FlowCreationEntreprise"
+import { JobPage } from "../pages/JobPage"
 import { generateRandomString } from "../utils/generateRandomString"
 
 describe("create-recruiter-account-siret-inexistent", () => {
@@ -41,7 +43,22 @@ describe("create-recruiter-account-siret-inexistent", () => {
     FlowCreationEntreprise.delegationPage.selectCFAs(["SAS L'ACADEMIE DE MANAGEMENT"])
     FlowCreationEntreprise.delegationPage.submit()
     FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase(), romeLabel, studyLevel])
-    FlowCreationEntreprise.emailSentPage.goBackHome()
-    smtpClient.getMail(email, "Confirmez votre adresse mail")
+    FlowCreationEntreprise.emailSentPage.getJobId().then((jobId) => {
+      FlowCreationEntreprise.emailSentPage.goBackHome()
+      // verifie que l'offre n'est pas visible
+      JobPage.goTo(jobId)
+      JobPage.expectNotPublished()
+
+      smtpClient.getMail(email, "Confirmez votre adresse mail").then((mailContent) => {
+        // confirmation de l'email
+        const url = smtpClient.findUrlInBrackets(`${Cypress.env("ui")}/espace-pro/authentification/validation/*`, mailContent)
+        cy.visit(url)
+        cy.contains("Merci ! Votre adresse email est bien confirmée.")
+        cy.url().should("contain", "/authentification/validation/")
+
+        // vérifie que le recruteur ne peut pas se connecter
+        loginClient.expectLoginFail(email, "VALIDATION")
+      })
+    })
   })
 })

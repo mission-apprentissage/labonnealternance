@@ -6,7 +6,7 @@ fileignoreconfig:
 - filename: .bin/scripts/set-cypress-env.sh
   checksum: 4463ed7c1d5b82a8b152248b953778f37771bfba72865ee0e8af3b61cf3c38da
 - filename: .bin/scripts/setup-local-env.sh
-  checksum: 47323f5183f73a794449666a816d5b797c7a5ed4c7ad219c3c885a57e2fcf1e9
+  checksum: f3cd7443153a8d4bc742ea6075b2ea9a174572b736186c6759fbf29f59567fd8
 - filename: .github/workflows/cypress.yml
   checksum: 39f98fb68fdebf6a36959706adb43a8219a4b7781ac35329f957dc1cfa8b6de0
 - filename: .github/workflows/deploy_preview.yml
@@ -26,7 +26,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 33f2851e5f07c0bb263b47caf7b4949be3b8ed3edd29f5b5588196d3e85cd8d6
+  checksum: ab249402eb2532ba0154474a9c8f2e445a2e0ff83584e7c3460c780ea5e5ec65
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
@@ -44,7 +44,7 @@ fileignoreconfig:
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
 - filename: server/src/jobs/database/obfuscateCollections.ts
-  checksum: 73482f9b75b3ca47c3bc9377ce4d4e03f4ba21a351986c0ca8ae17382a5263e3
+  checksum: b7bfa1b65f1890760f98701fc826b6f0f2136f068e6fa8cea0c136a2e2530852
 - filename: server/src/jobs/job.actions.ts
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
@@ -80,11 +80,11 @@ fileignoreconfig:
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: 2da5fe77017ba6e542d1681dd0d7ab88fd86739b31e580fc5a21a01b9c0800bd
+  checksum: 4c52ccaab38f3151e125d924d06eafd9f861be93c1d39cf70b563d081a3851fc
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
-  checksum: ffb18305ed9f3aa033c8aa680711e97796fe4f73e98c32dcf22247e0e1815ad8
+  checksum: 7fea07b04529a8981bd57f26420f4389337ab92404442c17772565f1d0ddc6f5
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
@@ -101,6 +101,10 @@ fileignoreconfig:
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
 - filename: ui/components/ItemDetail/ItemDetail.tsx
   checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
+- filename: ui/components/Ressources/conseilsEtAstuces.tsx
+  checksum: b9f16607c1fb319c2940223e7e9ce5acc48b8b5a5b519e2bb79210e3f0feaf17
+- filename: ui/components/Ressources/misesEnSituation.tsx
+  checksum: 40d3b51d46662db192ae3b8a5ecd5090445008dd7842425f34f7f4058482f3d0
 - filename: ui/components/SearchForTrainingsAndJobs/services/handleSessionStorage.ts
   checksum: c3c1aceede1040a9001bdc27cebbec7b3aeb0bb251b8b4264bb9d33da074af60
 - filename: ui/components/espace_pro/Admin/utilisateurs/UserList.tsx

@@ -168,7 +168,6 @@ const SatisfactionForm = () => {
   }
 
   const getFieldStatus = (formikObj, target) => {
-    console.log(formikObj, target)
     let res = "is-not-validated"
     if (formikObj.errors[target]) {
       res = "is-valid-false"
