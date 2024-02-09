@@ -26,7 +26,7 @@ export const syncEtablissementsAndFormations = async () => {
               cle_ministere_educatif: formation.cle_ministere_educatif,
             })
             .lean(),
-          Etablissement.find({ gestionnaire_siret: formation.etablissement_gestionnaire_siret }),
+          Etablissement.find({ gestionnaire_siret: formation.etablissement_gestionnaire_siret }).lean(),
           ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])
 
@@ -141,7 +141,7 @@ export const syncEtablissementsAndFormations = async () => {
           }
         )
       },
-      { parallel: 20 }
+      { parallel: 5 }
     )
   )
 
