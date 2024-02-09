@@ -31,7 +31,7 @@ const Contact = () => (
             {/* @ts-expect-error: TODO */}
             <Box align="center" my={12}>
               <NextLink legacyBehavior href="/faq" passHref>
-                <Button as="a" variant="editorialPrimary" aria-label="Accès à la Foire aux questions">
+                <Button as="a" variant="primary" aria-label="Accès à la Foire aux questions">
                   Consulter la FAQ
                 </Button>
               </NextLink>
@@ -44,48 +44,52 @@ const Contact = () => (
               <Text as="span" fontWeight={700}>
                 Vous êtes candidat,
               </Text>{" "}
-              écrivez-nous en cliquant sur ce <br />
+              écrivez-nous à<br />
               <Link
                 aria-label="Envoi d'un email au service candidat de La bonne alternance"
                 href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Candidat"
+                variant="basicUnderlinedBlue"
               >
-                lien vers notre adresse email labonnealternance@apprentissage.beta.gouv.fr
+                labonnealternance@apprentissage.beta.gouv.fr
               </Link>
             </Text>
             <Text as="p" mb={4}>
               <Text as="span" fontWeight={700}>
                 Vous êtes un organisme de formation,
               </Text>{" "}
-              écrivez-nous en cliquant sur ce <br />
+              écrivez-nous à<br />
               <Link
                 aria-label="Envoi d'un email au service organisme de formation de La bonne alternance"
-                href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20OF"
+                href="mailto:rdv_apprentissage@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20OF"
+                variant="basicUnderlinedBlue"
               >
-                lien vers notre adresse email labonnealternance@apprentissage.beta.gouv.fr
+                rdv_apprentissage@apprentissage.beta.gouv.fr
               </Link>
             </Text>
             <Text as="p" mb={4}>
               <Text as="span" fontWeight={700}>
                 Vous êtes une entreprise recevant des candidatures spontanées,
               </Text>{" "}
-              écrivez-nous en cliquant sur ce{" "}
+              écrivez-nous à<br />
               <Link
                 aria-label="Envoi d'un email au service entreprise de La bonne alternance"
                 href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Entreprise%20-%20Candidature%20spontanée"
+                variant="basicUnderlinedBlue"
               >
-                lien vers notre adresse email labonnealternance@apprentissage.beta.gouv.fr
+                labonnealternance@apprentissage.beta.gouv.fr
               </Link>
             </Text>
             <Text as="p" mb={4}>
               <Text as="span" fontWeight={700}>
                 Vous êtes une entreprise intéressée par notre service de dépôt d&apos;offre simplifié,
               </Text>{" "}
-              écrivez-nous en cliquant sur ce{" "}
+              écrivez-nous à<br />
               <Link
                 aria-label="Envoi d'un email au service recruteur de La bonne alternance"
-                href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Entreprise%20-%20Depot%20offre"
+                href="mailto:matcha@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Entreprise%20-%20Depot%20offre"
+                variant="basicUnderlinedBlue"
               >
-                lien vers notre adresse email labonnealternance@apprentissage.beta.gouv.fr
+                matcha@apprentissage.beta.gouv.fr
               </Link>
             </Text>
           </GridItem>
