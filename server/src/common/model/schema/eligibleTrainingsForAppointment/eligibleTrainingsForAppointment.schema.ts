@@ -43,6 +43,7 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     rco_formation_id: {
       type: String,
       default: null,
+      index: true,
       description: "Id RCO formation",
     },
     is_catalogue_published: {
@@ -58,15 +59,18 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     parcoursup_id: {
       type: String,
       default: null,
+      index: true,
       description: "Identifiant Parcoursup",
     },
     parcoursup_statut: {
       type: String,
+      index: true,
       default: null,
       description: "Statut Parcoursup",
     },
     affelnet_statut: {
       type: String,
+      index: true,
       default: null,
       description: "Statut Affelnet",
     },

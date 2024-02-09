@@ -12,6 +12,7 @@ export const etablissementSchema = new Schema<IEtablissement>(
     },
     gestionnaire_siret: {
       type: String,
+      index: true,
       default: null,
       description: "Siret gestionnaire",
     },
@@ -47,6 +48,7 @@ export const etablissementSchema = new Schema<IEtablissement>(
     },
     premium_activation_date: {
       type: Date,
+      index: true,
       default: null,
       description: "Date d'acceptation de l'offre Premium",
     },
@@ -62,6 +64,7 @@ export const etablissementSchema = new Schema<IEtablissement>(
     },
     premium_affelnet_activation_date: {
       type: Date,
+      index: true,
       default: null,
       description: "Date d'acceptation au Premium (Affelnet)",
     },
@@ -82,6 +85,7 @@ export const etablissementSchema = new Schema<IEtablissement>(
     },
     optout_activation_date: {
       type: Date,
+      index: true,
       default: null,
       description: "Date d'activation de l'opt-out",
     },
