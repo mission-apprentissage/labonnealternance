@@ -16,7 +16,7 @@ import mailer from "../../services/mailer.service"
  * @description Active all etablissement's formations that have subscribed to opt-out.
  * @returns {Promise<void>}
  */
-export const activateOptOutEtablissementFormations = async () => {
+export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () => {
   logger.info("Cron #activateOptOutEtablissementFormations started.")
 
   // Opt-out etablissement to activate

@@ -50,7 +50,7 @@ import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { activateOptOutEtablissementFormations } from "./rdv/activateOptOutEtablissementFormations"
+import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -65,8 +65,9 @@ import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
-import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsAndFormationsAffelnet"
+import { syncEtablissementsAndFormationsInverted } from "./rdv/syncEtablissementsAndFormationsInverted"
+import { syncEtablissementsAndFormationsNextVersion } from "./rdv/syncEtablissementsAndFormationsNextVersion"
 import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
 import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
@@ -130,6 +131,10 @@ export const CronsMap = {
   // },
   "Suppression des etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
     cron_string: "30 3 * * *",
+    handler: () => addJob({ name: "remove:duplicates:etablissements", payload: {} }),
+  },
+  "Re-synchronise les referres manquant dans la collection ETFA": {
+    cron_string: "10 3 * * *",
     handler: () => addJob({ name: "remove:duplicates:etablissements", payload: {} }),
   },
   "Historisation des formations éligibles à la prise de rendez-vous.": {
@@ -305,7 +310,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "siret:inError:update":
         return updateSiretInfosInError()
       case "etablissement:formations:activate:opt-out":
-        return activateOptOutEtablissementFormations()
+        return activateOptoutOnEtablissementAndUpdateReferrersOnETFA()
       case "etablissement:invite:opt-out":
         return inviteEtablissementToOptOut()
       case "etablissement:invite:premium:parcoursup":
@@ -320,8 +325,11 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return premiumActivatedReminder()
       case "premium:invite:one-shot":
         return premiumInviteOneShot()
+      case "etablissements:formations:inverted:sync":
+        return syncEtablissementsAndFormationsInverted()
       case "etablissements:formations:sync":
-        return syncEtablissementsAndFormations()
+        return syncEtablissementsAndFormationsNextVersion()
+      // return syncEtablissementsAndFormations()
       case "etablissements:formations:affelnet:sync":
         return syncAffelnetFormationsFromCatalogueME()
       case "appointments:anonimize":
