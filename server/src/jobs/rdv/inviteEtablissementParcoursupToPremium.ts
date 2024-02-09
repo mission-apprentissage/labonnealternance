@@ -42,6 +42,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
       etablissement_gestionnaire_siret: etablissement.gestionnaire_siret,
       lieu_formation_email: { $ne: null },
       parcoursup_id: { $ne: null },
+      parcoursup_statut: "publié",
     }).lean()
 
     if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.gestionnaire_siret || !etablissement.gestionnaire_email) {
