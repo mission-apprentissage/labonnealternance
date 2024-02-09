@@ -60,6 +60,16 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
       default: null,
       description: "Identifiant Parcoursup",
     },
+    parcoursup_statut: {
+      type: String,
+      default: null,
+      description: "Statut Parcoursup",
+    },
+    affelnet_statut: {
+      type: String,
+      default: null,
+      description: "Statut Affelnet",
+    },
     cle_ministere_educatif: {
       type: String,
       require: true,
