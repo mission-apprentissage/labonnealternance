@@ -1,6 +1,6 @@
 import { Jsonify } from "type-fest"
 
-import { CFA, ETAT_UTILISATEUR } from "../constants/recruteur"
+import { AUTHTYPE, CFA, ETAT_UTILISATEUR } from "../constants/recruteur"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
@@ -10,6 +10,8 @@ import { zObjectId } from "./common"
 
 const etatUtilisateurValues = Object.values(ETAT_UTILISATEUR)
 export const ZEtatUtilisateur = z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).describe("Statut de l'utilisateur")
+
+const authTypeValues = Object.values(AUTHTYPE)
 
 export const ZUserStatusValidation = z
   .object({
@@ -48,7 +50,7 @@ export const ZUserRecruteurWritable = z
     email: z.string().email().describe("L'email de l'utilisateur"),
     scope: z.string().nullish().describe("Scope accessible par l'utilisateur"),
     is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),
-    type: z.enum(["ENTREPRISE", "CFA", "OPCO", "ADMIN"]).describe("Type d'utilisateur"),
+    type: z.enum([authTypeValues[0], ...authTypeValues.slice(1)]).describe("Type d'utilisateur"),
     establishment_id: z.string().nullish().describe("Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique"),
     last_connection: z.date().nullish().describe("Date de dernière connexion"),
     origin: z.string().nullish().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi"),

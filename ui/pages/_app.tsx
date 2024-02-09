@@ -19,10 +19,8 @@ export default function LaBonneAlternance({ Component, pageProps }) {
   return (
     <Providers>
       <PageTracker>
-        <main>
-          <HeadLaBonneAlternance />
-          <Component {...pageProps} />
-        </main>
+        <HeadLaBonneAlternance />
+        <Component {...pageProps} />
       </PageTracker>
     </Providers>
   )

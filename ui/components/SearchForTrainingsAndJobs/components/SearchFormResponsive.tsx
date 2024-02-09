@@ -32,7 +32,7 @@ const selectProperties = {
   border: "none !important",
 }
 
-const SearchForm = (props) => {
+const SearchFormResponsive = (props) => {
   const { hasSearch } = useContext(SearchResultContext)
   const { widgetParameters } = React.useContext(ParameterContext)
   const { formValues, isFormVisible } = React.useContext(DisplayContext)
@@ -71,7 +71,7 @@ const SearchForm = (props) => {
     return (
       <Formik
         validate={(values) => validateFormik(values, widgetParameters)}
-        initialValues={{ job: {}, location: {}, radius: 30, diploma: "" }}
+        initialValues={{ job: {}, location: {}, radius: contextFormValues?.radius ?? 30, diploma: contextFormValues?.diploma ?? "" }}
         onSubmit={props.handleSearchSubmit}
       >
         {({ isSubmitting, setFieldValue, errors }) => (
@@ -230,4 +230,4 @@ const SearchForm = (props) => {
   )
 }
 
-export default SearchForm
+export default SearchFormResponsive

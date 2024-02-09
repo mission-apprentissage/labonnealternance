@@ -69,6 +69,7 @@ const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
 }
 
 const AjouterVoeuxForm = (props) => {
+  const { widget: isWidget } = useContext(WidgetContext)
   const [inputJobItems, setInputJobItems] = useState([])
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
@@ -109,13 +110,13 @@ const AjouterVoeuxForm = (props) => {
   const handleRedirectionAfterSubmit = (form, job, fromDashboard) => {
     if (haveProposals) {
       return router.replace({
-        pathname: "/espace-pro/creation/mise-en-relation",
+        pathname: isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation",
         query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId, establishment_id },
       })
     }
 
     router.replace({
-      pathname: "/espace-pro/creation/fin",
+      pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
       query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId, establishment_id },
     })
   }

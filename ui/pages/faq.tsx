@@ -55,7 +55,6 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
 
       <ScrollToTop />
       <Navigation />
-
       <Breadcrumb forPage="faq" label="FAQ" />
 
       <Container p={{ base: 2, md: 12 }} my={0} mb={[0, 12]} variant="pageContainer">
