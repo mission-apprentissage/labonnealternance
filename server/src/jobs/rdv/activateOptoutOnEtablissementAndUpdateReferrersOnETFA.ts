@@ -2,7 +2,6 @@ import * as _ from "lodash-es"
 import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { isValidEmail } from "@/common/utils/isValidEmail"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
@@ -22,10 +21,11 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
   // Opt-out etablissement to activate
   const etablissementsToActivate = await Etablissement.find({
     optout_activation_scheduled_date: {
-      $lte: dayjs().toDate(),
+      $lte: new Date(),
     },
     optout_refusal_date: null,
     optout_activation_date: null,
+    gestionnaire_email: { $ne: null },
   })
 
   // Activate all formations, for all referrers that have a mail
@@ -38,22 +38,16 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             lieu_formation_email: { $nin: [null, ""] },
           },
           {
-            referrers: Object.values(referrers)
-              .map((referrer) => referrer.name)
-              .filter((referrer) => referrer !== referrers.PARCOURSUP.name),
+            referrers: [referrers.JEUNE_1_SOLUTION.name, referrers.LBA.name],
           }
         ),
         Etablissement.findOneAndUpdate(
           {
             _id: etablissement._id,
           },
-          { optout_activation_date: dayjs().toDate() }
+          { optout_activation_date: new Date() }
         ),
       ])
-
-      if (!isValidEmail(etablissement.gestionnaire_email)) {
-        return
-      }
 
       if (!etablissement.gestionnaire_email) return
       // Send email
@@ -80,7 +74,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
       })
 
       const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointmentService.find({
-        etablissement_formateur_siret: etablissement.formateur_siret,
+        etablissement_gestionnaire_siret: etablissement.gestionnaire_siret,
       })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
