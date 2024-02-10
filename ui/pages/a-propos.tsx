@@ -1,4 +1,6 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Container, Divider, Grid, GridItem, Image, Link, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
+import NextLink from "next/link"
 import { NextSeo } from "next-seo"
 import React from "react"
 
@@ -60,15 +62,34 @@ const APropos = () => (
               intéressés par l'alternance à trouver une formation d’une part, et un contrat avec une entreprise d’autre part, en exposant et permettant aux candidat d'entrer en
               contact avec :
               <UnorderedList my={4}>
-                <ListItem>Les formations en apprentissage issues du catalogue des formations en apprentissage du Réseau des Carif-Oref. </ListItem>
+                <ListItem>
+                  Les formations en apprentissage issues du{" "}
+                  <Link
+                    href="https://catalogue-apprentissage.intercariforef.org/"
+                    aria-label="Accéder au catalogue des formations intercarif oref"
+                    isExternal
+                    variant="basicUnderlinedBlue"
+                  >
+                    catalogue des formations en apprentissage du Réseau des Carif-Oref <ExternalLinkIcon mb="3px" ml="2px" />
+                  </Link>
+                  .
+                </ListItem>
                 <ListItem>
                   De nombreuses offres d’emploi en alternance : celles postées par les recruteurs directement sur notre plateforme, ainsi que sur les sites de nos partenaires (via
                   API ou Widget).
                 </ListItem>
                 <ListItem>
-                  Nous agrégeons également les offres en alternance de Pôle emploi et de ses sites partenaires. Des entreprises identifiées comme à fort potentiel d'embauche en
-                  alternance sur la base de données publiques. Notre objectif est de faciliter les démarches de candidatures spontanées des candidats, en pré ciblant les
-                  entreprises pertinentes.
+                  Nous agrégeons également les offres en alternance de Pôle emploi et de ses{" "}
+                  <Link
+                    href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
+                    aria-label="Accéder à la liste des sites partenaires de France Travail"
+                    isExternal
+                    variant="basicUnderlinedBlue"
+                  >
+                    sites partenaires <ExternalLinkIcon mb="3px" ml="2px" />
+                  </Link>
+                  . Des entreprises identifiées comme à fort potentiel d'embauche en alternance sur la base de données publiques. Notre objectif est de faciliter les démarches de
+                  candidatures spontanées des candidats, en pré ciblant les entreprises pertinentes.
                 </ListItem>
               </UnorderedList>
               <Text as="span" fontWeight={700}>
@@ -84,7 +105,10 @@ const APropos = () => (
             </Text>
 
             <Text as="p" mb={4}>
-              Vous pouvez consulter nos statistiques.
+              Vous pouvez consulter nos{" "}
+              <NextLink legacyBehavior passHref href="/stats" aria-label="Accès aux statistiques">
+                <Link variant="basicUnderlinedBlue">statistiques</Link>
+              </NextLink>
             </Text>
 
             <Text as="p" mb={4}>
@@ -123,8 +147,20 @@ const APropos = () => (
             </Text>
 
             <Text as="p" mb={4}>
-              D’abord développé par Pôle emploi, La bonne alternance a été repris en 2020 par la mission interministérielle pour l'apprentissage, membre de la communauté
-              beta.gouv.fr et suit à ce titre une démarche spécifique de conception de services numériques.
+              D’abord développé par Pôle emploi, La bonne alternance a été repris en 2020 par{" "}
+              <Link
+                href="https://mission-apprentissage.gitbook.io/general/"
+                aria-label="Accéder au site de la mission interministérielle pour l'apprentissage"
+                isExternal
+                variant="basicUnderlinedBlue"
+              >
+                la mission interministérielle pour l'apprentissage <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>
+              , membre de la communauté{" "}
+              <Link href="https://beta.gouv.fr" aria-label="Accéder au site de beta gouv point fr" isExternal variant="basicUnderlinedBlue">
+                beta.gouv.fr <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>{" "}
+              et suit à ce titre une démarche spécifique de conception de services numériques.
             </Text>
           </GridItem>
         </Grid>
