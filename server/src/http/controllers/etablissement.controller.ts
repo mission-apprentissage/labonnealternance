@@ -450,6 +450,9 @@ export default (server: Server) => {
       }
 
       // If opt-out is already running but user unsubscribe, disable all formations
+      /**
+       * WARNING KBA 2024-02-12 : ALL REFERRERS ARE REMOVE AND ITS BAD IF PREMIUM IS AVAILABLE
+       */
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
         // Disable all formations
         await eligibleTrainingsForAppointmentService.updateMany(

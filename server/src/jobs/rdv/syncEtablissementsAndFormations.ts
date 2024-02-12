@@ -7,6 +7,10 @@ import * as eligibleTrainingsForAppointmentService from "../../services/eligible
 import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
+const hasDateProperty = (etablissements, propertyName) => {
+  return etablissements.some((etab) => etab[propertyName] !== null && etab[propertyName] !== undefined)
+}
+
 /**
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
  * @returns {Promise<void>}
@@ -35,8 +39,11 @@ export const syncEtablissementsAndFormations = async () => {
           ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])
 
-        const hasOptOutActivation = etablissements.some((etab) => etab.optout_activation_date !== null && etab.optout_activation_date !== undefined)
-        const hasPremiumActivation = etablissements.some((etab) => etab.premium_activation_date !== null && etab.premium_activation_date !== undefined)
+        const hasOptOutRefusal = hasDateProperty(etablissements, "optout_refusal_date")
+        const hasOptOutActivation = hasDateProperty(etablissements, "optout_activation_date")
+        const hasPremiumRefusal = hasDateProperty(etablissements, "premium_refusal_date")
+        const hasPremiumActivation = hasDateProperty(etablissements, "premium_activation_date")
+
         const emailArray = etablissements.map((etab) => {
           return { email: etab.gestionnaire_email }
         })
@@ -44,7 +51,7 @@ export const syncEtablissementsAndFormations = async () => {
 
         // Activate opt_out referrers
         const referrersToActivate: any[] = []
-        if (hasOptOutActivation) {
+        if (hasOptOutActivation && !hasOptOutRefusal) {
           referrersToActivate.push(referrers.LBA.name)
           referrersToActivate.push(referrers.JEUNE_1_SOLUTION.name)
           if (existInReferentielOnisep) {
@@ -53,7 +60,7 @@ export const syncEtablissementsAndFormations = async () => {
         }
 
         // Activate premium referrers
-        if (hasPremiumActivation && formation.parcoursup_id && formation.parcoursup_statut === "publié") {
+        if (hasPremiumActivation && !hasPremiumRefusal && formation.parcoursup_id && formation.parcoursup_statut === "publié") {
           referrersToActivate.push(referrers.PARCOURSUP.name)
         }
 

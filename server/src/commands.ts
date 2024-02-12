@@ -406,6 +406,12 @@ program
   .action(createJobAction("etablissements:formations:inverted:sync"))
 
 program
+  .command("sync-etablissements-dates")
+  .description("Resynchronise les dates de la collection Etablissement par siret gestionnaire")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("sync:etablissement:dates"))
+
+program
   .command("sync-etablissements-and-formations-affelnet")
   .description("Récupère la liste de toutes les formations du Catalogue ME du scope AFFELNET et les enregistre.")
   .option("-q, --queued", "Run job asynchronously", false)
