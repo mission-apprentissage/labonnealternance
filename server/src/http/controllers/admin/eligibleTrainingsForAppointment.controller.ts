@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
-import { EligibleTrainingsForAppointment } from "../../../common/model/index"
+import { CustomEmailETFA, EligibleTrainingsForAppointment } from "../../../common/model/index"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
 
@@ -68,6 +68,17 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"])],
     },
     async ({ body, params }, res) => {
+      if ("is_lieu_formation_email_customized" in body) {
+        if (body.is_lieu_formation_email_customized) {
+          if ("cle_ministere_educatif" in body && "lieu_formation_email" in body && body.lieu_formation_email && body.cle_ministere_educatif) {
+            await CustomEmailETFA.updateOne(
+              { cle_ministere_educatif: body.cle_ministere_educatif },
+              { email: body.lieu_formation_email, cle_ministere_educatif: body.cle_ministere_educatif },
+              { upsert: true }
+            )
+          }
+        }
+      }
       const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id.toString(), body).lean()
 
       res.send(result)

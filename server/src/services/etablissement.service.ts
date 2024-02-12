@@ -949,7 +949,7 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
         formateur_siret: etablissement.formateur_siret,
         gestionnaire_email: etablissement.gestionnaire_email,
       },
-      activationDate: dayjs().format("DD/MM"),
+      activationDate: dayjs().format("DD/MM/YYYY"),
     },
   })
 }

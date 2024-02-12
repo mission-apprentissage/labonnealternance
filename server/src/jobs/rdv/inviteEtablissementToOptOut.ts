@@ -44,7 +44,7 @@ export const inviteEtablissementToOptOut = async () => {
             formateur_zip_code: etablissement.formateur_zip_code,
             formateur_city: etablissement.formateur_city,
             siret: etablissement?.formateur_siret,
-            optOutActivatedAtDate: willBeActivatedAt.format("DD/MM"),
+            optOutActivatedAtDate: willBeActivatedAt.format("DD/MM/YYYY"),
             linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
           },
           user: {

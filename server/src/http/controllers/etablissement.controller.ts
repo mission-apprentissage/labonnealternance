@@ -125,7 +125,7 @@ export default (server: Server) => {
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
                 email: etablissement.gestionnaire_email,
-                premiumActivatedDate: dayjs(etablissementAffelnetUpdated?.premium_affelnet_activation_date).format("DD/MM"),
+                premiumActivatedDate: dayjs(etablissementAffelnetUpdated?.premium_affelnet_activation_date).format("DD/MM/YYYY"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
@@ -199,7 +199,8 @@ export default (server: Server) => {
               },
             },
             premium_activation_date: dayjs().toDate(),
-          }
+          },
+          { new: true }
         ),
       ])
 
@@ -230,7 +231,8 @@ export default (server: Server) => {
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
                 email: etablissement.gestionnaire_email,
-                premiumActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_activation_date).format("DD/MM"),
+                premiumActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_activation_date).format("DD/MM/YYYY"),
+                premiumAffelnetActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_affelnet_activation_date).format("DD/MM/YYYY"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
@@ -306,7 +308,7 @@ export default (server: Server) => {
             formateur_siret: etablissement.formateur_siret,
             email: etablissement.gestionnaire_email,
           },
-          activationDate: dayjs().format("DD/MM"),
+          activationDate: dayjs().format("DD/MM/YYYY"),
         },
       })
 
@@ -380,7 +382,7 @@ export default (server: Server) => {
             formateur_siret: etablissement.formateur_siret,
             email: etablissement.gestionnaire_email,
           },
-          activationDate: dayjs().format("DD/MM"),
+          activationDate: dayjs().format("DD/MM/YYYY"),
         },
       })
 
