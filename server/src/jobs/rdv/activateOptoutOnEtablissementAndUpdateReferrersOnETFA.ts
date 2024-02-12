@@ -110,7 +110,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
                 email: etablissement.gestionnaire_email,
-                optOutActivatedAtDate: dayjs().format("DD/MM"),
+                optOutActivatedAtDate: dayjs().format("DD/MM/YYYY"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
