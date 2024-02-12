@@ -5,6 +5,7 @@ import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
 import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
@@ -34,6 +35,8 @@ export const inviteEtablissementParcoursupToPremium = async () => {
     premium_invitation_date: null,
   }).lean()
 
+  let count = 0
+
   logger.info("Cron #inviteEtablissementToPremium / Etablissement: ", etablissementsToInvite.length)
 
   for (const etablissement of etablissementsToInvite) {
@@ -48,6 +51,8 @@ export const inviteEtablissementParcoursupToPremium = async () => {
     if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.gestionnaire_siret || !etablissement.gestionnaire_email) {
       continue
     }
+
+    count++
 
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
@@ -80,6 +85,8 @@ export const inviteEtablissementParcoursupToPremium = async () => {
       },
     })
   }
+
+  notifyToSlack({ subject: "RDVA - INVITATION PARCOURSUP", message: `${count} invitation(s) envoyé` })
 
   logger.info("Cron #inviteEtablissementToPremium done.")
 }

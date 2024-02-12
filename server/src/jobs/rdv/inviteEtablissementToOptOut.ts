@@ -4,6 +4,7 @@ import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
@@ -70,6 +71,8 @@ export const inviteEtablissementToOptOut = async () => {
       )
     }
   }
+
+  notifyToSlack({ subject: "RDVA - INVITATION OPTOUT", message: `${etablissementsWithouOptMode.length} invitation(s) envoyé` })
 
   logger.info("Cron #inviteEtablissementToOptOut done.")
 }
