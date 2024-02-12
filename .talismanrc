@@ -68,7 +68,7 @@ fileignoreconfig:
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: server/tests/unit/services/eligibleTrainingsForAppointment.service.test.ts
-  checksum: b4d6c4bc3706ba86b4aba6e0c2b73349c63139b9db6e8c0cdb232ba0ca163f16
+  checksum: 089218ccdaf2553d5a427cb81d0b556f51badaba5b5523299e5fe74e7ef5a802
 - filename: server/tests/unit/util.test.ts
   checksum: d38ae060280f0cb1579894ac2fcbfdd0a48b49eafc54f7ba3c7db0e422230547
 - filename: server/tests/unit/utils/isValidEmail.test.ts

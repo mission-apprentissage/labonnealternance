@@ -50,7 +50,7 @@ import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { activateOptOutEtablissementFormations } from "./rdv/activateOptOutEtablissementFormations"
+import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -64,8 +64,10 @@ import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
 import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
+import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsAndFormationsAffelnet"
+import { syncEtablissementsAndFormationsInverted } from "./rdv/syncEtablissementsAndFormationsInverted"
 import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
 import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
@@ -112,7 +114,7 @@ export const CronsMap = {
     handler: () => addJob({ name: "etablissement:formations:activate:opt-out", payload: {} }),
   },
   // "Invite les établissements (via email gestionnaire) à l'opt-out.": {
-  //   cron_string: "35 0 * * *",
+  //   cron_string: "0 9 * * *",
   //   handler: () => addJob({ name: "etablissement:invite:opt-out", payload: {} }),
   // },
   // "Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
@@ -127,6 +129,14 @@ export const CronsMap = {
   //   cron_string: "10 2 * * *",
   //   handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
   // },
+  "Suppression des etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
+    cron_string: "30 3 * * *",
+    handler: () => addJob({ name: "remove:duplicates:etablissements", payload: {} }),
+  },
+  "Re-synchronise les referres manquant dans la collection ETFA": {
+    cron_string: "10 3 * * *",
+    handler: () => addJob({ name: "remove:duplicates:etablissements", payload: {} }),
+  },
   "Historisation des formations éligibles à la prise de rendez-vous.": {
     cron_string: "55 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
@@ -222,6 +232,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "remove:duplicates:etablissements":
+        return removeDuplicateEtablissements()
       case "garbage-collector:run":
         return runGarbageCollector()
       case "anonymize:appointments":
@@ -298,7 +310,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "siret:inError:update":
         return updateSiretInfosInError()
       case "etablissement:formations:activate:opt-out":
-        return activateOptOutEtablissementFormations()
+        return activateOptoutOnEtablissementAndUpdateReferrersOnETFA()
       case "etablissement:invite:opt-out":
         return inviteEtablissementToOptOut()
       case "etablissement:invite:premium:parcoursup":
@@ -313,6 +325,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return premiumActivatedReminder()
       case "premium:invite:one-shot":
         return premiumInviteOneShot()
+      case "etablissements:formations:inverted:sync":
+        return syncEtablissementsAndFormationsInverted()
       case "etablissements:formations:sync":
         return syncEtablissementsAndFormations()
       case "etablissements:formations:affelnet:sync":
