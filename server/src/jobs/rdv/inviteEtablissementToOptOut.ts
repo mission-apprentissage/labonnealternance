@@ -72,7 +72,7 @@ export const inviteEtablissementToOptOut = async () => {
     }
   }
 
-  notifyToSlack({ subject: "RDVA - INVITATION OPTOUT", message: `${etablissementsWithouOptMode.length} invitation(s) envoyé` })
+  await notifyToSlack({ subject: "RDVA - INVITATION OPTOUT", message: `${etablissementsWithouOptMode.length} invitation(s) envoyé` })
 
   logger.info("Cron #inviteEtablissementToOptOut done.")
 }

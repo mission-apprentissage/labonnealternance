@@ -65,6 +65,7 @@ import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsAndFormationsAffelnet"
 import { syncEtablissementsAndFormationsInverted } from "./rdv/syncEtablissementsAndFormationsInverted"
@@ -135,7 +136,11 @@ export const CronsMap = {
   },
   "Re-synchronise les referres manquant dans la collection ETFA": {
     cron_string: "10 3 * * *",
-    handler: () => addJob({ name: "remove:duplicates:etablissements", payload: {} }),
+    handler: () => addJob({ name: "etablissements:formations:inverted:sync", payload: {} }),
+  },
+  "Synchronise les dates des etablissements": {
+    cron_string: "0 0 * * *",
+    handler: () => addJob({ name: "sync:etablissement:dates", payload: {} }),
   },
   "Historisation des formations éligibles à la prise de rendez-vous.": {
     cron_string: "55 2 * * *",
@@ -232,6 +237,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "sync:etablissement:dates":
+        return syncEtablissementDates()
       case "remove:duplicates:etablissements":
         return removeDuplicateEtablissements()
       case "garbage-collector:run":
