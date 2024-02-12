@@ -25,8 +25,13 @@ export const syncEtablissementsAndFormations = async () => {
             .findOne({
               cle_ministere_educatif: formation.cle_ministere_educatif,
             })
+            .select({ lieu_formation_email: 1, is_lieu_formation_email_customized: 1 })
             .lean(),
-          Etablissement.find({ gestionnaire_siret: formation.etablissement_gestionnaire_siret }).lean(),
+          Etablissement.find({
+            gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+          })
+            .select({ optout_activation_date: 1, premium_activation_date: 1, gestionnaire_email: 1 })
+            .lean(),
           ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])
 
@@ -70,7 +75,6 @@ export const syncEtablissementsAndFormations = async () => {
             parcoursup_id: formation.parcoursup_id,
             parcoursup_statut: formation.parcoursup_statut,
             affelnet_statut: formation.affelnet_statut,
-            cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
             etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
             training_intitule_long: formation.intitule_long,
@@ -85,8 +89,6 @@ export const syncEtablissementsAndFormations = async () => {
             etablissement_formateur_street: formation.etablissement_formateur_adresse,
             departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
             etablissement_formateur_city: formation.etablissement_formateur_localite,
-            etablissement_formateur_siret: formation.etablissement_formateur_siret,
-            etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
         } else {
           const emailRdv = await getEmailForRdv({
@@ -123,13 +125,13 @@ export const syncEtablissementsAndFormations = async () => {
         if (!gestionnaireEmail) {
           gestionnaireEmail =
             (await getEmailForRdv({
-              email: gestionnaireEmail,
+              email: formation.email,
               etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
             })) ?? null
         }
 
         await Etablissement.updateMany(
-          { formateur_siret: formation.etablissement_formateur_siret },
+          { $and: [{ formateur_siret: formation.etablissement_formateur_siret, gestionnaire_siret: formation.etablissement_gestionnaire_siret }] },
           {
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             gestionnaire_email: gestionnaireEmail,

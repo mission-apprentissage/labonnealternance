@@ -65,9 +65,9 @@ import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsAndFormationsAffelnet"
 import { syncEtablissementsAndFormationsInverted } from "./rdv/syncEtablissementsAndFormationsInverted"
-import { syncEtablissementsAndFormationsNextVersion } from "./rdv/syncEtablissementsAndFormationsNextVersion"
 import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
 import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
@@ -328,8 +328,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "etablissements:formations:inverted:sync":
         return syncEtablissementsAndFormationsInverted()
       case "etablissements:formations:sync":
-        return syncEtablissementsAndFormationsNextVersion()
-      // return syncEtablissementsAndFormations()
+        return syncEtablissementsAndFormations()
       case "etablissements:formations:affelnet:sync":
         return syncAffelnetFormationsFromCatalogueME()
       case "appointments:anonimize":

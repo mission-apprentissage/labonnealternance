@@ -400,6 +400,12 @@ program
   .action(createJobAction("etablissements:formations:sync"))
 
 program
+  .command("sync-etablissements-and-formations-inverted")
+  .description("Resynchronise les referrers en partant de la table ETFA")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("etablissements:formations:inverted:sync"))
+
+program
   .command("sync-etablissements-and-formations-affelnet")
   .description("Récupère la liste de toutes les formations du Catalogue ME du scope AFFELNET et les enregistre.")
   .option("-q, --queued", "Run job asynchronously", false)
