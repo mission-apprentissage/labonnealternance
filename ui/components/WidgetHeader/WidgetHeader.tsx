@@ -4,8 +4,8 @@ import { useRouter } from "next/router"
 import React, { useContext } from "react"
 
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import HeaderForm from "../HeaderForm/HeaderForm"
 import LogoLBA from "../LogoLBA/LogoLBA"
+import SearchForm from "../SearchForm/SearchForm"
 import ResultFilterAndCounter from "../SearchForTrainingsAndJobs/components/ResultFilterAndCounter"
 
 const WidgetHeader = ({
@@ -43,7 +43,7 @@ const WidgetHeader = ({
                 </Text>
               </Text>
             )}
-            <HeaderForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
+            <SearchForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
           </Box>
         </Flex>
         {!isHome && (
