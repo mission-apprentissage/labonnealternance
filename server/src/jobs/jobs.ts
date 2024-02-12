@@ -126,10 +126,10 @@ export const CronsMap = {
   //   cron_string: "30 9 * * *",
   //   handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
   // },
-  // "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
-  //   cron_string: "10 2 * * *",
-  //   handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
-  // },
+  "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
+    cron_string: "45 2 * * *",
+    handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
+  },
   "Suppression des etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
     cron_string: "30 3 * * *",
     handler: () => addJob({ name: "remove:duplicates:etablissements", payload: {} }),
@@ -168,11 +168,11 @@ export const CronsMap = {
     handler: () => addJob({ name: "referentiel:onisep:import", payload: {} }),
   },
   "Mise à jour depuis le Catalogue des formations.": {
-    cron_string: "15 3 * * *",
+    cron_string: "15 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:sync", payload: {} }),
   },
   "Mise à jour des champs spécifiques de la collection formations catalogue.": {
-    cron_string: "30 3 * * *",
+    cron_string: "30 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:sync:extra", payload: {} }),
   },
   "Mise à jour des adresses emails bloquées.": {
