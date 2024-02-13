@@ -2883,29 +2883,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   {
                     "additionalProperties": false,
                     "properties": {
-                      "idRcoFormation": {
-                        "minLength": 1,
-                        "type": "string",
-                      },
-                      "referrer": {
-                        "enum": [
-                          "pfr_pays_de_la_loire",
-                        ],
-                        "type": "string",
-                      },
-                      "trainingHasJob": {
-                        "type": "boolean",
-                      },
-                    },
-                    "required": [
-                      "idRcoFormation",
-                      "referrer",
-                    ],
-                    "type": "object",
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
                       "idActionFormation": {
                         "minLength": 1,
                         "type": "string",
@@ -2937,7 +2914,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                         "enum": [
                           "parcoursup",
                           "lba",
-                          "pfr_pays_de_la_loire",
                           "onisep",
                           "jeune_1_solution",
                           "affelnet",
