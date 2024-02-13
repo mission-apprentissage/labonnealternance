@@ -37,7 +37,6 @@ const prepareETFA = async () => {
         training_intitule_long: "$intitule_long",
         referrers: { $literal: [] },
         is_catalogue_published: "$published",
-        rco_formation_id: "$id_rco_formation",
         last_catalogue_sync_date: { $literal: new Date() },
         lieu_formation_street: "$lieu_formation_adresse",
         lieu_formation_city: "$localite",
