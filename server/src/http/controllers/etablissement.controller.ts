@@ -419,7 +419,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/opt-out/unsubscribe"])],
     },
     async (req, res) => {
-      let etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
+      let etablissement = await Etablissement.findById(req.params.id, { ...etablissementProjection, gestionnaire_email: 1 }).lean()
 
       if (!etablissement || etablissement.optout_refusal_date) {
         throw Boom.notFound()
