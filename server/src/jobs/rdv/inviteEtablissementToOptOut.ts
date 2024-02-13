@@ -11,14 +11,13 @@ import mailer from "../../services/mailer.service"
 
 interface IEtablissementsWithouOptMode {
   _id: Id
+  id: string
   gestionnaire_email: string
   count: number
 }
 
 interface Id {
-  _id: string
   gestionnaire_siret: string
-  formateur_siret: string
 }
 
 /**
@@ -39,10 +38,9 @@ export const inviteEtablissementToOptOut = async () => {
     {
       $group: {
         _id: {
-          _id: "$_id",
           gestionnaire_siret: "$gestionnaire_siret",
-          formateur_siret: "$formateur_siret",
         },
+        id: { $first: "$_id" },
         gestionnaire_email: { $first: "$gestionnaire_email" },
         count: { $sum: 1 },
       },
@@ -54,7 +52,7 @@ export const inviteEtablissementToOptOut = async () => {
 
   for (const etablissement of etablissementsWithouOptMode) {
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
-    if (etablissement.gestionnaire_email && etablissement._id.formateur_siret) {
+    if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret) {
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `Trouvez et recrutez vos candidats avec La bonne alternance`,
@@ -68,7 +66,7 @@ export const inviteEtablissementToOptOut = async () => {
           },
           etablissement: {
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM/YYYY"),
-            linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement._id.formateur_siret, etablissement._id._id.toString()),
+            linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
           },
           user: {
             destinataireEmail: etablissement.gestionnaire_email,

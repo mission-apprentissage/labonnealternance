@@ -12,15 +12,14 @@ import mailer from "../../services/mailer.service"
 
 interface IEtablissementsToInviteToPremium {
   _id: Id
+  id: string
   gestionnaire_email: string
+  optout_activation_scheduled_date: string
   count: number
 }
 
 interface Id {
-  _id: string
   gestionnaire_siret: string
-  formateur_siret: string
-  optout_activation_scheduled_date: string
 }
 
 /**
@@ -53,11 +52,10 @@ export const inviteEtablissementParcoursupToPremium = async () => {
     {
       $group: {
         _id: {
-          _id: "$_id",
           gestionnaire_siret: "$gestionnaire_siret",
-          formateur_siret: "$formateur_siret",
-          optout_activation_scheduled_date: "$optout_activation_scheduled_date",
         },
+        id: { $first: "$_id" },
+        optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
         gestionnaire_email: { $first: "$gestionnaire_email" },
         count: { $sum: 1 },
       },
@@ -96,23 +94,26 @@ export const inviteEtablissementParcoursupToPremium = async () => {
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
-          activatedAt: dayjs(etablissement._id.optout_activation_scheduled_date).format("DD/MM/YYYY"),
+          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
           linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement._id.toString()),
         },
       },
     })
 
-    await Etablissement.findByIdAndUpdate(etablissement._id, {
-      premium_invitation_date: dayjs().toDate(),
-      $push: {
-        to_etablissement_emails: {
-          campaign: mailType.PREMIUM_INVITE,
-          status: null,
-          message_id: messageId,
-          email_sent_at: dayjs().toDate(),
+    await Etablissement.updateMany(
+      { gestionnaire_siret: etablissement._id.gestionnaire_siret },
+      {
+        premium_invitation_date: dayjs().toDate(),
+        $push: {
+          to_etablissement_emails: {
+            campaign: mailType.PREMIUM_INVITE,
+            status: null,
+            message_id: messageId,
+            email_sent_at: dayjs().toDate(),
+          },
         },
-      },
-    })
+      }
+    )
   }
 
   await notifyToSlack({ subject: "RDVA - INVITATION PARCOURSUP", message: `${count} invitation(s) envoyé` })
