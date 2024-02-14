@@ -118,10 +118,10 @@ export const CronsMap = {
     cron_string: "0 9 * * *",
     handler: () => addJob({ name: "etablissement:invite:opt-out", payload: {} }),
   },
-  // "Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
-  //   cron_string: "0 9 * * *",
-  //   handler: () => addJob({ name: "etablissement:invite:premium", payload: {} }),
-  // },
+  "Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
+    cron_string: "0 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:parcoursup", payload: {} }),
+  },
   // "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
   //   cron_string: "30 9 * * *",
   //   handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
@@ -139,7 +139,7 @@ export const CronsMap = {
     handler: () => addJob({ name: "etablissements:formations:inverted:sync", payload: {} }),
   },
   "Synchronise les dates des etablissements": {
-    cron_string: "0 0 * * *",
+    cron_string: "0 5 * * *",
     handler: () => addJob({ name: "sync:etablissement:dates", payload: {} }),
   },
   "Historisation des formations éligibles à la prise de rendez-vous.": {
