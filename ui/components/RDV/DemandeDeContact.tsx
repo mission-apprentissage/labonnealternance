@@ -73,12 +73,12 @@ const DemandeDeContact = (props: Props) => {
   const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
   const yupInputs = {
-    firstname: Yup.string().required("Requis"),
-    lastname: Yup.string().required("Requis"),
+    firstname: Yup.string().required("⚠ Le prénom est obligatoire"),
+    lastname: Yup.string().required("⚠ Le nom est obligatoire"),
     phone: Yup.string()
-      .matches(/^[0-9]{10}$/, "Numéro mal formé")
-      .required("Le numéro de téléphone doit être renseigné."),
-    email: Yup.string().required("L'adresse e-mail de contact doit être renseignée."),
+      .matches(/^[0-9]{10}$/, "⚠ Numéro de téléphone invalide")
+      .required("⚠ Le numéro de téléphone est obligatoire"),
+    email: Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
     applicantMessageToCfa: Yup.string(),
     applicantType: Yup.string(),
   }
