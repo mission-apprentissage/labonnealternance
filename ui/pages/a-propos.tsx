@@ -79,7 +79,7 @@ const APropos = () => (
                   API ou Widget).
                 </ListItem>
                 <ListItem>
-                  Nous agrégeons également les offres en alternance de Pôle emploi et de ses{" "}
+                  Nous agrégeons également les offres en alternance de France travail et de ses{" "}
                   <Link
                     href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
                     aria-label="Accéder à la liste des sites partenaires de France Travail"
