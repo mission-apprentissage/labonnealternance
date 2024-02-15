@@ -43,6 +43,8 @@ export const syncEtablissementsAndFormations = async () => {
         const hasOptOutActivation = hasDateProperty(etablissements, "optout_activation_date")
         const hasPremiumRefusal = hasDateProperty(etablissements, "premium_refusal_date")
         const hasPremiumActivation = hasDateProperty(etablissements, "premium_activation_date")
+        const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")
+        const hasPremiumAffelnetRefusal = hasDateProperty(etablissements, "premium_affelnet_refusal_date")
 
         const emailArray = etablissements.map((etab) => {
           return { email: etab.gestionnaire_email }
@@ -59,9 +61,13 @@ export const syncEtablissementsAndFormations = async () => {
           }
         }
 
-        // Activate premium referrers
+        // Activate parcoursup premium referrer
         if (hasPremiumActivation && !hasPremiumRefusal && formation.parcoursup_id && formation.parcoursup_statut === "publié") {
           referrersToActivate.push(referrers.PARCOURSUP.name)
+        }
+        // Activate affelnet premium referrer
+        if (hasPremiumAffelnetActivation && !hasPremiumAffelnetRefusal && formation.affelnet_visible) {
+          referrersToActivate.push(referrers.AFFELNET.name)
         }
 
         if (eligibleTrainingsForAppointment) {
