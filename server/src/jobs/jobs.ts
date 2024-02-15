@@ -69,7 +69,6 @@ import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsAndFormationsAffelnet"
 import { syncEtablissementsAndFormationsInverted } from "./rdv/syncEtablissementsAndFormationsInverted"
-import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
 import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -372,8 +371,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "diplomes-metiers:update":
         return updateDiplomesMetiers()
-      case "referentiel:rncp-romes:update":
-        return updateReferentielRncpRomes()
       case "recruiters:raison-sociale:fill":
         return fillRecruiterRaisonSociale()
       case "recruiters:expiration-date:fix":
