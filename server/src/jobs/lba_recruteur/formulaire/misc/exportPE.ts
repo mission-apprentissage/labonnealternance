@@ -230,12 +230,13 @@ export const exportPE = async (): Promise<void> => {
     logger.info(`CSV sent (${response})`)
     await notifyToSlack({
       subject: "EXPORT PE OK",
-      message: `${buffer.length} offres transmises à Pôle emploi - reponse API PE : ${response}`,
+      message: `${buffer.length} offres transmises à Pôle emploi`,
     })
   } catch (err) {
     await notifyToSlack({
       subject: "EXPORT PE KO",
       message: `Echec de l'export des offres Pôle emploi. ${err}`,
+      error: true,
     })
     throw err
   }
