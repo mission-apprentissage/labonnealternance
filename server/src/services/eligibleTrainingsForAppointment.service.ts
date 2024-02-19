@@ -83,10 +83,12 @@ const getEmailForRdv = async (
   formation: Pick<IFormationCatalogue, "email" | "etablissement_gestionnaire_courriel" | "etablissement_gestionnaire_siret">
 ): Promise<string | null> => {
   const { email, etablissement_gestionnaire_courriel, etablissement_gestionnaire_siret } = formation
-  if (email && isValidEmail(email) && (await !isEmailBlacklisted(email))) return email
-  if (etablissement_gestionnaire_courriel && isValidEmail(etablissement_gestionnaire_courriel) && (await !isEmailBlacklisted(etablissement_gestionnaire_courriel)))
+  if (email && isValidEmail(email) && !(await isEmailBlacklisted(email))) return email
+  if (etablissement_gestionnaire_courriel && isValidEmail(etablissement_gestionnaire_courriel) && !(await isEmailBlacklisted(etablissement_gestionnaire_courriel))) {
     return etablissement_gestionnaire_courriel
-  return await getMostFrequentEmailByLieuFormationSiret(etablissement_gestionnaire_siret ?? undefined)
+  } else {
+    return await getMostFrequentEmailByLieuFormationSiret(etablissement_gestionnaire_siret ?? undefined)
+  }
 }
 
 export { create, find, findOne, getEmailForRdv, getParameterByCleMinistereEducatif, remove, update, updateMany, updateParameter }

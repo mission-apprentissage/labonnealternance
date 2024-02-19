@@ -31,32 +31,33 @@ const CGU = ({ recordMap }) => {
       <ScrollToTop />
       <Navigation />
 
-      <Breadcrumb forPage="cgu" label="CGU" />
-
-      <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
-        <Grid templateColumns="repeat(12, 1fr)">
-          <GridItem px={4} colSpan={[12, 12, 12, 5]}>
-            <Box as="h1">
-              <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
-                Conditions
-              </Text>
-              <Text as="span" display="block" mb={1} variant="editorialContentH1">
-                générales
-              </Text>
-              <Text as="span" display="block" mb={1} variant="editorialContentH1">
-                d&apos;utilisation
-              </Text>
-            </Box>
-            <Divider variant="pageTitleDivider" my={12} />
-          </GridItem>
-          <GridItem px={4} colSpan={[12, 12, 12, 7]}>
-            <Box>
-              <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} bodyClassName="notion-body" />
-            </Box>
-          </GridItem>
-        </Grid>
-      </Container>
-      <Box mb={3}>&nbsp;</Box>
+      <Box as="main">
+        <Breadcrumb forPage="cgu" label="CGU" />
+        <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
+          <Grid templateColumns="repeat(12, 1fr)">
+            <GridItem px={4} colSpan={[12, 12, 12, 5]}>
+              <Box as="h1">
+                <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
+                  Conditions
+                </Text>
+                <Text as="span" display="block" mb={1} variant="editorialContentH1">
+                  générales
+                </Text>
+                <Text as="span" display="block" mb={1} variant="editorialContentH1">
+                  d&apos;utilisation
+                </Text>
+              </Box>
+              <Divider variant="pageTitleDivider" my={12} />
+            </GridItem>
+            <GridItem px={4} colSpan={[12, 12, 12, 7]}>
+              <Box>
+                <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} bodyClassName="notion-body" />
+              </Box>
+            </GridItem>
+          </Grid>
+        </Container>
+        <Box mb={3}>&nbsp;</Box>
+      </Box>
       <Footer />
     </Box>
   )

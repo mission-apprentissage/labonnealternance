@@ -41,10 +41,10 @@
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="0 10px 20px 10px">
                 <mj-text>
                 <% if(data.isParcoursup){ %>
-                        Le <b><%= data.etablissement.premiumActivatedDate %></b>, votre établissement gestionnaire <b><%= data.etablissement.emailGestionnaire %></b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://www.parcoursup.fr" class="grey">Parcoursup</a>. Elle permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+                        Le <b><%= data.etablissement.premiumActivatedDate %></b>, votre établissement gestionnaire a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://www.parcoursup.fr" class="grey">Parcoursup</a>. Elle permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
                 <% } %>
                 <% if(data.isAffelnet){ %>
-                        Le <b><%= data.etablissement.premiumActivatedDate %></b>, votre établissement gestionnaire <b><%= data.etablissement.emailGestionnaire %></b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://affectation3e.phm.education.gouv.fr/pna-public/" class="grey">Choisir son affectation après la 3e</a>. Elle permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+                        Le <b><%= data.etablissement.premiumAffelnetActivatedDate %></b>, votre établissement gestionnaire a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://affectation3e.phm.education.gouv.fr/pna-public/" class="grey">Choisir son affectation après la 3e</a>. Elle permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
                 <% } %>
                 </mj-text>
                 <mj-text>
@@ -88,7 +88,7 @@
         <mj-section padding-top="24px">
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
                 <mj-text><b>Qui reçoit les demandes de rendez-vous ?</b><br/><br/>
-                    Les demandes de rendez-vous envoyées par les candidats auprès de votre CFA sont reçues sur le mail formateur renseigné auprès de votre Carif-Oref pour vos fiches formation.<br/><br/>
+                    Les demandes de rendez-vous envoyées par les candidats auprès de votre CFA sont reçues sur le mail déclaré comme contact principal au niveau du lieu de la formation renseigné auprès de votre Carif-Oref pour vos fiches formation.<br/><br/>
 
                     <b>Vous souhaitez modifier le mail de la personne en charge de traiter les demandes de prise de RDV ?</b><br/><br/>
 
@@ -115,7 +115,7 @@
             </mj-column>
             <mj-column width="400px" padding-left="30px">
                 <mj-text padding-bottom="15px" padding-right="0" font-size="12px">
-                    Cet email a été envoyé à <a class="grey" href="mailto:<%= data.user.destinataireEmail %>"><%= data.user.destinataireEmail %></a>
+                    Cet email a été envoyé à <a class="grey" href="mailto:<%= data.user.destinataireEmail %>">labonnealternance@apprentissage.beta.gouv.fr</a>
                 </mj-text>
             </mj-column>
         </mj-section>

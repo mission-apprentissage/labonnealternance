@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .bin/scripts/get-vault-password-client.sh
+  checksum: 721a0185a395874b58d38dd157aa326a15c73e7d381cfd968ad27fc5922ddfa3
 - filename: .bin/scripts/seed-apply.sh
   checksum: 49afe4f96fa13b38cf799d931085437d540b4c62eb05b2f15bc12cd3fb43268b
 - filename: .bin/scripts/seed-update.sh
@@ -26,7 +28,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: ab249402eb2532ba0154474a9c8f2e445a2e0ff83584e7c3460c780ea5e5ec65
+  checksum: 329fc038e4c1a88989e683c60333032aa5945f94acffa4a30123d63259ef502d
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
@@ -44,7 +46,7 @@ fileignoreconfig:
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
 - filename: server/src/jobs/database/obfuscateCollections.ts
-  checksum: 73482f9b75b3ca47c3bc9377ce4d4e03f4ba21a351986c0ca8ae17382a5263e3
+  checksum: b7bfa1b65f1890760f98701fc826b6f0f2136f068e6fa8cea0c136a2e2530852
 - filename: server/src/jobs/job.actions.ts
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
@@ -68,7 +70,7 @@ fileignoreconfig:
 - filename: server/tests/unit/security/authorisationService.test.ts
   checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: server/tests/unit/services/eligibleTrainingsForAppointment.service.test.ts
-  checksum: b4d6c4bc3706ba86b4aba6e0c2b73349c63139b9db6e8c0cdb232ba0ca163f16
+  checksum: 089218ccdaf2553d5a427cb81d0b556f51badaba5b5523299e5fe74e7ef5a802
 - filename: server/tests/unit/util.test.ts
   checksum: d38ae060280f0cb1579894ac2fcbfdd0a48b49eafc54f7ba3c7db0e422230547
 - filename: server/tests/unit/utils/isValidEmail.test.ts
@@ -80,11 +82,11 @@ fileignoreconfig:
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: 2da5fe77017ba6e542d1681dd0d7ab88fd86739b31e580fc5a21a01b9c0800bd
+  checksum: 4c52ccaab38f3151e125d924d06eafd9f861be93c1d39cf70b563d081a3851fc
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
-  checksum: ffb18305ed9f3aa033c8aa680711e97796fe4f73e98c32dcf22247e0e1815ad8
+  checksum: 7fea07b04529a8981bd57f26420f4389337ab92404442c17772565f1d0ddc6f5
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
@@ -99,12 +101,12 @@ fileignoreconfig:
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
-- filename: ui/components/ItemDetail/DidYouKnow.tsx
-  checksum: d6649949682369b511dbb278ca3ad2ad2771e73a72816a96d8310f013c8e4f63
 - filename: ui/components/ItemDetail/ItemDetail.tsx
-  checksum: 94562589347550c59a72397c399f3461599357797e72535ff7576736d0e5bb26
-- filename: ui/components/RDV/DemandeDeContact.tsx
-  checksum: 2f5d579fbe659f5c59a98cb2bee5a4bcb0f74c98005cdd96aff832bf5b3bf82b
+  checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
+- filename: ui/components/Ressources/conseilsEtAstuces.tsx
+  checksum: b9f16607c1fb319c2940223e7e9ce5acc48b8b5a5b519e2bb79210e3f0feaf17
+- filename: ui/components/Ressources/misesEnSituation.tsx
+  checksum: 40d3b51d46662db192ae3b8a5ecd5090445008dd7842425f34f7f4058482f3d0
 - filename: ui/components/SearchForTrainingsAndJobs/services/handleSessionStorage.ts
   checksum: c3c1aceede1040a9001bdc27cebbec7b3aeb0bb251b8b4264bb9d33da074af60
 - filename: ui/components/espace_pro/Admin/utilisateurs/UserList.tsx

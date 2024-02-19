@@ -298,6 +298,10 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       description: "Affelnet : historique des statuts",
       noIndex: true,
     },
+    affelnet_visible: {
+      type: Boolean,
+      description: "Formation Affelnet visible sur le SLA",
+    },
     source: {
       type: String,
       description: "Origine de la formation",
