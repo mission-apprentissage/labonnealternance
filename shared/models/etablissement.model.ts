@@ -32,7 +32,6 @@ export const ZEtablissement = z
     optout_refusal_date: z.date().nullish(),
     last_catalogue_sync_date: z.date().nullish(),
     created_at: z.date().nullish(),
-    affelnet_perimetre: z.boolean().nullish(),
   })
   .strict()
   .openapi("Etablissement")

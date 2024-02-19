@@ -114,10 +114,6 @@ export const etablissementSchema = new Schema<IEtablissement>(
       default: Date.now,
       description: "Date de création de la collection",
     },
-    affelnet_perimetre: {
-      type: Boolean,
-      description: "L'établissement a été traité par la synchronisation Affelnet",
-    },
   },
   {
     versionKey: false,
