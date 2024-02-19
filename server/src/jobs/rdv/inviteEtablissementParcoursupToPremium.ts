@@ -3,7 +3,6 @@ import { isValidEmail } from "@/common/utils/isValidEmail"
 import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { mailType } from "../../common/model/constants/etablissement"
 import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
@@ -82,7 +81,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
     count++
 
     // Invite all etablissements only in production environment
-    const { messageId } = await mailer.sendEmail({
+    await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Parcoursup !`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite.mjml.ejs"),
@@ -104,14 +103,6 @@ export const inviteEtablissementParcoursupToPremium = async () => {
       { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
         premium_invitation_date: dayjs().toDate(),
-        $push: {
-          to_etablissement_emails: {
-            campaign: mailType.PREMIUM_INVITE,
-            status: null,
-            message_id: messageId,
-            email_sent_at: dayjs().toDate(),
-          },
-        },
       }
     )
   }

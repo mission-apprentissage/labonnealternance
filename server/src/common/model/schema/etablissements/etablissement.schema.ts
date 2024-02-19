@@ -104,42 +104,6 @@ export const etablissementSchema = new Schema<IEtablissement>(
       default: null,
       description: "Date de refus de l'opt-out",
     },
-    to_etablissement_emails: {
-      type: "array",
-      description: "Liste des évènements MAIL récupéré par le serveur",
-      required: false,
-      items: {
-        type: "object",
-        required: false,
-        properties: {
-          campaign: {
-            type: "string",
-            default: null,
-            description: "Identifiant de campagne",
-          },
-          message_id: {
-            type: "string",
-            default: null,
-            description: "Identifiant Brevo",
-          },
-          status: {
-            type: "string",
-            default: null,
-            description: "Code erreur Brevo",
-          },
-          webhook_status_at: {
-            type: Date,
-            default: null,
-            description: "Date fournie par les webhooks Brevo lors de la réception d'un event",
-          },
-          email_sent_at: {
-            type: Date,
-            default: null,
-            description: "Date de création de la collection",
-          },
-        },
-      },
-    },
     last_catalogue_sync_date: {
       type: Date,
       default: null,

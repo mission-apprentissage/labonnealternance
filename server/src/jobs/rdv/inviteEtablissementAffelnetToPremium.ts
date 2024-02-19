@@ -2,7 +2,6 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
@@ -33,7 +32,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
     }
 
     // send the invitation mail
-    const { messageId } = await mailer.sendEmail({
+    await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e !`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite.mjml.ejs"),
@@ -55,14 +54,6 @@ export const inviteEtablissementAffelnetToPremium = async () => {
       { formateur_siret: etablissement.formateur_siret },
       {
         premium_affelnet_invitation_date: dayjs().toDate(),
-        $push: {
-          to_etablissement_emails: {
-            campaign: mailType.PREMIUM_AFFELNET_INVITE,
-            status: null,
-            message_id: messageId,
-            email_sent_at: dayjs().toDate(),
-          },
-        },
       }
     )
   }

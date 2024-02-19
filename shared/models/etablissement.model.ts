@@ -3,7 +3,6 @@ import { Jsonify } from "type-fest"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { ZMailing } from "./appointments.model"
 import { zObjectId } from "./common"
 
 export const ZEtablissement = z
@@ -34,7 +33,6 @@ export const ZEtablissement = z
     last_catalogue_sync_date: z.date().nullish(),
     created_at: z.date().nullish(),
     affelnet_perimetre: z.boolean().nullish(),
-    to_etablissement_emails: z.array(ZMailing).nullish(),
   })
   .strict()
   .openapi("Etablissement")
