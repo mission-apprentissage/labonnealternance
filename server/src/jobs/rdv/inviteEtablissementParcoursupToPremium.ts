@@ -10,21 +10,15 @@ import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
 
 interface IEtablissementsToInviteToPremium {
-  _id: Id
+  _id: {
+    gestionnaire_siret: string
+  }
   id: string
   gestionnaire_email: string
   optout_activation_scheduled_date: string
   count: number
 }
 
-interface Id {
-  gestionnaire_siret: string
-}
-
-/**
- * @description Invite all "etablissements" to Parcoursup Premium.
- * @returns {Promise<void>}
- */
 export const inviteEtablissementParcoursupToPremium = async () => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
@@ -34,7 +28,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
   const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
   const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
   if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not between the 08/01 and the 31/08 (eligible period).")
+    logger.info("Stopped because we are not within the eligible period.")
     return
   }
 

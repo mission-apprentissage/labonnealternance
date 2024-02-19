@@ -121,6 +121,16 @@ const config = {
       endDay: 31,
     },
   },
+  affelnetPeriods: {
+    start: {
+      startMonth: 3, // January = 0
+      startDay: 2,
+    },
+    end: {
+      endMonth: 7,
+      endDay: 31,
+    },
+  },
 }
 
 export default config

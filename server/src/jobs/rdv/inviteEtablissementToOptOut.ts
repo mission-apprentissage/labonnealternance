@@ -9,14 +9,12 @@ import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
 
 interface IEtablissementsWithouOptMode {
-  _id: Id
+  _id: {
+    gestionnaire_siret: string
+  }
   id: string
   gestionnaire_email: string
   count: number
-}
-
-interface Id {
-  gestionnaire_siret: string
 }
 
 /**

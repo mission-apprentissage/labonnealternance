@@ -8,25 +8,45 @@ import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
 
-/**
- * @description Invite all "etablissements" to Premium (followup).
- * @returns {Promise<void>}
- */
+interface IEtablissementsToInviteToPremium {
+  _id: {
+    gestionnaire_siret: string
+  }
+  id: string
+  gestionnaire_email: string
+  optout_activation_scheduled_date: string
+  count: number
+}
+
 export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
   logger.info("Cron #inviteEtablissementParcoursupToPremiumFollowUp started.")
 
-  const etablissementsFound = await Etablissement.find({
-    gestionnaire_email: {
-      $ne: null,
+  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await Etablissement.aggregate([
+    {
+      $match: {
+        gestionnaire_email: {
+          $ne: null,
+        },
+        premium_activation_date: null,
+        premium_refusal_date: null,
+        premium_follow_up_date: null,
+        $and: [{ premium_invitation_date: { $ne: null } }, { premium_invitation_date: { $lte: dayjs().subtract(10, "days").toDate() } }],
+      },
     },
-    premium_activation_date: null,
-    premium_refusal_date: null,
-    premium_follow_up_date: null,
-    $and: [{ premium_invitation_date: { $ne: null } }, { premium_invitation_date: { $lte: dayjs().subtract(10, "days").toDate() } }],
-  })
+    {
+      $group: {
+        _id: {
+          gestionnaire_siret: "$gestionnaire_siret",
+        },
+        optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
+        gestionnaire_email: { $first: "$gestionnaire_email" },
+        count: { $sum: 1 },
+      },
+    },
+  ])
 
-  for (const etablissement of etablissementsFound) {
-    if (!etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.gestionnaire_siret) {
+  for (const etablissement of etablissementsToInviteToPremium) {
+    if (!etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret) {
       continue
     }
 
@@ -45,13 +65,13 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
-          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.gestionnaire_siret, etablissement._id.toString()),
+          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement._id.toString()),
         },
       },
     })
 
     await Etablissement.updateMany(
-      { gestionnaire_siret: etablissement.gestionnaire_siret },
+      { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
         premium_follow_up_date: dayjs().toDate(),
       }
