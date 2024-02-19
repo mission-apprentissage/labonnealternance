@@ -27,9 +27,6 @@ describe("server", () => {
         continue
       }
 
-      // Known path aliases
-      const normalizedPath = routePath.startsWith("/romelabels") ? routePath.replace("/romelabels", "/rome") : routePath
-
       const methods = Array.isArray(route.method) ? route.method : [route.method]
       for (const method of methods) {
         // HEAD are not part of schema
@@ -38,7 +35,7 @@ describe("server", () => {
         }
 
         assert.equal(!!schema, true, `${method} ${routePath}: schema not define in route`)
-        const sharedSchema = zRoutes?.[method.toLowerCase()]?.[normalizedPath]
+        const sharedSchema = zRoutes?.[method.toLowerCase()]?.[routePath]
         assert.equal(!!sharedSchema, true, `${method} ${routePath}: schema not define in shared`)
         assert.equal(schema, sharedSchema, `${method} ${routePath}: schema not match shared schema`)
 

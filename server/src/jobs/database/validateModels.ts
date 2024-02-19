@@ -1,42 +1,45 @@
 import { captureException } from "@sentry/node"
 import { Model } from "mongoose"
 import {
+  ZApiCall,
   ZApplication,
   ZAppointment,
   ZCredential,
+  ZDiplomesMetiers,
+  ZDomainesMetiers,
   ZEligibleTrainingsForAppointmentSchema,
   ZEmailBlacklist,
   ZEtablissement,
+  ZGeoLocation,
   ZJob,
   ZLbaCompany,
+  ZLbaLegacyCompany,
   ZOptout,
   ZRecruiter,
   ZReferentielOnisep,
   ZReferentielOpco,
-  ZRncpRomes,
   ZUnsubscribeOF,
   ZUnsubscribedLbaCompany,
   ZUser,
   ZUserRecruteur,
   zFormationCatalogueSchema,
-  ZDiplomesMetiers,
-  ZDomainesMetiers,
-  ZApiCall,
-  ZGeoLocation,
-  ZLbaLegacyCompany,
 } from "shared/models"
 import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
 import {
+  ApiCalls,
   Application,
   Appointment,
   AppointmentDetailed,
   Credential,
+  DiplomesMetiers,
+  DomainesMetiers,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
   Etablissement,
   FormationCatalogue,
+  GeoLocation,
   Job,
   LbaCompany,
   LbaCompanyLegacy,
@@ -44,16 +47,11 @@ import {
   Recruiter,
   ReferentielOnisep,
   ReferentielOpco,
-  RncpRomes,
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
   UserRecruteur,
   eligibleTrainingsForAppointmentHistory,
-  DiplomesMetiers,
-  DomainesMetiers,
-  ApiCalls,
-  GeoLocation,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
@@ -118,7 +116,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(Optout, ZOptout)
   await validateModel(Recruiter, ZRecruiter)
   await validateModel(ReferentielOnisep, ZReferentielOnisep)
-  await validateModel(RncpRomes, ZRncpRomes)
   await validateModel(User, ZUser)
   await validateModel(ReferentielOpco, ZReferentielOpco)
   await validateModel(UnsubscribeOF, ZUnsubscribeOF)

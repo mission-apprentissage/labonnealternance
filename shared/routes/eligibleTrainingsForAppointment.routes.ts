@@ -29,6 +29,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       body: z.union([
         ZEligibleTrainingsForAppointmentSchema.pick({
           is_lieu_formation_email_customized: true,
+          cle_ministere_educatif: true,
           lieu_formation_email: true,
         }),
         ZEligibleTrainingsForAppointmentSchema.pick({

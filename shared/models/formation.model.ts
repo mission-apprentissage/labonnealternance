@@ -139,6 +139,7 @@ export const zFormationCatalogueSchema = z
     affelnet_a_charger: z.boolean().nullish(),
     affelnet_statut: z.string().nullish(),
     affelnet_statut_history: z.array(z.record(z.unknown())).nullish(),
+    affelnet_visible: z.boolean().nullish(),
     source: z.string().nullish(),
     commentaires: z.string().nullish(),
     opcos: z.array(z.string()).nullish(),

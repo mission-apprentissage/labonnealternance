@@ -40,13 +40,6 @@ export default (server: Server) => {
       let eligibleTrainingsForAppointment
       if ("idCleMinistereEducatif" in req.body) {
         eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({ cle_ministere_educatif: req.body.idCleMinistereEducatif })
-      } else if ("idRcoFormation" in req.body) {
-        eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
-          rco_formation_id: req.body.idRcoFormation,
-          cle_ministere_educatif: {
-            $ne: null,
-          },
-        })
       } else if ("idParcoursup" in req.body) {
         eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
           parcoursup_id: req.body.idParcoursup,
@@ -80,14 +73,14 @@ export default (server: Server) => {
         lieu_formation_email: { $nin: [null, ""] },
       })
 
-      if (!isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
-        sentryCaptureException(`Formation "${eligibleTrainingsForAppointment.cle_ministere_educatif}" sans email de contact.`)
-      }
-
       if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
         return res.status(200).send({
           error: "Prise de rendez-vous non disponible.",
         })
+      }
+
+      if (!isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
+        sentryCaptureException(`Formation "${eligibleTrainingsForAppointment.cle_ministere_educatif}" avec email de contact invalide.`)
       }
 
       const etablissement = await Etablissement.findOne({ formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret })
