@@ -119,7 +119,7 @@ function EditPage() {
    * @param email
    * @returns {Promise<string|number>}
    */
-  const saveEmail = async (parameterId, email) => {
+  const saveEmail = async (parameterId, email, cle_ministere_educatif) => {
     if (!email && !emailValidator.validate(email)) {
       return toast({
         title: "Email de contact non valide.",
@@ -131,6 +131,7 @@ function EditPage() {
 
     await patchEligibleTrainingsForAppointment(parameterId, {
       lieu_formation_email: email,
+      cle_ministere_educatif,
       is_lieu_formation_email_customized: true,
     })
 
@@ -294,7 +295,7 @@ function EditPage() {
                             <EditablePreview ref={emailFocusRef} />
                           </Editable>
                           {/* @ts-expect-error: TODO */}
-                          <Button mt={4} variant="primary" onClick={() => saveEmail(parameter._id, emailRef.current.value)}>
+                          <Button mt={4} variant="primary" onClick={() => saveEmail(parameter._id, emailRef.current.value, parameter.cle_ministere_educatif)}>
                             OK
                           </Button>
                         </Td>

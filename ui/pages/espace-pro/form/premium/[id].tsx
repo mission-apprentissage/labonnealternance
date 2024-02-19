@@ -124,7 +124,7 @@ export default function PremiumForm() {
                 <Text mt={4} color="grey.800" ml={2}>
                   Le service RDV Apprentissage est désormais activé sur Parcoursup.
                   <br />
-                  Afin de recevoir les demandes de RDV, assurez-vous que vos coordonnées de contact CARIF FOREF soient à jour.
+                  Afin de recevoir les demandes de RDV, assurez-vous que vos coordonnées de contact CARIF OREF sont à jour.
                 </Text>
               </Box>
             </Stack>
