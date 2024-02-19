@@ -58,8 +58,8 @@ import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
 import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
+import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { inviteEtablissementToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUp"
 import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
 import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
@@ -317,7 +317,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "etablissement:invite:premium:affelnet":
         return inviteEtablissementAffelnetToPremium()
       case "etablissement:invite:premium:follow-up":
-        return inviteEtablissementToPremiumFollowUp()
+        return inviteEtablissementParcoursupToPremiumFollowUp()
       case "etablissement:invite:premium:affelnet:follow-up":
         return inviteEtablissementAffelnetToPremiumFollowUp()
       case "premium:activated:reminder":

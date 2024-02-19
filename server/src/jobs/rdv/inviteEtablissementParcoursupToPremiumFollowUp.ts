@@ -2,7 +2,6 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
 import config from "../../config"
@@ -13,35 +12,26 @@ import mailer from "../../services/mailer.service"
  * @description Invite all "etablissements" to Premium (followup).
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToPremiumFollowUp = async () => {
-  logger.info("Cron #inviteEtablissementToPremiumFollowUp started.")
+export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
+  logger.info("Cron #inviteEtablissementParcoursupToPremiumFollowUp started.")
 
   const etablissementsFound = await Etablissement.find({
     gestionnaire_email: {
       $ne: null,
     },
-    optout_activation_scheduled_date: {
-      $ne: null,
-    },
     premium_activation_date: null,
     premium_refusal_date: null,
-    premium_invitation_date: {
-      $ne: null,
-      $lte: dayjs().subtract(10, "days").toDate(),
-    },
-    "to_etablissement_emails.campaign": {
-      $ne: mailType.PREMIUM_INVITE_FOLLOW_UP,
-    },
-    affelnet_perimetre: null,
+    premium_follow_up_date: null,
+    $and: [{ premium_invitation_date: { $ne: null } }, { premium_invitation_date: { $lte: dayjs().subtract(10, "days").toDate() } }],
   })
 
   for (const etablissement of etablissementsFound) {
-    if (!etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.formateur_siret) {
+    if (!etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.gestionnaire_siret) {
       continue
     }
 
     // Invite all etablissements only in production environment
-    const { messageId } = await mailer.sendEmail({
+    await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite-followup.mjml.ejs"),
@@ -55,26 +45,18 @@ export const inviteEtablissementToPremiumFollowUp = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
-          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
+          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.gestionnaire_siret, etablissement._id.toString()),
         },
       },
     })
 
-    await Etablissement.updateOne(
-      { formateur_siret: etablissement.formateur_siret },
+    await Etablissement.updateMany(
+      { gestionnaire_siret: etablissement.gestionnaire_siret },
       {
-        premium_invitation_date: dayjs().toDate(),
-        $push: {
-          to_etablissement_emails: {
-            campaign: mailType.PREMIUM_INVITE_FOLLOW_UP,
-            status: null,
-            message_id: messageId,
-            email_sent_at: dayjs().toDate(),
-          },
-        },
+        premium_follow_up_date: dayjs().toDate(),
       }
     )
   }
 
-  logger.info("Cron #inviteEtablissementToPremiumFollowUp done.")
+  logger.info("Cron #inviteEtablissementParcoursupToPremiumFollowUp done.")
 }
