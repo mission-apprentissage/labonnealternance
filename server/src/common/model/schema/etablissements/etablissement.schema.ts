@@ -44,18 +44,23 @@ export const etablissementSchema = new Schema<IEtablissement>(
     premium_invitation_date: {
       type: Date,
       default: null,
-      description: "Date d'invitation au Premium (Publication sur Parcoursup)",
+      description: "Date d'invitation au Premium (Parcoursup)",
     },
     premium_activation_date: {
       type: Date,
       index: true,
       default: null,
-      description: "Date d'acceptation de l'offre Premium",
+      description: "Date d'acceptation de l'offre Premium (Parcoursup)",
     },
     premium_refusal_date: {
       type: Date,
       default: null,
-      description: "Date de refus de l'offre Premium",
+      description: "Date de refus de l'offre Premium (Parcoursup)",
+    },
+    premium_follow_up_date: {
+      type: Date,
+      default: null,
+      description: "Date de relance de l'offre Premium (Parcoursup)",
     },
     premium_affelnet_invitation_date: {
       type: Date,
@@ -72,6 +77,11 @@ export const etablissementSchema = new Schema<IEtablissement>(
       type: Date,
       default: null,
       description: "Date de refus au Premium (Affelnet)",
+    },
+    premium_affelnet_follow_up_date: {
+      type: Date,
+      default: null,
+      description: "Date de relance au Premium (Affelnet)",
     },
     optout_invitation_date: {
       type: Date,
