@@ -16,17 +16,17 @@ export const updateParcoursupIdAndAffelnetStatusOnFormationCatalogueCollection =
       published: true,
       $or: [{ parcoursup_id: { $ne: null } }, { affelnet_statut: { $in: ["publié", "en attente de publication"] } }, { parcoursup_statut: "publié" }],
     },
-    select: { parcoursup_id: 1, affelnet_statut: 1, cle_ministere_educatif: 1, parcoursup_statut: 1 },
+    select: { parcoursup_id: 1, affelnet_statut: 1, cle_ministere_educatif: 1, parcoursup_statut: 1, affelnet_visible: 1 },
   })
 
   await asyncForEach(formations, async (formation: IFormationCatalogue) => {
     const found = catalogueMinistereEducatif.find((formationME) => formationME.cle_ministere_educatif === formation.cle_ministere_educatif)
 
     if (found) {
-      const { parcoursup_id, affelnet_statut, parcoursup_statut } = found
+      const { parcoursup_id, affelnet_statut, parcoursup_statut, affelnet_visible } = found
       await db
         .collection("formationcatalogues")
-        .updateOne({ cle_ministere_educatif: formation.cle_ministere_educatif }, { $set: { parcoursup_id, affelnet_statut, parcoursup_statut } })
+        .updateOne({ cle_ministere_educatif: formation.cle_ministere_educatif }, { $set: { parcoursup_id, affelnet_statut, parcoursup_statut, affelnet_visible } })
     }
   })
   logger.info("--- update formation catalogue data --- end")

@@ -5,6 +5,7 @@ import type { IFormationCatalogue } from "shared"
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
+import { isValidEmail } from "../common/utils/isValidEmail"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
@@ -660,9 +661,9 @@ export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_ges
   return await findFirstNonBlacklistedEmail(mostFrequentEmail)
 }
 
-const findFirstNonBlacklistedEmail = async (emails) => {
+export const findFirstNonBlacklistedEmail = async (emails) => {
   for (const { email } of emails) {
-    if (!(await isEmailBlacklisted(email))) {
+    if (isValidEmail(email) && !(await isEmailBlacklisted(email))) {
       return email
     }
   }

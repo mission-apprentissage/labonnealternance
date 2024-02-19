@@ -10,7 +10,6 @@ export const zV1FormationsRoutes = {
     "/v1/formations": {
       method: "get",
       path: "/v1/formations",
-      // TODO_SECURITY_FIX vérifier ce qu'on fait des emails et des téléphones et modifier les modèles en conséquences
       querystring: z
         .object({
           romes: zRomesParams("romeDomain"),

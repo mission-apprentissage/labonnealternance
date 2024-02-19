@@ -20,6 +20,8 @@ export const ZEligibleTrainingsForAppointmentSchema = z
     is_catalogue_published: z.boolean(),
     last_catalogue_sync_date: z.date().default(() => new Date()),
     parcoursup_id: z.string().nullable(),
+    parcoursup_statut: z.string().nullable(),
+    affelnet_statut: z.string().nullable(),
     cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
     etablissement_formateur_raison_sociale: z.string(),
     etablissement_formateur_street: z.string().nullable(),
