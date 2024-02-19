@@ -26,7 +26,7 @@ scenarios:
           url: "/api/metiersdavenir"
       - think: 5
       - get:
-          url: "/api/romelabels?title={{ keyword }}"
+          url: "/api/rome?title={{ keyword }}"
       - think: 5
       - get:
-          url: "/api/romelabels?title={{ keyword }}"
+          url: "/api/rome?title={{ keyword }}"

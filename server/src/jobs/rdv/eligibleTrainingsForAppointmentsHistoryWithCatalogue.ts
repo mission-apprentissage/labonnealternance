@@ -2,7 +2,6 @@ import { oleoduc, writeData } from "oleoduc"
 
 import { logger } from "../../common/logger"
 import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, FormationCatalogue } from "../../common/model/index"
-import dayjs from "../../services/dayjs.service"
 
 /**
  * @description Check if a training is still available for appointments again it's presence in the training catalogue
@@ -30,12 +29,14 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
       async (formation) => {
         const exist = await FormationCatalogue.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
 
+        formation._id = undefined
+
         if (!exist) {
-          await eligibleTrainingsForAppointmentHistory.create({ ...formation, email_rdv: undefined, historization_date: dayjs().format() })
+          await eligibleTrainingsForAppointmentHistory.create({ ...formation, email_rdv: undefined, historization_date: new Date() })
           await EligibleTrainingsForAppointment.findOneAndRemove({ cle_ministere_educatif: formation.cle_ministere_educatif })
         }
       },
-      { parallel: 500 }
+      { parallel: 20 }
     )
   )
 
