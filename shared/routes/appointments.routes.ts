@@ -15,16 +15,6 @@ const zContextCreateSchemaParcoursup = z
 
 export type IContextCreateSchemaParcoursup = z.output<typeof zContextCreateSchemaParcoursup>
 
-const zContextCreateSchemaRcoFormation = z
-  .object({
-    idRcoFormation: z.string().min(1),
-    trainingHasJob: z.boolean().optional(),
-    referrer: z.literal(referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase()),
-  })
-  .strict()
-
-export type IContextCreateSchemaRcoFormation = z.output<typeof zContextCreateSchemaRcoFormation>
-
 const zContextCreateSchemaActionFormation = z
   .object({
     idActionFormation: z.string().min(1),
@@ -42,7 +32,6 @@ const zContextCreateSchemaCleMinistereEducatif = z
     referrer: z.enum([
       referrers.PARCOURSUP.name.toLowerCase(),
       referrers.LBA.name.toLowerCase(),
-      referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase(),
       referrers.ONISEP.name.toLowerCase(),
       referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
       referrers.AFFELNET.name.toLowerCase(),
@@ -55,9 +44,6 @@ export type IContextCreateSchemaCleMinistereEducatif = z.output<typeof zContextC
 const zContextCreateSchema = z.union([
   // Find through "idParcoursup"
   zContextCreateSchemaParcoursup,
-
-  // Find through "idRcoFormation"
-  zContextCreateSchemaRcoFormation,
 
   // Find through "idActionFormation"
   zContextCreateSchemaActionFormation,

@@ -125,7 +125,7 @@ export default (server: Server) => {
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
                 email: etablissement.gestionnaire_email,
-                premiumActivatedDate: dayjs(etablissementAffelnetUpdated?.premium_affelnet_activation_date).format("DD/MM"),
+                premiumActivatedDate: dayjs(etablissementAffelnetUpdated?.premium_affelnet_activation_date).format("DD/MM/YYYY"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
@@ -199,7 +199,8 @@ export default (server: Server) => {
               },
             },
             premium_activation_date: dayjs().toDate(),
-          }
+          },
+          { new: true }
         ),
       ])
 
@@ -230,7 +231,8 @@ export default (server: Server) => {
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
                 email: etablissement.gestionnaire_email,
-                premiumActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_activation_date).format("DD/MM"),
+                premiumActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_activation_date).format("DD/MM/YYYY"),
+                premiumAffelnetActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_affelnet_activation_date).format("DD/MM/YYYY"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
@@ -306,7 +308,7 @@ export default (server: Server) => {
             formateur_siret: etablissement.formateur_siret,
             email: etablissement.gestionnaire_email,
           },
-          activationDate: dayjs().format("DD/MM"),
+          activationDate: dayjs().format("DD/MM/YYYY"),
         },
       })
 
@@ -380,7 +382,7 @@ export default (server: Server) => {
             formateur_siret: etablissement.formateur_siret,
             email: etablissement.gestionnaire_email,
           },
-          activationDate: dayjs().format("DD/MM"),
+          activationDate: dayjs().format("DD/MM/YYYY"),
         },
       })
 
@@ -417,7 +419,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/opt-out/unsubscribe"])],
     },
     async (req, res) => {
-      let etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
+      let etablissement = await Etablissement.findById(req.params.id, { ...etablissementProjection, gestionnaire_email: 1 }).lean()
 
       if (!etablissement || etablissement.optout_refusal_date) {
         throw Boom.notFound()
@@ -448,6 +450,9 @@ export default (server: Server) => {
       }
 
       // If opt-out is already running but user unsubscribe, disable all formations
+      /**
+       * WARNING KBA 2024-02-12 : ALL REFERRERS ARE REMOVE AND ITS BAD IF PREMIUM IS AVAILABLE
+       */
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
         // Disable all formations
         await eligibleTrainingsForAppointmentService.updateMany(
