@@ -1,8 +1,22 @@
-import { RncpRomes } from "../common/model/index"
+import axios from "axios"
+
 import { isOriginLocal } from "../common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
 
 import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types"
+import { IRncpTCO } from "./queryValidator.service.types"
+
+const getRomesFromRncp = async (rncp: string): Promise<string | null | undefined> => {
+  try {
+    const response = await axios.post<IRncpTCO>(`${config.tco.baseUrl}/api/v1/rncp`, { rncp })
+    const romes = response.data.result.romes.map(({ rome }) => rome).join(",")
+    return romes ?? null
+  } catch (error) {
+    sentryCaptureException(error)
+  }
+}
 
 /**
  * Contrôle le format d'un code RNCP
@@ -39,11 +53,11 @@ const validateRomesOrRncp = async (query: TJobSearchQuery, error_messages: strin
       error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
   } else if (rncp) {
     if (validateRncp(rncp, error_messages)) {
-      const romesFromRncp = await RncpRomes.findOne({ rncp_code: rncp })
+      const romesFromRncp = await getRomesFromRncp(rncp)
       if (!romesFromRncp) {
         error_messages.push(`rncp : Rncp code not recognized. Please check that it exists. (${rncp})`)
       } else {
-        query.romes = romesFromRncp.rome_codes.join(",")
+        query.romes = romesFromRncp
       }
     }
   } else {

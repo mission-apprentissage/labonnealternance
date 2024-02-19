@@ -9,7 +9,6 @@ export const zRomeRoutes = {
     "/rome": {
       method: "get",
       path: "/rome",
-      // TODO à fusionner avec romeLabels dans metiers.route ou supprimer si obsolète
       querystring: z
         .object({
           title: z.string(),

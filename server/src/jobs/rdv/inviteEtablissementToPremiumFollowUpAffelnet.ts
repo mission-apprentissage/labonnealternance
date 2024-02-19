@@ -51,7 +51,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
-          activatedAt: dayjs(etablissement.created_at).format("DD/MM"),
+          activatedAt: dayjs(etablissement.created_at).format("DD/MM/YYYY"),
           linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
         },
       },

@@ -54,7 +54,7 @@ export const inviteEtablissementToPremiumFollowUp = async () => {
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
-          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
+          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
           linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
         },
       },
