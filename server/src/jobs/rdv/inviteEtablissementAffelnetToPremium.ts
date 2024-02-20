@@ -45,6 +45,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         _id: {
           gestionnaire_siret: "$gestionnaire_siret",
         },
+        id: { $first: "$_id" },
         optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
         gestionnaire_email: { $first: "$gestionnaire_email" },
         count: { $sum: 1 },
@@ -78,7 +79,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
-          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement._id.toString()),
+          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
       },
     })
