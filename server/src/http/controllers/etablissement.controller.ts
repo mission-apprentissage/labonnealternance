@@ -6,7 +6,6 @@ import { referrers } from "shared/constants/referers"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
 
-import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
@@ -76,7 +75,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Gestionnaire email not found")
       }
 
-      const mailAffelnet = await sendMailCfaPremiumStart(etablissement, "affelnet")
+      await sendMailCfaPremiumStart(etablissement, "affelnet")
 
       const [eligibleTrainingsForAppointmentsAffelnetFound, etablissementAffelnetUpdated] = await Promise.all([
         eligibleTrainingsForAppointmentService.find({
@@ -85,14 +84,6 @@ export default (server: Server) => {
         Etablissement.findOneAndUpdate(
           { _id: etablissement._id },
           {
-            $push: {
-              to_etablissement_emails: {
-                campaign: mailType.PREMIUM_AFFELNET_STARTING,
-                status: null,
-                message_id: mailAffelnet.messageId,
-                email_sent_at: dayjs().toDate(),
-              },
-            },
             premium_affelnet_activation_date: dayjs().toDate(),
           }
         ),
@@ -178,7 +169,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Gestionnaire email not found")
       }
 
-      const mailParcoursup = await sendMailCfaPremiumStart(etablissement, "parcoursup")
+      await sendMailCfaPremiumStart(etablissement, "parcoursup")
 
       const [eligibleTrainingsForAppointmentsParcoursupFound, etablissementParcoursupUpdated] = await Promise.all([
         eligibleTrainingsForAppointmentService.find({
@@ -190,14 +181,6 @@ export default (server: Server) => {
         Etablissement.findOneAndUpdate(
           { _id: etablissement._id },
           {
-            $push: {
-              to_etablissement_emails: {
-                campaign: mailType.PREMIUM_STARTING,
-                status: null,
-                message_id: mailParcoursup.messageId,
-                email_sent_at: dayjs().toDate(),
-              },
-            },
             premium_activation_date: dayjs().toDate(),
           },
           { new: true }
@@ -289,7 +272,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Gestionnaire email not found")
       }
 
-      const mailAffelnet = await mailer.sendEmail({
+      await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur Choisir son affectation après la 3e`,
         template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
@@ -315,14 +298,6 @@ export default (server: Server) => {
       await Etablissement.findOneAndUpdate(
         { _id: etablissement._id },
         {
-          $push: {
-            to_etablissement_emails: {
-              campaign: mailType.PREMIUM_AFFELNET_REFUSED,
-              status: null,
-              message_id: mailAffelnet.messageId,
-              email_sent_at: dayjs().toDate(),
-            },
-          },
           premium_affelnet_refusal_date: dayjs().toDate(),
         }
       )
@@ -363,7 +338,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Gestionnaire email not found")
       }
 
-      const mailParcoursup = await mailer.sendEmail({
+      await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur Parcoursup`,
         template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
@@ -389,14 +364,6 @@ export default (server: Server) => {
       await Etablissement.findOneAndUpdate(
         { _id: etablissement._id },
         {
-          $push: {
-            to_etablissement_emails: {
-              campaign: mailType.PREMIUM_REFUSED,
-              status: null,
-              message_id: mailParcoursup.messageId,
-              email_sent_at: dayjs().toDate(),
-            },
-          },
           premium_refusal_date: dayjs().toDate(),
         }
       )
@@ -473,7 +440,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Gestionnaire email not found")
       }
 
-      const { messageId } = await mailer.sendEmail({
+      await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur La bonne alternance`,
         template: getStaticFilePath("./templates/mail-cfa-optout-unsubscription.mjml.ejs"),
@@ -491,20 +458,6 @@ export default (server: Server) => {
           },
         },
       })
-
-      await Etablissement.findOneAndUpdate(
-        { _id: etablissement._id },
-        {
-          $push: {
-            to_etablissement_emails: {
-              campaign: mailType.OPT_OUT_UNSUBSCRIPTION_CONFIRMATION,
-              status: null,
-              message_id: messageId,
-              email_sent_at: dayjs().toDate(),
-            },
-          },
-        }
-      )
 
       etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
       if (!etablissement) {

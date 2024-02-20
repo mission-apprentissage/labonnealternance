@@ -2,7 +2,6 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
@@ -10,14 +9,12 @@ import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
 
 interface IEtablissementsWithouOptMode {
-  _id: Id
+  _id: {
+    gestionnaire_siret: string
+  }
   id: string
   gestionnaire_email: string
   count: number
-}
-
-interface Id {
-  gestionnaire_siret: string
 }
 
 /**
@@ -53,7 +50,7 @@ export const inviteEtablissementToOptOut = async () => {
   for (const etablissement of etablissementsWithouOptMode) {
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
     if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret) {
-      const { messageId } = await mailer.sendEmail({
+      await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `Trouvez et recrutez vos candidats avec La bonne alternance`,
         template: getStaticFilePath("./templates/mail-cfa-optout-invitation.mjml.ejs"),
@@ -79,14 +76,6 @@ export const inviteEtablissementToOptOut = async () => {
         {
           optout_invitation_date: dayjs().toDate(),
           optout_activation_scheduled_date: willBeActivatedAt.toDate(),
-          $push: {
-            to_etablissement_emails: {
-              campaign: mailType.OPT_OUT_INVITE,
-              status: null,
-              message_id: messageId,
-              email_sent_at: dayjs().toDate(),
-            },
-          },
         }
       )
     }
