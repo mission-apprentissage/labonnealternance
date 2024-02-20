@@ -4,7 +4,6 @@ import { referrers } from "shared/constants/referers"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { logger } from "../../common/logger"
-import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
@@ -51,7 +50,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
 
       if (!etablissement.gestionnaire_email) return
       // Send email
-      const { messageId } = await mailer.sendEmail({
+      await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
         template: getStaticFilePath("./templates/mail-cfa-optout-start.mjml.ejs"),
@@ -119,20 +118,6 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             },
           })
         )
-      )
-
-      await Etablissement.findOneAndUpdate(
-        { _id: etablissement._id },
-        {
-          $push: {
-            to_etablissement_emails: {
-              campaign: mailType.OPT_OUT_STARTING,
-              status: null,
-              message_id: messageId,
-              email_sent_at: dayjs().toDate(),
-            },
-          },
-        }
       )
     })
   )

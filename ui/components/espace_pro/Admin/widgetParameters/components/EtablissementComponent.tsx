@@ -1,40 +1,14 @@
 import { EmailIcon } from "@chakra-ui/icons"
-import {
-  Box,
-  Text,
-  Flex,
-  EditablePreview,
-  EditableInput,
-  Editable,
-  Button,
-  Grid,
-  Tag,
-  useToast,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Table,
-  Thead,
-  Th,
-  Tr,
-  Tbody,
-  Td,
-} from "@chakra-ui/react"
-import { createRef, useState, useEffect } from "react"
+import { Box, Button, Editable, EditableInput, EditablePreview, Flex, Grid, Tag, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import { createRef, useEffect, useState } from "react"
 
 import "react-dates/initialize"
 import "react-dates/lib/css/_datepicker.css"
 
 import { apiGet, apiPatch } from "@/utils/api.utils"
 
-import { dayjs, formatDate } from "../../../../../common/dayjs"
+import { dayjs } from "../../../../../common/dayjs"
 import { Disquette } from "../../../../../theme/components/icons"
-import { emailStatus } from "../constants/email"
 
 const EtablissementComponent = ({ id }: { id?: string }) => {
   const emailGestionnaireFocusRef = createRef()
@@ -42,7 +16,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
 
   const [etablissement, setEtablissement]: [any, (t: any) => void] = useState(undefined)
   const toast = useToast()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { onOpen } = useDisclosure()
 
   const fetchData = async () => {
     try {
@@ -175,40 +149,6 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
                 {dayjs(etablissement?.optout_invitation_date).format("DD/MM/YYYY")}
               </Tag>
             </Text>
-            <Modal isOpen={isOpen} onClose={onClose} size={"full"}>
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Détails des emails</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <Box>
-                    <Table variant="simple">
-                      <Thead>
-                        <Tr>
-                          <Th>Date</Th>
-                          <Th>Campagne</Th>
-                          <Th>Statut</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        {etablissement?.to_etablissement_emails.map((mail, i) => (
-                          <Tr key={i}>
-                            <Td>{formatDate(mail?.webhook_status_at) || formatDate(mail.email_sent_at)}</Td>
-                            <Td>{mail.campaign}</Td>
-                            <Td>{emailStatus[mail.status] || "Envoyé"}</Td>
-                          </Tr>
-                        ))}
-                      </Tbody>
-                    </Table>
-                  </Box>
-                </ModalBody>
-                <ModalFooter>
-                  <Button colorScheme="blue" mr={3} onClick={onClose}>
-                    Fermer
-                  </Button>
-                </ModalFooter>
-              </ModalContent>
-            </Modal>
           </Box>
         )}
         {etablissement?.optout_activation_date && (
