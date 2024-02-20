@@ -69,7 +69,9 @@ const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
 }
 
 const AjouterVoeuxForm = (props) => {
-  const { widget: isWidget } = useContext(WidgetContext)
+  const {
+    widget: { isWidget },
+  } = useContext(WidgetContext)
   const [inputJobItems, setInputJobItems] = useState([])
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()

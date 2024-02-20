@@ -26,7 +26,7 @@ import { buildLbaCompanyAddress } from "./lbacompany.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 
-const MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT = 3
+const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
 
 const publicUrl = config.publicUrl
@@ -140,7 +140,7 @@ export const sendApplication = async ({
         return { error: offreOrError.error }
       }
 
-      validationResult = await checkUserApplicationCount(newApplication.applicant_email.toLowerCase(), newApplication.company_siret)
+      validationResult = await checkUserApplicationCount(newApplication.applicant_email.toLowerCase(), newApplication)
       if (validationResult !== "ok") {
         return { error: validationResult }
       }
@@ -448,15 +448,15 @@ export const validatePermanentEmail = (email: string): string => {
 
 /**
  * @description checks if email's owner has not sent more than allowed count of applications per day
- * @param {string} applicantEmail
- * @return {Promise<string>}
  */
-const checkUserApplicationCount = async (applicantEmail: string, company_siret: string): Promise<string> => {
+const checkUserApplicationCount = async (applicantEmail: string, application: INewApplication): Promise<string> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
   const end = new Date()
   end.setHours(23, 59, 59, 999)
+
+  const { company_type: companyType, company_siret, job_id } = application
 
   let appCount = await Application.countDocuments({
     applicant_email: applicantEmail.toLowerCase(),
@@ -467,13 +467,30 @@ const checkUserApplicationCount = async (applicantEmail: string, company_siret: 
     return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY
   }
 
-  appCount = await Application.countDocuments({
-    applicant_email: applicantEmail.toLowerCase(),
-    company_siret,
-  })
-
-  if (appCount >= MAX_MESSAGES_PAR_SOCIETE_PAR_CANDIDAT) {
-    return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_COMPANY
+  if (companyType === "lba") {
+    if (!company_siret) {
+      throw new Error("expected a siret")
+    }
+    appCount = await Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      company_siret,
+    })
+    if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
+      return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
+    }
+  } else if (companyType === "matcha") {
+    if (!job_id) {
+      throw new Error("expected a job id")
+    }
+    appCount = await Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      job_id,
+    })
+    if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
+      return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
+    }
+  } else {
+    assertUnreachable(companyType)
   }
 
   return "ok"
