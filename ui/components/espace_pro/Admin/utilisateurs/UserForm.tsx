@@ -158,7 +158,6 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
     e.preventDefault()
     if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
       const result = (await apiDelete("/admin/users/:userId", { params: { userId: user._id as string }, querystring: {} })) as any
-      console.log(result)
       if (result?.ok) {
         toast({
           title: "Utilisateur supprimé",

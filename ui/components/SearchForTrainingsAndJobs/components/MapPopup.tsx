@@ -77,7 +77,7 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
       }
     } catch (err) {
       logError(`Popup error ${type}`, err)
-      console.log("Erreur de format des éléments emplois : ", type, item)
+      console.error("Erreur de format des éléments emplois : ", type, item)
       return (
         <ErrorMessage
           message={

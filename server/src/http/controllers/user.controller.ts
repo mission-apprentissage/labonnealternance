@@ -210,6 +210,23 @@ export default (server: Server) => {
     }
   )
 
+  server.get(
+    "/user/status/:userId/by-token",
+    {
+      schema: zRoutes.get["/user/status/:userId/by-token"],
+      onRequest: [server.auth(zRoutes.get["/user/status/:userId/by-token"])],
+    },
+    async (req, res) => {
+      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+
+      if (!user) throw Boom.notFound("User not found")
+      const status_current = getUserStatus(user.status)
+      if (!status_current) throw Boom.internal("User doesn't have status")
+
+      return res.status(200).send({ status_current })
+    }
+  )
+
   server.put(
     "/user/:userId",
     {

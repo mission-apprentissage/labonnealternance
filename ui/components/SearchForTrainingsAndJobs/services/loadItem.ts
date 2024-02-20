@@ -164,7 +164,7 @@ export const loadItem = async ({
     }
     setCurrentPage("fiche")
   } catch (err) {
-    console.log(`Erreur interne lors du chargement d'un élément (${err.response ? err.response.status : ""} : ${err?.response?.data ? err.response.data.error : ""})`)
+    console.error(`Erreur interne lors du chargement d'un élément (${err.response ? err.response.status : ""} : ${err?.response?.data ? err.response.data.error : ""})`)
     logError("Training search error", err)
     setTrainingSearchError(trainingErrorText)
   }

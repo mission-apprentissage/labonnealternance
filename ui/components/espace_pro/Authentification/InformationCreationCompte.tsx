@@ -173,7 +173,7 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
             // Dépot simplifié
             router.push({
               pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
-              query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id.toString() },
+              query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id.toString(), token: data.token },
             })
           } else {
             router.push({
