@@ -4,7 +4,6 @@ import { zRoutes } from "shared/index"
 import config from "@/config"
 import { processApplicationWebhookEvent, processHardBounceWebhookEvent } from "@/services/application.service"
 import { processAppointmentToApplicantWebhookEvent, processAppointmentToCfaWebhookEvent } from "@/services/appointment.service"
-import { processEstablishmentWebhookEvent } from "@/services/etablissement.service"
 
 import { Server } from "../server"
 
@@ -16,9 +15,6 @@ const processWebhookEvent = async (payload) => {
   if (!shouldContinue) return
 
   shouldContinue = await processAppointmentToApplicantWebhookEvent(payload)
-  if (!shouldContinue) return
-
-  shouldContinue = await processEstablishmentWebhookEvent(payload)
   if (!shouldContinue) return
 
   await processHardBounceWebhookEvent(payload)
