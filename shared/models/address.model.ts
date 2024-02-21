@@ -43,12 +43,12 @@ const ZGeoJson = z
 
 const ZAcheminementPostal = z
   .object({
-    l1: z.string(), // raison_social | enseigne
-    l2: z.string(),
-    l3: z.string(), // lieu dit
-    l4: z.string(), // numéro et rue
-    l5: z.string(),
-    l6: z.string(), // code postal et ville
+    l1: z.string().nullish(), // raison_social | enseigne
+    l2: z.string().nullish(),
+    l3: z.string().nullish(), // lieu dit
+    l4: z.string().nullish(), // numéro et rue
+    l5: z.string().nullish(),
+    l6: z.string().nullish(), // code postal et ville
     l7: z.string(), // pays
   })
   .strict()
