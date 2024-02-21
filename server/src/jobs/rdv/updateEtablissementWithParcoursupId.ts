@@ -19,7 +19,7 @@ const getParcoursupId = async () => {
 
   const countAfterUpdate = await EligibleTrainingsForAppointment.countDocuments({ parcoursup_id: { $eq: null } })
 
-  console.log({ before: countBeforeUpdate, after: countAfterUpdate, updated: countBeforeUpdate - countAfterUpdate, totalME: formations.length })
+  console.info({ before: countBeforeUpdate, after: countAfterUpdate, updated: countBeforeUpdate - countAfterUpdate, totalME: formations.length })
 }
 
 runScript(async () => await getParcoursupId())

@@ -109,5 +109,12 @@ export const FlowCreationEntreprise = {
       cy.get("button").contains("Retour à l'accueil").click()
       cy.url().should("equal", Cypress.env("ui") + "/acces-recruteur")
     },
+    getJobId() {
+      return cy.url().then((url) => {
+        const jobJson = new URLSearchParams(url.substring(url.indexOf("?"))).get("job")
+        const job = JSON.parse(jobJson)
+        return job._id
+      })
+    },
   },
 }

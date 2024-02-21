@@ -400,6 +400,18 @@ program
   .action(createJobAction("etablissements:formations:sync"))
 
 program
+  .command("sync-etablissements-and-formations-inverted")
+  .description("Resynchronise les referrers en partant de la table ETFA")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("etablissements:formations:inverted:sync"))
+
+program
+  .command("sync-etablissements-dates")
+  .description("Resynchronise les dates de la collection Etablissement par siret gestionnaire")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("sync:etablissement:dates"))
+
+program
   .command("sync-etablissements-and-formations-affelnet")
   .description("Récupère la liste de toutes les formations du Catalogue ME du scope AFFELNET et les enregistre.")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -427,6 +439,12 @@ program
   .description("Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:onisep:import"))
+
+program
+  .command("remove:duplicate:etablissements")
+  .description("Supprime les doublon de la collection Etablissements généré par le script de synchronisation (lié au parallélisme)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("remove:duplicates:etablissements"))
 
 /**
  *

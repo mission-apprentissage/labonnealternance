@@ -26,9 +26,9 @@ const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 export const getPeApiReferentiels = async (referentiel: string) => {
   try {
     const referentiels = await getPeReferentiels(referentiel)
-    console.log(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
+    console.info(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
   } catch (error) {
-    console.log("error getReferentiel ", error)
+    console.error("error getReferentiel ", error)
   }
 }
 
@@ -237,7 +237,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
     peResponse = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
 
     if ("status" in peResponse && peResponse.status === 429) {
-      console.log("PE jobs api quota exceeded. Retrying : ", trys + 1)
+      console.warn("PE jobs api quota exceeded. Retrying : ", trys + 1)
       // trois essais pour gérer les 429 quotas exceeded des apis PE.
       trys++
       await setTimeout(1000, "result")

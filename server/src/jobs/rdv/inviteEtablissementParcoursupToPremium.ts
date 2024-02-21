@@ -3,16 +3,22 @@ import { isValidEmail } from "@/common/utils/isValidEmail"
 import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { mailType } from "../../common/model/constants/etablissement"
 import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
 
-/**
- * @description Invite all "etablissements" to Parcoursup Premium.
- * @returns {Promise<void>}
- */
+interface IEtablissementsToInviteToPremium {
+  _id: {
+    gestionnaire_siret: string
+  }
+  id: string
+  gestionnaire_email: string
+  optout_activation_scheduled_date: string
+  count: number
+}
+
 export const inviteEtablissementParcoursupToPremium = async () => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
@@ -22,34 +28,54 @@ export const inviteEtablissementParcoursupToPremium = async () => {
   const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
   const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
   if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not between the 08/01 and the 31/08 (eligible period).")
+    logger.info("Stopped because we are not within the eligible period.")
     return
   }
 
-  const etablissementsToInvite = await Etablissement.find({
-    gestionnaire_email: {
-      $ne: null,
+  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await Etablissement.aggregate([
+    {
+      $match: {
+        gestionnaire_email: {
+          $ne: null,
+        },
+        premium_activation_date: null,
+        premium_invitation_date: null,
+      },
     },
-    premium_activation_date: null,
-    premium_invitation_date: null,
-  }).lean()
+    {
+      $group: {
+        _id: {
+          gestionnaire_siret: "$gestionnaire_siret",
+        },
+        id: { $first: "$_id" },
+        optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
+        gestionnaire_email: { $first: "$gestionnaire_email" },
+        count: { $sum: 1 },
+      },
+    },
+  ])
 
-  logger.info("Cron #inviteEtablissementToPremium / Etablissement: ", etablissementsToInvite.length)
+  let count = 0
 
-  for (const etablissement of etablissementsToInvite) {
+  logger.info("Cron #inviteEtablissementToPremium / Etablissement: ", etablissementsToInviteToPremium.length)
+
+  for (const etablissement of etablissementsToInviteToPremium) {
     // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
     const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
-      etablissement_gestionnaire_siret: etablissement.gestionnaire_siret,
+      etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
       lieu_formation_email: { $ne: null },
       parcoursup_id: { $ne: null },
+      parcoursup_statut: "publié",
     }).lean()
 
-    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement.gestionnaire_siret || !etablissement.gestionnaire_email) {
+    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret || !etablissement.gestionnaire_email) {
       continue
     }
 
+    count++
+
     // Invite all etablissements only in production environment
-    const { messageId } = await mailer.sendEmail({
+    await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Parcoursup !`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite.mjml.ejs"),
@@ -61,24 +87,21 @@ export const inviteEtablissementParcoursupToPremium = async () => {
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
-          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
-          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement.gestionnaire_siret, etablissement._id.toString()),
+          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
+          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
       },
     })
 
-    await Etablissement.findByIdAndUpdate(etablissement._id, {
-      premium_invitation_date: dayjs().toDate(),
-      $push: {
-        to_etablissement_emails: {
-          campaign: mailType.PREMIUM_INVITE,
-          status: null,
-          message_id: messageId,
-          email_sent_at: dayjs().toDate(),
-        },
-      },
-    })
+    await Etablissement.updateMany(
+      { gestionnaire_siret: etablissement._id.gestionnaire_siret },
+      {
+        premium_invitation_date: dayjs().toDate(),
+      }
+    )
   }
+
+  await notifyToSlack({ subject: "RDVA - INVITATION PARCOURSUP", message: `${count} invitation(s) envoyé` })
 
   logger.info("Cron #inviteEtablissementToPremium done.")
 }

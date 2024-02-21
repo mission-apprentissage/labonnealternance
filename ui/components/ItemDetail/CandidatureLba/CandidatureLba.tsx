@@ -97,6 +97,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
                   }}
                   onClick={openApplicationForm}
                   aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
+                  data-testid="postuler-button"
                 >
                   J&apos;envoie ma candidature{with_str(kind).amongst(["lbb", "lba"]) ? " spontanée" : ""}
                 </Button>

@@ -37,11 +37,10 @@ const Text = {
 
     editorialContentH2: {
       color: "grey.750",
-      fontSize: "18px",
+      fontSize: "24px",
       fontWeight: 700,
       lineHeight: "22px",
-      marginBottom: "2.5rem",
-      marginTop: "2.5rem",
+      marginBottom: "1.5rem",
       textAlign: "left",
     },
 

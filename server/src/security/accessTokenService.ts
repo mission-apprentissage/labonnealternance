@@ -172,6 +172,14 @@ export function getAccessTokenScope<Schema extends SchemaWithSecurity>(
   )
 }
 
+const authorizedPaths = [
+  "/etablissement/validation",
+  "/formulaire/:establishment_id/by-token",
+  "/formulaire/:establishment_id/offre/by-token",
+  "/formulaire/offre/:jobId/delegation/by-token",
+  "/user/status/:userId/by-token",
+]
+
 export async function parseAccessToken<Schema extends SchemaWithSecurity>(
   accessToken: string,
   schema: Schema,
@@ -190,7 +198,7 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
 
     const userStatus = controlUserState(user?.status)
 
-    if (userStatus.error && schema.path !== "/etablissement/validation") {
+    if (userStatus.error && !authorizedPaths.includes(schema.path)) {
       throw Boom.forbidden()
     }
   }
