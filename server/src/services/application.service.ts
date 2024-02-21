@@ -27,6 +27,7 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
+const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
 const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
 
 const publicUrl = config.publicUrl
@@ -456,7 +457,7 @@ const checkUserApplicationCount = async (applicantEmail: string, application: IN
   const end = new Date()
   end.setHours(23, 59, 59, 999)
 
-  const { company_type: companyType, company_siret, job_id } = application
+  const { company_type: companyType, company_siret, job_id, caller } = application
 
   let appCount = await Application.countDocuments({
     applicant_email: applicantEmail.toLowerCase(),
@@ -491,6 +492,17 @@ const checkUserApplicationCount = async (applicantEmail: string, application: IN
     }
   } else {
     assertUnreachable(companyType)
+  }
+
+  if (caller) {
+    appCount = await Application.countDocuments({
+      caller: caller.toLowerCase(),
+      company_siret,
+      created_at: { $gte: start, $lt: end },
+    })
+    if (appCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
+      return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET
+    }
   }
 
   return "ok"
