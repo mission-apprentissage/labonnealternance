@@ -127,7 +127,7 @@ export const searchForJobsFunction = async ({
 
     setJobMarkers({ jobList: factorJobsForMap(results), searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
-    console.log(
+    console.error(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${
         err.response && err.response.data ? err.response.data.error : err.message
       })`

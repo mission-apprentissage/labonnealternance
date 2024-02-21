@@ -78,5 +78,5 @@ export async function create({ description }: { description: string }) {
 ${content.replaceAll("async (db, client)", "async (db: Db)").replace(/\nexport const down =[\s\S]+/, "")}`
 
   await writeFile(file, newContent, { encoding: "utf-8" })
-  console.log("Created:", fileName)
+  console.info("Created:", fileName)
 }

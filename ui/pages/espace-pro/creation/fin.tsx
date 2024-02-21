@@ -10,7 +10,7 @@ import { AuthentificationLayout, LoadingEmptySpace } from "../../../components/e
 import { WidgetContext } from "../../../context/contextWidget"
 import { InfoCircle } from "../../../theme/components/icons"
 import { MailCloud } from "../../../theme/components/logos"
-import { getUserStatus, sendValidationLink } from "../../../utils/api"
+import { getUserStatus, getUserStatusByToken, sendValidationLink } from "../../../utils/api"
 
 function parseQueryString(value: string | string[]): string {
   return Array.isArray(value) ? value[0] : value
@@ -24,6 +24,7 @@ const ZComponentProps = z
     fromDashboard: z.enum(["true", "false"]).transform((value) => value === "true"),
     userId: z.union([z.string(), zObjectId]),
     establishment_id: z.string(),
+    token: z.string().optional(),
   })
   .strict()
 
@@ -56,7 +57,7 @@ function FinComponent(props: ComponentProps) {
 
   const { widget } = useContext(WidgetContext)
 
-  const { job: jobString, email, withDelegation, fromDashboard, userId, establishment_id } = props
+  const { job: jobString, email, withDelegation, fromDashboard, userId, establishment_id, token } = props
 
   const job = JSON.parse(parseQueryString(jobString) ?? "{}")
 
@@ -64,7 +65,7 @@ function FinComponent(props: ComponentProps) {
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isFetched } = useQuery("userdetail", () => getUserStatus(userId.toString()), {
+  const { isFetched } = useQuery("userdetail", () => (token ? getUserStatusByToken(userId.toString(), token) : getUserStatus(userId.toString())), {
     enabled: Boolean(userId),
     onSettled: (data) => {
       if (data?.status_current === "ERROR") {
