@@ -1,6 +1,7 @@
-import { Box, Container, Divider, SimpleGrid, Text } from "@chakra-ui/react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Checkbox, Container, Divider, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { NotionRenderer } from "react-notion-x"
 
 import Breadcrumb from "../components/breadcrumb"
@@ -18,8 +19,50 @@ export async function getStaticProps() {
     },
   }
 }
+const getCookie = (cookieName) => {
+  var cookiePattern = new RegExp("(^|;)[ ]*" + cookieName + "=([^;]*)"),
+    cookieMatch = cookiePattern.exec(document.cookie)
+  return cookieMatch ? window.decodeURIComponent(cookieMatch[2]) : 0
+}
+const setCookie = (cookieName, value, msToExpire) => {
+  const expiryDate = new Date()
+  expiryDate.setTime(new Date().getTime() + msToExpire)
+  document.cookie = cookieName + "=" + window.encodeURIComponent(value) + (msToExpire ? ";expires=" + expiryDate.toString() : "") + ";path=/;domain=;SameSite=Lax"
+}
+
+const CONSENT_REMOVED_COOKIE_NAME = "mtm_consent_removed"
+const CONSENT_COOKIE_NAME = "mtm_consent"
 
 const PolitiqueDeConfidentialite = ({ recordMap }) => {
+  useEffect(() => {
+    const consentCookie = getCookie(CONSENT_COOKIE_NAME)
+    const removedCookie = getCookie(CONSENT_REMOVED_COOKIE_NAME)
+
+    if (removedCookie) {
+      setHasConsent(false)
+      if (consentCookie) {
+        setCookie(CONSENT_COOKIE_NAME, "", -129600000)
+      }
+    }
+  }, [])
+
+  const [hasConsent, setHasConsent] = useState(true)
+
+  const changeMatomoOptout = ({ checked }) => {
+    if (checked) {
+      setCookie(CONSENT_REMOVED_COOKIE_NAME, "", -129600000)
+      setCookie(CONSENT_COOKIE_NAME, new Date().getTime(), 946080000000)
+      // @ts-expect-error
+      window?._paq?.push(["forgetUserOptOut"])
+    } else {
+      setCookie(CONSENT_COOKIE_NAME, "", -129600000)
+      setCookie(CONSENT_REMOVED_COOKIE_NAME, new Date().getTime(), 946080000000)
+      // @ts-expect-error
+      window?._paq?.push(["optUserOut"])
+    }
+    setHasConsent(checked)
+  }
+
   return (
     <Box>
       <NextSeo
@@ -42,7 +85,39 @@ const PolitiqueDeConfidentialite = ({ recordMap }) => {
             </Box>
             <Divider variant="pageTitleDivider" my={12} />
           </Box>
-          <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} className="disable-chakra" />
+          <Box>
+            <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} className="disable-chakra" />
+            <Box>
+              La bonne alternance utilise la solution de mesure d'audience{" "}
+              <Link href="https://matomo.org/" isExternal variant="basicUnderlinedBlue">
+                Matomo <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>{" "}
+              en l'ayant configuré en mode « exempté », conformément aux{" "}
+              <Link href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience" isExternal variant="basicUnderlinedBlue">
+                recommandations de la CNIL
+                <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>
+              . Elle ne nécessite donc pas le consentement des personnes concernées. Vous pouvez malgré tout vous opposer au suivi de votre navigation, en décochant la case
+              ci-dessous.
+              <Checkbox
+                mt={3}
+                onChange={(event) =>
+                  changeMatomoOptout({
+                    checked: event.target.checked,
+                  })
+                }
+                isChecked={hasConsent}
+              >
+                <Text as="strong">Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.</Text>
+              </Checkbox>
+              {!hasConsent && (
+                <Text mt={3}>
+                  Note : si vous nettoyez vos cookies et supprimez le cookie d'exclusion, ou bien si vous changez d'ordinateur et/ou de navigateur, il vous faudra de nouveau
+                  effectuer la procédure d'exclusion.
+                </Text>
+              )}
+            </Box>
+          </Box>
         </SimpleGrid>
       </Container>
       <Footer />
