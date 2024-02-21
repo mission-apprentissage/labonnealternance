@@ -42,7 +42,7 @@ const sendingStateValues = {
     dataTestId: "CandidatureSpontaneeFailedTooManyApplicationsPerCompany",
   },
   [BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET]: {
-    title: "Vous avez atteint le quota maximum de candidature pour ce SIRET.",
+    title: "Vous avez atteint le quota maximum de candidatures pour ce SIRET.",
     text: "Vous pourrez en envoyer de nouveau demain",
     dataTestId: "CandidatureSpontaneeFailedTooManyApplicationsPerCompanyPerCaller",
   },
