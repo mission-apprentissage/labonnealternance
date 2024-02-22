@@ -10,19 +10,19 @@ import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
 
 import { logger } from "../../common/logger.js"
 import { Appointment, User, UserRecruteur } from "../../common/model/index.js"
-import { cfaRepository } from "../../common/model/schema/multiCompte/cfa.schema.js"
-import { entrepriseRepository } from "../../common/model/schema/multiCompte/entreprise.schema.js"
-import { roleManagementRepository } from "../../common/model/schema/multiCompte/roleManagement.schema.js"
-import { user2Repository } from "../../common/model/schema/multiCompte/user2.schema.js"
+import { Cfa } from "../../common/model/schema/multiCompte/cfa.schema.js"
+import { Entreprise } from "../../common/model/schema/multiCompte/entreprise.schema.js"
+import { RoleManagement } from "../../common/model/schema/multiCompte/roleManagement.schema.js"
+import { User2 } from "../../common/model/schema/multiCompte/user2.schema.js"
 import { asyncForEachGrouped } from "../../common/utils/asyncUtils.js"
 import { parseEnumOrError } from "../../common/utils/enumUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 export const migrationUsers = async () => {
-  await user2Repository.deleteMany({})
-  await entrepriseRepository.deleteMany({})
-  await cfaRepository.deleteMany({})
-  await roleManagementRepository.deleteMany({})
+  await User2.deleteMany({})
+  await Entreprise.deleteMany({})
+  await Cfa.deleteMany({})
+  await RoleManagement.deleteMany({})
   const now = new Date()
   await migrationRecruteurs()
   await migrationCandidats(now)
@@ -92,7 +92,7 @@ const migrationRecruteurs = async () => {
         origin,
         status: newStatus,
       }
-      await user2Repository.create(newUser)
+      await User2.create(newUser)
       stats.userCreated++
       if (type === ENTREPRISE) {
         if (!establishment_siret) {
@@ -113,7 +113,7 @@ const migrationRecruteurs = async () => {
           createdAt,
           updatedAt,
         }
-        const createdEntreprise = await entrepriseRepository.create(entreprise)
+        const createdEntreprise = await Entreprise.create(entreprise)
         stats.entrepriseCreated++
         const roleManagement: Omit<IRoleManagement, "_id"> = {
           user_id: userRecruteur._id,
@@ -124,7 +124,7 @@ const migrationRecruteurs = async () => {
           origin,
           status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
-        await roleManagementRepository.create(roleManagement)
+        await RoleManagement.create(roleManagement)
       } else if (type === "CFA") {
         if (!establishment_siret) {
           throw new Error("inattendu pour un CFA: pas de establishment_siret")
@@ -141,7 +141,7 @@ const migrationRecruteurs = async () => {
           createdAt,
           updatedAt,
         }
-        const createdCfa = await cfaRepository.create(cfa)
+        const createdCfa = await Cfa.create(cfa)
         stats.cfaCreated++
         const roleManagement: Omit<IRoleManagement, "_id"> = {
           user_id: userRecruteur._id,
@@ -152,7 +152,7 @@ const migrationRecruteurs = async () => {
           origin,
           status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
-        await roleManagementRepository.create(roleManagement)
+        await RoleManagement.create(roleManagement)
       } else if (type === "ADMIN") {
         const roleManagement: Omit<IRoleManagement, "_id"> = {
           user_id: userRecruteur._id,
@@ -163,7 +163,7 @@ const migrationRecruteurs = async () => {
           origin,
           status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
-        await roleManagementRepository.create(roleManagement)
+        await RoleManagement.create(roleManagement)
         stats.adminAccess++
       } else if (type === "OPCO") {
         const opco = parseEnumOrError(OPCOS, scope ?? null)
@@ -176,7 +176,7 @@ const migrationRecruteurs = async () => {
           origin,
           status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
-        await roleManagementRepository.create(roleManagement)
+        await RoleManagement.create(roleManagement)
         stats.opcoAccess++
       }
       stats.success++
@@ -218,11 +218,11 @@ const migrationCandidats = async (now: Date) => {
       if (type) {
         await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_type: parseEnumOrError(AppointmentUserType, type) } })
       }
-      const existingUser = await user2Repository.findOne({ email })
+      const existingUser = await User2.findOne({ email })
       if (existingUser) {
         await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_id: existingUser._id } })
         if (dayjs(candidat.last_action_date).isAfter(existingUser.last_action_date)) {
-          await user2Repository.updateOne({ _id: existingUser._id }, { last_action_date: candidat.last_action_date })
+          await User2.updateOne({ _id: existingUser._id }, { last_action_date: candidat.last_action_date })
         }
         stats.alreadyExist++
         return
@@ -246,7 +246,7 @@ const migrationCandidats = async (now: Date) => {
           },
         ],
       }
-      await user2Repository.create(newUser)
+      await User2.create(newUser)
       stats.success++
     } catch (err) {
       logger.error(`erreur lors de l'import du user candidat avec id=${_id}`)

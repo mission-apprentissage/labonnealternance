@@ -55,4 +55,4 @@ const entrepriseSchema = new Schema<IEntreprise>(
   }
 )
 
-export const entrepriseRepository = buildMongooseModel(entrepriseSchema, "entreprise")
+export const Entreprise = buildMongooseModel(entrepriseSchema, "entreprise")

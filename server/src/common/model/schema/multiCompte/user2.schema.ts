@@ -76,4 +76,4 @@ const User2Schema = new Schema<IUser2>(
   }
 )
 
-export const user2Repository = buildMongooseModel(User2Schema, "user2")
+export const User2 = buildMongooseModel(User2Schema, "user2")

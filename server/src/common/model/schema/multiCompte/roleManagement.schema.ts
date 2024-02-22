@@ -64,4 +64,4 @@ const roleManagementSchema = new Schema<IRoleManagement>(
   }
 )
 
-export const roleManagementRepository = buildMongooseModel(roleManagementSchema, "roleManagement")
+export const RoleManagement = buildMongooseModel(roleManagementSchema, "roleManagement")

@@ -43,4 +43,4 @@ const cfaSchema = new Schema<ICFA>(
   }
 )
 
-export const cfaRepository = buildMongooseModel(cfaSchema, "cfa")
+export const Cfa = buildMongooseModel(cfaSchema, "cfa")
