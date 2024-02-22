@@ -6,15 +6,19 @@ import { buildMongooseModel } from "./buildMongooseModel.js"
 
 const cfaSchema = new Schema<ICFA>(
   {
-    establishment_siret: {
+    origin: {
+      type: String,
+      description: "Origine de la creation (ex: Campagne mail, lien web, etc...) pour suivi",
+    },
+    siret: {
       type: String,
       description: "Siret de l'établissement",
     },
-    establishment_raison_sociale: {
+    raison_sociale: {
       type: String,
       description: "Raison social de l'établissement",
     },
-    establishment_enseigne: {
+    enseigne: {
       type: String,
       default: null,
       description: "Enseigne de l'établissement",
@@ -31,10 +35,6 @@ const cfaSchema = new Schema<ICFA>(
       type: String,
       default: null,
       description: "Latitude/Longitude de l'adresse de l'entreprise",
-    },
-    origin: {
-      type: String,
-      description: "Origine de la creation (ex: Campagne mail, lien web, etc...) pour suivi",
     },
   },
   {

@@ -98,9 +98,6 @@ const migrationRecruteurs = async () => {
         if (!establishment_siret) {
           throw new Error("inattendu pour une ENTERPRISE: pas de establishment_siret")
         }
-        if (!address_detail) {
-          throw new Error("inattendu pour une ENTERPRISE: pas de address_detail")
-        }
         const entreprise: IEntreprise = {
           _id: userRecruteur._id,
           origin,
@@ -134,11 +131,11 @@ const migrationRecruteurs = async () => {
         }
         const cfa: ICFA = {
           _id: userRecruteur._id,
-          establishment_siret,
+          siret: establishment_siret,
           address,
           address_detail,
-          establishment_enseigne,
-          establishment_raison_sociale,
+          enseigne: establishment_enseigne,
+          raison_sociale: establishment_raison_sociale,
           geo_coordinates,
           origin,
           createdAt,

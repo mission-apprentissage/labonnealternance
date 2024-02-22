@@ -15,7 +15,7 @@ const roleManagementEventSchema = new Schema<IRoleManagementEvent>(
     status: {
       type: String,
       enum: Object.values(AccessStatus),
-      description: "Statut de l'utilisateur",
+      description: "Statut de l'accès",
     },
     reason: {
       type: String,
@@ -37,31 +37,26 @@ const roleManagementEventSchema = new Schema<IRoleManagementEvent>(
 
 const roleManagementSchema = new Schema<IRoleManagement>(
   {
-    accessor_id: {
+    origin: {
       type: String,
-      description: "ID de l'entité ayant accès",
+      description: "Origine de la creation",
     },
-    accessor_type: {
-      type: String,
-      enum: Object.values(AccessEntityType),
-      description: "Type de l'entité ayant accès",
+    status: {
+      type: [roleManagementEventSchema],
+      description: "Evénements liés au cycle de vie de l'accès",
     },
-    accessed_id: {
+    authorized_id: {
       type: String,
       description: "ID de l'entité sur laquelle l'accès est exercé",
     },
-    accessed_type: {
+    authorized_type: {
       type: String,
       enum: Object.values(AccessEntityType),
       description: "Type de l'entité sur laquelle l'accès est exercé",
     },
-    history: {
-      type: [roleManagementEventSchema],
-      description: "Evénements liés au cycle de vie de l'accès",
-    },
-    origin: {
+    user_id: {
       type: String,
-      description: "Origine de la creation",
+      description: "ID de l'utilisateur ayant accès",
     },
   },
   {
