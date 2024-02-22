@@ -11,7 +11,7 @@ export const asyncForEachGrouped = async <T>(array: T[], groupSize: number, call
   }
 }
 
-export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export function timeout(promise, millis) {
   let timeout: NodeJS.Timeout | null = null

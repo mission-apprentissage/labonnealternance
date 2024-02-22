@@ -1,5 +1,7 @@
 import dayjs from "dayjs"
 import { AppointmentUserType } from "shared/constants/appointment.js"
+import { EApplicantRole } from "shared/constants/rdva.js"
+import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
 import { ICFA } from "shared/models/cfa.model.js"
 import { IEntreprise } from "shared/models/entreprise.model.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
@@ -15,71 +17,15 @@ import { user2Repository } from "../../common/model/schema/multiCompte/user2.sch
 import { asyncForEachGrouped } from "../../common/utils/asyncUtils.js"
 import { parseEnumOrError } from "../../common/utils/enumUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "../../services/constant.service.js"
 
-const migrationCandidats = async (now: Date) => {
-  logger.info(`Migration: lecture des user candidats...`)
-
-  // l'utilisateur admin n'est pas repris
-  const candidats = await User.find({ role: "candidat" })
-  logger.info(`Migration: ${candidats.length} user candidats à mettre à jour`)
-  const stats = { success: 0, failure: 0, alreadyExist: 0 }
-
-  await asyncForEachGrouped(candidats, 100, async (candidat, index) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { username, password, firstname, lastname, phone, email, role, type, last_action_date, is_anonymized, _id } = candidat
-    index % 1000 === 0 && logger.info(`import du candidat n°${index}`)
-    try {
-      if (type) {
-        await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_user_type: parseEnumOrError(AppointmentUserType, type) } })
-      }
-      const existingUser = await user2Repository.findOne({ email })
-      if (existingUser) {
-        await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_id: existingUser._id } })
-        if (dayjs(candidat.last_action_date).isAfter(existingUser.last_connection)) {
-          await user2Repository.updateOne({ _id: existingUser._id }, { last_connection: candidat.last_action_date })
-        }
-        stats.alreadyExist++
-        return
-      }
-      const newUser: Omit<IUser2, "id"> = {
-        firstname,
-        lastname,
-        phone,
-        email,
-        last_connection: last_action_date,
-        is_anonymized: is_anonymized,
-        createdAt: last_action_date,
-        updatedAt: last_action_date,
-        origin: "migration user candidat",
-        history: [
-          {
-            date: now,
-            reason: "migration",
-            status: is_anonymized ? UserEventType.DESACTIVE : UserEventType.ACTIF,
-            validation_type: VALIDATION_UTILISATEUR.AUTO,
-          },
-        ],
-      }
-      await user2Repository.create({ ...newUser, _id: candidat._id })
-      stats.success++
-    } catch (err) {
-      logger.error(`erreur lors de l'import du user candidat avec id=${_id}`)
-      logger.error(err)
-      stats.failure++
-    }
-  })
-  logger.info(`Migration: user candidats terminés`)
-  const message = `${stats.success} user candidats repris avec succès.
-  ${stats.failure} user candidats en erreur.
-  ${stats.alreadyExist} users en doublon.`
-  logger.info(message)
-  await notifyToSlack({
-    subject: "Migration multi-compte",
-    message,
-    error: stats.failure > 0,
-  })
-  return stats
+export const migrationUsers = async () => {
+  await user2Repository.deleteMany({})
+  await entrepriseRepository.deleteMany({})
+  await cfaRepository.deleteMany({})
+  await roleManagementRepository.deleteMany({})
+  const now = new Date()
+  await migrationRecruteurs()
+  await migrationCandidats(now)
 }
 
 const migrationRecruteurs = async () => {
@@ -263,6 +209,71 @@ const migrationRecruteurs = async () => {
   return stats
 }
 
+const migrationCandidats = async (now: Date) => {
+  logger.info(`Migration: lecture des user candidats...`)
+
+  // l'utilisateur admin n'est pas repris
+  const candidats = await User.find({ role: EApplicantRole.CANDIDAT })
+  logger.info(`Migration: ${candidats.length} user candidats à mettre à jour`)
+  const stats = { success: 0, failure: 0, alreadyExist: 0 }
+
+  await asyncForEachGrouped(candidats, 100, async (candidat, index) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { firstname, lastname, phone, email, role, type, last_action_date, is_anonymized, _id } = candidat
+    index % 1000 === 0 && logger.info(`import du candidat n°${index}`)
+    try {
+      if (type) {
+        await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_user_type: parseEnumOrError(AppointmentUserType, type) } })
+      }
+      const existingUser = await user2Repository.findOne({ email })
+      if (existingUser) {
+        await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_id: existingUser._id } })
+        if (dayjs(candidat.last_action_date).isAfter(existingUser.last_connection)) {
+          await user2Repository.updateOne({ _id: existingUser._id }, { last_connection: candidat.last_action_date })
+        }
+        stats.alreadyExist++
+        return
+      }
+      const newUser: Omit<IUser2, "id"> = {
+        firstname,
+        lastname,
+        phone,
+        email,
+        last_connection: last_action_date,
+        is_anonymized: is_anonymized,
+        createdAt: last_action_date,
+        updatedAt: last_action_date,
+        origin: "migration user candidat",
+        history: [
+          {
+            date: now,
+            reason: "migration",
+            status: is_anonymized ? UserEventType.DESACTIVE : UserEventType.ACTIF,
+            validation_type: VALIDATION_UTILISATEUR.AUTO,
+          },
+        ],
+      }
+      await user2Repository.create({ ...newUser, _id: candidat._id })
+      stats.success++
+    } catch (err) {
+      logger.error(`erreur lors de l'import du user candidat avec id=${_id}`)
+      logger.error(err)
+      stats.failure++
+    }
+  })
+  logger.info(`Migration: user candidats terminés`)
+  const message = `${stats.success} user candidats repris avec succès.
+  ${stats.failure} user candidats en erreur.
+  ${stats.alreadyExist} users en doublon.`
+  logger.info(message)
+  await notifyToSlack({
+    subject: "Migration multi-compte",
+    message,
+    error: stats.failure > 0,
+  })
+  return stats
+}
+
 function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["status"]): IRoleManagementEvent[] {
   return allStatus.flatMap((statusEvent) => {
     const { date, reason, status, user, validation_type } = statusEvent
@@ -286,14 +297,4 @@ function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["st
       return []
     }
   })
-}
-
-export const migrationUsers = async () => {
-  await user2Repository.deleteMany({})
-  await entrepriseRepository.deleteMany({})
-  await cfaRepository.deleteMany({})
-  await roleManagementRepository.deleteMany({})
-  const now = new Date()
-  await migrationRecruteurs()
-  await migrationCandidats(now)
 }
