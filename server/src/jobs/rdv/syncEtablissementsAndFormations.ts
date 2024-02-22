@@ -3,9 +3,8 @@ import { referrers } from "shared/constants/referers"
 
 import { logger } from "../../common/logger"
 import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
-import { findFirstNonBlacklistedEmail, getMostFrequentEmailByLieuFormationSiret } from "../../services/formation.service"
+import { create, findOne, getEmailForRdv, updateParameter } from "../../services/eligibleTrainingsForAppointment.service"
+import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
 const hasDateProperty = (etablissements, propertyName) => {
   return etablissements.some((etab) => etab[propertyName] !== null && etab[propertyName] !== undefined)
@@ -25,10 +24,9 @@ export const syncEtablissementsAndFormations = async () => {
     writeData(
       async (formation) => {
         const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
-          eligibleTrainingsForAppointmentService
-            .findOne({
-              cle_ministere_educatif: formation.cle_ministere_educatif,
-            })
+          findOne({
+            cle_ministere_educatif: formation.cle_ministere_educatif,
+          })
             .select({ lieu_formation_email: 1, is_lieu_formation_email_customized: 1 })
             .lean(),
           Etablissement.find({
@@ -75,14 +73,14 @@ export const syncEtablissementsAndFormations = async () => {
 
           // Don't override "email" if this field is true
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
-            emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
+            emailRdv = await getEmailForRdv({
               email: formation.email,
               etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
               etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             })
           }
 
-          await eligibleTrainingsForAppointmentService.updateParameter(eligibleTrainingsForAppointment._id, {
+          await updateParameter(eligibleTrainingsForAppointment._id, {
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
@@ -113,7 +111,7 @@ export const syncEtablissementsAndFormations = async () => {
           // if no email, don't create the record
           if (!emailRdv) return
 
-          await eligibleTrainingsForAppointmentService.create({
+          await create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
@@ -139,7 +137,10 @@ export const syncEtablissementsAndFormations = async () => {
         }
 
         if (!gestionnaireEmail) {
-          gestionnaireEmail = formation.etablissement_gestionnaire_courriel ?? (await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_gestionnaire_siret))
+          gestionnaireEmail = await getEmailForRdv(
+            { etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel, etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret },
+            "etablissement_gestionnaire_courriel"
+          )
         }
 
         await Etablissement.updateMany(
