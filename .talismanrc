@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .bin/scripts/get-vault-password-client.sh
+  checksum: 721a0185a395874b58d38dd157aa326a15c73e7d381cfd968ad27fc5922ddfa3
 - filename: .bin/scripts/seed-apply.sh
   checksum: 49afe4f96fa13b38cf799d931085437d540b4c62eb05b2f15bc12cd3fb43268b
 - filename: .bin/scripts/seed-update.sh
@@ -26,7 +28,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: ab249402eb2532ba0154474a9c8f2e445a2e0ff83584e7c3460c780ea5e5ec65
+  checksum: d4f0802bd8a2ebe3af70e84b8fae5b9f9651b7dd9f6d529cdd9081520962195b
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test

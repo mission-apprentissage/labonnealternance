@@ -6,7 +6,7 @@ export const storeTrainingsInSession = ({ trainings, searchTimestamp }) => {
     const search = JSON.parse(sessionStorage.getItem(searchTimestamp))
     sessionStorage.setItem(searchTimestamp, JSON.stringify({ trainings, ...search }))
   } catch (err) {
-    console.log("sessionStorage error : ", err)
+    console.error("sessionStorage error : ", err)
   }
 }
 
@@ -16,7 +16,7 @@ export const storeJobsInSession = ({ jobs, searchTimestamp }) => {
     const search = JSON.parse(sessionStorage.getItem(searchTimestamp))
     sessionStorage.setItem(searchTimestamp, JSON.stringify({ jobs, ...search }))
   } catch (err) {
-    console.log("sessionStorage error : ", err)
+    console.error("sessionStorage error : ", err)
   }
 }
 

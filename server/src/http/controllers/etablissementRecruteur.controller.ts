@@ -7,6 +7,7 @@ import { Recruiter, UserRecruteur } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { generateDepotSimplifieToken } from "@/services/appLinks.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -162,8 +163,8 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
             else throw Boom.badRequest(result.message, result)
           }
-          await startSession(req.body.email, res)
-          return res.status(200).send(result)
+          const token = generateDepotSimplifieToken(result.user)
+          return res.status(200).send({ ...result, token })
         }
         case CFA: {
           const { email, establishment_siret } = req.body

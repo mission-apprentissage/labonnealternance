@@ -12,7 +12,7 @@ export default async function postUnsubscribe({ email, reason }) {
     const response = await axios.post(`${publicConfig.apiEndpoint}/unsubscribe`, { email, reason })
     res = response?.data?.error || response.data
   } catch (error) {
-    console.log("postUnsubscribe error : ", error)
+    console.error("postUnsubscribe error : ", error)
     logError(error)
     isAxiosError = true
   }

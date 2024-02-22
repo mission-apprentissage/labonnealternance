@@ -60,7 +60,7 @@ export const fetchAddresses = memoize(async (value, type) => {
         return simplifiedReturnedItems
       })
     } catch (err) {
-      console.log("Fetch addresses cancelled : ", err)
+      console.error("Fetch addresses cancelled : ", err)
       return []
     }
   } else return []

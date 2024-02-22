@@ -1,4 +1,6 @@
-import { Box, Container, Divider, Flex, Grid, GridItem, Image, Link, SimpleGrid, Text, VStack } from "@chakra-ui/react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Container, Divider, Grid, GridItem, Image, Link, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
+import NextLink from "next/link"
 import { NextSeo } from "next-seo"
 import React from "react"
 
@@ -6,60 +8,6 @@ import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
-
-const ServiceCard = ({ logo, title, text, url, mt, mb = undefined, imageMT, imageML }) => {
-  return (
-    <Box mt={mt} mb={mb}>
-      <Flex bg="white" py="18px" px="24px" direction={["column", "row"]} borderRadius="10px" alignItems="center" boxShadow="0 0 12px rgb(0 0 0 / 21%)">
-        <Box minW="68px" minH="68px" bg="grey.300" borderRadius="70px">
-          <Image src={logo} alt="" mt={imageMT} ml={imageML} />
-        </Box>
-        <Box pl={2} textAlign={["center", "left"]}>
-          <Text color="grey.700" fontSize="22px" lineHeight="27px" fontWeight="700">
-            {title}
-          </Text>
-          <Text color="grey.600">{text}</Text>
-          <Link textDecoration="underline" color="grey.600" aria-label={`Accès au site ${url}`} href={url} isExternal>
-            En savoir plus
-          </Link>
-        </Box>
-      </Flex>
-    </Box>
-  )
-}
-
-const StartupCard = ({ logoUrl, url, title }) => {
-  return (
-    <Box mx={4} mt={4} mb={6} py={4} px={3} bg="white" boxShadow="0px 0px 12px rgb(0 0 0 / 21%)" borderRadius="10px">
-      <Box height="80px" display="flex" alignItems="center" justifyContent="center">
-        <Image src={logoUrl} width="134px" alt="" />
-      </Box>
-      <Box pl={2}>
-        <Link href={url} isExternal>
-          {title}
-        </Link>
-      </Box>
-    </Box>
-  )
-}
-
-const ServiceLink = ({ url, text, title }) => {
-  return (
-    <Grid templateColumns="repeat(12, 1fr)">
-      <GridItem sx={{ marginTop: "-7px" }} pr={4} colSpan={1} fontSize="25px">
-        •
-      </GridItem>
-      <GridItem ml={4} colSpan={[11, 11, 4]}>
-        <Link sx={{ "text-underline-offset": "3px" }} textDecoration="underline" textDecorationThickness="2px" fontWeight="700" href={url} isExternal>
-          {title}
-        </Link>
-      </GridItem>
-      <GridItem colSpan={[12, 12, 7]} pl={[0, 0, 8]}>
-        {text}
-      </GridItem>
-    </Grid>
-  )
-}
 
 const APropos = () => (
   <div>
@@ -77,149 +25,143 @@ const APropos = () => (
         <Grid templateColumns="repeat(12, 1fr)">
           <GridItem px={4} colSpan={[12, 12, 12, 5]}>
             <Text variant="editorialContentH1" as="h1">
-              <Text as="span" color="black">
-                A propos de{" "}
-              </Text>
-              <br />
-              La bonne alternance
+              A propos
             </Text>
-            <Divider variant="pageTitleDivider" my={12} />
+            <Divider variant="pageTitleDivider" my={4} />
           </GridItem>
           <GridItem px={4} colSpan={[12, 12, 12, 7]}>
             <Text variant="editorialContentH2" as="h2">
-              Le saviez-vous ?
+              Constat
             </Text>
             <Text as="p" mb={4}>
-              7 employeurs sur 10 recrutent sans déposer d’offre d’emploi.
-              <br />
-              Il est ainsi essentiel de diversifier vos démarches en répondant à des offres d'emploi ainsi qu'en envoyant des candidatures spontanées. Nous vous conseillons
-              également de cibler au mieux vos candidatures, et de les multiplier. Il faut envoyer en moyenne 30 candidatures personnalisées pour décrocher un entretien.
-            </Text>
-            <Text as="p" mb={4}>
-              Notre algorithme La bonne alternance analyse les offres et les recrutements des 6 dernières années pour vous proposer les entreprises qui recrutent régulièrement en
-              alternance (contrat d&apos;apprentissage ou contrat de professionnalisation).
-            </Text>
-
-            <Text as="p" mb={4}>
-              En complément, le service La bonne alternance expose les formations disponibles en apprentissage.
-            </Text>
-
-            <Text as="p" mb={4}>
-              Pour une meilleure lisibilité, les résultats sont affichés sur une carte et en liste.
-              <br />
-              En cliquant sur une entreprise, vous accédez à sa description, ses coordonnées lorsqu’elles sont disponibles, ainsi qu’à des conseils pour postuler.
+              L’alternance est une formule pleine de promesses pour les entreprises et les étudiants, car elle assure une formation proche des métiers et de la réalité du marché du
+              travail. Pourtant le triptyque formation-entreprise-candidat est souvent complexe à mettre en oeuvre pour que l’alternance soit un succès.
             </Text>
 
             <Text variant="editorialContentH2" as="h2">
-              Qui sommes-nous ?
+              La solution
             </Text>
 
             <Text as="p" mb={4}>
-              La bonne alternance est d’abord une start-up interne de Pôle emploi créée et développée par des conseillers. <br />
-              Reprise par la{" "}
-              <Link variant="editorialContentLink" aria-label="Accès au Gitbook de la mission apprentissage" href="https://mission-apprentissage.gitbook.io/general/" isExternal>
-                Mission apprentissage
-              </Link>{" "}
-              en 2020, le site ajoute désormais des informations sur les formations en apprentissage et les offres d&apos;emploi en alternance.
+              La bonne alternance a pour objectif de simplifier les mises en relation entre ces trois types d’acteurs afin de faciliter les entrées en alternance.
+            </Text>
+
+            <Text as="p" mb={4}>
+              <Text as="span" fontWeight={700}>
+                Pour les recruteurs
+              </Text>
+              , nous proposons un dépôt d’offre simplifié, permettant d’exprimer un besoin de recrutement en alternance en moins d'une minute. Recruter en alternance est souvent un
+              sujet compliqué pour les PME et TPE. Le manque de ressources et de connaissances en font un tâche peu prioritaire. D’ailleurs, 7 employeurs sur 10 recrutent sans
+              déposer d’offre d’emploi.
+            </Text>
+
+            <Text as="p" mb={4}>
+              <Text as="span" fontWeight={700}>
+                Nous aidons les candidats
+              </Text>{" "}
+              intéressés par l'alternance à trouver une formation d’une part, et un contrat avec une entreprise d’autre part, en exposant et permettant aux candidat d'entrer en
+              contact avec :
+              <UnorderedList my={4}>
+                <ListItem>
+                  Les formations en apprentissage issues du{" "}
+                  <Link
+                    href="https://catalogue-apprentissage.intercariforef.org/"
+                    aria-label="Accéder au catalogue des formations intercarif oref"
+                    isExternal
+                    variant="basicUnderlinedBlue"
+                  >
+                    catalogue des formations en apprentissage du Réseau des Carif-Oref <ExternalLinkIcon mb="3px" ml="2px" />
+                  </Link>
+                  .
+                </ListItem>
+                <ListItem>
+                  De nombreuses offres d’emploi en alternance : celles postées par les recruteurs directement sur notre plateforme, ainsi que sur les sites de nos partenaires (via
+                  API ou Widget).
+                </ListItem>
+                <ListItem>
+                  Nous agrégeons également les offres en alternance de France travail et de ses{" "}
+                  <Link
+                    href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
+                    aria-label="Accéder à la liste des sites partenaires de France Travail"
+                    isExternal
+                    variant="basicUnderlinedBlue"
+                  >
+                    sites partenaires <ExternalLinkIcon mb="3px" ml="2px" />
+                  </Link>
+                  . Des entreprises identifiées comme à fort potentiel d'embauche en alternance sur la base de données publiques. Notre objectif est de faciliter les démarches de
+                  candidatures spontanées des candidats, en pré ciblant les entreprises pertinentes.
+                </ListItem>
+              </UnorderedList>
+              <Text as="span" fontWeight={700}>
+                Les organismes de formation
+              </Text>{" "}
+              en alternance peuvent ainsi faire connaître leurs formations aux candidats, mais également diffuser les offres d’emploi de leurs entreprises partenaires. Par
+              ailleurs, nous proposons aux entreprises qui utilisent notre plateforme de partager leurs offres aux organismes de formation, afin que ces derniers puissent les
+              diffuser auprès de leurs étudiants.
             </Text>
 
             <Text variant="editorialContentH2" as="h2">
-              Les services de La bonne alternance
+              Impact observé
             </Text>
 
-            <ServiceCard
-              mt={6}
-              logo="/images/logo_matcha.svg"
-              title="Dépôt d'offres simplifié"
-              text="Susciter des recrutements en alternance"
-              url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled"
-              imageMT="-2px"
-              imageML="0"
-            />
+            <Text as="p" mb={4}>
+              Vous pouvez consulter nos{" "}
+              <NextLink legacyBehavior passHref href="/stats" aria-label="Accès aux statistiques">
+                <Link variant="basicUnderlinedBlue">statistiques</Link>
+              </NextLink>
+            </Text>
 
-            <ServiceCard
-              mt={4}
-              logo="/images/logo_catalogue.svg"
-              title="Catalogue des formations"
-              text="Un catalogue élargi de formations en apprentissage"
-              url="https://mission-apprentissage.gitbook.io/catalogue/"
-              imageMT="20px"
-              imageML="20px"
-            />
+            <Text as="p" mb={4}>
+              La bonne alternance, en collaboration avec ses partenaires, est au carrefour des mondes de la formation et de l’emploi, et ambitionne ainsi d’aider les candidats à
+              l'alternance à réaliser leur vocation.
+            </Text>
 
-            <ServiceCard
-              mt={4}
-              mb={6}
-              logo="/images/logo_prdv.svg"
-              title="Rendez-vous apprentissage"
-              text="Pour échanger facilement avec les centres de formation"
-              url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/prise-de-rendez-vous"
-              imageMT="4px"
-              imageML="4px"
-            />
+            <Text variant="editorialContentH2" as="h2">
+              Nos partenaires
+            </Text>
 
-            <SimpleGrid columns={[1, 1, 2]}>
-              <StartupCard
-                logoUrl="/images/logo-lbb.svg"
-                url="https://labonneboite.pole-emploi.fr/"
-                aria-label="Accès au site La bonne boite"
-                title="Trouver des entreprises qui recrutent sans déposer d'offres d'emploi"
-              />
-              <StartupCard
-                logoUrl="/images/logo-avril.svg"
-                url="https://avril.pole-emploi.fr/"
-                aria-label="Accès au site Avril"
-                title="Trouvez une formation en fonction de votre profil ET du marché du travail"
-              />
+            <SimpleGrid gap={2} mb={4} columns={[2, 3, 4]}>
+              <Image src="/images/logosPartenaires/partenaire-France Travail.png" alt="France Travail" />
+              <Image src="/images/logosPartenaires/partenaire-Parcoursup.png" alt="Parcoursup" />
+              <Image src="/images/logosPartenaires/partenaire-onisep.png" alt="Onisep" />
+              <Image src="/images/logosPartenaires/partenaire-portail de lalternance.png" alt="Portail de l'alternance" />
+              <Image src="/images/logosPartenaires/partenaire-1j1s.png" alt="un jeune une solution" />
+              <Image src="/images/logosPartenaires/partenaire-affelnet.png" alt="affelnet" />
+              <Image src="/images/logosPartenaires/partenaire-opco-ocapiat.png" alt="opco ocapiat" />
+              <Image src="/images/logosPartenaires/partenaire-opco-2i.png" alt="opco 2i" />
+              <Image src="/images/logosPartenaires/partenaire-opco-sante.png" alt="opco santé" />
+              <Image src="/images/logosPartenaires/partenaire-opco-atlas.png" alt="opco atlas" />
+              <Image src="/images/logosPartenaires/partenaire-opco-afdas.png" alt="opco afdas" />
+              <Image src="/images/logosPartenaires/partenaire-opco-ep.png" alt="opco e p" />
+              <Image src="/images/logosPartenaires/partenaire-opco-commerce.png" alt="opco commerce" />
+              <Image src="/images/logosPartenaires/partenaire-opco-constructys.png" alt="opco constructys" />
+              <Image src="/images/logosPartenaires/partenaire-opco-uniformation.png" alt="opco uniformation" />
+              <Image src="/images/logosPartenaires/partenaire-opco-akto.png" alt="opco akto" />
+              <Image src="/images/logosPartenaires/partenaire-diagoriente.png" alt="Diagoriente" />
+              <Image src="/images/logosPartenaires/partenaire-tdb.png" alt="Tableau de bord de l'apprentissage" />
+              <Image src="/images/logosPartenaires/partenaire-catalogue.png" alt="Catalogue intercarif oref" />
             </SimpleGrid>
 
             <Text variant="editorialContentH2" as="h2">
-              Autres liens utiles
+              Qui sommes nous
             </Text>
 
-            <VStack>
-              <ServiceLink
-                url="https://diagoriente.beta.gouv.fr/"
-                aria-label="Accès au site Diagoriente"
-                text="Outil d'orientation complet qui permet d'accéder à des pistes métiers en adéquation avec ses intérêts."
-                title="Diagoriente"
-              />
-
-              <ServiceLink
-                url="https://www.parcoursup.fr/index.php?desc=formations_apprentissage"
-                aria-label="Accès au site Parcoursup et ses conseils pour entrer en apprentissage"
-                text="Les conseils de parcoursup pour entrer en apprentissage."
-                title="Parcoursup"
-              />
-
-              <ServiceLink
-                url="https://www.parcoursup.fr/index.php?desc=services_numeriques"
-                aria-label="Accès au site Parcoursup et son service d'aide à l'orientation"
-                text="Les services d’aide à l’orientation vers les études supérieures proposés par Parcoursup."
-                title="Parcoursup"
-              />
-
-              <ServiceLink
-                url="https://www.myjobglasses.com/"
-                aria-label="Accès au site My job glasses"
-                text="Myjobglasses vous aide à identifier le métier qui vous correspond."
-                title="Myjobglasses"
-              />
-
-              <ServiceLink
-                url="https://openclassrooms.com/fr/courses/6003601-decouvrez-lalternance"
-                aria-label="Accès au site Openclassroom"
-                text="Profitez d’un cours en ligne gratuit pour découvrir l'alternance."
-                title="Openclassrooms"
-              />
-
-              <ServiceLink
-                url="https://www.1jeune1solution.gouv.fr/"
-                aria-label="Accès au site un jeune une solution"
-                text="Je suis jeune, je découvre toutes les solutions pour préparer mon avenir."
-                title="#1jeune1solution"
-              />
-            </VStack>
+            <Text as="p" mb={4}>
+              D’abord développé par France travail, La bonne alternance a été repris en 2020 par{" "}
+              <Link
+                href="https://mission-apprentissage.gitbook.io/general/"
+                aria-label="Accéder au site de la mission interministérielle pour l'apprentissage"
+                isExternal
+                variant="basicUnderlinedBlue"
+              >
+                la mission interministérielle pour l'apprentissage <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>
+              , membre de la communauté{" "}
+              <Link href="https://beta.gouv.fr" aria-label="Accéder au site de beta gouv point fr" isExternal variant="basicUnderlinedBlue">
+                beta.gouv.fr <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>{" "}
+              et suit à ce titre une démarche spécifique de conception de services numériques.
+            </Text>
           </GridItem>
         </Grid>
       </Container>
