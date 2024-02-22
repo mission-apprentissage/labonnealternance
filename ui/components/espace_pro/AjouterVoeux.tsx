@@ -42,7 +42,7 @@ import { LogoContext } from "../../context/contextLogo"
 import { WidgetContext } from "../../context/contextWidget"
 import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../../theme/components/icons"
 import { J1S, Parcoursup } from "../../theme/components/logos_pro"
-import { createOffre, getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
+import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
 
 import DropdownCombobox from "./DropdownCombobox"
 
@@ -69,15 +69,17 @@ const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
 }
 
 const AjouterVoeuxForm = (props) => {
-  const { widget: isWidget } = useContext(WidgetContext)
+  const {
+    widget: { isWidget },
+  } = useContext(WidgetContext)
   const [inputJobItems, setInputJobItems] = useState([])
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
 
-  const { establishment_id, email, userId, type } = router.query as { establishment_id: string; email: string; userId: string; type: string }
+  const { establishment_id, email, userId, type, token } = router.query as { establishment_id: string; email: string; userId: string; type: string; token: string }
   const { data: formulaire } = useQuery("offre-liste", {
     enabled: !!establishment_id,
-    queryFn: () => getFormulaire(establishment_id),
+    queryFn: () => (token ? getFormulaireByToken(establishment_id, token) : getFormulaire(establishment_id)),
   })
 
   const { user } = useAuth()
@@ -107,17 +109,17 @@ const AjouterVoeuxForm = (props) => {
    * @param {boolean} fromDashboard - Becomes from connected interface or anonymous.
    * @return {void}
    */
-  const handleRedirectionAfterSubmit = (form, job, fromDashboard) => {
+  const handleRedirectionAfterSubmit = (form, job, fromDashboard, jobToken) => {
     if (haveProposals) {
       return router.replace({
         pathname: isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation",
-        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId, establishment_id },
+        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId, establishment_id, token: jobToken },
       })
     }
 
     router.replace({
       pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId, establishment_id },
+      query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId, establishment_id, token: jobToken },
     })
   }
 
@@ -135,7 +137,7 @@ const AjouterVoeuxForm = (props) => {
 
       // Only redirect user in case of offer creation
       if (res) {
-        await handleRedirectionAfterSubmit(res.form, res.offre, true)
+        await handleRedirectionAfterSubmit(res.form, res.offre, true, null)
       }
     }
 
@@ -150,10 +152,9 @@ const AjouterVoeuxForm = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDepotRapide = async (values) => {
-    const formulaire = await createOffre(establishment_id, values)
-    formulaire.jobs.slice(-1)
+    const { recruiter: formulaire, token: jobToken } = await (token ? createOffreByToken(establishment_id, values, token) : createOffre(establishment_id, values))
     const [job] = formulaire.jobs.slice(-1)
-    await handleRedirectionAfterSubmit(formulaire, job, false)
+    await handleRedirectionAfterSubmit(formulaire, job, false, jobToken)
   }
 
   /**

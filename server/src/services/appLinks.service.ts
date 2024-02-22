@@ -1,4 +1,4 @@
-import { IUserRecruteur } from "shared/models"
+import { IJob, IUserRecruteur } from "shared/models"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
@@ -315,6 +315,67 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
     ],
     {
       expiresIn: "30d",
+    }
+  )
+}
+
+export function generateDepotSimplifieToken(user: IUserRecruteur) {
+  if (!user.establishment_id) {
+    throw new Error("unexpected")
+  }
+  const establishment_id = user.establishment_id
+  return generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.get["/formulaire/:establishment_id/by-token"],
+        options: {
+          params: { establishment_id },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/formulaire/:establishment_id/offre/by-token"],
+        options: {
+          params: { establishment_id },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.get["/user/status/:userId/by-token"],
+        options: {
+          params: { userId: user._id.toString() },
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "2h",
+    }
+  )
+}
+
+export function generateOffreToken(user: IUserRecruteur, offre: IJob) {
+  return generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.post["/formulaire/offre/:jobId/delegation/by-token"],
+        options: {
+          params: { jobId: offre._id },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.get["/user/status/:userId/by-token"],
+        options: {
+          params: { userId: user._id.toString() },
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "2h",
     }
   )
 }

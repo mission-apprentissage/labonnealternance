@@ -166,6 +166,7 @@ export const zRecruiterRoutes = {
           .object({
             formulaire: ZRecruiter.optional(),
             user: ZUserRecruteur,
+            token: z.string().optional(),
           })
           .strict(),
       },

@@ -22,6 +22,7 @@ export const ZEligibleTrainingsForAppointmentSchema = z
     parcoursup_id: z.string().nullable(),
     parcoursup_statut: z.string().nullable(),
     affelnet_statut: z.string().nullable(),
+    affelnet_visible: z.boolean().nullable(),
     cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
     etablissement_formateur_raison_sociale: z.string(),
     etablissement_formateur_street: z.string().nullable(),

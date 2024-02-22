@@ -1,6 +1,9 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
+import { UserRecruteur } from "@/common/model"
+import { generateOffreToken } from "@/services/appLinks.service"
+
 import { getApplicationsByJobId } from "../../services/application.service"
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
@@ -30,6 +33,28 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/formulaire/:establishment_id"],
       onRequest: [server.auth(zRoutes.get["/formulaire/:establishment_id"])],
+    },
+    async (req, res) => {
+      const { establishment_id } = req.params
+      const recruiterOpt = await getFormulaire({ establishment_id })
+      if (!recruiterOpt) {
+        throw Boom.notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
+      }
+      const jobsWithCandidatures = await Promise.all(
+        recruiterOpt.jobs.map(async (job) => {
+          const candidatures = await getApplicationsByJobId(job._id.toString())
+          return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : 0 }
+        })
+      )
+
+      return res.status(200).send({ ...recruiterOpt, jobs: jobsWithCandidatures })
+    }
+  )
+  server.get(
+    "/formulaire/:establishment_id/by-token",
+    {
+      schema: zRoutes.get["/formulaire/:establishment_id/by-token"],
+      onRequest: [server.auth(zRoutes.get["/formulaire/:establishment_id/by-token"])],
     },
     async (req, res) => {
       const { establishment_id } = req.params
@@ -176,6 +201,7 @@ export default (server: Server) => {
       bodyLimit: 5 * 1024 ** 2, // 5MB
     },
     async (req, res) => {
+      const { establishment_id } = req.params
       const {
         is_disabled_elligible,
         job_type,
@@ -190,6 +216,10 @@ export default (server: Server) => {
         rome_code,
         rome_label,
       } = req.body
+      const userRecruteur = await UserRecruteur.findOne({ establishment_id }).lean()
+      if (!userRecruteur) {
+        throw Boom.notFound()
+      }
       const updatedFormulaire = await createJob({
         job: {
           is_disabled_elligible,
@@ -205,9 +235,70 @@ export default (server: Server) => {
           rome_code,
           rome_label,
         },
-        id: req.params.establishment_id,
+        id: establishment_id,
       })
-      return res.status(200).send(updatedFormulaire)
+      const job = updatedFormulaire.jobs.at(0)
+      if (!job) {
+        throw new Error("unexpected")
+      }
+      const token = generateOffreToken(userRecruteur, job)
+      return res.status(200).send({ recruiter: updatedFormulaire, token })
+    }
+  )
+
+  /**
+   * Create new offer
+   */
+  server.post(
+    "/formulaire/:establishment_id/offre/by-token",
+    {
+      schema: zRoutes.post["/formulaire/:establishment_id/offre/by-token"],
+      onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre/by-token"])],
+      bodyLimit: 5 * 1024 ** 2, // 5MB
+    },
+    async (req, res) => {
+      const { establishment_id } = req.params
+      const {
+        is_disabled_elligible,
+        job_type,
+        delegations,
+        job_count,
+        job_description,
+        job_duration,
+        job_level_label,
+        job_rythm,
+        job_start_date,
+        rome_appellation_label,
+        rome_code,
+        rome_label,
+      } = req.body
+      const userRecruteur = await UserRecruteur.findOne({ establishment_id }).lean()
+      if (!userRecruteur) {
+        throw Boom.notFound()
+      }
+      const updatedFormulaire = await createJob({
+        job: {
+          is_disabled_elligible,
+          job_type,
+          delegations,
+          job_count,
+          job_description,
+          job_duration,
+          job_level_label,
+          job_rythm,
+          job_start_date,
+          rome_appellation_label,
+          rome_code,
+          rome_label,
+        },
+        id: establishment_id,
+      })
+      const job = updatedFormulaire.jobs.at(0)
+      if (!job) {
+        throw new Error("unexpected")
+      }
+      const token = generateOffreToken(userRecruteur, job)
+      return res.status(200).send({ recruiter: updatedFormulaire, token })
     }
   )
 
@@ -219,6 +310,20 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/formulaire/offre/:jobId/delegation"],
       onRequest: [server.auth(zRoutes.post["/formulaire/offre/:jobId/delegation"])],
+    },
+    async (req, res) => {
+      const { etablissementCatalogueIds } = req.body
+      const { jobId } = req.params
+      const job = await createJobDelegations({ jobId, etablissementCatalogueIds })
+      return res.status(200).send(job)
+    }
+  )
+
+  server.post(
+    "/formulaire/offre/:jobId/delegation/by-token",
+    {
+      schema: zRoutes.post["/formulaire/offre/:jobId/delegation/by-token"],
+      onRequest: [server.auth(zRoutes.post["/formulaire/offre/:jobId/delegation/by-token"])],
     },
     async (req, res) => {
       const { etablissementCatalogueIds } = req.body

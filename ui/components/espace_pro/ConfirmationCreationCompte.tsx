@@ -9,7 +9,7 @@ import { InfoCircle } from "../../theme/components/icons"
 import { deleteCfa, deleteEntreprise } from "../../utils/api"
 
 export const ConfirmationCreationCompte = (props) => {
-  const { isOpen, onClose, user, formulaire, isWidget } = props
+  const { isOpen, onClose, user, formulaire, isWidget, token } = props
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
 
@@ -18,7 +18,7 @@ export const ConfirmationCreationCompte = (props) => {
       case AUTHTYPE.ENTREPRISE:
         router.push({
           pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
-          query: { establishment_id: formulaire.establishment_id, email: user.email, type: user.type, userId: user._id, displayBanner: true },
+          query: { establishment_id: formulaire.establishment_id, email: user.email, type: user.type, userId: user._id, displayBanner: true, token },
         })
         break
       case AUTHTYPE.CFA:

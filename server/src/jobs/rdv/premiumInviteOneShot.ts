@@ -1,7 +1,6 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { logger } from "../../common/logger"
-import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
 import config from "../../config"
@@ -43,7 +42,7 @@ export const premiumInviteOneShot = async () => {
 
       if (!email) return
 
-      const { messageId } = await mailer.sendEmail({
+      await mailer.sendEmail({
         to: email,
         subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
         template: getStaticFilePath("./templates/mail-cfa-premium-invite-one-shot.mjml.ejs"),
@@ -78,14 +77,6 @@ export const premiumInviteOneShot = async () => {
         { formateur_siret: etablissement.formateur_siret },
         {
           premium_invitation_date: dayjs().toDate(),
-          $push: {
-            to_etablissement_emails: {
-              campaign: mailType.PREMIUM_INVITE_ONE_SHOT_2023,
-              status: null,
-              message_id: messageId,
-              email_sent_at: dayjs().toDate(),
-            },
-          },
         }
       )
     } catch (error) {

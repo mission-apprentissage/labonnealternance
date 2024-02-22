@@ -2,38 +2,75 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { mailType } from "../../common/model/constants/etablissement"
-import { Etablissement } from "../../common/model/index"
+import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
+import { isValidEmail } from "../../common/utils/isValidEmail"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
 
+interface IEtablissementsToInviteToPremium {
+  _id: {
+    gestionnaire_siret: string
+  }
+  id: string
+  gestionnaire_email: string
+  optout_activation_scheduled_date: string
+  count: number
+}
+
 export const inviteEtablissementAffelnetToPremium = async () => {
   logger.info("Cron #inviteEtablissementAffelnetToPremium started.")
 
-  const startInvitationPeriod = dayjs().month(3).date(2)
-  const endInvitationPeriod = dayjs().month(7).date(31)
+  const { startDay, startMonth } = config.affelnetPeriods.start
+  const { endDay, endMonth } = config.affelnetPeriods.end
+  let count = 0
+
+  const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
+  const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
   if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not between the 01/03 and the 31/08 (eligible period).")
+    logger.info("Stopped because we are not within the eligible period.")
     return
   }
 
-  // Get all Affelnet establishement where an email is specified
-  const etablissementToInvite = await Etablissement.find({
-    affelnet_perimetre: true,
-    gestionnaire_email: {
-      $ne: null,
+  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await Etablissement.aggregate([
+    {
+      $match: {
+        gestionnaire_email: {
+          $ne: null,
+        },
+        premium_affelnet_invitation_date: null,
+      },
     },
-    premium_affelnet_invitation_date: null,
-  })
+    {
+      $group: {
+        _id: {
+          gestionnaire_siret: "$gestionnaire_siret",
+        },
+        id: { $first: "$_id" },
+        optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
+        gestionnaire_email: { $first: "$gestionnaire_email" },
+        count: { $sum: 1 },
+      },
+    },
+  ])
 
-  for (const etablissement of etablissementToInvite) {
-    if (!etablissement.gestionnaire_email || !etablissement.formateur_siret) {
+  for (const etablissement of etablissementsToInviteToPremium) {
+    // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
+    const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
+      etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
+      lieu_formation_email: { $ne: null },
+      affelnet_visible: true,
+    }).lean()
+
+    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret || !etablissement.gestionnaire_email) {
       continue
     }
 
+    count++
+
     // send the invitation mail
-    const { messageId } = await mailer.sendEmail({
+    await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e !`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite.mjml.ejs"),
@@ -45,27 +82,21 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
-          activatedAt: dayjs(etablissement.created_at).format("DD/MM/YYYY"),
-          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement.formateur_siret, etablissement._id.toString()),
+          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
+          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
       },
     })
 
-    await Etablissement.updateOne(
-      { formateur_siret: etablissement.formateur_siret },
+    await Etablissement.updateMany(
+      { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
         premium_affelnet_invitation_date: dayjs().toDate(),
-        $push: {
-          to_etablissement_emails: {
-            campaign: mailType.PREMIUM_AFFELNET_INVITE,
-            status: null,
-            message_id: messageId,
-            email_sent_at: dayjs().toDate(),
-          },
-        },
       }
     )
   }
+
+  await notifyToSlack({ subject: "RDVA - INVITATION AFFELNET", message: `${count} invitation(s) envoyé` })
 
   logger.info("Cron #inviteEtablissementAffelnetToPremium done.")
 }

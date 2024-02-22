@@ -75,7 +75,7 @@ export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _apiEn
       }
     }
   } catch (err) {
-    console.log("Fetch romes cancelled : ", err)
+    console.error("Fetch romes cancelled : ", err)
     return "cancelled"
   }
 

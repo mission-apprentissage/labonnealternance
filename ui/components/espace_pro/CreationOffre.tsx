@@ -40,7 +40,7 @@ export default function CreationOffre() {
         })
         .finally(() => router.push(`/espace-pro/administration/entreprise/${establishment_id}`))
     } else {
-      const formulaire = await createOffre(establishment_id, values)
+      const { recruiter: formulaire } = await createOffre(establishment_id, values)
       if (user.type === AUTHTYPE.ENTREPRISE) {
         // Create the offer and return the form with the related offer created
         return {

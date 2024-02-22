@@ -74,6 +74,12 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
       default: null,
       description: "Statut Affelnet",
     },
+    affelnet_visible: {
+      type: Boolean,
+      index: true,
+      default: null,
+      description: "Statut SLA Affelnet",
+    },
     cle_ministere_educatif: {
       type: String,
       require: true,

@@ -25,6 +25,8 @@ const errorHandler = (error: any): undefined => {
 export const getDelegationDetails = (establishment_id: string, token: string) =>
   apiGet("/formulaire/delegation/:establishment_id", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 export const getFormulaire = (establishment_id: string) => apiGet("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
+export const getFormulaireByToken = (establishment_id: string, token: string) =>
+  apiGet("/formulaire/:establishment_id/by-token", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/formulaire", { params: { userId }, body: form })
 export const updateFormulaire = (establishment_id: string, values) => apiPut("/formulaire/:establishment_id", { params: { establishment_id }, body: values })
 
@@ -36,6 +38,8 @@ export const archiveDelegatedFormulaire = (siret: string) => API.delete(`/formul
  */
 export const getOffre = (jobId: string) => apiGet("/formulaire/offre/f/:jobId", { params: { jobId } })
 export const createOffre = (establishment_id: string, newOffre: IJobWritable) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
+export const createOffreByToken = (establishment_id: string, newOffre: IJobWritable, token: string) =>
+  apiPost("/formulaire/:establishment_id/offre/by-token", { params: { establishment_id }, body: newOffre, headers: { authorization: `Bearer ${token}` } })
 export const patchOffreDelegation = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}/delegation`, data, config).catch(errorHandler)
 export const cancelOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/cancel`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formulaire/offre/f/:jobId/cancel"]["body"]["_input"]) =>
@@ -44,6 +48,8 @@ export const extendOffre = (jobId: string) => apiPut(`/formulaire/offre/:jobId/e
 export const fillOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; data: INewDelegations }) =>
   apiPost(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, body: data })
+export const createEtablissementDelegationByToken = ({ data, jobId, token }: { jobId: string; data: INewDelegations; token: string }) =>
+  apiPost(`/formulaire/offre/:jobId/delegation/by-token`, { params: { jobId }, body: data, headers: { authorization: `Bearer ${token}` } })
 
 /**
  * User API
@@ -52,6 +58,8 @@ export const getUser = (userId: string) => apiGet("/user/:userId", { params: { u
 const updateUser = (userId: string, user) => apiPut("/user/:userId", { params: { userId }, body: user })
 const updateUserAdmin = (userId: string, user) => apiPut("/admin/users/:userId", { params: { userId }, body: user })
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
+export const getUserStatusByToken = (userId: string, token: string) =>
+  apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
 export const updateUserValidationHistory = (userId: string, state: IUserStatusValidationJson) =>
   apiPut("/user/:userId/history", { params: { userId }, body: state }).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)

@@ -3,7 +3,6 @@ import { isValidEmail } from "@/common/utils/isValidEmail"
 import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { mailType } from "../../common/model/constants/etablissement"
 import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
@@ -11,21 +10,15 @@ import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
 
 interface IEtablissementsToInviteToPremium {
-  _id: Id
+  _id: {
+    gestionnaire_siret: string
+  }
   id: string
   gestionnaire_email: string
   optout_activation_scheduled_date: string
   count: number
 }
 
-interface Id {
-  gestionnaire_siret: string
-}
-
-/**
- * @description Invite all "etablissements" to Parcoursup Premium.
- * @returns {Promise<void>}
- */
 export const inviteEtablissementParcoursupToPremium = async () => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
@@ -35,7 +28,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
   const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
   const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
   if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not between the 08/01 and the 31/08 (eligible period).")
+    logger.info("Stopped because we are not within the eligible period.")
     return
   }
 
@@ -82,7 +75,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
     count++
 
     // Invite all etablissements only in production environment
-    const { messageId } = await mailer.sendEmail({
+    await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Parcoursup !`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite.mjml.ejs"),
@@ -104,14 +97,6 @@ export const inviteEtablissementParcoursupToPremium = async () => {
       { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
         premium_invitation_date: dayjs().toDate(),
-        $push: {
-          to_etablissement_emails: {
-            campaign: mailType.PREMIUM_INVITE,
-            status: null,
-            message_id: messageId,
-            email_sent_at: dayjs().toDate(),
-          },
-        },
       }
     )
   }

@@ -134,7 +134,7 @@ const addReferrersToETFA = async () => {
         try {
           await db.collection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: formation._id }, { $set: { referrers: referrersToActivate } })
         } catch (err) {
-          console.log(err)
+          console.error(err)
         }
       },
       {
@@ -189,7 +189,7 @@ const createMissingEtablissement = async () => {
       ])
       .toArray()
   } catch (err) {
-    console.log({ err })
+    console.error({ err })
   }
 }
 
