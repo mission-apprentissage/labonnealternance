@@ -7,7 +7,7 @@ import { notifyToSlack } from "../../common/utils/slackUtils"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service"
 import { getMemoizedOpcoShortName, saveOpco } from "../../services/opco.service"
 
-import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils"
 
 let errorCount = 0
 let sirenSet: Set<string> = new Set()

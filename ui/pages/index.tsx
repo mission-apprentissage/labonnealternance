@@ -5,13 +5,11 @@ import React, { useEffect } from "react"
 import Footer from "../components/footer"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
 import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
-import MetiersDAvenir from "../components/HomeComponents/MetiersDAvenir"
-import TestezConnaissancesQuiz from "../components/HomeComponents/TestezConnaissancesQuiz"
 import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
+import PromoRessources from "../components/Ressources/promoRessources"
 import ScrollToTop from "../components/ScrollToTop"
-import config from "../config/config"
 import { ParameterContext } from "../context/ParameterContextProvider"
 import { initParametersFromQuery } from "../services/config"
 
@@ -45,40 +43,38 @@ const Home = () => {
     <Box>
       <ScrollToTop />
       <Navigation />
-      {/* @ts-expect-error: TODO */}
-      <Box background="beige" {...blockCssProperties}>
+      <Box as="main">
         {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle1.svg" {...circleImgCssProperties} top="60px" left="50px" alt="" />
+        <Box background="beige" {...blockCssProperties}>
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle1.svg" {...circleImgCssProperties} top="60px" left="50px" alt="" />
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle2.svg" {...circleImgCssProperties} bottom="-28px" left="444px" alt="" />
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle3.svg" {...circleImgCssProperties} top="182px" right="512px" alt="" />
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle4.svg" {...circleImgCssProperties} top="12px" right="312px" alt="" />
+          {/* @ts-expect-error: TODO */}
+          <Image src="/images/howtocircle5.svg" {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
+          <HomeHero />
+          <HowTo />
+        </Box>
         {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle2.svg" {...circleImgCssProperties} bottom="-28px" left="444px" alt="" />
-        {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle3.svg" {...circleImgCssProperties} top="182px" right="512px" alt="" />
-        {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle4.svg" {...circleImgCssProperties} top="12px" right="312px" alt="" />
-        {/* @ts-expect-error: TODO */}
-        <Image src="/images/howtocircle5.svg" {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
-        <HomeHero />
-        <HowTo />
-      </Box>
-      {/* @ts-expect-error: TODO */}
-      <Box {...blockCssProperties} pt={12} pb={0}>
-        <MetiersDAvenir />
-      </Box>
-      {/* @ts-expect-error: TODO */}
-      <Box {...blockCssProperties} pt={12} pb={0}>
-        <TestezConnaissancesQuiz />
-      </Box>
-      {/* @ts-expect-error: TODO */}
-      <Box {...blockCssProperties} py={12}>
-        <AlgoHome />
-      </Box>
+        <Box {...blockCssProperties} py={12}>
+          <AlgoHome />
+        </Box>
 
-      {config.shouldDisplayCallForHelp && (
-        // @ts-expect-error: TODO
+        {/* @ts-expect-error: TODO */}
+        <Box {...blockCssProperties} pb={12}>
+          <PromoRessources target="candidat" />
+        </Box>
+
+        {/* @ts-expect-error: TODO */}
         <Box {...blockCssProperties}>
           <AmeliorerLBA />
         </Box>
-      )}
+      </Box>
+
       <Footer />
     </Box>
   )

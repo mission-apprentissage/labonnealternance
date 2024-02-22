@@ -1,7 +1,5 @@
-import { IRecruiter, IUserRecruteur } from "shared"
+import { IAdresseCFA, IAdresseV3, IRecruiter, IUserRecruteur } from "shared"
 import { Jsonify } from "type-fest"
-
-import { IAdresseCFA, IAdresseV3 } from "../common/model/schema/_shared/shared.types"
 
 export interface IFormatAPIReferentiel
   extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {
@@ -41,7 +39,7 @@ export interface IEtablissementGouv {
   activite_principale: IActivitePrincipale
   tranche_effectif_salarie: ITrancheEffectifSalarie
   diffusable_commercialement: boolean
-  status_diffusion: string
+  status_diffusion: "diffusible" | "partiellement_diffusible" | "non_diffusible"
   date_creation: number
   unite_legale: IUniteLegale
   adresse: IAdresseV3
@@ -357,7 +355,7 @@ interface IFilters {
 }
 
 export interface ISIRET2IDCC {
-  conventions: IConvention[]
+  conventions?: IConvention[]
   siret: string
 }
 

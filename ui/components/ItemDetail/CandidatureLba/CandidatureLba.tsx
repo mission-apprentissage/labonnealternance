@@ -1,7 +1,7 @@
 import { CloseIcon } from "@chakra-ui/icons"
 import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
-import React, { useEffect, useState, useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { JOB_STATUS } from "shared/models/job.model"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
@@ -27,8 +27,6 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
     setSendingState("not_sent")
     onClose()
   }
-
-  console.log("formValues : ", formValues)
 
   const uniqId = `candidaturespontanee-${kind}-${getItemId(item)}`
 
@@ -99,6 +97,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
                   }}
                   onClick={openApplicationForm}
                   aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
+                  data-testid="postuler-button"
                 >
                   J&apos;envoie ma candidature{with_str(kind).amongst(["lbb", "lba"]) ? " spontanée" : ""}
                 </Button>

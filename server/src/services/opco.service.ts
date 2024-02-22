@@ -1,17 +1,22 @@
 import memoize from "memoizee"
+import { OPCOS } from "shared/constants/recruteur"
+import { IReferentielOpco, ZReferentielOpcoInsert } from "shared/models"
 
 import { Opco } from "../common/model/index"
 import { IOpco } from "../common/model/schema/opco/opco.types"
 
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
-import { OPCOS } from "./constant.service"
 
 /**
  * @description get opco from database collection OPCOS
- * @param {string} siren
- * @returns {Promise<IOpco>}
  */
-export const getOpcoBySirenFromDB = (siren) => Opco.findOne({ siren })
+export const getOpcoBySirenFromDB = async (siren: string) => {
+  const opcoFromDB = await Opco.findOne({ siren })
+  if (opcoFromDB) {
+    const { opco, idcc } = opcoFromDB
+    return { opco, idcc }
+  }
+}
 
 /**
  * @description tente d'ajouter un opco en base et retourne une string indiquant le résultat
@@ -122,4 +127,14 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
   })
 
   return results
+}
+
+export const prepareReferentielOpcoForInsert = (referentiel: Omit<IReferentielOpco, "_id">) => {
+  if (ZReferentielOpcoInsert.safeParse(referentiel).success && referentiel.emails.length) {
+    const deduplicatedEmails = [...new Set(referentiel.emails)]
+    referentiel.emails = deduplicatedEmails
+    return referentiel
+  } else {
+    return false
+  }
 }

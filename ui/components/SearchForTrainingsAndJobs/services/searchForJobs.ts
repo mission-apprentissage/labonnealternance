@@ -31,8 +31,7 @@ export const searchForJobsFunction = async ({
   try {
     const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
     const romes = getRomeFromParameters({ values, widgetParameters })
-    // TODO
-    // const rncp = romes ? "" : getRncpFromParameters({ widgetParameters }) // on ne transmet pas romes ET rncp
+    const rncp = romes ? "" : values?.job?.rncp
 
     const params: {
       romes?: string
@@ -46,7 +45,7 @@ export const searchForJobsFunction = async ({
       diploma?: string
     } = {
       romes,
-      // rncp,
+      rncp,
       opco: opcoFilter,
       opcoUrl: opcoUrlFilter,
     }
@@ -128,7 +127,7 @@ export const searchForJobsFunction = async ({
 
     setJobMarkers({ jobList: factorJobsForMap(results), searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
-    console.log(
+    console.error(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${
         err.response && err.response.data ? err.response.data.error : err.message
       })`

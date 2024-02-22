@@ -30,6 +30,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
+import { IJob } from "shared"
 
 import { useAuth } from "@/context/UserContext"
 
@@ -77,16 +78,18 @@ export default function ListeOffres() {
 
   dayjs.extend(relativeTime)
 
+  const { establishment_id } = router.query as { establishment_id: string }
   const { data, isLoading } = useQuery("offre-liste", {
-    enabled: !!router.query.establishment_id,
-    queryFn: () => getFormulaire(router.query.establishment_id),
+    enabled: !!establishment_id,
+    queryFn: () => getFormulaire(establishment_id),
   })
 
-  if (isLoading || !router.query.establishment_id) {
+  if (isLoading || !establishment_id) {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  const { jobs = [], establishment_raison_sociale, establishment_siret, establishment_id, geo_coordinates, _id: dataId } = data.data ?? {}
+  const { establishment_raison_sociale, establishment_siret, geo_coordinates, _id: dataId } = data
+  const jobs: (IJob & { candidatures: number })[] = data.jobs ?? []
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreCreationUrl = () => {
@@ -130,7 +133,7 @@ export default function ListeOffres() {
     )
   }
 
-  const jobsWithGeoCoords = jobs?.map((job) => ({ ...job, geo_coordinates })) ?? []
+  const jobsWithGeoCoords = jobs.map((job) => ({ ...job, geo_coordinates }))
 
   const offresTermine = jobsWithGeoCoords.filter((x) => x.job_status === "Annulée")
   const offresTermineNbr = offresTermine.length
@@ -205,7 +208,7 @@ export default function ListeOffres() {
             <Menu>
               {({ isOpen }) => (
                 <>
-                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
+                  <MenuButton isActive={isOpen} as={Button} variant="navdot">
                     <Icon as={Parametre} color="bluefrance.500" />
                   </MenuButton>
                   <MenuList>

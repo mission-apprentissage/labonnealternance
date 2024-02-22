@@ -177,7 +177,7 @@ export const AutoCompleteField = ({
     }
   }
 
-  const { isOpen, getMenuProps, getInputProps, getComboboxProps, highlightedIndex, getItemProps, selectItem, openMenu, inputValue } = useCombobox({
+  const { isOpen, getMenuProps, getInputProps, getLabelProps, getComboboxProps, highlightedIndex, getItemProps, selectItem, openMenu, inputValue } = useCombobox({
     id,
     items: inputItems,
     itemToString,
@@ -224,8 +224,8 @@ export const AutoCompleteField = ({
 
   return (
     <Box>
-      <Flex {...containerChakraProps} {...getComboboxProps()}>
-        <Text variant={labelVariant} as="label">
+      <Flex {...containerChakraProps} {...getComboboxProps()} aria-expanded={isOpen ? true : false}>
+        <Text {...getLabelProps()} variant={labelVariant} as="label">
           {kind}
         </Text>
 

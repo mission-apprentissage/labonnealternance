@@ -2,7 +2,7 @@ export interface PublicConfig {
   sentry_dsn: string
   baseUrl: string
   host: string
-  env: "local" | "recette" | "production" | "preview"
+  env: "local" | "recette" | "pentest" | "production" | "preview"
   matomo: {
     url: string
     siteId: string
@@ -11,6 +11,7 @@ export interface PublicConfig {
   inserJeuneApiUrl: string
   apiEndpoint: string
   version: string
+  plausibleDomain: string
 }
 
 const SENTRY_DSN = "https://d04df44068da41a19f478822fe1d58ea@sentry.apprentissage.beta.gouv.fr/8"
@@ -31,6 +32,7 @@ function getProductionPublicConfig(): PublicConfig {
     inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
+    plausibleDomain: "labonnealternance.apprentissage.beta.gouv.fr",
   }
 }
 
@@ -50,6 +52,27 @@ function getRecettePublicConfig(): PublicConfig {
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
+    plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
+  }
+}
+
+function getPentestPublicConfig(): PublicConfig {
+  const host = "labonnealternance-pentest.apprentissage.beta.gouv.fr"
+
+  return {
+    sentry_dsn: SENTRY_DSN,
+    env: "pentest",
+    host,
+    baseUrl: `https://${host}`,
+    matomo: {
+      url: "https://stats.beta.gouv.fr",
+      siteId: "10",
+      jsTrackerFile: "js/container_6EvvnT5g.js",
+    },
+    inserJeuneApiUrl: "https://exposition-pentest.inserjeunes.beta.gouv.fr",
+    apiEndpoint: `https://${host}/api`,
+    version: getVersion(),
+    plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
   }
 }
 
@@ -76,6 +99,7 @@ function getPreviewPublicConfig(): PublicConfig {
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version,
+    plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
   }
 }
 
@@ -95,6 +119,7 @@ function getLocalPublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     version: getVersion(),
+    plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
   }
 }
 
@@ -115,6 +140,7 @@ function getEnv(): PublicConfig["env"] {
     case "recette":
     case "preview":
     case "local":
+    case "pentest":
       return env
     default:
       throw new Error(`Invalid NEXT_PUBLIC_ENV env-vars ${env}`)
@@ -127,6 +153,8 @@ function getPublicConfig(): PublicConfig {
       return getProductionPublicConfig()
     case "recette":
       return getRecettePublicConfig()
+    case "pentest":
+      return getPentestPublicConfig()
     case "preview":
       return getPreviewPublicConfig()
     case "local":

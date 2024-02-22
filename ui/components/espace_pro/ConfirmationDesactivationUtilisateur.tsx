@@ -15,18 +15,28 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useState } from "react"
+import { IUserRecruteurJson } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
-import { AUTHTYPE, USER_STATUS } from "../../common/contants"
+import { AUTHTYPE } from "../../common/contants"
 import useUserHistoryUpdate from "../../common/hooks/useUserHistoryUpdate"
 import { Close } from "../../theme/components/icons"
-import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from "../../utils/api"
+import { archiveDelegatedFormulaire, archiveFormulaire, updateEntrepriseAdmin } from "../../utils/api"
 
-export const ConfirmationDesactivationUtilisateur = (props) => {
-  const { isOpen, onClose, establishment_raison_sociale, _id, type, establishment_id, siret, onUpdate } = props
+export const ConfirmationDesactivationUtilisateur = ({
+  userRecruteur,
+  onClose,
+  isOpen,
+  onUpdate,
+}: { userRecruteur?: IUserRecruteurJson; onUpdate?: () => void } & ReturnType<typeof useDisclosure>) => {
+  const { establishment_raison_sociale, _id: _idObject, type, establishment_id, establishment_siret } = userRecruteur ?? {}
+  const _id = (_idObject ?? "").toString()
   const [reason, setReason] = useState()
   const reasonComment = useDisclosure()
-  const disableUser = useUserHistoryUpdate(_id, USER_STATUS.DISABLED, reason)
-  const reassignUserToAdmin = useUserHistoryUpdate(_id, USER_STATUS.WAITING, reason)
+  const disableUser = useUserHistoryUpdate(_id, ETAT_UTILISATEUR.DESACTIVE, reason)
+  const reassignUserToAdmin = useUserHistoryUpdate(_id, ETAT_UTILISATEUR.ATTENTE, reason)
+
+  if (!userRecruteur) return null
 
   const handleReason = (value) => {
     if (value === "Autre") {
@@ -41,14 +51,14 @@ export const ConfirmationDesactivationUtilisateur = (props) => {
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
         if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
-          await Promise.all([updateEntreprise(_id, establishment_id, { opco: "inconnu" }), reassignUserToAdmin()])
+          await Promise.all([updateEntrepriseAdmin(_id, establishment_id, { opco: "inconnu" }), reassignUserToAdmin()])
         } else {
           await Promise.all([archiveFormulaire(establishment_id), disableUser()])
         }
         break
 
       case AUTHTYPE.CFA:
-        await Promise.all([archiveDelegatedFormulaire(siret), disableUser()])
+        await Promise.all([archiveDelegatedFormulaire(establishment_siret), disableUser()])
         break
       case AUTHTYPE.ADMIN:
         await disableUser()

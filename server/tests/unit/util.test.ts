@@ -1,9 +1,9 @@
 import assert from "assert"
 
+import { cleanEmail, removeUrlsFromText } from "shared/helpers/common"
 import { describe, it } from "vitest"
 
 import __filename from "../../src/common/filename"
-import { decrypt, encrypt } from "../../src/common/utils/encryptString"
 import { isOriginLocal } from "../../src/common/utils/isOriginLocal"
 
 describe(__filename(import.meta.url), () => {
@@ -32,13 +32,19 @@ describe(__filename(import.meta.url), () => {
     assert.strictEqual(result, true)
   })
 
-  it.skip("Encryption décryption fonctionne", () => {
-    const value = "Chaîne@crypter"
+  it("Suppression des accents et caractères spéciaux des adresses emails", () => {
+    assert.strictEqual(cleanEmail(""), "")
+    assert.strictEqual(cleanEmail("àlan.léruŷêïÿt@test.fr"), "alan.leruyeiyt@test.fr")
+    assert.strictEqual(cleanEmail("jhönœ.dôœ.’£'^&/=!*?}ù@têst .com "), "jhono.doo.u@test.com")
+  })
 
-    const encryptedValue = encrypt({ value, iv: null, secret: "test" })
-    const decryptedValue = decrypt({ value: encryptedValue, iv: null, secret: "test" })
-
-    assert.notStrictEqual(value, encryptedValue)
-    assert.strictEqual(value, decryptedValue)
+  it("Suppression des différentes formes d'URL dans un texte", () => {
+    assert.strictEqual(removeUrlsFromText(undefined), "")
+    assert.strictEqual(removeUrlsFromText(null), "")
+    assert.strictEqual(removeUrlsFromText(""), "")
+    assert.strictEqual(removeUrlsFromText("clean text"), "clean text")
+    assert.strictEqual(removeUrlsFromText("text https://url.com end"), "text  end")
+    assert.strictEqual(removeUrlsFromText("text http://www.url.com https://url.com evil-pirate@hack.com end"), "text    end")
+    assert.strictEqual(removeUrlsFromText("text https://url.com www.url.com/?meh=lah mailto:evil@hack.com ftp://bad-ressource.com/path/path"), "text    ")
   })
 })

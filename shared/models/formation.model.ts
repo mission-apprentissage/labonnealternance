@@ -1,5 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 
+import { ZPointGeometry } from "./address.model"
 import { ZAppointment } from "./appointments.model"
 import { zObjectId } from "./common"
 
@@ -138,6 +139,7 @@ export const zFormationCatalogueSchema = z
     affelnet_a_charger: z.boolean().nullish(),
     affelnet_statut: z.string().nullish(),
     affelnet_statut_history: z.array(z.record(z.unknown())).nullish(),
+    affelnet_visible: z.boolean().nullish(),
     source: z.string().nullish(),
     commentaires: z.string().nullish(),
     opcos: z.array(z.string()).nullish(),
@@ -153,6 +155,7 @@ export const zFormationCatalogueSchema = z
     to_update: z.boolean().nullish(),
     update_error: z.string().nullish(),
     lieu_formation_geo_coordonnees: z.string().nullish(),
+    lieu_formation_geopoint: ZPointGeometry.nullish(),
     lieu_formation_adresse: z.string().nullish(),
     lieu_formation_adresse_computed: z.string().nullish(),
     lieu_formation_siret: z.string().nullish(),
@@ -180,11 +183,15 @@ export const zFormationCatalogueSchema = z
     date_debut: z.array(z.string()).nullish(),
     date_fin: z.array(z.string()).nullish(),
     modalites_entrees_sorties: z.array(z.boolean()).nullish(),
+    num_tel: z.string().nullable().describe("Numéro de téléphone de contact"),
+    distance: z.number().nullish(),
   })
   .strict()
   .extend(etablissementFormateurSchema.shape)
   .extend(etablissementGestionnaireSchema.shape)
   .extend(etablissementReferenceSchema.shape)
   .openapi("FormationCatalogue")
+
+export const zFormationCatalogueSchemaNew = zFormationCatalogueSchema.omit({ _id: true })
 
 export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>

@@ -4,9 +4,10 @@ import HttpTerminator from "lil-http-terminator"
 
 import { closeMongoConnection } from "@/common/mongodb"
 
-import { closeElasticSearch } from "./common/esClient"
+import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
+import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { closeSentry, initSentryProcessor } from "./http/sentry"
 import server from "./http/server"
@@ -69,8 +70,14 @@ program
     logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await Promise.all([closeMongoConnection(), closeElasticSearch()])
+    await Promise.all([closeMongoConnection(), closeMemoryCache()])
     await closeSentry()
+
+    setTimeout(async () => {
+      await notifyToSlack({ error: true, subject: "Process not released", message: "Review open handles using wtfnode" })
+      // eslint-disable-next-line n/no-process-exit
+      process.exit(1)
+    }, 10_000).unref()
   })
 
 program
@@ -158,12 +165,47 @@ function createJobAction(name) {
 
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
+program
+  .command("fix-diffusible-companies")
+  .description("Clean companies not diffusible.")
+  .option("-c, --collection_list <string>", " <collection_list> est la liste des collections à réparer séparées par des ,")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("fix-diffusible-companies"))
+
+program
+  .command("anonymize-individual")
+  .description("Anonymize elements based on id")
+  .requiredOption("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
+  .requiredOption("-i, --id <string>", " <id> est l'identifiant de l'élément à anonymiser")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("anonymize-individual"))
+
+program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
+program
+  .command("fix:duplicate:users")
+  .description("Fix duplicated users in users collections and update appointment collection accordingly")
+  .action(createJobAction("fix:duplicate:users"))
+
+program
+  .command("migration:correctionRDVA")
+  .description("Corrige les erreurs de données ne correspondant pas aux modèles associés")
+  .action(createJobAction("migration:correctionRDVA"))
+
+program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
+
+program.command("recruiters:delegations").description("Resend delegation email for all jobs created on November 2023").action(createJobAction("recruiters:delegations"))
 program.command("migrations:up").description("Run migrations up").action(createJobAction("migrations:up"))
 
 program.command("migrations:status").description("Check migrations status").action(createJobAction("migrations:status"))
 
 program.command("migrations:create").description("Run migrations create").requiredOption("-d, --description <string>", "description").action(createJobAction("migrations:create"))
 
+// Temporaire, one shot à executer en recette et prod
+program
+  .command("recruiters:set-missing-job-start-date")
+  .description("Récupération des geo_coordinates manquants dans la collection Recruiters")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:set-missing-job-start-date"))
 // Temporaire, one shot à executer en recette et prod
 program
   .command("recruiters:get-missing-geocoordinates")
@@ -207,14 +249,6 @@ program
   .action(createJobAction("mongodb:indexes:create"))
 
 /********************/
-
-program
-  .command("index")
-  .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch.")
-  .option("-i, --index_list <string>", " <index_list> est la liste des index séparés par des ,")
-  .option("--recreate", " supprime et recrée tous les indexes", false)
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("indexes:generate"))
 
 //yarn cli create-user --first_name a --last_name b --email ab@fr.fr --scope beta --establishment_raison_sociale beta --type ADMIN
 program
@@ -324,13 +358,13 @@ program
   .action(createJobAction("etablissement:invite:opt-out"))
 
 program
-  .command("invite-etablissement-to-premium")
+  .command("etablissement:invite:premium:parcoursup")
   .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissement:invite:premium"))
+  .action(createJobAction("etablissement:invite:premium:parcoursup"))
 
 program
-  .command("invite-etablissement-affelnet-to-premium")
+  .command("etablissement:invite:premium:affelnet")
   .description("Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissement:invite:premium:affelnet"))
@@ -366,6 +400,18 @@ program
   .action(createJobAction("etablissements:formations:sync"))
 
 program
+  .command("sync-etablissements-and-formations-inverted")
+  .description("Resynchronise les referrers en partant de la table ETFA")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("etablissements:formations:inverted:sync"))
+
+program
+  .command("sync-etablissements-dates")
+  .description("Resynchronise les dates de la collection Etablissement par siret gestionnaire")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("sync:etablissement:dates"))
+
+program
   .command("sync-etablissements-and-formations-affelnet")
   .description("Récupère la liste de toutes les formations du Catalogue ME du scope AFFELNET et les enregistre.")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -393,6 +439,12 @@ program
   .description("Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:onisep:import"))
+
+program
+  .command("remove:duplicate:etablissements")
+  .description("Supprime les doublon de la collection Etablissements généré par le script de synchronisation (lié au parallélisme)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("remove:duplicates:etablissements"))
 
 /**
  *
@@ -438,7 +490,6 @@ program
   .description("Met à jour la liste des sociétés bonnes alternances")
   .option("-use-algo-file, [UseAlgoFile]", "télécharge et traite le fichier issu de l'algo", false)
   .option("-clear-mongo, [ClearMongo]", "vide la collection des bonnes alternances", false)
-  .option("-build-index, [BuildIndex]", "réindex les bonnes boîtes", false)
   .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
   .option("-source-file, [SourceFile]", "fichier source alternatif")
@@ -461,6 +512,12 @@ program
   .option("-source-file, [SourceFile]", "fichier source alternatif")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("opcos:update"))
+
+program
+  .command("update-save-files")
+  .description("Procède à la mise à jour sur le S3 des fichiers SAVE")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("save:update"))
 
 program
   .command("update-domaines-metiers")
@@ -505,6 +562,50 @@ program
   .description("Répare les job_type d'offre qui contiennent la valeur enum 'Professionalisation' mal orthographiée")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("recruiters:job-type:fix"))
+
+program
+  .command("fix-applications")
+  .description("Répare les adresses emails comportant des caractères erronés dans la collection applications")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("fix-applications"))
+
+program
+  .command("fix-data-validation-recruiters")
+  .description("Répare les data de la collection recruiters")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:data-validation:fix"))
+
+program
+  .command("fix-data-validation-user-recruteurs")
+  .description("Répare les data de la collection userrecruteurs")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("user-recruters:data-validation:fix"))
+
+program
+  .command("fix-data-validation-user-recruteurs-cfa")
+  .description("Répare les data des userrecruteurs CFA")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("user-recruters-cfa:data-validation:fix"))
+
+program
+  .command("anonymize-user-recruteurs")
+  .description("Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("user-recruteurs:anonymize"))
+
+program
+  .command("import-referentiel-opco-constructys")
+  .description("Importe les emails pour la collection ReferentielOpco depuis l'opco Constructys")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .option("-parallelism, [parallelism]", "Number of threads", "10")
+  .action(createJobAction("referentiel-opco:constructys:import"))
+
+program
+  .command("resend-prdv-emails")
+  .description("Renvoie les emails de prises de rendez-vous")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .requiredOption("--from-date <string>, [fromDate]", "format DD-MM-YYYY. Date depuis laquelle les prises de rendez-vous sont renvoyéees")
+  .action(createJobAction("prdv:emails:resend"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

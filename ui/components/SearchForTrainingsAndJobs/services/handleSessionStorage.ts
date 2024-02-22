@@ -2,38 +2,36 @@ import { factorJobsForMap, factorTrainingsForMap, setJobMarkers, setTrainingMark
 
 export const storeTrainingsInSession = ({ trainings, searchTimestamp }) => {
   try {
+    trimSessionStorage()
     const search = JSON.parse(sessionStorage.getItem(searchTimestamp))
     sessionStorage.setItem(searchTimestamp, JSON.stringify({ trainings, ...search }))
-    trimSessionStorage()
   } catch (err) {
-    console.log("sessionStorage error : ", err)
+    console.error("sessionStorage error : ", err)
   }
 }
 
 export const storeJobsInSession = ({ jobs, searchTimestamp }) => {
   try {
+    trimSessionStorage()
     const search = JSON.parse(sessionStorage.getItem(searchTimestamp))
     sessionStorage.setItem(searchTimestamp, JSON.stringify({ jobs, ...search }))
-    trimSessionStorage()
   } catch (err) {
-    console.log("sessionStorage error : ", err)
+    console.error("sessionStorage error : ", err)
   }
 }
 
 const trimSessionStorage = () => {
   let oldest = 0
 
-  if (sessionStorage.length > 15) {
-    for (let i = 0, l = sessionStorage.length; i < l; ++i) {
-      const currentKey = parseInt(sessionStorage.key(i))
-      if (!oldest || currentKey < oldest) {
-        oldest = currentKey
-      }
+  for (let i = 0, l = sessionStorage.length; i < l; ++i) {
+    const currentKey = parseInt(sessionStorage.key(i))
+    if (!oldest || currentKey < oldest) {
+      oldest = currentKey
     }
+  }
 
-    if (oldest) {
-      sessionStorage.removeItem(`${oldest}`)
-    }
+  if (oldest) {
+    sessionStorage.removeItem(`${oldest}`)
   }
 }
 

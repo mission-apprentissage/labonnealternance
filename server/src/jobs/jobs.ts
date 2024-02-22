@@ -1,19 +1,25 @@
 import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
-import { ETAT_UTILISATEUR } from "@/services/constant.service"
 
 import { getLoggerWithContext } from "../common/logger"
-import config from "../config"
 
-import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
+import anonymizeOldAppointments from "./anonymization/anonumizeAppointments"
+import anonymizeIndividual from "./anonymization/anonymizeIndividual"
+import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
+import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
+import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
+import { checkDiffusibleCompanies, fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
+import { obfuscateCollections } from "./database/obfuscateCollections"
+import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
+import { fixRDVACollections } from "./database/temp/fixRDVACollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
-import { updateFormationCatalogue } from "./formationsCatalogue/updateFormationCatalogue"
+import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { addJob, executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
@@ -22,47 +28,53 @@ import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
+import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
-import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
+import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire/misc/sendDelegationEmailWithSecuredToken"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
+import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
-import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
+import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { fillRecruiterRaisonSociale } from "./lba_recruteur/user/misc/fillRecruiterRaisonSociale"
+import { fixUserRecruiterCfaDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurCfaDataValidation"
+import { fixUserRecruiterDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurDataValidation"
 import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
+import buildSAVE from "./lbb/buildSAVE"
 import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
-import { activateOptOutEtablissementFormations } from "./rdv/activateOptOutEtablissementFormations"
+import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
-import { anonimizeUsers } from "./rdv/anonymizeUsers"
+import { anonymizeUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
+import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
+import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
+import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
+import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { inviteEtablissementToPremium } from "./rdv/inviteEtablissementToPremium"
-import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementToPremiumAffelnet"
-import { inviteEtablissementToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUp"
-import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementToPremiumFollowUpAffelnet"
+import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
+import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
+import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsAndFormationsAffelnet"
-import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
 import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
+import { controlApplications } from "./verifications/controlApplications"
+import { controlAppointments } from "./verifications/controlAppointments"
 
 const logger = getLoggerWithContext("script")
 
 export const CronsMap = {
-  "Reindex formulaire collection": {
-    cron_string: "5 1 * * *",
-    handler: () => addJob({ name: "indexes:generate", payload: { index_list: "recruiters" } }),
-  },
   "Create offre collection for metabase": {
     cron_string: "55 0 * * *",
     handler: () => addJob({ name: "metabase:offre:create", payload: {} }),
@@ -85,7 +97,7 @@ export const CronsMap = {
   },
   "Send CSV offers to Pôle emploi": {
     cron_string: "30 5 * * *",
-    handler: () => (config.env === "production" ? addJob({ name: "pe:offre:export", payload: { threshold: "1" } }) : Promise.resolve(0)),
+    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" }, productionOnly: true }),
   },
   "Check companies validation state": {
     cron_string: "30 6 * * *",
@@ -100,55 +112,59 @@ export const CronsMap = {
     handler: () => addJob({ name: "etablissement:formations:activate:opt-out", payload: {} }),
   },
   "Invite les établissements (via email gestionnaire) à l'opt-out.": {
-    cron_string: "35 0 * * *",
+    cron_string: "0 9 * * *",
     handler: () => addJob({ name: "etablissement:invite:opt-out", payload: {} }),
   },
   "Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
     cron_string: "0 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium", payload: {} }),
+    handler: () => addJob({ name: "etablissement:invite:premium:parcoursup", payload: {} }),
   },
-  "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
-    cron_string: "30 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
-  },
+  // "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
+  //   cron_string: "30 9 * * *",
+  //   handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
+  // },
   "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
-    cron_string: "10 2 * * *",
+    cron_string: "45 2 * * *",
     handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
+  },
+  "Suppression des etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
+    cron_string: "30 3 * * *",
+    handler: () => addJob({ name: "remove:duplicates:etablissements", payload: {} }),
+  },
+  "Re-synchronise les referres manquant dans la collection ETFA": {
+    cron_string: "10 3 * * *",
+    handler: () => addJob({ name: "etablissements:formations:inverted:sync", payload: {} }),
+  },
+  "Synchronise les dates des etablissements": {
+    cron_string: "0 5 * * *",
+    handler: () => addJob({ name: "sync:etablissement:dates", payload: {} }),
   },
   "Historisation des formations éligibles à la prise de rendez-vous.": {
     cron_string: "55 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
   },
-  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an": {
-    cron_string: "0 0 1 * *",
-    handler: () => addJob({ name: "users:anonimize", payload: {} }),
-  },
   "Anonimisation des prises de rendez-vous de plus d'un an": {
     cron_string: "10 0 1 * *",
     handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
   },
-  "Récupère la liste de toutes les formations Affelnet du Catalogue et les enregistre en base de données.": {
-    cron_string: "15 8 * * *",
-    handler: () => addJob({ name: "etablissements:formations:affelnet:sync", payload: {} }),
-  },
-  "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-    cron_string: "15 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
-  },
-  "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-    cron_string: "45 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:affelnet:follow-up", payload: {} }),
-  },
+  // "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
+  //   cron_string: "15 9 * * *",
+  //   handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
+  // },
+  // "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
+  //   cron_string: "45 9 * * *",
+  //   handler: () => addJob({ name: "etablissement:invite:premium:affelnet:follow-up", payload: {} }),
+  // },
   "Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
     cron_string: "45 23 * * 2",
     handler: () => addJob({ name: "referentiel:onisep:import", payload: {} }),
   },
   "Mise à jour depuis le Catalogue des formations.": {
-    cron_string: "15 3 * * *",
+    cron_string: "15 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:sync", payload: {} }),
   },
   "Mise à jour des champs spécifiques de la collection formations catalogue.": {
-    cron_string: "30 3 * * *",
+    cron_string: "30 2 * * *",
     handler: () => addJob({ name: "catalogue:trainings:sync:extra", payload: {} }),
   },
   "Mise à jour des adresses emails bloquées.": {
@@ -169,7 +185,31 @@ export const CronsMap = {
   },
   "Mise à jour des sociétés issues de l'algo": {
     cron_string: "0 5 * * 7",
-    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
+    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true } }),
+  },
+  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
+    cron_string: "0 0 1 * *",
+    handler: () => addJob({ name: "users:anonimize", payload: {} }),
+  },
+  "Contrôle quotidien des candidatures": {
+    cron_string: "0 10-19/1 * * 1-5",
+    handler: () => addJob({ name: "control:applications", payload: {}, productionOnly: true }),
+  },
+  "Contrôle quotidien des prises de rendez-vous": {
+    cron_string: "0 11-19/2 * * 1-5",
+    handler: () => addJob({ name: "control:appointments", payload: {}, productionOnly: true }),
+  },
+  "Anonymisation des user recruteurs de plus de 2 ans": {
+    cron_string: "0 1 * * *",
+    handler: () => addJob({ name: "user-recruteurs:anonymize", payload: {} }),
+  },
+  "Anonymisation des appointments de plus de 1 an": {
+    cron_string: "30 1 * * *",
+    handler: () => addJob({ name: "anonymize:appointments", payload: {} }),
+  },
+  "Lancement du garbage collector": {
+    cron_string: "30 3 * * *",
+    handler: () => addJob({ name: "garbage-collector:run", payload: {} }),
   },
 } satisfies Record<string, Omit<CronDef, "name">>
 
@@ -189,6 +229,26 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "sync:etablissement:dates":
+        return syncEtablissementDates()
+      case "remove:duplicates:etablissements":
+        return removeDuplicateEtablissements()
+      case "garbage-collector:run":
+        return runGarbageCollector()
+      case "anonymize:appointments":
+        return anonymizeOldAppointments()
+      case "recruiters:delegations": // Temporaire, doit tourner une fois en production
+        return resendDelegationEmailWithAccessToken()
+      case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
+        return fixDuplicateUsers()
+      case "migration:correctionRDVA": // Temporaire, doit tourner une fois en recette et production
+        return fixRDVACollections()
+      case "control:applications":
+        return controlApplications()
+      case "control:appointments":
+        return controlAppointments()
+      case "recruiters:set-missing-job-start-date":
+        return updateMissingStartDate()
       case "recruiters:get-missing-geocoordinates":
         return repiseGeocoordinates()
       case "recruiters:get-missing-address-detail":
@@ -201,8 +261,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return removeVersionKeyFromAllCollections()
       case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
         return removeIsDelegatedFromJobs()
-      case "indexes:generate":
-        return generateIndexes(job.payload)
       case "user:create": {
         const { first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope } = job.payload
         return createUserFromCLI(
@@ -215,14 +273,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
             address,
             email,
             scope,
-            status: [
-              {
-                status: ETAT_UTILISATEUR.VALIDE,
-                validation_type: "AUTOMATIQUE",
-                user: "SERVEUR",
-                date: new Date(),
-              },
-            ],
           },
           {
             options: {
@@ -259,15 +309,15 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "siret:inError:update":
         return updateSiretInfosInError()
       case "etablissement:formations:activate:opt-out":
-        return activateOptOutEtablissementFormations()
+        return activateOptoutOnEtablissementAndUpdateReferrersOnETFA()
       case "etablissement:invite:opt-out":
         return inviteEtablissementToOptOut()
-      case "etablissement:invite:premium":
-        return inviteEtablissementToPremium()
+      case "etablissement:invite:premium:parcoursup":
+        return inviteEtablissementParcoursupToPremium()
       case "etablissement:invite:premium:affelnet":
         return inviteEtablissementAffelnetToPremium()
       case "etablissement:invite:premium:follow-up":
-        return inviteEtablissementToPremiumFollowUp()
+        return inviteEtablissementParcoursupToPremiumFollowUp()
       case "etablissement:invite:premium:affelnet:follow-up":
         return inviteEtablissementAffelnetToPremiumFollowUp()
       case "premium:activated:reminder":
@@ -276,12 +326,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return premiumInviteOneShot()
       case "etablissements:formations:sync":
         return syncEtablissementsAndFormations()
-      case "etablissements:formations:affelnet:sync":
-        return syncAffelnetFormationsFromCatalogueME()
       case "appointments:anonimize":
         return anonimizeAppointments()
       case "users:anonimize":
-        return anonimizeUsers()
+        return anonymizeUsers()
       case "catalogue:trainings:appointments:archive:eligible":
         return eligibleTrainingsForAppointmentsHistoryWithCatalogue()
       case "referentiel:onisep:import":
@@ -289,11 +337,13 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "catalogue:trainings:sync":
         return importCatalogueFormationJob()
       case "catalogue:trainings:sync:extra":
-        return updateFormationCatalogue()
+        return updateParcoursupAndAffelnetInfoOnFormationCatalogue()
       case "brevo:blocked:sync":
         return updateBrevoBlockedEmails(job.payload)
       case "applications:anonymize":
         return anonymizeOldApplications()
+      case "user-recruteurs:anonymize":
+        return anonimizeUserRecruteurs()
       case "companies:update":
         return updateLbaCompanies(job.payload)
       case "geo-locations:update":
@@ -302,25 +352,51 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateOpcoCompanies(job.payload)
       case "domaines-metiers:update":
         return updateDomainesMetiers()
+      case "save:update":
+        return buildSAVE()
       case "domaines-metiers:file:update": {
         const { filename, key } = job.payload
         return updateDomainesMetiersFile({ filename, key })
       }
       case "diplomes-metiers:update":
         return updateDiplomesMetiers()
-      case "referentiel:rncp-romes:update":
-        return updateReferentielRncpRomes()
       case "recruiters:raison-sociale:fill":
         return fillRecruiterRaisonSociale()
       case "recruiters:expiration-date:fix":
         return fixJobExpirationDate()
       case "recruiters:job-type:fix":
         return fixJobType()
+      case "fix-applications":
+        return fixApplications()
+      case "recruiters:data-validation:fix":
+        return fixRecruiterDataValidation()
+      case "user-recruters:data-validation:fix":
+        return fixUserRecruiterDataValidation()
+      case "user-recruters-cfa:data-validation:fix":
+        return fixUserRecruiterCfaDataValidation()
+      case "referentiel-opco:constructys:import": {
+        const { parallelism } = job.payload
+        return importReferentielOpcoFromConstructys(parseInt(parallelism))
+      }
+      case "prdv:emails:resend": {
+        const { fromDate } = job.payload
+        return repriseEmailRdvs({ fromDateStr: fromDate })
+      }
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
+      case "fix-diffusible-companies":
+        return fixDiffusibleCompanies(job.payload)
+      case "anonymize-individual": {
+        const { collection, id } = job.payload
+        return anonymizeIndividual({ collection, id })
+      }
+      case "check-diffusible-companies":
+        return checkDiffusibleCompanies()
       case "db:validate":
         return validateModels()
+      case "db:obfuscate":
+        return obfuscateCollections()
       case "migrations:up": {
         await upMigration()
         // Validate all documents after the migration

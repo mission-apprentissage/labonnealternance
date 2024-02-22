@@ -1,13 +1,13 @@
-import { Box, Text, UnorderedList, ListItem } from "@chakra-ui/react"
+import { Box, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import * as Yup from "yup"
 
-import { apiGet, apiPatch, apiPost } from "@/utils/api.utils"
+import { reasons } from "@/components/RDV/types"
+import { apiGet, apiPost } from "@/utils/api.utils"
 
 import { formatDate } from "../../../../../common/utils/dateUtils"
-import { getReasonText } from "../../../../../common/utils/reasonsUtils"
 import { FormLayoutComponent } from "../../../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
 import { CfaCandidatInformationAnswered } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationAnswered"
 import { CfaCandidatInformationForm } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationForm"
@@ -20,12 +20,10 @@ import { CfaCandidatInformationUnreachable } from "../../../../../components/esp
  */
 export default function CfaCandidatInformationPage() {
   const router = useRouter()
-  const { establishmentId, appointmentId } = router.query as { establishmentId: string; appointmentId: string }
+  const { appointmentId, token } = router.query as { establishmentId: string; appointmentId: string; token: string }
   const [data, setData] = useState(null)
 
   const [currentState, setCurrentState] = useState("initial")
-
-  const utmSource = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("utm_source") : ""
 
   const formik = useFormik({
     initialValues: {
@@ -41,6 +39,9 @@ export default function CfaCandidatInformationPage() {
           cfa_intention_to_applicant: "personalised_answer",
           cfa_message_to_applicant: values.message,
           cfa_message_to_applicant_date: formatDate(new Date()),
+        },
+        headers: {
+          authorization: `Bearer ${token}`,
         },
       })
 
@@ -58,6 +59,9 @@ export default function CfaCandidatInformationPage() {
         cfa_message_to_applicant: "",
         cfa_message_to_applicant_date: formatDate(new Date()),
       },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     })
     setCurrentState("other")
   }
@@ -71,6 +75,9 @@ export default function CfaCandidatInformationPage() {
         cfa_message_to_applicant: "",
         cfa_message_to_applicant_date: formatDate(new Date()),
       },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     })
     setCurrentState("unreachable")
   }
@@ -80,20 +87,18 @@ export default function CfaCandidatInformationPage() {
    * @returns {Promise<void>}
    */
   useEffect(() => {
+    if (!router.isReady) return
     const fetchData = async () => {
-      if (appointmentId && establishmentId) {
-        if (utmSource === "mail") {
-          await apiPatch("/etablissements/:id/appointments/:appointmentId", { params: { id: establishmentId, appointmentId }, body: { has_been_read: true } })
-        }
-
-        const response = await apiGet("/appointment-request/context/recap", {
-          querystring: { appointmentId },
-        })
-        setData(response)
-      }
+      const response = await apiGet("/appointment-request/context/recap", {
+        querystring: { appointmentId },
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+      setData(response)
     }
     fetchData().catch(console.error)
-  }, [utmSource, appointmentId])
+  }, [appointmentId])
 
   return (
     <FormLayoutComponent
@@ -151,7 +156,7 @@ export default function CfaCandidatInformationPage() {
             <Text as="p" my="2">
               <UnorderedList>
                 {(data.appointment?.applicant_reasons || []).map((reason, i) => {
-                  return <ListItem key={i}>{getReasonText(reason)}</ListItem>
+                  return <ListItem key={i}>{reasons.find((item) => item.key === reason).title}</ListItem>
                 })}
               </UnorderedList>
             </Text>

@@ -3,17 +3,16 @@ import querystring from "node:querystring"
 import axios, { AxiosInstance } from "axios"
 import Boom from "boom"
 import { got } from "got"
-import * as _ from "lodash-es"
 import { sortBy } from "lodash-es"
 import { compose } from "oleoduc"
 
-import { search } from "../common/esClient/index"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+
 import { logger } from "../common/logger"
 import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
 import { getDistanceInKm } from "../common/utils/geolib"
 import { fetchStream } from "../common/utils/httpUtils"
 import { isValidEmail } from "../common/utils/isValidEmail"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { streamJsonArray } from "../common/utils/streamUtils"
 import config from "../config"
 
@@ -102,6 +101,7 @@ const neededFieldsFromCatalogue = {
   date_fin: 1,
   modalites_entrees_sorties: 1,
   bcn_mefs_10: 1,
+  num_tel: 1,
 }
 
 /**
@@ -270,7 +270,7 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
 
     instance.defaults.headers.common["Cookie"] = response?.headers["set-cookie"]?.[0]
   } catch (error: any) {
-    logger.error(error.response)
+    sentryCaptureException(error)
   }
 
   return instance
@@ -324,16 +324,23 @@ export const getFormationsFromCatalogueMe = async ({
   }
 }
 
-export type IRomeResult = {
-  romes: string[]
+export const getFormationFromCatalogueMe = async ({ query, select }: { query: object; select?: object }) => {
+  if (api === null) {
+    api = await createCatalogueMeAPI()
+  }
+
+  const params = { query: JSON.stringify(query), select: JSON.stringify(select) }
+
+  try {
+    const response = await api.get(`/entity/formation`, { params })
+    return response.data
+  } catch (error) {
+    logger.error(error)
+  }
 }
 
-const getFormationEsQueryIndexFragment = () => {
-  return {
-    index: "formationcatalogues",
-    size: 1000,
-    _source_includes: ["rome_codes"],
-  }
+export type IRomeResult = {
+  romes: string[]
 }
 
 /**
@@ -343,81 +350,32 @@ const getFormationEsQueryIndexFragment = () => {
  * @returns {Promise<IRomeResult>}
  */
 export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
-  try {
-    const mustTerm = [] as any[]
+  const query: { cfd?: string; etablissement_formateur_siret?: string } = {}
 
-    if (cfd) {
-      mustTerm.push({
-        match: {
-          cfd,
-        },
-      })
+  if (cfd) query.cfd = cfd
+  if (siret) query.etablissement_formateur_siret = siret
+
+  const formationsFromDb = await FormationCatalogue.find(query)
+
+  const romes: Set<string> = new Set()
+
+  formationsFromDb.forEach((formation) => {
+    if (formation.rome_codes) {
+      formation.rome_codes.forEach((rome) => romes.add(rome))
     }
+  })
 
-    if (siret) {
-      mustTerm.push({
-        match: {
-          etablissement_formateur_siret: siret,
-        },
-      })
-    }
+  const result: IRomeResult = { romes: [...romes] }
 
-    const esQueryIndexFragment = getFormationEsQueryIndexFragment()
-
-    const responseFormations = await search(
-      {
-        ...esQueryIndexFragment,
-        body: {
-          query: {
-            bool: {
-              must: mustTerm,
-            },
-          },
-        },
-      },
-      FormationCatalogue
-    )
-
-    const romes: Set<string> = new Set()
-
-    responseFormations.forEach((formation) => {
-      formation._source.rome_codes.forEach((rome) => romes.add(rome))
-    })
-
-    const result: IRomeResult = { romes: [...romes] }
-
-    if (!result.romes.length) {
-      throw new Error("not found")
-    }
-    return result
-  } catch (err: any) {
-    if (err.message === "not found") throw Boom.notFound("No training found")
-    const error_msg = _.get(err, "meta.body", err.message)
-    console.error("Error getting trainings from romes ", error_msg)
-    if (_.get(err, "meta.meta.connection.status") === "dead") {
-      console.error("Elastic search is down or unreachable")
-    }
-    sentryCaptureException(err)
-    throw Boom.internal(error_msg)
+  if (!result.romes.length) {
+    throw Boom.notFound("No training found")
   }
+  return result
 }
 
-/**
- * Gets email from catalogue field.
- * These email fields can contain "not valid email", "emails separated by ##" or be null.
- * @param {string|null} email
- * @return {string|null}
- */
-export const getEmailFromCatalogueField = (email) => {
+export const getEmailFromCatalogueField = (email: string | null | undefined) => {
   if (!email) {
     return null
-  }
-
-  const divider = "##"
-  if (email?.includes(divider)) {
-    const emailSplit = email.split(divider).at(-1).toLowerCase()
-
-    return isValidEmail(emailSplit) ? emailSplit : null
   }
 
   return isValidEmail(email) ? email.toLowerCase() : null

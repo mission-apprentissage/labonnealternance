@@ -1,10 +1,11 @@
 import type { ObjectId } from "mongodb"
 import type { FilterQuery } from "mongoose"
-import { IFormationCatalogue, IEligibleTrainingsForAppointment } from "shared"
+import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 
 import { EligibleTrainingsForAppointment } from "../common/model/index"
+import { isValidEmail } from "../common/utils/isValidEmail"
 
-import { getEmailFromCatalogueField } from "./catalogue.service"
+import { isEmailBlacklisted } from "./application.service"
 import { getMostFrequentEmailByLieuFormationSiret } from "./formation.service"
 
 /**
@@ -78,12 +79,16 @@ const getParameterByCleMinistereEducatif = ({ cleMinistereEducatif }) => Eligibl
  * @param {Pick<IFormationCatalogue, "email" | "etablissement_formateur_courriel" | "etablissement_formateur_siret">} formation
  * @returns {Promise<string | null>}
  */
-const getEmailForRdv = async (formation: Pick<IFormationCatalogue, "email" | "etablissement_formateur_courriel" | "etablissement_formateur_siret">): Promise<string | null> => {
-  return (
-    getEmailFromCatalogueField(formation.email) ||
-    getEmailFromCatalogueField(formation.etablissement_formateur_courriel) ||
-    (await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_formateur_siret ?? undefined))
-  )
+const getEmailForRdv = async (
+  formation: Pick<IFormationCatalogue, "email" | "etablissement_gestionnaire_courriel" | "etablissement_gestionnaire_siret">
+): Promise<string | null> => {
+  const { email, etablissement_gestionnaire_courriel, etablissement_gestionnaire_siret } = formation
+  if (email && isValidEmail(email) && !(await isEmailBlacklisted(email))) return email
+  if (etablissement_gestionnaire_courriel && isValidEmail(etablissement_gestionnaire_courriel) && !(await isEmailBlacklisted(etablissement_gestionnaire_courriel))) {
+    return etablissement_gestionnaire_courriel
+  } else {
+    return await getMostFrequentEmailByLieuFormationSiret(etablissement_gestionnaire_siret ?? undefined)
+  }
 }
 
-export { create, find, findOne, updateParameter, remove, updateMany, update, getParameterByCleMinistereEducatif, getEmailForRdv }
+export { create, find, findOne, getEmailForRdv, getParameterByCleMinistereEducatif, remove, update, updateMany, updateParameter }

@@ -18,6 +18,7 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useQueryClient } from "react-query"
+import { JOB_STATUS } from "shared"
 
 import { ArrowRightLine, Close } from "../../theme/components/icons"
 import { cancelOffreFromAdmin } from "../../utils/api"
@@ -47,7 +48,7 @@ export default function ConfirmationSuppressionOffre(props) {
     }
   }
 
-  const updateOffer = (job_status) => {
+  const cancelOffer = (job_status: JOB_STATUS.POURVUE | JOB_STATUS.ANNULEE) => {
     cancelOffreFromAdmin(offre._id, { job_status, job_status_comment: job_status_comment ?? undefined })
       .then(() => {
         toast({
@@ -91,7 +92,7 @@ export default function ConfirmationSuppressionOffre(props) {
             <Button variant="secondary" mr={3} onClick={() => reason.onOpen()}>
               Non
             </Button>
-            <Button variant="primary" onClick={() => updateOffer("Pourvue")}>
+            <Button variant="primary" onClick={() => cancelOffer(JOB_STATUS.POURVUE)}>
               Oui
             </Button>
           </ModalFooter>
@@ -107,7 +108,7 @@ export default function ConfirmationSuppressionOffre(props) {
                 <option value="Autre">Autre</option>
               </Select>
             </FormControl>
-            <Button variant="secondary" ml={3} onClick={() => updateOffer("Annulée")} isDisabled={job_status_comment.length < 3}>
+            <Button variant="secondary" ml={3} onClick={() => cancelOffer(JOB_STATUS.ANNULEE)} isDisabled={job_status_comment.length < 3}>
               Enregistrer
             </Button>
           </ModalFooter>
@@ -120,7 +121,7 @@ export default function ConfirmationSuppressionOffre(props) {
               <Input onChange={(e) => SetjobStatusComment(e.target.value)} isRequired minLength={3} />
             </FormControl>
             <Flex justify="flex-end">
-              <Button variant="secondary" mt={3} onClick={() => updateOffer("Annulée")} isDisabled={job_status_comment.length < 3}>
+              <Button variant="secondary" mt={3} onClick={() => cancelOffer(JOB_STATUS.ANNULEE)} isDisabled={job_status_comment.length < 3}>
                 Enregistrer
               </Button>
             </Flex>

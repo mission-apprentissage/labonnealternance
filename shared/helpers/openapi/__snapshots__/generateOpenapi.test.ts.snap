@@ -41,6 +41,155 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
         "type": "object",
       },
+      "ApplicationUi": {
+        "additionalProperties": false,
+        "properties": {
+          "applicant_email": {
+            "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
+            "example": "john.smith@mail.com",
+            "format": "email",
+            "type": "string",
+          },
+          "applicant_file_content": {
+            "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+            "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
+            "maxLength": 4215276,
+            "type": "string",
+          },
+          "applicant_file_name": {
+            "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
+            "example": "cv.pdf",
+            "pattern": "((.*?))(\\\\.)+(docx|pdf)$",
+            "type": "string",
+          },
+          "applicant_first_name": {
+            "description": "Le prénom du candidat.",
+            "example": "Jean",
+            "maxLength": 50,
+            "type": "string",
+          },
+          "applicant_last_name": {
+            "description": "Le nom du candidat.",
+            "example": "Dupont",
+            "maxLength": 50,
+            "type": "string",
+          },
+          "applicant_phone": {
+            "description": "Le numéro de téléphone du candidat.",
+            "example": "0101010101",
+            "type": "string",
+          },
+          "caller": {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "example": "contact@domaine nom_de_societe",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "company_address": {
+            "description": "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
+            "example": "38 RUE DES HAMECONS, 75021 PARIS-21",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "company_email": {
+            "description": "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
+            "example": "fake@dummy.com",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "company_naf": {
+            "description": "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
+            "example": "Boulangerie et boulangerie-pâtisserie",
+            "type": "string",
+          },
+          "company_name": {
+            "description": "Le nom de la société. Fourni par La bonne alternance. ",
+            "example": "Au bon pain d'antan",
+            "type": "string",
+          },
+          "company_siret": {
+            "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
+            "example": "00004993900000",
+            "pattern": "^[0-9]{14}$",
+            "type": "string",
+          },
+          "company_type": {
+            "description": "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
+            "enum": [
+              "matcha",
+              "lba",
+            ],
+            "example": "lba",
+            "type": "string",
+          },
+          "crypted_company_email": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "iv": {
+            "description": "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
+            "example": "...59c24c059b...",
+            "type": "string",
+          },
+          "job_id": {
+            "description": "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \\"matcha\\" . La valeur est fournie par La bonne alternance. ",
+            "example": "...59c24c059b...",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "job_title": {
+            "description": "Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \\"matcha\\" . La valeur est fournie par La bonne alternance. ",
+            "example": "Téléconseil, vente à distance",
+            "type": "string",
+          },
+          "message": {
+            "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
+            "example": "Madame, monsieur...",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "searched_for_job_label": {
+            "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
+            "example": "Vente de fleurs, végétaux",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "secret": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "applicant_email",
+          "applicant_first_name",
+          "applicant_last_name",
+          "applicant_phone",
+          "company_siret",
+          "company_name",
+          "company_naf",
+          "job_title",
+          "applicant_file_name",
+          "applicant_file_content",
+          "company_type",
+        ],
+        "type": "object",
+      },
       "Contact": {
         "additionalProperties": false,
         "description": "Informations de contact",
@@ -232,14 +381,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                     ],
                   },
                   "place": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Place",
-                      },
-                      {
-                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                      },
-                    ],
+                    "$ref": "#/components/schemas/Place",
                   },
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
@@ -334,14 +476,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 ],
               },
               "place": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Place",
-                  },
-                  {
-                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                  },
-                ],
+                "$ref": "#/components/schemas/Place",
               },
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
@@ -456,7 +591,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "place": {
-            "$ref": "#/components/schemas/Place",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Place",
+              },
+              {
+                "description": "Le lieu de formation",
+              },
+            ],
           },
           "rncpCode": {
             "description": "Le code RNCP.",
@@ -569,8 +711,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "is_disabled_elligible": {
+            "default": false,
             "description": "Poste ouvert aux personnes en situation de handicap",
-            "type": "boolean",
+            "type": [
+              "boolean",
+              "null",
+            ],
           },
           "is_multi_published": {
             "description": "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
@@ -580,6 +726,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_count": {
+            "default": 1,
             "description": "Nombre de poste(s) ouvert(s) pour cette offre",
             "type": [
               "number",
@@ -608,7 +755,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_duration": {
-            "description": "Durée du contrat en année",
+            "description": "Durée du contrat en mois",
+            "maximum": 36,
+            "minimum": 6,
             "type": [
               "number",
               "null",
@@ -637,6 +786,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "job_level_label": {
             "description": "Niveau de formation visé en fin de stage",
+            "enum": [
+              "Cap, autres formations niveau (Infrabac)",
+              "BP, Bac, autres formations niveau (Bac)",
+              "BTS, DEUST, autres formations niveau (Bac+2)",
+              "Licence, autres formations niveau (Bac+3)",
+              "Master, titre ingénieur, autres formations niveau (Bac+5)",
+              "Indifférent",
+            ],
             "type": [
               "string",
               "null",
@@ -651,6 +808,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "job_rythm": {
             "description": "Répartition de la présence de l'alternant en formation/entreprise",
+            "enum": [
+              "Indifférent",
+              "1 jour / 4 jours",
+              "2 jours / 3 jours",
+              "1 semaine / 1 semaine",
+              "2 semaines / 3 semaines",
+              "6 semaines / 6 semaines",
+            ],
             "type": [
               "string",
               "null",
@@ -745,10 +910,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
         },
         "required": [
+          "job_start_date",
           "rome_code",
           "job_status",
           "job_type",
-          "is_disabled_elligible",
         ],
         "type": "object",
       },
@@ -801,14 +966,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                     ],
                   },
                   "place": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Place",
-                      },
-                      {
-                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                      },
-                    ],
+                    "$ref": "#/components/schemas/Place",
                   },
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
@@ -903,14 +1061,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 ],
               },
               "place": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Place",
-                  },
-                  {
-                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                  },
-                ],
+                "$ref": "#/components/schemas/Place",
               },
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
@@ -989,14 +1140,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "place": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Place",
-              },
-              {
-                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-              },
-            ],
+            "$ref": "#/components/schemas/Place",
           },
           "title": {
             "type": [
@@ -1068,14 +1212,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                     ],
                   },
                   "place": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Place",
-                      },
-                      {
-                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                      },
-                    ],
+                    "$ref": "#/components/schemas/Place",
                   },
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
@@ -1170,14 +1307,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 ],
               },
               "place": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Place",
-                  },
-                  {
-                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                  },
-                ],
+                "$ref": "#/components/schemas/Place",
               },
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
@@ -1246,107 +1376,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Job",
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "contractDescription": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "contractType": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "creationDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "description": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "duration": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "dureeContrat": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "elligibleHandicap": {
-                    "type": [
-                      "boolean",
-                      "null",
-                    ],
-                  },
-                  "id": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "jobStartDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "quantiteContrat": {
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "romeDetails": {
-                    "$ref": "#/components/schemas/RomeDetail",
-                  },
-                  "rythmeAlternance": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "status": {
-                    "enum": [
-                      "Active",
-                      "Pourvue",
-                      "Annulée",
-                      "En attente",
-                    ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                },
-                "required": [
-                  "description",
-                  "creationDate",
-                  "id",
-                  "contractType",
-                ],
-                "type": [
-                  "object",
-                  "null",
-                ],
-              },
-            ],
+            "$ref": "#/components/schemas/LbacJob",
           },
           "nafs": {
             "items": {
@@ -1373,14 +1403,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "place": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Place",
-              },
-              {
-                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-              },
-            ],
+            "$ref": "#/components/schemas/Place",
           },
           "romes": {
             "items": {
@@ -1438,6 +1461,108 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "error",
         ],
         "type": "object",
+      },
+      "LbacJob": {
+        "additionalProperties": false,
+        "properties": {
+          "contractDescription": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "contractType": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "creationDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "description": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "duration": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "dureeContrat": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "elligibleHandicap": {
+            "type": [
+              "boolean",
+              "null",
+            ],
+          },
+          "employeurDescription": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "id": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "jobStartDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "quantiteContrat": {
+            "type": [
+              "number",
+              "null",
+            ],
+          },
+          "romeDetails": {
+            "$ref": "#/components/schemas/RomeDetail",
+          },
+          "rythmeAlternance": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "status": {
+            "enum": [
+              "Active",
+              "Pourvue",
+              "Annulée",
+              "En attente",
+            ],
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "description",
+          "creationDate",
+          "id",
+          "contractType",
+        ],
+        "type": [
+          "object",
+          "null",
+        ],
       },
       "MetierEnrichi": {
         "additionalProperties": false,
@@ -1544,14 +1669,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                     ],
                   },
                   "place": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/Place",
-                      },
-                      {
-                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                      },
-                    ],
+                    "$ref": "#/components/schemas/Place",
                   },
                   "siret": {
                     "description": "Le numéro de SIRET de l'établissement",
@@ -1646,14 +1764,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 ],
               },
               "place": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Place",
-                  },
-                  {
-                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-                  },
-                ],
+                "$ref": "#/components/schemas/Place",
               },
               "siret": {
                 "description": "Le numéro de SIRET de l'établissement",
@@ -1708,107 +1819,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "job": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Job",
-              },
-              {
-                "additionalProperties": false,
-                "properties": {
-                  "contractDescription": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "contractType": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "creationDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "description": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "duration": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "dureeContrat": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "elligibleHandicap": {
-                    "type": [
-                      "boolean",
-                      "null",
-                    ],
-                  },
-                  "id": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "jobStartDate": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "quantiteContrat": {
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "romeDetails": {
-                    "$ref": "#/components/schemas/RomeDetail",
-                  },
-                  "rythmeAlternance": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "status": {
-                    "enum": [
-                      "Active",
-                      "Pourvue",
-                      "Annulée",
-                      "En attente",
-                    ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                },
-                "required": [
-                  "description",
-                  "creationDate",
-                  "id",
-                  "contractType",
-                ],
-                "type": [
-                  "object",
-                  "null",
-                ],
-              },
-            ],
+            "$ref": "#/components/schemas/LbacJob",
           },
           "nafs": {
             "items": {
@@ -1835,14 +1846,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "place": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Place",
-              },
-              {
-                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
-              },
-            ],
+            "$ref": "#/components/schemas/Place",
           },
           "romes": {
             "items": {
@@ -1880,7 +1884,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       },
       "Place": {
         "additionalProperties": false,
-        "description": "Le lieu de formation",
+        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
         "properties": {
           "address": {
             "description": "L'adresse du lieu",
@@ -2000,6 +2004,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 "description": "Date de creation",
                 "type": "string",
               },
+              "distance": {
+                "type": [
+                  "number",
+                  "null",
+                ],
+              },
               "updatedAt": {
                 "description": "Date de mise à jour",
                 "type": "string",
@@ -2088,6 +2098,31 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "geopoint": {
+            "additionalProperties": false,
+            "description": "Coordonnées geographique de l'établissement",
+            "properties": {
+              "coordinates": {
+                "items": {
+                  "type": "number",
+                },
+                "maxItems": 2,
+                "minItems": 2,
+                "type": "array",
+              },
+              "type": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "coordinates",
+              "type",
+            ],
+            "type": [
+              "object",
+              "null",
+            ],
+          },
           "idcc": {
             "description": "Identifiant de la convention collective de l'établissement",
             "type": [
@@ -2153,6 +2188,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Statut de l'établissement",
             "enum": [
               "Actif",
+              "Archivé",
               "En attente de validation",
             ],
             "type": "string",
@@ -2231,7 +2267,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
           "codeIsco": {
-            "type": "string",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "competencesDeBase": {
             "items": {
@@ -2671,7 +2710,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "condition",
           "riasecMajeur",
           "riasecMineur",
-          "codeIsco",
           "particulier",
           "domaineProfessionnel",
           "appellations",
@@ -2845,29 +2883,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   {
                     "additionalProperties": false,
                     "properties": {
-                      "idRcoFormation": {
-                        "minLength": 1,
-                        "type": "string",
-                      },
-                      "referrer": {
-                        "enum": [
-                          "pfr_pays_de_la_loire",
-                        ],
-                        "type": "string",
-                      },
-                      "trainingHasJob": {
-                        "type": "boolean",
-                      },
-                    },
-                    "required": [
-                      "idRcoFormation",
-                      "referrer",
-                    ],
-                    "type": "object",
-                  },
-                  {
-                    "additionalProperties": false,
-                    "properties": {
                       "idActionFormation": {
                         "minLength": 1,
                         "type": "string",
@@ -2899,7 +2914,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                         "enum": [
                           "parcoursup",
                           "lba",
-                          "pfr_pays_de_la_loire",
                           "onisep",
                           "jeune_1_solution",
                           "affelnet",
@@ -2923,7 +2937,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "required": true,
         },
         "responses": {
-          "2xx": {
+          "200": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3073,152 +3087,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "applicant_email": {
-                    "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
-                    "example": "john.smith@mail.com",
-                    "format": "email",
-                    "type": "string",
-                  },
-                  "applicant_file_content": {
-                    "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
-                    "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
-                    "maxLength": 4215276,
-                    "type": "string",
-                  },
-                  "applicant_file_name": {
-                    "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
-                    "example": "cv.pdf",
-                    "pattern": "((.*?))(\\\\.)+(docx|pdf)$",
-                    "type": "string",
-                  },
-                  "applicant_first_name": {
-                    "description": "Le prénom du candidat.",
-                    "example": "Jean",
-                    "maxLength": 50,
-                    "type": "string",
-                  },
-                  "applicant_last_name": {
-                    "description": "Le nom du candidat.",
-                    "example": "Dupont",
-                    "maxLength": 50,
-                    "type": "string",
-                  },
-                  "applicant_phone": {
-                    "description": "Le numéro de téléphone du candidat.",
-                    "example": "0101010101",
-                    "type": "string",
-                  },
-                  "caller": {
-                    "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-                    "example": "contact@domaine nom_de_societe",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "company_address": {
-                    "description": "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
-                    "example": "38 RUE DES HAMECONS, 75021 PARIS-21",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "company_email": {
-                    "description": "L'adresse email de la société pour postuler. Vous devez impérativement utiliser les valeurs émises par l'API LBA avec le vecteur d'initialisation correspondant à l'adresse.",
-                    "example": "...f936e4352b5ae5...",
-                    "type": "string",
-                  },
-                  "company_naf": {
-                    "description": "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
-                    "example": "Boulangerie et boulangerie-pâtisserie",
-                    "type": "string",
-                  },
-                  "company_name": {
-                    "description": "Le nom de la société. Fourni par La bonne alternance. ",
-                    "example": "Au bon pain d'antan",
-                    "type": "string",
-                  },
-                  "company_siret": {
-                    "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
-                    "example": "00004993900000",
-                    "pattern": "^[0-9]{14}$",
-                    "type": "string",
-                  },
-                  "company_type": {
-                    "description": "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-                    "enum": [
-                      "matcha",
-                      "lba",
-                    ],
-                    "example": "lba",
-                    "type": "string",
-                  },
-                  "crypted_company_email": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "iv": {
-                    "description": "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
-                    "example": "...59c24c059b...",
-                    "type": "string",
-                  },
-                  "job_id": {
-                    "description": "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \\"matcha\\" . La valeur est fournie par La bonne alternance. ",
-                    "example": "...59c24c059b...",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "job_title": {
-                    "description": "Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \\"matcha\\" . La valeur est fournie par La bonne alternance. ",
-                    "example": "Téléconseil, vente à distance",
-                    "type": "string",
-                  },
-                  "message": {
-                    "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
-                    "example": "Madame, monsieur...",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "searched_for_job_label": {
-                    "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
-                    "example": "Vente de fleurs, végétaux",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "secret": {
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                },
-                "required": [
-                  "applicant_email",
-                  "applicant_first_name",
-                  "applicant_last_name",
-                  "applicant_phone",
-                  "company_siret",
-                  "company_email",
-                  "company_name",
-                  "company_naf",
-                  "job_title",
-                  "applicant_file_name",
-                  "applicant_file_content",
-                  "company_type",
-                  "iv",
-                ],
-                "type": "object",
+                "$ref": "#/components/schemas/ApplicationUi",
               },
             },
           },
@@ -3581,90 +3450,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
               },
             },
             "description": "",
-          },
-        },
-        "security": [],
-        "tags": [
-          "Formations",
-        ],
-      },
-    },
-    "/v1/formations/formationDescription/{id}": {
-      "get": {
-        "description": "Get details for one formation identified by it's clé ministère éducatif",
-        "operationId": "getFormationDescription",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {},
-              },
-            },
-            "description": "",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Bad Request",
-                },
-              },
-            },
-            "description": "Bad Request",
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Not Found",
-                },
-              },
-            },
-            "description": "Not Found",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Internal Server Error",
-                },
-              },
-            },
-            "description": "Internal Server Error",
           },
         },
         "security": [],
@@ -4403,47 +4188,56 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "_id": {
-                      "description": "Identifiant unique",
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "_id": {
+                        "description": "Identifiant unique",
+                      },
+                      "code_postal": {
+                        "type": "string",
+                      },
+                      "distance_en_km": {
+                        "type": "number",
+                      },
+                      "entreprise_raison_sociale": {
+                        "type": "string",
+                      },
+                      "geo_coordonnees": {
+                        "type": "string",
+                      },
+                      "nom_departement": {
+                        "type": "string",
+                      },
+                      "nom_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "numero_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "type_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
                     },
-                    "code_postal": {
-                      "type": "string",
-                    },
-                    "distance_en_km": {
-                      "type": "number",
-                    },
-                    "entreprise_raison_sociale": {
-                      "type": "string",
-                    },
-                    "geo_coordonnees": {
-                      "type": "string",
-                    },
-                    "nom_departement": {
-                      "type": "string",
-                    },
-                    "nom_voie": {
-                      "type": "string",
-                    },
-                    "numero_voie": {
-                      "type": "string",
-                    },
-                    "type_voie": {
-                      "type": "string",
-                    },
+                    "required": [
+                      "code_postal",
+                      "nom_departement",
+                      "entreprise_raison_sociale",
+                      "geo_coordonnees",
+                      "distance_en_km",
+                    ],
+                    "type": "object",
                   },
-                  "required": [
-                    "numero_voie",
-                    "type_voie",
-                    "nom_voie",
-                    "code_postal",
-                    "nom_departement",
-                    "entreprise_raison_sociale",
-                    "geo_coordonnees",
-                    "distance_en_km",
-                  ],
-                  "type": "object",
+                  "type": "array",
                 },
               },
             },
@@ -4651,6 +4445,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "phone": {
+                    "pattern": "^0[1-9]\\\\d{8}$",
                     "type": "string",
                   },
                 },
@@ -5063,36 +4858,94 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                 "additionalProperties": false,
                 "properties": {
                   "appellation_code": {
+                    "pattern": "^[0-9]+$",
                     "type": "string",
                   },
                   "custom_address": {
-                    "type": "string",
+                    "description": "Adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "custom_geo_coordinates": {
-                    "type": "string",
+                    "description": "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "is_disabled_elligible": {
-                    "type": "boolean",
+                    "default": false,
+                    "description": "Poste ouvert aux personnes en situation de handicap",
+                    "type": [
+                      "boolean",
+                      "null",
+                    ],
                   },
                   "job_count": {
-                    "type": "number",
+                    "default": 1,
+                    "description": "Nombre de poste(s) ouvert(s) pour cette offre",
+                    "type": [
+                      "number",
+                      "null",
+                    ],
                   },
                   "job_description": {
-                    "type": "string",
+                    "description": "Description de l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_duration": {
-                    "type": "number",
+                    "description": "Durée du contrat en mois",
+                    "maximum": 36,
+                    "minimum": 6,
+                    "type": [
+                      "number",
+                      "null",
+                    ],
                   },
                   "job_employer_description": {
-                    "type": "string",
+                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_level_label": {
-                    "type": "string",
+                    "description": "Niveau de formation visé en fin de stage",
+                    "enum": [
+                      "Cap, autres formations niveau (Infrabac)",
+                      "BP, Bac, autres formations niveau (Bac)",
+                      "BTS, DEUST, autres formations niveau (Bac+2)",
+                      "Licence, autres formations niveau (Bac+3)",
+                      "Master, titre ingénieur, autres formations niveau (Bac+5)",
+                      "Indifférent",
+                    ],
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_rythm": {
-                    "type": "string",
+                    "description": "Répartition de la présence de l'alternant en formation/entreprise",
+                    "enum": [
+                      "Indifférent",
+                      "1 jour / 4 jours",
+                      "2 jours / 3 jours",
+                      "1 semaine / 1 semaine",
+                      "2 semaines / 3 semaines",
+                      "6 semaines / 6 semaines",
+                    ],
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_start_date": {
+                    "description": "Date de début de l'alternance",
                     "type": "string",
                   },
                   "job_type": {
@@ -5108,8 +4961,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                 },
                 "required": [
-                  "job_level_label",
-                  "job_duration",
                   "job_type",
                   "job_start_date",
                   "appellation_code",
@@ -5194,10 +5045,15 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "is_disabled_elligible": {
+                    "default": false,
                     "description": "Poste ouvert aux personnes en situation de handicap",
-                    "type": "boolean",
+                    "type": [
+                      "boolean",
+                      "null",
+                    ],
                   },
                   "job_count": {
+                    "default": 1,
                     "description": "Nombre de poste(s) ouvert(s) pour cette offre",
                     "type": [
                       "number",
@@ -5212,7 +5068,9 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     ],
                   },
                   "job_duration": {
-                    "description": "Durée du contrat en année",
+                    "description": "Durée du contrat en mois",
+                    "maximum": 36,
+                    "minimum": 6,
                     "type": [
                       "number",
                       "null",
@@ -5227,6 +5085,14 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
+                    "enum": [
+                      "Cap, autres formations niveau (Infrabac)",
+                      "BP, Bac, autres formations niveau (Bac)",
+                      "BTS, DEUST, autres formations niveau (Bac+2)",
+                      "Licence, autres formations niveau (Bac+3)",
+                      "Master, titre ingénieur, autres formations niveau (Bac+5)",
+                      "Indifférent",
+                    ],
                     "type": [
                       "string",
                       "null",
@@ -5234,6 +5100,14 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                   "job_rythm": {
                     "description": "Répartition de la présence de l'alternant en formation/entreprise",
+                    "enum": [
+                      "Indifférent",
+                      "1 jour / 4 jours",
+                      "2 jours / 3 jours",
+                      "1 semaine / 1 semaine",
+                      "2 semaines / 3 semaines",
+                      "6 semaines / 6 semaines",
+                    ],
                     "type": [
                       "string",
                       "null",
@@ -5241,10 +5115,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
+                    "type": "string",
                   },
                   "job_type": {
                     "description": "Type de contrat",
@@ -5814,57 +5685,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/metiers/metiersParEtablissement/{siret}": {
-      "get": {
-        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour un établissement de formation",
-        "operationId": "getMetiersParEtablissement",
-        "parameters": [
-          {
-            "description": "Le numéro de SIRET de l'établissement",
-            "in": "path",
-            "name": "siret",
-            "required": true,
-            "schema": {
-              "description": "Le numéro de SIRET de l'établissement",
-              "example": "78424186100011",
-              "pattern": "^[0-9]{14}$",
-              "type": "string",
-            },
-          },
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "metiers": {
-                      "description": "Un tableau des noms des métiers triés par ordre alphabétique",
-                      "items": {
-                        "description": "Un nom de métier du référentiel La bonne alternance",
-                        "example": "Accueil touristique",
-                        "type": "string",
-                      },
-                      "type": "array",
-                    },
-                  },
-                  "required": [
-                    "metiers",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [],
-        "tags": [
-          "Metiers",
-        ],
-      },
-    },
     "/v1/metiers/metiersParFormation/{cfd}": {
       "get": {
         "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
@@ -5877,6 +5697,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "required": true,
             "schema": {
               "example": "50022137",
+              "minLength": 1,
               "type": "string",
             },
           },

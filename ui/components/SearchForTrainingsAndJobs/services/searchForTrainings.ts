@@ -51,7 +51,7 @@ export const searchForTrainingsFunction = async ({
     setHasSearch(true)
     setIsFormVisible(false)
 
-    if (response.results.length) {
+    if (response.results?.length) {
       setTrainingMarkers({
         trainingList: factorTrainingsForMap(response.results),
         options: {
@@ -69,7 +69,7 @@ export const searchForTrainingsFunction = async ({
       }
     }
   } catch (err) {
-    console.log(`Erreur interne lors de la recherche de formations (${err.response ? err.response?.status : ""} : ${err?.response?.data ? err.response.data?.error : ""})`)
+    console.error(`Erreur interne lors de la recherche de formations (${err.response ? err.response?.status : ""} : ${err?.response?.data ? err.response.data?.error : ""})`)
     logError("Training search error", err)
     setTrainingSearchError(trainingErrorText)
   }

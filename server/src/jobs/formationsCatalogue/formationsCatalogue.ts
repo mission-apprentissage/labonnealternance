@@ -1,8 +1,10 @@
 import { oleoduc, writeData } from "oleoduc"
+import { zFormationCatalogueSchemaNew } from "shared/models"
+
+import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 
 import { logger } from "../../common/logger"
 import { FormationCatalogue } from "../../common/model/index"
-import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.service"
@@ -23,9 +25,14 @@ const importFormations = async () => {
         stats.total++
         try {
           // use MongoDB to add only add selected field from getAllFormationFromCatalogue() function and speedup the process
-          await FormationCatalogue.collection.insertOne(formation)
+          delete formation._id // break parsing / insertion otherwise
+          formation.lieu_formation_geopoint = convertStringCoordinatesToGeoPoint(formation.lieu_formation_geo_coordonnees)
+          const parsedFormation = zFormationCatalogueSchemaNew.parse(formation)
+
+          await FormationCatalogue.collection.insertOne(parsedFormation)
           stats.created++
         } catch (e) {
+          logger.error("Erreur enregistrement de formation", e)
           stats.failed++
         }
       }),
@@ -55,11 +62,9 @@ export const importCatalogueFormationJob = async () => {
       return
     }
 
-    await resetIndexAndDb("formationcatalogues", FormationCatalogue, { requireAsciiFolding: true })
+    await FormationCatalogue.deleteMany({})
 
     const stats = await importFormations()
-
-    await rebuildIndex(FormationCatalogue)
 
     logger.info(`Fin traitement`)
 

@@ -18,10 +18,10 @@
   ],
   "scripts": {
     "setup": ".bin/mna-lba init:env",
+    "setup:mongodb": "docker compose exec -it mongodb mongosh --eval \"try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }\" --quiet",
     "dev": "yarn services:start; yarn foreach:parallel run dev",
     "cli": "yarn workspace server cli",
     "seed": "./.bin/mna-lba seed:apply",
-    "seed:es": "./.bin/mna-lba seed:es",
     "deploy": "./.bin/mna-lba deploy",
     "build": "yarn foreach:seq run build",
     "migrations:status": "yarn cli migrations:status",
@@ -53,10 +53,11 @@
     "foreach:ci": "yarn foreach:seq -p",
     "e2e": "cypress open",
     "e2e:headless": "cypress run",
-    "e2e:production": "cypress run --env host=https://labonnealternance-recette.apprentissage.beta.gouv.fr",
+    "e2e:production": "cypress run --env host=https://labonnealternance.apprentissage.beta.gouv.fr",
+    "e2e:recette": "cypress run --env ui=https://labonnealternance-recette.apprentissage.beta.gouv.fr,server=https://labonnealternance-recette.apprentissage.beta.gouv.fr",
     "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
     "e2e:convert2": "node cypress/convertRecords.mjs",
-    "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-job-application.cy.js --env host=localhost"
+    "e2e:specific": "cypress run --spec=./cypress/e2e/create-cfa-account-autovalidated.cy.ts"
   },
   "dependencies": {
     "husky": "^8.0.3"
@@ -69,6 +70,7 @@
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "@types/node": "20.7.1",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
     "@typescript-eslint/parser": "^6.7.2",
     "cross-env": "^7.0.3",
@@ -114,5 +116,8 @@
     "*": [
       "prettier --write -u"
     ]
+  },
+  "resolutions": {
+    "zod@3.21.4": "patch:zod@npm%3A3.21.4#./.yarn/patches/zod-npm-3.21.4-9f570b215c.patch"
   }
 }

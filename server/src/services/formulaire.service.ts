@@ -1,25 +1,26 @@
 import Boom from "boom"
-import type { ObjectId } from "mongodb"
+import type { ObjectId as ObjectIdType } from "mongodb"
+import pkg from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
+import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
+import { db } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
+import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
-import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
-import mailer from "./mailer.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
+import { getRomeDetailsFromDB } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
-interface IFormulaireExtended extends IRecruiter {
-  entreprise_localite?: string
-}
+const { ObjectId } = pkg
 
 export interface IOffreExtended extends IJob {
   candidatures: number
@@ -30,33 +31,33 @@ export interface IOffreExtended extends IJob {
 /**
  * @description get formulaire by offer id
  */
-export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise<IFormulaireExtended | null> => {
-  const result = await getOffre(id)
-
-  if (!result) {
+export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
+  const recruiterOpt = await getOffre(id)
+  if (!recruiterOpt) {
     return null
   }
-
-  result.jobs = result.jobs.filter((x) => x._id.toString() === id.toString())
-
-  if (result.is_delegated && result.address) {
-    const [entreprise_localite] = result.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
-    const { cfa_delegated_siret } = result
+  const job = recruiterOpt.jobs.find((x) => x._id.toString() === id.toString())
+  if (!job) {
+    return null
+  }
+  recruiterOpt.jobs = [job]
+  if (recruiterOpt.is_delegated && recruiterOpt.address) {
+    const { cfa_delegated_siret } = recruiterOpt
     if (cfa_delegated_siret) {
       const cfa = await getEtablissement({ establishment_siret: cfa_delegated_siret })
 
       if (cfa) {
-        result.phone = cfa.phone
-        result.email = cfa.email
-        result.last_name = cfa.last_name
-        result.first_name = cfa.first_name
-        result.establishment_raison_sociale = cfa.establishment_raison_sociale
-        result.address = cfa.address
-        return { ...result, entreprise_localite }
+        recruiterOpt.phone = cfa.phone
+        recruiterOpt.email = cfa.email
+        recruiterOpt.last_name = cfa.last_name
+        recruiterOpt.first_name = cfa.first_name
+        recruiterOpt.establishment_raison_sociale = cfa.establishment_raison_sociale
+        recruiterOpt.address = cfa.address
+        return { recruiter: recruiterOpt, job }
       }
     }
   }
-  return result
+  return { recruiter: recruiterOpt, job }
 }
 
 /**
@@ -68,7 +69,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
  * @param {number} payload.limit
  */
 export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
-  const response = await Recruiter.paginate({ query, ...select, page, limit, lean: true })
+  const response = await Recruiter.paginate({ query, select, page, limit, lean: true })
 
   return {
     pagination: {
@@ -94,7 +95,7 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
   jobPartial.job_status = user && isUserAwaiting ? JOB_STATUS.EN_ATTENTE : JOB_STATUS.ACTIVE
   // get user activation state if not managed by a CFA
   const codeRome = job.rome_code[0]
-  const romeData = await getRomeDetailsFromAPI(codeRome)
+  const romeData = await getRomeDetailsFromDB(codeRome)
   if (!romeData) {
     throw Boom.internal(`could not find rome infos for rome=${codeRome}`)
   }
@@ -102,7 +103,7 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
   const { job_start_date = creationDate } = job
   const updatedJob: Partial<IJob> = Object.assign(job, {
     job_start_date,
-    rome_detail: romeData,
+    rome_detail: romeData.fiche_metier,
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
@@ -317,7 +318,7 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @description Get job offer by job id
  * @param {IJob["_id"]} id
  */
-export async function getOffre(id: string | ObjectId) {
+export async function getOffre(id: string | ObjectIdType) {
   return Recruiter.findOne({ "jobs._id": id }).lean()
 }
 
@@ -340,7 +341,7 @@ export async function createOffre(id: IRecruiter["establishment_id"], payload: U
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+export async function updateOffre(id: string | ObjectIdType, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
   const recruiter = await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
@@ -362,21 +363,15 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object) => {
   const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
-  const recruiter = await Recruiter.findOneAndUpdate(
-    { "jobs._id": id },
+
+  await db.collection("recruiters").findOneAndUpdate(
+    { "jobs._id": new ObjectId(id.toString()) },
     {
       $inc: incPayload,
-    },
-    options
-  ).lean()
-
-  if (!recruiter) {
-    throw Boom.internal("Recruiter not found")
-  }
-
-  return recruiter
+    }
+  )
 }
 
 /**
@@ -532,7 +527,7 @@ export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecru
 /**
  * @description Get job offer by its id.
  */
-export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
+export const getJob = async (id: string | ObjectIdType): Promise<IJob | null> => {
   const offre = await getOffre(id)
   if (!offre) return null
   return offre.jobs.find((job) => job._id.toString() === id.toString()) ?? null
@@ -544,6 +539,7 @@ export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
 export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
+  const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   await mailer.sendEmail({
     to: email,
     subject: `Une entreprise recrute dans votre domaine`,
@@ -559,9 +555,9 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
       startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
       duration: offre.job_duration,
       rhythm: offre.job_rythm,
-      offerButton: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
+      offerButton: createViewDelegationLink(email, recruiter.establishment_id, offre._id.toString(), siret_code),
       createAccountButton: `${config.publicUrl}/espace-pro/creation/cfa`,
-      unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe`,
+      unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe?token=${unsubscribeToken}`,
     },
   })
 }
@@ -582,8 +578,8 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      nom: is_delegated ? contactCFA?.last_name : last_name,
-      prenom: is_delegated ? contactCFA?.first_name : first_name,
+      nom: sanitizeForEmail(is_delegated ? contactCFA?.last_name : last_name),
+      prenom: sanitizeForEmail(is_delegated ? contactCFA?.first_name : first_name),
       raison_sociale: establishmentTitle,
       mandataire: recruiter.is_delegated,
       offre: {

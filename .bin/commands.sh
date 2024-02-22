@@ -16,9 +16,11 @@ function Help() {
    echo "  vault:password                             Show vault password"
    echo "  seed:update                                Update seed using a database"
    echo "  seed:apply                                 Apply seed to a database"
-   echo "  seed:es                                    Seed Elasticsearch with data"
    echo "  deploy:log:encrypt                         Encrypt Github ansible logs"
    echo "  deploy:log:dencrypt                        Decrypt Github ansible logs"
+   echo "  log:encrypt <log_file>                     Encrypt log file"
+   echo "  log:decrypt <encrypted_log_file>           Decrypt log file"
+   echo "  e2e:run                                    Run end to end tests"
    echo
    echo
 }
@@ -72,10 +74,6 @@ function seed:apply() {
   "${SCRIPT_DIR}/seed-apply.sh" "$@"
 }
 
-function seed:es() {
-  "${SCRIPT_DIR}/seed-es.sh" "$@"
-}
-
 function deploy:log:encrypt() {
   "${SCRIPT_DIR}/deploy-log-encrypt.sh" "$@"
 }
@@ -84,3 +82,14 @@ function deploy:log:decrypt() {
   "${SCRIPT_DIR}/deploy-log-decrypt.sh" "$@"
 }
 
+function e2e:run() {
+  "${SCRIPT_DIR}/run-tests-e2e.sh" "$@"
+}
+
+function log:encrypt() {
+  "${SCRIPT_DIR}/log-encrypt.sh" "$@"
+}
+
+function log:decrypt() {
+  "${SCRIPT_DIR}/log-decrypt.sh" "$@"
+}

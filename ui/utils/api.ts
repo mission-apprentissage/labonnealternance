@@ -1,9 +1,12 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
+import { IJobWritable, INewDelegations, IRoutes, IUserRecruteur, IUserStatusValidationJson } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
 import { publicConfig } from "../config.public"
 
-import { apiGet, apiPut } from "./api.utils"
+import { ApiError, apiDelete, apiGet, apiPost, apiPut, removeUndefinedFields } from "./api.utils"
 
 const API = Axios.create({
   baseURL: publicConfig.apiEndpoint,
@@ -19,62 +22,92 @@ const errorHandler = (error: any): undefined => {
  * Formulaire API
  */
 
-export const getFormulaire = (establishment_id) => API.get(`/formulaire/${establishment_id}`).catch(errorHandler)
-export const postFormulaire = (form) => API.post(`/formulaire`, form)
+export const getDelegationDetails = (establishment_id: string, token: string) =>
+  apiGet("/formulaire/delegation/:establishment_id", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
+export const getFormulaire = (establishment_id: string) => apiGet("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
+export const getFormulaireByToken = (establishment_id: string, token: string) =>
+  apiGet("/formulaire/:establishment_id/by-token", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
+export const postFormulaire = (userId: string, form) => apiPost("/user/:userId/formulaire", { params: { userId }, body: form })
+export const updateFormulaire = (establishment_id: string, values) => apiPut("/formulaire/:establishment_id", { params: { establishment_id }, body: values })
 
-export const archiveFormulaire = (establishment_id) => API.delete(`/formulaire/${establishment_id}`).catch(errorHandler)
-export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
+export const archiveFormulaire = (establishment_id: string) => apiDelete("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
+export const archiveDelegatedFormulaire = (siret: string) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
 
 /**
  * Offre API
  */
-export const getOffre = (jobId) => API.get(`/formulaire/offre/f/${jobId}`)
-
-export const patchOffre = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}`, data, config).catch(errorHandler)
-export const cancelOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/cancel`)
-export const cancelOffreFromAdmin = (jobId, data) => API.put(`/formulaire/offre/f/${jobId}/cancel`, data)
-export const extendOffre = (jobId) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
-export const fillOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/provided`)
-export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/formulaire/offre/${jobId}/delegation`, data)
+export const getOffre = (jobId: string) => apiGet("/formulaire/offre/f/:jobId", { params: { jobId } })
+export const createOffre = (establishment_id: string, newOffre: IJobWritable) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
+export const createOffreByToken = (establishment_id: string, newOffre: IJobWritable, token: string) =>
+  apiPost("/formulaire/:establishment_id/offre/by-token", { params: { establishment_id }, body: newOffre, headers: { authorization: `Bearer ${token}` } })
+export const patchOffreDelegation = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}/delegation`, data, config).catch(errorHandler)
+export const cancelOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/cancel`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
+export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formulaire/offre/f/:jobId/cancel"]["body"]["_input"]) =>
+  apiPut("/formulaire/offre/f/:jobId/cancel", { params: { jobId }, body: data })
+export const extendOffre = (jobId: string) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
+export const fillOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
+export const createEtablissementDelegation = ({ data, jobId }: { jobId: string; data: INewDelegations }) =>
+  apiPost(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, body: data })
+export const createEtablissementDelegationByToken = ({ data, jobId, token }: { jobId: string; data: INewDelegations; token: string }) =>
+  apiPost(`/formulaire/offre/:jobId/delegation/by-token`, { params: { jobId }, body: data, headers: { authorization: `Bearer ${token}` } })
 
 /**
  * User API
  */
-export const updateUserValidationHistory = async (userId, state) => await API.put(`user/${userId}/history`, state).catch(errorHandler)
+export const getUser = (userId: string) => apiGet("/user/:userId", { params: { userId } })
+const updateUser = (userId: string, user) => apiPut("/user/:userId", { params: { userId }, body: user })
+const updateUserAdmin = (userId: string, user) => apiPut("/admin/users/:userId", { params: { userId }, body: user })
+export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
+export const getUserStatusByToken = (userId: string, token: string) =>
+  apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
+export const updateUserValidationHistory = (userId: string, state: IUserStatusValidationJson) =>
+  apiPut("/user/:userId/history", { params: { userId }, body: state }).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
-export const deleteEntreprise = async (userId, recruiterId) => await API.delete(`/user`, { params: { userId, recruiterId } }).catch(errorHandler)
+export const deleteEntreprise = (userId: string, recruiterId: string) => apiDelete(`/user`, { querystring: { userId, recruiterId } }).catch(errorHandler)
+export const createUser = (userRecruteur: IUserRecruteur) => apiPost("/admin/users", { body: userRecruteur })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**
  * KBA 20230511 : (migration db) : casting des valueurs coté collection recruiter, car les champs ne sont plus identiques avec la collection userRecruteur.
  */
-export const updateEntreprise = async (userId: string, establishment_id, user) =>
+export const updateEntreprise = async (userId: string, establishment_id: string, user: any) =>
   await Promise.all([
-    apiPut(`/user/:userId`, { params: { userId }, body: user }),
+    updateUser(userId, user),
     //
-    apiPut(`/formulaire/:establishment_id`, { params: { establishment_id }, body: user }),
+    updateFormulaire(establishment_id, user),
+  ])
+
+export const updateEntrepriseAdmin = async (userId: string, establishment_id: string, user: any) =>
+  await Promise.all([
+    updateUserAdmin(userId, user),
+    //
+    updateFormulaire(establishment_id, user),
   ])
 
 /**
  * Auth API
  */
 export const sendMagiclink = async (email) => await API.post(`/login/magiclink`, email)
-export const sendValidationLink = async (email) => await API.post(`/login/confirmation-email`, email)
+export const sendValidationLink = async (userId: string) => await apiPost("/login/:userId/resend-confirmation-email", { params: { userId } })
 
 /**
  * Etablissement API
  */
-export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
+export const getEntreprisesManagedByCfa = (userId: string) => apiGet("/etablissement/cfa/:userRecruteurId/entreprises", { params: { userRecruteurId: userId } })
+export const getCfaInformation = async (siret: string) => apiGet("/etablissement/cfa/:siret", { params: { siret } })
 
-export const getEntrepriseInformation = async (siret: string, options: { cfa_delegated_siret: string | undefined } = { cfa_delegated_siret: undefined }) => {
+export const getEntrepriseInformation = async (
+  siret: string,
+  options: { cfa_delegated_siret?: string } = {}
+): Promise<{ statusCode: 200; data: IEntrepriseInformations; error: false } | { statusCode: number; message: string; data?: { errorCode?: BusinessErrorCodes }; error: true }> => {
   try {
-    const data = await apiGet("/etablissement/entreprise/:siret", { params: { siret }, querystring: options }, { timeout: 7000 })
-    return data
-  } catch (error: any) {
+    const data = await apiGet("/etablissement/entreprise/:siret", { params: { siret }, querystring: removeUndefinedFields(options) }, { timeout: 7000 })
+    return { statusCode: 200, data, error: false }
+  } catch (error: unknown) {
     captureException(error)
-    if (error && typeof error === "object" && "response" in error) {
-      const payload: { data?: { isCfa?: boolean }; error: boolean; statusCode: number; message: string } = error.response.data
-      return payload
+    if (error instanceof ApiError && error.context?.statusCode >= 400) {
+      const { errorData, statusCode, message } = error.context
+      return { statusCode, message, data: errorData, error: true }
     } else {
       return { statusCode: 500, message: "unkown error", error: true }
     }
@@ -90,16 +123,22 @@ export const getEntrepriseOpco = async (siret: string) => {
   }
 }
 
-export const createEtablissement = (etablissement) => API.post("/etablissement/creation", etablissement)
+export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
 
 export const getRomeDetail = (rome: string) => API.get(`/rome/detail/${rome}`)
 export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) =>
   API.get(`/etablissement/cfas-proches?rome=${rome}&latitude=${latitude}&longitude=${longitude}`)
 
-export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) => API.post(`/etablissement/${establishmentSiret}/proposition/unsubscribe`)
+export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: any, token: string) =>
+  apiPost("/etablissement/:establishment_siret/proposition/unsubscribe", {
+    params: { establishment_siret },
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  })
 
 /**
  * Administration OPCO
  */
 
-export const getOpcoUsers = (opco) => API.get("/user/opco", { params: { opco } })
+export const getOpcoUsers = (opco: string) => apiGet("/user/opco", { querystring: { opco } })

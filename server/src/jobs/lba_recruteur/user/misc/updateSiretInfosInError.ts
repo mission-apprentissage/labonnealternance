@@ -1,13 +1,14 @@
 import Boom from "boom"
 import { JOB_STATUS, type IUserRecruteur } from "shared"
+import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { logger } from "../../../../common/logger"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "../../../../services/constant.service"
-import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
+import { CFA, ENTREPRISE } from "../../../../services/constant.service"
+import { autoValidateCompany, EntrepriseData, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
 import { activateEntrepriseRecruiterForTheFirstTime, archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
 import { autoValidateUser, deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
 
@@ -32,8 +33,9 @@ const updateUserRecruteursSiretInfosInError = async () => {
         await deactivateUser(_id, siretResponse.message)
         stats.deactivated++
       } else {
-        let updatedUserRecruteur: IUserRecruteur = await updateUser({ _id }, siretResponse)
-        recruteur = await updateFormulaire(recruteur.establishment_id, siretResponse)
+        const entrepriseData: Partial<EntrepriseData> = siretResponse
+        let updatedUserRecruteur: IUserRecruteur = await updateUser({ _id }, entrepriseData)
+        recruteur = await updateFormulaire(recruteur.establishment_id, entrepriseData)
         if (type === "ENTREPRISE") {
           const result = await autoValidateCompany(updatedUserRecruteur)
           updatedUserRecruteur = result.userRecruteur
@@ -80,7 +82,8 @@ const updateRecruteursSiretInfosInError = async () => {
         await archiveFormulaire(establishment_id)
         stats.deactivated++
       } else {
-        const updatedRecruiter = await updateFormulaire(establishment_id, { ...siretResponse, status: RECRUITER_STATUS.ACTIF })
+        const entrepriseData: Partial<EntrepriseData> = siretResponse
+        const updatedRecruiter = await updateFormulaire(establishment_id, { ...entrepriseData, status: RECRUITER_STATUS.ACTIF })
         const userRecruteurCFA = await getUser({ establishment_siret: cfa_delegated_siret, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] } })
         if (!userRecruteurCFA) {
           throw Boom.internal(`unexpected: impossible de trouver le user recruteur CFA avec siret=${cfa_delegated_siret}`)

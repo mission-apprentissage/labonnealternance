@@ -6,11 +6,11 @@ import { LoadingEmptySpace } from "../.."
 import { dayjs } from "../../../../common/dayjs"
 import { publicConfig } from "../../../../config.public"
 import { Copy, InfoCircle, Minus, Plus } from "../../../../theme/components/icons"
-import { getFormulaire, patchOffre } from "../../../../utils/api"
+import { getDelegationDetails, patchOffreDelegation } from "../../../../utils/api"
 
 export default function PropositionOffreId() {
   const router = useRouter()
-  const { idFormulaire, jobId, siretFormateur } = router.query
+  const { idFormulaire, jobId, siretFormateur, token } = router.query as { idFormulaire: string; jobId: string; siretFormateur: string; token: string }
   const toast = useToast()
 
   const [job, setJob]: [any, (t: any) => void] = useState()
@@ -36,12 +36,11 @@ export default function PropositionOffreId() {
    */
   useEffect(() => {
     const fetchData = async () => {
-      const { data }: any = await getFormulaire(idFormulaire)
-
+      const data: any = await getDelegationDetails(idFormulaire, token)
       const job = data.jobs.find((job) => job._id === jobId)
 
       if (siretFormateur) {
-        await patchOffre(job._id, { cfa_read_company_detail_at: new Date() }, { params: { siret_formateur: siretFormateur } })
+        await patchOffreDelegation(job._id, null, { params: { siret_formateur: siretFormateur } })
       }
 
       setFormulaire(data)

@@ -1,3 +1,4 @@
+import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zCallerParam } from "../routes/_params"
@@ -11,14 +12,22 @@ export const ZApplication = z
       description: "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
       example: "john.smith@mail.com",
     }),
-    applicant_first_name: z.string().max(50).openapi({
-      description: "Le prénom du candidat.",
-      example: "Jean",
-    }),
-    applicant_last_name: z.string().max(50).openapi({
-      description: "Le nom du candidat.",
-      example: "Dupont",
-    }),
+    applicant_first_name: z
+      .string()
+      .max(50)
+      .transform((value) => removeUrlsFromText(value))
+      .openapi({
+        description: "Le prénom du candidat.",
+        example: "Jean",
+      }),
+    applicant_last_name: z
+      .string()
+      .max(50)
+      .transform((value) => removeUrlsFromText(value))
+      .openapi({
+        description: "Le nom du candidat.",
+        example: "Dupont",
+      }),
     applicant_phone: extensions.phone().openapi({
       description: "Le numéro de téléphone du candidat.",
       example: "0101010101",
@@ -58,9 +67,9 @@ export const ZApplication = z
       description: "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
       example: "38 RUE DES HAMECONS, 75021 PARIS-21",
     }),
-    job_origin: z.string().nullable().openapi({
+    job_origin: z.enum(["lba", "lbb", "matcha"]).nullable().openapi({
       description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-      example: "lba|lbb|matcha",
+      example: "matcha",
     }),
     job_title: z.string().openapi({
       description:
@@ -75,14 +84,13 @@ export const ZApplication = z
     to_applicant_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé au candidat"),
     to_company_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé à l'entreprise"),
     caller: z.string().nullable().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
-    is_anonymized: z.boolean().nullable().describe("Indique si la candidature a été anonymisée"),
     created_at: z.date().nullable().describe("La date création de la demande"),
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
   })
   .strict()
   .openapi("Application")
 
-export const ZApplicationUI = ZApplication.extend({
+export const ZNewApplication = ZApplication.extend({
   message: ZApplication.shape.applicant_message_to_company.optional(),
   applicant_file_name: ZApplication.shape.applicant_attachment_name,
   applicant_file_content: z.string().max(4215276).openapi({
@@ -93,11 +101,15 @@ export const ZApplicationUI = ZApplication.extend({
     description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
     example: "lba",
   }),
-  iv: z.string().openapi({
+  iv: z.string().optional().openapi({
     description: "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
     example: "...59c24c059b...",
   }),
   secret: z.string().nullish(),
+  company_email: z.string().nullish().openapi({
+    description: "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
+    example: "fake@dummy.com",
+  }),
   crypted_company_email: z.string().nullish(),
   caller: zCallerParam.nullish(),
   job_id: ZApplication.shape.job_id.optional(),
@@ -107,12 +119,12 @@ export const ZApplicationUI = ZApplication.extend({
   }),
 })
   .omit({
+    _id: true,
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
     to_applicant_message_id: true,
     to_company_message_id: true,
-    is_anonymized: true,
     company_recruitment_intention: true,
     company_feedback: true,
     company_feedback_date: true,
@@ -121,6 +133,23 @@ export const ZApplicationUI = ZApplication.extend({
   })
   .openapi("ApplicationUi")
 
-export type IApplicationUI = z.output<typeof ZApplicationUI>
+export const ZUsedNewApplication = ZNewApplication.pick({
+  caller: true,
+  applicant_email: true,
+  company_siret: true,
+  applicant_file_content: true,
+  searched_for_job_label: true,
+  job_id: true,
+  company_type: true,
+  applicant_first_name: true,
+  applicant_last_name: true,
+  applicant_file_name: true,
+  message: true,
+  applicant_phone: true,
+  secret: true,
+  company_email: true,
+})
+
+export type INewApplication = z.output<typeof ZUsedNewApplication>
 
 export type IApplication = z.output<typeof ZApplication>

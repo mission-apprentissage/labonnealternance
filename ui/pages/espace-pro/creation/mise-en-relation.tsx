@@ -3,20 +3,20 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
 import { ArrowRightLine, Check } from "../../../theme/components/icons"
-import { createEtablissementDelegation, getRelatedEtablissementsFromRome } from "../../../utils/api"
+import { createEtablissementDelegation, createEtablissementDelegationByToken, getRelatedEtablissementsFromRome } from "../../../utils/api"
 
 /**
  * @description "Mise en relation" page.
  * @return {JSX.Element}
  */
-export default function CreationMiseEnRelation() {
+function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
   const router = useRouter()
 
   const [etablissements, setEtablissements] = useState(null)
   const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
-  const { job: jobString, email, geo_coordinates, fromDashboard, userId, establishment_id } = router.query
+  const { job: jobString, email, geo_coordinates, fromDashboard, userId, establishment_id, token } = router.query
   const job = JSON.parse((jobString as string) ?? "{}")
 
   /**
@@ -32,9 +32,9 @@ export default function CreationMiseEnRelation() {
   }
 
   const goToEndStep = ({ withDelegation }) => {
-    router.push({
-      pathname: "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(job), email, withDelegation, fromDashboard, userId, establishment_id },
+    router.replace({
+      pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
+      query: { job: JSON.stringify(job), email, withDelegation, fromDashboard, userId, establishment_id, token },
     })
   }
 
@@ -53,10 +53,17 @@ export default function CreationMiseEnRelation() {
     setIsSubmitLoading(true)
     const etablissementCatalogueIds = etablissements.filter((etablissement) => etablissement.checked).map((etablissement) => etablissement._id)
 
-    await createEtablissementDelegation({
-      jobId: job._id,
-      data: { etablissementCatalogueIds },
-    }).finally(() => setIsSubmitLoading(false))
+    await (token
+      ? createEtablissementDelegationByToken({
+          jobId: job._id,
+          data: { etablissementCatalogueIds },
+          token: token as string,
+        })
+      : createEtablissementDelegation({
+          jobId: job._id,
+          data: { etablissementCatalogueIds },
+        })
+    ).finally(() => setIsSubmitLoading(false))
 
     goToEndStep({ withDelegation: true })
   }
@@ -97,9 +104,9 @@ export default function CreationMiseEnRelation() {
             </GridItem>
             {etablissements && (
               <GridItem rowStart={["auto", 2]}>
-                {etablissements.map((etablissement) => {
+                {etablissements.map((etablissement, index) => {
                   return (
-                    <Flex borderStyle="solid" borderWidth="1px" borderColor="#000091" py={4} key={etablissement._id} mb={4}>
+                    <Flex borderStyle="solid" borderWidth="1px" borderColor="#000091" py={4} key={etablissement._id} mb={4} data-testid={`cfa-${index}`}>
                       <Center w="70px">
                         <Checkbox
                           defaultChecked={etablissement.checked}
@@ -170,7 +177,7 @@ export default function CreationMiseEnRelation() {
           <Box p={5}>
             <Grid gap={4}>
               <GridItem mb={0}>
-                <Button variant="secondary" onClick={skip} mr={4} my={2}>
+                <Button variant="secondary" onClick={skip} mr={4} my={2} data-testid="pass-delegation">
                   Passer cette étape
                 </Button>
                 <Button
@@ -181,6 +188,7 @@ export default function CreationMiseEnRelation() {
                   isLoading={isSubmitLoading}
                   onClick={submit}
                   my={1}
+                  data-testid="submit-delegation"
                 >
                   Envoyer ma demande
                 </Button>
@@ -192,3 +200,5 @@ export default function CreationMiseEnRelation() {
     </>
   )
 }
+
+export default CreationMiseEnRelationPage

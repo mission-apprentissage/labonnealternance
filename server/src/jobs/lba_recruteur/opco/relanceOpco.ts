@@ -1,11 +1,11 @@
 import { IUserRecruteur } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { UserRecruteur } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import config from "../../../config"
-import { ETAT_UTILISATEUR } from "../../../services/constant.service"
 import mailer from "../../../services/mailer.service"
 
 /**
@@ -22,7 +22,7 @@ export const relanceOpco = async () => {
   if (!userAwaitingValidation.length) return
 
   // count user to validate per opco
-  const userList = userAwaitingValidation.reduce((acc, user) => {
+  const userList = userAwaitingValidation.reduce<Record<string, number>>((acc, user) => {
     if (user.opco) {
       if (user.opco in acc) {
         acc[user.opco]++
@@ -38,7 +38,6 @@ export const relanceOpco = async () => {
     const users = await UserRecruteur.find({ scope: opco, type: "OPCO" })
 
     await asyncForEach(users, async (user: IUserRecruteur) => {
-      // send mail to recipient
       await mailer.sendEmail({
         to: user.email,
         subject: "Nouveaux comptes entreprises à valider",
@@ -48,7 +47,6 @@ export const relanceOpco = async () => {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           count: userList[opco],
-          url: `${config.publicUrl}/espace-pro/authentification`,
         },
       })
     })

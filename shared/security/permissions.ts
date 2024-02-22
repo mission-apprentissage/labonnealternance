@@ -1,6 +1,6 @@
-export type Permission = "recruiter:manage" | "recruiter:validate" | "recruiter:add_job" | "job:manage" | "school:manage" | "application:manage" | "user:manage" | "admin"
+export type Permission = "recruiter:manage" | "user:validate" | "recruiter:add_job" | "job:manage" | "school:manage" | "application:manage" | "user:manage" | "admin"
 
-export type RoleNames = "opco" | "recruiter" | "cfa" | "admin"
+export type RoleNames = "opco" | "recruiter" | "cfa" | "admin" | "pending_recruiter"
 
 export interface Role {
   name: RoleNames
@@ -9,12 +9,17 @@ export interface Role {
 
 export const OpcoRole = {
   name: "opco",
-  permissions: ["recruiter:manage", "recruiter:validate", "recruiter:add_job", "job:manage", "user:manage"],
+  permissions: ["recruiter:manage", "user:validate", "recruiter:add_job", "job:manage", "user:manage"],
 } satisfies Role
 
 export const RecruiterRole = {
   name: "recruiter",
   permissions: ["recruiter:manage", "recruiter:add_job", "job:manage", "application:manage", "user:manage"],
+} satisfies Role
+
+export const PendingRecruiterRole = {
+  name: "pending_recruiter",
+  permissions: ["recruiter:add_job"],
 } satisfies Role
 
 export const CfaRole = {
@@ -46,16 +51,33 @@ export type AccessRessouces = {
         establishment_siret: AccessResourcePath
         email: AccessResourcePath
       }
+    | {
+        opco: AccessResourcePath
+      }
+    | {
+        cfa_delegated_siret: AccessResourcePath
+      }
   >
+  appointment?: ReadonlyArray<{
+    _id: AccessResourcePath
+  }>
+  formationCatalogue?: ReadonlyArray<{
+    cle_ministere_educatif: AccessResourcePath
+  }>
   job?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
   application?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
-  user?: ReadonlyArray<{
-    _id: AccessResourcePath
-  }>
+  user?: ReadonlyArray<
+    | {
+        _id: AccessResourcePath
+      }
+    | {
+        opco: AccessResourcePath
+      }
+  >
 }
 
 export type UserWithType<T, V> = Readonly<{

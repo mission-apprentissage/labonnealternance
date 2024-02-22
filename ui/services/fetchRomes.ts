@@ -22,11 +22,11 @@ export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _apiEn
 
   if (!isNonEmptyString(value)) return res
 
-  const romeLabelsApi = _apiEndpoint + "/romelabels"
+  const romeApi = _apiEndpoint + "/rome"
 
   try {
     const reqParams = { title: value }
-    const response = await _axios.get(romeLabelsApi, { params: reqParams, cancelToken: cancelToken.token })
+    const response = await _axios.get(romeApi, { params: reqParams, cancelToken: cancelToken.token })
 
     const isAxiosError = !!_.get(response, "data.error")
     const hasNoLabelsAndRomes = !_.get(response, "data.labelsAndRomes") && !_.get(response, "data.labelsAndRomesForDiplomas")
@@ -75,7 +75,7 @@ export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _apiEn
       }
     }
   } catch (err) {
-    console.log("Fetch romes cancelled : ", err)
+    console.error("Fetch romes cancelled : ", err)
     return "cancelled"
   }
 

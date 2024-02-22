@@ -43,45 +43,25 @@ services:
 
   mongodb:
     <<: *default
-    image: mongo:6.0.2-focal
+    image: mongo:6.0.11
+    hostname: mongodb
     container_name: lba_mongodb
-    ports:
-      - "127.0.0.1:27017:27017"
     deploy:
       resources:
         limits:
           memory: 2g
+    ports:
+      - "127.0.0.1:27017:27017"
+    command: ["-f", "/etc/mongod/mongod.conf"]
     volumes:
       - /opt/app/data/mongodb/db:/data/db
+      - /opt/app/configs/mongodb:/etc/mongod
     healthcheck:
       test: ["CMD", "mongosh", "--eval", '''db.runCommand("ping").ok''', "--quiet"]
       interval: 10s
       timeout: 5s
       retries: 12
       start_period: 10s
-    labels:
-      - autoheal=true
-
-  elasticsearch:
-    <<: *default
-    container_name: lba_elasticsearch
-    deploy:
-      resources:
-        limits:
-          memory: 2g
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
-    environment:
-      - ES_JAVA_OPTS=-Xmx512m -Xms512m
-      - discovery.type=single-node
-      - cluster.name=docker-cluster
-      - network.host=0.0.0.0
-      - discovery.zen.minimum_master_nodes=1
-    healthcheck:
-      test: ["CMD", "curl", "http://localhost:9200/_cat/health > /dev/null || exit 1"]
-      interval: 30s
-      retries: 5
-      timeout: 10s
-      start_period: 2m
     labels:
       - autoheal=true
 
@@ -105,7 +85,7 @@ services:
 
   smtp:
     <<: *default
-    image: axllent/mailpit:v1.5.5
+    image: axllent/mailpit:v1.10.1
     container_name: lba_smtp
     ports:
       - 1025:1025
@@ -123,7 +103,7 @@ services:
 
   nodeexporter:
     <<: *default
-    image: prom/node-exporter:v1.5.0
+    image: prom/node-exporter:v1.7.0
     hostname: "{{host_name}}"
     user: root
     command:
@@ -147,7 +127,7 @@ services:
 
   cadvisor:
     <<: *default
-    image: gcr.io/cadvisor/cadvisor:v0.46.0
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
     hostname: "{{host_name}}"
     privileged: true
     devices:

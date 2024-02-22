@@ -2,22 +2,28 @@ import fs from "fs"
 import path from "path"
 
 import { oleoduc } from "oleoduc"
+import { ZDomainesMetiers } from "shared/models"
+import { removeAccents } from "shared/utils"
 import XLSX from "xlsx"
+
+import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
+import { initializeCacheMetiers } from "@/services/metiers.service"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
 import { DomainesMetiers } from "../../common/model/index"
 import { getFileFromS3Bucket } from "../../common/utils/awsUtils"
-import { resetIndexAndDb } from "../../common/utils/esUtils"
 import { readXLSXFile } from "../../common/utils/fileUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { createAssetsFolder } from "../lbb/lbaCompaniesUtils"
 
 const currentDirname = __dirname(import.meta.url)
-const FILEPATH = path.join(currentDirname, "../../assets/domainesMetiers_S3.xlsx")
+const FILEPATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
 
 const downloadAndSaveFile = async (from = "currentDomainesMetiers.xlsx") => {
   logger.info(`Downloading and save file ${from} from S3 Bucket...`)
 
+  await createAssetsFolder()
   await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(FILEPATH))
 }
 
@@ -28,7 +34,8 @@ export default async function (optionalFileName?: string) {
 
   await downloadAndSaveFile(optionalFileName)
 
-  await resetIndexAndDb("domainesmetiers", DomainesMetiers, { requireAsciiFolding: true })
+  logger.info(`Clearing domainesmetiers...`)
+  await DomainesMetiers.deleteMany({})
 
   const workbookDomainesMetiers = readXLSXFile(FILEPATH)
 
@@ -41,8 +48,8 @@ export default async function (optionalFileName?: string) {
     motsClefsSpecifiques,
     appellationsROMEs,
     coupleAppellationsRomeIntitules,
-    codesFAPs,
-    libellesFAPs,
+    codesFAPs: string[] = [],
+    libellesFAPs: string[] = [],
     sousDomainesOnisep
 
   const reset = () => {
@@ -92,28 +99,45 @@ export default async function (optionalFileName?: string) {
         // cas de la ligne sur laquelle se trouve le nom du métier qui va marquer l'insertion d'une ligne dans la db
         step = 1
 
-        const domainesMetier = new DomainesMetiers({
+        const paramsDomaineMetier: IDomainesMetiers = {
           domaine: domaine,
+          domaine_sans_accent_computed: removeAccents(domaine),
           sous_domaine: metier,
+          sous_domaine_sans_accent_computed: removeAccents(metier),
           mots_clefs_specifiques: [...new Set(motsClefsSpecifiques)].join(", "),
+          mots_clefs_specifiques_sans_accent_computed: [...new Set(motsClefsSpecifiques.map(removeAccents))].join(", "),
           mots_clefs: [...new Set(motsClefsDomaine)].join(", "),
+          mots_clefs_sans_accent_computed: [...new Set(motsClefsDomaine.map(removeAccents))].join(", "),
           appellations_romes: [...new Set(appellationsROMEs)].join(", "),
+          appellations_romes_sans_accent_computed: [...new Set(appellationsROMEs.map(removeAccents))].join(", "),
           couples_appellations_rome_metier: coupleAppellationsRomeIntitules,
           codes_romes: codesROMEs,
           intitules_romes: intitulesROMEs,
+          intitules_romes_sans_accent_computed: intitulesROMEs.map((v) => removeAccents(v)),
           codes_rncps: codesRNCPs,
           intitules_rncps: intitulesRNCPs,
+          intitules_rncps_sans_accent_computed: intitulesRNCPs.map((v) => removeAccents(v)),
           couples_romes_metiers: couplesROMEsIntitules,
           codes_fap: [...new Set(codesFAPs)],
           intitules_fap: [...new Set(libellesFAPs)],
+          intitules_fap_sans_accent_computed: [...new Set(libellesFAPs)].map(removeAccents),
           sous_domaine_onisep: sousDomainesOnisep,
-        })
+          sous_domaine_onisep_sans_accent_computed: sousDomainesOnisep.map(removeAccents),
+          created_at: new Date(),
+          last_update_at: new Date(),
+        }
 
         if (codesROMEs.length > 15) {
           avertissements.push({ domaine: metier, romes: codesROMEs.length })
         }
 
-        await domainesMetier.save()
+        const parsedDomaineMetier = ZDomainesMetiers.safeParse(paramsDomaineMetier)
+
+        if (parsedDomaineMetier.success) {
+          await new DomainesMetiers(parsedDomaineMetier.data).save()
+        } else {
+          logger.error(`Erreur non bloquante : mauvais format de domaines metiers domaine=${paramsDomaineMetier.domaine} - sous_domaine=${paramsDomaineMetier.sous_domaine}`)
+        }
 
         reset()
       } else {
@@ -207,6 +231,9 @@ export default async function (optionalFileName?: string) {
 
     logger.info("Deleting downloaded file frome assets")
     await fs.unlinkSync(FILEPATH)
+
+    logger.info("Reloading domainesMetiers cache")
+    await initializeCacheMetiers()
 
     logger.info(`Fin traitement`)
 

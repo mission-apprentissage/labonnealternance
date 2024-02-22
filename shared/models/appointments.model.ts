@@ -6,6 +6,20 @@ import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
 
+export const enum EReasonsKey {
+  MODALITE = "modalite",
+  CONTENU = "contenu",
+  PORTE = "porte",
+  FRAIS = "frais",
+  PLACE = "place",
+  HORAIRE = "horaire",
+  PLUS = "plus",
+  ACCOMPAGNEMENT = "accompagnement",
+  LIEU = "lieu",
+  SUIVI = "suivi",
+  AUTRE = "autre",
+}
+
 export const ZMailing = z
   .object({
     campaign: z.string(),
@@ -35,7 +49,6 @@ export const ZAppointment = z
     cle_ministere_educatif: z.string().nullish(),
     created_at: z.date().default(() => new Date()),
     cfa_recipient_email: z.string(),
-    is_anonymized: z.boolean().default(false),
     applicant_user_type: enumToZod(AppointmentUserType).nullish(),
   })
   .strict()

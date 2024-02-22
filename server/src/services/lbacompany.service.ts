@@ -1,17 +1,20 @@
+import Boom from "boom"
 import { ILbaCompany } from "shared"
 
-import { search } from "../common/esClient/index.js"
-import { LbaCompany } from "../common/model/index.js"
-import { encryptMailWithIV } from "../common/utils/encryptString.js"
-import { IApiError, manageApiError } from "../common/utils/errorManager.js"
-import { roundDistance } from "../common/utils/geolib.js"
-import { isAllowedSource } from "../common/utils/isAllowedSource.js"
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import { LbaCompany } from "../common/model/index"
+import { encryptMailWithIV } from "../common/utils/encryptString"
+import { IApiError, manageApiError } from "../common/utils/errorManager"
+import { roundDistance } from "../common/utils/geolib"
+import { isAllowedSource } from "../common/utils/isAllowedSource"
+import { trackApiCall } from "../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
 
-import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
-import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types.js"
+import { getApplicationByCompanyCount, IApplicationCount } from "./application.service"
+import { TLbaItemResult } from "./jobOpportunity.service.types"
+import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
+
+export const buildLbaCompanyAddress = (company: ILbaCompany) =>
+  `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
 
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo
@@ -30,15 +33,13 @@ const transformCompany = ({
     email?: string
     iv?: string
     phone?: string | null
-  } = {
-    ...encryptMailWithIV({ value: company.email !== "null" ? company.email : "" }),
-  }
+  } = encryptMailWithIV({ value: company.email !== "null" ? company.email : "" })
 
   if (contactAllowedOrigin) {
     contact.phone = company.phone
   }
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
-  const address = `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
+  const address = buildLbaCompanyAddress(company)
 
   const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
 
@@ -47,7 +48,7 @@ const transformCompany = ({
     title: company.enseigne,
     contact,
     place: {
-      distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
+      distance: company.distance ? roundDistance(company.distance / 1000) ?? 0 : null,
       fullAddress: address,
       latitude: parseFloat(company.geo_coordinates.split(",")[0]),
       longitude: parseFloat(company.geo_coordinates.split(",")[1]),
@@ -109,40 +110,6 @@ const transformCompanies = ({
 }
 
 /**
- * Retourn le bloc de paramètres commun à toutes les recherches ES sur les sociétés issues de l'algo
- * @param {number} limit le nombre maximum de sociétés à remonter
- * @returns {object}
- */
-const getCompanyEsQueryIndexFragment = (limit: number) => {
-  return {
-    //index: "mnaformation",
-    index: "bonnesboites",
-    size: limit,
-    _source_includes: [
-      "siret",
-      "recruitment_potential",
-      "raison_sociale",
-      "enseigne",
-      "naf_code",
-      "naf_label",
-      "rome_codes",
-      "street_number",
-      "street_name",
-      "insee_city_code",
-      "zip_code",
-      "city",
-      "geo_coordinates",
-      "email",
-      "phone",
-      "company_size",
-      "algorithm_origin",
-      "opco",
-      "opco_url",
-    ],
-  }
-}
-
-/**
  * Retourne des sociétés issues de l'algo matchant les critères en paramètres
  */
 const getCompanies = async ({
@@ -169,91 +136,48 @@ const getCompanies = async ({
   try {
     const distance = radius || 10
 
-    const mustTerm: object[] = [
-      {
-        match: {
-          rome_codes: romes?.split(",").join(" "),
-        },
-      },
-    ]
+    const query: any = {}
+
+    if (romes) {
+      query.rome_codes = { $in: romes?.split(",") }
+    }
 
     if (opco) {
-      mustTerm.push({
-        match: {
-          opco_short_name: opco.toUpperCase(),
-        },
-      })
+      query.opco_short_name = opco.toUpperCase()
     }
 
     if (opcoUrl) {
-      mustTerm.push({
-        match: {
-          opco_url: opcoUrl.toLowerCase(),
-        },
-      })
+      query.opco_url = opcoUrl.toLowerCase()
     }
 
-    const esQueryIndexFragment = getCompanyEsQueryIndexFragment(companyLimit)
-
-    const esQuerySort = {
-      sort: [
-        latitude
-          ? {
-              _geo_distance: {
-                geo_coordinates: [longitude ?? 0, latitude ?? 0],
-                order: "asc",
-                unit: "km",
-                mode: "min",
-                distance_type: "arc",
-                ignore_unmapped: true,
-              },
-            }
-          : "_score",
-      ],
-    }
-
-    let esQuery: any = {
-      query: {
-        bool: {
-          must: mustTerm,
-        },
-      },
-    }
+    let companies: ILbaCompany[] = []
 
     if (latitude) {
-      esQuery.query.bool.filter = {
-        geo_distance: {
-          distance: `${distance}km`,
-          geo_coordinates: {
-            lat: latitude,
-            lon: longitude,
+      companies = await LbaCompany.aggregate([
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [longitude, latitude] },
+            distanceField: "distance",
+            maxDistance: distance * 1000,
+            query,
           },
         },
-      }
+        {
+          $limit: companyLimit,
+        },
+      ])
     } else {
-      esQuery = {
-        query: {
-          function_score: esQuery,
+      companies = await LbaCompany.aggregate([
+        {
+          $match: query,
         },
-      }
+        {
+          $sample: {
+            size: companyLimit,
+          },
+        },
+      ])
     }
-
-    const responseCompanies = await search(
-      {
-        ...esQueryIndexFragment,
-        body: {
-          ...esQuery,
-          ...esQuerySort,
-        },
-      },
-      LbaCompany
-    )
-
-    const companies: ILbaCompany[] = []
-
-    responseCompanies.forEach((company) => {
-      companies.push({ ...company._source, distance: latitude ? company.sort : null })
-    })
 
     if (!latitude) {
       companies.sort(function (a, b) {
@@ -269,7 +193,7 @@ const getCompanies = async ({
 
     return companies
   } catch (error) {
-    return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from local ES (${api})` })
+    return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from DB (${api})` })
   }
 }
 
@@ -383,25 +307,23 @@ export const getCompanyFromSiret = async ({
  * @param {string} phone
  * @returns {Promise<ILbaCompany | string>}
  */
-export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }) => {
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string | undefined; phone: string | undefined }) => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
 
     if (!lbaCompany) {
-      return "not_found"
-    } else {
-      if (email !== undefined) {
-        lbaCompany.email = email
-      }
-
-      if (phone !== undefined) {
-        lbaCompany.phone = phone
-      }
-
-      await lbaCompany.save()
-
-      return lbaCompany.toJSON()
+      throw Boom.badRequest()
     }
+
+    if (email !== undefined) {
+      lbaCompany.email = email
+    }
+
+    if (phone !== undefined) {
+      lbaCompany.phone = phone
+    }
+
+    await lbaCompany.save() // obligatoire pour trigger la mise à jour de l'index ES. update ne le fait pas
   } catch (err) {
     sentryCaptureException(err)
     throw err

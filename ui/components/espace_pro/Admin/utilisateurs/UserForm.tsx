@@ -1,17 +1,16 @@
-import { Box, Button, FormControl, FormLabel, FormErrorMessage, HStack, Input, VStack, useToast, Checkbox, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Checkbox, FormControl, FormErrorMessage, FormLabel, HStack, Input, VStack, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFormik } from "formik"
-import React from "react"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import { USER_STATUS } from "@/common/contants"
 import useUserHistoryUpdate from "@/common/hooks/useUserHistoryUpdate"
-import { useAuth } from "@/context/UserContext"
-import { apiDelete, apiPost, apiPut } from "@/utils/api.utils"
+import { createUser } from "@/utils/api"
+import { apiDelete, apiPut } from "@/utils/api.utils"
 
 import ConfirmationDesactivationUtilisateur from "../../ConfirmationDesactivationUtilisateur"
 
 const ActivateUserButton = ({ userId, onUpdate }) => {
-  const updateUserHistory = useUserHistoryUpdate(userId, USER_STATUS.ACTIVE)
+  const updateUserHistory = useUserHistoryUpdate(userId, ETAT_UTILISATEUR.VALIDE)
 
   return (
     <Button
@@ -35,17 +34,17 @@ const DisableUserButton = ({ confirmationDesactivationUtilisateur }) => {
 }
 
 const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisateur, onUpdate) => {
-  switch (userHistory.status) {
-    case USER_STATUS.WAITING:
+  switch (userHistory?.status) {
+    case ETAT_UTILISATEUR.ATTENTE:
       return (
         <>
           <ActivateUserButton userId={userId} onUpdate={onUpdate} />
           <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
         </>
       )
-    case USER_STATUS.ACTIVE:
+    case ETAT_UTILISATEUR.VALIDE:
       return <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
-    case USER_STATUS.DISABLED:
+    case ETAT_UTILISATEUR.DESACTIVE:
       return <ActivateUserButton userId={userId} onUpdate={onUpdate} />
 
     default:
@@ -55,7 +54,6 @@ const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisat
 
 const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?: any; onDelete?: any; onUpdate?: any }) => {
   const toast = useToast()
-  const { user: adminUser } = useAuth()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const { values, errors, touched, dirty, handleSubmit, handleChange } = useFormik({
     initialValues: {
@@ -110,19 +108,9 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
           }
           onUpdate?.()
         } else {
-          result = await apiPost("/admin/users", {
-            // @ts-expect-error TODO
-            body: {
-              ...values,
-              type: beAdmin ? "ADMIN" : values.type,
-              status: [
-                {
-                  status: "EN ATTENTE DE VALIDATION",
-                  validation_type: "MANUELLE",
-                  user: adminUser._id,
-                },
-              ],
-            },
+          result = await createUser({
+            ...values,
+            type: beAdmin ? "ADMIN" : values.type,
           }).catch((err) => {
             if (err.statusCode === 409) {
               return { error: "Cet utilisateur existe déjà" }
@@ -170,7 +158,6 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
     e.preventDefault()
     if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
       const result = (await apiDelete("/admin/users/:userId", { params: { userId: user._id as string }, querystring: {} })) as any
-      console.log(result)
       if (result?.ok) {
         toast({
           title: "Utilisateur supprimé",
@@ -194,7 +181,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
 
   return (
     <>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...user} onUpdate={onUpdate} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={user} onUpdate={onUpdate} />
       {user && (
         <>
           <HStack mb={4} alignItems="baseline">
@@ -204,7 +191,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
           <HStack mb={4} alignItems="baseline">
             <Box w="300px">Statut du compte </Box>=
             <HStack spacing={6}>
-              <Box> {lastUserState.status}</Box> {getActionButtons(lastUserState, user._id, confirmationDesactivationUtilisateur, onUpdate)}{" "}
+              <Box> {lastUserState?.status}</Box> {getActionButtons(lastUserState, user._id, confirmationDesactivationUtilisateur, onUpdate)}{" "}
               <Box>
                 <Button variant="outline" colorScheme="red" borderRadius="none" onClick={onDeleteClicked}>
                   Supprimer l&apos;utilisateur
@@ -248,7 +235,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
             {errors.establishment_siret && touched.establishment_siret && <FormErrorMessage>{errors.establishment_siret as string}</FormErrorMessage>}
           </FormControl>
           <FormControl py={2} isInvalid={!!errors.establishment_raison_sociale}>
-            <FormLabel>Siret</FormLabel>
+            <FormLabel>Raison sociale</FormLabel>
             <Input
               type="establishment_raison_sociale"
               id="establishment_raison_sociale"

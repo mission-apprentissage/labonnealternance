@@ -1,13 +1,12 @@
-import { search } from "../../common/esClient/index"
+import { ZDiplomesMetiersNew } from "shared/models"
+
+import { initializeCacheDiplomas } from "@/services/metiers.service"
+
 import { logger } from "../../common/logger"
 import { DiplomesMetiers, FormationCatalogue } from "../../common/model/index"
-import { resetIndexAndDb } from "../../common/utils/esUtils"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
 
 const motsIgnores = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", "des", "et", "en"]
 const diplomesMetiers = {}
-let shouldStop = false
-let lastIdToSearchAfter = null
 
 const buildAcronyms = (intitule) => {
   let acronymeLong = ""
@@ -50,85 +49,51 @@ const updateDiplomeMetier = ({ initial, toAdd }) => {
 }
 
 const getIntitulesFormations = async () => {
-  const size = 1500 // make the process 10 secondes faster
-  const intitules = []
-  const body: any = {
-    query: {
-      bool: {
-        must: {
-          match_all: {},
-        },
-      },
-    },
-    sort: [{ _id: "asc" }],
-  }
+  const intitulesFormations = await FormationCatalogue.find({}, { _id: 0, intitule_long: 1, rome_codes: 1, rncp_code: 1 }).lean()
 
-  if (lastIdToSearchAfter) {
-    body.search_after = [lastIdToSearchAfter]
-  }
-
-  try {
-    /**
-     * KBA 30/11/2022 : TODO : use _scroll method from ES to get all data
-     */
-    const responseIntitulesFormations = await search(
-      {
-        index: "formationcatalogues",
-        size,
-        _source_includes: ["_id", "intitule_long", "rome_codes", "rncp_code"],
-        body,
-      },
-      FormationCatalogue
-    )
-
-    responseIntitulesFormations.map((formation) => {
-      if (!diplomesMetiers[formation._source.intitule_long]) {
-        diplomesMetiers[formation._source.intitule_long] = {
-          intitule_long: formation._source.intitule_long,
-          codes_romes: formation._source.rome_codes,
-          codes_rncps: [formation._source.rncp_code],
+  for (const formation of intitulesFormations) {
+    if (formation.intitule_long) {
+      if (!diplomesMetiers[formation.intitule_long]) {
+        diplomesMetiers[formation.intitule_long] = {
+          intitule_long: formation.intitule_long,
+          codes_romes: formation.rome_codes,
+          codes_rncps: [formation.rncp_code],
         }
       } else {
-        diplomesMetiers[formation._source.intitule_long] = updateDiplomeMetier({
-          initial: diplomesMetiers[formation._source.intitule_long],
-          toAdd: formation._source,
+        diplomesMetiers[formation.intitule_long] = updateDiplomeMetier({
+          initial: diplomesMetiers[formation.intitule_long],
+          toAdd: formation,
         })
       }
-
-      lastIdToSearchAfter = formation._id
-    })
-
-    if (responseIntitulesFormations.length < size) {
-      shouldStop = true
     }
-
-    return intitules
-  } catch (error) {
-    sentryCaptureException(error)
-    logger.error("Erreur lors de la récupération des codes formations depuis l'ES")
-    logger.error(error)
   }
 }
 
 export default async function () {
   logger.info(" -- Start of DiplomesMetiers initializer -- ")
 
-  await resetIndexAndDb("diplomesmetiers", DiplomesMetiers, { requireAsciiFolding: true })
+  logger.info(`Clearing diplomesmetiers...`)
+  await DiplomesMetiers.deleteMany({})
 
   logger.info(`Début traitement`)
 
-  while (!shouldStop) {
-    await getIntitulesFormations()
-  }
+  await getIntitulesFormations()
 
   for (const k in diplomesMetiers) {
     diplomesMetiers[k].acronymes_intitule = buildAcronyms(diplomesMetiers[k].intitule_long)
 
-    if (diplomesMetiers[k]?.codes_romes.length) {
-      const diplomesMetier = new DiplomesMetiers(diplomesMetiers[k])
-      await diplomesMetier.save()
+    if (diplomesMetiers[k]?.codes_romes?.length) {
+      const parsedDiplomeMetier = ZDiplomesMetiersNew.safeParse(diplomesMetiers[k])
+      if (parsedDiplomeMetier.success) {
+        await new DiplomesMetiers(parsedDiplomeMetier.data).save()
+      } else {
+        logger.error(`Mauvais format diplomesmetier pour le diplôme ${diplomesMetiers[k].intitule_long}`)
+      }
     }
   }
+
+  logger.info("Reloading diplomesMetiers cache")
+  await initializeCacheDiplomas()
 
   logger.info(`Fin traitement`)
 }

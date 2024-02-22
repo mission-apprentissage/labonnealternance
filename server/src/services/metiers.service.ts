@@ -1,248 +1,256 @@
 import Boom from "boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
+import { removeAccents, removeRegexChars } from "shared/utils"
 
-import { DiplomesMetiers, DomainesMetiers } from "@/common/model"
+import { logger } from "@/common/logger"
+import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomesmetiers.types"
 import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
-
-import { search } from "../common/esClient/index"
+import { db } from "@/common/mongodb"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import config from "@/config"
 
 import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
+
+let globalCacheMetiers: IDomainesMetiers[] = []
+let cacheMetierLoading = false
+let globalCacheDiplomas: IDiplomesMetiers[] = []
+let cacheDiplomaLoading = false
+
+const SEARCH_TERM_START_POSITION_BONUS_SCORE = 20 // valeur arbitraire
+
+export const initializeCacheMetiers = async () => {
+  if (!cacheMetierLoading) {
+    cacheMetierLoading = true
+    logger.info("initializeCacheMetiers on first use")
+    globalCacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
+    cacheMetierLoading = false
+    const roughObjSize = JSON.stringify(globalCacheMetiers).length
+    if (config.env === "production") {
+      notifyToSlack({
+        subject: `Cache domaines metiers chargé`,
+        message: `Cache domaines metiers chargé. Taille estimée ${roughObjSize} octets`,
+        error: false,
+      })
+    }
+    logger.info("cacheMetiers : ", roughObjSize)
+  }
+}
+
+export const initializeCacheDiplomas = async () => {
+  if (!cacheDiplomaLoading) {
+    cacheDiplomaLoading = true
+    logger.info("initializeCacheDiplomas on first use")
+    globalCacheDiplomas = await db.collection("diplomesmetiers").find({}).toArray()
+    cacheDiplomaLoading = false
+    const roughObjSize = JSON.stringify(globalCacheDiplomas).length
+    if (config.env === "production") {
+      notifyToSlack({
+        subject: `Cache diplômes metiers chargé`,
+        message: `Cache diplômes metiers chargé. Taille estimée ${roughObjSize} octets`,
+        error: false,
+      })
+    }
+    logger.info("cacheDiplomas : ", roughObjSize)
+  }
+}
+
+const getCacheMetiers = async () => {
+  if (globalCacheMetiers.length === 0) {
+    await initializeCacheMetiers()
+  }
+
+  return globalCacheMetiers
+}
+
+const getCacheDiplomes = async () => {
+  if (globalCacheDiplomas.length === 0) {
+    await initializeCacheDiplomas()
+  }
+
+  return globalCacheDiplomas
+}
 
 /**
  * Retourne un ensemble de métiers et/ou diplômes et leurs codes romes et rncps associés en fonction de terme de recherches
  */
 export const getRomesAndLabelsFromTitleQuery = async ({ title, withRomeLabels }: { title: string; withRomeLabels?: boolean }): Promise<IMetiersEnrichis> => {
   // nominal case
-  const [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(title, withRomeLabels), getLabelsAndRomesForDiplomas(title)])
+  const [romesMetiers, romesDiplomes] = await Promise.all([getMetiers({ title, withRomeLabels }), getLabelsAndRomesForDiplomas(title)])
   return { ...romesMetiers, ...romesDiplomes }
 }
 
-const getMultiMatchTerm = (term) => {
-  return {
-    bool: {
-      must: {
-        multi_match: {
-          query: term,
-          fields: [
-            "sous_domaine^80",
-            "appellations_romes^15",
-            "intitules_romes^7",
-            "intitules_rncps^7",
-            "mots_clefs_specifiques^40",
-            "domaine^3",
-            "mots_clefs^3",
-            "sous_domaine_onisep^1",
-            "intitules_fap^1",
-          ],
-          type: "phrase_prefix",
-          operator: "or",
-        },
-      },
-    },
-  }
+const computeScore = (document, searchableFields, regexes) => {
+  searchableFields.map(({ field, score }) =>
+    regexes.map((regex) => {
+      const valueToTest = document[field] instanceof Array ? document[field].join(" ") : document[field]
+      if (valueToTest?.match(regex)) {
+        document.score = score + (document.score ?? 0)
+      }
+    })
+  )
 }
 
-const getMultiMatchTermForDiploma = (term) => {
-  return {
-    bool: {
-      must: {
-        multi_match: {
-          query: term,
-          fields: ["intitule_long^1", "acronymes_intitule^2"],
-          type: "phrase_prefix",
-          operator: "or",
-        },
-      },
-    },
+const searchableWeightedMetiersFields = [
+  { field: "sous_domaine_sans_accent_computed", score: 80 },
+  { field: "domaine_sans_accent_computed", score: 3 },
+  { field: "intitules_romes_sans_accent_computed", score: 7 },
+  { field: "intitules_rncps_sans_accent_computed", score: 7 },
+  { field: "mots_clefs_sans_accent_computed", score: 3 },
+  { field: "mots_clefs_specifiques_sans_accent_computed", score: 40 },
+  { field: "appellations_romes_sans_accent_computed", score: 15 },
+  { field: "intitules_fap_sans_accent_computed", score: 1 },
+  { field: "sous_domaine_onisep_sans_accent_computed", score: 1 },
+]
+
+const searchableWeightedAppellationFields = [
+  { field: "intitules_romes_sans_accent_computed", score: 1 },
+  { field: "appellations_romes_sans_accent_computed", score: 1 },
+]
+
+const filterMetiers = async ({
+  regexes,
+  romes,
+  rncps,
+  searchTerm = "",
+  searchableFields = searchableWeightedMetiersFields,
+}: {
+  regexes: RegExp[]
+  romes?: string
+  rncps?: string
+  searchTerm?: string
+  searchableFields?: { field: string; score: number }[]
+}): Promise<(IDomainesMetiers & { score?: number })[]> => {
+  const cacheMetiers = await getCacheMetiers()
+
+  const results: (IDomainesMetiers & { score?: number })[] = []
+
+  cacheMetiers.map((metier) => {
+    if (romes) {
+      const romeList: string[] = romes.split(", ")
+      if (!romeList.some((rome) => metier.codes_romes.includes(rome))) {
+        return
+      }
+    }
+
+    if (rncps) {
+      const rncpList: string[] = rncps.split(", ")
+      if (!rncpList.some((rncp) => metier.codes_rncps.includes(rncp))) {
+        return
+      }
+    }
+
+    if (!regexes.length && (romes || rncps)) {
+      results.push(metier)
+      return
+    }
+
+    const matchingMetier: IDomainesMetiers & { score?: number } = { ...metier }
+    computeScore(matchingMetier, searchableFields, regexes)
+
+    // ajout d'un score bonus si le sous domaine commence par la chaîne de recherche
+    if (matchingMetier.sous_domaine_sans_accent_computed.toLowerCase().startsWith(searchTerm.toLowerCase())) {
+      matchingMetier.score = (matchingMetier.score || 0) + SEARCH_TERM_START_POSITION_BONUS_SCORE
+    }
+
+    if (matchingMetier.score) {
+      results.push(matchingMetier)
+    }
+  })
+
+  return results
+}
+
+const searchableWeightedDiplomaFields = [
+  { field: "intitule_long", score: 1 },
+  { field: "acronymes_intitule", score: 2 },
+]
+
+const filterDiplomas = async (regexes: RegExp[]): Promise<(IDiplomesMetiers & { score?: number })[]> => {
+  const cacheDiplomes = await getCacheDiplomes()
+
+  const results: (IDiplomesMetiers & { score?: number })[] = []
+
+  cacheDiplomes.forEach((diploma) => {
+    const matchingDiploma: IDiplomesMetiers & { score?: number } = { ...diploma }
+
+    computeScore(matchingDiploma, searchableWeightedDiplomaFields, regexes)
+
+    if (matchingDiploma.score) {
+      results.push(matchingDiploma)
+    }
+  })
+
+  return results
+}
+
+/**
+ * construit les regex à partir du terme de recherche
+ */
+const buildRegexes = (searchTerm: string) => {
+  const regexes: RegExp[] = []
+
+  // recherche sur les sous éléments de la chaine de recherche
+  const withoutAccentSearchTerm = removeAccents(searchTerm)
+  withoutAccentSearchTerm.split(/[.,:*+?^${}()|[\]\\ ]/g).forEach((term, idx) => {
+    if (idx === 0 || term.length > 1) {
+      regexes.push(new RegExp(`\\b${term}`, "i"))
+    }
+  })
+
+  // ajout de la chaîne entière pour match complet
+  if (searchTerm.indexOf(" ") > 0) {
+    regexes.push(new RegExp(`\\b${removeRegexChars(withoutAccentSearchTerm)}`, "i"))
   }
+
+  return regexes
 }
 
 /**
  * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. le retour respecte strictement les critères
  */
-export const getMetiers = async ({ title, romes, rncps }: { title: string; romes?: string; rncps?: string }): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] }> => {
+export const getMetiers = async ({
+  title,
+  romes,
+  rncps,
+  withRomeLabels,
+}: {
+  title: string
+  romes?: string
+  rncps?: string
+  withRomeLabels?: boolean
+}): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] }> => {
   if (!title && !romes && !rncps) {
     throw Boom.badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
   } else {
-    try {
-      const terms: any[] = []
+    let regexes: RegExp[] = []
 
-      if (title) {
-        title.split(" ").forEach((term, idx) => {
-          if (idx === 0 || term.length > 2) {
-            terms.push(getMultiMatchTerm(term))
-          }
-        })
-      }
-
-      if (romes) {
-        terms.push({
-          bool: {
-            must: {
-              match: {
-                codes_romes: romes,
-              },
-            },
-          },
-        })
-      }
-
-      if (rncps) {
-        terms.push({
-          bool: {
-            must: {
-              match: {
-                codes_rncps: rncps,
-              },
-            },
-          },
-        })
-      }
-
-      const response = await search(
-        {
-          index: "domainesmetiers",
-          size: 20,
-          _source_includes: ["sous_domaine", "codes_romes", "codes_rncps"],
-          body: {
-            query: {
-              bool: {
-                must: terms,
-              },
-            },
-          },
-        },
-        DomainesMetiers
-      )
-
-      const labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] = response.map((labelAndRome) => ({
-        label: labelAndRome._source.sous_domaine,
-        romes: labelAndRome._source.codes_romes,
-        rncps: labelAndRome._source.codes_rncps,
-        type: "job",
-      }))
-
-      return { labelsAndRomes }
-    } catch (error) {
-      const newError = Boom.internal("getting metiers from title romes and rncps")
-      newError.cause = error
-      throw newError
-    }
-  }
-}
-
-/**
- * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. Le retour s'approche au mieux des critères.
- * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
- * @param {undefined | string} withRomeLabels : indique s'il faut que la fonction retourne également les labels associés aux romes
- */
-const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: boolean): Promise<{ labelsAndRomes: IMetierEnrichi[] }> => {
-  try {
-    const terms: any[] = []
-
-    searchTerm.split(" ").forEach((term, idx) => {
-      if (idx === 0 || term.length > 2) {
-        terms.push(getMultiMatchTerm(term))
-      }
-    })
-
-    const sources = ["sous_domaine", "codes_romes", "codes_rncps"]
-    if (withRomeLabels) {
-      sources.push("couples_romes_metiers")
+    if (title) {
+      regexes = buildRegexes(title)
     }
 
-    const response = await search(
-      {
-        index: "domainesmetiers",
-        size: 20,
-        _source_includes: sources,
-        body: {
-          query: {
-            bool: {
-              should: terms,
-            },
-          },
-        },
-      },
-      DomainesMetiers
-    )
+    let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({ regexes, romes, rncps, searchTerm: removeAccents(title) })
+    metiers = metiers.sort((a: IDomainesMetiers & { score?: number }, b: IDomainesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
-    const labelsAndRomes: any[] = []
+    const labelsAndRomes: IMetierEnrichi[] = []
 
-    response.forEach((labelAndRome) => {
-      const metier: IMetierEnrichi = {
-        label: labelAndRome._source.sous_domaine,
-        romes: labelAndRome._source.codes_romes,
-        rncps: labelAndRome._source.codes_rncps,
+    metiers.forEach((metier) => {
+      const labelAndRome: IMetierEnrichi = {
+        label: metier.sous_domaine,
+        romes: metier.codes_romes,
+        rncps: metier.codes_rncps,
         type: "job",
       }
 
       if (withRomeLabels) {
-        metier.romeTitles = labelAndRome._source.couples_romes_metiers
+        labelAndRome.romeTitles = metier.couples_romes_metiers
       }
 
-      labelsAndRomes.push(metier)
+      labelsAndRomes.push(labelAndRome)
     })
+
     return { labelsAndRomes }
-  } catch (error) {
-    const newError = Boom.internal("getting metiers from title")
-    newError.cause = error
-    throw newError
-  }
-}
-
-/**
- * Retourne les appellations, intitulés et codes romes correspondant au terme de recherche
- * @param {string} searchTerm un mot ou un préfixe sur lequel doit se baser la recherche
- * @returns {Promise<IAppellationsRomes>}
- */
-export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
-  try {
-    const body = {
-      query: {
-        bool: {
-          must: [
-            {
-              nested: {
-                path: "couples_appellations_rome_metier",
-                query: {
-                  bool: {
-                    should: [
-                      {
-                        match: {
-                          "couples_appellations_rome_metier.appellation": {
-                            query: searchTerm,
-                            fuzziness: 4,
-                            operator: "and",
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
-      },
-    }
-
-    const response = await search({ index: "domainesmetiers", body }, DomainesMetiers)
-
-    const domaineMetiers: IDomainesMetiers[] = response.map(({ _source }) => _source)
-    const coupleAppellationRomeMetier = domaineMetiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
-    const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
-    const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
-      keys: ["appellation"],
-      threshold: matchSorter.rankings.NO_MATCH,
-    })
-    return { coupleAppellationRomeMetier: sorted }
-  } catch (error) {
-    const newError = Boom.internal("getting intitule from title")
-    newError.cause = error
-    throw newError
   }
 }
 
@@ -251,50 +259,51 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
  * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
  */
 const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ labelsAndRomesForDiplomas: IMetierEnrichi[] }> => {
-  try {
-    const terms: any[] = []
+  const regexes: RegExp[] = buildRegexes(searchTerm)
 
-    searchTerm.split(" ").forEach((term, idx) => {
-      if (idx === 0 || term.length > 2) {
-        terms.push(getMultiMatchTermForDiploma(term))
-      }
+  let diplomas: (IDiplomesMetiers & { score?: number })[] = await filterDiplomas(regexes)
+  diplomas = diplomas.sort((a: IDiplomesMetiers & { score?: number }, b: IDiplomesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
+
+  let labelsAndRomesForDiplomas: IMetierEnrichi[] = []
+
+  diplomas.forEach((labelAndRomeForDiploma) => {
+    labelsAndRomesForDiplomas.push({
+      label: labelAndRomeForDiploma.intitule_long,
+      romes: labelAndRomeForDiploma.codes_romes,
+      rncps: labelAndRomeForDiploma.codes_rncps,
+      type: "diploma",
     })
+  })
 
-    const response = await search(
-      {
-        index: "diplomesmetiers",
-        size: 20,
-        _source_includes: ["intitule_long", "codes_romes", "codes_rncps"],
-        body: {
-          query: {
-            bool: {
-              should: terms,
-            },
-          },
-        },
-      },
-      DiplomesMetiers
-    )
+  labelsAndRomesForDiplomas = removeDuplicateDiplomas(labelsAndRomesForDiplomas)
 
-    let labelsAndRomesForDiplomas: IMetierEnrichi[] = []
+  return { labelsAndRomesForDiplomas }
+}
 
-    response.forEach((labelAndRomeForDiploma) => {
-      labelsAndRomesForDiplomas.push({
-        label: labelAndRomeForDiploma._source.intitule_long,
-        romes: labelAndRomeForDiploma._source.codes_romes,
-        rncps: labelAndRomeForDiploma._source.codes_rncps,
-        type: "diploma",
-      })
-    })
+/**
+ * Retourne les appellations, intitulés et codes romes correspondant au terme de recherche
+ * @param {string} searchTerm un mot ou un préfixe sur lequel doit se baser la recherche
+ * @returns {Promise<IAppellationsRomes>}
+ */
+export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
+  const regexes: RegExp[] = buildRegexes(searchTerm)
 
-    labelsAndRomesForDiplomas = removeDuplicateDiplomas(labelsAndRomesForDiplomas)
+  let metiers: (IDomainesMetiers & { score?: number })[] = await filterMetiers({
+    regexes,
+    searchTerm: removeAccents(searchTerm),
+    searchableFields: searchableWeightedAppellationFields,
+  })
+  metiers = metiers.sort((a: IDomainesMetiers & { score?: number }, b: IDomainesMetiers & { score?: number }) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 20)
 
-    return { labelsAndRomesForDiplomas }
-  } catch (error) {
-    const newError = Boom.internal("getting diplomes from title")
-    newError.cause = error
-    throw newError
-  }
+  const coupleAppellationRomeMetier = metiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
+  const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
+
+  const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
+    keys: ["appellation"],
+    threshold: matchSorter.rankings.NO_MATCH,
+  })
+
+  return { coupleAppellationRomeMetier: sorted.slice(0, 100) }
 }
 
 const removeDuplicateDiplomas = (diplomas) => {
@@ -319,20 +328,7 @@ const removeDuplicateDiplomas = (diplomas) => {
  * @returns {Promise<IMetiers>}
  */
 export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMetiers> => {
-  const romeResponse = await getRomesFromCatalogue({ cfd })
-  const { romes } = romeResponse
-  const metiers = await getMetiersFromRomes(romes)
-  return metiers
-}
-
-/**
- * Récupère la liste des métiers associés à un établissement en paramètre identifié par son SIRET
- * @param {string} siret
- * @returns {Promise<IMetiers>}
- */
-export const getMetiersPourEtablissement = async ({ siret }: { siret: string }): Promise<IMetiers> => {
-  const romeResponse = await getRomesFromCatalogue({ siret })
-  const { romes } = romeResponse
+  const { romes } = await getRomesFromCatalogue({ cfd })
   const metiers = await getMetiersFromRomes(romes)
   return metiers
 }
@@ -343,24 +339,11 @@ export const getMetiersPourEtablissement = async ({ siret }: { siret: string }):
  * @returns {IMetiers}
  */
 const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
-  const response = await search(
-    {
-      index: "domainesmetiers",
-      size: 20,
-      _source_includes: ["sous_domaine"],
-      body: {
-        query: {
-          match: {
-            codes_romes: romes.join(","),
-          },
-        },
-      },
-    },
-    DomainesMetiers
-  )
-  const metiers: string[] = response.map((metier) => {
-    return metier._source.sous_domaine
-  })
+  const metiers = (await getCacheMetiers())
+    .filter((metier) => metier.codes_romes.some((rome) => romes.includes(rome)))
+    .map((metier: { sous_domaine: string }) => metier.sous_domaine)
+    .sort()
+
   return { metiers }
 }
 
@@ -369,33 +352,6 @@ const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
  * @returns {IMetiers}
  */
 export const getTousLesMetiers = async (): Promise<IMetiers> => {
-  try {
-    const response = await search(
-      {
-        index: "domainesmetiers",
-        size: 200,
-        _source_includes: ["sous_domaine"],
-        body: {
-          query: {
-            match_all: {},
-          },
-        },
-      },
-      DomainesMetiers
-    )
-
-    const metiers: string[] = []
-
-    response.forEach((metier) => {
-      metiers.push(metier._source.sous_domaine)
-    })
-
-    metiers.sort()
-
-    return { metiers }
-  } catch (error) {
-    const newError = Boom.internal("getting all metiers")
-    newError.cause = error
-    throw newError
-  }
+  const metiers = (await getCacheMetiers()).map((metier: { sous_domaine: string }) => metier.sous_domaine).sort()
+  return { metiers }
 }

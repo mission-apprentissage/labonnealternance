@@ -1,6 +1,6 @@
-import { model, Schema } from "../../../mongodb"
+import { IEmailBlacklist } from "shared"
 
-import { IEmailBlacklist } from "./emailBlacklist.types"
+import { model, Schema } from "../../../mongodb"
 
 export const emailBlacklistSchema = new Schema<IEmailBlacklist>(
   {

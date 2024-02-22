@@ -1,5 +1,18 @@
 import { Box, Container, Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
+
+type DataDisplayForError = {
+  title: string
+  text: JSX.Element | string
+  dataTestId: string
+}
+
+const defaultErrorData: DataDisplayForError = {
+  title: "Une erreur est survenue",
+  text: "Vous pourrez essayer ultérieurement",
+  dataTestId: "CandidatureSpontaneeFailedTitle",
+}
 
 const sendingStateValues = {
   "email temporaire non autorisé": {
@@ -18,41 +31,46 @@ const sendingStateValues = {
     text: "Veuillez patienter quelques instants et réessayer",
     dataTestId: "CandidatureSpontaneeFailedTempEmailTitle",
   },
-  "max candidatures atteint": {
+  [BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY]: {
     title: "Vous avez atteint le nombre maximum de candidature pour aujourd'hui",
     text: "Vous pourrez en envoyer de nouveau demain",
     dataTestId: "CandidatureSpontaneeFailedTempEmailTitle",
+  },
+  [BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER]: {
+    title: "Vous avez déjà atteint la limite de 3 candidatures envoyées à cette opportunité d’emploi.",
+    text: "",
+    dataTestId: "CandidatureSpontaneeFailedTooManyApplicationsPerCompany",
   },
   "Internal Server Error": {
     title: "Erreur technique",
     text: "Veuillez patienter quelques instants et réessayer. Si l'erreur persiste merci de nous contacter.",
     dataTestId: "CandidatureSpontaneeFailedTempEmailTitle",
   },
-}
+  "offre expirée": {
+    title: "Offre expirée",
+    text: "Cette offre n'est plus active",
+    dataTestId: "CandidatureSpontaneeFailedExpiredJob",
+  },
+} satisfies Record<string, DataDisplayForError>
 
 const CandidatureLbaFailed = ({ sendingState }) => {
-  const errorReasonText = () => {
-    return (
-      <>
-        <Flex direction="row" alignItems="center">
-          <Image src="/images/icons/input_value_error.svg" mr={4} alt="" />
-          <Text as="h2" fontWeight={700} fontSize="20px" data-testid={sendingStateValues[sendingState]?.dataTestId || "CandidatureSpontaneeFailedTitle"}>
-            {sendingStateValues[sendingState]?.title || "Une erreur est survenue"}
-          </Text>
-        </Flex>
-        <Box mt={10} mb={12} fontSize="18px">
-          {sendingStateValues[sendingState]?.text || "Vous pourrez essayer ultérieurement"}
-        </Box>
-      </>
-    )
-  }
+  const errorData: DataDisplayForError = sendingStateValues[sendingState] ?? defaultErrorData
+  const { dataTestId, title, text } = errorData
 
   return (
     <Container data-testid="CandidatureSpontaneeFailed">
       <Text as="h1" mb={10} fontSize="1.5rem" fontWeight={700}>
-        Candidature spontanée
+        Erreur
       </Text>
-      {errorReasonText()}
+      <Flex direction="row" alignItems="center">
+        <Image src="/images/icons/input_value_error.svg" mr={4} alt="" />
+        <Text as="h2" fontWeight={700} fontSize="20px" data-testid={dataTestId}>
+          {title}
+        </Text>
+      </Flex>
+      <Box mt={10} mb={12} fontSize="18px">
+        {text}
+      </Box>
     </Container>
   )
 }

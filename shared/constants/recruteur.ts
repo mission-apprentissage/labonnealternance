@@ -1,10 +1,3 @@
-export enum JOB_STATUS {
-  ACTIVE = "Active",
-  POURVUE = "Pourvue",
-  ANNULEE = "Annulée",
-  EN_ATTENTE = "En attente",
-}
-
 export enum RECRUITER_STATUS {
   ACTIF = "Actif",
   ARCHIVE = "Archivé",
@@ -36,23 +29,32 @@ export enum ETAT_UTILISATEUR {
 }
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
+export const ADMIN = "ADMIN"
+
+export const AUTHTYPE = {
+  OPCO: "OPCO",
+  CFA,
+  ENTREPRISE,
+  ADMIN,
+} as const
+
 export const REGEX = {
   SIRET: /^([0-9]{9}|[0-9]{14})$/,
   GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,
   TELEPHONE: /^[0-9]{10}$/,
 }
-export const OPCOS = {
-  AFDAS: "AFDAS",
-  AKTO: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
-  ATLAS: "ATLAS",
-  CONSTRUCTYS: "Constructys",
-  OPCOMMERCE: "L'Opcommerce",
-  OCAPIAT: "OCAPIAT",
-  OPCO2I: "OPCO 2i",
-  EP: "Opco entreprises de proximité",
-  MOBILITE: "Opco Mobilités",
-  SANTE: "Opco Santé",
-  UNIFORMATION: "Uniformation, l'Opco de la Cohésion sociale",
+export enum OPCOS {
+  AFDAS = "AFDAS",
+  AKTO = "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+  ATLAS = "ATLAS",
+  CONSTRUCTYS = "Constructys",
+  OPCOMMERCE = "L'Opcommerce",
+  OCAPIAT = "OCAPIAT",
+  OPCO2I = "OPCO 2i",
+  EP = "Opco entreprises de proximité",
+  MOBILITE = "Opco Mobilités",
+  SANTE = "Opco Santé",
+  UNIFORMATION = "Uniformation, l'Opco de la Cohésion sociale",
 }
 
 export const NIVEAUX_POUR_LBA = {
@@ -92,19 +94,9 @@ export const TRAINING_CONTRACT_TYPE = {
 
 export const TRAINING_RYTHM = {
   INDIFFERENT: "Indifférent",
+  "1J4J": "1 jour / 4 jours",
   "2J3J": "2 jours / 3 jours",
   "1S1S": "1 semaine / 1 semaine",
   "2S3S": "2 semaines / 3 semaines",
   "6S6S": "6 semaines / 6 semaines",
-}
-
-export const ROLES = {
-  candidat: "candidat",
-  cfa: "cfa",
-  administrator: "administrator",
-}
-
-export enum BusinessErrorCodes {
-  IS_CFA = "IS_CFA",
-  ALREADY_EXISTS = "ALREADY_EXISTS",
 }

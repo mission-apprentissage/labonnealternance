@@ -2,7 +2,11 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormL
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
+import { IUserStatusValidationJson } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
+
+import { ApiError } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
 import { phoneValidation } from "../../../common/validation/fieldValidations"
@@ -132,8 +136,8 @@ const FormulaireLayout = ({ left, right }) => {
         <Box fontSize="20px" mb={4}>
           <Text textAlign="justify" mt={2}>
             {type === AUTHTYPE.ENTREPRISE
-              ? "Les informations de contact seront visibles sur vos offres et permettront de recevoir les candidatures."
-              : "Les informations de contact seront visibles sur les offres de vos entreprises partenaires"}
+              ? "Les informations de contact et l'adresse postale de votre établissement seront visibles sur vos offres et permettront de recevoir les candidatures."
+              : "Les informations de contact et l'adresse postale de votre établissement seront visibles sur les offres de vos entreprises partenaires"}
           </Text>
           <Text>Elles peuvent être modifiées ultérieurement.</Text>
         </Box>
@@ -144,8 +148,7 @@ const FormulaireLayout = ({ left, right }) => {
   )
 }
 
-export const InformationCreationCompte = () => {
-  // const location = useLocation()
+export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boolean }) => {
   const router = useRouter()
   const validationPopup = useDisclosure()
   const [popupData, setPopupData] = useState({})
@@ -160,13 +163,17 @@ export const InformationCreationCompte = () => {
       delete payload.opco
     }
     createEtablissement(payload)
-      .then(({ data }) => {
-        if (data.user.status[0].status === "VALIDÉ") {
+      .then((data) => {
+        if (!data) {
+          throw new Error("no data")
+        }
+        const statusArray: IUserStatusValidationJson[] = data.user?.status ?? []
+        if (statusArray?.at(0)?.status === ETAT_UTILISATEUR.VALIDE) {
           if (data.user.type === AUTHTYPE.ENTREPRISE) {
             // Dépot simplifié
             router.push({
-              pathname: "/espace-pro/creation/offre",
-              query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id },
+              pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
+              query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id.toString(), token: data.token },
             })
           } else {
             router.push({
@@ -180,17 +187,19 @@ export const InformationCreationCompte = () => {
         }
         setSubmitting(false)
       })
-      .catch(({ response }) => {
-        const payload: { error: string; statusCode: number; message: string } = response.data
-        console.error(payload.error)
-        setFieldError("email", payload.message)
-        setSubmitting(false)
+      .catch((error) => {
+        console.error(error)
+        if (error instanceof ApiError) {
+          const payload: { error: string; statusCode: number; message: string } = error.context.errorData
+          setFieldError("email", payload.message)
+          setSubmitting(false)
+        }
       })
   }
 
   return (
     <AnimationContainer>
-      <ConfirmationCreationCompte {...popupData} {...validationPopup} />
+      <ConfirmationCreationCompte {...popupData} {...validationPopup} isWidget={isWidget} />
       <AuthentificationLayout>
         <Formulaire submitForm={submitForm} />
       </AuthentificationLayout>

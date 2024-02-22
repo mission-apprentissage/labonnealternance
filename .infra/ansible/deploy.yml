@@ -65,7 +65,7 @@
       async: 1800
       poll: 10
 
-    - name: "Create MongoDB & ElasticSearch Indexes"
+    - name: "Create MongoDB Indexes"
       shell:
         chdir: /opt/app
         cmd: "sudo /opt/app/scripts/sync-index.sh"
@@ -90,6 +90,11 @@
       shell:
         chdir: /opt/app
         cmd: "sudo /opt/app/tools/reload-proxy.sh"
+
+    - name: "Désactivation du mode maintenance"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/tools/maintenance/maintenance-off.sh"
 
     - name: "Verification des certificats SSL"
       shell:
@@ -121,8 +126,3 @@
       shell:
         chdir: /opt/app
         cmd: "sudo docker system prune --all --force"
-
-    - name: "Désactivation du mode maintenance"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo /opt/app/tools/maintenance/maintenance-off.sh"

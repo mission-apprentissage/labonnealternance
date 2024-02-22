@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Image } from "@chakra-ui/react"
-import React, { useContext } from "react"
+import { useContext } from "react"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
@@ -19,8 +19,9 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
 
   const filterButtonClicked = (filterButton) => {
     let filters = activeFilters
+
     filters.includes(filterButton) ? filters.splice(filters.indexOf(filterButton), 1) : filters.push(filterButton)
-    if (!filters.length) {
+    if (!filters.length || (!partnerJobCount && filters.length === 1 && filters[0] === "duo")) {
       filters = ["jobs", "trainings", "duo"]
     }
 
@@ -31,7 +32,9 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
     }
   }
 
-  if (allJobSearchError && trainingSearchError) return ""
+  if (allJobSearchError && trainingSearchError) {
+    return <></>
+  }
 
   const jobLoading = ""
   let jobCount = 0
@@ -52,7 +55,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
   const filterZoneProperties = {
     justifyContent: "left",
     paddingLeft: ["8px", "8px", "8px", "16px"],
-    marginTop: "8px",
+    marginTop: "12px",
     marginBottom: "4px",
     maxWidth: "1275px",
     alignItems: ["left", "left", "left", "center"],
@@ -68,7 +71,9 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
                 <>
                   <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilters.includes("jobs")} handleFilterButtonClicked={filterButtonClicked} />
                   <FilterButton type="trainings" count={trainingCount} isActive={activeFilters.includes("trainings")} handleFilterButtonClicked={filterButtonClicked} />
-                  <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} />
+                  {partnerJobCount > 0 && (
+                    <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} />
+                  )}
                 </>
               )}
               <DisplayMapButton jobs={jobs} trainings={trainings} />

@@ -2,7 +2,9 @@ import { randomUUID } from "crypto"
 
 import Boom from "boom"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation } from "shared"
+import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection } from "shared"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -10,8 +12,8 @@ import { UserRecruteur } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR, ADMIN } from "./constant.service"
-import mailer from "./mailer.service"
+import { ADMIN } from "./constant.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
 
 /**
  * @description generate an API key
@@ -29,7 +31,7 @@ export const createApiKey = (): string => `mna-${randomUUID()}`
  * @returns {Promise<IUserRecruteur>}
  */
 export const getUsers = async (query: FilterQuery<IUserRecruteur>, options, { page, limit }) => {
-  const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true, select: "-password" })
+  const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true })
   return {
     pagination: {
       page: response?.page,
@@ -49,39 +51,37 @@ export const getUsers = async (query: FilterQuery<IUserRecruteur>, options, { pa
 export const getUser = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query).lean()
 
 /**
- * @description create user
- * @param {IUserRecruteur} values
- * @returns {IUserRecruteur}
+ * @description création d'un nouveau user recruteur. Le champ status peut être passé ou, s'il n'est pas passé, être sauvé ultérieurement
  */
-export const createUser = async (values) => {
-  let scope = values.scope ?? undefined
+export const createUser = async (
+  userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status"> & Partial<Pick<IUserRecruteur, "status">>
+): Promise<IUserRecruteur> => {
+  let scope = userRecruteurProps.scope ?? undefined
 
-  const formatedEmail = values.email.toLocaleLowerCase()
+  const formatedEmail = userRecruteurProps.email.toLocaleLowerCase()
 
   if (!scope) {
-    if (values.type === "CFA") {
+    if (userRecruteurProps.type === "CFA") {
       // generate user scope
       const [key] = randomUUID().split("-")
       scope = `cfa-${key}`
     } else {
       let key
-      if (values?.establishment_raison_sociale) {
-        key = values.establishment_raison_sociale.toLowerCase().replace(/ /g, "-")
+      if (userRecruteurProps?.establishment_raison_sociale) {
+        key = userRecruteurProps.establishment_raison_sociale.toLowerCase().replace(/ /g, "-")
       } else {
         key = randomUUID().split("-")[0]
       }
       scope = `etp-${key}`
     }
   }
-
-  const user = new UserRecruteur({
-    ...values,
-    scope: scope,
+  const createdUser = await UserRecruteur.create({
+    status: [],
+    ...userRecruteurProps,
+    scope,
     email: formatedEmail,
   })
-
-  await user.save()
-  return user.toObject()
+  return createdUser.toObject()
 }
 
 /**
@@ -122,7 +122,8 @@ export const removeUser = async (id: IUserRecruteur["_id"] | string) => {
  * @param {IUserRecruteur["email"]} email
  * @returns {Promise<IUserRecruteur>}
  */
-export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.findOneAndUpdate({ email: email }, { last_connection: new Date() }, { new: true }).lean()
+export const updateLastConnectionDate = (email: IUserRecruteur["email"]) =>
+  UserRecruteur.findOneAndUpdate({ email: email.toLowerCase() }, { last_connection: new Date() }, { new: true }).lean()
 
 /**
  * @description update user validation status
@@ -142,9 +143,9 @@ export const updateUserValidationHistory = async (
  * @param {IUserRecruteur["status"]} stateArray
  * @returns {IUserRecruteur["status"]}
  */
-export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
+export const getUserStatus = (stateArray: IUserRecruteur["status"]): IUserStatusValidation["status"] => {
   const sortedArray = [...stateArray].sort((a, b) => new Date(a?.date ?? 0).valueOf() - new Date(b?.date ?? 0).valueOf())
-  const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
+  const lastValidationEvent = sortedArray.at(-1)
   if (!lastValidationEvent) {
     throw Boom.internal("no status found in status array")
   }
@@ -211,31 +212,17 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
-      establishment_raison_sociale,
-      last_name,
-      first_name,
-      email,
+      establishment_raison_sociale: establishment_raison_sociale,
+      last_name: sanitizeForEmail(last_name),
+      first_name: sanitizeForEmail(first_name),
+      email: sanitizeForEmail(email),
       is_delegated: type === CFA,
       url: createAuthMagicLink(userRecruteur),
     },
   })
 }
 
-const projection = {
-  _id: 1,
-  establishment_id: 1,
-  establishment_raison_sociale: 1,
-  establishment_siret: 1,
-  type: 1,
-  first_name: 1,
-  last_name: 1,
-  email: 1,
-  phone: 1,
-  createdAt: 1,
-  origin: 1,
-  opco: 1,
-  status: 1,
-}
+const projection = entriesToTypedRecord(typedKeys(UserRecruteurForAdminProjection).map((key) => [key, 1 as const]))
 
 export const getAdminUsers = () => UserRecruteur.find({ type: ADMIN }).lean()
 

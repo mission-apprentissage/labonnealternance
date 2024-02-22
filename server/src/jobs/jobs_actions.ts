@@ -5,17 +5,28 @@ import mongoose from "mongoose"
 import { IInternalJobs, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { db } from "@/common/mongodb"
 import { sleep } from "@/common/utils/asyncUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 import { getLoggerWithContext } from "../common/logger"
+import config from "../config"
 
 import { createJobSimple, updateJob } from "./job.actions"
 import { runJob } from "./jobs"
 
 const logger = getLoggerWithContext("script")
 
-type AddJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload"> & Partial<Pick<IInternalJobsSimple, "scheduled_for">> & { queued?: boolean }
+type AddJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload"> & Partial<Pick<IInternalJobsSimple, "scheduled_for">> & { queued?: boolean; productionOnly?: boolean }
 
-export async function addJob({ name, payload, scheduled_for = new Date(), queued = false }: AddJobSimpleParams): Promise<number> {
+export async function addJob({ name, payload, scheduled_for = new Date(), queued = false, productionOnly = false }: AddJobSimpleParams): Promise<number> {
+  if (config.env !== "production" && productionOnly) {
+    return 0
+  }
+
+  // disable all jobs on pentest env
+  if (config.env === "pentest") {
+    return 0
+  }
+
   const job = await createJobSimple({
     name,
     payload,
@@ -80,6 +91,7 @@ const runner = async (job: IInternalJobs, jobFunc: () => Promise<unknown>): Prom
   } catch (err: any) {
     captureException(err)
     jobLogger.error({ err, writeErrors: err.writeErrors, error: err }, "job error")
+    await notifyToSlack({ subject: `Job ${job.name}`, message: `error while running job with id=${job._id}`, error: true })
     error = err?.stack
   }
 

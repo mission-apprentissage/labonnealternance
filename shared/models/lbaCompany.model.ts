@@ -1,6 +1,7 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
+import { ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
 
 export const ZLbaCompany = z
@@ -18,6 +19,7 @@ export const ZLbaCompany = z
     zip_code: z.string().nullable().describe("Code postal"),
     city: z.string().nullable().describe("Ville"),
     geo_coordinates: z.string().describe("Latitude et longitude de l'établissement"),
+    geopoint: ZPointGeometry.nullish().describe("Latitude et longitude de l'établissement"),
     email: z.string().nullable().describe("Adresse email de contact"),
     phone: extensions.phone().nullable().describe("Numéro de téléphone de contact"),
     company_size: z.string().nullable().describe("Tranche effectif de l'entreprise"),
@@ -28,11 +30,22 @@ export const ZLbaCompany = z
     opco_url: z.string().nullable().describe("L'URL spécifique liée à l'OPCO de la société"),
     created_at: z.date().describe("La date création de la demande"),
     last_update_at: z.date().describe("Date de dernières mise à jour"),
-    distance: z.array(z.number()).nullish().describe("Distance de la société au centre de recherche en km"),
-    _id: zObjectId.nullish(),
-    __v: z.number().nullish(),
+    distance: z.number().nullish().describe("Distance de la société au centre de recherche en km"),
+    _id: zObjectId,
   })
   .strict()
   .openapi("LbaCompany")
+
+export const ZLbaCompanyNew = ZLbaCompany.omit({
+  _id: true,
+  created_at: true,
+  last_update_at: true,
+}).strict()
+
+export const ZLbaLegacyCompany = ZLbaCompany.pick({
+  siret: true,
+  email: true,
+  _id: true,
+}).strict()
 
 export type ILbaCompany = z.output<typeof ZLbaCompany>

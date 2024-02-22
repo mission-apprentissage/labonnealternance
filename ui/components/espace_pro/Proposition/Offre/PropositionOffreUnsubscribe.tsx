@@ -7,12 +7,15 @@ import { etablissementUnsubscribeDemandeDelegation } from "../../../../utils/api
 
 export const PropositionOffreUnsubscribe = () => {
   const router = useRouter()
+
+  const { token } = router.query as { token: string | undefined }
+
   const { siretFormateur } = router.query
   const toast = useToast()
   const { isLoading, isError, isSuccess } = useQuery(
     "proposition-offre-unsubscribe",
     async () => {
-      await etablissementUnsubscribeDemandeDelegation(siretFormateur)
+      await etablissementUnsubscribeDemandeDelegation(siretFormateur, token)
     },
     {
       enabled: Boolean(siretFormateur),

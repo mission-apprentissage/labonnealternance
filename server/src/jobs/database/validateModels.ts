@@ -1,15 +1,26 @@
 import { captureException } from "@sentry/node"
 import { Model } from "mongoose"
 import {
+  ZApiCall,
   ZApplication,
   ZAppointment,
   ZCredential,
+  ZDiplomesMetiers,
+  ZDomainesMetiers,
   ZEligibleTrainingsForAppointmentSchema,
+  ZEmailBlacklist,
   ZEtablissement,
+  ZGeoLocation,
   ZJob,
   ZLbaCompany,
+  ZLbaLegacyCompany,
   ZOptout,
   ZRecruiter,
+  ZReferentielOnisep,
+  ZReferentielOpco,
+  ZUnsubscribeOF,
+  ZUnsubscribedLbaCompany,
+  ZUser,
   ZUserRecruteur,
   zFormationCatalogueSchema,
 } from "shared/models"
@@ -17,18 +28,28 @@ import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
 import {
+  ApiCalls,
   Application,
   Appointment,
   AppointmentDetailed,
   Credential,
+  DiplomesMetiers,
+  DomainesMetiers,
   EligibleTrainingsForAppointment,
+  EmailBlacklist,
   Etablissement,
   FormationCatalogue,
+  GeoLocation,
   Job,
   LbaCompany,
   LbaCompanyLegacy,
   Optout,
   Recruiter,
+  ReferentielOnisep,
+  ReferentielOpco,
+  UnsubscribeOF,
+  UnsubscribedLbaCompany,
+  User,
   UserRecruteur,
   eligibleTrainingsForAppointmentHistory,
 } from "@/common/model/index"
@@ -47,6 +68,7 @@ async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, a
       z.parse(doc)
     } catch (err) {
       count++
+
       if (err && typeof err === "object" && "issues" in err && Array.isArray(err.issues)) {
         err.issues.forEach(({ code, path, expected, received, message }) => {
           const pointPath = path.join(".")
@@ -74,33 +96,30 @@ async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, a
 
 export async function validateModels(): Promise<void> {
   // TODO: Create Zod for missing models
-
-  //  await validateModel(ApiCalls, ZApiCalls)
+  await validateModel(ApiCalls, ZApiCall)
   await validateModel(Application, ZApplication)
   await validateModel(Appointment, ZAppointment)
   await validateModel(AppointmentDetailed, ZAppointment)
   await validateModel(Credential, ZCredential)
-  //  await validateModel(DiplomesMetiers, ZDiplomesMetiers)
-  //  await validateModel(DomainesMetiers, ZDomainesMetiers)
+  await validateModel(DiplomesMetiers, ZDiplomesMetiers)
+  await validateModel(DomainesMetiers, ZDomainesMetiers)
   await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
-  // await validateModel(EmailBlacklist, ZEmailBlacklist)
+  await validateModel(EmailBlacklist, ZEmailBlacklist)
   await validateModel(Etablissement, ZEtablissement)
   await validateModel(FormationCatalogue, zFormationCatalogueSchema)
-  //  await validateModel(GeoLocation, ZGeoLocation)
-  //  await validateModel(InternalJobs, ZInternalJobs)
+  await validateModel(GeoLocation, ZGeoLocation)
+  // //  await validateModel(InternalJobs, ZInternalJobs)
   await validateModel(Job, ZJob)
   await validateModel(LbaCompany, ZLbaCompany)
-  await validateModel(LbaCompanyLegacy, ZLbaCompany)
+  await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   //  await validateModel(Opco, ZOpco)
   await validateModel(Optout, ZOptout)
   await validateModel(Recruiter, ZRecruiter)
-  // await validateModel(ReferentielOnisep, ZReferentielOnisep)
-  // await validateModel(ReferentielOpco, ZReferentielOpco)
-  // await validateModel(ReferentielRome, ZReferentielRome)
-  // await validateModel(RncpRomes, ZRncpRomes)
-  // await validateModel(UnsubscribeOF, ZUnsubscribeOF)
-  // await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
-  // await validateModel(User, ZUser)
+  await validateModel(ReferentielOnisep, ZReferentielOnisep)
+  await validateModel(User, ZUser)
+  await validateModel(ReferentielOpco, ZReferentielOpco)
+  await validateModel(UnsubscribeOF, ZUnsubscribeOF)
+  await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
   await validateModel(UserRecruteur, ZUserRecruteur)
   await validateModel(eligibleTrainingsForAppointmentHistory, ZEligibleTrainingsForAppointmentSchema)
 }

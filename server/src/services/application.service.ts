@@ -1,25 +1,33 @@
+import Boom from "boom"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
-import { IApplication, IApplicationUI, ILbaCompany, JOB_STATUS } from "shared"
-import { RECRUITER_STATUS } from "shared/constants/recruteur.js"
+import { IApplication, IJob, ILbaCompany, INewApplication, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
+import { ApplicantIntention } from "shared/constants/application"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { UserForAccessToken } from "@/security/accessTokenService"
 
-import { logger } from "../common/logger.js"
-import { Application, EmailBlacklist, LbaCompany } from "../common/model/index.js"
-import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
-import { manageApiError } from "../common/utils/errorManager.js"
-import { prepareMessageForMail } from "../common/utils/fileUtils.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import config from "../config.js"
+import { logger } from "../common/logger"
+import { Application, EmailBlacklist, LbaCompany, Recruiter, UserRecruteur } from "../common/model"
+import { manageApiError } from "../common/utils/errorManager"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
 
-import { BrevoEventStatus } from "./brevo.service.js"
+import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
+import { BrevoEventStatus } from "./brevo.service"
 import { scan } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
-import mailer from "./mailer.service.js"
-import { validateCaller } from "./queryValidator.service.js"
+import { buildLbaCompanyAddress } from "./lbacompany.service"
+import mailer, { sanitizeForEmail } from "./mailer.service"
+import { validateCaller } from "./queryValidator.service"
+
+const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
+const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
 
 const publicUrl = config.publicUrl
 
@@ -48,7 +56,7 @@ const images: object = {
 /**
  * @description Get applications by job id
  */
-export const getApplication = (job_id: IApplication["job_id"]) => Application.find({ job_id }).lean()
+export const getApplicationsByJobId = (job_id: IApplication["job_id"]) => Application.find({ job_id }).lean()
 
 /**
  * @description Get applications count by job id
@@ -60,7 +68,7 @@ export const getApplicationCount = (job_id: IApplication["job_id"]) => Applicati
  * @param {string} email - Email
  * @return {Promise<boolean>}
  */
-export const isEmailBlacklisted = async (email: string): Promise<boolean> => !!(await EmailBlacklist.findOne({ email }))
+export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await EmailBlacklist.countDocuments({ email }))
 
 /**
  * @description Add an email address to the blacklist collection.
@@ -86,7 +94,7 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
  * @param {string} email
  * @returns {Promise<IApplication>}
  */
-const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
+export const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
   Application.findOne({ company_email: email, to_company_message_id: messageId })
 
 /**
@@ -113,125 +121,90 @@ export const removeEmailFromLbaCompanies = async (email: string) => {
  * Send an application email to a company and a confirmation email to the applicant
  */
 export const sendApplication = async ({
-  query,
+  newApplication,
   referer,
-  shouldCheckSecret,
 }: {
-  query: Omit<IApplicationUI, "_id">
+  newApplication: INewApplication
   referer: string | undefined
-  shouldCheckSecret: boolean
 }): Promise<{ error: string } | { result: "ok"; message: "messages sent" }> => {
-  if (shouldCheckSecret && !query.secret) {
-    return { error: "secret_missing" }
-  } else if (shouldCheckSecret && query.secret !== config.secretUpdateRomesMetiers) {
-    return { error: "wrong_secret" }
-  } else if (!validateCaller({ caller: query.caller, referer })) {
+  if (!validateCaller({ caller: newApplication.caller, referer })) {
     return { error: "missing_caller" }
   } else {
-    let validationResult = await validateApplicationType(query)
-
+    let validationResult = validatePermanentEmail(newApplication.applicant_email)
     if (validationResult !== "ok") {
       return { error: validationResult }
     }
-
-    validationResult = await validatePermanentEmail(query)
-
-    if (validationResult !== "ok") {
-      return { error: validationResult }
-    }
-
-    validationResult = await validateJobStatus(query)
-
-    if (validationResult !== "ok") {
-      return { error: validationResult }
-    }
-
-    const company_email = shouldCheckSecret ? query.company_email : decryptWithIV(query.company_email, query.iv) // utilisation email de test ou decrypt vrai mail crypté
-    const decrypted_email = shouldCheckSecret ? decryptWithIV(query.crypted_company_email, query.iv) : company_email // présent uniquement pour les tests utilisateurs
-
-    validationResult = await validateCompanyEmail({
-      company_email,
-      decrypted_email,
-    })
-
-    validationResult = await validateCompany(query, decrypted_email)
-
-    if (validationResult !== "ok") {
-      return { error: validationResult }
-    }
-
-    if (validationResult !== "ok") {
-      return { error: validationResult }
-    }
-
-    validationResult = await checkUserApplicationCount(query.applicant_email.toLowerCase())
-
-    if (validationResult !== "ok") {
-      return { error: validationResult }
-    }
-
-    validationResult = await scanFileContent(query)
-
-    if (validationResult !== "ok") {
-      return { error: validationResult }
-    }
-
     try {
-      const application = initApplication(query, company_email)
-
-      const encryptedId = encryptIdWithIV(application.id)
-
-      const emailTemplates = getEmailTemplates(query.company_type)
-
-      const fileContent = query.applicant_file_content
-
-      const urlOfDetail = buildUrlOfDetail(publicUrl, query)
-      const urlOfDetailNoUtm = urlOfDetail.replace(/(?<=&|\?)utm_.*?(&|$)/gim, "")
-      const recruiterEmailUrls = buildRecruiterEmailUrls({
-        publicUrl,
-        application,
-        encryptedId,
-      })
-
-      const buildTopic = (aCompanyType, aJobTitle) => {
-        let res = "Candidature"
-        if (aCompanyType === "matcha") {
-          res = `Candidature en alternance - ${aJobTitle}`
-        } else {
-          res = `Candidature spontanée en alternance`
-        }
-        return res
+      const offreOrError = await validateJob(newApplication)
+      if ("error" in offreOrError) {
+        return { error: offreOrError.error }
       }
 
-      const searched_for_job_label = query.searched_for_job_label || ""
+      validationResult = await checkUserApplicationCount(newApplication.applicant_email.toLowerCase(), newApplication)
+      if (validationResult !== "ok") {
+        return { error: validationResult }
+      }
+
+      validationResult = await scanFileContent(newApplication)
+      if (validationResult !== "ok") {
+        return { error: validationResult }
+      }
+
+      const { type: offreType } = offreOrError
+      const recruteurEmail = (offreType === "matcha" ? offreOrError.recruiter.email : offreOrError.company.email)?.toLowerCase()
+      if (!recruteurEmail) {
+        return { error: "email du recruteur manquant" }
+      }
+      const application = newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
+      const fileContent = newApplication.applicant_file_content
+
+      const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, newApplication)
+      const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
+      const searched_for_job_label = newApplication.searched_for_job_label || ""
+
+      const buildTopic = (aCompanyType: INewApplication["company_type"], aJobTitle: string) => {
+        if (aCompanyType === "matcha") {
+          return `Candidature en alternance - ${aJobTitle}`
+        } else {
+          return `Candidature spontanée en alternance ${searched_for_job_label ? "- " + searched_for_job_label : ""}`
+        }
+      }
 
       // Sends acknowledge email to "candidate" and application email to "company"
-      const [emailCandidat, emailCompany] = await Promise.all([
-        mailer.sendEmail({
-          to: application.applicant_email,
-          subject: `Votre candidature chez ${application.company_name}`,
-          template: getEmailTemplate(emailTemplates.candidat),
-          data: { ...application.toObject(), ...images, ...encryptedId, publicUrl, urlOfDetail, urlOfDetailNoUtm },
-          attachments: [
-            {
-              filename: application.applicant_attachment_name,
-              path: fileContent,
-            },
-          ],
-        }),
-        mailer.sendEmail({
-          to: application.company_email,
-          subject: buildTopic(application.job_origin, application.job_title),
-          template: getEmailTemplate(emailTemplates.entreprise),
-          data: { ...application.toObject(), ...images, ...recruiterEmailUrls, searched_for_job_label, urlOfDetail, urlOfDetailNoUtm },
-          attachments: [
-            {
-              filename: application.applicant_attachment_name,
-              path: fileContent,
-            },
-          ],
-        }),
-      ])
+      const emailCompany = await mailer.sendEmail({
+        to:
+          newApplication.company_email && newApplication.secret && newApplication.secret === config.secretUpdateRomesMetiers
+            ? newApplication.company_email
+            : application.company_email,
+        subject: buildTopic(newApplication.company_type, application.job_title),
+        template: getEmailTemplate("mail-candidature"),
+        data: {
+          ...sanitizeApplicationForEmail(application.toObject()),
+          ...images,
+          ...recruiterEmailUrls,
+          searched_for_job_label: sanitizeForEmail(searched_for_job_label),
+          urlOfDetail,
+          urlOfDetailNoUtm,
+        },
+        attachments: [
+          {
+            filename: application.applicant_attachment_name,
+            path: fileContent,
+          },
+        ],
+      })
+      const emailCandidat = await mailer.sendEmail({
+        to: application.applicant_email,
+        subject: `Votre candidature chez ${application.company_name}`,
+        template: getEmailTemplate(offreType === "matcha" ? "mail-candidat-matcha" : "mail-candidat"),
+        data: { ...sanitizeApplicationForEmail(application.toObject()), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
+        attachments: [
+          {
+            filename: application.applicant_attachment_name,
+            path: fileContent,
+          },
+        ],
+      })
 
       application.to_applicant_message_id = emailCandidat.messageId
       if (emailCompany?.accepted?.length) {
@@ -245,13 +218,13 @@ export const sendApplication = async ({
 
       return { result: "ok", message: "messages sent" }
     } catch (err) {
-      logger.error(`Error sending application. Reason : ${err}`)
+      logger.error("Error sending application", err)
       sentryCaptureException(err)
-      if (query?.caller) {
+      if (newApplication?.caller) {
         manageApiError({
           error: err,
           api_path: "applicationV1",
-          caller: query.caller,
+          caller: newApplication.caller,
           errorTitle: "error_sending_application",
         })
       }
@@ -263,64 +236,152 @@ export const sendApplication = async ({
 /**
  * Build url to access item detail on LBA ui
  */
-const buildUrlOfDetail = (publicUrl: string, query: Pick<IApplicationUI, "job_id" | "company_type" | "company_siret">): string => {
-  const itemId = ((aCompanyType) => {
-    if (aCompanyType === "peJob") {
-      return query.job_id
-    } else if (aCompanyType === "matcha") {
-      return query.job_id
-    } else if (aCompanyType !== "formation") {
-      return query.company_siret || "siret"
-    }
-  })(query.company_type as string)
-  const moreParams = ((aCompanyType) => {
-    let res = ""
-    if (aCompanyType === "matcha") {
-      res = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
-    }
-    return res
-  })(query.company_type)
-  const kind = query.company_type
+const buildUrlsOfDetail = (publicUrl: string, newApplication: INewApplication) => {
+  const { company_type, job_id, company_siret } = newApplication
+  const urlSearchParams = new URLSearchParams()
+  urlSearchParams.append("display", "list")
+  urlSearchParams.append("page", "fiche")
+  urlSearchParams.append("type", company_type)
+  if (company_type === "matcha" && job_id) {
+    urlSearchParams.append("itemId", job_id)
+  } else if (company_type === "lba") {
+    urlSearchParams.append("itemId", company_siret)
+  }
+  const paramsWithoutUtm = urlSearchParams.toString()
+  if (company_type === "matcha") {
+    urlSearchParams.append("utm_source", "jecandidate")
+    urlSearchParams.append("utm_medium", "email")
+    urlSearchParams.append("utm_campaign", "jecandidaterecruteur")
+  }
+  const params = urlSearchParams.toString()
+  return {
+    urlWithoutUtm: `${publicUrl}/recherche-apprentissage?${paramsWithoutUtm}`,
+    url: `${publicUrl}/recherche-apprentissage?${params}`,
+  }
+}
 
-  return `${publicUrl}/recherche-apprentissage?display=list&page=fiche&type=${kind}&itemId=${itemId}${moreParams}`
+const buildUserToken = (application: IApplication, userRecruteur?: IUserRecruteur): UserForAccessToken => {
+  const { job_origin, company_siret, company_email } = application
+  if (job_origin === "lba") {
+    return { type: "lba-company", siret: company_siret, email: company_email }
+  } else if (job_origin === "matcha") {
+    if (!userRecruteur) {
+      throw Boom.internal("un user recruteur était attendu")
+    }
+    return userRecruteur
+  } else {
+    throw Boom.internal(`job_origin=${job_origin} non supporté`)
+  }
+}
+
+const buildReplyLink = (application: IApplication, intention: ApplicantIntention, userRecruteur?: IUserRecruteur) => {
+  const applicationId = application._id.toString()
+  const searchParams = new URLSearchParams()
+  searchParams.append("company_recruitment_intention", intention)
+  searchParams.append("id", applicationId)
+  searchParams.append("fn", application.applicant_first_name)
+  searchParams.append("ln", application.applicant_last_name)
+  searchParams.append("utm_source", "jecandidate")
+  searchParams.append("utm_medium", "email")
+  searchParams.append("utm_campaign", "jecandidaterecruteur")
+  const token = generateApplicationReplyToken(buildUserToken(application, userRecruteur), applicationId)
+  searchParams.append("token", token)
+  return `${config.publicUrl}/formulaire-intention?${searchParams.toString()}`
 }
 
 /**
  * Build urls to add in email messages sent to the recruiter
  */
-const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }: { publicUrl: string; application: EnforceDocument<IApplication, any>; encryptedId: any }) => {
+const buildRecruiterEmailUrls = async (application: IApplication) => {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
-  const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
-  const encryptedData = `&id=${encryptedId.id}&iv=${encryptedId.iv}`
+
+  // get the related recruiters to fetch it's establishment_id
+  let userRecruteur: IUserRecruteur | undefined
+  if (application.job_id) {
+    const recruiter = await Recruiter.findOne({ "jobs._id": application.job_id }).lean()
+    if (recruiter) {
+      if (recruiter.is_delegated) {
+        userRecruteur = await UserRecruteur.findOne({ establishment_siret: recruiter.cfa_delegated_siret }).lean()
+      } else {
+        userRecruteur = await UserRecruteur.findOne({ establishment_id: recruiter.establishment_id }).lean()
+      }
+    }
+  }
 
   const urls = {
-    meetCandidateUrl: `${publicUrl}/formulaire-intention?intention=entretien${encryptedData}${candidateData}${utmRecruiterData}`,
-    waitCandidateUrl: `${publicUrl}/formulaire-intention?intention=ne_sais_pas${encryptedData}${candidateData}${utmRecruiterData}`,
-    refuseCandidateUrl: `${publicUrl}/formulaire-intention?intention=refus${encryptedData}${candidateData}${utmRecruiterData}`,
-    lbaRecruiterUrl: `${publicUrl}/acces-recruteur?${utmRecruiterData}`,
-    unsubscribeUrl: `${publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
-    lbaUrl: `${publicUrl}?${utmRecruiterData}`,
-    jobProvidedUrl: `${publicUrl}/espace-pro/offre/${application.job_id}/provided?${utmRecruiterData}`,
-    cancelJobUrl: `${publicUrl}/espace-pro/offre/${application.job_id}/cancel?${utmRecruiterData}`,
-    faqUrl: `${publicUrl}/faq?${utmRecruiterData}`,
+    meetCandidateUrl: buildReplyLink(application, ApplicantIntention.ENTRETIEN, userRecruteur),
+    waitCandidateUrl: buildReplyLink(application, ApplicantIntention.NESAISPAS, userRecruteur),
+    refuseCandidateUrl: buildReplyLink(application, ApplicantIntention.REFUS, userRecruteur),
+    lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}`,
+    unsubscribeUrl: `${config.publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
+    lbaUrl: `${config.publicUrl}?${utmRecruiterData}`,
+    faqUrl: `${config.publicUrl}/faq?${utmRecruiterData}`,
+    jobProvidedUrl: "",
+    cancelJobUrl: "",
+  }
+
+  if (application.job_id && userRecruteur) {
+    urls.jobProvidedUrl = createProvidedJobLink(userRecruteur, application.job_id, utmRecruiterData)
+    urls.cancelJobUrl = createCancelJobLink(userRecruteur, application.job_id, utmRecruiterData)
   }
 
   return urls
 }
 
+const offreOrCompanyToCompanyFields = (offreOrCompany: OffreOrLbbCompany): Partial<IApplication> => {
+  const { type } = offreOrCompany
+  if (type === "lba") {
+    const { company } = offreOrCompany
+    const { siret, enseigne, naf_label } = company
+    const application: Partial<IApplication> = {
+      company_siret: siret,
+      company_name: enseigne,
+      company_naf: naf_label,
+      job_title: enseigne,
+      company_address: buildLbaCompanyAddress(company),
+    }
+    return application
+  } else if (type === "matcha") {
+    const { offre, recruiter } = offreOrCompany
+    const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label } = recruiter
+    const { rome_appellation_label, rome_label } = offre
+    const application: Partial<IApplication> = {
+      company_siret: establishment_siret,
+      company_name: establishment_enseigne || establishment_raison_sociale || "Enseigne inconnue",
+      company_naf: naf_label ?? undefined,
+      job_title: rome_appellation_label ?? rome_label ?? undefined,
+      company_address: is_delegated ? null : address,
+      job_id: offre._id.toString(),
+    }
+    return application
+  } else {
+    assertUnreachable(type)
+  }
+}
+
+const cleanApplicantFields = (newApplication: INewApplication): Partial<IApplication> => {
+  return {
+    applicant_first_name: newApplication.applicant_first_name,
+    applicant_last_name: newApplication.applicant_last_name,
+    applicant_attachment_name: newApplication.applicant_file_name,
+    applicant_email: newApplication.applicant_email.toLowerCase(),
+    applicant_message_to_company: prepareMessageForMail(newApplication.message),
+    applicant_phone: newApplication.applicant_phone,
+    caller: newApplication.caller,
+  }
+}
+
 /**
  * Initialize application object from query parameters
  */
-const initApplication = (params: Omit<IApplicationUI, "_id">, company_email: string): EnforceDocument<IApplication, any> => {
+const newApplicationToApplicationDocument = (newApplication: INewApplication, offreOrCompany: OffreOrLbbCompany, recruteurEmail: string) => {
   const res = new Application({
-    ...params,
-    applicant_attachment_name: params.applicant_file_name,
-    applicant_email: params.applicant_email.toLowerCase(),
-    applicant_message_to_company: prepareMessageForMail(params.message),
-    company_email: company_email.toLowerCase(),
-    job_origin: params.company_type,
+    ...offreOrCompanyToCompanyFields(offreOrCompany),
+    ...cleanApplicantFields(newApplication),
+    company_email: recruteurEmail.toLowerCase(),
+    job_origin: newApplication.company_type,
   })
-
+  ZApplication.parse(res.toObject())
   return res
 }
 
@@ -333,139 +394,106 @@ export const getEmailTemplate = (type = "mail-candidat"): string => {
   return getStaticFilePath(`./templates/${type}.mjml.ejs`)
 }
 
-interface IApplicationTemplates {
-  candidat: string
-  entreprise: string
-}
-/**
- * @description Return template file path for given type
- * @param {string} type
- * @return {IApplicationTemplates}
- */
-const getEmailTemplates = (applicationType: string): IApplicationTemplates => {
-  if (applicationType === "matcha") {
-    return {
-      candidat: "mail-candidat-matcha",
-      entreprise: "mail-candidature",
-    }
-  } else {
-    return {
-      candidat: "mail-candidat",
-      entreprise: "mail-candidature",
-    }
-  }
-}
+type OffreOrLbbCompany = { type: "lba"; company: ILbaCompany } | { type: "matcha"; offre: IJob; recruiter: IRecruiter }
 
 /**
- * @description checks if job applied to is still active or exists
+ * @description checks if job applied to is valid
  */
-export const validateJobStatus = async (validable: Partial<IApplicationUI>): Promise<"ok" | "offre expirée"> => {
-  const { company_type, job_id } = validable
+export const validateJob = async (validable: INewApplication): Promise<OffreOrLbbCompany | { error: string }> => {
+  const { company_type, job_id, company_siret } = validable
 
-  if (company_type === "matcha" && job_id) {
-    const job = await getOffreAvecInfoMandataire(job_id)
-
-    if (!job || job.status !== RECRUITER_STATUS.ACTIF || job.jobs[0].job_status !== JOB_STATUS.ACTIVE) {
-      return "offre expirée"
+  if (company_type === "matcha") {
+    if (!job_id) {
+      return { error: "job_id manquant" }
     }
-  }
-
-  return "ok"
-}
-
-/**
- * checks if company applied to exists in base
- */
-export const validateCompany = async (validable: Partial<IApplicationUI>, company_email: string): Promise<"ok" | "société désinscrite" | "email société invalide"> => {
-  const { company_siret, company_type } = validable
-
-  if (company_type === "lba") {
+    const recruiterResult = await getOffreAvecInfoMandataire(job_id)
+    if (!recruiterResult) {
+      return { error: "offre manquante" }
+    }
+    const { recruiter, job } = recruiterResult
+    if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE) {
+      return { error: "offre expirée" }
+    }
+    return { type: "matcha", offre: job, recruiter }
+  } else if (company_type === "lba") {
+    if (!company_siret) {
+      return { error: "company_siret manquant" }
+    }
     const lbaCompany = await LbaCompany.findOne({ siret: company_siret })
     if (!lbaCompany) {
-      return "société désinscrite"
-    } else if (lbaCompany.email?.toLowerCase() !== company_email.toLowerCase()) {
-      return "email société invalide"
+      return { error: "société manquante" }
     }
+    return { type: "lba", company: lbaCompany }
+  } else {
+    assertUnreachable(company_type)
   }
-
-  return "ok"
 }
 
 /**
  * @description checks if attachment is corrupted
- * @param {Partial<IApplicationUI>} validable
- * @return {Promise<string>}
  */
-const scanFileContent = async (validable: Pick<IApplicationUI, "applicant_file_content">): Promise<string> => {
+const scanFileContent = async (validable: INewApplication): Promise<string> => {
   return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
-}
-
-interface ICompanyEmail {
-  company_email: string
-  decrypted_email?: string
-}
-/**
- * checks if company email is valid for sending an application
- */
-export const validateCompanyEmail = async (validable: ICompanyEmail): Promise<string> => {
-  const schema = Joi.object({
-    company_email: Joi.string().email().required(),
-    decrypted_email: Joi.optional(),
-  })
-  try {
-    await schema.validateAsync(validable)
-  } catch (err) {
-    return "email société invalide"
-  }
-
-  return "ok"
 }
 
 /**
  * checks if email is not disposable
  */
-export const validatePermanentEmail = async (validable: Partial<IApplicationUI>): Promise<string> => {
-  if (isEmailBurner(validable?.applicant_email ?? "")) {
+export const validatePermanentEmail = (email: string): string => {
+  if (isEmailBurner(email)) {
     return "email temporaire non autorisé"
   }
   return "ok"
 }
 
 /**
- * @description Checks if application type matches params
- * @param {Partial<IApplicationUI>} validable
- * @return {<string>}
- */
-export const validateApplicationType = (validable: Partial<IApplicationUI>) => {
-  const { company_type, company_siret, job_id } = validable
-  if ((company_type === "matcha" && !job_id) || (company_type === "lba" && (!company_siret || job_id))) {
-    return "paramètres sociétés non autorisés"
-  }
-  return "ok"
-}
-
-/**
  * @description checks if email's owner has not sent more than allowed count of applications per day
- * @param {string} applicantEmail
- * @return {Promise<string>}
  */
-const checkUserApplicationCount = async (applicantEmail: string): Promise<string> => {
+const checkUserApplicationCount = async (applicantEmail: string, application: INewApplication): Promise<string> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
   const end = new Date()
   end.setHours(23, 59, 59, 999)
 
-  const appCount = await Application.countDocuments({
+  const { company_type: companyType, company_siret, job_id } = application
+
+  let appCount = await Application.countDocuments({
     applicant_email: applicantEmail.toLowerCase(),
     created_at: { $gte: start, $lt: end },
   })
 
-  if (appCount > config.maxApplicationPerDay) {
-    return "max candidatures atteint"
-  } else {
-    return "ok"
+  if (appCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
+    return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY
   }
+
+  if (companyType === "lba") {
+    if (!company_siret) {
+      throw new Error("expected a siret")
+    }
+    appCount = await Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      company_siret,
+    })
+    if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
+      return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
+    }
+  } else if (companyType === "matcha") {
+    if (!job_id) {
+      throw new Error("expected a job id")
+    }
+    appCount = await Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      job_id,
+    })
+    if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
+      return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
+    }
+  } else {
+    assertUnreachable(companyType)
+  }
+
+  return "ok"
 }
 
 interface IApplicationFeedback {
@@ -496,51 +524,45 @@ export const validateFeedbackApplicationComment = async (validable: Partial<IApp
 
 /**
  * @description sends notification email to applicant
- * @param {IApplication} application
- * @param {string} intention
- * @param {string} email
- * @param {string} phone
- * @param {string} comment
- * @return {Promise<void>}
  */
-export const sendNotificationToApplicant = async ({
+export const sendMailToApplicant = async ({
   application,
-  intention,
   email,
   phone,
-  comment,
+  company_recruitment_intention,
+  company_feedback,
 }: {
-  application: EnforceDocument<IApplication, any>
-  intention: string
-  email: string
-  phone: string
-  comment: string
+  application: IApplication
+  email: string | null
+  phone: string | null
+  company_recruitment_intention: string
+  company_feedback: string
 }): Promise<void> => {
-  switch (intention) {
-    case "entretien": {
+  switch (company_recruitment_intention) {
+    case ApplicantIntention.ENTRETIEN: {
       mailer.sendEmail({
         to: application.applicant_email,
         subject: `Réponse positive de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
-        data: { ...application.toObject(), ...images, email, phone, comment },
+        data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
-    case "ne_sais_pas": {
+    case ApplicantIntention.NESAISPAS: {
       mailer.sendEmail({
         to: application.applicant_email,
         subject: `Réponse de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
-        data: { ...application.toObject(), ...images, email, phone, comment },
+        data: { ...sanitizeApplicationForEmail(application), ...images, email, phone: sanitizeForEmail(removeUrlsFromText(phone)), comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
-    case "refus": {
+    case ApplicantIntention.REFUS: {
       mailer.sendEmail({
         to: application.applicant_email,
         subject: `Réponse négative de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
-        data: { ...application.toObject(), ...images, comment },
+        data: { ...sanitizeApplicationForEmail(application), ...images, comment: sanitizeForEmail(company_feedback) },
       })
       break
     }
@@ -552,44 +574,14 @@ export const sendNotificationToApplicant = async ({
 /**
  * @description updates application and triggers action from email webhook
  */
-export const updateApplicationStatus = async ({ payload }: { payload: any }): Promise<void> => {
-  /* Format payload cf. https://developers.brevo.com/docs/how-to-use-webhooks
-      {
-        "event": "delivered",
-        "email": "example@example.com",
-        "id": 26224,
-        "date": "YYYY-MM-DD HH:mm:ss",
-        "ts": 1598634509,
-        "message-id": "<xxxxxxxxxxxx.xxxxxxxxx@domain.com>",
-        "ts_event": 1598034509,
-        "subject": "Subject Line",
-        "tag": "[\"transactionalTag\"]",
-        "sending_ip": "185.41.28.109",
-        "ts_epoch": 1598634509223,
-        "tags": [
-          "myFirstTransactional"
-        ]
-      }
-  */
+export const updateApplicationStatusFromHardbounce = async ({ payload, application }: { payload: any; application: IApplication }): Promise<void> => {
+  /* Format payload cf. https://developers.brevo.com/docs/transactional-webhooks
+  https://developers.brevo.com/docs/marketing-webhooks */
 
-  const { event, subject, email } = payload
-
-  if (event !== BrevoEventStatus.HARD_BOUNCE) {
-    return
-  }
+  const { subject, email } = payload
 
   if (!subject.startsWith("Candidature en alternance") && !subject.startsWith("Candidature spontanée")) {
     // les messages qui ne sont pas de candidature vers une entreprise sont ignorés
-    return
-  }
-
-  const application = await findApplicationByMessageId({
-    messageId: payload["message-id"],
-    email,
-  })
-
-  if (!application) {
-    logger.error(`Application webhook : application not found. message_id=${payload["message-id"]} email=${email} subject=${subject}`)
     return
   }
 
@@ -612,7 +604,7 @@ const notifyHardbounceToApplicant = async ({ application }: { application: Enfor
     to: application.applicant_email,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
-    data: { ...application.toObject(), ...images },
+    data: { ...sanitizeApplicationForEmail(application.toObject()), ...images },
   })
 }
 
@@ -624,7 +616,7 @@ const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: E
     to: config.transactionalEmail,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-matcha-hardbounce"),
-    data: { ...application.toObject(), ...images },
+    data: { ...sanitizeApplicationForEmail(application.toObject()), ...images },
   })
 }
 
@@ -677,4 +669,84 @@ export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][
   ])
 
   return applicationCountByCompany
+}
+
+/**
+ *  met à jour une candidature si l'événement reçu correspond à une hardbounce
+ */
+export const processApplicationWebhookEvent = async (payload) => {
+  const { event, email } = payload
+  const messageId = payload["message-id"]
+
+  // application
+  if (event === BrevoEventStatus.HARD_BOUNCE) {
+    const application = await findApplicationByMessageId({
+      messageId,
+      email,
+    })
+
+    if (application) {
+      await updateApplicationStatusFromHardbounce({ payload, application })
+      return false
+    }
+  }
+  return true
+}
+
+/**
+ *  réagit à un hardbounce non lié à aux autres processeurs de webhook email
+ */
+export const processHardBounceWebhookEvent = async (payload) => {
+  const { event, email } = payload
+
+  if (event === BrevoEventStatus.HARD_BOUNCE) {
+    await Promise.all([addEmailToBlacklist(email, "campaign"), removeEmailFromLbaCompanies(email)])
+  }
+}
+
+const sanitizeApplicationForEmail = (application: IApplication) => {
+  const {
+    applicant_email,
+    applicant_first_name,
+    applicant_last_name,
+    applicant_phone,
+    applicant_attachment_name,
+    applicant_message_to_company,
+    company_recruitment_intention,
+    company_feedback,
+    company_feedback_date,
+    company_siret,
+    company_email,
+    company_name,
+    company_naf,
+    company_address,
+    job_origin,
+    job_title,
+    job_id,
+    caller,
+    created_at,
+    last_update_at,
+  } = application
+  return {
+    applicant_email: sanitizeForEmail(applicant_email),
+    applicant_first_name: sanitizeForEmail(applicant_first_name),
+    applicant_last_name: sanitizeForEmail(applicant_last_name),
+    applicant_phone: sanitizeForEmail(applicant_phone),
+    applicant_attachment_name: sanitizeForEmail(applicant_attachment_name),
+    applicant_message_to_company: sanitizeForEmail(applicant_message_to_company),
+    company_recruitment_intention: sanitizeForEmail(company_recruitment_intention),
+    company_feedback: sanitizeForEmail(company_feedback),
+    company_feedback_date: company_feedback_date,
+    company_siret: company_siret,
+    company_email: sanitizeForEmail(company_email),
+    company_name: company_name,
+    company_naf: company_naf,
+    company_address: company_address,
+    job_origin: job_origin,
+    job_title: sanitizeForEmail(job_title),
+    job_id: job_id,
+    caller: sanitizeForEmail(caller),
+    created_at: created_at,
+    last_update_at: last_update_at,
+  }
 }

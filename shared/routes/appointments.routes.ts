@@ -1,6 +1,7 @@
 import { referrers } from "../constants/referers"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZEtablissement } from "../models"
+import { ZAppointment, ZEtablissement, ZUser } from "../models"
+import { zObjectId } from "../models/common"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -13,16 +14,6 @@ const zContextCreateSchemaParcoursup = z
   .strict()
 
 export type IContextCreateSchemaParcoursup = z.output<typeof zContextCreateSchemaParcoursup>
-
-const zContextCreateSchemaRcoFormation = z
-  .object({
-    idRcoFormation: z.string().min(1),
-    trainingHasJob: z.boolean().optional(),
-    referrer: z.literal(referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase()),
-  })
-  .strict()
-
-export type IContextCreateSchemaRcoFormation = z.output<typeof zContextCreateSchemaRcoFormation>
 
 const zContextCreateSchemaActionFormation = z
   .object({
@@ -41,7 +32,6 @@ const zContextCreateSchemaCleMinistereEducatif = z
     referrer: z.enum([
       referrers.PARCOURSUP.name.toLowerCase(),
       referrers.LBA.name.toLowerCase(),
-      referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase(),
       referrers.ONISEP.name.toLowerCase(),
       referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
       referrers.AFFELNET.name.toLowerCase(),
@@ -55,9 +45,6 @@ const zContextCreateSchema = z.union([
   // Find through "idParcoursup"
   zContextCreateSchemaParcoursup,
 
-  // Find through "idRcoFormation"
-  zContextCreateSchemaRcoFormation,
-
   // Find through "idActionFormation"
   zContextCreateSchemaActionFormation,
 
@@ -65,13 +52,60 @@ const zContextCreateSchema = z.union([
   zContextCreateSchemaCleMinistereEducatif,
 ])
 
+const zAppointmentRequestContextCreateFormAvailableResponseSchema = z
+  .object({
+    etablissement_formateur_entreprise_raison_sociale: ZEtablissement.shape.raison_sociale,
+    intitule_long: z.string().openapi({
+      example: "METIERS D'ART ET DU DESIGN (DN)",
+    }),
+    lieu_formation_adresse: z.string().openapi({
+      example: "80 Rue Jules Ferry",
+    }),
+    code_postal: z.string().openapi({
+      example: "93170",
+    }),
+    etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,
+    cfd: z.string().openapi({
+      example: "24113401",
+    }),
+    localite: z.string().openapi({ example: "Bagnolet" }),
+    id_rco_formation: z
+      .string()
+      .openapi({
+        example: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
+      })
+      .nullable(),
+    cle_ministere_educatif: z.string().openapi({
+      example: "101249P01313538697790003635386977900036-93006#L01",
+    }),
+    form_url: z.string().openapi({
+      example: "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
+    }),
+  })
+  .strict()
+
+const zAppointmentRequestContextCreateFormUnavailableResponseSchema = z
+  .object({
+    error: z.literal("Prise de rendez-vous non disponible."),
+  })
+  .strict()
+
+const zAppointmentRequestContextCreateResponseSchema = z.union([
+  zAppointmentRequestContextCreateFormAvailableResponseSchema,
+  zAppointmentRequestContextCreateFormUnavailableResponseSchema,
+])
+
+export type IAppointmentRequestContextCreateResponseSchema = z.output<typeof zAppointmentRequestContextCreateResponseSchema>
+export type IAppointmentRequestContextCreateFormAvailableResponseSchema = z.output<typeof zAppointmentRequestContextCreateFormAvailableResponseSchema>
+export type IAppointmentRequestContextCreateFormUnavailableResponseSchema = z.output<typeof zAppointmentRequestContextCreateFormUnavailableResponseSchema>
+
 export const zAppointmentsRoute = {
   get: {
     "/admin/appointments/details": {
       method: "get",
       path: "/admin/appointments/details",
       response: {
-        "2xx": z
+        "200": z
           .object({
             appointments: z.array(
               z
@@ -104,31 +138,88 @@ export const zAppointmentsRoute = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
+      },
+    },
+    "/appointment-request/context/short-recap": {
+      method: "get",
+      path: "/appointment-request/context/short-recap",
+      querystring: z.object({ appointmentId: z.string() }).strict(),
+      response: {
+        "200": z
+          .object({
+            user: z
+              .object({
+                firstname: z.string(),
+                lastname: z.string(),
+                phone: z.string(),
+                email: z.string(),
+              })
+              .strict(),
+            etablissement: z
+              .object({
+                etablissement_formateur_raison_sociale: z.string().nullish(),
+                lieu_formation_email: z.string().nullish(),
+              })
+              .strict(),
+          })
+          .strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
       },
     },
     "/appointment-request/context/recap": {
       method: "get",
       path: "/appointment-request/context/recap",
-      // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
-        // TODO ANY TO BE FIXED  __v
-        "2xx": z.any(),
-        // "2xx": z
-        //   .object({
-        //     appointment: z
-        //       .object({
-        //         appointment: z.any(),
-        //         appointment_origin_detailed: z.string(),
-        //       })
-        //       .strict(),
-        //     user: z.any(),
-        //     etablissement: z.union([ZEligibleTrainingsForAppointmentSchema, z.object({}).strict()]),
-        //   })
-        //   .strict(),
+        "200": z
+          .object({
+            appointment: z
+              .object({
+                _id: ZAppointment.shape._id,
+                cfa_intention_to_applicant: ZAppointment.shape.cfa_intention_to_applicant,
+                cfa_message_to_applicant_date: ZAppointment.shape.cfa_message_to_applicant_date,
+                cfa_message_to_applicant: ZAppointment.shape.cfa_message_to_applicant,
+                applicant_message_to_cfa: ZAppointment.shape.applicant_message_to_cfa,
+                applicant_reasons: ZAppointment.shape.applicant_reasons,
+                cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
+                applicant_id: ZAppointment.shape.applicant_id,
+                cfa_read_appointment_details_date: ZAppointment.shape.cfa_read_appointment_details_date,
+              })
+              .strict(),
+            user: z
+              .object({
+                _id: zObjectId,
+                firstname: z.string(),
+                lastname: z.string(),
+                phone: z.string(),
+                email: z.string(),
+                type: z.string(),
+              })
+              .strict(),
+            etablissement: z
+              .object({
+                _id: ZEtablissement.shape._id,
+                training_intitule_long: z.string().nullish(),
+                etablissement_formateur_raison_sociale: z.string().nullish(),
+                lieu_formation_street: z.string().nullish(),
+                lieu_formation_city: z.string().nullish(),
+                lieu_formation_zip_code: z.string().nullish(),
+                lieu_formation_email: z.string().nullish(),
+              })
+              .strict(),
+          })
+          .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
   },
   post: {
@@ -137,45 +228,7 @@ export const zAppointmentsRoute = {
       path: "/appointment-request/context/create",
       body: zContextCreateSchema,
       response: {
-        "2xx": z.union([
-          z
-            .object({
-              etablissement_formateur_entreprise_raison_sociale: ZEtablissement.shape.raison_sociale,
-              intitule_long: z.string().openapi({
-                example: "METIERS D'ART ET DU DESIGN (DN)",
-              }),
-              lieu_formation_adresse: z.string().openapi({
-                example: "80 Rue Jules Ferry",
-              }),
-              code_postal: z.string().openapi({
-                example: "93170",
-              }),
-              etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,
-              cfd: z.string().openapi({
-                example: "24113401",
-              }),
-              localite: z.string().openapi({ example: "Bagnolet" }),
-              id_rco_formation: z
-                .string()
-                .openapi({
-                  example: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-                })
-                .nullable(),
-              cle_ministere_educatif: z.string().openapi({
-                example: "101249P01313538697790003635386977900036-93006#L01",
-              }),
-              form_url: z.string().openapi({
-                example:
-                  "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
-              }),
-            })
-            .strict(),
-          z
-            .object({
-              error: z.literal("Prise de rendez-vous non disponible."),
-            })
-            .strict(),
-        ]),
+        "200": zAppointmentRequestContextCreateResponseSchema,
         "404": z.union([ZResError, z.literal("Formation introuvable")]),
         "400": z.union([ZResError, z.literal("Critère de recherche non conforme.")]),
       },
@@ -189,13 +242,14 @@ export const zAppointmentsRoute = {
     "/appointment-request/validate": {
       method: "post",
       path: "/appointment-request/validate",
-      body: z
-        .object({
-          firstname: z.string(),
-          lastname: z.string(),
-          phone: z.string(),
-          email: z.string(),
-          type: z.string(),
+      body: ZUser.pick({
+        firstname: true,
+        lastname: true,
+        phone: true,
+        email: true,
+        type: true,
+      })
+        .extend({
           applicantMessageToCfa: z.string().nullable(),
           applicantReasons: z.array(z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"])),
           cleMinistereEducatif: z.string(),
@@ -203,21 +257,19 @@ export const zAppointmentsRoute = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "2xx": z
-        //   .object({
-        //     userId: z.string(),
-        //     appointment: z.union([ZAppointment, z.null()]),
-        //   })
-        //   .strict(),
+        "200": z
+          .object({
+            userId: zObjectId,
+            appointment: z.union([ZAppointment, z.null()]),
+            token: z.string(),
+          })
+          .strict(),
       },
       securityScheme: null,
     },
     "/appointment-request/reply": {
       method: "post",
       path: "/appointment-request/reply",
-      // TODO_SECURITY_FIX token jwt
       body: z
         .object({
           appointment_id: z.string(),
@@ -227,7 +279,7 @@ export const zAppointmentsRoute = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             appointment_id: z.string(),
             cfa_intention_to_applicant: z.string(),
@@ -236,7 +288,11 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
   },
 } as const satisfies IRoutesDef

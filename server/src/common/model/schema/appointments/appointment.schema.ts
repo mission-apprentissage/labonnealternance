@@ -148,11 +148,6 @@ export const appointmentSchema = new Schema<IAppointment>(
       default: null,
       description: "Adresse email CFA",
     },
-    is_anonymized: {
-      type: Boolean,
-      default: false,
-      description: "Si l'enregistrement est anonymisé",
-    },
     applicant_user_type: {
       type: String,
       enum: [...Object.values(AppointmentUserType), null],

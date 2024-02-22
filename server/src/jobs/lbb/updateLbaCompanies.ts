@@ -1,11 +1,13 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
+import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
-import { rebuildIndex } from "../../common/utils/esUtils"
+import { checkIsDiffusible } from "@/services/etablissement.service"
+
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
+import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils"
 import { insertSAVECompanies, removeSAVECompanies, updateSAVECompanies } from "./updateSAVECompanies"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
@@ -25,7 +27,7 @@ const printProgress = () => {
   }
 }
 
-const prepareCompany = async (rawCompany) => {
+const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
   count++
   printProgress()
   rawCompany.siret = rawCompany.siret.toString().padStart(14, "0")
@@ -35,6 +37,10 @@ const prepareCompany = async (rawCompany) => {
 
   if (!rawCompany.enseigne) {
     logMessage("error", `Error processing company. Company ${rawCompany.siret} has no name`)
+    return null
+  }
+
+  if (await !checkIsDiffusible(rawCompany.siret)) {
     return null
   }
 
@@ -55,8 +61,8 @@ const processCompanies = async () => {
     writeData(async (lbaCompany) => {
       try {
         if (lbaCompany) {
-          // contourne mongoose pour éviter la réindexation systématique à chaque insertion.
-          await LbaCompany.collection.insertOne(lbaCompany)
+          const parsedCompany = ZLbaCompany.parse(lbaCompany.toObject())
+          await LbaCompany.collection.insertOne(new LbaCompany(parsedCompany))
         }
       } catch (err) {
         logMessage("error", err)
@@ -68,14 +74,12 @@ const processCompanies = async () => {
 export default async function updateLbaCompanies({
   UseAlgoFile = false,
   ClearMongo = false,
-  BuildIndex = false,
   UseSave = false,
   ForceRecreate = false,
   SourceFile = null,
 }: {
   UseAlgoFile?: boolean
   ClearMongo?: boolean
-  BuildIndex?: boolean
   UseSave?: boolean
   ForceRecreate?: boolean
   SourceFile?: string | null
@@ -83,7 +87,7 @@ export default async function updateLbaCompanies({
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
-    console.log("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - BuildIndex : ", BuildIndex, " - UseSave : ", UseSave, " - ForceRecreate : ", ForceRecreate)
+    console.log("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - UseSave : ", UseSave, " - ForceRecreate : ", ForceRecreate)
 
     if (UseAlgoFile) {
       if (!ForceRecreate) {
@@ -118,10 +122,6 @@ export default async function updateLbaCompanies({
       await insertSAVECompanies()
       await updateSAVECompanies()
       await removeSAVECompanies()
-    }
-
-    if (BuildIndex) {
-      await rebuildIndex(LbaCompany, { skipNotFound: true, recreate: true })
     }
 
     logMessage("info", `End updating lbb db`)

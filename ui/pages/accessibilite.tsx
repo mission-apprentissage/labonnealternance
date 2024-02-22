@@ -28,23 +28,25 @@ const PolitiqueDeConfidentialite = ({ recordMap }) => {
       />
       <ScrollToTop />
       <Navigation />
-      <Breadcrumb forPage="accessibilite" label="Déclaration d'accessibilité" />
-      <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
-        <SimpleGrid columns={[1, 1, 1, 2]}>
-          <Box>
-            <Box as="h1">
-              <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
-                Déclaration
-              </Text>
-              <Text as="span" display="block" mb={1} variant="editorialContentH1">
-                d'accessibilité
-              </Text>
+      <Box as="main">
+        <Breadcrumb forPage="accessibilite" label="Déclaration d'accessibilité" />
+        <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
+          <SimpleGrid columns={[1, 1, 1, 2]}>
+            <Box>
+              <Box as="h1">
+                <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
+                  Déclaration
+                </Text>
+                <Text as="span" display="block" mb={1} variant="editorialContentH1">
+                  d'accessibilité
+                </Text>
+              </Box>
+              <Divider variant="pageTitleDivider" my={12} />
             </Box>
-            <Divider variant="pageTitleDivider" my={12} />
-          </Box>
-          <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} className="disable-chakra" />
-        </SimpleGrid>
-      </Container>
+            <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} className="disable-chakra" />
+          </SimpleGrid>
+        </Container>
+      </Box>
       <Footer />
     </Box>
   )

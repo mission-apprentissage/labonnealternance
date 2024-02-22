@@ -21,13 +21,14 @@ import {
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { IUserStatusValidation } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
-import { apiGet } from "@/utils/api.utils"
 
-import { AUTHTYPE, USER_STATUS } from "../../../../common/contants"
+import { AUTHTYPE } from "../../../../common/contants"
 import useUserHistoryUpdate from "../../../../common/hooks/useUserHistoryUpdate"
 import {
   AnimationContainer,
@@ -42,7 +43,7 @@ import {
 import { OpcoSelect } from "../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
 import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
-import { updateEntreprise } from "../../../../utils/api"
+import { getUser, updateEntrepriseAdmin } from "../../../../utils/api"
 
 function DetailEntreprise() {
   const router = useRouter()
@@ -55,7 +56,7 @@ function DetailEntreprise() {
   const { user } = useAuth()
 
   const ActivateUserButton = ({ userId }) => {
-    const updateUserHistory = useUserHistoryUpdate(userId, USER_STATUS.ACTIVE)
+    const updateUserHistory = useUserHistoryUpdate(userId, ETAT_UTILISATEUR.VALIDE)
 
     return (
       <Button variant="primary" onClick={() => updateUserHistory()}>
@@ -74,16 +75,16 @@ function DetailEntreprise() {
 
   const getActionButtons = (userHistory, userId) => {
     switch (userHistory.status) {
-      case USER_STATUS.WAITING:
+      case ETAT_UTILISATEUR.ATTENTE:
         return (
           <>
             <ActivateUserButton userId={userId} />
             <DisableUserButton />
           </>
         )
-      case USER_STATUS.ACTIVE:
+      case ETAT_UTILISATEUR.VALIDE:
         return <DisableUserButton />
-      case USER_STATUS.DISABLED:
+      case ETAT_UTILISATEUR.DESACTIVE:
         return <ActivateUserButton userId={userId} />
 
       default:
@@ -93,11 +94,11 @@ function DetailEntreprise() {
 
   const getUserBadge = (userHistory) => {
     switch (userHistory.status) {
-      case USER_STATUS.WAITING:
+      case ETAT_UTILISATEUR.ATTENTE:
         return <Badge variant="awaiting">À VERIFIER</Badge>
-      case USER_STATUS.ACTIVE:
+      case ETAT_UTILISATEUR.VALIDE:
         return <Badge variant="active">ACTIF</Badge>
-      case USER_STATUS.DISABLED:
+      case ETAT_UTILISATEUR.DESACTIVE:
         return <Badge variant="inactive">INACTIF</Badge>
 
       default:
@@ -117,24 +118,24 @@ function DetailEntreprise() {
     }
   }
 
-  const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => apiGet(`/user/:userId`, { params: { userId } }), { cacheTime: 0, enabled: !!userId })
+  const { data: userRecruteur, isLoading } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
   // @ts-expect-error: TODO
-  const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
+  const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntrepriseAdmin(userId, establishment_id, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
     },
   })
 
-  if (isLoading || !data || !userId) {
+  if (isLoading || !userRecruteur || !userId) {
     return <LoadingEmptySpace />
   }
 
-  const [lastUserState] = data.status.slice(-1)
-  const establishmentLabel = data.establishment_raison_sociale ?? data.establishment_siret
+  const lastUserState: IUserStatusValidation = userRecruteur.status.at(-1)
+  const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
 
   return (
     <AnimationContainer>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...data} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} />
       <Layout displayNavigationMenu={false} header={false} footer={false}>
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>
@@ -158,15 +159,18 @@ function DetailEntreprise() {
                 <Box ml={5}>{getUserBadge(lastUserState)}</Box>
               </Flex>
               <Stack direction={["column", "column", "column", "row"]} spacing="10px">
-                {getActionButtons(lastUserState, data._id)}
-                {data.type === AUTHTYPE.ENTREPRISE ? (
-                  data.jobs.length ? (
-                    lastUserState.status === USER_STATUS.WAITING || lastUserState.status === USER_STATUS.ERROR ? (
+                {getActionButtons(lastUserState, userRecruteur._id)}
+                {userRecruteur.type === AUTHTYPE.ENTREPRISE ? (
+                  userRecruteur.jobs.length ? (
+                    lastUserState.status === ETAT_UTILISATEUR.ATTENTE || lastUserState.status === ETAT_UTILISATEUR.ERROR ? (
                       <Button variant="secondary" isDisabled={true}>
                         Offre en attente de validation
                       </Button>
                     ) : (
-                      <Button variant="secondary" onClick={() => router.push(`/espace-pro/administration/opco/entreprise/${data.establishment_siret}/${data.establishment_id}`)}>
+                      <Button
+                        variant="secondary"
+                        onClick={() => router.push(`/espace-pro/administration/opco/entreprise/${userRecruteur.establishment_siret}/${userRecruteur.establishment_id}`)}
+                      >
                         Voir les offres
                       </Button>
                     )
@@ -183,11 +187,11 @@ function DetailEntreprise() {
             validateOnMount={true}
             enableReinitialize={true}
             initialValues={{
-              last_name: data.last_name,
-              first_name: data.first_name,
-              phone: data.phone,
-              email: data.email,
-              opco: data.opco,
+              last_name: userRecruteur.last_name,
+              first_name: userRecruteur.first_name,
+              phone: userRecruteur.phone,
+              email: userRecruteur.email,
+              opco: userRecruteur.opco,
             }}
             validationSchema={Yup.object().shape({
               last_name: Yup.string().required("champ obligatoire"),
@@ -198,14 +202,14 @@ function DetailEntreprise() {
                 .max(10, "le téléphone est sur 10 chiffres")
                 .required("champ obligatoire"),
               email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
-              type: Yup.string().default(data.type),
+              type: Yup.string().default(userRecruteur.type),
               opco: Yup.string().when("type", { is: (v) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
             })}
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
               // For companies we update the User Collection and the Formulaire collection at the same time
               // @ts-expect-error: TODO
-              userMutation.mutate({ userId: data._id, establishment_id: data.establishment_id, values })
+              userMutation.mutate({ userId: userRecruteur._id, establishment_id: userRecruteur.establishment_id, values })
               toast({
                 title: "Mise à jour enregistrée avec succès",
                 position: "top-right",
@@ -223,7 +227,7 @@ function DetailEntreprise() {
                     {...confirmationModificationOpco}
                     establishment_raison_sociale={establishmentLabel}
                     setFieldValue={setFieldValue}
-                    previousValue={data.opco}
+                    previousValue={userRecruteur.opco}
                     newValue={values.opco}
                   />
                   <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
@@ -237,7 +241,7 @@ function DetailEntreprise() {
                           <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
                           <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                           <CustomInput name="email" label="Email" type="email" value={values.email} />
-                          {data.type === AUTHTYPE.ENTREPRISE && (
+                          {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
                             <FormControl>
                               <FormLabel>OPCO</FormLabel>
                               <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
@@ -261,13 +265,12 @@ function DetailEntreprise() {
                       </Box>
                     </Box>
                     <Box>
-                      <InformationLegaleEntreprise {...data} />
+                      <InformationLegaleEntreprise {...userRecruteur} />
                     </Box>
                   </SimpleGrid>
-                  {(user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (
+                  {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
                     <Box mb={12}>
-                      {/* @ts-expect-error: TODO */}
-                      <UserValidationHistory histories={data.status} />
+                      <UserValidationHistory histories={userRecruteur.status} />
                     </Box>
                   )}
                 </>

@@ -1,10 +1,32 @@
+import { Jsonify } from "type-fest"
+
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZRecruiter } from "../models"
+import { ZPointGeometry, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable, zReferentielData } from "../models/usersRecruteur.model"
+import { ZCfaReferentielData, ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
+
+export const ZEntrepriseInformations = z
+  .object({
+    establishment_enseigne: z.string().nullish(),
+    establishment_state: z.string(), // F pour fermé ou A pour actif
+    establishment_siret: z.string().nullish(),
+    establishment_raison_sociale: z.string().nullish(),
+    address_detail: z.any(),
+    address: z.string().nullish(),
+    contacts: z.array(z.any()), // conserve la coherence avec l'UI
+    naf_code: z.string().nullish(),
+    naf_label: z.string().nullish(),
+    establishment_size: z.string().nullish(),
+    establishment_creation_date: z.date().nullish(),
+    geo_coordinates: z.string().nullish(),
+    geopoint: ZPointGeometry.nullish().describe("Coordonnées geographique de l'établissement"),
+  })
+  .strict()
+
+export type IEntrepriseInformations = Jsonify<z.input<typeof ZEntrepriseInformations>>
 
 export const zRecruiterRoutes = {
   get: {
@@ -53,22 +75,7 @@ export const zRecruiterRoutes = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            establishment_enseigne: z.string().nullish(),
-            establishment_state: z.string(), // F pour fermé ou A pour actif
-            establishment_siret: z.string().nullish(),
-            establishment_raison_sociale: z.string().nullish(),
-            address_detail: z.any(),
-            address: z.string().nullish(),
-            contacts: z.array(z.any()), // conserve la coherence avec l'UI
-            naf_code: z.string().nullish(),
-            naf_label: z.string().nullish(),
-            establishment_size: z.string().nullish(),
-            establishment_creation_date: z.date().nullish(),
-            geo_coordinates: z.string().nullish(),
-          })
-          .strict(),
+        "200": ZEntrepriseInformations,
       },
       securityScheme: null,
     },
@@ -93,7 +100,7 @@ export const zRecruiterRoutes = {
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "2xx": zReferentielData,
+        "2xx": ZCfaReferentielData,
       },
       securityScheme: null,
     },
@@ -107,7 +114,7 @@ export const zRecruiterRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "user:manage",
-        ressources: {
+        resources: {
           user: [{ _id: { type: "params", key: "userRecruteurId" } }],
         },
       },
@@ -155,30 +162,19 @@ export const zRecruiterRoutes = {
           ),
       ]),
       response: {
-        // TODO ANY TO BE FIXED
-        "2xx": z.any(),
-        // "2xx": z.union([
-        //   z
-        //     .object({
-        //       formulaire: ZRecruiter,
-        //       user: ZUserRecruteur.extend({
-        //         type: z.literal("ENTREPRISE"),
-        //       }),
-        //     })
-        //     .strict(),
-        //   z
-        //     .object({
-        //       user: ZUserRecruteur,
-        //     })
-        //     .strict(),
-        // ]),
+        "200": z
+          .object({
+            formulaire: ZRecruiter.optional(),
+            user: ZUserRecruteur,
+            token: z.string().optional(),
+          })
+          .strict(),
       },
       securityScheme: null,
     },
     "/etablissement/:establishment_siret/proposition/unsubscribe": {
       method: "post",
       path: "/etablissement/:establishment_siret/proposition/unsubscribe",
-      // TODO_SECURITY_FIX jwt
       params: z.object({ establishment_siret: extensions.siret }).strict(),
       response: {
         "2xx": z
@@ -187,18 +183,22 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
     "/etablissement/validation": {
       method: "post",
       path: "/etablissement/validation",
       response: {
-        "2xx": ZUserRecruteurPublic,
+        "200": ZUserRecruteurPublic,
       },
       securityScheme: {
         auth: "access-token",
         access: null,
-        ressources: {},
+        resources: {},
       },
     },
   },
@@ -206,23 +206,20 @@ export const zRecruiterRoutes = {
     "/etablissement/:id": {
       method: "put",
       path: "/etablissement/:id",
-      // TODO_SECURITY_FIX jwt en mode session + filtre sur la payload pour réduction
       params: z.object({ id: zObjectId }).strict(),
       body: ZUserRecruteurWritable.pick({
         last_name: true,
         first_name: true,
         phone: true,
         email: true,
-        is_email_checked: true,
-        last_connection: true,
-      }).partial(),
+      }).extend({ _id: zObjectId }),
       response: {
-        "2xx": z.union([ZUserRecruteur, z.null()]),
+        "200": z.object({ ok: z.boolean() }).strict(),
       },
       securityScheme: {
         auth: "cookie-session",
-        access: null,
-        ressources: {
+        access: "user:manage",
+        resources: {
           user: [{ _id: { type: "params", key: "id" } }],
         },
       },

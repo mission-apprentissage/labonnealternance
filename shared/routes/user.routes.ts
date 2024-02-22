@@ -1,17 +1,33 @@
 import { z } from "../helpers/zodWithOpenApi"
+import { ZJob, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
+import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
+
+const ZUserForOpco = ZUserRecruteur.pick({
+  _id: true,
+  first_name: true,
+  last_name: true,
+  establishment_id: true,
+  establishment_raison_sociale: true,
+  establishment_siret: true,
+  createdAt: true,
+  email: true,
+  phone: true,
+  type: true,
+}).extend({
+  jobs_count: z.number(),
+  origin: z.string(),
+})
+
+export type IUserForOpco = z.output<typeof ZUserForOpco>
 
 export const zUserRecruteurRoutes = {
   get: {
     "/user/opco": {
       method: "get",
       path: "/user/opco",
-      // TODO_SECURITY_FIX supprimer  les mongo query
-      // TODO_SECURITY_FIX session cookie plus permission
-      // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
       querystring: z
         .object({
           opco: z.string(),
@@ -20,46 +36,56 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z
           .object({
-            awaiting: z.array(z.any()),
-            active: z.array(z.any()),
-            disable: z.array(z.any()),
+            awaiting: z.array(ZUserForOpco),
+            active: z.array(ZUserForOpco),
+            disable: z.array(ZUserForOpco),
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: { every: ["user:manage", "recruiter:manage"] },
+        resources: {
+          user: [{ opco: { type: "query", key: "opco" } }],
+          recruiter: [{ opco: { type: "query", key: "opco" } }],
+        },
+      },
     },
     "/user": {
       method: "get",
       path: "/user",
-      // TODO ANY TO BE FIXED
       // TODO_SECURITY_FIX session admin only et changer le chemin vers /admin/user
       // => /admin/user-recruteur?
       response: {
-        "200": z.any(),
-        // "200": z.object({
-        //   awaiting: z.array(ZUserRecruteur),
-        //   active: z.array(ZUserRecruteur),
-        //   disabled: z.array(ZUserRecruteur),
-        //   error: z.array(ZUserRecruteur),
-        // }),
+        "200": z
+          .object({
+            awaiting: z.array(ZUserRecruteurForAdmin),
+            active: z.array(ZUserRecruteurForAdmin),
+            disabled: z.array(ZUserRecruteurForAdmin),
+            error: z.array(ZUserRecruteurForAdmin),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/admin/users": {
       method: "get",
       path: "/admin/users",
-      // TODO ANY TO BE FIXED
       response: {
-        "200": z.any(),
+        "200": z
+          .object({
+            users: z.array(ZUserRecruteur),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/admin/users/:userId": {
@@ -70,14 +96,15 @@ export const zUserRecruteurRoutes = {
           userId: z.string(),
         })
         .strict(),
-      // TODO ANY TO BE FIXED
       response: {
-        "200": z.any(),
+        "200": ZUserRecruteur.extend({
+          jobs: ZRecruiter.shape.jobs,
+        }),
       },
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/user/:userId": {
@@ -90,14 +117,12 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }), //  "message": "Unrecognized key(s) in object: '__v'"
+        "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }),
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "recruiter:manage",
-        ressources: {
+        access: "user:manage",
+        resources: {
           user: [
             {
               _id: { type: "params", key: "userId" },
@@ -115,28 +140,60 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
+        "200": z
+          .object({
+            status_current: ZEtatUtilisateur,
+          })
+          .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: { some: ["user:manage", "recruiter:add_job"] },
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
+    "/user/status/:userId/by-token": {
+      method: "get",
+      path: "/user/status/:userId/by-token",
+      params: z
+        .object({
+          userId: z.string(),
+        })
+        .strict(),
+      response: {
+        "200": z
+          .object({
+            status_current: ZEtatUtilisateur,
+          })
+          .strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: { some: ["user:manage", "recruiter:add_job"] },
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
     },
   },
   post: {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      // TODO TO BE FIXED
-      body: z.object({}).passthrough(),
-      // body: ZUserRecruteur.extend({
-      //   scope: z.string().optional(),
-      // }).strict(),
+      body: ZUserRecruteurWritable.omit({
+        is_email_checked: true,
+        is_qualiopi: true,
+        status: true,
+      }),
       response: {
         "200": ZUserRecruteur,
       },
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
   },
@@ -144,25 +201,21 @@ export const zUserRecruteurRoutes = {
     "/user/:userId": {
       method: "put",
       path: "/user/:userId",
-      // TODO_SECURITY_FIX session et cookie + permissions
       params: z.object({ userId: zObjectId }).strict(),
       body: ZUserRecruteurWritable.pick({
         last_name: true,
         first_name: true,
         phone: true,
         email: true,
-        opco: true,
-      })
-        .partial()
-        .strict(),
+      }).strict(),
       response: {
         "200": z.union([ZUserRecruteur, z.null()]),
         "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "recruiter:manage",
-        ressources: {
+        access: "user:manage",
+        resources: {
           user: [{ _id: { type: "params", key: "userId" } }],
         },
       },
@@ -174,38 +227,39 @@ export const zUserRecruteurRoutes = {
       body: ZUserRecruteurWritable.partial(),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
+        "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
       },
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
     "/user/:userId/history": {
       method: "put",
       path: "/user/:userId/history",
-      // TODO_SECURITY_FIX session et cookie + permissions + role
       params: z.object({ userId: zObjectId }).strict(),
       body: ZUserStatusValidation.pick({
         validation_type: true,
         status: true,
         reason: true,
-        user: true,
       }),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "200": ZUserRecruteur,
+        "200": ZUserRecruteur,
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:validate",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
     },
   },
   delete: {
     "/user": {
       method: "delete",
       path: "/user",
-      // TODO_SECURITY_FIX session et cookie + permissions
-      // TODO return json format
       querystring: z
         .object({
           userId: zObjectId,
@@ -215,7 +269,22 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "cookie-session",
+        access: "recruiter:manage",
+        resources: {
+          user: [
+            {
+              _id: { type: "query", key: "userId" },
+            },
+          ],
+          recruiter: [
+            {
+              _id: { type: "query", key: "recruiterId" },
+            },
+          ],
+        },
+      },
     },
     "/admin/users/:userId": {
       method: "delete",
@@ -236,7 +305,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: "admin",
-        ressources: {},
+        resources: {},
       },
     },
   },

@@ -1,7 +1,8 @@
 import { Box, Button, Container, Flex, Stack, Text } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { IEtablissementJson } from "shared"
 
 import { apiGet, apiPost } from "@/utils/api.utils"
 
@@ -25,7 +26,7 @@ type IPremiumEtablissement = {
  */
 export default function PremiumForm() {
   const router = useRouter()
-  const { id } = router.query as { id: string }
+  const { id, token } = router.query as { id: string; token: string }
   const [hasRefused, setHasRefused] = useState(false)
   const [hasAccepted, setHasAccepted] = useState(false)
   const [etablissement, setEtablissement]: [IPremiumEtablissement | null, (e: any) => void] = useState()
@@ -39,6 +40,9 @@ export default function PremiumForm() {
   const accept = async () => {
     await apiPost("/etablissements/:id/premium/accept", {
       params: { id },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     })
     setHasAccepted(true)
     window.scrollTo(0, 0)
@@ -51,6 +55,9 @@ export default function PremiumForm() {
   const refuse = async () => {
     await apiPost("/etablissements/:id/premium/refuse", {
       params: { id },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     })
     setHasRefused(true)
     window.scrollTo(0, 0)
@@ -60,7 +67,10 @@ export default function PremiumForm() {
     const fetchData = async () => {
       const etablissement = (await apiGet("/etablissements/:id", {
         params: { id },
-      })) as any // TODO not any
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })) as IEtablissementJson
 
       if (etablissement.premium_refusal_date) {
         setHasRefused(true)
@@ -114,7 +124,7 @@ export default function PremiumForm() {
                 <Text mt={4} color="grey.800" ml={2}>
                   Le service RDV Apprentissage est désormais activé sur Parcoursup.
                   <br />
-                  Afin de recevoir les demandes de RDV, assurez-vous que vos coordonnées de contact CARIF FOREF soient à jour.
+                  Afin de recevoir les demandes de RDV, assurez-vous que vos coordonnées de contact CARIF OREF sont à jour.
                 </Text>
               </Box>
             </Stack>

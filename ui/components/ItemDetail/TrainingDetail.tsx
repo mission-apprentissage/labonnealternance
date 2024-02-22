@@ -53,7 +53,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
     if (!training.prdvLoaded) {
       fetchPrdv(training, hasAlsoJob).then((result) => {
         if (result) {
-          applyDataFromPrdv(result.error === "indisponible" ? "" : result.form_url)
+          applyDataFromRdvA(result.error === "indisponible" ? "" : result)
         }
       })
     }
@@ -86,13 +86,13 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
     })
   }
 
-  const applyDataFromPrdv = (url) => {
+  const applyDataFromRdvA = (appointmentContextResponse) => {
     const updatedTrainings = trainings
     updatedTrainings.forEach(async (v) => {
       if (v.id === training.id) {
         if (!v.prdvLoaded) {
           v.prdvLoaded = true
-          v.prdvUrl = url
+          v.rdvContext = appointmentContextResponse
           setTrainingsAndSelectedItem(updatedTrainings, v)
         }
         setLoading(false)
@@ -178,7 +178,7 @@ const getTrainingDetails = (training) => {
         </Flex>
       )}
 
-      {training["sessions"] && training["sessions"].length && (
+      {training["sessions"]?.length ? (
         <Flex alignItems="flex-start" mt={10}>
           <Image src="/images/icons/training-academic-cap.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
@@ -195,6 +195,8 @@ const getTrainingDetails = (training) => {
                 ))}
           </Box>
         </Flex>
+      ) : (
+        <></>
       )}
 
       {getTrainingSessions(training)}
@@ -237,7 +239,7 @@ const getTrainingSessions = (training) => {
       )
     )
   } else {
-    return ""
+    return <></>
   }
 }
 

@@ -1,4 +1,3 @@
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/metiers.model"
 
@@ -11,12 +10,15 @@ export const zMetiersRoutes = {
       path: "/v1/metiers/metiersParFormation/:cfd",
       params: z
         .object({
-          cfd: z.string().openapi({
-            param: {
-              description: "L'identifiant CFD de la formation.",
-            },
-            example: "50022137",
-          }),
+          cfd: z
+            .string()
+            .min(1)
+            .openapi({
+              param: {
+                description: "L'identifiant CFD de la formation.",
+              },
+              example: "50022137",
+            }),
         })
         .strict(),
       response: {
@@ -27,24 +29,6 @@ export const zMetiersRoutes = {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
         tags: ["Metiers"] as string[],
         operationId: "getMetiersParCfd",
-      },
-    },
-    "/v1/metiers/metiersParEtablissement/:siret": {
-      method: "get",
-      path: "/v1/metiers/metiersParEtablissement/:siret",
-      params: z
-        .object({
-          siret: extensions.siret,
-        })
-        .strict(),
-      response: {
-        200: ZMetiers,
-      },
-      securityScheme: null,
-      openapi: {
-        description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour un établissement de formation",
-        tags: ["Metiers"] as string[],
-        operationId: "getMetiersParEtablissement",
       },
     },
     "/v1/metiers/all": {

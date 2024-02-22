@@ -1,49 +1,61 @@
 import { Jsonify } from "type-fest"
 
-import { CFA, ETAT_UTILISATEUR } from "../constants/recruteur"
+import { AUTHTYPE, CFA, ETAT_UTILISATEUR } from "../constants/recruteur"
+import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { ZGlobalAddress } from "./address.model"
+import { ZGlobalAddress, ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
 
 const etatUtilisateurValues = Object.values(ETAT_UTILISATEUR)
+export const ZEtatUtilisateur = z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).describe("Statut de l'utilisateur")
+
+const authTypeValues = Object.values(AUTHTYPE)
 
 export const ZUserStatusValidation = z
   .object({
     validation_type: z.enum(["AUTOMATIQUE", "MANUELLE"]).describe("Processus de validation lors de l'inscription de l'utilisateur"),
-    status: z
-      .enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)])
-      .nullish()
-      .describe("Statut de l'utilisateur"),
+    // TODO : check DB and remove nullish
+    status: ZEtatUtilisateur.nullish(),
     reason: z.string().nullish().describe("Raison du changement de statut"),
-    user: z.string().describe("Utilisateur ayant effectué la modification | SERVEUR si le compte a été validé automatiquement"),
+    user: z.string().describe("Id de l'utilisateur ayant effectué la modification | 'SERVEUR' si le compte a été validé automatiquement"),
     date: z.date().nullish().describe("Date de l'évènement"),
   })
   .strict()
 
 export const ZUserRecruteurWritable = z
   .object({
-    last_name: z.string().describe("Nom de l'utilisateur"),
-    first_name: z.string().describe("Prénom de l'utilisateur"),
+    last_name: z
+      .string()
+      .transform((value) => removeUrlsFromText(value))
+      .describe("Nom de l'utilisateur"),
+    first_name: z
+      .string()
+      .transform((value) => removeUrlsFromText(value))
+      .describe("Prénom de l'utilisateur"),
     opco: z.string().nullish().describe("Information sur l'opco de l'entreprise"),
     idcc: z.string().nullish().describe("Identifiant convention collective de l'entreprise"),
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
     establishment_siret: extensions.siret.describe("Siret de l'établissement"),
     address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
-    address: z.string().nullish().describe("Adresse de l'établissement"),
+    address: z
+      .string()
+      .transform((value) => removeUrlsFromText(value))
+      .nullish()
+      .describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
     phone: extensions.phone().describe("Téléphone de l'établissement"),
     email: z.string().email().describe("L'email de l'utilisateur"),
     scope: z.string().nullish().describe("Scope accessible par l'utilisateur"),
     is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),
-    type: z.enum(["ENTREPRISE", "CFA", "OPCO", "ADMIN"]).describe("Type d'utilisateur"),
+    type: z.enum([authTypeValues[0], ...authTypeValues.slice(1)]).describe("Type d'utilisateur"),
     establishment_id: z.string().nullish().describe("Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique"),
     last_connection: z.date().nullish().describe("Date de dernière connexion"),
     origin: z.string().nullish().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi"),
     status: z.array(ZUserStatusValidation).describe("Tableau des modifications de statut de l'utilisateur"),
-    is_qualiopi: z.boolean().describe("Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)"),
+    is_qualiopi: z.boolean().describe("Statut qualiopi d'un CFA (toujours à true pour les CFA, false pour les entreprises)"),
   })
   .strict()
 
@@ -61,7 +73,7 @@ export const ZUserRecruteur = ZUserRecruteurWritable.omit({
   is_qualiopi: ZUserRecruteurWritable.shape.is_qualiopi.nullish(),
 })
 
-export const zReferentielData = z
+export const ZCfaReferentielData = z
   .object({
     establishment_state: z.string(),
     is_qualiopi: z.boolean(),
@@ -79,13 +91,15 @@ export const zReferentielData = z
     ),
     address_detail: ZGlobalAddress,
     address: z.string(),
-    geo_coordinates: z.string().nullish(),
+    geo_coordinates: z.string().max(40).nullish(),
+    geopoint: ZPointGeometry.nullish(),
   })
   .strict()
 
-export type IReferentielData = z.output<typeof zReferentielData>
+export type ICfaReferentielData = z.output<typeof ZCfaReferentielData>
 
 export type IUserStatusValidation = z.output<typeof ZUserStatusValidation>
+export type IUserStatusValidationJson = Jsonify<z.input<typeof ZUserStatusValidation>>
 export type IUserRecruteur = z.output<typeof ZUserRecruteur>
 export type IUserRecruteurWritable = z.output<typeof ZUserRecruteurWritable>
 export type IUserRecruteurJson = Jsonify<z.input<typeof ZUserRecruteur>>
@@ -141,3 +155,42 @@ export function toPublicUser(user: IUserRecruteur): z.output<typeof ZUserRecrute
     status_current: getUserStatus(user.status),
   }
 }
+
+export const ZAnonymizedUserRecruteur = ZUserRecruteur.pick({
+  opco: true,
+  idcc: true,
+  establishment_raison_sociale: true,
+  establishment_enseigne: true,
+  establishment_siret: true,
+  address_detail: true,
+  address: true,
+  geo_coordinates: true,
+  scope: true,
+  is_email_checked: true,
+  type: true,
+  establishment_id: true,
+  last_connection: true,
+  origin: true,
+  status: true,
+  is_qualiopi: true,
+})
+
+export type IAnonymizedUserRecruteur = z.output<typeof ZAnonymizedUserRecruteur>
+
+export const UserRecruteurForAdminProjection = {
+  _id: true,
+  establishment_id: true,
+  establishment_raison_sociale: true,
+  establishment_siret: true,
+  type: true,
+  first_name: true,
+  last_name: true,
+  email: true,
+  phone: true,
+  createdAt: true,
+  origin: true,
+  opco: true,
+  status: true,
+} as const
+
+export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminProjection)

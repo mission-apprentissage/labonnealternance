@@ -57,10 +57,13 @@ const contentSecurityPolicy = `
 const nextConfig = withImages({
   // reactStrictMode: true,
   transpilePackages: ["shared"],
+  i18n: {
+    locales: ["fr"],
+    defaultLocale: "fr",
+  },
   poweredByHeader: false,
   swcMinify: true,
   experimental: {
-    appDir: false,
     typedRoutes: true,
   },
   output: "standalone",

@@ -2,7 +2,9 @@ import fs from "fs"
 import path from "path"
 
 import { compose, oleoduc, writeData } from "oleoduc"
-import { ILbaCompany } from "shared/models"
+import { ILbaCompany, ZGeoLocation } from "shared/models"
+
+import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
@@ -18,8 +20,15 @@ import initNafScoreMap from "./initNafScoreMap"
 
 const currentDirname = __dirname(import.meta.url)
 
-const PREDICTION_FILE = path.join(currentDirname, "../../assets/bonnesboites.json")
+const PREDICTION_FILE = path.join(currentDirname, "./assets/bonnesboites.json")
 const s3File = config.algoBonnesBoites.s3File
+
+export const createAssetsFolder = async () => {
+  const assetsPath = path.join(currentDirname, "./assets")
+  if (!(await fs.existsSync(assetsPath))) {
+    await fs.mkdirSync(assetsPath)
+  }
+}
 
 export const removePredictionFile = async () => {
   try {
@@ -67,15 +76,16 @@ export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
 export const downloadSAVEFile = async ({ key }) => {
   logger.info(`Downloading SAVE file ${key} from S3 Bucket...`)
 
-  await downloadFile({ from: key, to: path.join(currentDirname, `../../assets/${key}`) })
+  await downloadFile({ from: key, to: path.join(currentDirname, `./assets/${key}`) })
 }
 
 export const downloadFile = async ({ from, to }) => {
+  await createAssetsFolder()
   await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(to))
 }
 
 export const streamSAVECompanies = async ({ key }) => {
-  const response = fs.createReadStream(path.join(currentDirname, `../../assets/${key}`))
+  const response = fs.createReadStream(path.join(currentDirname, `./assets/${key}`))
   return compose(response, streamJsonArray())
 }
 
@@ -104,7 +114,7 @@ export const countCompaniesInFile = async (): Promise<number> => {
 /*
 Initialize bonneBoite from data, add missing data from maps,
 */
-export const getCompanyMissingData = async (rawCompany) => {
+export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | null> => {
   const company = new LbaCompany(rawCompany)
   const geo = await getGeoLocationForCompany(company)
   if (!geo) {
@@ -113,6 +123,7 @@ export const getCompanyMissingData = async (rawCompany) => {
     company.city = geo.city
     company.zip_code = geo.zip_code
     company.geo_coordinates = geo.geo_coordinates
+    company.geopoint = convertStringCoordinatesToGeoPoint(geo.geo_coordinates)
   }
 
   if (rawCompany.rome_codes) {
@@ -169,7 +180,9 @@ const getGeoLocationForCompany = async (company) => {
       })
       try {
         // on enregistre la geoloc trouvée
-        await geoLocation.save()
+        if (ZGeoLocation.safeParse(geoLocation).success) {
+          await geoLocation.save()
+        }
       } catch (err) {
         //ignore duplicate error
       }

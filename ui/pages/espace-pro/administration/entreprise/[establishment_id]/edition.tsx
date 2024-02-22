@@ -6,15 +6,26 @@ import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
-import { apiPut } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../../../../common/contants"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise, Layout, LoadingEmptySpace } from "../../../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../theme/components/icons"
-import { getFormulaire, updateEntreprise } from "../../../../../utils/api"
+import { getFormulaire, updateEntreprise, updateFormulaire } from "../../../../../utils/api"
 
-const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) => {
+const Formulaire = ({
+  last_name,
+  first_name,
+  phone,
+  email,
+  establishment_id,
+}: {
+  last_name?: string
+  first_name?: string
+  phone?: string
+  email?: string
+  establishment_id?: string
+}) => {
   const toast = useToast()
   const { user } = useAuth()
   const router = useRouter()
@@ -37,19 +48,21 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
     },
   })
 
-  // @ts-expect-error: TODO
-  const cfaMutation = useMutation(({ establishment_id, values }) => apiPut(`/formulaire/:establishment_id`, { params: { establishment_id }, body: values }), {
-    onSuccess: () => {
-      toast({
-        title: "Entreprise mise à jour avec succès.",
-        position: "top-right",
-        status: "success",
-        duration: 4000,
-      })
-      router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
-      client.invalidateQueries("formulaire-edition")
-    },
-  })
+  const cfaMutation = useMutation<void, unknown, { establishment_id: string; values: any }, unknown>(
+    ({ establishment_id, values }) => updateFormulaire(establishment_id, values).then(() => {}),
+    {
+      onSuccess: () => {
+        toast({
+          title: "Entreprise mise à jour avec succès.",
+          position: "top-right",
+          status: "success",
+          duration: 4000,
+        })
+        router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
+        client.invalidateQueries("formulaire-edition")
+      },
+    }
+  )
 
   const submitForm = async (values, { setSubmitting, setFieldError }) => {
     if (user.type === AUTHTYPE.ENTREPRISE) {
@@ -69,8 +82,7 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
         }
       )
     } else {
-      // @ts-expect-error: TODO
-      cfaMutation.mutate({ establishment_id: establishment_id, values })
+      cfaMutation.mutate({ establishment_id, values })
     }
 
     setSubmitting(false)
@@ -147,14 +159,15 @@ function EditionEntrepriseContact() {
   const router = useRouter()
   const { user } = useAuth()
 
-  const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(router.query.establishment_id), { cacheTime: 0, enabled: !!router.query.establishment_id })
+  const { establishment_id } = router.query as { establishment_id: string }
+  const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(establishment_id), { cacheTime: 0, enabled: !!establishment_id })
 
-  if (isLoading || !router.query.establishment_id) {
+  if (isLoading || !establishment_id) {
     return <LoadingEmptySpace />
   }
 
   // add type ENTREPRISE for legale information
-  const entreprise = { ...data.data, type: AUTHTYPE.ENTREPRISE }
+  const entreprise = { ...data, type: AUTHTYPE.ENTREPRISE }
 
   return (
     <AnimationContainer>
@@ -168,7 +181,7 @@ function EditionEntrepriseContact() {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{entreprise.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           </Breadcrumb>

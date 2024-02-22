@@ -1,7 +1,7 @@
 import { IFormationCatalogue } from "shared"
 
-import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
+import { geoPointSchema } from "../geopoint/geoPoint.schema"
 
 import { etablissementFormateurInfo } from "./etablissement.formateur.sub"
 import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub"
@@ -100,6 +100,7 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     niveau: {
       type: String,
       description: "Niveau de la formation",
+      index: true,
     },
     onisep_url: {
       type: String,
@@ -127,7 +128,6 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       type: String,
       description: "Domaine et sous domaine ONISEP (séparateur ;)",
     },
-
     rncp_code: {
       index: true,
       type: String,
@@ -213,6 +213,7 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     rome_codes: {
       type: [String],
       description: "Codes ROME",
+      index: true,
     },
     date_debut: {
       type: [Date],
@@ -297,6 +298,10 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       description: "Affelnet : historique des statuts",
       noIndex: true,
     },
+    affelnet_visible: {
+      type: Boolean,
+      description: "Formation Affelnet visible sur le SLA",
+    },
     source: {
       type: String,
       description: "Origine de la formation",
@@ -347,23 +352,25 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       type: String,
       description: "Qui a réalisé la derniere modification",
     },
-
     // Flags
     to_update: {
       index: true,
       type: Boolean,
       description: "Formation à mette à jour lors du script d'enrichissement",
     },
-
     update_error: {
       type: String,
       description: "Erreur lors de la mise à jour de la formation",
     },
-
     lieu_formation_geo_coordonnees: {
       type: String,
       implicit_type: "geo_point",
       description: "Latitude et longitude du lieu de formation",
+    },
+    lieu_formation_geopoint: {
+      type: geoPointSchema,
+      default: null,
+      description: "La géolocation du lieu de formation sous forme de geoPoint",
     },
     lieu_formation_adresse: {
       type: String,
@@ -405,6 +412,7 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     tags: {
       type: [String],
       description: "Tableau de tags (2020, 2021, etc.)",
+      index: true,
     },
     libelle_court: {
       type: String,
@@ -468,6 +476,11 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       type: String,
       description: "Les objectifs de la formation",
     },
+    num_tel: {
+      type: String,
+      default: null,
+      description: "Numéro de téléphone de contact de la formation",
+    },
     ...etablissementGestionnaireInfo,
     ...etablissementFormateurInfo,
     ...etablissementReferenceInfo,
@@ -476,7 +489,5 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     versionKey: false,
   }
 )
-
-mnaFormationSchema.plugin(mongoosastic, { index: "formationcatalogues" })
 
 export default model<IFormationCatalogue>("formationcatalogues", mnaFormationSchema)

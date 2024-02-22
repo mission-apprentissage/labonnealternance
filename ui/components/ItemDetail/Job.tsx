@@ -2,6 +2,8 @@ import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useState } from "react"
 import ReactHtmlParser from "react-html-parser"
 
+import { focusWithin } from "@/theme/theme-lba-tools"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { fetchAddresses } from "../../services/baseAdresse"
@@ -128,6 +130,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
       onClick={onSelectItem}
       onMouseOver={highlightItemOnMap}
       onMouseOut={dimItemOnMap}
+      {...focusWithin}
       href={actualLink}
       data-testid={`${kind}${job.job.id}`}
     >
@@ -170,7 +173,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
                   </Flex>
                 )}
                 <Text ml="auto" as="span" display={["none", "none", "block"]}>
-                  <Button variant="knowMore" aria-label="Accéder au détail de l'offre">
+                  <Button tabIndex={-1} variant="knowMore" aria-label="Accéder au détail de l'offre">
                     En savoir plus
                   </Button>
                 </Text>

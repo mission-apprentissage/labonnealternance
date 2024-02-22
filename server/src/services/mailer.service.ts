@@ -3,6 +3,7 @@ import { promisify } from "util"
 import ejs, { Data } from "ejs"
 import mjml from "mjml"
 import nodemailer, { Transporter } from "nodemailer"
+import { Address } from "nodemailer/lib/mailer"
 import SMTPTransport from "nodemailer/lib/smtp-transport"
 import nodemailerHtmlToText from "nodemailer-html-to-text"
 
@@ -11,8 +12,15 @@ import config from "../config"
 const htmlToText = nodemailerHtmlToText.htmlToText
 const renderFile: (path: string, data: Data) => Promise<string> = promisify(ejs.renderFile)
 
+export const sanitizeForEmail = (text: string | null | undefined) => {
+  if (!text) return ""
+  text = text.replaceAll(/(<([^>]+)>)/gi, "")
+  text = text.replaceAll(/\./g, "\u200B.\u200B")
+  return text
+}
+
 const createTransporter = (): Transporter => {
-  const needAuthentication = config.env === "production"
+  const needAuthentication = config.env === "production" || config.env === "pentest"
 
   const options: SMTPTransport.Options = {
     host: config.smtp.host,
@@ -49,7 +57,7 @@ const createMailer = () => {
       subject,
       template,
       data,
-      from = config.transactionalEmail,
+      from = { name: config.transactionalEmailSender, address: config.transactionalEmail },
       cc = undefined,
       attachments,
     }: {
@@ -57,7 +65,7 @@ const createMailer = () => {
       subject: string
       template: string
       data: object
-      from?: string
+      from?: string | Address
       cc?: string
       attachments?: object[]
     }): Promise<{ messageId: string; accepted?: string[] }> => {

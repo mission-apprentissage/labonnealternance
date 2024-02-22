@@ -1,6 +1,5 @@
-import { Button, Flex } from "@chakra-ui/react"
+import { Button, Flex, Link } from "@chakra-ui/react"
 import { useRouter } from "next/router"
-import React from "react"
 
 const ConnectionActions = ({ service }) => {
   const router = useRouter()
@@ -8,16 +7,17 @@ const ConnectionActions = ({ service }) => {
   return (
     <Flex direction={{ base: "column", md: "row" }} align="center" pt="30px">
       {service === "entreprise" && (
-        <Button width="185px" variant="primary" aria-label="Déposer une offre" onClick={() => router.push({ pathname: "/espace-pro/creation/entreprise" })}>
+        <Button as={Link} width="185px" variant="primary" aria-label="Déposer une offre" onClick={() => router.push({ pathname: "/espace-pro/creation/entreprise" })}>
           Déposer une offre
         </Button>
       )}
       {service === "cfa" && (
-        <Button width="235px" variant="primary" aria-label="Créer mon espace dédié" onClick={() => router.push({ pathname: "/espace-pro/creation/cfa" })}>
+        <Button as={Link} width="235px" variant="primary" aria-label="Créer mon espace dédié" onClick={() => router.push({ pathname: "/espace-pro/creation/cfa" })}>
           Créer mon espace dédié
         </Button>
       )}
       <Button
+        as={Link}
         width="155px"
         variant="secondary"
         mt={{ base: "2", md: "0" }}

@@ -1,10 +1,10 @@
 import { IUserRecruteur, IUserStatusValidation } from "shared"
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
-import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../../services/constant.service"
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
 
-const userValidationSchema = new Schema<IUserStatusValidation>(
+export const userValidationSchema = new Schema<IUserStatusValidation>(
   {
     validation_type: {
       type: String,
@@ -33,97 +33,104 @@ const userValidationSchema = new Schema<IUserStatusValidation>(
   { _id: false }
 )
 
+const personalInfosUserRecruteurSchema = new Schema({
+  last_name: {
+    type: String,
+    description: "Nom de l'utilisateur",
+  },
+  first_name: {
+    type: String,
+    description: "Prénom de l'utilisateur",
+  },
+  phone: {
+    type: String,
+    description: "Téléphone de l'établissement",
+  },
+  email: {
+    type: String,
+    required: true,
+    description: "L'email de l'utilisateur",
+    unique: true,
+  },
+})
+
+export const nonPersonalInfosUserRecruteurSchema = new Schema({
+  opco: {
+    type: String,
+    description: "Information sur l'opco de l'entreprise",
+  },
+  idcc: {
+    type: String,
+    description: "Identifiant convention collective de l'entreprise",
+  },
+  establishment_raison_sociale: {
+    type: String,
+    description: "Raison social de l'établissement",
+  },
+  establishment_enseigne: {
+    type: String,
+    default: null,
+    description: "Enseigne de l'établissement",
+  },
+  establishment_siret: {
+    type: String,
+    description: "Siret de l'établissement",
+  },
+  address_detail: {
+    type: Object,
+    description: "Detail de l'adresse de l'établissement",
+  },
+  address: {
+    type: String,
+    description: "Adresse de l'établissement",
+  },
+  geo_coordinates: {
+    type: String,
+    default: null,
+    description: "Latitude/Longitude de l'adresse de l'entreprise",
+  },
+  scope: {
+    type: String,
+    default: null,
+    description: "Scope accessible par l'utilisateur",
+  },
+  is_email_checked: {
+    type: Boolean,
+    default: false,
+    description: "Indicateur de confirmation de l'adresse mail par l'utilisateur",
+  },
+  type: {
+    type: String,
+    enum: ["ENTREPRISE", "CFA", "OPCO", "ADMIN"],
+    description: "Type d'utilisateur",
+  },
+  establishment_id: {
+    type: String,
+    description: "Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique",
+  },
+  last_connection: {
+    type: Date,
+    default: null,
+    description: "Date de dernière connexion",
+  },
+  origin: {
+    type: String,
+    description: "Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi",
+  },
+  status: {
+    type: [userValidationSchema],
+    description: "Tableau des modifications de statut de l'utilisateur",
+  },
+  is_qualiopi: {
+    type: Boolean,
+    description: "Statut qualiopi d'un CFA (toujours à true pour les CFA, false pour les entreprises)",
+  },
+})
+
 const userRecruteurSchema = new Schema<IUserRecruteur>(
   {
-    last_name: {
-      type: String,
-      description: "Nom de l'utilisateur",
-    },
-    first_name: {
-      type: String,
-      description: "Prénom de l'utilisateur",
-    },
-    opco: {
-      type: String,
-      description: "Information sur l'opco de l'entreprise",
-    },
-    idcc: {
-      type: String,
-      description: "Identifiant convention collective de l'entreprise",
-    },
-    establishment_raison_sociale: {
-      type: String,
-      description: "Raison social de l'établissement",
-    },
-    establishment_enseigne: {
-      type: String,
-      default: null,
-      description: "Enseigne de l'établissement",
-    },
-    establishment_siret: {
-      type: String,
-      description: "Siret de l'établissement",
-    },
-    address_detail: {
-      type: Object,
-      description: "Detail de l'adresse de l'établissement",
-    },
-    address: {
-      type: String,
-      description: "Adresse de l'établissement",
-    },
-    geo_coordinates: {
-      type: String,
-      default: null,
-      description: "Latitude/Longitude de l'adresse de l'entreprise",
-    },
-    phone: {
-      type: String,
-      description: "Téléphone de l'établissement",
-    },
-    email: {
-      type: String,
-      required: true,
-      description: "L'email de l'utilisateur",
-      unique: true,
-    },
-    scope: {
-      type: String,
-      default: null,
-      description: "Scope accessible par l'utilisateur",
-    },
-    is_email_checked: {
-      type: Boolean,
-      default: false,
-      description: "Indicateur de confirmation de l'adresse mail par l'utilisateur",
-    },
-    type: {
-      type: String,
-      enum: ["ENTREPRISE", "CFA", "OPCO", "ADMIN"],
-      description: "Type d'utilisateur",
-    },
-    establishment_id: {
-      type: String,
-      description: "Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique",
-    },
-    last_connection: {
-      type: Date,
-      default: null,
-      description: "Date de dernière connexion",
-    },
-    origin: {
-      type: String,
-      description: "Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi",
-    },
-    status: {
-      type: [userValidationSchema],
-      description: "Tableau des modifications de statut de l'utilisateur",
-    },
-    is_qualiopi: {
-      type: Boolean,
-      default: true,
-      description: "Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)",
-    },
+    ...personalInfosUserRecruteurSchema.obj,
+    ...nonPersonalInfosUserRecruteurSchema.obj,
   },
   {
     timestamps: true,

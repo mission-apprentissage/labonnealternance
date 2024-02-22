@@ -17,12 +17,10 @@ export default function LaBonneAlternance({ Component, pageProps }) {
   }, [])
 
   return (
-    <Providers env={publicConfig.env}>
+    <Providers>
       <PageTracker>
-        <main>
-          <HeadLaBonneAlternance />
-          <Component {...pageProps} />
-        </main>
+        <HeadLaBonneAlternance />
+        <Component {...pageProps} />
       </PageTracker>
     </Providers>
   )

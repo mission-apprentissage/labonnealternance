@@ -1,6 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob, ZJobType } from "../models"
+import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
@@ -51,7 +51,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "recruiter:manage",
-        ressources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
+        resources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -61,7 +61,7 @@ export const zV1JobsRoutes = {
     "/v1/jobs/bulk": {
       method: "get",
       path: "/v1/jobs/bulk",
-      // TODO_SECURITY_FIX il faut faire quelque chose car sinon nous allons claquer des fesses
+      // TODO_SECURITY_FIX
       querystring: z
         .object({
           query: z
@@ -117,7 +117,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: null,
-        ressources: {},
+        resources: {},
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -134,25 +134,27 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            _id: zObjectId,
-            numero_voie: z.string(),
-            type_voie: z.string(),
-            nom_voie: z.string(),
-            code_postal: z.string(),
-            nom_departement: z.string(),
-            entreprise_raison_sociale: z.string(),
-            geo_coordonnees: z.string(),
-            distance_en_km: z.number(),
-          })
-          .strict(),
+        "200": z.array(
+          z
+            .object({
+              _id: zObjectId,
+              numero_voie: z.string().nullish(),
+              type_voie: z.string().nullish(),
+              nom_voie: z.string().nullish(),
+              code_postal: z.string(),
+              nom_departement: z.string(),
+              entreprise_raison_sociale: z.string(),
+              geo_coordonnees: z.string(),
+              distance_en_km: z.number(),
+            })
+            .strict()
+        ),
         "4xx": z.union([ZLbarError, ZResError]),
       },
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: { job: [{ _id: { type: "params", key: "jobId" } }] },
+        resources: { job: [{ _id: { type: "params", key: "jobId" } }] },
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -333,7 +335,11 @@ export const zV1JobsRoutes = {
           establishment_siret: extensions.siret,
           first_name: z.string(),
           last_name: z.string(),
-          phone: extensions.phone().optional(),
+          phone: z
+            .string()
+            .trim()
+            .regex(/^0[1-9]\d{8}$/)
+            .optional(),
           email: z.string().email(),
           idcc: z.string().optional(),
           origin: z.string().optional().openapi({
@@ -349,8 +355,8 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        access: { every: ["recruiter:validate", "recruiter:manage"] },
-        ressources: {},
+        access: { every: ["user:validate", "recruiter:manage", "user:manage"] },
+        resources: {},
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -361,27 +367,33 @@ export const zV1JobsRoutes = {
     "/v1/jobs/:establishmentId": {
       method: "post",
       path: "/v1/jobs/:establishmentId",
-      params: z
-        .object({
-          establishmentId: z.string(),
+      params: z.object({ establishmentId: z.string() }).strict(),
+      body: ZJobFields.pick({
+        job_level_label: true,
+        job_duration: true,
+        job_type: true,
+        job_count: true,
+        job_rythm: true,
+        job_employer_description: true,
+        job_description: true,
+        is_disabled_elligible: true,
+        custom_address: true,
+        custom_geo_coordinates: true,
+      })
+        .extend({
+          job_start_date: ZJobStartDateCreate(),
+          appellation_code: z.string().regex(/^[0-9]+$/, "appelation code must contains only numbers"),
         })
-        .strict(),
-      body: z
-        .object({
-          job_level_label: z.string(),
-          job_duration: z.number(),
-          job_type: ZJobType,
-          is_disabled_elligible: z.boolean().optional(),
-          job_count: z.number().optional(),
-          job_rythm: z.string().optional(),
-          job_start_date: z.date(),
-          job_employer_description: z.string().optional(),
-          job_description: z.string().optional(),
-          custom_address: z.string().optional(),
-          custom_geo_coordinates: z.string().optional(),
-          appellation_code: z.string(),
-        })
-        .strict(),
+        .strict()
+        .refine(
+          ({ custom_address, custom_geo_coordinates }) => {
+            if ((custom_address !== undefined && custom_geo_coordinates === undefined) || (custom_address === undefined && custom_geo_coordinates !== undefined)) {
+              return false
+            }
+            return true
+          },
+          { message: "custom_geo_coordinates must be filled if a custom_address is passed" }
+        ),
       response: {
         "201": ZRecruiter,
         "400": z.union([ZResError, ZLbarError]),
@@ -389,7 +401,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "recruiter:add_job",
-        ressources: {
+        resources: {
           recruiter: [
             {
               establishment_id: { type: "params", key: "establishmentId" },
@@ -423,7 +435,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -436,7 +448,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/provided/:jobId": {
       method: "post",
       path: "/v1/jobs/provided/:jobId",
-      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
@@ -448,7 +459,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -461,7 +472,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/canceled/:jobId": {
       method: "post",
       path: "/v1/jobs/canceled/:jobId",
-      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
@@ -473,7 +483,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -486,7 +496,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/extend/:jobId": {
       method: "post",
       path: "/v1/jobs/extend/:jobId",
-      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
@@ -498,7 +507,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },
@@ -531,7 +540,6 @@ export const zV1JobsRoutes = {
     "/v1/jobs/:jobId": {
       method: "patch",
       path: "/v1/jobs/:jobId",
-      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
@@ -544,12 +552,15 @@ export const zV1JobsRoutes = {
         is_disabled_elligible: true,
         job_count: true,
         job_rythm: true,
-        job_start_date: true,
         job_employer_description: true,
         job_description: true,
         custom_address: true,
         custom_geo_coordinates: true,
-      }).partial(),
+      })
+        .extend({
+          job_start_date: ZJobStartDateCreate(),
+        })
+        .partial(),
       response: {
         "200": ZRecruiter,
         "400": z.union([ZResError, ZLbarError]),
@@ -557,7 +568,7 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         access: "job:manage",
-        ressources: {
+        resources: {
           job: [{ _id: { type: "params", key: "jobId" } }],
         },
       },

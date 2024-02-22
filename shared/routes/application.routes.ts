@@ -1,7 +1,7 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models"
-import { ZApplicationUI } from "../models/applications.model"
+import { ZNewApplication } from "../models/applications.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -10,7 +10,7 @@ export const zApplicationRoutes = {
     "/v1/application": {
       path: "/v1/application",
       method: "post",
-      body: ZApplicationUI.omit({ _id: true }),
+      body: ZNewApplication,
       response: {
         "200": z
           .object({
@@ -35,15 +35,14 @@ export const zApplicationRoutes = {
           "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique \"Ne pas répondre\" de La bonne alternance.\n",
       },
     },
-    "/application/intention": {
+    "/application/intention/:id": {
       // TODO_SECURITY_FIX
-      path: "/application/intention",
+      path: "/application/intention/:id",
       method: "post",
+      params: z.object({ id: z.string() }).strict(),
       body: z
         .object({
-          id: z.string(), // inutile de chiffrer l'id, rajouter un champ token qui contiendra l'id
-          iv: z.string(),
-          intention: z.string(),
+          company_recruitment_intention: z.string(),
         })
         .strict(),
       response: {
@@ -53,20 +52,22 @@ export const zApplicationRoutes = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
-    "/application/intentionComment": {
-      // TODO_SECURITY_FIX
-      path: "/application/intentionComment",
+    "/application/intentionComment/:id": {
+      path: "/application/intentionComment/:id",
       method: "post",
+      params: z.object({ id: z.string() }).strict(),
       body: z
         .object({
-          id: z.string(), // inutile de chiffrer l'id, rajouter un champ token qui contiendra l'id
-          iv: z.string(),
-          comment: z.string(),
-          intention: z.string(),
-          email: z.string(),
-          phone: z.string(),
+          company_feedback: z.string(),
+          company_recruitment_intention: z.string(),
+          email: z.string().email().or(z.literal("")),
+          phone: extensions.phone().or(z.literal("")),
         })
         .strict(),
       response: {
@@ -84,25 +85,11 @@ export const zApplicationRoutes = {
             .strict(),
         ]),
       },
-      securityScheme: null,
-    },
-    "/application/webhook": {
-      path: "/application/webhook",
-      method: "post",
-      querystring: z
-        .object({
-          apikey: z.string(),
-        })
-        .strict(),
-      body: extensions.brevoWebhook(),
-      response: {
-        "200": z
-          .object({
-            result: z.literal("ok"),
-          })
-          .strict(),
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
       },
-      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

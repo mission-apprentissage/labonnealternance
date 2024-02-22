@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   smtp:
-    image: axllent/mailpit:v1.5.5
+    image: axllent/mailpit:v1.10.1
     deploy:
       resources:
         limits:
@@ -29,6 +29,7 @@ services:
     environment:
       - MP_DATA_FILE=/data/mailpit.db
       - MP_UI_AUTH_FILE=/auth
+      - MP_WEBROOT=/smtp/
     logging:
       driver: "fluentd"
       options:

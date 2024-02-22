@@ -3,13 +3,13 @@ import env from "env-var"
 const config = {
   version: env.get("PUBLIC_VERSION").required().asString(),
   port: env.get("LBA_SERVER_PORT").required().asPortNumber(),
-  env: env.get("LBA_ENV").required().asEnum(["local", "recette", "production", "preview"]),
+  env: env.get("LBA_ENV").required().asEnum(["local", "recette", "pentest", "production", "preview"]),
   publicUrl: env.get("LBA_PUBLIC_URL").required().asString(),
   outputDir: env.get("LBA_OUTPUT_DIR").required().asString(),
   formationsEndPoint: "/api/v1/entity/formations",
-  maxApplicationPerDay: 100,
   publicEmail: "labonnealternance@apprentissage.beta.gouv.fr",
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
+  transactionalEmailSender: "La bonne alternance",
   disable_processors: env.get("LBA_DISABLE_PROCESSORS").required().asBool(),
   log: {
     level: env.get("LBA_LOG_LEVEL").required().asString(),
@@ -22,7 +22,6 @@ const config = {
   mongodb: {
     uri: env.get("LBA_MONGODB_URI").required().asString(),
   },
-  laBonneFormationPassword: env.get("LBA_LABONNEFORMATION_PASSWORD").required().asString(),
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").required().asString(),
   secretUpdateRomesMetiers: env.get("LBA_SECRET_UPDATE_ROMES_METIERS").required().asString(), //TODO: rename
@@ -103,6 +102,34 @@ const config = {
     object: "Consolidation des données",
     apiKey: env.get("LBA_ENTREPRISE_API_KEY").required().asString(),
     simulateError: env.get("LBA_ENTREPRISE_SIMULATE_ERROR").default("false").asBool(),
+  },
+  franceCompetences: {
+    baseUrl: "https://api-preprod.francecompetences.fr",
+    apiKey: env.get("LBA_FRANCE_COMPETENCE_API_KEY").required().asString(),
+    bearerToken: env.get("LBA_FRANCE_COMPETENCE_TOKEN").required().asString(),
+  },
+  tco: {
+    baseUrl: "https://tables-correspondances.apprentissage.beta.gouv.fr",
+  },
+  parcoursupPeriods: {
+    start: {
+      startMonth: 0, // January = 0
+      startDay: 2,
+    },
+    end: {
+      endMonth: 7,
+      endDay: 31,
+    },
+  },
+  affelnetPeriods: {
+    start: {
+      startMonth: 3, // January = 0
+      startDay: 2,
+    },
+    end: {
+      endMonth: 7,
+      endDay: 31,
+    },
   },
 }
 

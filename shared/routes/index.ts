@@ -3,7 +3,6 @@ import z, { ZodType } from "zod"
 
 import { zApplicationRoutes } from "./application.routes"
 import { zAppointmentsRoute } from "./appointments.routes"
-import { zCampaignWebhookRoutes } from "./campaignWebhook.routes"
 import { IRouteSchema, IRouteSchemaWrite } from "./common.routes"
 import { zCoreRoutes } from "./core.routes"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAppointment.routes"
@@ -32,13 +31,6 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zMetiersDAvenirRoutes.get,
   ...zMetiersRoutes.get,
-  ...zOptoutRoutes.get,
-  ...zRomeRoutes.get,
-  ...zUpdateLbaCompanyRoutes.get,
-  ...zUserRecruteurRoutes.get,
-  ...zV1FormationsParRegion.get,
-  ...zPartnersRoutes.get,
-  ...zLoginRoutes.get,
 } as const
 
 const zRoutesGetP2 = {
@@ -47,33 +39,55 @@ const zRoutesGetP2 = {
   ...zV1JobsEtFormationsRoutes.get,
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
-  ...zAppointmentsRoute.get,
 } as const
 
 const zRoutesGetP3 = {
+  ...zAppointmentsRoute.get,
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationRoute.get,
+  ...zOptoutRoutes.get,
 } as const
 
-const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 = {
+const zRoutesGetP4 = {
+  ...zRomeRoutes.get,
+  ...zUpdateLbaCompanyRoutes.get,
+  ...zUserRecruteurRoutes.get,
+  ...zV1FormationsParRegion.get,
+  ...zPartnersRoutes.get,
+  ...zLoginRoutes.get,
+} as const
+
+const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 = {
   ...zRoutesGetP1,
   ...zRoutesGetP2,
   ...zRoutesGetP3,
+  ...zRoutesGetP4,
 } as const
 
-const zRoutesPost = {
+const zRoutesPost1 = {
   ...zApplicationRoutes.post,
   ...zLoginRoutes.post,
   ...zTrainingLinksRoutes.post,
   ...zUnsubscribeRoute.post,
   ...zUserRecruteurRoutes.post,
   ...zV1JobsRoutes.post,
+} as const
+
+const zRoutesPost2 = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
-  ...zCampaignWebhookRoutes.post,
+}
+
+const zRoutesPost3 = {
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
+}
+
+const zRoutesPost = {
+  ...zRoutesPost1,
+  ...zRoutesPost2,
+  ...zRoutesPost3,
 } as const
 
 const zRoutesPut = {
@@ -127,8 +141,8 @@ export const zRoutes: IRoutes = {
 export type IResponse<S extends IRouteSchema> = S["response"][`200`] extends ZodType
   ? Jsonify<z.output<S["response"][`200`]>>
   : S["response"][`2${string}`] extends ZodType
-  ? Jsonify<z.output<S["response"][`2${string}`]>>
-  : never
+    ? Jsonify<z.output<S["response"][`2${string}`]>>
+    : never
 
 export type IBody<S extends IRouteSchemaWrite> = S["body"] extends ZodType ? z.input<S["body"]> : never
 

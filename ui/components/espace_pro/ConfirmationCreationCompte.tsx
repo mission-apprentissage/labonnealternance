@@ -9,7 +9,7 @@ import { InfoCircle } from "../../theme/components/icons"
 import { deleteCfa, deleteEntreprise } from "../../utils/api"
 
 export const ConfirmationCreationCompte = (props) => {
-  const { isOpen, onClose, user, formulaire } = props
+  const { isOpen, onClose, user, formulaire, isWidget, token } = props
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
 
@@ -17,8 +17,8 @@ export const ConfirmationCreationCompte = (props) => {
     switch (user.type) {
       case AUTHTYPE.ENTREPRISE:
         router.push({
-          pathname: "/espace-pro/creation/offre",
-          query: { establishment_id: formulaire.establishment_id, email: user.email, type: user.type, userId: user._id, displayBanner: true },
+          pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
+          query: { establishment_id: formulaire.establishment_id, email: user.email, type: user.type, userId: user._id, displayBanner: true, token },
         })
         break
       case AUTHTYPE.CFA:
@@ -73,7 +73,7 @@ export const ConfirmationCreationCompte = (props) => {
           <Button variant="secondary" mr={3} onClick={deleteAccount}>
             Annuler
           </Button>
-          <Button variant="primary" onClick={validateAccountCreation}>
+          <Button variant="primary" onClick={validateAccountCreation} data-testid="confirm-account-creation">
             Envoyer ma demande
           </Button>
         </ModalFooter>

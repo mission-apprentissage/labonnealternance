@@ -28,13 +28,13 @@ import dayjs from "dayjs"
 import { Formik } from "formik"
 import omit from "lodash/omit"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { useContext, useState } from "react"
+import { useQuery } from "react-query"
+import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
 import { useAuth } from "@/context/UserContext"
-import { apiPost } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../common/contants"
 import { publicConfig } from "../../config.public"
@@ -42,25 +42,25 @@ import { LogoContext } from "../../context/contextLogo"
 import { WidgetContext } from "../../context/contextWidget"
 import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../../theme/components/icons"
 import { J1S, Parcoursup } from "../../theme/components/logos_pro"
-import { getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
+import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
 
 import DropdownCombobox from "./DropdownCombobox"
 
 const DATE_FORMAT = "YYYY-MM-DD"
 const URL_LBA = publicConfig.apiEndpoint
 
-const ChampNombre = ({ value, max, name, handleChange, label }) => {
+const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
   return (
-    <Flex align="center">
+    <Flex align="center" data-testid={dataTestId}>
       <Text flexGrow={2}>{label}</Text>
       <Stack direction="row" align="center">
-        <Button onClick={() => handleChange(name, value - 1)} isDisabled={value === 1} variant="secondary">
+        <Button onClick={() => handleChange(name, value - 1)} isDisabled={value === 1} variant="secondary" data-testid="-">
           <Minus />
         </Button>
-        <Text minW="50px" my={3} textAlign="center">
+        <Text minW="50px" my={3} textAlign="center" data-testid={`${dataTestId}-value`}>
           {value}
         </Text>
-        <Button onClick={() => handleChange(name, value + 1)} isDisabled={value === max} variant="secondary">
+        <Button onClick={() => handleChange(name, value + 1)} isDisabled={value === max} variant="secondary" data-testid="+">
           <Plus />
         </Button>
       </Stack>
@@ -69,14 +69,20 @@ const ChampNombre = ({ value, max, name, handleChange, label }) => {
 }
 
 const AjouterVoeuxForm = (props) => {
+  const {
+    widget: { isWidget },
+  } = useContext(WidgetContext)
   const [inputJobItems, setInputJobItems] = useState([])
-  const [formulaire, setFormulaire] = useState(null)
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
 
-  const { user } = useAuth()
+  const { establishment_id, email, userId, type, token } = router.query as { establishment_id: string; email: string; userId: string; type: string; token: string }
+  const { data: formulaire } = useQuery("offre-liste", {
+    enabled: !!establishment_id,
+    queryFn: () => (token ? getFormulaireByToken(establishment_id, token) : getFormulaire(establishment_id)),
+  })
 
-  const { establishment_id, email, userId, type } = router.query as { establishment_id: string; email: string; userId: string; type: string }
+  const { user } = useAuth()
 
   const minDate = dayjs().format(DATE_FORMAT)
 
@@ -103,17 +109,17 @@ const AjouterVoeuxForm = (props) => {
    * @param {boolean} fromDashboard - Becomes from connected interface or anonymous.
    * @return {void}
    */
-  const handleRedirectionAfterSubmit = (form, job, fromDashboard) => {
+  const handleRedirectionAfterSubmit = (form, job, fromDashboard, jobToken) => {
     if (haveProposals) {
-      return router.push({
-        pathname: "/espace-pro/creation/mise-en-relation",
-        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId, establishment_id },
+      return router.replace({
+        pathname: isWidget ? "/espace-pro/widget/entreprise/mise-en-relation" : "/espace-pro/creation/mise-en-relation",
+        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId, establishment_id, token: jobToken },
       })
     }
 
-    router.push({
-      pathname: "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId, establishment_id },
+    router.replace({
+      pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
+      query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId, establishment_id, token: jobToken },
     })
   }
 
@@ -131,7 +137,7 @@ const AjouterVoeuxForm = (props) => {
 
       // Only redirect user in case of offer creation
       if (res) {
-        await handleRedirectionAfterSubmit(res.form, res.offre, true)
+        await handleRedirectionAfterSubmit(res.form, res.offre, true, null)
       }
     }
 
@@ -146,10 +152,9 @@ const AjouterVoeuxForm = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDepotRapide = async (values) => {
-    const formulaire = (await apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: values })) as any
-    formulaire.jobs.slice(-1)
+    const { recruiter: formulaire, token: jobToken } = await (token ? createOffreByToken(establishment_id, values, token) : createOffre(establishment_id, values))
     const [job] = formulaire.jobs.slice(-1)
-    await handleRedirectionAfterSubmit(formulaire, job, false)
+    await handleRedirectionAfterSubmit(formulaire, job, false, jobToken)
   }
 
   /**
@@ -166,20 +171,10 @@ const AjouterVoeuxForm = (props) => {
       setHaveProposals(false)
       return
     }
-    const [latitude, longitude] = geo_coordinates.split(",")
+    const [latitude, longitude] = geo_coordinates.split(",").map((str) => parseFloat(str))
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
-
-  useEffect(() => {
-    async function fetchData() {
-      if (establishment_id) {
-        const { data: formulaire } = (await getFormulaire(establishment_id)) as any
-        setFormulaire(formulaire)
-      }
-    }
-    fetchData()
-  }, [establishment_id])
 
   return (
     <Formik
@@ -203,6 +198,7 @@ const AjouterVoeuxForm = (props) => {
         job_count: props.job_count ?? 1,
         job_duration: props.job_duration ?? 6,
         job_rythm: props.job_rythm ?? undefined,
+        job_delegation_count: props.job_delegation_count ?? 0,
       }}
       validationSchema={Yup.object().shape({
         rome_label: Yup.string().required("Champ obligatoire"),
@@ -241,6 +237,7 @@ const AjouterVoeuxForm = (props) => {
                 name="rome_label"
                 value={values.rome_appellation_label}
                 placeholder="Rechercher un métier.."
+                data-testid="offre-metier"
               />
             </FormControl>
             <FormControl mt={6}>
@@ -264,10 +261,10 @@ const AjouterVoeuxForm = (props) => {
                 value={values.job_type}
                 defaultValue={["Apprentissage"]}
               >
-                <Stack direction="row" spacing={5}>
+                <Stack direction="row" spacing={5} data-testid="offre-job-type">
                   {Object.values(TRAINING_CONTRACT_TYPE).map((label) => (
                     <Checkbox key={label} value={label}>
-                      {label}
+                      <span data-testid={label}>{label}</span>
                     </Checkbox>
                   ))}
                 </Stack>
@@ -275,7 +272,7 @@ const AjouterVoeuxForm = (props) => {
             </FormControl>
             <FormControl mt={6} isRequired>
               <FormLabel>Niveau visé en fin d’études</FormLabel>
-              <Select variant="outline" size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
+              <Select size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
                 <option value="" hidden>
                   Choisissez un niveau
                 </option>
@@ -295,13 +292,15 @@ const AjouterVoeuxForm = (props) => {
             {organisation !== "atlas" && (
               <FormControl mt={6}>
                 <Checkbox name="is_disabled_elligible" value={values.is_disabled_elligible} isChecked={values.is_disabled_elligible} onChange={handleChange}>
-                  Je souhaite faire figurer sur l’offre la mention suivante: <br />
-                  "À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap."
+                  <Text ml={3}>
+                    Je souhaite faire figurer sur l’offre la mention suivante: <br />
+                    <Text as="cite">"À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap."</Text>
+                  </Text>
                 </Checkbox>
               </FormControl>
             )}
             <FormControl mt={6}>
-              <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} />
+              <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
             </FormControl>
             {/* @ts-expect-error: TODO */}
             <FormControl mt={6} isInvalid={errors.job_duration}>
@@ -321,7 +320,7 @@ const AjouterVoeuxForm = (props) => {
                 </Flex>
               </FormErrorMessage>
             </FormControl>
-            {(user && user.type !== AUTHTYPE.ENTREPRISE) || type !== AUTHTYPE.ENTREPRISE ? (
+            {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
               <FormControl mt={6}>
                 <FormLabel>Rythme de l'alternance (formation / entreprise)</FormLabel>
                 <FormHelperText pb={2}>Facultatif</FormHelperText>
@@ -329,15 +328,15 @@ const AjouterVoeuxForm = (props) => {
                   <option value="" hidden>
                     Choisissez un rythme
                   </option>
-                  <option value="Indifférent">Indifférent</option>
-                  <option value="2 jours / 3 jours">2 jours / 3 jours</option>
-                  <option value="1 semaine / 1 semaine">1 semaine / 1 semaine</option>
-                  <option value="2 semaines / 3 semaines">2 semaines / 3 semaines</option>
-                  <option value="6 semaines / 6 semaines">6 semaines / 6 semaines</option>
+                  {Object.values(TRAINING_RYTHM).map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
                 </Select>
                 {errors.job_rythm && touched.job_rythm && <FormErrorMessage>{errors.job_rythm as string}</FormErrorMessage>}
               </FormControl>
-            ) : null}
+            )}
             <Divider mt={5} />
             {(values.job_description || organisation?.includes("akto")) && (
               <FormControl mt={6}>
@@ -353,7 +352,14 @@ const AjouterVoeuxForm = (props) => {
               <Button variant="secondary" onClick={() => router.back()} mr={4}>
                 Annuler
               </Button>
-              <Button leftIcon={<ArrowRightLine />} variant="form" isDisabled={!(isValid && dirty) || isSubmitting} isActive={isValid && dirty} onClick={submitForm}>
+              <Button
+                leftIcon={<ArrowRightLine />}
+                variant="form"
+                isDisabled={!(isValid && dirty) || isSubmitting}
+                isActive={isValid && dirty}
+                onClick={submitForm}
+                data-testid="creer-offre"
+              >
                 {props._id ? "Mettre à jour" : "Créer l'offre"}
               </Button>
             </Flex>

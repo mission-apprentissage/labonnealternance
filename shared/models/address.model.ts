@@ -7,16 +7,29 @@ const ZAcademie = z
   })
   .strict()
 
-const ZGeometry = z
+const Z2DCoord = z.tuple([z.number(), z.number()])
+
+export const ZPointGeometry = z
   .object({
-    coordinates: z.array(z.number()),
+    coordinates: Z2DCoord,
     type: z.string(),
   })
   .strict()
 
+const ZPolygonGeometry = z
+  .object({
+    coordinates: z.array(z.array(Z2DCoord)), // oui, il y a un niveau de tableau en trop mais ce sont les data qu'on récupère
+    type: z.literal("Polygon"),
+  })
+  .strict()
+
+const ZGeometry = z.union([ZPointGeometry, ZPolygonGeometry])
+
+export type IGeometry = z.input<typeof ZGeometry>
+
 const ZProperties = z
   .object({
-    score: z.number(),
+    score: z.number().nullish(),
     source: z.string(),
   })
   .strict()
@@ -92,3 +105,8 @@ const ZAdresseV3 = z
   .openapi("AdresseV3")
 
 export const ZGlobalAddress = z.union([ZAdresseCFA, ZAdresseV2, ZAdresseV3])
+
+export type IAdresseV3 = z.input<typeof ZAdresseV3>
+export type IAdresseCFA = z.input<typeof ZAdresseCFA>
+export type IGlobalAddress = z.input<typeof ZGlobalAddress>
+export type IGeoPoint = z.input<typeof ZPointGeometry>

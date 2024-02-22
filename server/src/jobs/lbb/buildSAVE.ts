@@ -3,6 +3,8 @@ import path from "path"
 
 import { accumulateData, oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
 import __dirname from "../../common/dirname"
 import { logMessage } from "../../common/utils/logMessage"
 
@@ -15,7 +17,7 @@ const tempDir = "./assets/"
 const updateFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_update.csv")
 const removeFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_remove.csv")
 const addFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_add.csv")
-const nafHiringFilePath = path.join(currentDirname, "../../assets/contrats_30j.csv")
+const nafHiringFilePath = getStaticFilePath("contrats_30j.csv")
 
 const removeMap = {}
 const updateMap = {}

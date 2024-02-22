@@ -1,12 +1,10 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZLbaCompany } from "../models/lbaCompany.model"
 
 import { IRoutesDef } from "./common.routes"
 
 export const zUpdateLbaCompanyRoutes = {
   get: {
-    // TODO_SECURITY passer en session role is-admin et faire un formulaire (migrer en POST)
     "/updateLBB/updateContactInfo": {
       method: "get",
       path: "/updateLBB/updateContactInfo",
@@ -19,7 +17,7 @@ export const zUpdateLbaCompanyRoutes = {
         })
         .strict(),
       response: {
-        "200": z.union([ZLbaCompany, z.string()]),
+        "200": z.literal("OK"),
       },
       securityScheme: null,
     },

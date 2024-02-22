@@ -1,14 +1,16 @@
 import { Box } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 
-import { AjouterVoeux, AuthentificationLayout, Bandeau } from "../../../components/espace_pro"
+import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
+
+import { AjouterVoeux, Bandeau } from "../../../components/espace_pro"
 
 export default function DepotRapideAjouterVoeux(props) {
   const router = useRouter()
   const { displayBanner } = router.query
 
   return (
-    <AuthentificationLayout>
+    <DepotSimplifieLayout>
       {displayBanner && (
         <Bandeau
           type="success"
@@ -19,6 +21,6 @@ export default function DepotRapideAjouterVoeux(props) {
       <Box mt={10}>
         <AjouterVoeux {...props} />
       </Box>
-    </AuthentificationLayout>
+    </DepotSimplifieLayout>
   )
 }
