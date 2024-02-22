@@ -8,6 +8,8 @@ export const setCookie = (cookieName, value, msToExpire) => {
   expiryDate.setTime(new Date().getTime() + msToExpire)
   document.cookie = cookieName + "=" + window.encodeURIComponent(value) + (msToExpire ? ";expires=" + expiryDate.toString() : "") + ";path=/;domain=;SameSite=Lax"
 }
+export const COOKIE_REMOVE_TIME = -36 * 60 * 60 * 1000
+export const MTM_CONSENT_COOKIE_DURATION = 30 * 365 * 24 * 60 * 60 * 1000
 
 export const CONSENT_REMOVED_COOKIE_NAME = "mtm_consent_removed"
 export const CONSENT_COOKIE_NAME = "mtm_consent"

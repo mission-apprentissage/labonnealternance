@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 
-import { CONSENT_COOKIE_NAME, CONSENT_REMOVED_COOKIE_NAME, forgetOptUserOut, getCookie, optUserOut, setCookie } from "@/common/utils/matomoCookieUtils"
+import { CONSENT_COOKIE_NAME, CONSENT_REMOVED_COOKIE_NAME, COOKIE_REMOVE_TIME, forgetOptUserOut, getCookie, MTM_CONSENT_COOKIE_DURATION, optUserOut, setCookie } from "@/common/utils/matomoCookieUtils"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Checkbox, Container, Divider, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
@@ -34,12 +34,12 @@ const PolitiqueDeConfidentialite = ({ recordMap }) => {
 
   const changeMatomoOptout = ({ checked }) => {
     if (checked) {
-      setCookie(CONSENT_REMOVED_COOKIE_NAME, "", -129600000)
-      setCookie(CONSENT_COOKIE_NAME, new Date().getTime(), 946080000000)
+      setCookie(CONSENT_REMOVED_COOKIE_NAME, "", COOKIE_REMOVE_TIME)
+      setCookie(CONSENT_COOKIE_NAME, new Date().getTime(), MTM_CONSENT_COOKIE_DURATION)
       forgetOptUserOut()
     } else {
-      setCookie(CONSENT_COOKIE_NAME, "", -129600000)
-      setCookie(CONSENT_REMOVED_COOKIE_NAME, new Date().getTime(), 946080000000)
+      setCookie(CONSENT_COOKIE_NAME, "", COOKIE_REMOVE_TIME)
+      setCookie(CONSENT_REMOVED_COOKIE_NAME, new Date().getTime(), MTM_CONSENT_COOKIE_DURATION)
       optUserOut()
     }
     setHasConsent(checked)
