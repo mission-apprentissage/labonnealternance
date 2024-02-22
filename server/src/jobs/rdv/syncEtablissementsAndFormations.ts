@@ -5,7 +5,7 @@ import { logger } from "../../common/logger"
 import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
-import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
+import { findFirstNonBlacklistedEmail, getMostFrequentEmailByLieuFormationSiret } from "../../services/formation.service"
 
 const hasDateProperty = (etablissements, propertyName) => {
   return etablissements.some((etab) => etab[propertyName] !== null && etab[propertyName] !== undefined)
@@ -52,7 +52,7 @@ export const syncEtablissementsAndFormations = async () => {
         let gestionnaireEmail = await findFirstNonBlacklistedEmail(emailArray)
 
         // Activate opt_out referrers
-        const referrersToActivate: any[] = []
+        const referrersToActivate: string[] = []
         if (hasOptOutActivation && !hasOptOutRefusal) {
           referrersToActivate.push(referrers.LBA.name)
           referrersToActivate.push(referrers.JEUNE_1_SOLUTION.name)
@@ -92,7 +92,7 @@ export const syncEtablissementsAndFormations = async () => {
             training_code_formation_diplome: formation.cfd,
             etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
             training_intitule_long: formation.intitule_long,
-            referrers: emailRdv ? referrersToActivate : [],
+            referrers: referrersToActivate,
             is_catalogue_published: formation.published,
             last_catalogue_sync_date: new Date(),
             lieu_formation_street: formation.lieu_formation_adresse,
@@ -110,6 +110,9 @@ export const syncEtablissementsAndFormations = async () => {
             etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
 
+          // if no email, don't create the record
+          if (!emailRdv) return
+
           await eligibleTrainingsForAppointmentService.create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
@@ -120,7 +123,7 @@ export const syncEtablissementsAndFormations = async () => {
             cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
             training_intitule_long: formation.intitule_long,
-            referrers: emailRdv ? referrersToActivate : [],
+            referrers: referrersToActivate,
             is_catalogue_published: formation.published,
             lieu_formation_street: formation.lieu_formation_adresse,
             lieu_formation_city: formation.localite,
@@ -136,11 +139,7 @@ export const syncEtablissementsAndFormations = async () => {
         }
 
         if (!gestionnaireEmail) {
-          gestionnaireEmail =
-            (await getEmailForRdv({
-              email: formation.email,
-              etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
-            })) ?? null
+          gestionnaireEmail = formation.etablissement_gestionnaire_courriel ?? (await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_gestionnaire_siret))
         }
 
         await Etablissement.updateMany(
