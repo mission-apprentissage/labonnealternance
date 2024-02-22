@@ -1,10 +1,19 @@
+import { NextSeo } from "next-seo"
 import React, { useEffect, useState } from "react"
-
-import { CONSENT_COOKIE_NAME, CONSENT_REMOVED_COOKIE_NAME, COOKIE_REMOVE_TIME, forgetOptUserOut, getCookie, MTM_CONSENT_COOKIE_DURATION, optUserOut, setCookie } from "@/common/utils/matomoCookieUtils"
+import { NotionRenderer } from "react-notion-x"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Checkbox, Container, Divider, Link, SimpleGrid, Text } from "@chakra-ui/react"
-import { NextSeo } from "next-seo"
-import { NotionRenderer } from "react-notion-x"
+
+import {
+  CONSENT_COOKIE_NAME,
+  CONSENT_REMOVED_COOKIE_NAME,
+  COOKIE_REMOVE_TIME,
+  forgetOptUserOut,
+  getCookie,
+  MTM_CONSENT_COOKIE_DURATION,
+  optUserOut,
+  setCookie,
+} from "@/common/utils/matomoCookieUtils"
 
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
