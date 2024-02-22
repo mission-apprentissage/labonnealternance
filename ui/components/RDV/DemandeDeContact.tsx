@@ -333,7 +333,7 @@ const DemandeDeContact = (props: Props) => {
           type="submit"
           fontWeight="700"
           onClick={submitForm}
-          isDisabled={!formik.isValid}
+          isDisabled={formik.isSubmitting}
         >
           J'envoie ma demande
         </Button>
