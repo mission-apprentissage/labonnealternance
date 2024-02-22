@@ -671,8 +671,6 @@ export const getMostFrequentEmailByGestionnaireSiret = async (
     .orderBy("count", "desc")
     .value()
 
-  console.log({ formations, mostFrequentEmail })
-
   return await findFirstNonBlacklistedEmail(mostFrequentEmail)
 }
 
