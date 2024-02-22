@@ -1,3 +1,4 @@
+import { CONSENT_COOKIE_NAME, CONSENT_REMOVED_COOKIE_NAME, forgetOptUserOut, getCookie, optUserOut, setCookie } from "@/common/utils/matomoCookieUtils"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Checkbox, Container, Divider, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
@@ -19,30 +20,12 @@ export async function getStaticProps() {
     },
   }
 }
-const getCookie = (cookieName) => {
-  const cookiePattern = new RegExp("(^|;)[ ]*" + cookieName + "=([^;]*)"),
-    cookieMatch = cookiePattern.exec(document.cookie)
-  return cookieMatch ? window.decodeURIComponent(cookieMatch[2]) : 0
-}
-const setCookie = (cookieName, value, msToExpire) => {
-  const expiryDate = new Date()
-  expiryDate.setTime(new Date().getTime() + msToExpire)
-  document.cookie = cookieName + "=" + window.encodeURIComponent(value) + (msToExpire ? ";expires=" + expiryDate.toString() : "") + ";path=/;domain=;SameSite=Lax"
-}
-
-const CONSENT_REMOVED_COOKIE_NAME = "mtm_consent_removed"
-const CONSENT_COOKIE_NAME = "mtm_consent"
 
 const PolitiqueDeConfidentialite = ({ recordMap }) => {
   useEffect(() => {
-    const consentCookie = getCookie(CONSENT_COOKIE_NAME)
     const removedCookie = getCookie(CONSENT_REMOVED_COOKIE_NAME)
-
     if (removedCookie) {
       setHasConsent(false)
-      if (consentCookie) {
-        setCookie(CONSENT_COOKIE_NAME, "", -129600000)
-      }
     }
   }, [])
 
@@ -52,13 +35,11 @@ const PolitiqueDeConfidentialite = ({ recordMap }) => {
     if (checked) {
       setCookie(CONSENT_REMOVED_COOKIE_NAME, "", -129600000)
       setCookie(CONSENT_COOKIE_NAME, new Date().getTime(), 946080000000)
-      // @ts-expect-error
-      window?._paq?.push(["forgetUserOptOut"])
+      forgetOptUserOut()
     } else {
       setCookie(CONSENT_COOKIE_NAME, "", -129600000)
       setCookie(CONSENT_REMOVED_COOKIE_NAME, new Date().getTime(), 946080000000)
-      // @ts-expect-error
-      window?._paq?.push(["optUserOut"])
+      optUserOut()
     }
     setHasConsent(checked)
   }
@@ -101,11 +82,11 @@ const PolitiqueDeConfidentialite = ({ recordMap }) => {
               ci-dessous.
               <Checkbox
                 mt={3}
-                onChange={(event) =>
+                onChange={(event) => {
                   changeMatomoOptout({
                     checked: event.target.checked,
                   })
-                }
+                }}
                 isChecked={hasConsent}
               >
                 <Text as="strong">Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.</Text>

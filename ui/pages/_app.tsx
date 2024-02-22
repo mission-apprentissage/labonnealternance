@@ -1,3 +1,4 @@
+import { setIsTrackingEnabled } from "@/common/utils/matomoCookieUtils"
 import { init } from "@socialgouv/matomo-next"
 import React, { useEffect } from "react"
 
@@ -14,6 +15,7 @@ import "../styles/Voeux.module.css"
 export default function LaBonneAlternance({ Component, pageProps }) {
   useEffect(() => {
     init(publicConfig.matomo)
+    setIsTrackingEnabled()
   }, [])
 
   return (
