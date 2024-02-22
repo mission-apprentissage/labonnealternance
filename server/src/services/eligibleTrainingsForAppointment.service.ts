@@ -6,7 +6,7 @@ import { EligibleTrainingsForAppointment } from "../common/model/index"
 import { isValidEmail } from "../common/utils/isValidEmail"
 
 import { isEmailBlacklisted } from "./application.service"
-import { getMostFrequentEmailByLieuFormationSiret } from "./formation.service"
+import { getMostFrequentEmailByGestionnaireSiret } from "./formation.service"
 
 /**
  * @description Creates new item.
@@ -80,14 +80,15 @@ const getParameterByCleMinistereEducatif = ({ cleMinistereEducatif }) => Eligibl
  * @returns {Promise<string | null>}
  */
 const getEmailForRdv = async (
-  formation: Pick<IFormationCatalogue, "email" | "etablissement_gestionnaire_courriel" | "etablissement_gestionnaire_siret">
+  formation: Pick<IFormationCatalogue, "email" | "etablissement_gestionnaire_courriel" | "etablissement_gestionnaire_siret">,
+  type: "email" | "etablissement_gestionnaire_courriel" = "email"
 ): Promise<string | null> => {
   const { email, etablissement_gestionnaire_courriel, etablissement_gestionnaire_siret } = formation
   if (email && isValidEmail(email) && !(await isEmailBlacklisted(email))) return email
   if (etablissement_gestionnaire_courriel && isValidEmail(etablissement_gestionnaire_courriel) && !(await isEmailBlacklisted(etablissement_gestionnaire_courriel))) {
     return etablissement_gestionnaire_courriel
   } else {
-    return await getMostFrequentEmailByLieuFormationSiret(etablissement_gestionnaire_siret ?? undefined)
+    return await getMostFrequentEmailByGestionnaireSiret(etablissement_gestionnaire_siret ?? undefined, type)
   }
 }
 

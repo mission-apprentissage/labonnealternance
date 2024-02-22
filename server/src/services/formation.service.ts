@@ -641,22 +641,37 @@ const sortFormations = (formations: ILbaItemFormation[]) => {
   })
 }
 
-/**
- * Retourne l'email le plus présent parmi toutes les formations du catalogue ayant un même "etablissement_formateur_siret".
- */
-export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_gestionnaire_siret: string | undefined): Promise<string | null> => {
-  const formations = await FormationCatalogue.find(
-    {
-      email: { $ne: null },
-      etablissement_gestionnaire_siret,
-    },
-    { email: 1 }
-  ).lean()
+export const getMostFrequentEmailByGestionnaireSiret = async (
+  etablissement_gestionnaire_siret: string | undefined,
+  type: "email" | "etablissement_gestionnaire_courriel"
+): Promise<string | null> => {
+  let formations
+
+  if (type === "email") {
+    formations = await FormationCatalogue.find(
+      {
+        email: { $ne: null },
+        etablissement_gestionnaire_siret,
+      },
+      { email: 1 }
+    ).lean()
+  } else {
+    formations = await FormationCatalogue.find(
+      {
+        etablissement_gestionnaire_courriel: { $ne: null },
+        etablissement_gestionnaire_siret,
+      },
+      { etablissement_gestionnaire_courriel: 1 }
+    ).lean()
+  }
 
   const mostFrequentEmail = chain(formations)
-    .groupBy("email")
-    .map((group, email) => ({ email, group: group.length }))
+    .groupBy(type)
+    .map((group, email) => ({ email, count: group.length }))
     .orderBy("count", "desc")
+    .value()
+
+  console.log({ formations, mostFrequentEmail })
 
   return await findFirstNonBlacklistedEmail(mostFrequentEmail)
 }
