@@ -1,6 +1,7 @@
-import { setIsTrackingEnabled } from "@/common/utils/matomoCookieUtils"
 import { init } from "@socialgouv/matomo-next"
 import React, { useEffect } from "react"
+
+import { setIsTrackingEnabled } from "@/common/utils/matomoCookieUtils"
 
 import HeadLaBonneAlternance from "../components/head"
 import PageTracker from "../components/pageTracker"

@@ -1,8 +1,8 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Checkbox, Container, Divider, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React, { useEffect, useState } from "react"
 import { NotionRenderer } from "react-notion-x"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Checkbox, Container, Divider, Link, SimpleGrid, Text } from "@chakra-ui/react"
 
 import {
   CONSENT_COOKIE_NAME,
