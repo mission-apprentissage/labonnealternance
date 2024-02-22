@@ -5,7 +5,7 @@ import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "sha
 import { ICFA } from "shared/models/cfa.model.js"
 import { IEntreprise } from "shared/models/entreprise.model.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
-import { UserEventType, IUser2 } from "shared/models/user2.model.js"
+import { UserEventType, IUser2, IUserStatusEvent } from "shared/models/user2.model.js"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
 
 import { logger } from "../../common/logger.js"
@@ -55,7 +55,7 @@ const migrationRecruteurs = async () => {
       is_email_checked,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       is_qualiopi,
-      status,
+      status: oldStatus,
       last_connection,
       createdAt,
       updatedAt,
@@ -63,38 +63,36 @@ const migrationRecruteurs = async () => {
     const origin = originRaw || "user migration"
     index % 1000 === 0 && logger.info(`import du user recruteur n°${index}`)
     try {
-      const fieldsUpdate: Omit<IUser2, "id"> = {
+      const newStatus: IUserStatusEvent[] = []
+      if (is_email_checked) {
+        newStatus.push({
+          date: createdAt,
+          reason: "migration",
+          status: UserEventType.VALIDATION_EMAIL,
+          validation_type: VALIDATION_UTILISATEUR.AUTO,
+          granted_by: "migration",
+        })
+      }
+      newStatus.push({
+        date: createdAt,
+        reason: "migration",
+        status: UserEventType.ACTIF,
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+        granted_by: "migration",
+      })
+      const newUser: IUser2 = {
+        _id: userRecruteur._id,
         firstname: first_name ?? "",
         lastname: last_name ?? "",
         phone: phone ?? "",
         email,
-        last_connection: last_connection,
-        is_anonymized: false,
+        last_action_date: last_connection,
         createdAt,
         updatedAt,
         origin,
-        history: [
-          ...(is_email_checked
-            ? [
-                {
-                  date: createdAt,
-                  reason: "migration",
-                  status: UserEventType.VALIDATION_EMAIL,
-                  validation_type: VALIDATION_UTILISATEUR.AUTO,
-                  granted_by: "migration",
-                },
-              ]
-            : []),
-          {
-            date: createdAt,
-            reason: "migration",
-            status: UserEventType.ACTIF,
-            validation_type: VALIDATION_UTILISATEUR.AUTO,
-            granted_by: "migration",
-          },
-        ],
+        status: newStatus,
       }
-      await user2Repository.create({ ...fieldsUpdate, _id: userRecruteur._id })
+      await user2Repository.create(newUser)
       stats.userCreated++
       if (type === ENTREPRISE) {
         if (!establishment_siret) {
@@ -104,37 +102,38 @@ const migrationRecruteurs = async () => {
           throw new Error("inattendu pour une ENTERPRISE: pas de address_detail")
         }
         const entreprise: IEntreprise = {
-          establishment_siret,
+          _id: userRecruteur._id,
+          origin,
+          siret: establishment_siret,
           address,
           address_detail,
-          establishment_enseigne,
+          enseigne: establishment_enseigne,
           establishment_id,
-          establishment_raison_sociale,
+          raison_sociale: establishment_raison_sociale,
           geo_coordinates,
           idcc,
           opco,
-          origin,
           createdAt,
           updatedAt,
         }
-        const createdEntreprise = await entrepriseRepository.create({ ...entreprise, _id: userRecruteur._id })
+        const createdEntreprise = await entrepriseRepository.create(entreprise)
         stats.entrepriseCreated++
-        const roleManagement: Omit<IRoleManagement, "id"> = {
-          accessor_id: userRecruteur._id,
-          accessor_type: AccessEntityType.USER,
-          accessed_type: AccessEntityType.ENTREPRISE,
-          accessed_id: createdEntreprise._id,
+        const roleManagement: Omit<IRoleManagement, "_id"> = {
+          user_id: userRecruteur._id,
+          authorized_type: AccessEntityType.ENTREPRISE,
+          authorized_id: createdEntreprise._id,
           createdAt: userRecruteur.createdAt,
           updatedAt: userRecruteur.updatedAt,
           origin,
-          history: userRecruteurStatusToRoleManagementStatus(status),
+          status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
         await roleManagementRepository.create(roleManagement)
       } else if (type === "CFA") {
         if (!establishment_siret) {
           throw new Error("inattendu pour un CFA: pas de establishment_siret")
         }
-        const cfa: Omit<ICFA, "id"> = {
+        const cfa: ICFA = {
+          _id: userRecruteur._id,
           establishment_siret,
           address,
           address_detail,
@@ -145,43 +144,40 @@ const migrationRecruteurs = async () => {
           createdAt,
           updatedAt,
         }
-        const createdCfa = await cfaRepository.create({ ...cfa, _id: userRecruteur._id })
+        const createdCfa = await cfaRepository.create(cfa)
         stats.cfaCreated++
         const roleManagement: Omit<IRoleManagement, "_id"> = {
-          accessor_id: userRecruteur._id,
-          accessor_type: AccessEntityType.USER,
-          accessed_type: AccessEntityType.CFA,
-          accessed_id: createdCfa._id,
+          user_id: userRecruteur._id,
+          authorized_type: AccessEntityType.CFA,
+          authorized_id: createdCfa._id,
           createdAt: userRecruteur.createdAt,
           updatedAt: userRecruteur.updatedAt,
           origin,
-          history: userRecruteurStatusToRoleManagementStatus(status),
+          status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
         await roleManagementRepository.create(roleManagement)
       } else if (type === "ADMIN") {
         const roleManagement: Omit<IRoleManagement, "_id"> = {
-          accessor_id: userRecruteur._id,
-          accessor_type: AccessEntityType.USER,
-          accessed_type: AccessEntityType.ADMIN,
-          accessed_id: "",
+          user_id: userRecruteur._id,
+          authorized_type: AccessEntityType.ADMIN,
+          authorized_id: "",
           createdAt: userRecruteur.createdAt,
           updatedAt: userRecruteur.updatedAt,
           origin,
-          history: userRecruteurStatusToRoleManagementStatus(status),
+          status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
         await roleManagementRepository.create(roleManagement)
         stats.adminAccess++
       } else if (type === "OPCO") {
         const opco = parseEnumOrError(OPCOS, scope ?? null)
         const roleManagement: Omit<IRoleManagement, "_id"> = {
-          accessor_id: userRecruteur._id,
-          accessor_type: AccessEntityType.USER,
-          accessed_type: AccessEntityType.OPCO,
-          accessed_id: opco,
+          user_id: userRecruteur._id,
+          authorized_type: AccessEntityType.OPCO,
+          authorized_id: opco,
           createdAt: userRecruteur.createdAt,
           updatedAt: userRecruteur.updatedAt,
           origin,
-          history: userRecruteurStatusToRoleManagementStatus(status),
+          status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
         await roleManagementRepository.create(roleManagement)
         stats.opcoAccess++
@@ -223,28 +219,28 @@ const migrationCandidats = async (now: Date) => {
     index % 1000 === 0 && logger.info(`import du candidat n°${index}`)
     try {
       if (type) {
-        await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_user_type: parseEnumOrError(AppointmentUserType, type) } })
+        await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_type: parseEnumOrError(AppointmentUserType, type) } })
       }
       const existingUser = await user2Repository.findOne({ email })
       if (existingUser) {
         await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_id: existingUser._id } })
-        if (dayjs(candidat.last_action_date).isAfter(existingUser.last_connection)) {
-          await user2Repository.updateOne({ _id: existingUser._id }, { last_connection: candidat.last_action_date })
+        if (dayjs(candidat.last_action_date).isAfter(existingUser.last_action_date)) {
+          await user2Repository.updateOne({ _id: existingUser._id }, { last_action_date: candidat.last_action_date })
         }
         stats.alreadyExist++
         return
       }
-      const newUser: Omit<IUser2, "id"> = {
+      const newUser: IUser2 = {
+        _id: candidat._id,
         firstname,
         lastname,
         phone,
         email,
-        last_connection: last_action_date,
-        is_anonymized: is_anonymized,
+        last_action_date: last_action_date,
         createdAt: last_action_date,
         updatedAt: last_action_date,
         origin: "migration user candidat",
-        history: [
+        status: [
           {
             date: now,
             reason: "migration",
@@ -253,7 +249,7 @@ const migrationCandidats = async (now: Date) => {
           },
         ],
       }
-      await user2Repository.create({ ...newUser, _id: candidat._id })
+      await user2Repository.create(newUser)
       stats.success++
     } catch (err) {
       logger.error(`erreur lors de l'import du user candidat avec id=${_id}`)

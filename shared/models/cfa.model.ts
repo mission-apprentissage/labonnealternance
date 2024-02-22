@@ -3,9 +3,11 @@ import { Jsonify } from "type-fest"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress } from "./address.model"
+import { zObjectId } from "./common"
 
 export const zCFA = z
   .object({
+    _id: zObjectId,
     establishment_siret: z.string(),
     establishment_raison_sociale: z.string().nullish(),
     establishment_enseigne: z.string().nullish(),

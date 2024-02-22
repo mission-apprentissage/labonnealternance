@@ -148,7 +148,7 @@ export const appointmentSchema = new Schema<IAppointment>(
       default: null,
       description: "Adresse email CFA",
     },
-    applicant_user_type: {
+    applicant_type: {
       type: String,
       enum: [...Object.values(AppointmentUserType), null],
       default: null,

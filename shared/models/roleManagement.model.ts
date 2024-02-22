@@ -32,17 +32,16 @@ export const ZAccessEntityType = enumToZod(AccessEntityType)
 
 export const ZRoleManagement = z
   .object({
-    accessor_id: zObjectId,
-    accessor_type: ZAccessEntityType,
-    accessed_id: z.string(),
-    accessed_type: ZAccessEntityType,
+    _id: zObjectId,
     origin: z.string(),
-    history: z.array(ZRoleManagementEvent),
+    status: z.array(ZRoleManagementEvent),
+    authorized_id: z.string(),
+    authorized_type: ZAccessEntityType,
+    user_id: zObjectId,
     createdAt: z.date(),
     updatedAt: z.date(),
   })
   .strict()
 
 export type IRoleManagement = z.output<typeof ZRoleManagement>
-
 export type IRoleManagementEvent = z.output<typeof ZRoleManagementEvent>

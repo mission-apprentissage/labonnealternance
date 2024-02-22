@@ -37,6 +37,14 @@ const userStatusEventSchema = new Schema<IUserStatusEvent>(
 
 const User2Schema = new Schema<IUser2>(
   {
+    origin: {
+      type: String,
+      description: "Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi",
+    },
+    status: {
+      type: [userStatusEventSchema],
+      description: "Evénements liés au cycle de vie de l'utilisateur",
+    },
     firstname: {
       type: String,
       default: null,
@@ -47,33 +55,20 @@ const User2Schema = new Schema<IUser2>(
       default: null,
       description: "Le nom",
     },
-    phone: {
-      type: String,
-      default: null,
-      description: "Le numéro de téléphone",
-    },
     email: {
       type: String,
       default: null,
       description: "L'email",
     },
-    last_connection: {
+    phone: {
+      type: String,
+      default: null,
+      description: "Le numéro de téléphone",
+    },
+    last_action_date: {
       type: Date,
       default: null,
       description: "Date de dernière connexion",
-    },
-    is_anonymized: {
-      type: Boolean,
-      default: false,
-      description: "Si l'enregistrement est anonymisé",
-    },
-    history: {
-      type: [userStatusEventSchema],
-      description: "Evénements liés au cycle de vie de l'utilisateur",
-    },
-    origin: {
-      type: String,
-      description: "Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi",
     },
   },
   {

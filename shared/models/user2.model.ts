@@ -27,15 +27,14 @@ export const ZUserStatusEvent = z
 
 export const ZUser2 = z
   .object({
-    id: zObjectId,
+    _id: zObjectId,
+    origin: z.string().nullish(),
+    status: z.array(ZUserStatusEvent),
     firstname: z.string(),
     lastname: z.string(),
-    phone: extensions.phone(),
     email: z.string().email(),
-    last_connection: z.date().nullish(),
-    is_anonymized: z.boolean(),
-    origin: z.string().nullish(),
-    history: z.array(ZUserStatusEvent),
+    phone: extensions.phone(),
+    last_action_date: z.date().nullish(),
     createdAt: z.date(),
     updatedAt: z.date(),
   })

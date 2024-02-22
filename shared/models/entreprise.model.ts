@@ -3,21 +3,24 @@ import { Jsonify } from "type-fest"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress } from "./address.model"
+import { zObjectId } from "./common"
 
 export const ZEntreprise = z
   .object({
-    establishment_siret: z.string(),
-    opco: z.string().nullish(),
-    idcc: z.string().nullish(),
-    establishment_raison_sociale: z.string().nullish(),
-    establishment_enseigne: z.string().nullish(),
-    address_detail: ZGlobalAddress.nullish(),
-    address: z.string().nullish(),
-    geo_coordinates: z.string().nullish(),
+    _id: zObjectId,
     origin: z.string().nullish(),
-    establishment_id: z.string().nullish(),
     createdAt: z.date(),
     updatedAt: z.date(),
+    siret: z.string(),
+    raison_sociale: z.string().nullish(),
+    enseigne: z.string().nullish(),
+    idcc: z.string().nullish(),
+    address: z.string().nullish(),
+    address_detail: ZGlobalAddress.nullish(),
+    geo_coordinates: z.string().nullish(),
+    opco: z.string().nullish(),
+
+    establishment_id: z.string().nullish(),
   })
   .strict()
 
