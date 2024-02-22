@@ -92,6 +92,10 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       type: String,
       description: "Intitulé court de la formation normalisé BCN",
     },
+    intitule_rco: {
+      type: String,
+      description: "Intitulé RCO de la formation",
+    },
     diplome: {
       type: String,
       description: "Diplôme ou titre visé",

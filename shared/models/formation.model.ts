@@ -112,6 +112,7 @@ export const zFormationCatalogueSchema = z
     nom: z.string().nullish(),
     intitule_long: z.string().nullish(),
     intitule_court: z.string().nullish(),
+    intitule_rco: z.string().nullish(),
     diplome: z.string().nullish(),
     niveau: z.string().nullish(),
     onisep_url: z.string().nullish(),
