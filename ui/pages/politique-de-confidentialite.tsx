@@ -20,7 +20,7 @@ export async function getStaticProps() {
   }
 }
 const getCookie = (cookieName) => {
-  var cookiePattern = new RegExp("(^|;)[ ]*" + cookieName + "=([^;]*)"),
+  const cookiePattern = new RegExp("(^|;)[ ]*" + cookieName + "=([^;]*)"),
     cookieMatch = cookiePattern.exec(document.cookie)
   return cookieMatch ? window.decodeURIComponent(cookieMatch[2]) : 0
 }
@@ -92,7 +92,7 @@ const PolitiqueDeConfidentialite = ({ recordMap }) => {
               <Link href="https://matomo.org/" isExternal variant="basicUnderlinedBlue">
                 Matomo <ExternalLinkIcon mb="3px" ml="2px" />
               </Link>{" "}
-              en l'ayant configuré en mode « exempté », conformément aux{" "}
+              en l'ayant configuré en mode « exempté », conformément aux{" "}
               <Link href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience" isExternal variant="basicUnderlinedBlue">
                 recommandations de la CNIL
                 <ExternalLinkIcon mb="3px" ml="2px" />
