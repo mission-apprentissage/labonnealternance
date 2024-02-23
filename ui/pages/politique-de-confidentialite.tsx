@@ -32,14 +32,14 @@ export async function getStaticProps() {
 }
 
 const PolitiqueDeConfidentialite = ({ recordMap }) => {
+  const [hasConsent, setHasConsent] = useState(true)
+
   useEffect(() => {
     const removedCookie = getCookie(CONSENT_REMOVED_COOKIE_NAME)
     if (removedCookie) {
       setHasConsent(false)
     }
   }, [])
-
-  const [hasConsent, setHasConsent] = useState(true)
 
   const changeMatomoOptout = ({ checked }) => {
     if (checked) {
