@@ -2,7 +2,7 @@ import crypto from "crypto"
 
 import config from "../../config"
 
-const secretLba = Buffer.alloc(32, config.secretUpdateRomesMetiers)
+const secretLba = Buffer.alloc(32, config.lbaSecret)
 
 const algo = "aes-256-ctr"
 const inputEncoding = "utf8"

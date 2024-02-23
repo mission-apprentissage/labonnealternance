@@ -24,7 +24,7 @@ const config = {
   },
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").required().asString(),
-  secretUpdateRomesMetiers: env.get("LBA_SECRET_UPDATE_ROMES_METIERS").required().asString(), //TODO: rename
+  lbaSecret: env.get("LBA_SECRET").required().asString(),
   allowedSources: env.get("LBA_ALLOWED_SOURCES").required().asString(),
   esdClientId: env.get("LBA_ESD_CLIENT_ID").required().asString(),
   esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").required().asString(),
