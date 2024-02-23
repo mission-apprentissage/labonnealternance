@@ -8,7 +8,7 @@ import { db } from "../../common/mongodb"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { isValidEmail } from "../../common/utils/isValidEmail"
 import { isEmailBlacklisted } from "../../services/application.service"
-import { getMostFrequentEmailByLieuFormationSiret } from "../../services/formation.service"
+import { getMostFrequentEmailByGestionnaireSiret } from "../../services/formation.service"
 
 import { removeDuplicateEtablissements } from "./removeDuplicateEtablissements"
 
@@ -74,7 +74,7 @@ const updateLieuFormationEmail = async () => {
     etfa.map(async (formation) => {
       if (!formation.etablissement_gestionnaire_siret) return
       if (!formation.lieu_formation_email) {
-        const email = await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_gestionnaire_siret)
+        const email = await getMostFrequentEmailByGestionnaireSiret(formation.etablissement_gestionnaire_siret, "email")
         if (!email) return
         await db.collection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: formation._id }, { $set: { lieu_formation_email: email } })
         return
@@ -82,7 +82,7 @@ const updateLieuFormationEmail = async () => {
       if (isValidEmail(formation.lieu_formation_email) && !(await isEmailBlacklisted(formation.lieu_formation_email))) {
         return
       } else {
-        const email = await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_gestionnaire_siret)
+        const email = await getMostFrequentEmailByGestionnaireSiret(formation.etablissement_gestionnaire_siret, "email")
         if (!email) return
         await db.collection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: formation._id }, { $set: { lieu_formation_email: email } })
         return
@@ -197,7 +197,7 @@ const updateGestionnaireEmailEtablissement = async () => {
   const etablissements: IEtablissement[] = await Etablissement.find({ gestionnaire_email: null }).lean()
   await asyncForEach(etablissements, async (etab) => {
     if (!etab.gestionnaire_siret) return
-    const email = await getMostFrequentEmailByLieuFormationSiret(etab.gestionnaire_siret)
+    const email = await getMostFrequentEmailByGestionnaireSiret(etab.gestionnaire_siret, "etablissement_gestionnaire_courriel")
     await Etablissement.findByIdAndUpdate(etab._id, { $set: { gestionnaire_email: email, last_catalogue_sync_date: new Date() } })
   })
 }
