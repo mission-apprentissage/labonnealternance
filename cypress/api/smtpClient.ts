@@ -51,9 +51,4 @@ export const smtpClient = {
     }
     return urlOpt
   },
-  containsText(text: string, content: string) {
-    if (content.indexOf(text) < 0) {
-      throw new Error(`could not find text "${text}" in ${content}`)
-    }
-  },
 }

@@ -2,6 +2,7 @@ import { smtpClient } from "../api/smtpClient"
 import { FlowItemList } from "../pages/FlowItemList"
 import { FlowSendApplication } from "../pages/FlowSendApplication"
 import { SearchForm } from "../pages/SearchForm"
+import { containsText } from "../utils/containText"
 import { generateRandomString } from "../utils/generateRandomString"
 
 describe("send-spontaneous-application", () => {
@@ -29,7 +30,7 @@ describe("send-spontaneous-application", () => {
     FlowSendApplication.applicationForm.close()
 
     smtpClient.getMail(fakeMail, "Votre candidature chez").then((emailContent) => {
-      smtpClient.containsText("Votre candidature a bien été envoyée à", emailContent)
+      containsText("Votre candidature a bien été envoyée à", emailContent)
     })
 
     FlowSendApplication.applicationForm.verifyAlreadyApplied()

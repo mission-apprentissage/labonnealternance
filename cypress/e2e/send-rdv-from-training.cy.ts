@@ -2,6 +2,7 @@ import { smtpClient } from "../api/smtpClient"
 import { FlowItemList } from "../pages/FlowItemList"
 import { FlowSendRDV } from "../pages/FlowSendRDV"
 import { SearchForm } from "../pages/SearchForm"
+import { containsText } from "../utils/containText"
 import { generateRandomString } from "../utils/generateRandomString"
 
 describe("send-rdv-from-training", () => {
@@ -29,7 +30,7 @@ describe("send-rdv-from-training", () => {
     FlowSendRDV.rdvForm.verifyAlreadyApplied()
 
     smtpClient.getMail(fakeMail, "Votre demande de RDV").then((emailContent) => {
-      smtpClient.containsText("Merci de votre intérêt pour la formation", emailContent)
+      containsText("Merci de votre intérêt pour la formation", emailContent)
     })
   })
 })
