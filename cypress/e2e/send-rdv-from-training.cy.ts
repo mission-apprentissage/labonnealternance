@@ -17,6 +17,7 @@ describe("send-rdv-from-training", () => {
     SearchForm.goToSearchFormation()
     SearchForm.fillSearch({
       metier: "Esthétique",
+      location: "Bordeaux 33800",
     })
     SearchForm.submit()
 

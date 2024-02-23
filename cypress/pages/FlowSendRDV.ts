@@ -16,8 +16,8 @@ export const FlowSendRDV = {
       cy.get("input[type='email']").click()
       cy.get("input[type='email']").type(email)
       cy.get(".chakra-accordion__button").click()
-      cy.get("[data-testid='fieldset-reasons'] .chakra-collapse input:checkbox[id='reason-3']").click({ force: true })
-      cy.get("[data-testid='fieldset-reasons'] .chakra-collapse input:checkbox[id='reason-10']").click({ force: true })
+      cy.get("[data-testid='fieldset-reasons'] input:checkbox[id='reason-3']").click({ force: true })
+      cy.get("[data-testid='fieldset-reasons'] input:checkbox[id='reason-10']").click({ force: true })
       cy.get("input[name='applicantMessageToCfa']").click()
       cy.get("input[name='applicantMessageToCfa']").type("horaires")
     },
