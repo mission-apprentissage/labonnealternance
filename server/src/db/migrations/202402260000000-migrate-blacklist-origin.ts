@@ -17,7 +17,7 @@ export const up = async (db: Db) => {
   )
   await db.collection("emailblacklists").updateMany(
     { blacklisting_origin: { $in: ["brevo", "sendinblue"] } },
-    { $set: { blacklisting_origin: "brevo-spam" } },
+    { $set: { blacklisting_origin: "brevo_spam" } },
     {
       bypassDocumentValidation: true,
     }
