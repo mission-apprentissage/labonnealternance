@@ -919,7 +919,7 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
         formateur_zip_code: etablissement.formateur_zip_code,
         formateur_city: etablissement.formateur_city,
         formateur_siret: etablissement.formateur_siret,
-        gestionnaire_email: etablissement.gestionnaire_email,
+        email: etablissement.gestionnaire_email,
       },
       activationDate: dayjs().format("DD/MM/YYYY"),
     },
