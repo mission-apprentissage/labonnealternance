@@ -6,7 +6,7 @@ import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecr
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement } from "shared/models/roleManagement.model"
-import { UserEventType } from "shared/models/user2.model"
+import { IUser2, UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
@@ -100,10 +100,13 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
   }
 }
 
-export const getUserRecruteurById = async (id: ObjectId): Promise<IUserRecruteur | null> => {
-  const user = await User2.findById(id).lean()
+export const getUserRecruteurById = (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: id })
+export const getUserRecruteurByEmail = (email: string) => getUserRecruteurByUser2Query({ email })
+
+const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promise<IUserRecruteur | null> => {
+  const user = await User2.findOne(user2query).lean()
   if (!user) return null
-  const role = await RoleManagement.findOne({ user_id: id.toString() }).lean()
+  const role = await RoleManagement.findOne({ user_id: user._id.toString() }).lean()
   if (!role) return null
   const organismeData = await getOrganismeFromRole(role)
   const { email, first_name, last_name, phone, last_action_date, _id } = user

@@ -26,7 +26,7 @@ import {
 import {
   autoValidateUser,
   createUser,
-  getUser,
+  getUserRecruteurByEmail,
   getUserStatus,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
@@ -170,7 +170,7 @@ export default (server: Server) => {
           const { email, establishment_siret } = req.body
           const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
-          const userRecruteurOpt = await getUser({ email: formatedEmail })
+          const userRecruteurOpt = await getUserRecruteurByEmail(formatedEmail)
           if (userRecruteurOpt) {
             throw Boom.forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }

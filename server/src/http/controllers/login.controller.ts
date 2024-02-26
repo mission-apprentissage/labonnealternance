@@ -11,7 +11,7 @@ import config from "../../config"
 import { sendUserConfirmationEmail } from "../../services/etablissement.service"
 import { controlUserState } from "../../services/login.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
-import { getUser, updateLastConnectionDate } from "../../services/userRecruteur.service"
+import { getUserRecruteurByEmail, getUserRecruteurById, updateLastConnectionDate } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -23,7 +23,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const user = await getUser({ _id: userId })
+      const user = await getUserRecruteurById(userId)
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
@@ -44,7 +44,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { email } = req.body
       const formatedEmail = email.toLowerCase()
-      const user = await getUser({ email: formatedEmail })
+      const user = await getUserRecruteurByEmail(formatedEmail)
 
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
@@ -93,7 +93,7 @@ export default (server: Server) => {
       const { email } = user.identity
       const formatedEmail = email.toLowerCase()
 
-      const userData = await getUser({ email: formatedEmail })
+      const userData = await getUserRecruteurByEmail(formatedEmail)
 
       if (!userData) {
         throw Boom.unauthorized()

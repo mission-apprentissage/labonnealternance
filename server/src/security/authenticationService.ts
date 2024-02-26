@@ -11,7 +11,7 @@ import { UserWithType } from "shared/security/permissions"
 import { Credential } from "@/common/model"
 import config from "@/config"
 import { getSession } from "@/services/sessions.service"
-import { getUser as getUserRecruteur, updateLastConnectionDate } from "@/services/userRecruteur.service"
+import { getUserRecruteurByEmail, updateLastConnectionDate } from "@/services/userRecruteur.service"
 
 import { controlUserState } from "../services/login.service"
 
@@ -56,7 +56,7 @@ async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUs
 
     const { email } = jwt.verify(token, config.auth.user.jwtSecret) as JwtPayload
 
-    const user = await getUserRecruteur({ email: email.toLowerCase() })
+    const user = await getUserRecruteurByEmail(email.toLowerCase())
     if (!user) {
       return null
     }

@@ -35,7 +35,7 @@ import {
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
-import { autoValidateUser, createUser, getUser, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
+import { autoValidateUser, createUser, getUserRecruteurByEmail, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -748,7 +748,7 @@ export const entrepriseOnboardingWorkflow = {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
-    const userRecruteurOpt = await getUser({ email: formatedEmail })
+    const userRecruteurOpt = await getUserRecruteurByEmail(formatedEmail)
     if (userRecruteurOpt) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }

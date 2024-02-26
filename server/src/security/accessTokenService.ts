@@ -11,7 +11,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 import { controlUserState } from "../services/login.service"
-import { getUser } from "../services/userRecruteur.service"
+import { getUserRecruteurById } from "../services/userRecruteur.service"
 
 // cf https://www.sistrix.com/ask-sistrix/technical-seo/site-structure/url-length-how-long-can-a-url-be
 const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083
@@ -192,7 +192,7 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
   })
   const token = data.payload as IAccessToken<Schema>
   if (token.identity.type === "IUserRecruteur") {
-    const user = await getUser({ _id: token.identity._id })
+    const user = await getUserRecruteurById(token.identity._id)
 
     if (!user) throw Boom.unauthorized()
 

@@ -21,7 +21,6 @@ import {
   provideOffre,
   updateFormulaire,
 } from "../../services/formulaire.service"
-import { getUser } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -105,7 +104,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { userId: userRecruteurId } = req.params
       const { establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
-      const userRecruteurOpt = await getUser({ _id: userRecruteurId })
+      const userRecruteurOpt = await getUserRecruteurById(userRecruteurId)
       if (!userRecruteurOpt) {
         throw Boom.badRequest("Nous n'avons pas trouvé votre compte utilisateur")
       }

@@ -2,7 +2,7 @@ import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recru
 import { IUserRecruteur } from "shared/models"
 
 import { logger } from "../../../common/logger"
-import { getUser, createUser } from "../../../services/userRecruteur.service"
+import { createUser, getUserRecruteurByEmail } from "../../../services/userRecruteur.service"
 
 export const createUserFromCLI = async (
   {
@@ -18,7 +18,7 @@ export const createUserFromCLI = async (
   { options }: { options: { Type: IUserRecruteur["type"]; Email_valide: IUserRecruteur["is_email_checked"] } }
 ) => {
   const { Type, Email_valide } = options
-  const exist = await getUser({ email })
+  const exist = await getUserRecruteurByEmail(email)
 
   if (exist) {
     logger.error(`Users ${email} already exist - ${exist._id}`)
