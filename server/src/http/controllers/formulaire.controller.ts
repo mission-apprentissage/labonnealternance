@@ -3,6 +3,7 @@ import { zRoutes } from "shared/index"
 
 import { UserRecruteur } from "@/common/model"
 import { generateOffreToken } from "@/services/appLinks.service"
+import { getUserRecruteurById } from "@/services/userRecruteur.service"
 
 import { getApplicationsByJobId } from "../../services/application.service"
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"

@@ -3,7 +3,7 @@ import { IUser, IUserRecruteur } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
 
-import { Recruiter, User, UserRecruteur } from "../common/model/index"
+import { Recruiter, User, User2, UserRecruteur } from "../common/model/index"
 
 /**
  * @description Returns user from its email.
@@ -144,7 +144,7 @@ const getValidatorIdentityFromStatus = async (status: IUserRecruteur["status"]) 
   return await Promise.all(
     status.map(async (state) => {
       if (state.user === "SERVEUR") return state
-      const user = await UserRecruteur.findById(state.user).select({ first_name: 1, last_name: 1, _id: 0 }).lean()
+      const user = await User2.findById(state.user).select({ first_name: 1, last_name: 1, _id: 0 }).lean()
       return { ...state, user: `${user?.first_name} ${user?.last_name}` }
     })
   )

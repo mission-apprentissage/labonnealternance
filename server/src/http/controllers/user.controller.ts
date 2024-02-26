@@ -19,6 +19,7 @@ import {
   getAwaitingUsers,
   getDisabledUsers,
   getErrorUsers,
+  getUserRecruteurById,
   removeUser,
   sendWelcomeEmailToUserRecruteur,
   updateUser,
@@ -71,7 +72,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const userRecruteur = await UserRecruteur.findOne({ _id: userId }).lean()
+      const userRecruteur = await getUserRecruteurById(userId)
       let jobs: IJob[] = []
 
       if (!userRecruteur) throw Boom.notFound(`user with id=${userId} not found`)
@@ -165,7 +166,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user/:userId"])],
     },
     async (req, res) => {
-      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      const user = await getUserRecruteurById(req.params.userId)
       const loggedUser = getUserFromRequest(req, zRoutes.get["/user/:userId"]).value
 
       let jobs: IJob[] = []
@@ -200,7 +201,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user/status/:userId"])],
     },
     async (req, res) => {
-      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      const user = await getUserRecruteurById(req.params.userId)
 
       if (!user) throw Boom.notFound("User not found")
       const status_current = getUserStatus(user.status)
@@ -217,7 +218,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user/status/:userId/by-token"])],
     },
     async (req, res) => {
-      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      const user = await getUserRecruteurById(req.params.userId)
 
       if (!user) throw Boom.notFound("User not found")
       const status_current = getUserStatus(user.status)

@@ -1,6 +1,8 @@
 import pkg from "mongodb"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 
+import { getUserRecruteurById } from "@/services/userRecruteur.service"
+
 import { logger } from "../../common/logger"
 import { AnonymizedUser, Application, Recruiter, User, UserRecruteur } from "../../common/model/index"
 
@@ -116,7 +118,7 @@ const anonymizeUser = async (_id: string) => {
 }
 
 const anonymizeUserRecruterAndRecruiter = async (_id: string) => {
-  const user = await UserRecruteur.findById(_id).lean()
+  const user = await getUserRecruteurById(_id)
 
   if (!user) {
     throw new Error("Anonymize userRecruter not found")

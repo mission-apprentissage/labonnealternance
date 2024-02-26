@@ -220,13 +220,6 @@ program
   .action(createJobAction("recruiters:get-missing-address-detail"))
 
 // Temporaire, one shot à executer en recette et prod
-program
-  .command("migration:get-missing-geocoords")
-  .description("Récupération des geocoordonnées manquautes")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("migration:get-missing-geocoords"))
-
-// Temporaire, one shot à executer en recette et prod
 program.command("import:rome").description("import référentiel fiche metier rome v3").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import:rome"))
 // Temporaire, one shot à executer en recette et prod
 program
@@ -580,12 +573,6 @@ program
   .description("Répare les data de la collection userrecruteurs")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("user-recruters:data-validation:fix"))
-
-program
-  .command("fix-data-validation-user-recruteurs-cfa")
-  .description("Répare les data des userrecruteurs CFA")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("user-recruters-cfa:data-validation:fix"))
 
 program
   .command("anonymize-user-recruteurs")

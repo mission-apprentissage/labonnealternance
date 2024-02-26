@@ -15,7 +15,7 @@ import config from "../config"
 import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
-import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
+import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
@@ -44,7 +44,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Pro
   if (recruiterOpt.is_delegated && recruiterOpt.address) {
     const { cfa_delegated_siret } = recruiterOpt
     if (cfa_delegated_siret) {
-      const cfa = await getEtablissement({ establishment_siret: cfa_delegated_siret })
+      const cfa = await getUser({ establishment_siret: cfa_delegated_siret })
 
       if (cfa) {
         recruiterOpt.phone = cfa.phone

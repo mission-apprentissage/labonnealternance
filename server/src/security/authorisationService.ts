@@ -7,6 +7,7 @@ import { assertUnreachable } from "shared/utils"
 import { Primitive } from "type-fest"
 
 import { Application, Recruiter, UserRecruteur } from "@/common/model"
+import { getUserRecruteurById } from "@/services/userRecruteur.service"
 
 import { controlUserState } from "../services/login.service"
 
@@ -107,7 +108,7 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
     await Promise.all(
       schema.securityScheme.resources.user.map(async (userDef) => {
         if ("_id" in userDef) {
-          const userOpt = await UserRecruteur.findById(getAccessResourcePathValue(userDef._id, req)).lean()
+          const userOpt = await getUserRecruteurById(getAccessResourcePathValue(userDef._id, req))
           return userOpt ? [userOpt] : []
         }
         if ("opco" in userDef) {

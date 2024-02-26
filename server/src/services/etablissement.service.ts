@@ -35,7 +35,7 @@ import {
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
-import { autoValidateUser, createUser, getUserRecruteurByEmail, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
+import { autoValidateUser, createUser, getUser, getUserRecruteurByEmail, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -180,13 +180,6 @@ export const findByIdAndUpdate = async (id, values): Promise<IEtablissement | nu
  * @returns {Promise<void>}
  */
 export const findByIdAndDelete = async (id): Promise<IEtablissement | null> => Etablissement.findByIdAndDelete(id).lean()
-
-/**
- * @description Get etablissement from a given query
- * @param {Object} query
- * @returns {Promise<void>}
- */
-export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query).lean()
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET
@@ -692,7 +685,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string, shouldValidate = true) => {
   if (shouldValidate) {
-    const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: siret, type: CFA })
+    const cfaUserRecruteurOpt = await getUser({ establishment_siret: siret, type: CFA })
     if (cfaUserRecruteurOpt) {
       throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
     }

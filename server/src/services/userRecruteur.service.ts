@@ -1,7 +1,8 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
-import type { FilterQuery, ModelUpdateOptions, ObjectId, UpdateQuery } from "mongoose"
+import { ObjectId } from "mongodb"
+import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection, assertUnreachable } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
@@ -100,7 +101,7 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
   }
 }
 
-export const getUserRecruteurById = (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: id })
+export const getUserRecruteurById = (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
 export const getUserRecruteurByEmail = (email: string) => getUserRecruteurByUser2Query({ email })
 
 const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promise<IUserRecruteur | null> => {
@@ -202,7 +203,7 @@ export const updateUser = async (
  * @returns {Promise<void>}
  */
 export const removeUser = async (id: IUserRecruteur["_id"] | string) => {
-  const user = await UserRecruteur.findById(id)
+  const user = await getUserRecruteurById(id)
   if (!user) {
     throw new Error(`Unable to find user ${id}`)
   }

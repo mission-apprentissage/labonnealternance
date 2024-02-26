@@ -11,10 +11,10 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
-import { getEtablissement } from "./etablissement.service"
 import { getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
+import { getUser } from "./userRecruteur.service"
 
 const JOB_SEARCH_LIMIT = 250
 
@@ -70,7 +70,7 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
       const jobs: any[] = []
 
       if (x.is_delegated) {
-        const cfa = await getEtablissement({ establishment_siret: x.cfa_delegated_siret })
+        const cfa = await getUser({ establishment_siret: x.cfa_delegated_siret })
 
         x.phone = cfa?.phone
         x.email = cfa?.email || ""
