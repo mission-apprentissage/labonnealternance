@@ -178,6 +178,7 @@ export default (server: Server) => {
           parcoursup_id: {
             $ne: null,
           },
+          parcoursup_statut: "publié",
         }),
         Etablissement.findOneAndUpdate(
           { _id: etablissement._id },
