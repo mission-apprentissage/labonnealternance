@@ -123,7 +123,7 @@ const config = {
   },
   affelnetPeriods: {
     start: {
-      startMonth: 3, // January = 0
+      startMonth: 0, // January = 0
       startDay: 2,
     },
     end: {
