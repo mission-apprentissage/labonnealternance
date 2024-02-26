@@ -20,7 +20,7 @@ export default function (server: Server) {
     async (req, res) => {
       const { email, phone, siret } = req.query
 
-      if (req.query.secret !== config.secretUpdateRomesMetiers) {
+      if (req.query.secret !== config.lbaSecret) {
         throw Boom.unauthorized()
       }
 
