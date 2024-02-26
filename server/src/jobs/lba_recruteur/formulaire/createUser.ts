@@ -1,4 +1,4 @@
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IUserRecruteur } from "shared/models"
 
 import { logger } from "../../../common/logger"
@@ -39,7 +39,7 @@ export const createUserFromCLI = async (
     status: [
       {
         status: ETAT_UTILISATEUR.VALIDE,
-        validation_type: "AUTOMATIQUE",
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
         user: "SERVEUR",
         date: new Date(),
       },

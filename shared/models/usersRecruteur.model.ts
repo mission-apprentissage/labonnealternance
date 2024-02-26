@@ -1,21 +1,21 @@
 import { Jsonify } from "type-fest"
 
-import { AUTHTYPE, CFA, ETAT_UTILISATEUR } from "../constants/recruteur"
+import { AUTHTYPE, CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../constants/recruteur"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress, ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
+import { enumToZod } from "./enumToZod"
 
-const etatUtilisateurValues = Object.values(ETAT_UTILISATEUR)
-export const ZEtatUtilisateur = z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).describe("Statut de l'utilisateur")
+export const ZEtatUtilisateur = enumToZod(ETAT_UTILISATEUR).describe("Statut de l'utilisateur")
 
 const authTypeValues = Object.values(AUTHTYPE)
 
 export const ZUserStatusValidation = z
   .object({
-    validation_type: z.enum(["AUTOMATIQUE", "MANUELLE"]).describe("Processus de validation lors de l'inscription de l'utilisateur"),
+    validation_type: enumToZod(VALIDATION_UTILISATEUR).describe("Processus de validation lors de l'inscription de l'utilisateur"),
     // TODO : check DB and remove nullish
     status: ZEtatUtilisateur.nullish(),
     reason: z.string().nullish().describe("Raison du changement de statut"),
@@ -119,7 +119,7 @@ export const ZUserRecruteurPublic = ZUserRecruteur.pick({
 }).extend({
   is_delegated: z.boolean(),
   cfa_delegated_siret: extensions.siret.nullish(),
-  status_current: z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).nullish(),
+  status_current: ZEtatUtilisateur.nullish(),
 })
 export type IUserRecruteurPublic = Jsonify<z.output<typeof ZUserRecruteurPublic>>
 

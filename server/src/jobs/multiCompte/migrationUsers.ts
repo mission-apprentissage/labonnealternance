@@ -3,9 +3,9 @@ import { AppointmentUserType } from "shared/constants/appointment.js"
 import { EApplicantRole } from "shared/constants/rdva.js"
 import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
 import { ICFA } from "shared/models/cfa.model.js"
-import { IEntreprise } from "shared/models/entreprise.model.js"
+import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
-import { UserEventType, IUser2, IUserStatusEvent } from "shared/models/user2.model.js"
+import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
 
 import { logger } from "../../common/logger.js"
@@ -112,6 +112,7 @@ const migrationRecruteurs = async () => {
           opco,
           createdAt,
           updatedAt,
+          status: userRecruteurStatusToEntrepriseStatus(oldStatus),
         }
         const createdEntreprise = await Entreprise.create(entreprise)
         stats.entrepriseCreated++
@@ -284,6 +285,31 @@ function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["st
         validation_type: validation_type,
         granted_by: user,
         status: accessStatus,
+      }
+      return [newEvent]
+    } else {
+      return []
+    }
+  })
+}
+
+function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status"]): IEntrepriseStatusEvent[] {
+  return allStatus.flatMap((statusEvent) => {
+    const { date, reason, status, user, validation_type } = statusEvent
+    const statusMapping: Record<ETAT_UTILISATEUR, EntrepriseStatus | null> = {
+      [ETAT_UTILISATEUR.VALIDE]: EntrepriseStatus.VALIDE,
+      [ETAT_UTILISATEUR.ERROR]: EntrepriseStatus.ERROR,
+      [ETAT_UTILISATEUR.ATTENTE]: null,
+      [ETAT_UTILISATEUR.DESACTIVE]: null,
+    }
+    const entrepriseStatus = status ? statusMapping[status] : null
+    if (entrepriseStatus && date) {
+      const newEvent: IEntrepriseStatusEvent = {
+        date,
+        reason: reason ?? "",
+        validation_type: validation_type,
+        granted_by: user,
+        status: entrepriseStatus,
       }
       return [newEvent]
     } else {

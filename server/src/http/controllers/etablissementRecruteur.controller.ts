@@ -3,7 +3,7 @@ import { IUserRecruteur, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { Recruiter, UserRecruteur } from "@/common/model"
+import { Cfa, Recruiter, UserRecruteur } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -132,11 +132,11 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userRecruteurId } = req.params
-      const cfa = await UserRecruteur.findOne({ _id: userRecruteurId }).lean()
+      const cfa = await Cfa.findOne({ _id: userRecruteurId }).lean()
       if (!cfa) {
         throw Boom.notFound(`Aucun CFA ayant pour id ${userRecruteurId.toString()}`)
       }
-      const cfa_delegated_siret = cfa.establishment_siret
+      const cfa_delegated_siret = cfa.siret
       if (!cfa_delegated_siret) {
         throw Boom.internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
       }
@@ -250,7 +250,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { _id, ...rest } = req.body
-      const exists = await UserRecruteur.findOne({ email: req.body.email?.toLocaleLowerCase(), _id: { $ne: _id } })
+      const exists = await UserRecruteur.findOne({ email: req.body.email.toLocaleLowerCase(), _id: { $ne: _id } })
       if (exists) {
         throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
       }

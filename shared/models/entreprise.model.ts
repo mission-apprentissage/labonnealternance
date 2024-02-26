@@ -4,6 +4,25 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress } from "./address.model"
 import { zObjectId } from "./common"
+import { enumToZod } from "./enumToZod"
+import { ZValidationUtilisateur } from "./user2.model"
+
+export enum EntrepriseStatus {
+  ERROR = "ERROR",
+  VALIDE = "VALIDE",
+}
+
+export const ZEntrepriseStatusEvent = z
+  .object({
+    validation_type: ZValidationUtilisateur.describe("Indique si l'action est ordonnée par un utilisateur ou le serveur"),
+    status: enumToZod(EntrepriseStatus).describe("Statut de l'accès"),
+    reason: z.string().describe("Raison du changement de statut"),
+    date: z.date().describe("Date de l'évènement"),
+    granted_by: z.string().nullish().describe("Utilisateur à l'origine du changement"),
+  })
+  .strict()
+
+export type IEntrepriseStatusEvent = z.output<typeof ZEntrepriseStatusEvent>
 
 export const ZEntreprise = z
   .object({
@@ -19,6 +38,7 @@ export const ZEntreprise = z
     address_detail: ZGlobalAddress.nullish().describe("Detail de l'adresse de l'établissement"),
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
     opco: z.string().nullish().describe("Opco de l'entreprise"),
+    status: z.array(ZEntrepriseStatusEvent).describe("historique de la mise à jour des données entreprise"),
 
     establishment_id: z.string().nullish().describe("Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique"),
   })

@@ -1,14 +1,18 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
-import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection } from "shared"
+import type { FilterQuery, ModelUpdateOptions, ObjectId, UpdateQuery } from "mongoose"
+import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection, assertUnreachable } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
+import { AccessEntityType, AccessStatus, IRoleManagement } from "shared/models/roleManagement.model"
+import { UserEventType } from "shared/models/user2.model"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { UserRecruteur } from "../common/model/index"
+import { Cfa, Entreprise, RoleManagement, User2, UserRecruteur } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
@@ -22,33 +26,119 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 export const createApiKey = (): string => `mna-${randomUUID()}`
 
 /**
- * @query get all user using a given query filter
- * @param {Filter<IUserRecruteur>} query
- * @param {Object} options
- * @param {Object} pagination
- * @param {Number} pagination.page
- * @param {Number} pagination.limit
- * @returns {Promise<IUserRecruteur>}
+ * @description get a single user using a given query filter
  */
-export const getUsers = async (query: FilterQuery<IUserRecruteur>, options, { page, limit }) => {
-  const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true })
+export const getUser = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => {
+  return UserRecruteur.findOne(query).lean()
+}
+
+const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
+  const { date, reason, validation_type, granted_by } = entrepriseStatusEvent
   return {
-    pagination: {
-      page: response?.page,
-      result_per_page: limit,
-      number_of_page: response?.totalPages,
-      total: response?.totalDocs,
-    },
-    data: response?.docs,
+    date,
+    user: granted_by ?? "",
+    validation_type,
+    reason,
+    status: forcedStatus,
   }
 }
 
-/**
- * @description get a single user using a given query filter
- * @param {Filter<IUserRecruteur>} query
- * @returns {Promise<IUserRecruteur>}
- */
-export const getUser = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query).lean()
+const getOrganismeFromRole = async (role: IRoleManagement): Promise<Partial<IUserRecruteur> | null> => {
+  switch (role.authorized_type) {
+    case AccessEntityType.ENTREPRISE: {
+      const entreprise = await Entreprise.findOne({ _id: role.authorized_id }).lean()
+      if (!entreprise) return null
+      const { siret, address, address_detail, establishment_id, geo_coordinates, idcc, opco, origin, raison_sociale, enseigne, status } = entreprise
+      const lastStatus = getLastStatusEvent(status)
+
+      return {
+        establishment_siret: siret,
+        establishment_enseigne: enseigne,
+        establishment_raison_sociale: raison_sociale,
+        address,
+        address_detail,
+        establishment_id,
+        geo_coordinates,
+        idcc,
+        opco,
+        origin,
+        type: ENTREPRISE,
+        status: lastStatus?.status === EntrepriseStatus.ERROR ? [entrepriseStatusEventToUserRecruteurStatusEvent(lastStatus, ETAT_UTILISATEUR.ERROR)] : [],
+      }
+    }
+    case AccessEntityType.CFA: {
+      const cfa = await Cfa.findOne({ _id: role.authorized_id }).lean()
+      if (!cfa) return null
+      const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = cfa
+      return {
+        establishment_siret: siret,
+        establishment_enseigne: enseigne,
+        establishment_raison_sociale: raison_sociale,
+        address,
+        address_detail,
+        geo_coordinates,
+        origin,
+        type: CFA,
+        is_qualiopi: true,
+      }
+    }
+    default:
+      return null
+  }
+}
+
+const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISATEUR => {
+  switch (roleStatus) {
+    case AccessStatus.GRANTED:
+      return ETAT_UTILISATEUR.VALIDE
+    case AccessStatus.DENIED:
+      return ETAT_UTILISATEUR.DESACTIVE
+    case AccessStatus.AWAITING_VALIDATION:
+      return ETAT_UTILISATEUR.ATTENTE
+    default:
+      assertUnreachable(roleStatus)
+  }
+}
+
+export const getUserRecruteurById = async (id: ObjectId): Promise<IUserRecruteur | null> => {
+  const user = await User2.findById(id).lean()
+  if (!user) return null
+  const role = await RoleManagement.findOne({ user_id: id.toString() }).lean()
+  if (!role) return null
+  const organismeData = await getOrganismeFromRole(role)
+  const { email, first_name, last_name, phone, last_action_date, _id } = user
+  const oldStatus: IUserStatusValidation[] = [
+    ...role.status.map(({ date, reason, status, validation_type, granted_by }) => {
+      const userRecruteurStatus = roleStatusToUserRecruteurStatus(status)
+      return {
+        date,
+        reason,
+        status: userRecruteurStatus,
+        validation_type,
+        user: granted_by ?? "",
+      }
+    }),
+    ...(organismeData?.status ?? []),
+  ]
+  const roleType = role.authorized_type === AccessEntityType.OPCO ? "OPCO" : role.authorized_type === AccessEntityType.ADMIN ? "ADMIN" : null
+  const organismeType = organismeData?.type
+  const type = roleType ?? organismeType ?? null
+  if (!type) throw Boom.internal("unexpected: no type found")
+  return {
+    ...organismeData,
+    createdAt: organismeData?.createdAt ?? user.createdAt,
+    updatedAt: organismeData?.updatedAt ?? user.updatedAt,
+    is_email_checked: user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL),
+    type,
+    _id,
+    email,
+    first_name,
+    last_name,
+    phone,
+    last_connection: last_action_date,
+    status: oldStatus,
+  }
+}
 
 /**
  * @description création d'un nouveau user recruteur. Le champ status peut être passé ou, s'il n'est pas passé, être sauvé ultérieurement
@@ -257,3 +347,18 @@ export const getErrorUsers = () =>
   })
     .select(projection)
     .lean()
+
+export const getUsersWithRoles = async () => {
+  const usersWithRoles = await RoleManagement.aggregate([
+    {
+      $lookup: {
+        from: "user2",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "roles",
+      },
+    },
+  ])
+  console.log(usersWithRoles.slice(0, 3))
+  return usersWithRoles
+}
