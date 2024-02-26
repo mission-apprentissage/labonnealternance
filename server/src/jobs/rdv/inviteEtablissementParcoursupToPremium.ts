@@ -1,5 +1,6 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isValidEmail } from "@/common/utils/isValidEmail"
+import { isEmailBlacklisted } from "@/services/application.service"
 import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
@@ -68,14 +69,20 @@ export const inviteEtablissementParcoursupToPremium = async () => {
       parcoursup_statut: "publié",
     }).lean()
 
-    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret || !etablissement.gestionnaire_email) {
+    if (
+      !hasOneAvailableFormation ||
+      !isValidEmail(etablissement.gestionnaire_email) ||
+      !etablissement._id.gestionnaire_siret ||
+      !etablissement.gestionnaire_email ||
+      (await isEmailBlacklisted(etablissement.gestionnaire_email))
+    ) {
       continue
     }
 
     count++
 
     // Invite all etablissements only in production environment
-    await mailer.sendEmail({
+    const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Parcoursup !`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite.mjml.ejs"),
@@ -97,6 +104,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
       { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
         premium_invitation_date: dayjs().toDate(),
+        to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
       }
     )
   }

@@ -33,6 +33,10 @@ export const processHardBounceWebhookEvent = async (payload) => {
       hardbounceOrigin = "prise_de_rdv"
     }
 
+    if (await isHardbounceEventFromEtablissement(payload)) {
+      hardbounceOrigin = "invitation_prise_de_rdv"
+    }
+
     await processBlacklistedEmail(email, hardbounceOrigin)
   } else {
     throw new Error("Non hardbounce event received on hardbounce webhook route")

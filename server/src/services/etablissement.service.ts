@@ -925,3 +925,13 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
     },
   })
 }
+
+export const isHardbounceEventFromEtablissement = async (payload) => {
+  const messageId = payload["message-id"]
+
+  const etablissement = await findOne({ to_CFA_invite_optout_last_message_id: messageId })
+  if (etablissement) {
+    return true
+  }
+  return false
+}

@@ -1,4 +1,5 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { isEmailBlacklisted } from "@/services/application.service"
 import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
@@ -63,14 +64,20 @@ export const inviteEtablissementAffelnetToPremium = async () => {
       affelnet_visible: true,
     }).lean()
 
-    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret || !etablissement.gestionnaire_email) {
+    if (
+      !hasOneAvailableFormation ||
+      !isValidEmail(etablissement.gestionnaire_email) ||
+      !etablissement._id.gestionnaire_siret ||
+      !etablissement.gestionnaire_email ||
+      (await isEmailBlacklisted(etablissement.gestionnaire_email))
+    ) {
       continue
     }
 
     count++
 
     // send the invitation mail
-    await mailer.sendEmail({
+    const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e !`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite.mjml.ejs"),
@@ -92,6 +99,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
       { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
         premium_affelnet_invitation_date: dayjs().toDate(),
+        to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
       }
     )
   }
