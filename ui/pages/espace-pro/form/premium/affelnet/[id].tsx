@@ -138,7 +138,7 @@ export default function PremiumAffelnetForm() {
                 </Text>
               </Box>
               <Text fontWeight="700" my={5}>
-                Afin de bénéficier de la parution du service RDV Apprentissage, je m'engage auprès de Choisir son affectation après la 3e à
+                Afin de bénéficier de l'activation du service RDV Apprentissage, je m'engage auprès de Choisir son affectation après la 3e à :
               </Text>
               <Stack direction="row" align="center">
                 <SuccessCircle fillHexaColor="#00AC8C" />
@@ -169,7 +169,7 @@ export default function PremiumAffelnetForm() {
                   <Box float="left" pr={3} pl={3}>
                     <InfoCircleFilled fillHexaColor="#FF8D7E" />
                   </Box>{" "}
-                  Cette action n’aura aucun impact sur le référencement de vos formations dans Choisir son affectation après la 3e
+                  Cette action n’aura aucun impact sur le référencement de vos formations sur Choisir son affectation après la 3e
                 </Text>
               </Flex>
               <Box>

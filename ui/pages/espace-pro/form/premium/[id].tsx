@@ -137,7 +137,7 @@ export default function PremiumForm() {
                 </Text>
               </Box>
               <Text fontWeight="700" my={5}>
-                Afin de bénéficier de la parution du service RDV Apprentissage, je m'engage auprès de Parcoursup à
+                Afin de bénéficier de l'activation du service RDV Apprentissage, je m'engage auprès de Parcoursup à:
               </Text>
               <Stack direction="row" align="center">
                 <SuccessCircle fillHexaColor="#00AC8C" />
