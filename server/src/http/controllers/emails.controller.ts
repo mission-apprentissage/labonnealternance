@@ -2,23 +2,10 @@ import Boom from "boom"
 import { zRoutes } from "shared/index"
 
 import config from "@/config"
-import { processApplicationWebhookEvent, processHardBounceWebhookEvent } from "@/services/application.service"
-import { processAppointmentToApplicantWebhookEvent, processAppointmentToCfaWebhookEvent } from "@/services/appointment.service"
+import { processHardBounceWebhookEvent, processWebhookEvent } from "@/services/emails.service"
 
 import { Server } from "../server"
 
-const processWebhookEvent = async (payload) => {
-  let shouldContinue = await processApplicationWebhookEvent(payload)
-  if (!shouldContinue) return
-
-  shouldContinue = await processAppointmentToCfaWebhookEvent(payload)
-  if (!shouldContinue) return
-
-  shouldContinue = await processAppointmentToApplicantWebhookEvent(payload)
-  if (!shouldContinue) return
-
-  await processHardBounceWebhookEvent(payload)
-}
 /**
  * Email controllers.
  */
@@ -39,6 +26,22 @@ export default (server: Server) => {
       }
 
       await processWebhookEvent(req.body)
+
+      return res.status(200).send({})
+    }
+  )
+
+  server.post(
+    "/emails/webhookHardbounce",
+    {
+      schema: zRoutes.post["/emails/webhookHardbounce"],
+    },
+    async (req, res) => {
+      if (req.query.apiKey !== config.smtp.brevoWebhookApiKey) {
+        throw Boom.forbidden()
+      }
+
+      await processHardBounceWebhookEvent(req.body)
 
       return res.status(200).send({})
     }
