@@ -281,7 +281,8 @@ export default (server: Server) => {
         await sendWelcomeEmailToUserRecruteur(userRecruteur)
       }
 
-      const connectedUser = await updateLastConnectionDate(userRecruteur.email)
+      await updateLastConnectionDate(userRecruteur.email)
+      const connectedUser = await getUserRecruteurByEmail(userRecruteur.email)
 
       if (!connectedUser) {
         throw Boom.forbidden()

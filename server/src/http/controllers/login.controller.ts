@@ -105,8 +105,8 @@ export default (server: Server) => {
         throw Boom.forbidden()
       }
 
-      const connectedUser = await updateLastConnectionDate(formatedEmail)
-
+      await updateLastConnectionDate(formatedEmail)
+      const connectedUser = await getUserRecruteurByEmail(formatedEmail)
       if (!connectedUser) {
         throw Boom.forbidden()
       }

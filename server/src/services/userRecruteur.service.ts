@@ -216,8 +216,9 @@ export const removeUser = async (id: IUserRecruteur["_id"] | string) => {
  * @param {IUserRecruteur["email"]} email
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateLastConnectionDate = (email: IUserRecruteur["email"]) =>
-  UserRecruteur.findOneAndUpdate({ email: email.toLowerCase() }, { last_connection: new Date() }, { new: true }).lean()
+export const updateLastConnectionDate = async (email: IUserRecruteur["email"]): Promise<void> => {
+  await User2.findOneAndUpdate({ email: email.toLowerCase() }, { last_action_date: new Date() }, { new: true }).lean()
+}
 
 /**
  * @description update user validation status
