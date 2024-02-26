@@ -85,9 +85,9 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
 /**
  * @description Create job offer for formulaire
  */
-export const createJob = async ({ job, id }: { job: IJobWritable; id: string }): Promise<IRecruiter> => {
+export const createJob = async ({ job, establishment_id }: { job: IJobWritable; establishment_id: string }): Promise<IRecruiter> => {
   // get user data
-  const user = await getUser({ establishment_id: id })
+  const user = await getUser({ establishment_id })
   const userStatus: ETAT_UTILISATEUR | null = (user ? getUserStatus(user.status) : null) ?? null
   const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
 
@@ -109,7 +109,7 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
     job_update_date: creationDate,
   })
   // insert job
-  const updatedFormulaire = await createOffre(id, updatedJob)
+  const updatedFormulaire = await createOffre(establishment_id, updatedJob)
   const { is_delegated, cfa_delegated_siret, jobs } = updatedFormulaire
   const createdJob = jobs.at(jobs.length - 1)
   if (!createdJob) {
@@ -325,8 +325,8 @@ export async function getOffre(id: string | ObjectIdType) {
 /**
  * Create job offer on existing formulaire
  */
-export async function createOffre(id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> {
-  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, { new: true }).lean()
+export async function createOffre(establishment_id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id }, { $push: { jobs: payload } }, { new: true }).lean()
 
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
