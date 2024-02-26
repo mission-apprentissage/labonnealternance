@@ -13,9 +13,7 @@ const saveBlacklistEmails = async (contacts) => {
     const email = contacts[i].email
     const blackListedEmail = await EmailBlacklist.findOne({ email })
     if (!blackListedEmail) {
-      /*const stats =*/ await processBlacklistedEmail(email, "brevo_spam")
-      //blacklistedAddressCount++
-      // TODO construire les stats
+      await processBlacklistedEmail(email, "brevo_spam")
     }
   }
 }
@@ -65,11 +63,9 @@ const updateBlockedEmails = async ({ AllAddresses }: { AllAddresses?: boolean })
 }
 
 let blacklistedAddressCount = 0
-let modifiedCompanyCount = 0
 
 export default async function ({ AllAddresses }: { AllAddresses?: boolean }) {
   blacklistedAddressCount = 0
-  modifiedCompanyCount = 0
 
   try {
     logger.info(" -- Import blocked email addresses -- ")
@@ -78,7 +74,7 @@ export default async function ({ AllAddresses }: { AllAddresses?: boolean }) {
 
     await notifyToSlack({
       subject: "BREVO",
-      message: `Mise à jour des adresses emails bloquées terminée. ${blacklistedAddressCount} adresse(s) bloquée(s). ${modifiedCompanyCount} société(s) impactée(s).`,
+      message: `Mise à jour des adresses emails bloquées terminée. ${blacklistedAddressCount} adresse(s) bloquée(s).`,
     })
 
     logger.info(`Fin traitement`)

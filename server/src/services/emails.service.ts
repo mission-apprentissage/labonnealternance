@@ -7,6 +7,7 @@ import {
 } from "@/services/appointment.service"
 
 import { BrevoEventStatus } from "./brevo.service"
+import { isHardbounceEventFromEtablissement } from "./etablissement.service"
 
 // webhook events excluding hardbounce
 export const processWebhookEvent = async (payload) => {
@@ -44,5 +45,5 @@ export const processHardBounceWebhookEvent = async (payload) => {
 }
 
 export const processBlacklistedEmail = async (email: string, origin: string) => {
-  return await Promise.all([addEmailToBlacklist(email, origin), await removeEmailFromLbaCompanies(email), await disableEligibleTraininForAppointmentWithEmail(email)])
+  await Promise.all([addEmailToBlacklist(email, origin), await removeEmailFromLbaCompanies(email), await disableEligibleTraininForAppointmentWithEmail(email)])
 }
