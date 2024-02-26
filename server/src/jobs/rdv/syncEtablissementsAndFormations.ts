@@ -32,16 +32,24 @@ export const syncEtablissementsAndFormations = async () => {
           Etablissement.find({
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
-            .select({ optout_activation_date: 1, premium_activation_date: 1, gestionnaire_email: 1 })
+            .select({
+              premium_affelnet_activation_date: 1,
+              optout_refusal_date: 1,
+              optout_activation_date: 1,
+              premium_refusal_date: 1,
+              premium_activation_date: 1,
+              premium_affelnet_refusal_date: 1,
+              gestionnaire_email: 1,
+            })
             .lean(),
           ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])
 
+        const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")
         const hasOptOutRefusal = hasDateProperty(etablissements, "optout_refusal_date")
         const hasOptOutActivation = hasDateProperty(etablissements, "optout_activation_date")
         const hasPremiumRefusal = hasDateProperty(etablissements, "premium_refusal_date")
         const hasPremiumActivation = hasDateProperty(etablissements, "premium_activation_date")
-        const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")
         const hasPremiumAffelnetRefusal = hasDateProperty(etablissements, "premium_affelnet_refusal_date")
 
         const emailArray = etablissements.map((etab) => {
