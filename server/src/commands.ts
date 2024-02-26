@@ -539,12 +539,6 @@ program
   .action(createJobAction("referentiel:rncp-romes:update"))
 
 program
-  .command("fill-recruiters-raison-sociale")
-  .description("Remplissage des raisons sociales pour les recruiters et userRecruiters qui n'en ont pas")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiters:raison-sociale:fill"))
-
-program
   .command("fix-job-expiration-date")
   .description("Répare les date d'expiration d'offre qui seraient trop dans le futur")
   .option("-q, --queued", "Run job asynchronously", false)

@@ -39,7 +39,6 @@ import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
-import { fillRecruiterRaisonSociale } from "./lba_recruteur/user/misc/fillRecruiterRaisonSociale"
 import { fixUserRecruiterDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurDataValidation"
 import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
@@ -357,8 +356,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "diplomes-metiers:update":
         return updateDiplomesMetiers()
-      case "recruiters:raison-sociale:fill":
-        return fillRecruiterRaisonSociale()
       case "recruiters:expiration-date:fix":
         return fixJobExpirationDate()
       case "recruiters:job-type:fix":
