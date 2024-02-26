@@ -138,7 +138,7 @@ export default function PremiumAffelnetForm() {
                 </Text>
               </Box>
               <Text fontWeight="700" my={5}>
-                Afin de bénéficier de la parution du service RDV Apprentissage, je m'engage auprès de Choisir son affectation après la 3e à
+                Afin de bénéficier de l'activation du service RDV Apprentissage, je m'engage auprès de Choisir son affectation après la 3e à :
               </Text>
               <Stack direction="row" align="center">
                 <SuccessCircle fillHexaColor="#00AC8C" />
@@ -150,7 +150,7 @@ export default function PremiumAffelnetForm() {
               </Stack>
               <Text mt={6}>
                 Je prends acte du fait que la{" "}
-                <a style={{ textDecoration: "underline", cursor: "pointer" }} href="https://mission-apprentissage.gitbook.io/general/" target="_blank" rel="noreferrer">
+                <a style={{ textDecoration: "underline", cursor: "pointer" }} href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html" target="_blank" rel="noreferrer">
                   Mission interministérielle pour l’apprentissage
                 </a>{" "}
                 pourra prendre toutes les mesures utiles pour mesurer le fait que cet engagement soit tenu (dont enquêtes en ligne ou orales auprès des candidats et des CFA).
@@ -169,49 +169,17 @@ export default function PremiumAffelnetForm() {
                   <Box float="left" pr={3} pl={3}>
                     <InfoCircleFilled fillHexaColor="#FF8D7E" />
                   </Box>{" "}
-                  Cette action n’aura aucun impact sur le référencement de vos formations dans Choisir son affectation après la 3e
+                  Cette action n’aura aucun impact sur le référencement de vos formations sur Choisir son affectation après la 3e
                 </Text>
               </Flex>
               <Box>
-                <Text mt="-7px">Le service sera activé sur toutes les formations référencées dans Choisir son affectation après la 3e de l’organisme suivant :</Text>
-                <Stack dir="column" bg="#F9F8F6" px={10} py={6} mt={3} spacing={4}>
-                  <Text>
-                    Raison sociale :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.raison_sociale}
-                    </Text>
+                <Text mt="-7px">
+                  Le service sera activé sur toutes les formations éligibles à être affichées sur Choisir son affectation après la 3e, liées à votre SIRET{" "}
+                  <Text as="span" fontWeight="700">
+                    {etablissement.gestionnaire_siret}
                   </Text>
-                  <Text>
-                    SIRET Gestionnaire :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.gestionnaire_siret}
-                    </Text>
-                  </Text>
-                  <Text>
-                    SIRET Formateur :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.formateur_siret}
-                    </Text>
-                  </Text>
-                  <Text>
-                    Adresse :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.formateur_address}
-                    </Text>
-                  </Text>
-                  <Text>
-                    Code postal :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.formateur_zip_code}
-                    </Text>
-                  </Text>
-                  <Text>
-                    Ville :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.formateur_city}
-                    </Text>
-                  </Text>
-                </Stack>
+                  .
+                </Text>
               </Box>
             </>
           )}
