@@ -211,7 +211,7 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
           })
         })
       )
-      await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
+      await addEmailToBlacklist(appointment.cfa_recipient_email, "prise_de_rdv")
     }
 
     return false

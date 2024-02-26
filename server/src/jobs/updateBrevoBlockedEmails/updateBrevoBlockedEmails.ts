@@ -16,7 +16,7 @@ const saveBlacklistEmails = async (contacts) => {
 
       blackListedEmail = new EmailBlacklist({
         email,
-        blacklisting_origin: "brevo",
+        blacklisting_origin: "brevo-spam",
       })
       await blackListedEmail.save()
       blacklistedAddressCount++
