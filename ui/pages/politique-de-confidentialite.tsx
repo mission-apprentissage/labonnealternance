@@ -7,11 +7,11 @@ import { NotionRenderer } from "react-notion-x"
 import {
   CONSENT_COOKIE_NAME,
   CONSENT_REMOVED_COOKIE_NAME,
-  COOKIE_REMOVE_TIME,
   forgetOptUserOut,
   getCookie,
   MTM_CONSENT_COOKIE_DURATION,
   optUserOut,
+  removeCookie,
   setCookie,
 } from "@/common/utils/matomoCookieUtils"
 
@@ -43,11 +43,11 @@ const PolitiqueDeConfidentialite = ({ recordMap }) => {
 
   const changeMatomoOptout = ({ checked }) => {
     if (checked) {
-      setCookie(CONSENT_REMOVED_COOKIE_NAME, "", COOKIE_REMOVE_TIME)
+      removeCookie(CONSENT_REMOVED_COOKIE_NAME)
       setCookie(CONSENT_COOKIE_NAME, new Date().getTime(), MTM_CONSENT_COOKIE_DURATION)
       forgetOptUserOut()
     } else {
-      setCookie(CONSENT_COOKIE_NAME, "", COOKIE_REMOVE_TIME)
+      removeCookie(CONSENT_COOKIE_NAME)
       setCookie(CONSENT_REMOVED_COOKIE_NAME, new Date().getTime(), MTM_CONSENT_COOKIE_DURATION)
       optUserOut()
     }
