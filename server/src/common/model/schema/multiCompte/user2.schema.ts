@@ -45,12 +45,12 @@ const User2Schema = new Schema<IUser2>(
       type: [userStatusEventSchema],
       description: "Evénements liés au cycle de vie de l'utilisateur",
     },
-    firstname: {
+    first_name: {
       type: String,
       default: null,
       description: "Le prénom",
     },
-    lastname: {
+    last_name: {
       type: String,
       default: null,
       description: "Le nom",

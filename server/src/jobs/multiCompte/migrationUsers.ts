@@ -82,8 +82,8 @@ const migrationRecruteurs = async () => {
       })
       const newUser: IUser2 = {
         _id: userRecruteur._id,
-        firstname: first_name ?? "",
-        lastname: last_name ?? "",
+        first_name: first_name ?? "",
+        last_name: last_name ?? "",
         phone: phone ?? "",
         email,
         last_action_date: last_connection,
@@ -229,8 +229,8 @@ const migrationCandidats = async (now: Date) => {
       }
       const newUser: IUser2 = {
         _id: candidat._id,
-        firstname,
-        lastname,
+        first_name: firstname,
+        last_name: lastname,
         phone,
         email,
         last_action_date: last_action_date,
