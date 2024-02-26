@@ -1,7 +1,9 @@
 import SibApiV3Sdk from "sib-api-v3-sdk"
 
+import { processBlacklistedEmail } from "@/services/emails.service"
+
 import { logger } from "../../common/logger"
-import { EmailBlacklist, LbaCompany } from "../../common/model"
+import { EmailBlacklist } from "../../common/model"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
@@ -9,33 +11,13 @@ import config from "../../config"
 const saveBlacklistEmails = async (contacts) => {
   for (let i = 0; i < contacts.length; ++i) {
     const email = contacts[i].email
-    let blackListedEmail = await EmailBlacklist.findOne({ email })
+    const blackListedEmail = await EmailBlacklist.findOne({ email })
     if (!blackListedEmail) {
-      const companies = await LbaCompany.find({ email })
-      await cleanCompanies(companies)
-
-      blackListedEmail = new EmailBlacklist({
-        email,
-        blacklisting_origin: "brevo-spam",
-      })
-      await blackListedEmail.save()
-      blacklistedAddressCount++
+      /*const stats =*/ await processBlacklistedEmail(email, "brevo_spam")
+      //blacklistedAddressCount++
+      // TODO construire les stats
     }
   }
-}
-
-const cleanCompanies = async (companies) => {
-  if (companies && companies.length) {
-    for (let i = 0; i < companies.length; ++i) {
-      await cleanCompany(companies[i])
-    }
-  }
-}
-
-const cleanCompany = async (company) => {
-  company.email = ""
-  await company.save()
-  modifiedCompanyCount++
 }
 
 const updateBlockedEmails = async ({ AllAddresses }: { AllAddresses?: boolean }) => {

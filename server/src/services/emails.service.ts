@@ -1,5 +1,10 @@
 import { addEmailToBlacklist, processApplicationHardbounceEvent, removeEmailFromLbaCompanies } from "@/services/application.service"
-import { disableEligibleTraininForAppointmentWithEmail, processAppointmentToApplicantWebhookEvent, processAppointmentToCfaWebhookEvent } from "@/services/appointment.service"
+import {
+  disableEligibleTraininForAppointmentWithEmail,
+  isHardbounceEventFromAppointment,
+  processAppointmentToApplicantWebhookEvent,
+  processAppointmentToCfaWebhookEvent,
+} from "@/services/appointment.service"
 
 import { BrevoEventStatus } from "./brevo.service"
 
@@ -28,8 +33,12 @@ export const processHardBounceWebhookEvent = async (payload) => {
       hardbounceOrigin = "prise_de_rdv"
     }
 
-    await Promise.all([addEmailToBlacklist(email, hardbounceOrigin), await removeEmailFromLbaCompanies(email), await disableEligibleTraininForAppointmentWithEmail(email)])
+    await processBlacklistedEmail(email, hardbounceOrigin)
   } else {
     throw new Error("Non hardbounce event received on hardbounce webhook route")
   }
+}
+
+export const processBlacklistedEmail = async (email: string, origin: string) => {
+  return await Promise.all([addEmailToBlacklist(email, origin), await removeEmailFromLbaCompanies(email), await disableEligibleTraininForAppointmentWithEmail(email)])
 }

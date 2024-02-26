@@ -2,7 +2,6 @@ import Boom from "boom"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
-import { oleoduc, writeData } from "oleoduc"
 import { IApplication, IJob, ILbaCompany, INewApplication, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -97,24 +96,8 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
 export const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
   Application.findOne({ company_email: email, to_company_message_id: messageId })
 
-/**
- * @description Remove an email address form all bonnesboites where it is present
- * @param {string} email
- * @return {Promise<void>}
- */
 export const removeEmailFromLbaCompanies = async (email: string) => {
-  try {
-    oleoduc(
-      LbaCompany.find({ email }).cursor(),
-      writeData((company) => {
-        company.email = ""
-        company.save()
-      })
-    )
-  } catch (err) {
-    logger.error(`Failed to clean bonnes boîtes emails from hardbounce (${email})`)
-    // do nothing
-  }
+  return await LbaCompany.updateMany({ email }, { email: "" })
 }
 
 /**
@@ -572,24 +555,10 @@ export const sendMailToApplicant = async ({
 }
 
 /**
- * @description updates application and triggers action from email webhook
+ * @description triggers action from hardbounce webhook
  */
-export const updateApplicationStatusFromHardbounce = async ({ payload, application }: { payload: any; application: IApplication }): Promise<void> => {
-  /* Format payload cf. https://developers.brevo.com/docs/transactional-webhooks
-  https://developers.brevo.com/docs/marketing-webhooks */
-
-  const { subject, email } = payload
-
-  if (!subject.startsWith("Candidature en alternance") && !subject.startsWith("Candidature spontanée")) {
-    // les messages qui ne sont pas de candidature vers une entreprise sont ignorés
-    return
-  }
-
-  await addEmailToBlacklist(email, application.job_origin ?? "unknown")
-
-  if (application.job_origin === "lba") {
-    await removeEmailFromLbaCompanies(email)
-  } else if (application.job_origin === "matcha") {
+export const sendNotificationForApplicationHardbounce = async ({ application }: { payload: any; application: IApplication }): Promise<void> => {
+  if (application.job_origin === "matcha") {
     await warnMatchaTeamAboutBouncedEmail({ application })
   }
 
@@ -672,9 +641,9 @@ export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][
 }
 
 /**
- *  met à jour une candidature si l'événement reçu correspond à une hardbounce
+ *  met à jour une candidature si l'événement reçu correspond à un hardbounce
  */
-export const processApplicationWebhookEvent = async (payload) => {
+export const processApplicationHardbounceEvent = async (payload) => {
   const { event, email } = payload
   const messageId = payload["message-id"]
 
@@ -686,22 +655,12 @@ export const processApplicationWebhookEvent = async (payload) => {
     })
 
     if (application) {
-      await updateApplicationStatusFromHardbounce({ payload, application })
-      return false
+      await sendNotificationForApplicationHardbounce({ payload, application })
+      return true
     }
   }
-  return true
-}
 
-/**
- *  réagit à un hardbounce non lié à aux autres processeurs de webhook email
- */
-export const processHardBounceWebhookEvent = async (payload) => {
-  const { event, email } = payload
-
-  if (event === BrevoEventStatus.HARD_BOUNCE) {
-    await Promise.all([addEmailToBlacklist(email, "campaign"), removeEmailFromLbaCompanies(email)])
-  }
+  return false
 }
 
 const sanitizeApplicationForEmail = (application: IApplication) => {

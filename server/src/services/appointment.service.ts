@@ -10,9 +10,7 @@ import config from "@/config"
 
 import { Appointment } from "../common/model/index"
 
-import { addEmailToBlacklist } from "./application.service"
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
-import { BrevoEventStatus } from "./brevo.service"
 import * as eligibleTrainingsForAppointmentService from "./eligibleTrainingsForAppointment.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 
@@ -197,24 +195,33 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
       },
     })
 
-    // Disable eligibleTrainingsForAppointments in case of hard_bounce
-    if (event === BrevoEventStatus.HARD_BOUNCE) {
-      const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: appointment.cfa_recipient_email })
-
-      await Promise.all(
-        eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
-          await eligibleTrainingsForAppointment.update({ referrers: [] })
-
-          logger.info('Widget parameters disabled for "hard_bounce" reason', {
-            eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
-            cfa_recipient_email: appointment.cfa_recipient_email,
-          })
-        })
-      )
-      await addEmailToBlacklist(appointment.cfa_recipient_email, "prise_de_rdv")
-    }
-
     return false
   }
   return true
+}
+
+export const isHardbounceEventFromAppointment = async (payload) => {
+  const messageId = payload["message-id"]
+
+  const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
+  if (appointment) {
+    return true
+  }
+  return false
+}
+
+export const disableEligibleTraininForAppointmentWithEmail = async (disabledEmail: string) => {
+  // Disable eligibleTrainingsForAppointments
+  const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: disabledEmail })
+
+  await Promise.all(
+    eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
+      await eligibleTrainingsForAppointment.update({ referrers: [] })
+
+      logger.info('Eligible training disabled for "hard_bounce" reason', {
+        eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
+        cfa_recipient_email: disabledEmail,
+      })
+    })
+  )
 }
