@@ -80,6 +80,7 @@ export default (server: Server) => {
       const [eligibleTrainingsForAppointmentsAffelnetFound, etablissementAffelnetUpdated] = await Promise.all([
         eligibleTrainingsForAppointmentService.find({
           etablissement_formateur_siret: etablissement.formateur_siret,
+          affelnet_visible: true,
         }),
         Etablissement.findOneAndUpdate(
           { _id: etablissement._id },
