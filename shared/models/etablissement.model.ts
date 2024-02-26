@@ -31,6 +31,7 @@ export const ZEtablissement = z
     optout_activation_date: z.date().nullish(),
     optout_refusal_date: z.date().nullish(),
     last_catalogue_sync_date: z.date().nullish(),
+    to_CFA_invite_optout_last_message_id: z.string().nullish(),
     created_at: z.date().nullish(),
   })
   .strict()
