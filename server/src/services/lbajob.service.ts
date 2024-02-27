@@ -1,7 +1,7 @@
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { Recruiter } from "@/common/model"
+import { Cfa, Recruiter } from "@/common/model"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -9,12 +9,11 @@ import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
-import { IApplicationCount, getApplicationByJobCount } from "./application.service"
+import { IApplicationCount, getApplicationByJobCount, getUser2ManagingOffer } from "./application.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
-import { getUser } from "./userRecruteur.service"
 
 const JOB_SEARCH_LIMIT = 250
 
@@ -66,21 +65,22 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
   const jobs: IRecruiter[] = await Recruiter.aggregate(stages)
 
   const filteredJobs = await Promise.all(
-    jobs.map(async (x) => {
+    jobs.map(async (job) => {
       const jobs: any[] = []
 
-      if (x.is_delegated) {
-        const cfa = await getUser({ establishment_siret: x.cfa_delegated_siret })
+      if (job.is_delegated && job.cfa_delegated_siret) {
+        const cfa = await Cfa.findOne({ siret: job.cfa_delegated_siret })
+        const cfaUser = await getUser2ManagingOffer(job)
 
-        x.phone = cfa?.phone
-        x.email = cfa?.email || ""
-        x.last_name = cfa?.last_name
-        x.first_name = cfa?.first_name
-        x.establishment_raison_sociale = cfa?.establishment_raison_sociale
-        x.address = cfa?.address
+        job.phone = cfaUser.phone
+        job.email = cfaUser.email
+        job.last_name = cfaUser.last_name
+        job.first_name = cfaUser.first_name
+        job.establishment_raison_sociale = cfa?.raison_sociale
+        job.address = cfa?.address
       }
 
-      x.jobs.forEach((o) => {
+      job.jobs.forEach((o) => {
         if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === JOB_STATUS.ACTIVE) {
           o.rome_label = o.rome_appellation_label ?? o.rome_label
           if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === o.job_level_label || niveau === o.job_level_label) {
@@ -89,8 +89,8 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
         }
       })
 
-      x.jobs = jobs
-      return x
+      job.jobs = jobs
+      return job
     })
   )
 

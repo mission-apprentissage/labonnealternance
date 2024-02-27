@@ -8,10 +8,11 @@ import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { db } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { Recruiter, UnsubscribeOF } from "../common/model/index"
+import { Cfa, Recruiter, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
+import { getUser2ManagingOffer } from "./application.service"
 import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
@@ -31,12 +32,12 @@ export interface IOffreExtended extends IJob {
 /**
  * @description get formulaire by offer id
  */
-export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
-  const recruiterOpt = await getOffre(id)
+export const getOffreAvecInfoMandataire = async (jobId: string | ObjectIdType): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
+  const recruiterOpt = await getOffre(jobId)
   if (!recruiterOpt) {
     return null
   }
-  const job = recruiterOpt.jobs.find((x) => x._id.toString() === id.toString())
+  const job = recruiterOpt.jobs.find((x) => x._id.toString() === jobId.toString())
   if (!job) {
     return null
   }
@@ -44,14 +45,15 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Pro
   if (recruiterOpt.is_delegated && recruiterOpt.address) {
     const { cfa_delegated_siret } = recruiterOpt
     if (cfa_delegated_siret) {
-      const cfa = await getUser({ establishment_siret: cfa_delegated_siret })
-
+      const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
       if (cfa) {
-        recruiterOpt.phone = cfa.phone
-        recruiterOpt.email = cfa.email
-        recruiterOpt.last_name = cfa.last_name
-        recruiterOpt.first_name = cfa.first_name
-        recruiterOpt.establishment_raison_sociale = cfa.establishment_raison_sociale
+        const cfaUser = await getUser2ManagingOffer(getJobFromRecruiter(recruiterOpt, jobId.toString()))
+
+        recruiterOpt.phone = cfaUser.phone
+        recruiterOpt.email = cfaUser.email
+        recruiterOpt.last_name = cfaUser.last_name
+        recruiterOpt.first_name = cfaUser.first_name
+        recruiterOpt.establishment_raison_sociale = cfa.raison_sociale
         recruiterOpt.address = cfa.address
         return { recruiter: recruiterOpt, job }
       }
@@ -595,4 +597,12 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
 
 export function addExpirationPeriod(fromDate: Date | dayjs.Dayjs): dayjs.Dayjs {
   return dayjs(fromDate).add(2, "months")
+}
+
+export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob => {
+  const job = recruiter.jobs.find((job) => job._id.toString() === jobId)
+  if (!job) {
+    throw new Error(`could not find job with id=${jobId} in recruiter with id=${recruiter._id}`)
+  }
+  return job
 }

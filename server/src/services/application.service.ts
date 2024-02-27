@@ -22,7 +22,7 @@ import config from "../config"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import { BrevoEventStatus } from "./brevo.service"
 import { scan } from "./clamav.service"
-import { getOffreAvecInfoMandataire } from "./formulaire.service"
+import { getOffreAvecInfoMandataire, getJobFromRecruiter } from "./formulaire.service"
 import { buildLbaCompanyAddress } from "./lbacompany.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
@@ -290,11 +290,7 @@ const buildReplyLink = (application: IApplication, intention: ApplicantIntention
   return `${config.publicUrl}/formulaire-intention?${searchParams.toString()}`
 }
 
-const getUser2ManagingOffer = async (recruiter: IRecruiter, jobId: string) => {
-  const job = recruiter.jobs.find((job) => job._id.toString() === jobId)
-  if (!job) {
-    throw new Error(`unexpected: could not find offer with id=${jobId}`)
-  }
+export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id">): Promise<IUser2> => {
   const { managed_by } = job
   if (managed_by) {
     const user = await User2.findOne({ _id: managed_by }).lean()
@@ -303,7 +299,7 @@ const getUser2ManagingOffer = async (recruiter: IRecruiter, jobId: string) => {
     }
     return user
   } else {
-    throw new Error(`unexpected: managed_by is empty for offer with id=${jobId}`)
+    throw new Error(`unexpected: managed_by is empty for offer with id=${job._id}`)
   }
 }
 
@@ -318,7 +314,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   if (application.job_id) {
     const recruiter = await Recruiter.findOne({ "jobs._id": application.job_id }).lean()
     if (recruiter) {
-      userRecruteur = await getUser2ManagingOffer(recruiter, application.job_id)
+      userRecruteur = await getUser2ManagingOffer(getJobFromRecruiter(recruiter, application.job_id))
     }
   }
 

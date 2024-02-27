@@ -7,12 +7,14 @@ import { IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecr
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 
-import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, SiretDiffusibleStatus, UnsubscribeOF } from "../common/model/index"
+import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -20,7 +22,7 @@ import config from "../config"
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
-import { CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
+import { ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import {
   IAPIAdresse,
@@ -35,7 +37,7 @@ import {
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
-import { autoValidateUser, createUser, getUser, getUserRecruteurByEmail, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
+import { autoValidateUser, createUser, getUserRecruteurByEmail, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -675,10 +677,21 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}`, geopoint: { type: "Point", coordinates: [longitude, latitude] as [number, number] } }
 }
 
+const isCfaCreationValid = async (siret: string): Promise<boolean> => {
+  const cfa = await Cfa.findOne({ siret }).lean()
+  if (!cfa) return true
+  const role = await RoleManagement.findOne({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
+  if (!role) return true
+  if (getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED) {
+    return false
+  }
+  return true
+}
+
 export const getOrganismeDeFormationDataFromSiret = async (siret: string, shouldValidate = true) => {
   if (shouldValidate) {
-    const cfaUserRecruteurOpt = await getUser({ establishment_siret: siret, type: CFA })
-    if (cfaUserRecruteurOpt) {
+    const isValid = await isCfaCreationValid(siret)
+    if (!isValid) {
       throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
     }
   }
