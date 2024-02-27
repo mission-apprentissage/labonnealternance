@@ -426,6 +426,7 @@ const DemandeDeContact = (props: Props) => {
                   fontWeight={400}
                   background="none"
                   alignItems="baseline"
+                  data-testid="close-rdv-form"
                   height="1.5rem"
                   sx={{
                     _hover: {
