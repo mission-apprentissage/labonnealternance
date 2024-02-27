@@ -641,7 +641,8 @@ export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][
 }
 
 /**
- *  met à jour une candidature si l'événement reçu correspond à un hardbounce
+ *  if hardbounce event si related to an application sent to a compay then
+ * warns the applicant and returns true otherwise returns false
  */
 export const processApplicationHardbounceEvent = async (payload) => {
   const { event, email } = payload
