@@ -310,15 +310,15 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
 
   // get the related recruiters to fetch it's establishment_id
-  let userRecruteur: IUser2 | undefined
+  let user: IUser2 | undefined
   if (application.job_id) {
     const recruiter = await Recruiter.findOne({ "jobs._id": application.job_id }).lean()
     if (recruiter) {
-      userRecruteur = await getUser2ManagingOffer(getJobFromRecruiter(recruiter, application.job_id))
+      user = await getUser2ManagingOffer(getJobFromRecruiter(recruiter, application.job_id))
     }
   }
 
-  const userForToken = buildUserForToken(application, userRecruteur)
+  const userForToken = buildUserForToken(application, user)
   const urls = {
     meetCandidateUrl: buildReplyLink(application, ApplicantIntention.ENTRETIEN, userForToken),
     waitCandidateUrl: buildReplyLink(application, ApplicantIntention.NESAISPAS, userForToken),
@@ -331,7 +331,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
     cancelJobUrl: "",
   }
 
-  if (application.job_id && userRecruteur) {
+  if (application.job_id && user) {
     urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id, utmRecruiterData)
     urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, utmRecruiterData)
   }
