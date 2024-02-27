@@ -1,12 +1,8 @@
 import { addEmailToBlacklist, processApplicationHardbounceEvent, removeEmailFromLbaCompanies } from "@/services/application.service"
-import {
-  disableEligibleTraininForAppointmentWithEmail,
-  isHardbounceEventFromAppointment,
-  processAppointmentToApplicantWebhookEvent,
-  processAppointmentToCfaWebhookEvent,
-} from "@/services/appointment.service"
+import { isHardbounceEventFromAppointment, processAppointmentToApplicantWebhookEvent, processAppointmentToCfaWebhookEvent } from "@/services/appointment.service"
 
 import { BrevoEventStatus } from "./brevo.service"
+import { disableEligibleTraininForAppointmentWithEmail } from "./eligibleTrainingsForAppointment.service"
 import { isHardbounceEventFromEtablissement } from "./etablissement.service"
 
 // webhook events excluding hardbounce

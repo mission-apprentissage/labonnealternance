@@ -2,6 +2,8 @@ import type { ObjectId } from "mongodb"
 import type { FilterQuery } from "mongoose"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 
+import { logger } from "@/common/logger"
+
 import { EligibleTrainingsForAppointment } from "../common/model/index"
 import { isValidEmail } from "../common/utils/isValidEmail"
 
@@ -90,6 +92,21 @@ const getEmailForRdv = async (
   } else {
     return await getMostFrequentEmailByGestionnaireSiret(etablissement_gestionnaire_siret ?? undefined, type)
   }
+}
+
+export const disableEligibleTraininForAppointmentWithEmail = async (disabledEmail: string) => {
+  const eligibleTrainingsForAppointmentsWithEmail = await find({ lieu_formation_email: disabledEmail })
+
+  await Promise.all(
+    eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
+      await eligibleTrainingsForAppointment.update({ referrers: [], lieu_formation_email: "" })
+
+      logger.info('Eligible training disabled for "hard_bounce" reason', {
+        eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
+        lieu_formation_email: disabledEmail,
+      })
+    })
+  )
 }
 
 export { create, find, findOne, getEmailForRdv, getParameterByCleMinistereEducatif, remove, update, updateMany, updateParameter }

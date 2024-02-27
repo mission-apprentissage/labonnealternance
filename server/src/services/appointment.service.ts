@@ -2,7 +2,6 @@ import dayjs from "dayjs"
 import type { FilterQuery, ObjectId } from "mongoose"
 import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 
-import { logger } from "@/common/logger"
 import { mailType } from "@/common/model/constants/appointments"
 import { ReferrerObject } from "@/common/model/constants/referrers"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -11,7 +10,6 @@ import config from "@/config"
 import { Appointment } from "../common/model/index"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
-import * as eligibleTrainingsForAppointmentService from "./eligibleTrainingsForAppointment.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 
 export type NewAppointment = Pick<
@@ -208,20 +206,4 @@ export const isHardbounceEventFromAppointment = async (payload) => {
     return true
   }
   return false
-}
-
-export const disableEligibleTraininForAppointmentWithEmail = async (disabledEmail: string) => {
-  // Disable eligibleTrainingsForAppointments
-  const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: disabledEmail })
-
-  await Promise.all(
-    eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
-      await eligibleTrainingsForAppointment.update({ referrers: [] })
-
-      logger.info('Eligible training disabled for "hard_bounce" reason', {
-        eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
-        cfa_recipient_email: disabledEmail,
-      })
-    })
-  )
 }
