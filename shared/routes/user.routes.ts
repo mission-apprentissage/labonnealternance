@@ -154,6 +154,29 @@ export const zUserRecruteurRoutes = {
         },
       },
     },
+    "/user/status/:userId/by-token": {
+      method: "get",
+      path: "/user/status/:userId/by-token",
+      params: z
+        .object({
+          userId: z.string(),
+        })
+        .strict(),
+      response: {
+        "200": z
+          .object({
+            status_current: ZEtatUtilisateur,
+          })
+          .strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: { some: ["user:manage", "recruiter:add_job"] },
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+        },
+      },
+    },
   },
   post: {
     "/admin/users": {

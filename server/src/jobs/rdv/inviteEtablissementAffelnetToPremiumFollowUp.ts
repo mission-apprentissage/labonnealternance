@@ -2,8 +2,9 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { Etablissement } from "../../common/model/index"
+import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
@@ -20,6 +21,8 @@ interface IEtablissementsToInviteToPremium {
 
 export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
   logger.info("Cron #inviteEtablissementAffelnetToPremiumFollowUp started.")
+
+  let count = 0
 
   const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await Etablissement.aggregate([
     {
@@ -38,6 +41,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
         _id: {
           gestionnaire_siret: "$gestionnaire_siret",
         },
+        id: { $first: "$_id" },
         optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
         gestionnaire_email: { $first: "$gestionnaire_email" },
         count: { $sum: 1 },
@@ -46,9 +50,17 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
   ])
 
   for (const etablissement of etablissementsToInviteToPremium) {
-    if (!etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret) {
+    const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
+      etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
+      lieu_formation_email: { $ne: null },
+      affelnet_visible: true,
+    }).lean()
+
+    if (!hasOneAvailableFormation || !etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret) {
       continue
     }
+
+    count++
 
     // Invite all etablissements only in production environment
     await mailer.sendEmail({
@@ -65,7 +77,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
-          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement._id.toString()),
+          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
       },
     })
@@ -77,6 +89,8 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
       }
     )
   }
+
+  await notifyToSlack({ subject: "RDVA - INVITATION AFFELNET - FOLLOW UP", message: `${count} invitation(s) envoyé` })
 
   logger.info("Cron #inviteEtablissementAffelnetToPremiumFollowUp done.")
 }

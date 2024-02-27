@@ -40,6 +40,8 @@ type IEtablissementByGestionnaireSiret = Array<{
         | "premium_affelnet_activation_date"
         | "premium_affelnet_invitation_date"
         | "premium_affelnet_refusal_date"
+        | "premium_follow_up_date"
+        | "premium_affelnet_follow_up_date"
       >
     >
   >
@@ -71,9 +73,11 @@ export const syncEtablissementDates = async () => {
               premium_invitation_date: "$$doc.premium_invitation_date",
               premium_activation_date: "$$doc.premium_activation_date",
               premium_refusal_date: "$$doc.premium_refusal_date",
+              premium_follow_up_date: "$$doc.premium_follow_up_date",
               premium_affelnet_invitation_date: "$$doc.premium_affelnet_invitation_date",
               premium_affelnet_activation_date: "$$doc.premium_affelnet_activation_date",
               premium_affelnet_refusal_date: "$$doc.premium_affelnet_refusal_date",
+              premium_affelnet_follow_up_date: "$$doc.premium_affelnet_follow_up_date",
               optout_invitation_date: "$$doc.optout_invitation_date",
               optout_activation_date: "$$doc.optout_activation_date",
               optout_activation_scheduled_date: "$$doc.optout_activation_scheduled_date",

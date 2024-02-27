@@ -172,10 +172,7 @@ export const sendApplication = async ({
 
       // Sends acknowledge email to "candidate" and application email to "company"
       const emailCompany = await mailer.sendEmail({
-        to:
-          newApplication.company_email && newApplication.secret && newApplication.secret === config.secretUpdateRomesMetiers
-            ? newApplication.company_email
-            : application.company_email,
+        to: newApplication.company_email && newApplication.secret && newApplication.secret === config.lbaSecret ? newApplication.company_email : application.company_email,
         subject: buildTopic(newApplication.company_type, application.job_title),
         template: getEmailTemplate("mail-candidature"),
         data: {

@@ -4,6 +4,7 @@ import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 import { logger } from "../../common/logger"
 import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
@@ -23,6 +24,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
 
   const { startDay, startMonth } = config.affelnetPeriods.start
   const { endDay, endMonth } = config.affelnetPeriods.end
+  let count = 0
 
   const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
   const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
@@ -45,6 +47,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         _id: {
           gestionnaire_siret: "$gestionnaire_siret",
         },
+        id: { $first: "$_id" },
         optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
         gestionnaire_email: { $first: "$gestionnaire_email" },
         count: { $sum: 1 },
@@ -64,6 +67,8 @@ export const inviteEtablissementAffelnetToPremium = async () => {
       continue
     }
 
+    count++
+
     // send the invitation mail
     await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
@@ -78,7 +83,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
-          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement._id.toString()),
+          linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
       },
     })
@@ -90,6 +95,8 @@ export const inviteEtablissementAffelnetToPremium = async () => {
       }
     )
   }
+
+  await notifyToSlack({ subject: "RDVA - INVITATION AFFELNET", message: `${count} invitation(s) envoyé` })
 
   logger.info("Cron #inviteEtablissementAffelnetToPremium done.")
 }

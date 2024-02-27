@@ -2,8 +2,9 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { Etablissement } from "../../common/model/index"
+import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import mailer from "../../services/mailer.service"
@@ -20,6 +21,8 @@ interface IEtablissementsToInviteToPremium {
 
 export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
   logger.info("Cron #inviteEtablissementParcoursupToPremiumFollowUp started.")
+
+  let count = 0
 
   const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await Etablissement.aggregate([
     {
@@ -38,6 +41,7 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
         _id: {
           gestionnaire_siret: "$gestionnaire_siret",
         },
+        id: { $first: "$_id" },
         optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
         gestionnaire_email: { $first: "$gestionnaire_email" },
         count: { $sum: 1 },
@@ -46,9 +50,18 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
   ])
 
   for (const etablissement of etablissementsToInviteToPremium) {
-    if (!etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret) {
+    const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
+      etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
+      lieu_formation_email: { $ne: null },
+      parcoursup_id: { $ne: null },
+      parcoursup_statut: "publié",
+    }).lean()
+
+    if (!hasOneAvailableFormation || !etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret) {
       continue
     }
+
+    count++
 
     // Invite all etablissements only in production environment
     await mailer.sendEmail({
@@ -65,7 +78,7 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
-          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement._id.toString()),
+          linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
       },
     })
@@ -77,6 +90,8 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
       }
     )
   }
+
+  await notifyToSlack({ subject: "RDVA - INVITATION PARCOURSUP - FOLLOW UP", message: `${count} invitation(s) envoyé` })
 
   logger.info("Cron #inviteEtablissementParcoursupToPremiumFollowUp done.")
 }

@@ -3,8 +3,7 @@ import { referrers } from "shared/constants/referers"
 
 import { logger } from "../../common/logger"
 import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
+import { create, findOne, getEmailForRdv, updateParameter } from "../../services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
 const hasDateProperty = (etablissements, propertyName) => {
@@ -25,25 +24,32 @@ export const syncEtablissementsAndFormations = async () => {
     writeData(
       async (formation) => {
         const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
-          eligibleTrainingsForAppointmentService
-            .findOne({
-              cle_ministere_educatif: formation.cle_ministere_educatif,
-            })
+          findOne({
+            cle_ministere_educatif: formation.cle_ministere_educatif,
+          })
             .select({ lieu_formation_email: 1, is_lieu_formation_email_customized: 1 })
             .lean(),
           Etablissement.find({
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
-            .select({ optout_activation_date: 1, premium_activation_date: 1, gestionnaire_email: 1 })
+            .select({
+              premium_affelnet_activation_date: 1,
+              optout_refusal_date: 1,
+              optout_activation_date: 1,
+              premium_refusal_date: 1,
+              premium_activation_date: 1,
+              premium_affelnet_refusal_date: 1,
+              gestionnaire_email: 1,
+            })
             .lean(),
           ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])
 
+        const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")
         const hasOptOutRefusal = hasDateProperty(etablissements, "optout_refusal_date")
         const hasOptOutActivation = hasDateProperty(etablissements, "optout_activation_date")
         const hasPremiumRefusal = hasDateProperty(etablissements, "premium_refusal_date")
         const hasPremiumActivation = hasDateProperty(etablissements, "premium_activation_date")
-        const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")
         const hasPremiumAffelnetRefusal = hasDateProperty(etablissements, "premium_affelnet_refusal_date")
 
         const emailArray = etablissements.map((etab) => {
@@ -52,7 +58,7 @@ export const syncEtablissementsAndFormations = async () => {
         let gestionnaireEmail = await findFirstNonBlacklistedEmail(emailArray)
 
         // Activate opt_out referrers
-        const referrersToActivate: any[] = []
+        const referrersToActivate: string[] = []
         if (hasOptOutActivation && !hasOptOutRefusal) {
           referrersToActivate.push(referrers.LBA.name)
           referrersToActivate.push(referrers.JEUNE_1_SOLUTION.name)
@@ -75,14 +81,14 @@ export const syncEtablissementsAndFormations = async () => {
 
           // Don't override "email" if this field is true
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
-            emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
+            emailRdv = await getEmailForRdv({
               email: formation.email,
               etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
               etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             })
           }
 
-          await eligibleTrainingsForAppointmentService.updateParameter(eligibleTrainingsForAppointment._id, {
+          await updateParameter(eligibleTrainingsForAppointment._id, {
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
@@ -92,7 +98,7 @@ export const syncEtablissementsAndFormations = async () => {
             training_code_formation_diplome: formation.cfd,
             etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
             training_intitule_long: formation.intitule_long,
-            referrers: emailRdv ? referrersToActivate : [],
+            referrers: referrersToActivate,
             is_catalogue_published: formation.published,
             last_catalogue_sync_date: new Date(),
             lieu_formation_street: formation.lieu_formation_adresse,
@@ -110,7 +116,10 @@ export const syncEtablissementsAndFormations = async () => {
             etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
 
-          await eligibleTrainingsForAppointmentService.create({
+          // if no email, don't create the record
+          if (!emailRdv) return
+
+          await create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
@@ -120,7 +129,7 @@ export const syncEtablissementsAndFormations = async () => {
             cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
             training_intitule_long: formation.intitule_long,
-            referrers: emailRdv ? referrersToActivate : [],
+            referrers: referrersToActivate,
             is_catalogue_published: formation.published,
             lieu_formation_street: formation.lieu_formation_adresse,
             lieu_formation_city: formation.localite,
@@ -136,11 +145,10 @@ export const syncEtablissementsAndFormations = async () => {
         }
 
         if (!gestionnaireEmail) {
-          gestionnaireEmail =
-            (await getEmailForRdv({
-              email: formation.email,
-              etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel,
-            })) ?? null
+          gestionnaireEmail = await getEmailForRdv(
+            { etablissement_gestionnaire_courriel: formation.etablissement_gestionnaire_courriel, etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret },
+            "etablissement_gestionnaire_courriel"
+          )
         }
 
         await Etablissement.updateMany(
