@@ -10,7 +10,10 @@ type Diploma = keyof typeof diplomaMap
 
 export const SearchForm = {
   goToHome() {
-    cy.visit(Cypress.env("ui") + "?displayMap=false")
+    cy.visit(Cypress.env("ui"))
+  },
+  goToSearchFormation() {
+    cy.visit(Cypress.env("ui") + "/recherche-apprentissage-formation")
   },
   fillSearch({ metier, location, distance, niveauEtude }: { metier?: string; location?: string; distance?: 10 | 30 | 60 | 100; niveauEtude?: Diploma }) {
     if (metier) {
