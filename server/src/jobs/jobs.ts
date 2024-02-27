@@ -39,7 +39,6 @@ import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
-import { fixUserRecruiterDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurDataValidation"
 import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
 import buildSAVE from "./lbb/buildSAVE"
@@ -364,8 +363,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixApplications()
       case "recruiters:data-validation:fix":
         return fixRecruiterDataValidation()
-      case "user-recruters:data-validation:fix":
-        return fixUserRecruiterDataValidation()
       case "referentiel-opco:constructys:import": {
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))

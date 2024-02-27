@@ -31,7 +31,7 @@ import {
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
-  updateUser,
+  updateUser2Fields,
 } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
@@ -254,7 +254,7 @@ export default (server: Server) => {
       if (exists) {
         throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
       }
-      await updateUser({ _id: req.params.id }, rest)
+      await updateUser2Fields(req.params.id, rest)
       return res.status(200).send({ ok: true })
     }
   )

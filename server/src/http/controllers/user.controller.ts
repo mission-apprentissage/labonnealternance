@@ -23,7 +23,9 @@ import {
   removeUser,
   sendWelcomeEmailToUserRecruteur,
   updateUser,
+  updateUser2Fields,
   updateUserValidationHistory,
+  validateUserEmail,
 } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
@@ -248,7 +250,8 @@ export default (server: Server) => {
 
       const update = { email: formattedEmail, ...userPayload }
 
-      const user = await updateUser({ _id: userId }, update)
+      await updateUser2Fields(userId, update)
+      const user = await getUserRecruteurById(userId)
       return res.status(200).send(user)
     }
   )
@@ -322,7 +325,7 @@ export default (server: Server) => {
       }
 
       // validate user email addresse
-      await updateUser({ _id: user._id }, { is_email_checked: true })
+      await validateUserEmail(user._id)
       await sendWelcomeEmailToUserRecruteur(user)
       return res.status(200).send(user)
     }

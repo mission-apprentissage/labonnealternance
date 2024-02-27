@@ -8,7 +8,7 @@ import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { ENTREPRISE } from "../../../../services/constant.service"
 import { autoValidateCompany } from "../../../../services/etablissement.service"
 import { activateEntrepriseRecruiterForTheFirstTime, getFormulaire } from "../../../../services/formulaire.service"
-import { sendWelcomeEmailToUserRecruteur, updateUser } from "../../../../services/userRecruteur.service"
+import { sendWelcomeEmailToUserRecruteur } from "../../../../services/userRecruteur.service"
 
 export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
@@ -52,7 +52,6 @@ export const checkAwaitingCompaniesValidation = async () => {
       await activateEntrepriseRecruiterForTheFirstTime(userFormulaire)
 
       // Validate user email addresse
-      await updateUser({ _id: entreprise._id }, { is_email_checked: true })
       await sendWelcomeEmailToUserRecruteur(entreprise)
     }
   })

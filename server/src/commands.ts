@@ -563,12 +563,6 @@ program
   .action(createJobAction("recruiters:data-validation:fix"))
 
 program
-  .command("fix-data-validation-user-recruteurs")
-  .description("Répare les data de la collection userrecruteurs")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("user-recruters:data-validation:fix"))
-
-program
   .command("anonymize-user-recruteurs")
   .description("Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans")
   .option("-q, --queued", "Run job asynchronously", false)

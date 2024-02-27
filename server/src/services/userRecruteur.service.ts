@@ -7,7 +7,7 @@ import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecr
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement } from "shared/models/roleManagement.model"
-import { IUser2, UserEventType } from "shared/models/user2.model"
+import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
@@ -195,6 +195,21 @@ export const updateUser = async (
     throw Boom.internal(`could not update one user from query=${JSON.stringify(query)}`)
   }
   return userRecruterOpt
+}
+
+export const updateUser2Fields = (userId: ObjectId, fields: Partial<IUser2>) => {
+  return User2.findOneAndUpdate({ _id: userId }, fields, { new: true })
+}
+
+export const validateUserEmail = async (userId: ObjectId) => {
+  const event: IUserStatusEvent = {
+    date: new Date(),
+    status: UserEventType.VALIDATION_EMAIL,
+    validation_type: VALIDATION_UTILISATEUR.MANUAL,
+    granted_by: userId.toString(),
+    reason: "user validated its email",
+  }
+  await User2.updateOne({ _id: userId }, { $push: { status: event } })
 }
 
 /**
