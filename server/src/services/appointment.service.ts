@@ -186,7 +186,7 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
 
     await appointment.update({
       $push: {
-        to_etablissement_emails: {
+        to_cfa_mails: {
           campaign: firstEmailEvent.campaign,
           status: event,
           message_id: firstEmailEvent.message_id,
