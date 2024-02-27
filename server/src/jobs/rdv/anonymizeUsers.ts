@@ -20,7 +20,6 @@ const anonymizeUsers = async () => {
     {
       $project: {
         role: 1,
-        userId: "$_id",
         type: 1,
         last_action_date: 1,
       },
