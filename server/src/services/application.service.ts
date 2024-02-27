@@ -11,7 +11,7 @@ import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common
 import { IUser2 } from "shared/models/user2.model"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { UserForAccessToken } from "@/security/accessTokenService"
+import { UserForAccessToken, user2ToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
 import { Application, EmailBlacklist, LbaCompany, Recruiter, User2 } from "../common/model"
@@ -261,15 +261,15 @@ const buildUrlsOfDetail = (publicUrl: string, newApplication: INewApplication) =
   }
 }
 
-const buildUserForToken = (application: IApplication, userRecruteur?: IUser2): UserForAccessToken => {
+const buildUserForToken = (application: IApplication, user?: IUser2): UserForAccessToken => {
   const { job_origin, company_siret, company_email } = application
   if (job_origin === "lba") {
     return { type: "lba-company", siret: company_siret, email: company_email }
   } else if (job_origin === "matcha") {
-    if (!userRecruteur) {
+    if (!user) {
       throw Boom.internal("un user recruteur était attendu")
     }
-    return { type: "IUser2", email: userRecruteur.email, _id: userRecruteur._id.toString() }
+    return user2ToUserForToken(user)
   } else {
     throw Boom.internal(`job_origin=${job_origin} non supporté`)
   }

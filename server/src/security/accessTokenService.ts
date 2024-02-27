@@ -2,6 +2,7 @@ import Boom from "boom"
 import jwt from "jsonwebtoken"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
+import { IUser2 } from "shared/models/user2.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { assertUnreachable } from "shared/utils"
 import { Jsonify } from "type-fest"
@@ -77,6 +78,8 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
 }
 
 export type UserForAccessToken = IUserRecruteur | IAccessToken["identity"]
+
+export const user2ToUserForToken = (user: IUser2): UserForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
 
 export function generateAccessToken(user: UserForAccessToken, scopes: ReadonlyArray<NewIScope<SchemaWithSecurity>>, options: { expiresIn?: string } = {}): string {
   const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUserRecruteur", _id: user._id.toString(), email: user.email.toLowerCase() } : user

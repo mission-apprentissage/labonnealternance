@@ -8,13 +8,15 @@ import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { IUser2 } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
+import { user2ToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF } from "../common/model/index"
+import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, User2 } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -839,8 +841,8 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
-export const sendUserConfirmationEmail = async (user: IUserRecruteur) => {
-  const url = createValidationMagicLink(user)
+export const sendUserConfirmationEmail = async (user: IUser2) => {
+  const url = createValidationMagicLink(user2ToUserForToken(user))
   await mailer.sendEmail({
     to: user.email,
     subject: "Confirmez votre adresse mail",
@@ -889,7 +891,11 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
       },
     })
   } else {
-    await sendUserConfirmationEmail(user)
+    const user2 = await User2.findOne({ _id: user._id.toString() }).lean()
+    if (!user2) {
+      throw Boom.internal(`could not find user with id=${user._id}`)
+    }
+    await sendUserConfirmationEmail(user2)
   }
 }
 

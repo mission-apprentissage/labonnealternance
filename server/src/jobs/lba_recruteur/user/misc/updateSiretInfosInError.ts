@@ -1,16 +1,20 @@
 import Boom from "boom"
 import { JOB_STATUS, type IUserRecruteur } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
+
+import { getUser2ManagingOffer } from "@/services/application.service"
 
 import { logger } from "../../../../common/logger"
-import { Recruiter, UserRecruteur } from "../../../../common/model/index"
+import { Cfa, Recruiter, RoleManagement, UserRecruteur } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { CFA, ENTREPRISE } from "../../../../services/constant.service"
-import { autoValidateCompany, EntrepriseData, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
+import { EntrepriseData, autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
 import { activateEntrepriseRecruiterForTheFirstTime, archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
-import { autoValidateUser, deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
+import { autoValidateUser, deactivateUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
 
 const updateUserRecruteursSiretInfosInError = async () => {
   const userRecruteurs = await UserRecruteur.find({
@@ -84,19 +88,26 @@ const updateRecruteursSiretInfosInError = async () => {
       } else {
         const entrepriseData: Partial<EntrepriseData> = siretResponse
         const updatedRecruiter = await updateFormulaire(establishment_id, { ...entrepriseData, status: RECRUITER_STATUS.ACTIF })
-        const userRecruteurCFA = await getUser({ establishment_siret: cfa_delegated_siret, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] } })
-        if (!userRecruteurCFA) {
-          throw Boom.internal(`unexpected: impossible de trouver le user recruteur CFA avec siret=${cfa_delegated_siret}`)
+        const managingUser = await getUser2ManagingOffer(updatedRecruiter.jobs[0])
+        const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+        if (!cfa) {
+          throw Boom.internal(`could not find cfa with siret=${cfa_delegated_siret}`)
         }
-        await Promise.all(
-          updatedRecruiter.jobs.flatMap((job) => {
-            if (job.job_status === JOB_STATUS.ACTIVE) {
-              return [sendMailNouvelleOffre(updatedRecruiter, job, userRecruteurCFA)]
-            } else {
-              return []
-            }
-          })
-        )
+        const role = await RoleManagement.findOne({ user_id: managingUser._id, authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
+        if (!role) {
+          throw Boom.internal(`could not find role with user_id=${managingUser._id} and authorized_id=${cfa._id}`)
+        }
+        if (getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED) {
+          await Promise.all(
+            updatedRecruiter.jobs.flatMap((job) => {
+              if (job.job_status === JOB_STATUS.ACTIVE) {
+                return [sendMailNouvelleOffre(updatedRecruiter, job, managingUser)]
+              } else {
+                return []
+              }
+            })
+          )
+        }
         stats.success++
       }
     } catch (err) {

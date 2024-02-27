@@ -3,7 +3,7 @@ import { randomUUID } from "crypto"
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection, assertUnreachable } from "shared"
+import { IRecruiter, IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection, assertUnreachable } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement } from "shared/models/roleManagement.model"
@@ -25,13 +25,6 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
  * @returns {string}
  */
 export const createApiKey = (): string => `mna-${randomUUID()}`
-
-/**
- * @description get a single user using a given query filter
- */
-export const getUser = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => {
-  return UserRecruteur.findOne(query).lean()
-}
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
   const { date, reason, validation_type, granted_by } = entrepriseStatusEvent
@@ -103,6 +96,28 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
 
 export const getUserRecruteurById = (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
 export const getUserRecruteurByEmail = (email: string) => getUserRecruteurByUser2Query({ email })
+export const getUserRecruteurByRecruiter = async (recruiter: IRecruiter): Promise<IUserRecruteur | null> => {
+  const { cfa_delegated_siret, establishment_id } = recruiter
+  if (cfa_delegated_siret) {
+    const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+    if (!cfa) {
+      throw new Error(`cfa with cfa_delegated_siret=${cfa_delegated_siret} not found`)
+    }
+    const role = await RoleManagement.findOne({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
+    if (!role) {
+      throw new Error(`role with authorized_id=${cfa._id} not found`)
+    }
+    return getUserRecruteurById(role.user_id)
+  } else if (establishment_id) {
+    const entreprise = await Entreprise.findOne({ establishment_id }).lean()
+    if (!entreprise) {
+      throw new Error(`entreprise with establishment_id=${establishment_id} not found`)
+    }
+    return getUserRecruteurById(entreprise._id)
+  } else {
+    throw new Error("inattendu: pas de establishment_id ni de cfa_delegated_siret")
+  }
+}
 
 const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promise<IUserRecruteur | null> => {
   const user = await User2.findOne(user2query).lean()
@@ -132,7 +147,7 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
     ...organismeData,
     createdAt: organismeData?.createdAt ?? user.createdAt,
     updatedAt: organismeData?.updatedAt ?? user.updatedAt,
-    is_email_checked: user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL),
+    is_email_checked: isUserEmailChecked(user),
     type,
     _id,
     email,
@@ -382,3 +397,5 @@ export const getUsersWithRoles = async () => {
   console.log(usersWithRoles.slice(0, 3))
   return usersWithRoles
 }
+
+export const isUserEmailChecked = (user: IUser2): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)

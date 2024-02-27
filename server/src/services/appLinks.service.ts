@@ -22,7 +22,7 @@ export function createAuthMagicLink(user: IUserRecruteur) {
   return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
 }
 
-export function createValidationMagicLink(user: IUserRecruteur) {
+export function createValidationMagicLink(user: UserForAccessToken) {
   const token = generateAccessToken(
     user,
     [

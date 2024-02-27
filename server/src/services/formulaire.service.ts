@@ -4,11 +4,14 @@ import pkg from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { IUser2 } from "shared/models/user2.model"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { db } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { Cfa, Recruiter, UnsubscribeOF } from "../common/model/index"
+import { Cfa, Entreprise, Recruiter, RoleManagement, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
@@ -19,7 +22,7 @@ import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getRomeDetailsFromDB } from "./rome.service"
-import { getUser, getUserStatus } from "./userRecruteur.service"
+import { getUserRecruteurByRecruiter, getUserStatus } from "./userRecruteur.service"
 
 const { ObjectId } = pkg
 
@@ -89,12 +92,16 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
  */
 export const createJob = async ({ job, id }: { job: IJobWritable; id: string }): Promise<IRecruiter> => {
   // get user data
-  const user = await getUser({ establishment_id: id })
-  const userStatus: ETAT_UTILISATEUR | null = (user ? getUserStatus(user.status) : null) ?? null
+  const recruiter = await Recruiter.findOne({ establishment_id: id }).lean()
+  if (!recruiter) {
+    throw Boom.internal(`recruiter with establishment_id=${id} not found`)
+  }
+  const userRecruteur = await getUserRecruteurByRecruiter(recruiter)
+  const userStatus: ETAT_UTILISATEUR | null = (userRecruteur ? getUserStatus(userRecruteur.status) : null) ?? null
   const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
 
   const jobPartial: Partial<IJob> = job
-  jobPartial.job_status = user && isUserAwaiting ? JOB_STATUS.EN_ATTENTE : JOB_STATUS.ACTIVE
+  jobPartial.job_status = userRecruteur && isUserAwaiting ? JOB_STATUS.EN_ATTENTE : JOB_STATUS.ACTIVE
   // get user activation state if not managed by a CFA
   const codeRome = job.rome_code[0]
   const romeData = await getRomeDetailsFromDB(codeRome)
@@ -118,18 +125,18 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
     throw Boom.internal("unexpected: no job found after job creation")
   }
   // if first offer creation for an Entreprise, send specific mail
-  if (jobs.length === 1 && is_delegated === false && user) {
-    await sendEmailConfirmationEntreprise(user, updatedFormulaire)
+  if (jobs.length === 1 && is_delegated === false && userRecruteur) {
+    await sendEmailConfirmationEntreprise(userRecruteur, updatedFormulaire)
     return updatedFormulaire
   }
 
-  let contactCFA: IUserRecruteur | null = null
+  let contactCFA: IUser2 | null = null
   if (is_delegated) {
     if (!cfa_delegated_siret) {
       throw Boom.internal(`unexpected: could not find user recruteur CFA that created the job`)
     }
     // get CFA informations if formulaire is handled by a CFA
-    contactCFA = await getUser({ establishment_siret: cfa_delegated_siret })
+    contactCFA = await getUser2ManagingOffer(createdJob)
     if (!contactCFA) {
       throw Boom.internal(`unexpected: could not find user recruteur CFA that created the job`)
     }
@@ -142,29 +149,22 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: string }):
  * Create job delegations
  */
 export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJob["_id"] | string; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
-  const offreDocument = await getOffre(jobId)
-  if (!offreDocument) {
+  const recruiter = await getOffre(jobId)
+  if (!recruiter) {
     throw Boom.internal("Offre not found", { jobId, etablissementCatalogueIds })
   }
-  const userDocument = await getUser({ establishment_id: offreDocument.establishment_id })
-  if (!userDocument) {
-    throw Boom.internal("User not found", { jobId, etablissementCatalogueIds })
+  const offre = getJobFromRecruiter(recruiter, jobId.toString())
+  const managingUser = await getUser2ManagingOffer(offre)
+  const entreprise = await Entreprise.findOne({ establishment_id: recruiter.establishment_id }).lean()
+  let shouldSentMailToCfa = false
+  if (entreprise) {
+    const role = await RoleManagement.findOne({ user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }).lean()
+    if (role && getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED) {
+      shouldSentMailToCfa = true
+    }
   }
-  if (!userDocument.status) {
-    throw Boom.internal("User is missing status object", { jobId, etablissementCatalogueIds })
-  }
-  const userState = userDocument.status.pop()
-
-  const offre = offreDocument.jobs.find((job) => job._id.toString() === jobId.toString())
-
-  if (!offre) {
-    throw Boom.internal("Offre not found", { jobId, etablissementCatalogueIds })
-  }
-
   const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } }, { _id: 1 })
-
   const delegations: IDelegation[] = []
-
   const promises = etablissements.map(async (etablissement) => {
     const formations = await getCatalogueFormations(
       {
@@ -191,8 +191,8 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
     delegations.push({ siret_code, email })
 
-    if (userState?.status === ETAT_UTILISATEUR.VALIDE) {
-      await sendDelegationMailToCFA(email, offre, offreDocument, siret_code)
+    if (shouldSentMailToCfa) {
+      await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
     }
   })
 
@@ -564,7 +564,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
   })
 }
 
-export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, contactCFA?: IUserRecruteur) {
+export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, contactCFA?: IUser2) {
   const isRecruteurAwaiting = recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION
   if (isRecruteurAwaiting) {
     return
