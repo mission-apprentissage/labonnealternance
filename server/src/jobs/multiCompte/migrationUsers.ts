@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 import { AppointmentUserType } from "shared/constants/appointment.js"
 import { EApplicantRole } from "shared/constants/rdva.js"
 import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
+import { IRecruiter } from "shared/index.js"
 import { ICFA } from "shared/models/cfa.model.js"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
@@ -9,7 +10,7 @@ import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.mod
 import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
 
 import { logger } from "../../common/logger.js"
-import { Appointment, User, UserRecruteur } from "../../common/model/index.js"
+import { Appointment, Recruiter, User, UserRecruteur } from "../../common/model/index.js"
 import { Cfa } from "../../common/model/schema/multiCompte/cfa.schema.js"
 import { Entreprise } from "../../common/model/schema/multiCompte/entreprise.schema.js"
 import { RoleManagement } from "../../common/model/schema/multiCompte/roleManagement.schema.js"
@@ -24,13 +25,72 @@ export const migrationUsers = async () => {
   await Cfa.deleteMany({})
   await RoleManagement.deleteMany({})
   const now = new Date()
-  await migrationRecruteurs()
+  await migrationRecruiters()
+  await migrationUserRecruteurs()
   await migrationCandidats(now)
 }
 
-const migrationRecruteurs = async () => {
+const migrationRecruiters = async () => {
+  logger.info(`Migration: lecture des recruiteurs...`)
+  const recruiters: IRecruiter[] = await Recruiter.find({}).lean()
+  logger.info(`Migration: ${recruiters.length} recruiteurs à mettre à jour`)
+  const stats = { success: 0, failure: 0, jobSuccess: 0 }
+
+  await asyncForEachGrouped(recruiters, 100, async (recruiter, index) => {
+    index % 1000 === 0 && logger.info(`import du recruiteur n°${index}`)
+    try {
+      const { establishment_id, cfa_delegated_siret, jobs } = recruiter
+      let userRecruiter: IUserRecruteur
+      if (cfa_delegated_siret) {
+        userRecruiter = await UserRecruteur.findOne({ establishment_siret: cfa_delegated_siret }).lean()
+        if (!userRecruiter) {
+          throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_siret=${cfa_delegated_siret}`)
+        }
+      } else {
+        userRecruiter = await UserRecruteur.findOne({ establishment_id }).lean()
+        if (!userRecruiter) {
+          throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_id=${establishment_id}`)
+        }
+      }
+
+      await Promise.all(
+        jobs.map(async (job) => {
+          await Recruiter.findOneAndUpdate(
+            { "jobs._id": job._id },
+            {
+              $set: {
+                "jobs.$.managed_by": userRecruiter._id,
+              },
+            },
+            { new: true }
+          ).lean()
+          stats.jobSuccess++
+        })
+      )
+      stats.success++
+    } catch (err) {
+      logger.error(`erreur lors de l'import du user recruteur avec id=${recruiter._id}`)
+      logger.error(err)
+      stats.failure++
+    }
+  })
+  logger.info(`Migration: user candidats terminés`)
+  const message = `${stats.success} recruiteurs repris avec succès.
+  ${stats.failure} recruiteurs en erreur.
+  ${stats.jobSuccess} offres reprises avec succès.
+  `
+  logger.info(message)
+  await notifyToSlack({
+    subject: "Migration multi-compte",
+    message,
+    error: stats.failure > 0,
+  })
+  return stats
+}
+
+const migrationUserRecruteurs = async () => {
   logger.info(`Migration: lecture des user recruteurs...`)
-  const userRecruteurs: IUserRecruteur[] = await UserRecruteur.find({})
+  const userRecruteurs: IUserRecruteur[] = await UserRecruteur.find({}).lean()
   logger.info(`Migration: ${userRecruteurs.length} user recruteurs à mettre à jour`)
   const stats = { success: 0, failure: 0, entrepriseCreated: 0, cfaCreated: 0, userCreated: 0, adminAccess: 0, opcoAccess: 0 }
 
@@ -207,7 +267,7 @@ const migrationCandidats = async (now: Date) => {
   logger.info(`Migration: lecture des user candidats...`)
 
   // l'utilisateur admin n'est pas repris
-  const candidats = await User.find({ role: EApplicantRole.CANDIDAT })
+  const candidats = await User.find({ role: EApplicantRole.CANDIDAT }).lean()
   logger.info(`Migration: ${candidats.length} user candidats à mettre à jour`)
   const stats = { success: 0, failure: 0, alreadyExist: 0 }
 
@@ -219,7 +279,7 @@ const migrationCandidats = async (now: Date) => {
       if (type) {
         await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_type: parseEnumOrError(AppointmentUserType, type) } })
       }
-      const existingUser = await User2.findOne({ email })
+      const existingUser = await User2.findOne({ email }).lean()
       if (existingUser) {
         await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_id: existingUser._id } })
         if (dayjs(candidat.last_action_date).isAfter(existingUser.last_action_date)) {

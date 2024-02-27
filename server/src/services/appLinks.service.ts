@@ -80,7 +80,7 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
   )
 }
 
-export function createCancelJobLink(user: IUserRecruteur, jobId: string, utmData: string | undefined = undefined) {
+export function createCancelJobLink(user: UserForAccessToken, jobId: string, utmData: string | undefined = undefined) {
   const token = generateAccessToken(
     user,
     [
@@ -102,7 +102,7 @@ export function createCancelJobLink(user: IUserRecruteur, jobId: string, utmData
   return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
 }
 
-export function createProvidedJobLink(user: IUserRecruteur, jobId: string, utmData: string | undefined = undefined) {
+export function createProvidedJobLink(user: UserForAccessToken, jobId: string, utmData: string | undefined = undefined) {
   const token = generateAccessToken(
     user,
     [

@@ -3,17 +3,18 @@ import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
-import { IApplication, IJob, ILbaCompany, INewApplication, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
+import { IApplication, IJob, ILbaCompany, INewApplication, IRecruiter, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import { IUser2 } from "shared/models/user2.model"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { UserForAccessToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
-import { Application, EmailBlacklist, LbaCompany, Recruiter, UserRecruteur } from "../common/model"
+import { Application, EmailBlacklist, LbaCompany, Recruiter, User2 } from "../common/model"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -260,7 +261,7 @@ const buildUrlsOfDetail = (publicUrl: string, newApplication: INewApplication) =
   }
 }
 
-const buildUserToken = (application: IApplication, userRecruteur?: IUserRecruteur): UserForAccessToken => {
+const buildUserForToken = (application: IApplication, userRecruteur?: IUser2): UserForAccessToken => {
   const { job_origin, company_siret, company_email } = application
   if (job_origin === "lba") {
     return { type: "lba-company", siret: company_siret, email: company_email }
@@ -268,13 +269,13 @@ const buildUserToken = (application: IApplication, userRecruteur?: IUserRecruteu
     if (!userRecruteur) {
       throw Boom.internal("un user recruteur était attendu")
     }
-    return userRecruteur
+    return { type: "IUser2", email: userRecruteur.email, _id: userRecruteur._id.toString() }
   } else {
     throw Boom.internal(`job_origin=${job_origin} non supporté`)
   }
 }
 
-const buildReplyLink = (application: IApplication, intention: ApplicantIntention, userRecruteur?: IUserRecruteur) => {
+const buildReplyLink = (application: IApplication, intention: ApplicantIntention, userForToken: UserForAccessToken) => {
   const applicationId = application._id.toString()
   const searchParams = new URLSearchParams()
   searchParams.append("company_recruitment_intention", intention)
@@ -284,9 +285,26 @@ const buildReplyLink = (application: IApplication, intention: ApplicantIntention
   searchParams.append("utm_source", "jecandidate")
   searchParams.append("utm_medium", "email")
   searchParams.append("utm_campaign", "jecandidaterecruteur")
-  const token = generateApplicationReplyToken(buildUserToken(application, userRecruteur), applicationId)
+  const token = generateApplicationReplyToken(userForToken, applicationId)
   searchParams.append("token", token)
   return `${config.publicUrl}/formulaire-intention?${searchParams.toString()}`
+}
+
+const getUser2ManagingOffer = async (recruiter: IRecruiter, jobId: string) => {
+  const job = recruiter.jobs.find((job) => job._id.toString() === jobId)
+  if (!job) {
+    throw new Error(`unexpected: could not find offer with id=${jobId}`)
+  }
+  const { managed_by } = job
+  if (managed_by) {
+    const user = await User2.findOne({ _id: managed_by }).lean()
+    if (!user) {
+      throw new Error(`could not find offer manager with id=${managed_by}`)
+    }
+    return user
+  } else {
+    throw new Error(`unexpected: managed_by is empty for offer with id=${jobId}`)
+  }
 }
 
 /**
@@ -296,22 +314,19 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
 
   // get the related recruiters to fetch it's establishment_id
-  let userRecruteur: IUserRecruteur | undefined
+  let userRecruteur: IUser2 | undefined
   if (application.job_id) {
     const recruiter = await Recruiter.findOne({ "jobs._id": application.job_id }).lean()
     if (recruiter) {
-      if (recruiter.is_delegated) {
-        userRecruteur = await UserRecruteur.findOne({ establishment_siret: recruiter.cfa_delegated_siret }).lean()
-      } else {
-        userRecruteur = await UserRecruteur.findOne({ establishment_id: recruiter.establishment_id }).lean()
-      }
+      userRecruteur = await getUser2ManagingOffer(recruiter, application.job_id)
     }
   }
 
+  const userForToken = buildUserForToken(application, userRecruteur)
   const urls = {
-    meetCandidateUrl: buildReplyLink(application, ApplicantIntention.ENTRETIEN, userRecruteur),
-    waitCandidateUrl: buildReplyLink(application, ApplicantIntention.NESAISPAS, userRecruteur),
-    refuseCandidateUrl: buildReplyLink(application, ApplicantIntention.REFUS, userRecruteur),
+    meetCandidateUrl: buildReplyLink(application, ApplicantIntention.ENTRETIEN, userForToken),
+    waitCandidateUrl: buildReplyLink(application, ApplicantIntention.NESAISPAS, userForToken),
+    refuseCandidateUrl: buildReplyLink(application, ApplicantIntention.REFUS, userForToken),
     lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}`,
     unsubscribeUrl: `${config.publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
     lbaUrl: `${config.publicUrl}?${utmRecruiterData}`,
@@ -321,8 +336,8 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   }
 
   if (application.job_id && userRecruteur) {
-    urls.jobProvidedUrl = createProvidedJobLink(userRecruteur, application.job_id, utmRecruiterData)
-    urls.cancelJobUrl = createCancelJobLink(userRecruteur, application.job_id, utmRecruiterData)
+    urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id, utmRecruiterData)
+    urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, utmRecruiterData)
   }
 
   return urls
