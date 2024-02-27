@@ -76,7 +76,7 @@ function getHTMLLink(link) {
   return (
     link &&
     `<span style="margin-top: 6px;display: block;">
-                  <a href="${link}" target="_blank" rel="noopener noreferrer" style="display: flex;">
+                  <a href="${link}" target="_blank" rel="noopener noreferrer" style="display: flex;" title="en savoir plus - nouvelle fenêtre">
                     <span aria-label="Accéder au détail de l'astuce" style="color: #000091;">En savoir plus</span>
                     <img style="margin-left: 5px" src="/images/square_link_blue.svg" alt=""/>
                   </a>

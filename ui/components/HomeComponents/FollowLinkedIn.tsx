@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
 import React from "react"
 
@@ -16,12 +17,13 @@ const FollowLinkedIn = () => {
         <GridItem mt="4" colSpan={{ base: 1, lg: 3 }} display="flex" justifyContent="center" alignItems="center">
           <Link
             href="https://www.linkedin.com/company/mission-apprentissage/posts/?feedView=all"
-            aria-label="Accès à la page Linkedin de la mission interministérielle pour l’apprentissage"
+            aria-label="Accès à la page Linkedin de la mission interministérielle pour l’apprentissage - nouvelle fenêtre"
             bg="bluefrance.500"
             color="white"
             width={209}
             display="flex"
             justifyContent="center"
+            alignItems="center"
             py={4}
             fontSize={18}
             isExternal
@@ -29,6 +31,7 @@ const FollowLinkedIn = () => {
           >
             Voir notre page &nbsp;
             <Image src="/images/icons/linkedin.svg" alt=""></Image>
+            <ExternalLinkIcon mx="2px" />
           </Link>
         </GridItem>
       </Grid>

@@ -33,13 +33,12 @@
                     <% } %>
                 </mj-text>
                 <mj-text>
-                    A votre demande, le service RDV Apprentissage sera activé à partir du <%= data.activationDate %> sur Parcoursup pour l’organisme suivant :<br/><br/>
-                    <b>
-                        <%= data.etablissement.name %> <br />
-                        <%= data.etablissement.formateur_address %><br/>
-                        <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
-                        SIRET : <%= data.etablissement.formateur_siret %>
-                    </b>
+                    <% if(data.isParcoursup){ %>
+                        A votre demande, le service RDV Apprentissage sera activé à partir du <%= data.activationDate %> sur Parcoursup pour l'ensemble de vos formations qui y sont exposées.<br/><br/>
+                    <% } %>
+                    <% if(data.isAffelnet){ %>
+                        A votre demande, le service RDV Apprentissage sera activé à partir du <%= data.activationDate %> sur Choisir son affectation après la 3e pour l'ensemble de vos formations qui y sont exposées.<br/><br/>
+                    <% } %>
                 </mj-text>
             </mj-column>
         </mj-section>

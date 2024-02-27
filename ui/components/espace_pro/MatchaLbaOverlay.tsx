@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Container, Flex, Heading, Link, Text, useBoolean } from "@chakra-ui/react"
 
 import { Close } from "../../theme/components/icons"
@@ -24,8 +25,16 @@ export default function MatchaLbaOverlay() {
                 successives surviendront sur le site internet Matcha dans les prochains mois.
               </Text>
             </Box>
-            <Button as={Link} bg="#8585F6" borderRadius="0px" mt={[5, 5, 5, 5, 0]} href="https://labonnealternance.apprentissage.beta.gouv.fr/" isExternal>
-              Accéder au site La bonne alternance
+            <Button
+              as={Link}
+              bg="#8585F6"
+              borderRadius="0px"
+              mt={[5, 5, 5, 5, 0]}
+              href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+              isExternal
+              aria-label="Site de la bonne alternance - nouvelle fenêtre"
+            >
+              Accéder au site La bonne alternance <ExternalLinkIcon mx="2px" />
             </Button>
           </Flex>
         </Container>
