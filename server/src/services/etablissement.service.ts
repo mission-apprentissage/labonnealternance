@@ -12,7 +12,7 @@ import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 
-import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, SiretDiffusibleStatus, UnsubscribeOF, UserRecruteur } from "../common/model/index"
+import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, SiretDiffusibleStatus, UnsubscribeOF } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -239,14 +239,6 @@ export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
     return null
   }
 }
-
-/**
- * @description Validate the establishment email for a given ID
- * @param {IUserRecruteur["_id"]} _id
- * @returns {Promise<void>}
- */
-export const validateEtablissementEmail = async (email: IUserRecruteur["email"]): Promise<IUserRecruteur | null> =>
-  UserRecruteur.findOneAndUpdate({ email }, { is_email_checked: true })
 
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET

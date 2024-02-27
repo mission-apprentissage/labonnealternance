@@ -21,7 +21,6 @@ import {
   getOrganismeDeFormationDataFromSiret,
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
-  validateEtablissementEmail,
 } from "../../services/etablissement.service"
 import {
   autoValidateUser,
@@ -267,10 +266,9 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
+      const email = user.identity.email.toLocaleLowerCase()
 
-      // Validate email
-      const userRecruteur = await validateEtablissementEmail(user.identity.email.toLocaleLowerCase())
-
+      const userRecruteur = await getUserRecruteurByEmail(email)
       if (!userRecruteur) {
         throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
