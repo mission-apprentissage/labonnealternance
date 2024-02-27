@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Container, Divider, Grid, GridItem, Link, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React from "react"
@@ -29,8 +30,8 @@ const Developpeurs = () => (
             <Text variant="editorialContentH3" as="h3">
               Code source ouvert
             </Text>
-            <Link variant="editorialContentLink" aria-label="Accès au site Github" href="https://github.com/mission-apprentissage/labonnealternance" isExternal>
-              LBA - Recherche d&apos;une formation et/ou d&apos;un organisme de formation en apprentissage
+            <Link variant="editorialContentLink" aria-label="Accès au site Github - nouvelle fenêtre" href="https://github.com/mission-apprentissage/labonnealternance" isExternal>
+              LBA - Recherche d&apos;une formation et/ou d&apos;un organisme de formation en apprentissage <ExternalLinkIcon mx="2px" />
             </Link>
             <Text variant="editorialContentH3" as="h3" mt={4}>
               Données ouvertes
@@ -42,8 +43,8 @@ const Developpeurs = () => (
             <Text as="p" mb={4}>
               Testez le widget et les API et accédez à leur documentation sur le site API.gouv
             </Text>
-            <Link variant="editorialContentLink" aria-label="Accès au site api.gouv" href="https://api.gouv.fr/les-api/api-la-bonne-alternance" isExternal>
-              https://api.gouv.fr/les-api/api-la-bonne-alternance
+            <Link variant="editorialContentLink" aria-label="Accès au site api.gouv - nouvelle fenêtre" href="https://api.gouv.fr/les-api/api-la-bonne-alternance" isExternal>
+              https://api.gouv.fr/les-api/api-la-bonne-alternance <ExternalLinkIcon mx="2px" />
             </Link>
           </GridItem>
         </Grid>

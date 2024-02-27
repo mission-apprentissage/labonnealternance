@@ -34,19 +34,19 @@ const CandidatureLbaExplanation = (props) => {
           Besoin d&apos;aide pour concevoir votre CV ? Il existe plusieurs outils gratuits :
           <Box mt={3}>
             &bull;
-            <Link href="https://cv.clicnjob.fr/" ml={3} isExternal variant="basicUnderlined">
+            <Link href="https://cv.clicnjob.fr/" ml={3} isExternal variant="basicUnderlined" aria-label="Site de cv.clicnjob.fr - nouvelle fenêtre">
               https://cv.clicnjob.fr/ <ExternalLinkIcon ml="2px" mb="3px" />
             </Link>
           </Box>
           <Box mt={2}>
             &bull;
-            <Link href="https://cvdesignr.com/fr" ml={3} isExternal variant="basicUnderlined">
+            <Link href="https://cvdesignr.com/fr" ml={3} isExternal variant="basicUnderlined" aria-label="Site de cvdesignr.com - nouvelle fenêtre">
               https://cvdesignr.com/fr <ExternalLinkIcon ml="2px" mb="3px" />
             </Link>
           </Box>
           <Box mt={2}>
             &bull;
-            <Link href="https://www.canva.com/fr_fr/creer/cv/" ml={3} isExternal variant="basicUnderlined">
+            <Link href="https://www.canva.com/fr_fr/creer/cv/" ml={3} isExternal variant="basicUnderlined" aria-label="Créer son CV sur canva.com - nouvelle fenêtre">
               https://www.canva.com/fr_fr/creer/cv/ <ExternalLinkIcon ml="2px" mb="3px" />
             </Link>
           </Box>

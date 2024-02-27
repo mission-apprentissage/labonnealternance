@@ -179,13 +179,25 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           <Box pl={6}>
             <Box pt={4}>
               &bull;
-              <Link variant="basicUnderlined" ml={4} isExternal href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e">
+              <Link
+                variant="basicUnderlined"
+                ml={4}
+                isExternal
+                href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
+                aria-label="Formation Chercher un employeur - nouvelle fenêtre"
+              >
                 Chercher un employeur <ExternalLinkIcon mb="3px" mx="2px" />
               </Link>
             </Box>
             <Box pt={4}>
               &bull;
-              <Link variant="basicUnderlined" ml={4} isExternal href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac">
+              <Link
+                variant="basicUnderlined"
+                ml={4}
+                isExternal
+                href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
+                aria-label="Formation préparer un entretien avec un employeur - nouvelle fenêtre"
+              >
                 Préparer un entretien avec un employeur <ExternalLinkIcon mb="3px" mx="2px" />
               </Link>
             </Box>

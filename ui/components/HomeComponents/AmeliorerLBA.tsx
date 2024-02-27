@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
 import React from "react"
 
@@ -27,14 +28,14 @@ const AmeliorerLBA = () => {
           <Box mt="7">
             <Link
               href="https://calendly.com/claire-arnaud-beta-gouv/la-bonne-alternance"
-              aria-label="Prendre rendez-vous"
+              aria-label="Prendre rendez-vous - nouvelle fenêtre"
               title="Je participe à l'étude"
               color="#000091"
               border="1px solid #000091"
               padding="10px 24px"
               isExternal
             >
-              Je participe à l'étude
+              Je participe à l'étude <ExternalLinkIcon mx="2px" />
             </Link>
           </Box>
           <Box mt="3">&nbsp;</Box>
