@@ -8,9 +8,11 @@ const anonymizeApplications = async () => {
   const lastYear = new Date()
   lastYear.setFullYear(lastYear.getFullYear() - 1)
 
+  const matchCondition = { created_at: { $lte: lastYear } }
+
   await Application.aggregate([
     {
-      $match: { created_at: { $lte: lastYear } },
+      $match: matchCondition,
     },
     {
       $project: {
@@ -29,7 +31,7 @@ const anonymizeApplications = async () => {
     },
   ])
 
-  const res = await Application.deleteMany({ created_at: { $lte: lastYear } })
+  const res = await Application.deleteMany(matchCondition)
 
   return res.deletedCount
 }

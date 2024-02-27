@@ -52,7 +52,7 @@ import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
-import { anonymizeUsers } from "./rdv/anonymizeUsers"
+import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
@@ -329,7 +329,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "appointments:anonimize":
         return anonimizeAppointments()
       case "users:anonimize":
-        return anonymizeUsers()
+        return anonymizeOldUsers()
       case "catalogue:trainings:appointments:archive:eligible":
         return eligibleTrainingsForAppointmentsHistoryWithCatalogue()
       case "referentiel:onisep:import":
