@@ -1,6 +1,5 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isValidEmail } from "@/common/utils/isValidEmail"
-import { isEmailBlacklisted } from "@/services/application.service"
 import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
@@ -69,13 +68,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
       parcoursup_statut: "publié",
     }).lean()
 
-    if (
-      !hasOneAvailableFormation ||
-      !isValidEmail(etablissement.gestionnaire_email) ||
-      !etablissement._id.gestionnaire_siret ||
-      !etablissement.gestionnaire_email ||
-      (await isEmailBlacklisted(etablissement.gestionnaire_email))
-    ) {
+    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret || !etablissement.gestionnaire_email) {
       continue
     }
 

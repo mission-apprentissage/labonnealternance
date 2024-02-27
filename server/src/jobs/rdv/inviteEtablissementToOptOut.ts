@@ -1,5 +1,4 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { isEmailBlacklisted } from "@/services/application.service"
 import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
@@ -50,7 +49,7 @@ export const inviteEtablissementToOptOut = async () => {
 
   for (const etablissement of etablissementsWithouOptMode) {
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
-    if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret && !(await isEmailBlacklisted(etablissement.gestionnaire_email))) {
+    if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret) {
       const emailEtablissement = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `Trouvez et recrutez vos candidats avec La bonne alternance`,

@@ -1,5 +1,4 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { isEmailBlacklisted } from "@/services/application.service"
 import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
@@ -64,13 +63,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
       affelnet_visible: true,
     }).lean()
 
-    if (
-      !hasOneAvailableFormation ||
-      !isValidEmail(etablissement.gestionnaire_email) ||
-      !etablissement._id.gestionnaire_siret ||
-      !etablissement.gestionnaire_email ||
-      (await isEmailBlacklisted(etablissement.gestionnaire_email))
-    ) {
+    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret || !etablissement.gestionnaire_email) {
       continue
     }
 
