@@ -3,7 +3,7 @@ import { setTimeout } from "timers/promises"
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, IUserRecruteur, ZCfaReferentielData } from "shared"
+import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, IUserRecruteur, ZCfaReferentielData } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -469,6 +469,11 @@ function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undef
   }
 }
 
+const addressDetailToString = (address: IAdresseV3): string => {
+  const { l4 = "", l6 = "", l7 = "" } = address?.acheminement_postal ?? {}
+  return [l4, l6, l7 === "FRANCE" ? null : l7].filter((_) => _).join(" ")
+}
+
 /**
  * @description Format Entreprise data
  */
@@ -482,7 +487,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
     establishment_siret: d.siret,
     establishment_raison_sociale: getRaisonSocialeFromGouvResponse(d),
     address_detail: d.adresse,
-    address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
+    address: addressDetailToString(d.adresse),
     contacts: [], // conserve la coherence avec l'UI
     naf_code: d.activite_principale.code,
     naf_label: d.activite_principale.libelle,
@@ -919,7 +924,7 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
         formateur_zip_code: etablissement.formateur_zip_code,
         formateur_city: etablissement.formateur_city,
         formateur_siret: etablissement.formateur_siret,
-        gestionnaire_email: etablissement.gestionnaire_email,
+        email: etablissement.gestionnaire_email,
       },
       activationDate: dayjs().format("DD/MM/YYYY"),
     },
