@@ -25,6 +25,7 @@ describe("send-job-application", () => {
       distance: 60,
     })
     SearchForm.submit()
+    SearchForm.uncheckFormations()
 
     FlowItemList.lbaJobs.openFirst()
 

@@ -38,4 +38,7 @@ export const SearchForm = {
   submit() {
     cy.get("[data-testid='widget-form'] button").click()
   },
+  uncheckFormations() {
+    cy.get("[data-testid='checkbox-filter-trainings']").click()
+  },
 }
