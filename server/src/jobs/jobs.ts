@@ -119,10 +119,10 @@ export const CronsMap = {
     cron_string: "0 9 * * *",
     handler: () => addJob({ name: "etablissement:invite:premium:parcoursup", payload: {} }),
   },
-  // "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
-  //   cron_string: "30 9 * * *",
-  //   handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
-  // },
+  "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
+    cron_string: "30 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
+  },
   "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
     cron_string: "45 2 * * *",
     handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
@@ -147,14 +147,14 @@ export const CronsMap = {
     cron_string: "10 0 1 * *",
     handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
   },
-  // "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-  //   cron_string: "15 9 * * *",
-  //   handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
-  // },
-  // "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-  //   cron_string: "45 9 * * *",
-  //   handler: () => addJob({ name: "etablissement:invite:premium:affelnet:follow-up", payload: {} }),
-  // },
+  "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
+    cron_string: "15 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
+  },
+  "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
+    cron_string: "45 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:affelnet:follow-up", payload: {} }),
+  },
   "Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
     cron_string: "45 23 * * 2",
     handler: () => addJob({ name: "referentiel:onisep:import", payload: {} }),
