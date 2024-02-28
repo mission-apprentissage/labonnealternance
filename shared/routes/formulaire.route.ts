@@ -121,7 +121,7 @@ export const zFormulaireRoute = {
         "200": z
           .object({
             recruiter: ZRecruiter,
-            token: z.string(),
+            token: z.string().optional(),
           })
           .strict(),
       },
