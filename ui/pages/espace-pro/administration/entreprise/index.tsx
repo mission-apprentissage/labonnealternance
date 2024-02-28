@@ -128,7 +128,8 @@ const InformationSiret = () => (
         Le numéro d’identification de votre entreprise partenaire peut être trouvé sur
         <ChakraLink href="https://annuaire-entreprises.data.gouv.fr/" variant="classic" isExternal aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
           l’annuaire des entreprises <ExternalLinkIcon mx="2px" />
-        </ChakraLink>.
+        </ChakraLink>
+        .
       </Text>
     </Flex>
   </Box>
