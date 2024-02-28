@@ -27,7 +27,7 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
 
   return (
     <Checkbox spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
-      <Box onClick={handleClick} fontSize="14px">
+      <Box onClick={handleClick} fontSize="14px" data-testid={`checkbox-filter-${type}`}>
         {getText()}
       </Box>
     </Checkbox>

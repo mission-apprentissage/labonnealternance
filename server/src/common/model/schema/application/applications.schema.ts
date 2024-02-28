@@ -110,6 +110,7 @@ export const applicationSchema = new Schema<IApplication>(
       type: String,
       default: null,
       description: "L'identification de la source d'émission de la candidature (pour widget et api)",
+      index: true,
     },
     created_at: {
       type: Date,

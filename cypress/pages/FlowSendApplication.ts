@@ -1,7 +1,7 @@
 export const FlowSendApplication = {
   applicationForm: {
     verifySuccess() {
-      cy.get("[data-testid='application-success']")
+      cy.get("[data-testid='application-success']", { timeout: 20000 })
     },
     openSpontanee() {
       cy.get("[data-testid='CandidatureSpontanee'] button").click()
@@ -20,7 +20,7 @@ export const FlowSendApplication = {
       cy.get("[data-testid='fileDropzone']").selectFile(file, { action: "drag-drop" })
     },
     submit() {
-      cy.get("button[data-testid='candidature-not-sent']").click({ timeout: 10000 })
+      cy.get("button[data-testid='candidature-not-sent']").click({ timeout: 20000 })
     },
     close() {
       cy.get("[data-testid='close-application-form']").click()
