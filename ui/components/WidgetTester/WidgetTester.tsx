@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Container, Grid, GridItem, Input, Link, Radio, RadioGroup, Select, Stack, Text } from "@chakra-ui/react"
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import React, { useState } from "react"
@@ -367,14 +368,14 @@ const WidgetTester = () => {
           La documentation est ici :{" "}
           <Link
             href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation"
-            aria-label="Accès à la documentation"
+            aria-label="Accès à la documentation - nouvelle fenêtre"
             target="docIdea"
             isExternal
             fontSize={14}
             fontWeight={700}
             color="grey.425"
           >
-            https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation
+            https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation <ExternalLinkIcon mx="2px" />
           </Link>
         </Text>
       </Box>

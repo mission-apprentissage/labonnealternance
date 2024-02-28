@@ -244,7 +244,12 @@ const AjouterVoeuxForm = (props) => {
               <FormLabel>
                 <Flex alignItems="flex-end">
                   Type de contrat en alternance{" "}
-                  <Link href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704" isExternal ml={1}>
+                  <Link
+                    href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
+                    isExternal
+                    ml={1}
+                    aria-label="Accès au contrat en alternance - nouvelle fenêtre"
+                  >
                     <Flex>
                       <Text fontSize="sm" color="grey.500">
                         en savoir plus

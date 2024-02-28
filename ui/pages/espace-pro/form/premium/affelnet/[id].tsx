@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Container, Flex, Stack, Text } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
@@ -150,8 +151,14 @@ export default function PremiumAffelnetForm() {
               </Stack>
               <Text mt={6}>
                 Je prends acte du fait que la{" "}
-                <a style={{ textDecoration: "underline", cursor: "pointer" }} href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html" target="_blank" rel="noreferrer">
-                  Mission interministérielle pour l’apprentissage
+                <a
+                  style={{ textDecoration: "underline", cursor: "pointer" }}
+                  href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Mission interministérielle pour l’apprentissage - nouvelle fenêtre"
+                >
+                  Mission interministérielle pour l’apprentissage <ExternalLinkIcon mx="2px" />
                 </a>{" "}
                 pourra prendre toutes les mesures utiles pour mesurer le fait que cet engagement soit tenu (dont enquêtes en ligne ou orales auprès des candidats et des CFA).
               </Text>

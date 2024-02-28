@@ -216,10 +216,6 @@ export default (server: Server) => {
         rome_code,
         rome_label,
       } = req.body
-      const userRecruteur = await UserRecruteur.findOne({ establishment_id }).lean()
-      if (!userRecruteur) {
-        throw Boom.notFound()
-      }
       const updatedFormulaire = await createJob({
         job: {
           is_disabled_elligible,
@@ -235,14 +231,13 @@ export default (server: Server) => {
           rome_code,
           rome_label,
         },
-        id: establishment_id,
+        establishment_id,
       })
       const job = updatedFormulaire.jobs.at(0)
       if (!job) {
         throw new Error("unexpected")
       }
-      const token = generateOffreToken(userRecruteur, job)
-      return res.status(200).send({ recruiter: updatedFormulaire, token })
+      return res.status(200).send({ recruiter: updatedFormulaire })
     }
   )
 
@@ -291,7 +286,7 @@ export default (server: Server) => {
           rome_code,
           rome_label,
         },
-        id: establishment_id,
+        establishment_id,
       })
       const job = updatedFormulaire.jobs.at(0)
       if (!job) {

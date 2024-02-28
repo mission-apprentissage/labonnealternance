@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Center, Heading, Icon, Link, Stack, Text } from "@chakra-ui/react"
 import { assertUnreachable } from "shared"
 
@@ -26,7 +27,7 @@ const Bandeau = ({ header, description, lien = null, type }: BandeauProps) => {
           {description}
           {lien && (
             <Link href={lien} textDecoration="underline" isExternal>
-              lien
+              lien <ExternalLinkIcon mx="2px" />
             </Link>
           )}
         </Text>

@@ -66,7 +66,7 @@ const APropos = () => (
                   Les formations en apprentissage issues du{" "}
                   <Link
                     href="https://catalogue-apprentissage.intercariforef.org/"
-                    aria-label="Accéder au catalogue des formations intercarif oref"
+                    aria-label="Accéder au catalogue des formations intercarif oref - nouvelle fenêtre"
                     isExternal
                     variant="basicUnderlinedBlue"
                   >
@@ -82,7 +82,7 @@ const APropos = () => (
                   Nous agrégeons également les offres en alternance de France travail et de ses{" "}
                   <Link
                     href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
-                    aria-label="Accéder à la liste des sites partenaires de France Travail"
+                    aria-label="Accéder à la liste des sites partenaires de France Travail - nouvelle fenêtre"
                     isExternal
                     variant="basicUnderlinedBlue"
                   >
@@ -150,14 +150,14 @@ const APropos = () => (
               D’abord développé par France travail, La bonne alternance a été repris en 2020 par{" "}
               <Link
                 href="https://mission-apprentissage.gitbook.io/general/"
-                aria-label="Accéder au site de la mission interministérielle pour l'apprentissage"
+                aria-label="Accéder au site de la mission interministérielle pour l'apprentissage - nouvelle fenêtre"
                 isExternal
                 variant="basicUnderlinedBlue"
               >
                 la mission interministérielle pour l'apprentissage <ExternalLinkIcon mb="3px" ml="2px" />
               </Link>
               , membre de la communauté{" "}
-              <Link href="https://beta.gouv.fr" aria-label="Accéder au site de beta gouv point fr" isExternal variant="basicUnderlinedBlue">
+              <Link href="https://beta.gouv.fr" aria-label="Accéder au site de beta gouv point fr - nouvelle fenêtre" isExternal variant="basicUnderlinedBlue">
                 beta.gouv.fr <ExternalLinkIcon mb="3px" ml="2px" />
               </Link>{" "}
               et suit à ce titre une démarche spécifique de conception de services numériques.

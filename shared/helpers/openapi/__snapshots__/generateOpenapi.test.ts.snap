@@ -541,7 +541,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "id": {
-            "description": "L'identifiant de la formation dans le catalogue de la mission apprentissage.",
+            "description": "L'identifiant de la formation dans le catalogue du Réseau des Carif-Oref.",
             "example": "5e8dfad720ff3b2161269d86",
             "type": [
               "string",

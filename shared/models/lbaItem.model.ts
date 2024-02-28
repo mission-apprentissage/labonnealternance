@@ -289,7 +289,7 @@ export const ZLbaItemFormation = z
     }), // formation -> intitule_long,
     id: z.string().nullable().openapi({
       example: "5e8dfad720ff3b2161269d86",
-      description: "L'identifiant de la formation dans le catalogue de la mission apprentissage.",
+      description: "L'identifiant de la formation dans le catalogue du Réseau des Carif-Oref.",
     }), // formation -> id
     idRco: z.string().nullable(), // formation -> id_formation
     idRcoFormation: z.string().nullable(), // formation -> id_rco_formation
