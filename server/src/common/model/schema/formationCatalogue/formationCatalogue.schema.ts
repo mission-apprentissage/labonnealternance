@@ -280,6 +280,10 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
       type: String,
       description: "ids ParcourSup",
     },
+    parcoursup_visible: {
+      type: Boolean,
+      description: "Formation Parcoursup visible sur le SLA",
+    },
     affelnet_reference: {
       type: Boolean,
       description: "La formation est présent sur affelnet",

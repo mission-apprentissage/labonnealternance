@@ -260,7 +260,7 @@ export const getAllFormationsFromCatalogue = async () => {
  * @returns {instanceof<API>}
  */
 const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
-  const instance = axios.create({ baseURL: "https://catalogue.apprentissage.education.gouv.fr/api/v1" })
+  const instance = axios.create({ baseURL: "https://catalogue.apprentissage.education.gouv.fr/api" })
 
   try {
     const response = await axios.post("https://catalogue.apprentissage.education.gouv.fr/api/v1/auth/login", {
@@ -276,79 +276,31 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
   return instance
 }
 
-/**
- * @description: Get formations from the Ministère Educatif formation catalogue
- * @param {Object} query
- * @param {Object} limit
- * @param {Number} page
- * @param {Object} select
- * @param {Array} allFormations
- * @returns {Promise<Object[]>}
- */
-
-// KBA 20221227 : find more elegant solution
 let api: AxiosInstance | null = null
-export const getFormationsFromCatalogueMe = async ({
-  query,
-  limit,
-  page = 1,
-  select,
-  allFormations = [],
-}: {
-  query: object
-  limit: number
-  page?: number
-  select?: object
-  allFormations?: object[]
-}) => {
+export const getParcoursupAndAffelnetPerimetreFromCatalogueME = async (): Promise<
+  | Array<{
+      cle_ministere_educatif: string
+      parcoursup_perimetre_prise_rdv: boolean
+      affelnet_perimetre_prise_rdv: boolean
+    }>
+  | undefined
+> => {
   if (api === null) {
     api = await createCatalogueMeAPI()
   }
 
-  const params = { page, limit, query: JSON.stringify(query), select: JSON.stringify(select) }
-
   try {
-    const response = await api.get(`/entity/formations`, { params })
-
-    const { formations, pagination } = response.data
-
-    allFormations = allFormations.concat(formations)
-
-    if (page < pagination.nombre_de_page) {
-      return getFormationsFromCatalogueMe({ page: page + 1, allFormations, limit, query, select })
-    } else {
-      return allFormations
-    }
-  } catch (error) {
-    logger.error(error)
-  }
-}
-
-export const getFormationFromCatalogueMe = async ({ query, select }: { query: object; select?: object }) => {
-  if (api === null) {
-    api = await createCatalogueMeAPI()
-  }
-
-  const params = { query: JSON.stringify(query), select: JSON.stringify(select) }
-
-  try {
-    const response = await api.get(`/entity/formation`, { params })
+    const response = await api.get(`/perimetre-prise-rdv.json`)
     return response.data
   } catch (error) {
     logger.error(error)
   }
 }
 
-export type IRomeResult = {
+type IRomeResult = {
   romes: string[]
 }
 
-/**
- * @description récupère les romes associés à un cfd de formation ou à un siret d'établissement
- * @param {string} cfd
- * @param {string} siret
- * @returns {Promise<IRomeResult>}
- */
 export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
   const query: { cfd?: string; etablissement_formateur_siret?: string } = {}
 

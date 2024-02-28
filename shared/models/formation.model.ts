@@ -135,6 +135,7 @@ export const zFormationCatalogueSchema = z
     parcoursup_reference: z.boolean().nullish(),
     parcoursup_a_charger: z.boolean().nullish(),
     parcoursup_id: z.string().nullish(),
+    parcoursup_visible: z.boolean().nullish(),
     affelnet_reference: z.boolean().nullish(),
     affelnet_a_charger: z.boolean().nullish(),
     affelnet_statut: z.string().nullish(),
