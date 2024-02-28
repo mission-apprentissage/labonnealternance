@@ -18,12 +18,12 @@ export const updateParcoursupAndAffelnetInfoOnFormationCatalogue = async () => {
     const found = catalogueMinistereEducatif.find((formationME) => formationME.cle_ministere_educatif === formation.cle_ministere_educatif)
 
     if (found) {
-      const { parcoursup_perimetre_prise_rdv, affelnet_perimetre_prise_rdv } = found
+      const { parcoursup_perimetre_prise_rdv, affelnet_perimetre_prise_rdv, parcoursup_id } = found
       await db
         .collection("formationcatalogues")
         .updateOne(
           { cle_ministere_educatif: formation.cle_ministere_educatif },
-          { $set: { affelnet_visible: affelnet_perimetre_prise_rdv, parcoursup_visible: parcoursup_perimetre_prise_rdv } }
+          { $set: { affelnet_visible: affelnet_perimetre_prise_rdv, parcoursup_visible: parcoursup_perimetre_prise_rdv, parcoursup_id } }
         )
     }
   })

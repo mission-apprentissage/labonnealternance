@@ -91,6 +91,7 @@ export const syncEtablissementsAndFormations = async () => {
           await updateParameter(eligibleTrainingsForAppointment._id, {
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
+            parcoursup_id: formation.parcoursup_id,
             parcoursup_visible: formation.parcoursup_visible,
             affelnet_visible: formation.affelnet_visible,
             training_code_formation_diplome: formation.cfd,
@@ -120,6 +121,7 @@ export const syncEtablissementsAndFormations = async () => {
           await create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
+            parcoursup_id: formation.parcoursup_id,
             parcoursup_visible: formation.parcoursup_visible,
             affelnet_visible: formation.affelnet_visible,
             cle_ministere_educatif: formation.cle_ministere_educatif,

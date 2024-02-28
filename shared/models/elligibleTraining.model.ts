@@ -19,6 +19,7 @@ export const ZEligibleTrainingsForAppointmentSchema = z
     rco_formation_id: z.string().nullable(),
     is_catalogue_published: z.boolean(),
     last_catalogue_sync_date: z.date().default(() => new Date()),
+    parcoursup_id: z.string().nullable(),
     parcoursup_visible: z.boolean().nullable(),
     affelnet_visible: z.boolean().nullable(),
     cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,

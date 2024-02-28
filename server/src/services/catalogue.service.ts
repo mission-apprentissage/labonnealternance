@@ -282,6 +282,7 @@ export const getParcoursupAndAffelnetPerimetreFromCatalogueME = async (): Promis
       cle_ministere_educatif: string
       parcoursup_perimetre_prise_rdv: boolean
       affelnet_perimetre_prise_rdv: boolean
+      parcoursup_id: string
     }>
   | undefined
 > => {

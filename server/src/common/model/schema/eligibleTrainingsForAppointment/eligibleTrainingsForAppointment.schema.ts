@@ -56,6 +56,12 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
       default: Date.now,
       description: "Date de la dernière synchronisation avec le Catalogue",
     },
+    parcoursup_id: {
+      type: String,
+      index: true,
+      default: null,
+      description: "Identifiant Parcoursup",
+    },
     parcoursup_visible: {
       type: Boolean,
       index: true,
