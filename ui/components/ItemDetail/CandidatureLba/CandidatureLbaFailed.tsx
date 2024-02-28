@@ -4,7 +4,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 type DataDisplayForError = {
   title: string
-  text: JSX.Element | string
+  text: React.ReactNode
   dataTestId: string
 }
 
@@ -40,6 +40,11 @@ const sendingStateValues = {
     title: "Vous avez déjà atteint la limite de 3 candidatures envoyées à cette opportunité d’emploi.",
     text: "",
     dataTestId: "CandidatureSpontaneeFailedTooManyApplicationsPerCompany",
+  },
+  [BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET]: {
+    title: "Vous avez atteint le quota maximum de candidatures pour ce SIRET.",
+    text: "Vous pourrez en envoyer de nouveau demain",
+    dataTestId: "CandidatureSpontaneeFailedTooManyApplicationsPerCompanyPerCaller",
   },
   "Internal Server Error": {
     title: "Erreur technique",
