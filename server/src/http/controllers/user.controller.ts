@@ -1,6 +1,7 @@
 import Boom from "boom"
 import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, getUserStatus, zRoutes } from "shared/index"
+import { AccessStatus } from "shared/models/roleManagement.model"
 
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -102,18 +103,18 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/admin/users"])],
     },
     async (req, res) => {
-      const user = await createUser({
+      const { userRecruteur } = await createUser({
         ...req.body,
         is_email_checked: true,
-        status: [
-          {
-            status: ETAT_UTILISATEUR.ATTENTE,
-            validation_type: VALIDATION_UTILISATEUR.MANUAL,
-            user: getUserFromRequest(req, zRoutes.post["/admin/users"]).value._id.toString(),
-          },
-        ],
+        statusEvent: {
+          reason: "création par l'interface admin",
+          date: new Date(),
+          status: AccessStatus.AWAITING_VALIDATION,
+          validation_type: VALIDATION_UTILISATEUR.MANUAL,
+          granted_by: getUserFromRequest(req, zRoutes.post["/admin/users"]).value._id.toString(),
+        },
       })
-      return res.status(200).send(user)
+      return res.status(200).send(userRecruteur)
     }
   )
 

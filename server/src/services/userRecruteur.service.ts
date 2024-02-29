@@ -4,21 +4,23 @@ import Boom from "boom"
 import { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IRecruiter, IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection, assertUnreachable } from "shared"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
-import { AccessEntityType, AccessStatus, IRoleManagement } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
+import { parseEnumOrError } from "@/common/utils/enumUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Cfa, Entreprise, RoleManagement, User2, UserRecruteur } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
-import { ADMIN } from "./constant.service"
+import { ADMIN, OPCO } from "./constant.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
+import { modifyPermissionToUser } from "./permissions.service"
 
 /**
  * @description generate an API key
@@ -163,34 +165,110 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
  * @description création d'un nouveau user recruteur. Le champ status peut être passé ou, s'il n'est pas passé, être sauvé ultérieurement
  */
 export const createUser = async (
-  userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status"> & Partial<Pick<IUserRecruteur, "status">>
-): Promise<IUserRecruteur> => {
-  let scope = userRecruteurProps.scope ?? undefined
-
+  userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status"> & { statusEvent?: IRoleManagementEvent }
+): Promise<{ userRecruteur: IUserRecruteur; user: IUser2 }> => {
+  const {
+    first_name,
+    is_email_checked,
+    last_name,
+    type,
+    address,
+    address_detail,
+    establishment_enseigne,
+    establishment_id,
+    establishment_raison_sociale,
+    establishment_siret,
+    geo_coordinates,
+    idcc,
+    last_connection,
+    opco,
+    origin,
+    phone,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    scope,
+    statusEvent,
+  } = userRecruteurProps
   const formatedEmail = userRecruteurProps.email.toLocaleLowerCase()
 
-  if (!scope) {
-    if (userRecruteurProps.type === "CFA") {
-      // generate user scope
-      const [key] = randomUUID().split("-")
-      scope = `cfa-${key}`
-    } else {
-      let key
-      if (userRecruteurProps?.establishment_raison_sociale) {
-        key = userRecruteurProps.establishment_raison_sociale.toLowerCase().replace(/ /g, "-")
-      } else {
-        key = randomUUID().split("-")[0]
-      }
-      scope = `etp-${key}`
+  let user = await User2.findOne({ email: formatedEmail }).lean()
+  if (!user) {
+    const status: IUserStatusEvent[] = []
+    if (is_email_checked) {
+      status.push({
+        date: new Date(),
+        reason: "creation",
+        status: UserEventType.VALIDATION_EMAIL,
+        validation_type: VALIDATION_UTILISATEUR.MANUAL,
+      })
     }
+    status.push({
+      date: new Date(),
+      reason: "creation",
+      status: UserEventType.ACTIF,
+      validation_type: VALIDATION_UTILISATEUR.MANUAL,
+    })
+    const userFields: Omit<IUser2, "_id" | "createdAt" | "updatedAt"> = {
+      email: formatedEmail,
+      first_name,
+      last_name,
+      phone: phone ?? "",
+      last_action_date: last_connection ?? new Date(),
+      origin,
+      status,
+    }
+    user = await User2.create(userFields)
   }
-  const createdUser = await UserRecruteur.create({
-    status: [],
-    ...userRecruteurProps,
-    scope,
-    email: formatedEmail,
-  })
-  return createdUser.toObject()
+  let addedRole: Parameters<typeof modifyPermissionToUser>[0] | null = null
+  if (type === ENTREPRISE || type === CFA) {
+    if (!establishment_siret) {
+      throw Boom.internal("siret is missing")
+    }
+    let entreprise = await Entreprise.findOne({ siret: establishment_siret }).lean()
+    if (!entreprise) {
+      entreprise = await Entreprise.create({
+        siret: establishment_siret,
+        address,
+        address_detail,
+        enseigne: establishment_enseigne,
+        raison_sociale: establishment_raison_sociale,
+        establishment_id,
+        origin,
+        opco,
+        idcc,
+        geo_coordinates,
+      })
+    }
+    addedRole = {
+      user_id: user._id,
+      authorized_id: entreprise._id.toString(),
+      authorized_type: AccessEntityType.ENTREPRISE,
+      origin: origin ?? "createUser",
+    }
+  } else if (type === ADMIN) {
+    addedRole = {
+      user_id: user._id,
+      authorized_id: "",
+      authorized_type: AccessEntityType.ADMIN,
+      origin: origin ?? "createUser",
+    }
+  } else if (type === OPCO) {
+    addedRole = {
+      user_id: user._id,
+      authorized_id: parseEnumOrError(OPCOS, opco ?? null),
+      authorized_type: AccessEntityType.OPCO,
+      origin: origin ?? "createUser",
+    }
+  } else {
+    assertUnreachable(type)
+  }
+  if (statusEvent && addedRole) {
+    await modifyPermissionToUser(addedRole, statusEvent)
+  }
+  const userRecruteur = await getUserRecruteurById(user._id)
+  if (!userRecruteur) {
+    throw Boom.internal("unexpected")
+  }
+  return { userRecruteur, user }
 }
 
 /**

@@ -558,8 +558,8 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
   return { userRecruteur, validated }
 }
 
-export const isCompanyValid = async (userRecruteur: IUserRecruteur) => {
-  const { establishment_siret: siret, email } = userRecruteur
+export const isCompanyValid = async (props: { establishment_siret?: string | null; email: string }): Promise<boolean> => {
+  const { establishment_siret: siret, email } = props
   if (!siret) {
     return false
   }
@@ -775,7 +775,7 @@ export const entrepriseOnboardingWorkflow = {
       cfa_delegated_siret,
     })
     const formulaireId = formulaireInfo.establishment_id
-    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE, is_email_checked: false, is_qualiopi: false })
+    let { userRecruteur: newEntreprise } = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE, is_email_checked: false, is_qualiopi: false })
 
     if (hasSiretError) {
       newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")

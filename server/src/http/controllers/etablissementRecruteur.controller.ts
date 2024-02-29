@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { IUserRecruteur, toPublicUser, zRoutes } from "shared"
+import { toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
@@ -178,7 +178,8 @@ export default (server: Server) => {
           const { contacts } = siretInfos
 
           // Creation de l'utilisateur en base de données
-          let newCfa: IUserRecruteur = await createUser({ ...req.body, ...siretInfos, is_email_checked: false })
+          // eslint-disable-next-line prefer-const
+          let { userRecruteur: newCfa, user: userCfa } = await createUser({ ...req.body, ...siretInfos, is_email_checked: false })
 
           const slackNotification = {
             subject: "RECRUTEUR",
@@ -193,7 +194,7 @@ export default (server: Server) => {
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
             newCfa = await autoValidateUser(newCfa._id)
-            await sendUserConfirmationEmail(newCfa)
+            await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
             return res.status(200).send({ user: newCfa })
           }
@@ -203,7 +204,7 @@ export default (server: Server) => {
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
               newCfa = await autoValidateUser(newCfa._id)
-              await sendUserConfirmationEmail(newCfa)
+              await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
               return res.status(200).send({ user: newCfa })
             }
