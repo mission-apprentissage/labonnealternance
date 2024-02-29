@@ -1,52 +1,54 @@
-import { oleoduc, writeData } from "oleoduc"
-
 import { logger } from "@/common/logger"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
-import { AnonymizedUser, User } from "../../common/model/index"
-import dayjs from "../../services/dayjs.service"
+import { User } from "../../common/model/index"
 
 /**
- * Anonymize users older than 2 years.
+ * Anonymize users older than 1 year.
  */
-export const anonymizeUsers = async () => {
-  logger.info("Cron #anonymizeUsers started.")
+const anonymizeUsers = async () => {
+  logger.info(`Début anonymisation`)
 
-  const stats = {
-    beforeExecutionUsersCount: 0,
-    afterExecutionUsersCount: 0,
-    anonymizedUsersCount: 0,
-  }
+  const lastYear = new Date()
+  lastYear.setFullYear(lastYear.getFullYear() - 1)
+  const matchCondition = { last_action_date: { $lte: lastYear } }
 
-  stats.beforeExecutionUsersCount = await User.countDocuments()
-
-  const anonymizeUsersOlderThanDate = dayjs().subtract(1, "year").toDate()
-  const anonymizeUsersFixedDate = dayjs("2023-03-03").toDate()
-
-  const conditions = {
-    $or: [{ last_action_date: { $lte: anonymizeUsersOlderThanDate } }, { last_action_date: { $lte: anonymizeUsersFixedDate } }],
-  }
-
-  await oleoduc(
-    User.find(conditions).lean().cursor(),
-    writeData(
-      async (user) => {
-        await AnonymizedUser.create({
-          userId: user._id,
-          type: user.type,
-          role: user.role,
-          last_action_date: user.last_action_date,
-        })
-        stats.anonymizedUsersCount++
+  await User.aggregate([
+    {
+      $match: matchCondition,
+    },
+    {
+      $project: {
+        role: 1,
+        type: 1,
+        last_action_date: 1,
       },
-      { parallel: 100 }
-    )
-  )
+    },
+    {
+      $merge: "anonymized_users",
+    },
+  ])
 
-  await User.deleteMany(conditions)
+  const res = await User.deleteMany(matchCondition)
 
-  stats.afterExecutionUsersCount = await User.countDocuments()
+  return res.deletedCount
+}
 
-  logger.info("Cron #anonymizeUsers done.", { stats })
+export const anonymizeOldUsers = async () => {
+  try {
+    logger.info(" -- Anonymisation des utilisateurs non modifiés de plus de un (1) an -- ")
 
-  return stats
+    const anonymizedUserCount = await anonymizeUsers()
+
+    logger.info(`Fin traitement ${anonymizedUserCount}`)
+
+    await notifyToSlack({
+      subject: "ANONYMISATION USERS",
+      message: `Anonymisation des users non modifiés depuis plus de un an terminée. ${anonymizedUserCount} user(s) anonymisée(s).`,
+      error: false,
+    })
+  } catch (err: any) {
+    await notifyToSlack({ subject: "ANONYMISATION USERS", message: `ECHEC anonymisation des users`, error: true })
+    throw err
+  }
 }
