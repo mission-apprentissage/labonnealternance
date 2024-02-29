@@ -58,21 +58,15 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     },
     parcoursup_id: {
       type: String,
-      default: null,
       index: true,
+      default: null,
       description: "Identifiant Parcoursup",
     },
-    parcoursup_statut: {
-      type: String,
+    parcoursup_visible: {
+      type: Boolean,
       index: true,
       default: null,
-      description: "Statut Parcoursup",
-    },
-    affelnet_statut: {
-      type: String,
-      index: true,
-      default: null,
-      description: "Statut Affelnet",
+      description: "Statut SLA Parcoursup",
     },
     affelnet_visible: {
       type: Boolean,
