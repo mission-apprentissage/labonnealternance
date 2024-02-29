@@ -53,8 +53,7 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
     const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
       etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
       lieu_formation_email: { $ne: null },
-      parcoursup_id: { $ne: null },
-      parcoursup_statut: "publié",
+      parcoursup_visible: true,
     }).lean()
 
     if (!hasOneAvailableFormation || !etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret) {
