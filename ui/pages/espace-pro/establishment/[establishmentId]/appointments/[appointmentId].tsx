@@ -167,16 +167,20 @@ export default function CfaCandidatInformationPage() {
             ) : (
               <Text as="div" marginTop={2}></Text>
             )}
-            <Text as="p" mt="2">
-              à propos de la formation : <strong>{data.etablissement.training_intitule_long}</strong>
-            </Text>
-            <Text as="p" mt="1">
-              dispensée par :{" "}
-              <strong>
-                {data.etablissement.etablissement_formateur_raison_sociale}, {data.etablissement.lieu_formation_street}, {data.etablissement.lieu_formation_zip_code},{" "}
-                {data.etablissement.lieu_formation_city}
-              </strong>
-            </Text>
+            {data.formation && (
+              <>
+                <Text as="p" mt="2">
+                  à propos de la formation : <strong>{data.formation.training_intitule_long}</strong>
+                </Text>
+                <Text as="p" mt="1">
+                  dispensée par :{" "}
+                  <strong>
+                    {data.formation.formation_formateur_raison_sociale}, {data.formation.lieu_formation_street}, {data.formation.lieu_formation_zip_code},{" "}
+                    {data.formation.lieu_formation_city}
+                  </strong>
+                </Text>
+              </>
+            )}
           </Box>
           {currentState === "initial" ? (
             <CfaCandidatInformationForm formik={formik} setCurrentState={setCurrentState} otherClicked={otherClicked} unreachableClicked={unreachableClicked} />

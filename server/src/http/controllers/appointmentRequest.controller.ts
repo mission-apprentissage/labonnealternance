@@ -208,7 +208,7 @@ export default (server: Server) => {
         throw Boom.notFound()
       }
 
-      const [etablissement, user] = await Promise.all([
+      const [formation, user] = await Promise.all([
         EligibleTrainingsForAppointment.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
@@ -226,7 +226,7 @@ export default (server: Server) => {
         }).lean(),
       ])
 
-      if (!etablissement) {
+      if (!formation) {
         throw Boom.internal("Etablissment not found")
       }
 
@@ -236,7 +236,7 @@ export default (server: Server) => {
 
       res.status(200).send({
         user,
-        etablissement,
+        formation,
       })
     }
   )
@@ -269,7 +269,7 @@ export default (server: Server) => {
         await Appointment.findByIdAndUpdate(appointmentId, { cfa_read_appointment_details_date: new Date() })
       }
 
-      const [etablissement, user] = await Promise.all([
+      const [formation, user] = await Promise.all([
         EligibleTrainingsForAppointment.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
@@ -290,10 +290,6 @@ export default (server: Server) => {
         }).lean(),
       ])
 
-      if (!etablissement) {
-        throw Boom.internal("Etablissment not found")
-      }
-
       if (!user) {
         throw Boom.internal("User not found")
       }
@@ -301,7 +297,7 @@ export default (server: Server) => {
       res.status(200).send({
         appointment,
         user,
-        etablissement,
+        formation,
       })
     }
   )

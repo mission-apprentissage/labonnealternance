@@ -156,7 +156,7 @@ export const zAppointmentsRoute = {
                 email: z.string(),
               })
               .strict(),
-            etablissement: z
+            formation: z
               .object({
                 etablissement_formateur_raison_sociale: z.string().nullish(),
                 lieu_formation_email: z.string().nullish(),
@@ -201,17 +201,20 @@ export const zAppointmentsRoute = {
                 type: z.string(),
               })
               .strict(),
-            etablissement: z
-              .object({
-                _id: ZEtablissement.shape._id,
-                training_intitule_long: z.string().nullish(),
-                etablissement_formateur_raison_sociale: z.string().nullish(),
-                lieu_formation_street: z.string().nullish(),
-                lieu_formation_city: z.string().nullish(),
-                lieu_formation_zip_code: z.string().nullish(),
-                lieu_formation_email: z.string().nullish(),
-              })
-              .strict(),
+            formation: z.union([
+              z
+                .object({
+                  _id: ZEtablissement.shape._id,
+                  training_intitule_long: z.string().nullish(),
+                  etablissement_formateur_raison_sociale: z.string().nullish(),
+                  lieu_formation_street: z.string().nullish(),
+                  lieu_formation_city: z.string().nullish(),
+                  lieu_formation_zip_code: z.string().nullish(),
+                  lieu_formation_email: z.string().nullish(),
+                })
+                .strict(),
+              z.null(),
+            ]),
           })
           .strict(),
       },
