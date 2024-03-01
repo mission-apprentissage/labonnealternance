@@ -86,7 +86,8 @@ export default (server: Server) => {
           { _id: etablissement._id },
           {
             premium_affelnet_activation_date: dayjs().toDate(),
-          }
+          },
+          { new: true }
         ),
       ])
 
@@ -117,7 +118,7 @@ export default (server: Server) => {
                 formateur_zip_code: etablissement.formateur_zip_code,
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
-                premiumActivatedDate: dayjs(etablissementAffelnetUpdated?.premium_affelnet_activation_date).format("DD/MM/YYYY"),
+                premiumAffelnetActivatedDate: dayjs(etablissementAffelnetUpdated?.premium_affelnet_activation_date).format("DD/MM/YYYY"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
