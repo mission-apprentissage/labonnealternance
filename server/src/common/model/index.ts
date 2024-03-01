@@ -42,6 +42,12 @@ const createSpecialIndexes = async () => {
   await db.collection("bonnesboites").createIndex({ geopoint: "2dsphere" })
   await db.collection("formationcatalogues").createIndex({ lieu_formation_geopoint: "2dsphere" })
   await db.collection("recruiters").createIndex({ geopoint: "2dsphere" })
+  await db.collection("accesslogs").createIndex(
+    { created_at: 1 },
+    {
+      expireAfterSeconds: 2 * 365 * 24 * 60 * 60,
+    }
+  )
 }
 
 export async function createMongoDBIndexes() {
