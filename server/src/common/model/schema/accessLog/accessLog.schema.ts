@@ -30,7 +30,7 @@ export const accessLogSchema = new Schema<IAccessLog>(
       description: "Type d'auth",
     },
     role: {
-      type: String,
+      type: Object,
       default: null,
       description: "Rôle",
     },
@@ -49,7 +49,7 @@ export const accessLogSchema = new Schema<IAccessLog>(
       default: null,
       description: "",
     },
-    ressurces: {
+    resources: {
       type: Object,
       default: null,
       description: "Ressources autorisées",
