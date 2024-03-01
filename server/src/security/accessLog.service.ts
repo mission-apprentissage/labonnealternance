@@ -6,7 +6,7 @@ import { AccessLog } from "@/common/model"
 import { IAccessLog } from "@/common/model/schema/accessLog/accessLog.types"
 
 export const createAccessLog = async <S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest, status: "authorized" | "unauthorized") => {
-  if (schema?.securityScheme?.doNotLogAccess) {
+  if (schema?.securityScheme?.skipLogAccess) {
     return
   }
 
