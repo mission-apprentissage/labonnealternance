@@ -24,10 +24,10 @@ export function auth<S extends IRouteSchema & WithSecurityScheme>(schema: S) {
     try {
       await authenticationMiddleware(schema, req)
       await authorizationMiddleware(schema, req)
-      await createAccessLog(schema, req, "authorized")
+      await createAccessLog(schema, req, true)
     } catch (error: any) {
-      if (error?.isBoom && error?.output?.payload.error === "Unauthorized") {
-        await createAccessLog(schema, req, "unauthorized")
+      if (error?.isBoom && error?.output?.payload.statusCode === 401) {
+        await createAccessLog(schema, req, false)
       }
       throw error
     }

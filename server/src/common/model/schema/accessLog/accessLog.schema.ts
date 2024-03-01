@@ -4,9 +4,8 @@ import { IAccessLog } from "./accessLog.types"
 
 export const accessLogSchema = new Schema<IAccessLog>(
   {
-    status: {
-      type: String,
-      default: null,
+    authorized: {
+      type: Boolean,
       description: "Statut de l'access log",
     },
     user_id: {

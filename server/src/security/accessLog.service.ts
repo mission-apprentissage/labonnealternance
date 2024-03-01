@@ -5,24 +5,26 @@ import { assertUnreachable } from "shared/utils"
 import { AccessLog } from "@/common/model"
 import { IAccessLog } from "@/common/model/schema/accessLog/accessLog.types"
 
-export const createAccessLog = async <S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest, status: "authorized" | "unauthorized") => {
+export const createAccessLog = async <S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest, authorized: boolean) => {
   if (schema?.securityScheme?.skipLogAccess) {
     return
   }
 
   const acl: IAccessLog = {
-    status,
+    authorized,
     auth_type: schema.securityScheme.auth,
     http_method: schema.method,
     path: schema.path,
     ip: req.ip,
+    user_id: null,
+    user_email: null,
     created_at: new Date(),
-    parameters: req.params,
+    parameters: req.params as { [key: string]: string },
     role: req?.authorizationContext?.role,
     resources: req?.authorizationContext?.resources,
   }
 
-  if (status === "authorized" && req.user) {
+  if (authorized && req.user) {
     switch (req.user.type) {
       case "IUserRecruteur": {
         acl.user_type = req.user.type

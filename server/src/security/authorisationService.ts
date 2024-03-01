@@ -18,7 +18,7 @@ type Resources = {
   users: Array<IUserRecruteur>
   applications: Array<{ application: IApplication; job: IJob; recruiter: IRecruiter } | null>
 }
-type ResourceIds = {
+export type ResourceIds = {
   recruiters?: string[]
   jobs?: Array<{ job: string; recruiter: string | null } | null>
   users?: Array<string>

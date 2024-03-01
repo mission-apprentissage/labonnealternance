@@ -1,16 +1,18 @@
 import { Role } from "shared/security/permissions"
 
+import { ResourceIds } from "@/security/authorisationService"
+
 interface IAccessLog {
-  status: "authorized" | "unauthorized"
-  user_id?: string
-  user_email?: string
+  authorized: boolean
+  user_id: string | null
+  user_email: string | null
   user_type?: string
   auth_type: string
   path: string
   role?: Role
-  parameters?: any
+  parameters: { [key: string]: string } | null
   http_method: string
-  resources?: any
+  resources: ResourceIds | null
   ip: string
   created_at: Date
 }
