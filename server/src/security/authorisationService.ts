@@ -20,7 +20,7 @@ type Resources = {
 }
 
 // Specify what we need to simplify mocking in tests
-type IRequest = Pick<FastifyRequest, "user" | "params" | "query">
+type IRequest = Pick<FastifyRequest, "user" | "params" | "query" | "authorizationContext">
 
 type NonTokenUserWithType = UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>
 
@@ -355,6 +355,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
   const userWithType = getUserFromRequest(req, schema)
 
   if (userWithType.type === "IUserRecruteur" && userWithType.value.type === "ADMIN") {
+    req.authorizationContext = { role: { name: "admin", permissions: [] } }
     return
   }
   if (userWithType.type === "IAccessToken") {
@@ -365,6 +366,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
   const resources = await getResources(schema, req)
   const role = getUserRole(userWithType)
 
+  req.authorizationContext = { role, resources }
   if (!isAuthorized(schema.securityScheme.access, userWithType, role, resources)) {
     throw Boom.forbidden()
   }
