@@ -212,12 +212,12 @@ export const exportPE = async (): Promise<void> => {
 
     await notifyToSlack({
       subject: "EXPORT PE OK",
-      message: `${buffer.length} offres transmises à Pôle emploi`,
+      message: `${buffer.length} offres transmises à France Travail`,
     })
   } catch (err) {
     await notifyToSlack({
       subject: "EXPORT PE KO",
-      message: `Echec de l'export des offres Pôle emploi. ${err}`,
+      message: `Echec de l'export des offres France Travail. ${err}`,
     })
     throw err
   }

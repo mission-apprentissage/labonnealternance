@@ -5,7 +5,7 @@ import React from "react"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const buildPeUrl = (formValues) => {
-  let peUrl = "https://candidat.pole-emploi.fr/offres/recherche?typeContrat=CDI,CDD&offresPartenaires=true&tri=0"
+  let peUrl = "https://candidat.francetravail.fr/offres/recherche?typeContrat=CDI,CDD&offresPartenaires=true&tri=0"
   if (formValues?.job) {
     peUrl += `&motsCles=${formValues.job.romes}`
   }

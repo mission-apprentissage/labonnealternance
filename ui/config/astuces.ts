@@ -3,7 +3,7 @@ export const astuces = [
     id: "AID_PERMIS_MESAIDES",
     theme: "Aide",
     message: "Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aides dès maintenant.",
-    lien: "https://mes-aides.pole-emploi.fr/",
+    lien: "https://mes-aides.francetravail.fr/",
   },
   {
     id: "AID_COMMUNES",

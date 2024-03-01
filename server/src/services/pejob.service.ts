@@ -99,7 +99,7 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
       fullAddress: `${job.lieuTravail.libelle}${job.lieuTravail.codePostal ? " " + job.lieuTravail.codePostal : ""}`,
     },
     company,
-    url: `https://candidat.pole-emploi.fr/offres/recherche/detail/${job.id}?at_medium=CMP&at_campaign=labonnealternance_candidater_a_une_offre`,
+    url: `https://candidat.francetravail.fr/offres/recherche/detail/${job.id}?at_medium=CMP&at_campaign=labonnealternance_candidater_a_une_offre`,
     job: {
       id: job.id,
       creationDate: new Date(job.dateCreation),
@@ -130,7 +130,7 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
 }
 
 /**
- * Converti les offres issues de l'api Pôle emploi en objets de type ILbaItem
+ * Converti les offres issues de l'api France Travail en objets de type ILbaItem
  */
 const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[]; radius: number; latitude: string; longitude: string }) => {
   const resultJobs: ILbaItemPeJob[] = []
@@ -152,7 +152,7 @@ const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[];
 }
 
 /**
- * Récupère une liste d'offres depuis l'API Pôle emploi
+ * Récupère une liste d'offres depuis l'API France Travail
  */
 const getPeJobs = async ({
   romes,
@@ -221,7 +221,7 @@ const getPeJobs = async ({
 }
 
 /**
- * Retourne une liste d'offres Pôle emploi au format unifié La bonne alternance
+ * Retourne une liste d'offres France Travail au format unifié La bonne alternance
  * applique post traitements suivants :
  * - filtrage optionnel sur les opco
  * - suppressions de données non autorisées pour des consommateurs extérieurs
@@ -282,7 +282,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
 }
 
 /**
- * Retourne un tableau contenant la seule offre Pôle emploi identifiée
+ * Retourne un tableau contenant la seule offre France Travail identifiée
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {

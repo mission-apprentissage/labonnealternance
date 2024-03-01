@@ -389,7 +389,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
           <Text fontSize="16px" fontWeight="700">
             Fiche métier : {libelle}
           </Text>
-          <Text fontSize="14px">La fiche métier se base sur la classification ROME de Pôle Emploi</Text>
+          <Text fontSize="14px">La fiche métier se base sur la classification ROME de France Travail</Text>
         </Box>
         <Flex alignItems="flex-start" mb={6}>
           <InfoCircle mr={2} mt={1} color="bluefrance.500" />

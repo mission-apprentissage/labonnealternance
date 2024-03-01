@@ -94,7 +94,7 @@ const ZLbaItemRome = z
       .string()
       .openapi({
         example: "F1603",
-        description: "Un code ROME provenant de la nomenclature des métiers de Pôle emploi",
+        description: "Un code ROME provenant de la nomenclature des métiers de France Travail",
       })
       .nullable(), // pe -> romeCode | lbb/lba -> rome_codes | matcha -> offres.romes
     label: z

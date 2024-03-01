@@ -143,7 +143,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
             <Box my={4}>
               <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={selectedItem.url} target="poleemploi" onClick={postuleSurPoleEmploi}>
-                Je postule sur Pôle emploi
+                Je postule sur France Travail
               </Link>
             </Box>
           )}

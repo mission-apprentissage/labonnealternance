@@ -165,7 +165,7 @@ const ConseilsEtAstuces = () => {
               <ListItem mb={4}>
                 France Travail recense de nombreux évènements (conférences, salons, job dating, conférences en ligne…) pour vous aider dans vos recherches de contrat.{" "}
                 <Link
-                  href="https://mesevenementsemploi.pole-emploi.fr/mes-evenements-emploi/evenements"
+                  href="https://mesevenementsemploi.francetravail.fr/mes-evenements-emploi/evenements"
                   aria-label="Accéder au site des événement recencsé par France Travail"
                   isExternal
                   variant="basicUnderlinedBlue"

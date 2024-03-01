@@ -24,13 +24,13 @@ const AlgoHome = () => {
           <UnorderedList>
             <ListItem>
               <Text as="p" fontSize="18px" mb="5">
-                <strong>Les offres d&apos;emploi</strong> : publiées sur notre plateforme ainsi que celles issues de Pôle emploi et ses partenaires. Elles sont identifiées grâce au
-                tag <TagOffreEmploi />
+                <strong>Les offres d&apos;emploi</strong> : publiées sur notre plateforme ainsi que celles issues de France Travail et ses partenaires. Elles sont identifiées grâce
+                au tag <TagOffreEmploi />
               </Text>
             </ListItem>
             <ListItem>
               <Text as="p" fontSize="18px" mb="5">
-                <strong>Les candidatures spontanées</strong> : correspondant au marché caché de l&apos;emploi. Chaque mois, un algorithme prédictif de Pôle emploi analyse les
+                <strong>Les candidatures spontanées</strong> : correspondant au marché caché de l&apos;emploi. Chaque mois, un algorithme prédictif de France Travail analyse les
                 recrutements des 6 années passées pour prédire ceux des 6 mois à venir. Grâce à ces données, il identifie une liste restreinte d&apos;entreprises &quot;à fort
                 potentiel d&apos;embauche en alternance&quot; pour faciliter vos démarches de candidatures spontanées. Elles sont identifiées grâce au tag{" "}
                 <TagCandidatureSpontanee />
