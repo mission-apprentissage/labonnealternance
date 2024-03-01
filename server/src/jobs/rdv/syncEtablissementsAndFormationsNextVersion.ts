@@ -47,8 +47,8 @@ const prepareETFA = async () => {
         etablissement_formateur_city: "$etablissement_formateur_localite",
         etablissement_formateur_siret: "$etablissement_formateur_siret",
         etablissement_gestionnaire_siret: "$etablissement_gestionnaire_siret",
-        parcoursup_statut: "$parcoursup_statut",
-        affelnet_statut: "$affelnet_statut",
+        affelnet_visible: "$affelnet_visible",
+        parcoursup_visible: "$parcoursup_visible",
         email_catalogue: "$email",
         etablissement_gestionnaire_courriel_catalogue: "$etablissement_gestionnaire_courriel",
       },
@@ -95,14 +95,14 @@ const addReferrersToETFA = async () => {
   // const etfa = await db
   //   .collection("eligible_trainings_for_appointments")
   //   .find({ lieu_formation_email: { $ne: null } })
-  //   .project({ cle_ministere_educatif: 1, etablissement_gestionnaire_siret: 1, parcoursup_id: 1, parcoursup_statut: 1 })
+  // .project({ cle_ministere_educatif: 1, etablissement_gestionnaire_siret: 1, parcoursup_visible: 1 }),
   //   .toArray()
 
   oleoduc(
     db
       .collection("eligible_trainings_for_appointments")
       .find({ lieu_formation_email: { $ne: null } })
-      .project({ cle_ministere_educatif: 1, etablissement_gestionnaire_siret: 1, parcoursup_id: 1, parcoursup_statut: 1 }),
+      .project({ cle_ministere_educatif: 1, etablissement_gestionnaire_siret: 1, parcoursup_visible: 1 }),
     writeData(
       async (formation) => {
         const [etablissements, existInReferentielOnisep] = await Promise.all([
@@ -128,7 +128,7 @@ const addReferrersToETFA = async () => {
         }
 
         // Activate premium referrers
-        if (hasPremiumActivation && formation.parcoursup_id && formation.parcoursup_statut === "publié") {
+        if (hasPremiumActivation && formation.parcoursup_visible) {
           referrersToActivate.push(referrers.PARCOURSUP.name)
         }
         try {
