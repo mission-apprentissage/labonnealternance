@@ -6,10 +6,10 @@ interface IAccessLog {
   authorized: boolean
   user_id: string | null
   user_email: string | null
-  user_type?: string
+  user_type: string
   auth_type: string
   path: string
-  role?: Role
+  role: Role | null
   parameters: { [key: string]: string } | null
   http_method: string
   resources: ResourceIds | null
