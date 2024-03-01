@@ -86,7 +86,8 @@ export default (server: Server) => {
           { _id: etablissement._id },
           {
             premium_affelnet_activation_date: dayjs().toDate(),
-          }
+          },
+          { new: true }
         ),
       ])
 
