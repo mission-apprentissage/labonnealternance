@@ -72,7 +72,7 @@ export type SecurityScheme = {
   auth: AuthStrategy
   access: AccessPermission | null
   resources: AccessRessouces
-  doNotLogAccess?: boolean
+  skipLogAccess?: boolean
 }
 
 interface IRouteSchemaCommon {
