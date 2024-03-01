@@ -4,6 +4,7 @@ import { db, mongooseInstance } from "@/common/mongodb"
 
 import { logger } from "../logger"
 
+import AccessLog from "./schema/accessLog/accessLog.schema"
 import AnonymizedUser from "./schema/anonymizedUsers/anonymizedUsers.schema"
 import ApiCalls from "./schema/apiCall/apiCall.schema"
 import AnonymizedApplication from "./schema/application/anonymizedApplications.schema"
@@ -80,6 +81,7 @@ export async function createMongoDBIndexes() {
 }
 
 export {
+  AccessLog,
   AnonymizedApplication,
   AnonymizedUser,
   ApiCalls,
