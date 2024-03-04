@@ -9,7 +9,7 @@ import { JOB_STATUS } from "shared/models"
 
 import { db } from "@/common/mongodb"
 
-import { sendCsvToPE } from "../../../../common/apis/Pe"
+import { sendCsvToPE } from "../../../../common/apis/FranceTravail"
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
 import { getDepartmentByZipCode } from "../../../../common/territoires"

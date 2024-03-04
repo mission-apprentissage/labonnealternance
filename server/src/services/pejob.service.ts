@@ -3,7 +3,7 @@ import { setTimeout } from "timers/promises"
 import distance from "@turf/distance"
 import Boom from "boom"
 
-import { getPeJob, getPeReferentiels, searchForPeJobs } from "@/common/apis/Pe"
+import { getPeJob, getPeReferentiels, searchForPeJobs } from "@/common/apis/FranceTravail"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
