@@ -65,7 +65,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
     setIsCollapsedHeader(currentScroll > maxScroll)
   }
 
-  const postuleSurPoleEmploi = () => {
+  const postuleSurFranceTravail = () => {
     SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre PE", {
       info_fiche: selectedItem.job.id,
     })
@@ -142,7 +142,14 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
           {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
             <Box my={4}>
-              <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={selectedItem.url} target="francetravail" onClick={postuleSurPoleEmploi}>
+              <Link
+                data-tracking-id="postuler-offre-partenaire"
+                {...focusWithin}
+                variant="postuler"
+                href={selectedItem.url}
+                target="francetravail"
+                onClick={postuleSurFranceTravail}
+              >
                 Je postule sur France Travail
               </Link>
             </Box>
