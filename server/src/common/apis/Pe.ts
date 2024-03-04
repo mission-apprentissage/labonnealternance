@@ -204,9 +204,9 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
  */
 export const sendCsvToPE = async (csvPath: string): Promise<void> => {
   const form = new FormData()
-  form.append("login", config.poleEmploiDepotOffres.login)
-  form.append("password", config.poleEmploiDepotOffres.password)
-  form.append("nomFlux", config.poleEmploiDepotOffres.nomFlux)
+  form.append("login", config.franceTravailDepotOffres.login)
+  form.append("password", config.franceTravailDepotOffres.password)
+  form.append("nomFlux", config.franceTravailDepotOffres.nomFlux)
   form.append("fichierAenvoyer", createReadStream(csvPath))
   form.append("periodeRef", "")
 
