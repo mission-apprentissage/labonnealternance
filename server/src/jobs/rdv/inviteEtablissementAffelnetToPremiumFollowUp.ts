@@ -63,7 +63,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
     count++
 
     // Invite all etablissements only in production environment
-    await mailer.sendEmail({
+    const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite-followup.mjml.ejs"),
@@ -86,6 +86,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
       { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
         premium_affelnet_follow_up_date: dayjs().toDate(),
+        to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
       }
     )
   }

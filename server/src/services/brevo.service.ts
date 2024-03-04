@@ -12,6 +12,8 @@ const apiInstance = new SibApiV3Sdk.WebhooksApi()
 
 let emailWebhook = new SibApiV3Sdk.CreateWebhook()
 
+let hardBounceWebhook = new SibApiV3Sdk.CreateWebhook()
+
 export const enum BrevoEventStatus {
   HARD_BOUNCE = "hard_bounce",
 }
@@ -19,7 +21,13 @@ export const enum BrevoEventStatus {
 emailWebhook = {
   description: "Changements d'états des emails de candidatures ou de rendez-vous ou de marketing",
   url: `${config.publicUrl}/api/emails/webhook?apiKey=${config.smtp.brevoWebhookApiKey}`,
-  events: ["hardBounce", "delivered", "request", "click", "uniqueOpened"],
+  events: ["delivered", "request", "click", "uniqueOpened"],
+}
+
+hardBounceWebhook = {
+  description: "Hardbounce des emails de candidatures ou de rendez-vous ou de marketing",
+  url: `${config.publicUrl}/api/emails/webhookHardbounce?apiKey=${config.smtp.brevoWebhookApiKey}`,
+  events: ["hardBounce"],
 }
 
 /**
@@ -38,7 +46,17 @@ export const initBrevoWebhooks = () => {
       logger.error("Brevo webhook API Error for email (appointment, application) status changes. Returned data: " + error.response.res.text)
     }
   )
-  apiInstance.createWebhook({ ...emailWebhook, events: ["hardBounce"], type: "marketing" }).then(
+
+  apiInstance.createWebhook({ ...hardBounceWebhook, type: "transactional" }).then(
+    function (data) {
+      logger.info("Brevo webhook API called successfully for transactional hardbounces. Returned data: " + JSON.stringify(data))
+    },
+    function (error) {
+      logger.error("Brevo webhook API Error for transactional hardbounces. Returned data: " + error.response.res.text)
+    }
+  )
+
+  apiInstance.createWebhook({ ...hardBounceWebhook, events: ["hardBounce"], type: "marketing" }).then(
     function (data) {
       logger.info("Brevo webhook API called successfully for campaign hardbounce detection. Returned data: " + JSON.stringify(data))
     },

@@ -50,7 +50,7 @@ export const inviteEtablissementToOptOut = async () => {
   for (const etablissement of etablissementsWithouOptMode) {
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
     if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret) {
-      await mailer.sendEmail({
+      const emailEtablissement = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `Trouvez et recrutez vos candidats avec La bonne alternance`,
         template: getStaticFilePath("./templates/mail-cfa-optout-invitation.mjml.ejs"),
@@ -76,6 +76,7 @@ export const inviteEtablissementToOptOut = async () => {
         {
           optout_invitation_date: dayjs().toDate(),
           optout_activation_scheduled_date: willBeActivatedAt.toDate(),
+          to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
         }
       )
     }
