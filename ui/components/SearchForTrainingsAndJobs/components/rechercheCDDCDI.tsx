@@ -4,16 +4,16 @@ import React from "react"
 
 import { DisplayContext } from "@/context/DisplayContextProvider"
 
-const buildPeUrl = (formValues) => {
-  let peUrl = "https://candidat.francetravail.fr/offres/recherche?typeContrat=CDI,CDD&offresPartenaires=true&tri=0"
+const buildFtUrl = (formValues) => {
+  let ftUrl = "https://candidat.francetravail.fr/offres/recherche?typeContrat=CDI,CDD&offresPartenaires=true&tri=0"
   if (formValues?.job) {
-    peUrl += `&motsCles=${formValues.job.romes}`
+    ftUrl += `&motsCles=${formValues.job.romes}`
   }
   if (formValues?.location?.insee) {
-    peUrl += `&lieux=${formValues.location.insee}&rayon=${formValues.radius}`
+    ftUrl += `&lieux=${formValues.location.insee}&rayon=${formValues.radius}`
   }
 
-  return peUrl
+  return ftUrl
 }
 
 const RechercheCDICDD = () => {
@@ -27,7 +27,7 @@ const RechercheCDICDD = () => {
             <Text mb={4} fontWeight={700}>
               Certaines entreprises proposent d’autres types de contrats, soumettez-leur l'idée de vous recruter en alternance.
             </Text>
-            <Link ml="2px" isExternal variant="basicUnderlined" href={buildPeUrl(formValues)}>
+            <Link ml="2px" isExternal variant="basicUnderlined" href={buildFtUrl(formValues)}>
               Voir les offres France Travail <ExternalLinkIcon mb="3px" ml="2px" />
             </Link>
           </Box>
