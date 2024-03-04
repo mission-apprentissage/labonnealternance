@@ -328,7 +328,7 @@ export default (server: Server) => {
         users.getUserById(appointment.applicant_id),
       ])
 
-      if (!user || !eligibleTrainingsForAppointment) throw Boom.notFound()
+      if (!user) throw Boom.notFound()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
         const formationCatalogue = cle_ministere_educatif ? await FormationCatalogue.findOne({ cle_ministere_educatif }) : undefined
@@ -342,9 +342,9 @@ export default (server: Server) => {
             prenom: sanitizeForEmail(user.firstname),
             nom: sanitizeForEmail(user.lastname),
             message: sanitizeForEmail(cfa_message_to_applicant),
-            nom_formation: eligibleTrainingsForAppointment.training_intitule_long,
-            nom_cfa: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
-            cfa_email: eligibleTrainingsForAppointment.lieu_formation_email,
+            nom_formation: eligibleTrainingsForAppointment?.training_intitule_long,
+            nom_cfa: eligibleTrainingsForAppointment?.etablissement_formateur_raison_sociale,
+            cfa_email: eligibleTrainingsForAppointment?.lieu_formation_email,
             cfa_phone: formationCatalogue?.num_tel,
           },
         })
