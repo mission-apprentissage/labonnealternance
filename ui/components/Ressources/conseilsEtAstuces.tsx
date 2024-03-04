@@ -293,7 +293,7 @@ const ConseilsEtAstuces = () => {
               <ListItem mb={4}>
                 Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aide dès maintenant.{" "}
                 <Link
-                  href="https://mes-aides.pole-emploi.fr/transport-et-mobilite/financer-mon-permis"
+                  href="https://mes-aides.francetravail.fr/transport-et-mobilite/financer-mon-permis"
                   aria-label="Accéder au site mes aides de France travail"
                   isExternal
                   variant="basicUnderlinedBlue"
