@@ -116,7 +116,7 @@ export const sendFormateurAppointmentEmail = async (
     throw new Error("Etablissement formateur_siret not found")
   }
 
-  let emailCfaSubject = `${subjectPrefix ?? ""}[${referrerObj.full_name}] - Un candidat a un message pour vous`
+  let emailCfaSubject = `${subjectPrefix ?? ""} ${referrerObj.full_name} - un candidat a un message pour vous`
 
   if (eligibleTrainingsForAppointment.lieu_formation_zip_code) {
     emailCfaSubject = `${emailCfaSubject} - [${eligibleTrainingsForAppointment.lieu_formation_zip_code.slice(0, 2)}]`
