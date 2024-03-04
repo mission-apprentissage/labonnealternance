@@ -19,5 +19,19 @@ export const zEmailsRoutes = {
       },
       securityScheme: null,
     },
+    "/emails/webhookHardbounce": {
+      method: "post",
+      path: "/emails/webhookHardbounce",
+      querystring: z
+        .object({
+          apiKey: z.string(),
+        })
+        .strict(),
+      body: extensions.brevoWebhook(),
+      response: {
+        "200": z.object({}).strict(),
+      },
+      securityScheme: null,
+    },
   },
 } as const satisfies IRoutesDef

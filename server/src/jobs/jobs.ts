@@ -188,7 +188,7 @@ export const CronsMap = {
     handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true } }),
   },
   "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
-    cron_string: "0 0 1 * *",
+    cron_string: "5 1 * * *",
     handler: () => addJob({ name: "users:anonimize", payload: {} }),
   },
   "Contrôle quotidien des candidatures": {
