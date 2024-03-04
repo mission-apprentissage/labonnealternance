@@ -28,7 +28,7 @@ import {
 } from "@chakra-ui/react"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
@@ -348,7 +348,7 @@ const DemandeDeContact = (props: Props) => {
       </Text>
       <Box mt={6}>
         <Text fontWeight="700" color="grey.750">
-          {onSuccessSubmitResponse.etablissement.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
+          {onSuccessSubmitResponse.formation.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
           <Text color="bluefrance.500" as="span">
             {onSuccessSubmitResponse.user.phone.match(/.{1,2}/g).join(".")}
           </Text>{" "}
@@ -381,12 +381,12 @@ const DemandeDeContact = (props: Props) => {
       </Flex>
       <Box borderBottom="1px solid #D0C9C4" mt={10} />
       <Box my={10}>
-        {onSuccessSubmitResponse.etablissement?.lieu_formation_email && (
+        {onSuccessSubmitResponse.formation?.lieu_formation_email && (
           <Text fontSize="14px">
             Vous souhaitez modifier ou annuler cette demande ? <br />
             Envoyez un email à{" "}
             <u>
-              <a href={`mailto:${onSuccessSubmitResponse.etablissement.lieu_formation_email}`}>{onSuccessSubmitResponse.etablissement.lieu_formation_email}</a>
+              <a href={`mailto:${onSuccessSubmitResponse.formation.lieu_formation_email}`}>{onSuccessSubmitResponse.formation.lieu_formation_email}</a>
             </u>
           </Text>
         )}
