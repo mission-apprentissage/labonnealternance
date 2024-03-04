@@ -116,20 +116,13 @@ export const sendFormateurAppointmentEmail = async (
     throw new Error("Etablissement formateur_siret not found")
   }
 
-  let emailCfaSubject = `${subjectPrefix ?? ""} ${referrerObj.full_name} - un candidat a un message pour vous`
-
-  if (eligibleTrainingsForAppointment.lieu_formation_zip_code) {
-    emailCfaSubject = `${emailCfaSubject} - [${eligibleTrainingsForAppointment.lieu_formation_zip_code.slice(0, 2)}]`
-  }
-  const toEmail = appointment.cfa_recipient_email
-
   const email = await mailer.sendEmail({
-    to: toEmail,
-    subject: emailCfaSubject,
+    to: appointment.cfa_recipient_email,
+    subject: `${subjectPrefix ?? ""} ${referrerObj.full_name} - un candidat a un message pour vous`,
     template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
     data: {
       ...getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
-      link: createRdvaAppointmentIdPageLink(toEmail, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
+      link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
     },
   })
   await findOneAndUpdate(
