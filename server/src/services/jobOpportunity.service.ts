@@ -1,11 +1,11 @@
 import { IApiError } from "../common/utils/errorManager"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 
+import { getSomeFtJobs } from "./ftjob.service"
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
 import { getSomeCompanies } from "./lbacompany.service"
 import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPeJob } from "./lbaitem.shared.service.types"
 import { getLbaJobs } from "./lbajob.service"
-import { getSomePeJobs } from "./pejob.service"
 import { jobsQueryValidator } from "./queryValidator.service"
 
 /**
@@ -48,7 +48,7 @@ export const getJobsFromApi = async ({
 
     const [peJobs, lbaCompanies, matchas] = await Promise.all([
       jobSources.includes("offres")
-        ? getSomePeJobs({
+        ? getSomeFtJobs({
             romes: romes?.split(","),
             insee: insee,
             radius: finalRadius,

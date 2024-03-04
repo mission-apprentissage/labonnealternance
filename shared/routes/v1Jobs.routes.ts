@@ -3,7 +3,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
-import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
+import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
 import {
@@ -188,7 +188,7 @@ export const zV1JobsRoutes = {
             peJobs: z.union([
               z
                 .object({
-                  results: z.array(ZLbaItemPeJob),
+                  results: z.array(ZLbaItemFtJob),
                 })
                 .strict()
                 .nullable(),
@@ -311,7 +311,7 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            peJobs: z.array(ZLbaItemPeJob),
+            peJobs: z.array(ZLbaItemFtJob),
           })
           .strict(),
         "400": z.union([ZResError, ZLbacError, ZApiError]),

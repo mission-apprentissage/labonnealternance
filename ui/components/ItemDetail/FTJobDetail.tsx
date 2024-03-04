@@ -9,7 +9,7 @@ import { formatDate } from "../../utils/strutils"
 
 const md = mdIt().disable(["link", "image"])
 
-const PeJobDetail = ({ job }) => {
+const FTJobDetail = ({ job }) => {
   useEffect(() => {
     // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
     document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
@@ -58,4 +58,4 @@ const PeJobDetail = ({ job }) => {
   )
 }
 
-export default PeJobDetail
+export default FTJobDetail

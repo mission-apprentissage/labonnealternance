@@ -4,7 +4,7 @@ import querystring from "querystring"
 import FormData from "form-data"
 
 import config from "@/config"
-import { PEResponse } from "@/services/pejob.service.types"
+import { FTResponse } from "@/services/ftjob.service.types"
 import { IAppelattionDetailsFromAPI, IFTAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
@@ -39,13 +39,13 @@ const OFFRES_ACESS = querystring.stringify({
   scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
 })
 
-let tokenOffrePE: IFTAPIToken = {
+let tokenOffreFT: IFTAPIToken = {
   access_token: "",
   scope: "",
   token_type: "",
   expires_in: 0,
 }
-let tokenRomePE: IFTAPIToken = {
+let tokenRomeFT: IFTAPIToken = {
   access_token: "",
   scope: "",
   token_type: "",
@@ -54,7 +54,7 @@ let tokenRomePE: IFTAPIToken = {
 
 const isTokenValid = (token: IFTAPIToken): any => token?.expire?.isAfter(dayjs())
 
-const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPIToken> => {
+const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPIToken> => {
   const isValid = isTokenValid(token)
 
   if (isValid) {
@@ -78,9 +78,9 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPI
 }
 
 /**
- * @description Search for PE Jobs
+ * @description Search for FT Jobs
  */
-export const searchForPeJobs = async (params: {
+export const searchForFtJobs = async (params: {
   codeROME: string
   commune: string
   sort: number
@@ -89,8 +89,8 @@ export const searchForPeJobs = async (params: {
   niveauFormation?: string
   insee?: string
   distance?: number
-}): Promise<IApiError | PEResponse | ""> => {
-  tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
+}): Promise<IApiError | FTResponse | ""> => {
+  tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
   try {
     const extendedParams = {
       ...params,
@@ -102,7 +102,7 @@ export const searchForPeJobs = async (params: {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${tokenOffrePE.access_token}`,
+        Authorization: `Bearer ${tokenOffreFT.access_token}`,
       },
     })
 
@@ -114,41 +114,41 @@ export const searchForPeJobs = async (params: {
 }
 
 /**
- * @description Get a PE Job
+ * @description Get a FT Job
  */
-export const getPeJob = async (id: string) => {
-  tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
+export const getFtJob = async (id: string) => {
+  tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
   try {
     const result = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/offres/${id}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${tokenOffrePE.access_token}`,
+        Authorization: `Bearer ${tokenOffreFT.access_token}`,
       },
     })
 
-    return result // PEResponse
+    return result
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
+    new ApiError("Api FT", error.message, error.code || error.response?.status, error?.response?.status)
   }
 }
 
 /**
- * Utilitaire à garder pour interroger les référentiels PE non documentés par ailleurs
+ * Utilitaire à garder pour interroger les référentiels FT non documentés par ailleurs
  * Liste des référentiels disponible sur https://www.emploi-store-dev.fr/portail-developpeur-cms/home/catalogue-des-api/documentation-des-api/api/api-offres-demploi-v2/referentiels.html
  *
  * @param {string} referentiel
  */
-export const getPeReferentiels = async (referentiel: string) => {
+export const getFtReferentiels = async (referentiel: string) => {
   try {
-    tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
+    tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
 
     const referentiels = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${tokenOffrePE.access_token}`,
+        Authorization: `Bearer ${tokenOffreFT.access_token}`,
       },
     })
 
@@ -164,12 +164,12 @@ export const getPeReferentiels = async (referentiel: string) => {
  * @returns
  */
 export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDetailsFromAPI | null | undefined> => {
-  tokenRomePE = await getPeAccessToken("ROME", tokenRomePE)
+  tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
 
   try {
     const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/metier/${romeCode}`, {
       headers: {
-        Authorization: `Bearer ${tokenRomePE.access_token}`,
+        Authorization: `Bearer ${tokenRomeFT.access_token}`,
       },
     })
 
@@ -181,12 +181,12 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 }
 
 export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
-  tokenRomePE = await getPeAccessToken("ROME", tokenRomePE)
+  tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
 
   try {
     const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/appellation/${appellationCode}`, {
       headers: {
-        Authorization: `Bearer ${tokenRomePE.access_token}`,
+        Authorization: `Bearer ${tokenRomeFT.access_token}`,
       },
     })
 

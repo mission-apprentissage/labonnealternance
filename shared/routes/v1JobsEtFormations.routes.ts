@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
-import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
+import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob } from "../models/lbaItem.model"
 
 import {
   zCallerParam,
@@ -58,7 +58,7 @@ export const zV1JobsEtFormationsRoutes = {
                 peJobs: z.union([
                   z
                     .object({
-                      results: z.array(ZLbaItemPeJob),
+                      results: z.array(ZLbaItemFtJob),
                     })
                     .strict(),
                   ZApiError,

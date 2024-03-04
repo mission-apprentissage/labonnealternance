@@ -17,6 +17,7 @@ import AideApprentissage from "./AideApprentissage"
 import CandidatureLba from "./CandidatureLba/CandidatureLba"
 import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
+import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
@@ -29,7 +30,6 @@ import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
 import LbbCompanyDetail from "./LbbCompanyDetail"
 import LocationDetail from "./LocationDetail"
 import MatchaDetail from "./MatchaDetail"
-import PeJobDetail from "./PeJobDetail"
 import TrainingDetail from "./TrainingDetail"
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
@@ -171,7 +171,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
         </Box>
       </Box>
 
-      {kind === "peJob" ? <PeJobDetail job={selectedItem} /> : ""}
+      {kind === "peJob" ? <FTJobDetail job={selectedItem} /> : ""}
       {kind === "matcha" ? <MatchaDetail job={selectedItem} /> : ""}
       {amongst(kind, ["lbb", "lba"]) ? <LbbCompanyDetail lbb={selectedItem} /> : ""}
 

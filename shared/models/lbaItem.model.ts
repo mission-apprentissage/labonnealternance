@@ -406,7 +406,7 @@ export const ZLbaItemLbaCompany = z
 
 export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
 
-export const ZLbaItemPeJob = z
+export const ZLbaItemFtJob = z
   .object({
     ideaType: z.literal("peJob"),
     title: z.string().nullish(), // pe -> intitule
@@ -422,7 +422,7 @@ export const ZLbaItemPeJob = z
   .strict()
   .openapi("PeJob")
 
-export type ILbaItemPeJob = z.output<typeof ZLbaItemPeJob>
+export type ILbaItemFtJob = z.output<typeof ZLbaItemFtJob>
 
 export const ZLbaItemFormationResult = z
   .object({
