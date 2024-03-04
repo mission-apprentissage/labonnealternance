@@ -1,6 +1,6 @@
 import { TDayjs } from "./dayjs.service"
 
-export interface IPEAPIToken {
+export interface IFTAPIToken {
   access_token: string
   scope: string
   token_type: string

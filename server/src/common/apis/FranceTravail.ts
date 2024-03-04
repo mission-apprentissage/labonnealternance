@@ -5,7 +5,7 @@ import FormData from "form-data"
 
 import config from "@/config"
 import { PEResponse } from "@/services/pejob.service.types"
-import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
+import { IAppelattionDetailsFromAPI, IFTAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
 import { ApiError } from "../utils/apiUtils"
@@ -39,22 +39,22 @@ const OFFRES_ACESS = querystring.stringify({
   scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
 })
 
-let tokenOffrePE: IPEAPIToken = {
+let tokenOffrePE: IFTAPIToken = {
   access_token: "",
   scope: "",
   token_type: "",
   expires_in: 0,
 }
-let tokenRomePE: IPEAPIToken = {
+let tokenRomePE: IFTAPIToken = {
   access_token: "",
   scope: "",
   token_type: "",
   expires_in: 0,
 }
 
-const isTokenValid = (token: IPEAPIToken): any => token?.expire?.isAfter(dayjs())
+const isTokenValid = (token: IFTAPIToken): any => token?.expire?.isAfter(dayjs())
 
-const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPIToken> => {
+const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPIToken> => {
   const isValid = isTokenValid(token)
 
   if (isValid) {
