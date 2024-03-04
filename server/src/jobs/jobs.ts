@@ -29,7 +29,7 @@ import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
-import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
+import { exportToFranceTravail } from "./lba_recruteur/formulaire/misc/exportToFranceTravail"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
@@ -303,7 +303,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "opco:relance":
         return relanceOpco()
       case "pe:offre:export":
-        return exportPE()
+        return exportToFranceTravail()
       case "user:validate":
         return checkAwaitingCompaniesValidation()
       case "siret:inError:update":

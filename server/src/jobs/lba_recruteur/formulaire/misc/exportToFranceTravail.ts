@@ -9,7 +9,7 @@ import { JOB_STATUS } from "shared/models"
 
 import { db } from "@/common/mongodb"
 
-import { sendCsvToPE } from "../../../../common/apis/FranceTravail"
+import { sendCsvToFranceTravail } from "../../../../common/apis/FranceTravail"
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
 import { getDepartmentByZipCode } from "../../../../common/territoires"
@@ -169,9 +169,9 @@ const formatToPe = async (offre) => {
 /**
  * @description Generate a CSV with eligible offers for Pole Emploi integration
  */
-export const exportPE = async (): Promise<void> => {
+export const exportToFranceTravail = async (): Promise<void> => {
   try {
-    const csvPath = new URL("./exportPE.csv", import.meta.url)
+    const csvPath = new URL("./exportFT.csv", import.meta.url)
     const buffer: any[] = []
     const threshold = dayjs().subtract(30, "days").toDate()
 
@@ -208,15 +208,15 @@ export const exportPE = async (): Promise<void> => {
       createWriteStream(csvPath)
     )
 
-    await sendCsvToPE(path.resolve(csvPath.pathname))
+    await sendCsvToFranceTravail(path.resolve(csvPath.pathname))
 
     await notifyToSlack({
-      subject: "EXPORT PE OK",
+      subject: "EXPORT FRANCE TRAVAIL OK",
       message: `${buffer.length} offres transmises à France Travail`,
     })
   } catch (err) {
     await notifyToSlack({
-      subject: "EXPORT PE KO",
+      subject: "EXPORT FRANCE TRAVAIL KO",
       message: `Echec de l'export des offres France Travail. ${err}`,
     })
     throw err

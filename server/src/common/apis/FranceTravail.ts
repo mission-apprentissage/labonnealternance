@@ -200,9 +200,9 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
 }
 
 /**
- * Sends CSV file to Pole Emploi API through a "form data".
+ * Sends CSV file to France Travail API through a "form data".
  */
-export const sendCsvToPE = async (csvPath: string): Promise<void> => {
+export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => {
   const form = new FormData()
   form.append("login", config.franceTravailDepotOffres.login)
   form.append("password", config.franceTravailDepotOffres.password)
