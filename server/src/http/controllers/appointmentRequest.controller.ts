@@ -208,7 +208,7 @@ export default (server: Server) => {
         throw Boom.notFound()
       }
 
-      const [etablissement, user] = await Promise.all([
+      const [formation, user] = await Promise.all([
         EligibleTrainingsForAppointment.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
@@ -226,7 +226,7 @@ export default (server: Server) => {
         }).lean(),
       ])
 
-      if (!etablissement) {
+      if (!formation) {
         throw Boom.internal("Etablissment not found")
       }
 
@@ -236,7 +236,7 @@ export default (server: Server) => {
 
       res.status(200).send({
         user,
-        etablissement,
+        formation,
       })
     }
   )
@@ -269,7 +269,7 @@ export default (server: Server) => {
         await Appointment.findByIdAndUpdate(appointmentId, { cfa_read_appointment_details_date: new Date() })
       }
 
-      const [etablissement, user] = await Promise.all([
+      const [formation, user] = await Promise.all([
         EligibleTrainingsForAppointment.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
@@ -290,10 +290,6 @@ export default (server: Server) => {
         }).lean(),
       ])
 
-      if (!etablissement) {
-        throw Boom.internal("Etablissment not found")
-      }
-
       if (!user) {
         throw Boom.internal("User not found")
       }
@@ -301,7 +297,7 @@ export default (server: Server) => {
       res.status(200).send({
         appointment,
         user,
-        etablissement,
+        formation,
       })
     }
   )
@@ -332,23 +328,23 @@ export default (server: Server) => {
         users.getUserById(appointment.applicant_id),
       ])
 
-      if (!user || !eligibleTrainingsForAppointment) throw Boom.notFound()
+      if (!user) throw Boom.notFound()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
         const formationCatalogue = cle_ministere_educatif ? await FormationCatalogue.findOne({ cle_ministere_educatif }) : undefined
 
         await mailer.sendEmail({
           to: user.email,
-          subject: `[La bonne alternance] Le centre de formation vous répond`,
+          subject: `La bonne alternance - Le centre de formation vous répond`,
           template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
           data: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             prenom: sanitizeForEmail(user.firstname),
             nom: sanitizeForEmail(user.lastname),
             message: sanitizeForEmail(cfa_message_to_applicant),
-            nom_formation: eligibleTrainingsForAppointment.training_intitule_long,
-            nom_cfa: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
-            cfa_email: eligibleTrainingsForAppointment.lieu_formation_email,
+            nom_formation: eligibleTrainingsForAppointment?.training_intitule_long,
+            nom_cfa: eligibleTrainingsForAppointment?.etablissement_formateur_raison_sociale,
+            cfa_email: eligibleTrainingsForAppointment?.lieu_formation_email,
             cfa_phone: formationCatalogue?.num_tel,
           },
         })
