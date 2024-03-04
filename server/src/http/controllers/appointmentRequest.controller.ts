@@ -335,7 +335,7 @@ export default (server: Server) => {
 
         await mailer.sendEmail({
           to: user.email,
-          subject: `[La bonne alternance] Le centre de formation vous répond`,
+          subject: `La bonne alternance - Le centre de formation vous répond`,
           template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
           data: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
