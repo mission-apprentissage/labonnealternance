@@ -175,7 +175,7 @@ export default function CfaCandidatInformationPage() {
                 <Text as="p" mt="1">
                   dispensée par :{" "}
                   <strong>
-                    {data.formation.formation_formateur_raison_sociale}, {data.formation.lieu_formation_street}, {data.formation.lieu_formation_zip_code},{" "}
+                    {data.formation.etablissement_formateur_raison_sociale}, {data.formation.lieu_formation_street}, {data.formation.lieu_formation_zip_code},{" "}
                     {data.formation.lieu_formation_city}
                   </strong>
                 </Text>
