@@ -45,6 +45,7 @@ const neededFieldsFromCatalogue = {
   catalogue_published: 1,
   intitule_long: 1,
   intitule_court: 1,
+  intitule_rco: 1,
   niveau: 1,
   onisep_url: 1,
   parcoursup_id: 1,
