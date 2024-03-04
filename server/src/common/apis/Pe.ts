@@ -14,14 +14,14 @@ import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
 
-const PE_IO_API_ROME_V1_BASE_URL = "https://api.pole-emploi.io/partenaire/rome/v1"
-const PE_IO_API_OFFRES_BASE_URL = "https://api.pole-emploi.io/partenaire/offresdemploi/v2"
-const PE_AUTH_BASE_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2"
-const PE_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
+const FT_IO_API_ROME_V1_BASE_URL = "https://api.pole-emploi.io/partenaire/rome/v1"
+const FT_IO_API_OFFRES_BASE_URL = "https://api.pole-emploi.io/partenaire/offresdemploi/v2"
+const FT_AUTH_BASE_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2"
+const FT_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
 
 // paramètres exclurant les offres LBA des résultats de l'api PE
-const PE_LBA_PARTENAIRE = "LABONNEALTERNANCE"
-const PE_PARTENAIRE_MODE = "EXCLU"
+const FT_LBA_PARTENAIRE = "LABONNEALTERNANCE"
+const FT_PARTENAIRE_MODE = "EXCLU"
 
 const axiosClient = getApiClient({})
 
@@ -62,7 +62,7 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
   }
 
   try {
-    const response = await axiosClient.post(`${PE_AUTH_BASE_URL}/access_token?realm=%2Fpartenaire`, access === "OFFRE" ? OFFRES_ACESS : ROME_ACESS, {
+    const response = await axiosClient.post(`${FT_AUTH_BASE_URL}/access_token?realm=%2Fpartenaire`, access === "OFFRE" ? OFFRES_ACESS : ROME_ACESS, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 3000,
     })
@@ -94,10 +94,10 @@ export const searchForPeJobs = async (params: {
   try {
     const extendedParams = {
       ...params,
-      partenaires: PE_LBA_PARTENAIRE,
-      modeSelectionPartenaires: PE_PARTENAIRE_MODE,
+      partenaires: FT_LBA_PARTENAIRE,
+      modeSelectionPartenaires: FT_PARTENAIRE_MODE,
     }
-    const { data } = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/search`, {
+    const { data } = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/offres/search`, {
       params: extendedParams,
       headers: {
         "Content-Type": "application/json",
@@ -119,7 +119,7 @@ export const searchForPeJobs = async (params: {
 export const getPeJob = async (id: string) => {
   tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
   try {
-    const result = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/${id}`, {
+    const result = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/offres/${id}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -144,7 +144,7 @@ export const getPeReferentiels = async (referentiel: string) => {
   try {
     tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
 
-    const referentiels = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
+    const referentiels = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -167,7 +167,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
   tokenRomePE = await getPeAccessToken("ROME", tokenRomePE)
 
   try {
-    const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${PE_IO_API_ROME_V1_BASE_URL}/metier/${romeCode}`, {
+    const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/metier/${romeCode}`, {
       headers: {
         Authorization: `Bearer ${tokenRomePE.access_token}`,
       },
@@ -184,7 +184,7 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
   tokenRomePE = await getPeAccessToken("ROME", tokenRomePE)
 
   try {
-    const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${PE_IO_API_ROME_V1_BASE_URL}/appellation/${appellationCode}`, {
+    const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/appellation/${appellationCode}`, {
       headers: {
         Authorization: `Bearer ${tokenRomePE.access_token}`,
       },
@@ -211,7 +211,7 @@ export const sendCsvToPE = async (csvPath: string): Promise<void> => {
   form.append("periodeRef", "")
 
   try {
-    const { data } = await axiosClient.post(`${PE_PORTAIL_BASE_URL}/depotcurl`, form, {
+    const { data } = await axiosClient.post(`${FT_PORTAIL_BASE_URL}/depotcurl`, form, {
       headers: {
         ...form.getHeaders(),
       },
