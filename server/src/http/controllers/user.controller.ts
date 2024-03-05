@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { CFA, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, getUserStatus, zRoutes } from "shared/index"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -7,6 +7,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { modifyPermissionToUser } from "@/services/permissions.service"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, UserRecruteur } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
@@ -27,7 +28,6 @@ import {
   sendWelcomeEmailToUserRecruteur,
   updateUser,
   updateUser2Fields,
-  updateUserValidationHistory,
   userAndRoleAndOrganizationToUserRecruteur,
   validateUserEmail,
 } from "../../services/userRecruteur.service"
@@ -286,23 +286,40 @@ export default (server: Server) => {
   )
 
   server.put(
-    "/user/:userId/history",
+    "/user/:userId/organization/:organizationId/permission",
     {
-      schema: zRoutes.put["/user/:userId/history"],
-      onRequest: [server.auth(zRoutes.put["/user/:userId/history"])],
+      schema: zRoutes.put["/user/:userId/organization/:organizationId/permission"],
+      onRequest: [server.auth(zRoutes.put["/user/:userId/organization/:organizationId/permission"])],
     },
     async (req, res) => {
-      // TODO gestion couple user/organization
-      const newEvent = req.body
-      const validator = getUserFromRequest(req, zRoutes.put["/user/:userId/history"]).value
-      const user = await updateUserValidationHistory(req.params.userId, { ...newEvent, user: validator._id.toString() })
-
+      const { reason, status, organizationType } = req.body
+      const { userId, organizationId } = req.params
+      const user = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
       if (!user) throw Boom.badRequest()
+
+      const updatedRole = await modifyPermissionToUser(
+        {
+          user_id: userId,
+          authorized_id: organizationId.toString(),
+          authorized_type: organizationType,
+          origin: "action admin ou opco",
+        },
+        {
+          validation_type: VALIDATION_UTILISATEUR.MANUAL,
+          reason,
+          status,
+          granted_by: user._id.toString(),
+        }
+      )
 
       const { email, last_name, first_name } = user
 
+      const newEvent = getLastStatusEvent(updatedRole.status)
+      if (!newEvent) {
+        throw Boom.internal("inattendu : aucun event sauvegardé")
+      }
       // if user is disabled, return the user data directly
-      if (newEvent.status === ETAT_UTILISATEUR.DESACTIVE) {
+      if (newEvent.status === AccessStatus.DENIED) {
         // send email to user to notify him his account has been disabled
         await mailer.sendEmail({
           to: email,
@@ -330,8 +347,9 @@ export default (server: Server) => {
         return res.status(200).send(user)
       }
 
-      if (user.type === ENTREPRISE) {
-        const { establishment_id } = user
+      if (organizationType === AccessEntityType.ENTREPRISE) {
+        const entreprise = await Entreprise.findOne({ _id: organizationId }).lean()
+        const establishment_id = entreprise?.establishment_id
         if (!establishment_id) {
           throw Boom.internal("unexpected: no establishment_id on userRecruteur of type ENTREPRISE", { userId: user._id })
         }

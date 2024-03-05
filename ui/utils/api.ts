@@ -54,7 +54,7 @@ export const createEtablissementDelegationByToken = ({ data, jobId, token }: { j
 /**
  * User API
  */
-export const getUser = (userId: string) => apiGet("/user/:userId", { params: { userId } })
+export const getUser = (userId: string, entrepriseId: string) => apiGet("/user/:userId/organization/:organizationId", { params: { userId, entrepriseId } })
 const updateUser = (userId: string, user) => apiPut("/user/:userId", { params: { userId }, body: user })
 const updateUserAdmin = (userId: string, user) => apiPut("/admin/users/:userId", { params: { userId }, body: user })
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })

@@ -1,7 +1,8 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
+import { AccessEntityType, ZRoleManagementEvent } from "../models/roleManagement.model"
+import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -107,13 +108,14 @@ export const zUserRecruteurRoutes = {
         resources: {},
       },
     },
-    "/user/:userId": {
+    "/user/:userId/organization/:organizationId": {
       method: "get",
-      path: "/user/:userId",
+      path: "/user/:userId/organization/:organizationId",
       // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
       params: z
         .object({
           userId: z.string(),
+          organizationId: z.string(),
         })
         .strict(),
       response: {
@@ -188,7 +190,7 @@ export const zUserRecruteurRoutes = {
         status: true,
       }),
       response: {
-        "200": ZUserRecruteur,
+        "200": z.object({ _id: zObjectId }).strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -235,17 +237,18 @@ export const zUserRecruteurRoutes = {
         resources: {},
       },
     },
-    "/user/:userId/history": {
+    "/user/:userId/organization/:organizationId/permission": {
       method: "put",
-      path: "/user/:userId/history",
-      params: z.object({ userId: zObjectId }).strict(),
-      body: ZUserStatusValidation.pick({
-        validation_type: true,
+      path: "/user/:userId/organization/:organizationId/permission",
+      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      body: ZRoleManagementEvent.pick({
         status: true,
         reason: true,
+      }).extend({
+        organizationType: z.enum([AccessEntityType.ENTREPRISE, AccessEntityType.CFA]),
       }),
       response: {
-        "200": ZUserRecruteur,
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "cookie-session",

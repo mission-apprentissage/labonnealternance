@@ -3,12 +3,9 @@ import { useCallback } from "react"
 import { useQueryClient } from "react-query"
 import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
-import { useAuth } from "@/context/UserContext"
-
 import { updateUserValidationHistory } from "../../utils/api"
 
 export default function useUserHistoryUpdate(userId: string, status: ETAT_UTILISATEUR, reason?: string) {
-  const { user } = useAuth()
   const client = useQueryClient()
   const toast = useToast()
 
@@ -28,5 +25,5 @@ export default function useUserHistoryUpdate(userId: string, status: ETAT_UTILIS
           isClosable: true,
         })
       )
-  }, [user._id, client, reason, status, toast, userId])
+  }, [client, reason, status, toast, userId])
 }

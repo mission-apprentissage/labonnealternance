@@ -52,7 +52,7 @@ const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisat
   }
 }
 
-const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?: any; onDelete?: any; onUpdate?: any }) => {
+const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?: (result: void, error?: any) => void; onDelete?: () => void; onUpdate?: () => void }) => {
   const toast = useToast()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const { values, errors, touched, dirty, handleSubmit, handleChange } = useFormik({

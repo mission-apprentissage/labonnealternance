@@ -1,6 +1,6 @@
 import { Jsonify } from "type-fest"
 
-import { AUTHTYPE, CFA, ETAT_UTILISATEUR } from "../constants/recruteur"
+import { AUTHTYPE, ETAT_UTILISATEUR } from "../constants/recruteur"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
@@ -8,7 +8,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZGlobalAddress, ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
-import { ZValidationUtilisateur } from "./user2.model"
+import { IUser2, ZValidationUtilisateur } from "./user2.model"
 
 export const ZEtatUtilisateur = enumToZod(ETAT_UTILISATEUR).describe("Statut de l'utilisateur")
 
@@ -112,15 +112,6 @@ export const ZUserRecruteurPublic = ZUserRecruteur.pick({
   last_name: true,
   first_name: true,
   phone: true,
-  opco: true,
-  idcc: true,
-  scope: true,
-  establishment_siret: true,
-  establishment_id: true,
-}).extend({
-  is_delegated: z.boolean(),
-  cfa_delegated_siret: extensions.siret.nullish(),
-  status_current: ZEtatUtilisateur.nullish(),
 })
 export type IUserRecruteurPublic = Jsonify<z.output<typeof ZUserRecruteurPublic>>
 
@@ -138,22 +129,13 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
   return lastValidationEvent.status
 }
 
-export function toPublicUser(user: IUserRecruteur): z.output<typeof ZUserRecruteurPublic> {
+export function toPublicUser(user: IUser2): z.output<typeof ZUserRecruteurPublic> {
   return {
     _id: user._id,
     email: user.email,
-    type: user.type,
     last_name: user.last_name,
     first_name: user.first_name,
     phone: user.phone,
-    opco: user.opco,
-    idcc: user.idcc,
-    scope: user.scope,
-    establishment_siret: user.establishment_siret,
-    establishment_id: user.establishment_id,
-    is_delegated: user.type === CFA ? true : false,
-    cfa_delegated_siret: user.type === CFA ? user.establishment_siret : undefined,
-    status_current: getUserStatus(user.status),
   }
 }
 

@@ -12,7 +12,8 @@ export const modifyPermissionToUser = async (
     ...eventProps,
     date: new Date(),
   }
-  const role = await RoleManagement.findOne(props).lean()
+  const { authorized_id, authorized_type, user_id } = props
+  const role = await RoleManagement.findOne({ authorized_id, authorized_type, user_id }).lean()
   if (role) {
     const lastEvent = getLastStatusEvent(role.status)
     if (lastEvent?.status === eventProps.status) {

@@ -2,8 +2,9 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormL
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
-import { IUserStatusValidationJson } from "shared"
+import { IRecruiterJson, IUserStatusValidationJson } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { IUser2Json } from "shared/models/user2.model"
 import * as Yup from "yup"
 
 import { ApiError } from "@/utils/api.utils"
@@ -151,7 +152,7 @@ const FormulaireLayout = ({ left, right }) => {
 export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boolean }) => {
   const router = useRouter()
   const validationPopup = useDisclosure()
-  const [popupData, setPopupData] = useState({})
+  const [popupData, setPopupData] = useState<{ user: IUser2Json; formulaire: IRecruiterJson; token?: string; type: "CFA" | "ENTREPRISE" } | null>(null)
 
   const { type, informationSiret: informationSiretString }: { type: "CFA" | "ENTREPRISE"; informationSiret: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
@@ -159,7 +160,7 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     const payload = { ...values, type, establishment_siret }
-    if (type === "CFA") {
+    if (type === AUTHTYPE.CFA) {
       delete payload.opco
     }
     createEtablissement(payload)
@@ -169,7 +170,7 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
         }
         const statusArray: IUserStatusValidationJson[] = data.user?.status ?? []
         if (statusArray?.at(0)?.status === ETAT_UTILISATEUR.VALIDE) {
-          if (data.user.type === AUTHTYPE.ENTREPRISE) {
+          if (type === AUTHTYPE.ENTREPRISE) {
             // Dépot simplifié
             router.push({
               pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
@@ -183,7 +184,11 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
           }
         } else {
           validationPopup.onOpen()
-          setPopupData({ ...data, type })
+          const { user, formulaire } = data
+          if (!user) {
+            throw new Error("unexpected: data.user is empty")
+          }
+          setPopupData({ user, formulaire, ...data, type })
         }
         setSubmitting(false)
       })

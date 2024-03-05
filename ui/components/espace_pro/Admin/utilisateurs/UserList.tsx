@@ -50,7 +50,7 @@ const UserList = () => {
           </ModalCloseButton>
           <UserForm
             user={null}
-            onCreate={async (_action, error) => {
+            onCreate={async (_, error) => {
               if (!error) {
                 newUser.onClose()
                 await refetchUsers()
