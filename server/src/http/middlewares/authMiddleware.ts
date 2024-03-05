@@ -26,7 +26,7 @@ export function auth<S extends IRouteSchema & WithSecurityScheme>(schema: S) {
       await authorizationMiddleware(schema, req)
       await createAccessLog(schema, req, true)
     } catch (error: any) {
-      if (error?.isBoom && error?.output?.payload.statusCode === 401) {
+      if (error?.isBoom && (error?.output?.payload.statusCode === 401 || error?.output?.payload.statusCode === 403)) {
         await createAccessLog(schema, req, false)
       }
       throw error
