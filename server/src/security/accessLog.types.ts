@@ -6,7 +6,8 @@ interface IAccessLog {
   authorized: boolean
   user_id: string | null
   user_email: string | null
-  user_type: string
+  user_siret: string | null
+  user_type: string | null
   auth_type: string
   path: string
   role: Role | null

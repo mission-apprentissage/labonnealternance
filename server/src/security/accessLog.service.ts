@@ -2,8 +2,9 @@ import { FastifyRequest } from "fastify"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { assertUnreachable } from "shared/utils"
 
-import { AccessLog } from "@/common/model"
-import { IAccessLog } from "@/common/model/schema/accessLog/accessLog.types"
+import { IAccessLog } from "@/security/accessLog.types"
+
+import { logger } from "../common/logger"
 
 export const createAccessLog = async <S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest, authorized: boolean) => {
   if (schema?.securityScheme?.skipLogAccess) {
@@ -18,9 +19,11 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
     ip: req.ip,
     user_id: null,
     user_email: null,
+    user_siret: null,
+    user_type: null,
     created_at: new Date(),
     parameters: req.params as { [key: string]: string },
-    role: req?.authorizationContext?.role,
+    role: req?.authorizationContext?.role || null,
     resources: req?.authorizationContext?.resources,
   }
 
@@ -35,6 +38,9 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
       case "IAccessToken": {
         acl.user_type = req.user.value.identity.type
         acl.user_email = req.user.value.identity.email
+        if ("siret" in req.user.value.identity) {
+          acl.user_siret = req.user.value.identity.siret
+        }
         if (req.user.value.identity.type === "IUserRecruteur") {
           acl.user_id = req.user.value.identity?._id?.toString()
         }
@@ -53,6 +59,5 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
     }
   }
 
-  const accessLog = new AccessLog(acl)
-  await accessLog.save()
+  authorized ? logger.info(acl) : logger.warn(acl)
 }
