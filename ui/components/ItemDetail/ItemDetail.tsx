@@ -1,7 +1,8 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { defaultTo } from "lodash"
-import React, { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
 
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
 import { focusWithin } from "@/theme/theme-lba-tools"
@@ -33,7 +34,7 @@ import PeJobDetail from "./PeJobDetail"
 import TrainingDetail from "./TrainingDetail"
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
-  const kind = selectedItem?.ideaType
+  const kind: LBA_ITEM_TYPE = selectedItem?.ideaType
 
   const { activeFilters } = useContext(DisplayContext)
 
@@ -111,7 +112,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
 
-          {kind === "formation" && (
+          {kind === LBA_ITEM_TYPE.FORMATION && (
             <Text as="p" textAlign="left" color="grey.600" mt={4} mb={3} fontWeight={700} fontSize="1rem">
               <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
               <Text as="span" fontWeight={400}>
@@ -126,7 +127,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           <Text
             as="h1"
             fontSize={isCollapsedHeader ? "20px" : "28px"}
-            color={kind !== "formation" ? "pinksoft.600" : "greensoft.500"}
+            color={kind !== LBA_ITEM_TYPE.FORMATION ? "pinksoft.600" : "greensoft.500"}
             sx={{
               fontWeight: 700,
               marginBottom: "11px",
@@ -155,7 +156,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             </>
           )}
 
-          {kind === "formation" && buttonRdvShouldBeDisplayed(selectedItem) && (
+          {kind === LBA_ITEM_TYPE.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
               <Divider my={2} />
               <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
@@ -164,13 +165,13 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
         </Box>
       </Box>
 
-      {kind === "peJob" ? <PeJobDetail job={selectedItem} /> : ""}
-      {kind === "matcha" ? <MatchaDetail job={selectedItem} /> : ""}
-      {amongst(kind, ["lbb", "lba"]) ? <LbbCompanyDetail lbb={selectedItem} /> : ""}
+      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PeJobDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <MatchaDetail job={selectedItem} />}
+      {amongst(kind, [LBA_ITEM_TYPE.RECRUTEURS_LBA]) && <LbbCompanyDetail lbb={selectedItem} />}
 
-      {kind === "formation" ? <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} /> : ""}
+      {kind === LBA_ITEM_TYPE.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
 
-      {amongst(kind, ["lbb", "lba"]) && (
+      {amongst(kind, [LBA_ITEM_TYPE.RECRUTEURS_LBA]) && (
         <Box bg="#f5f5fe" border="1px solid #e3e3fd" mx={8} mb={8} px={6} py={4}>
           <Box color="bluefrance.500" fontSize="22px" fontWeight={700}>
             Besoin d&apos;aide ?
@@ -209,7 +210,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
       <AideApprentissage item={selectedItem}></AideApprentissage>
 
-      {kind === "peJob" && (
+      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (
         <>
           <DidYouKnow />
           {!buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
@@ -217,10 +218,10 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           )}
         </>
       )}
-      {kind === "formation" && !buttonRdvShouldBeDisplayed(selectedItem) && (
+      {kind === LBA_ITEM_TYPE.FORMATION && !buttonRdvShouldBeDisplayed(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
-      {(kind === "lbb" || kind === "lba") && !isCandidatureLba(selectedItem) && (
+      {amongst(kind, [LBA_ITEM_TYPE.RECRUTEURS_LBA]) && !isCandidatureLba(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
     </Box>

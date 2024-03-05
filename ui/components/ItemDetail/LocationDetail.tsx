@@ -1,13 +1,14 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
-import React from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
 
+import { amongst } from "../../utils/arrayutils"
 import { endsWithNumber } from "../../utils/strutils"
 import { getCompanyPathLink, getPathLink } from "../../utils/tools"
 import { string_wrapper as with_str } from "../../utils/wrapper_utils"
 
 const LocationDetail = ({ item, isCfa }) => {
-  const kind = item?.ideaType
+  const kind: LBA_ITEM_TYPE = item?.ideaType
 
   const getGoogleSearchParameters = () => {
     return encodeURIComponent(`${item.company.name} ${item.place.city || item.place.address}`)
@@ -27,11 +28,11 @@ const LocationDetail = ({ item, isCfa }) => {
     const oneKind = oneItem?.ideaType
     const isMandataire = item?.company?.mandataire
     let res = "Quelques informations sur l'entreprise"
-    if (oneKind === "formation") {
+    if (oneKind === LBA_ITEM_TYPE.FORMATION) {
       res = "Quelques informations sur le centre de formation"
-    } else if (oneKind === "matcha" && !isMandataire) {
+    } else if (oneKind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire) {
       res = "Quelques informations sur l'établissement"
-    } else if (oneKind === "matcha" && isMandataire) {
+    } else if (oneKind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) {
       res = "Contactez le CFA pour avoir plus d'informations"
     }
     return res
@@ -39,7 +40,7 @@ const LocationDetail = ({ item, isCfa }) => {
 
   const shouldDisplayEmail = (oneItem) => {
     let res = false
-    if (oneItem?.ideaType === "matcha") {
+    if (oneItem?.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
       res = !!item?.company?.mandataire
     }
     if (res) {
@@ -51,7 +52,7 @@ const LocationDetail = ({ item, isCfa }) => {
 
   return (
     <>
-      {kind === "matcha" && item?.company?.mandataire && (
+      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && item?.company?.mandataire && (
         <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
           <Text as="h2" variant="itemDetailH2" mt={2}>
             {getTitle({})}
@@ -185,7 +186,7 @@ const LocationDetail = ({ item, isCfa }) => {
           </Box>
         )}
 
-        {(kind === "matcha" || kind === "lbb" || kind === "lba") && (
+        {amongst(kind, [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA]) && (
           <>
             <Flex mt={2} mb={4}>
               <Box width="30px" pl="2px" minWidth="30px" mr={2}>

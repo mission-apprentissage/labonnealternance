@@ -1,6 +1,7 @@
 import { Box, Flex } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
@@ -128,7 +129,7 @@ const SearchForTrainingsAndJobs = () => {
       pushHistory({
         router,
         scopeContext,
-        item: { id: itemId, ideaType: type === "training" ? "formation" : type, directId: true },
+        item: { id: itemId, ideaType: type === "training" ? LBA_ITEM_TYPE.FORMATION : type, directId: true },
         page: "fiche",
         display: "list",
         searchParameters: formValues,

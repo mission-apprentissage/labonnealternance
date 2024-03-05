@@ -2,6 +2,7 @@ import { CloseIcon } from "@chakra-ui/icons"
 import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useContext, useEffect, useState } from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
 import { JOB_STATUS } from "shared/models/job.model"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
@@ -21,7 +22,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [sendingState, setSendingState] = useState("not_sent")
   const { formValues } = useContext(DisplayContext)
-  const kind = item?.ideaType || ""
+  const kind: LBA_ITEM_TYPE = item?.ideaType || ""
 
   const onModalClose = () => {
     setSendingState("not_sent")
@@ -34,7 +35,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
 
   const openApplicationForm = () => {
     onOpen()
-    SendPlausibleEvent(kind === "matcha" ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
+    SendPlausibleEvent(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
       info_fiche: getItemId(item),
     })
   }
@@ -80,7 +81,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
             })}
           </Box>
         ) : (
-          (kind !== "matcha" || item.job.status === JOB_STATUS.ACTIVE) && (
+          (kind !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || item.job.status === JOB_STATUS.ACTIVE) && (
             <>
               <Box my={4}>
                 <Button

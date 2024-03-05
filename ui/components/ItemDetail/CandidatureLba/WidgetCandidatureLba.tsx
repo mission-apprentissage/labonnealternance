@@ -1,6 +1,7 @@
 import { Box, Container } from "@chakra-ui/react"
 import { useFormik } from "formik"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
 
 import { getItemId } from "../../../utils/getItemId"
 import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
@@ -15,7 +16,7 @@ import useLocalStorage from "./services/useLocalStorage"
 
 const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage = null }) => {
   const [sendingState, setSendingState] = useState("not_sent")
-  const kind = item?.ideaType || ""
+  const kind: LBA_ITEM_TYPE = item?.ideaType || ""
 
   const uniqId = `candidaturespontanee-${kind}-${getItemId(item)}`
 
@@ -25,11 +26,14 @@ const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage = null }) => {
 
   const getAPostuleMessage = () => {
     return `
-    Vous avez déjà postulé ${kind === "matcha" ? "à cette offre" : "auprès de cette entreprise"} le ${new Date(parseInt(applied, 10)).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })}`
+    Vous avez déjà postulé ${kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "à cette offre" : "auprès de cette entreprise"} le ${new Date(parseInt(applied, 10)).toLocaleDateString(
+      "fr-FR",
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }
+    )}`
   }
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { get } from "lodash"
 import React, { useState } from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
 
@@ -81,7 +82,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly = undefined, searc
   }
 
   const shouldBeHighlighted = () => {
-    if (selectedMapPopupItem?.ideaType === "job") {
+    if ([LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES].includes(selectedMapPopupItem?.ideaType)) {
       return selectedMapPopupItem.items.find((item) => {
         return item?.company?.siret === company.company.siret
       })

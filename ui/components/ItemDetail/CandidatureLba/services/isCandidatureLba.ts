@@ -1,7 +1,8 @@
-import { amongst } from "../../../../utils/arrayutils"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+
 import { isNonEmptyString } from "../../../../utils/strutils"
 
 export default function isCandidatureLba(item) {
-  const kind = item?.ideaType
-  return amongst(kind, ["lbb", "lba", "matcha"]) && isNonEmptyString(item?.contact?.email)
+  const kind: LBA_ITEM_TYPE = item?.ideaType
+  return [LBA_ITEM_TYPE.RECRUTEURS_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind) && isNonEmptyString(item?.contact?.email)
 }
