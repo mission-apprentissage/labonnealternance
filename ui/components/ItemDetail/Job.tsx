@@ -36,7 +36,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
   }
 
   const shouldBeHighlighted = () => {
-    if ([LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES].includes(selectedMapPopupItem?.ideaType)) {
+    if (selectedMapPopupItem?.ideaType === "job") {
       return selectedMapPopupItem.items.find((item) => {
         return item?.job?.id === job.job.id
       })
