@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { amongst } from "../../utils/arrayutils"
 import { endsWithNumber } from "../../utils/strutils"

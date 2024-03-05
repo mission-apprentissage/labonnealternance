@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { rawPostalAddress } from "./addressUtils"
 //import * as Sentry from "@sentry/react";

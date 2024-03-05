@@ -1,5 +1,5 @@
 import { Button, Flex, Spinner, Text } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 const CandidatureLbaSubmit = (props) => {
   const sendingState = props.sendingState

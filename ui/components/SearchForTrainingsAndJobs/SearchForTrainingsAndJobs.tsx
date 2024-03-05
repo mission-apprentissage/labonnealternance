@@ -1,7 +1,7 @@
 import { Box, Flex } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"

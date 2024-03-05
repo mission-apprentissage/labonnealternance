@@ -1,5 +1,5 @@
 import { Flex, Image, Text } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getDaysSinceDate } from "../../../utils/dateUtils"
 

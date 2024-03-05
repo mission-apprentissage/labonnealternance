@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 export const getItemId = (item) => {
   return getItemIdAndType(item).itemId

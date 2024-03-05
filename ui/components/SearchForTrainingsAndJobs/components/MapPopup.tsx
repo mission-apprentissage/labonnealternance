@@ -1,6 +1,6 @@
 import { Box, Button, ChakraProvider, Flex, Image, Text, VStack } from "@chakra-ui/react"
 import { useEffect } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { ErrorMessage } from "../.."
 import theme from "../../../theme"

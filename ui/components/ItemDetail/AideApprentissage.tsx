@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Link, Text } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 const AideApprentissage = ({ item }) => {
   const kind = item?.ideaType

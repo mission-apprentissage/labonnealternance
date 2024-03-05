@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE } from "../constants/lbaiten"
+import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 

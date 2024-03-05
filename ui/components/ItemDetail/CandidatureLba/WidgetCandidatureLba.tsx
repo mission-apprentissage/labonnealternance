@@ -1,7 +1,7 @@
 import { Box, Container } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getItemId } from "../../../utils/getItemId"
 import { string_wrapper as with_str } from "../../../utils/wrapper_utils"

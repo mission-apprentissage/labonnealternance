@@ -2,7 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { defaultTo } from "lodash"
 import { useContext, useEffect, useState } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
 import { focusWithin } from "@/theme/theme-lba-tools"

@@ -3,7 +3,7 @@ import { round } from "lodash"
 import * as mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import { createRoot } from "react-dom/client"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { MapPopup } from "../components/SearchForTrainingsAndJobs/components"
 import { fetchAddresses } from "../services/baseAdresse"

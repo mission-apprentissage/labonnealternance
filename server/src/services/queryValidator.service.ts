@@ -1,5 +1,5 @@
 import axios from "axios"
-import { allLbaItemType } from "shared/constants/lbaiten"
+import { allLbaItemType } from "shared/constants/lbaitem"
 
 import { isOriginLocal } from "../common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"

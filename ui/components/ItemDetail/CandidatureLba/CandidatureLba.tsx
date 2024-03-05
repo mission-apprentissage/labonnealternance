@@ -2,7 +2,7 @@ import { CloseIcon } from "@chakra-ui/icons"
 import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useContext, useEffect, useState } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_STATUS } from "shared/models/job.model"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"

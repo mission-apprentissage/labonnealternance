@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 
 import { IApiError } from "../common/utils/errorManager"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"

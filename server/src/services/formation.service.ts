@@ -1,7 +1,7 @@
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError } from "../common/utils/errorManager"

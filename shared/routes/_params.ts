@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE } from "../constants/lbaiten"
+import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { NIVEAUX_POUR_LBA } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 

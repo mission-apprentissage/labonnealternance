@@ -1,6 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react"
 import { useContext, useState } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { ErrorMessage } from "../.."
 import { DisplayContext } from "../../../context/DisplayContextProvider"

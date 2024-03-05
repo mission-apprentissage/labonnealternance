@@ -1,5 +1,5 @@
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter } from "@/common/model"
