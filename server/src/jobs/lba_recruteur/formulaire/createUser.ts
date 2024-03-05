@@ -26,24 +26,25 @@ export const createUserFromCLI = async (
     return
   }
 
-  await createUser({
-    first_name,
-    last_name,
-    establishment_siret,
-    establishment_raison_sociale,
-    phone,
-    address,
-    email,
-    scope,
-    type: Type,
-    is_email_checked: Email_valide,
-    statusEvent: {
+  await createUser(
+    {
+      first_name,
+      last_name,
+      establishment_siret,
+      establishment_raison_sociale,
+      phone,
+      address,
+      email,
+      scope,
+      type: Type,
+      is_email_checked: Email_valide,
+    },
+    {
       reason: "created from CLI",
       status: AccessStatus.GRANTED,
       validation_type: VALIDATION_UTILISATEUR.AUTO,
-      date: new Date(),
-    },
-  })
+    }
+  )
 
   logger.info(`User created : ${email} — ${scope} - admin: ${Type === "ADMIN"}`)
 }

@@ -2,7 +2,9 @@ import Boom from "boom"
 import { zRoutes } from "shared/index"
 
 import { UserRecruteur } from "@/common/model"
+import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
+import { getUser2ByEmail } from "@/services/user2.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
 
 import { getApplicationsByJobId } from "../../services/application.service"
@@ -202,6 +204,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { establishment_id } = req.params
+      const user = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/offre"]).value
       const {
         is_disabled_elligible,
         job_type,
@@ -220,6 +223,7 @@ export default (server: Server) => {
       if (!userRecruteur) {
         throw Boom.notFound()
       }
+
       const updatedFormulaire = await createJob({
         job: {
           is_disabled_elligible,
@@ -236,6 +240,7 @@ export default (server: Server) => {
           rome_label,
         },
         id: establishment_id,
+        user,
       })
       const job = updatedFormulaire.jobs.at(0)
       if (!job) {
@@ -258,6 +263,12 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { establishment_id } = req.params
+      const tokenUser = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/offre/by-token"]).value
+      const { email } = tokenUser.identity
+      const user = await getUser2ByEmail(email)
+      if (!user) {
+        throw Boom.internal(`inattendu : impossible de récupérer l'utilisateur de type token ayant pour email=${email}`)
+      }
       const {
         is_disabled_elligible,
         job_type,
@@ -292,6 +303,7 @@ export default (server: Server) => {
           rome_label,
         },
         id: establishment_id,
+        user,
       })
       const job = updatedFormulaire.jobs.at(0)
       if (!job) {

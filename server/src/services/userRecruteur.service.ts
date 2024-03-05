@@ -5,7 +5,8 @@ import { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IRecruiter, IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection, assertUnreachable } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
+import { ICFA } from "shared/models/cfa.model"
+import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -13,6 +14,7 @@ import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
 import { parseEnumOrError } from "@/common/utils/enumUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { user2ToUserForToken } from "@/security/accessTokenService"
 
 import { Cfa, Entreprise, RoleManagement, User2, UserRecruteur } from "../common/model/index"
 import config from "../config"
@@ -20,7 +22,9 @@ import config from "../config"
 import { createAuthMagicLink } from "./appLinks.service"
 import { ADMIN, OPCO } from "./constant.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
+import { createOrganizationIfNotExist } from "./organization.service"
 import { modifyPermissionToUser } from "./permissions.service"
+import { createUser2IfNotExist } from "./user2.service"
 
 /**
  * @description generate an API key
@@ -39,44 +43,17 @@ const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: 
   }
 }
 
-const getOrganismeFromRole = async (role: IRoleManagement): Promise<Partial<IUserRecruteur> | null> => {
+const getOrganismeFromRole = async (role: IRoleManagement): Promise<IEntreprise | ICFA | null> => {
   switch (role.authorized_type) {
     case AccessEntityType.ENTREPRISE: {
       const entreprise = await Entreprise.findOne({ _id: role.authorized_id }).lean()
       if (!entreprise) return null
-      const { siret, address, address_detail, establishment_id, geo_coordinates, idcc, opco, origin, raison_sociale, enseigne, status } = entreprise
-      const lastStatus = getLastStatusEvent(status)
-
-      return {
-        establishment_siret: siret,
-        establishment_enseigne: enseigne,
-        establishment_raison_sociale: raison_sociale,
-        address,
-        address_detail,
-        establishment_id,
-        geo_coordinates,
-        idcc,
-        opco,
-        origin,
-        type: ENTREPRISE,
-        status: lastStatus?.status === EntrepriseStatus.ERROR ? [entrepriseStatusEventToUserRecruteurStatusEvent(lastStatus, ETAT_UTILISATEUR.ERROR)] : [],
-      }
+      return entreprise
     }
     case AccessEntityType.CFA: {
       const cfa = await Cfa.findOne({ _id: role.authorized_id }).lean()
       if (!cfa) return null
-      const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = cfa
-      return {
-        establishment_siret: siret,
-        establishment_enseigne: enseigne,
-        establishment_raison_sociale: raison_sociale,
-        address,
-        address_detail,
-        geo_coordinates,
-        origin,
-        type: CFA,
-        is_qualiopi: true,
-      }
+      return cfa
     }
     default:
       return null
@@ -121,13 +98,10 @@ export const getUserRecruteurByRecruiter = async (recruiter: IRecruiter): Promis
   }
 }
 
-const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promise<IUserRecruteur | null> => {
-  const user = await User2.findOne(user2query).lean()
-  if (!user) return null
-  const role = await RoleManagement.findOne({ user_id: user._id.toString() }).lean()
-  if (!role) return null
-  const organismeData = await getOrganismeFromRole(role)
+export const userAndRoleAndOrganizationToUserRecruteur = (user: IUser2, role: IRoleManagement, organisme: ICFA | IEntreprise): IUserRecruteur => {
   const { email, first_name, last_name, phone, last_action_date, _id } = user
+  const organismeType = "status" in organisme ? ENTREPRISE : CFA
+  const lastEntrepriseEvent = "status" in organisme ? getLastStatusEvent(organisme.status) : null
   const oldStatus: IUserStatusValidation[] = [
     ...role.status.map(({ date, reason, status, validation_type, granted_by }) => {
       const userRecruteurStatus = roleStatusToUserRecruteurStatus(status)
@@ -139,16 +113,32 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
         user: granted_by ?? "",
       }
     }),
-    ...(organismeData?.status ?? []),
+    ...(lastEntrepriseEvent?.status === EntrepriseStatus.ERROR ? [entrepriseStatusEventToUserRecruteurStatusEvent(lastEntrepriseEvent, ETAT_UTILISATEUR.ERROR)] : []),
   ]
-  const roleType = role.authorized_type === AccessEntityType.OPCO ? "OPCO" : role.authorized_type === AccessEntityType.ADMIN ? "ADMIN" : null
-  const organismeType = organismeData?.type
+  const roleType = role.authorized_type === AccessEntityType.OPCO ? OPCO : role.authorized_type === AccessEntityType.ADMIN ? ADMIN : null
   const type = roleType ?? organismeType ?? null
   if (!type) throw Boom.internal("unexpected: no type found")
-  return {
-    ...organismeData,
-    createdAt: organismeData?.createdAt ?? user.createdAt,
-    updatedAt: organismeData?.updatedAt ?? user.updatedAt,
+  const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme
+  const entrepriseFields =
+    "idcc" in organisme
+      ? {
+          idcc: organisme.idcc,
+          opco: organisme.opco,
+          establishment_id: organisme.establishment_id,
+        }
+      : {}
+  const userRecruteur: IUserRecruteur = {
+    ...entrepriseFields,
+    establishment_siret: siret,
+    establishment_enseigne: enseigne,
+    establishment_raison_sociale: raison_sociale,
+    address,
+    address_detail,
+    geo_coordinates,
+    origin,
+    is_qualiopi: type === CFA,
+    createdAt: role?.createdAt ?? user.createdAt,
+    updatedAt: role?.updatedAt ?? user.updatedAt,
     is_email_checked: isUserEmailChecked(user),
     type,
     _id,
@@ -159,116 +149,130 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
     last_connection: last_action_date,
     status: oldStatus,
   }
+  return userRecruteur
+}
+
+const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promise<IUserRecruteur | null> => {
+  const user = await User2.findOne(user2query).lean()
+  if (!user) return null
+  const role = await RoleManagement.findOne({ user_id: user._id.toString() }).lean()
+  if (!role) return null
+  const organisme = await getOrganismeFromRole(role)
+  if (!organisme) return null
+  return userAndRoleAndOrganizationToUserRecruteur(user, role, organisme)
+}
+
+export const createOrganizationUser = async (
+  userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status" | "scope">,
+  statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
+): Promise<UserAndOrganization> => {
+  const { type, origin, first_name, last_name, last_connection, email, is_email_checked, phone } = userRecruteurProps
+  if (type === ENTREPRISE || type === CFA) {
+    const user = await createUser2IfNotExist(
+      {
+        email,
+        first_name,
+        last_name,
+        phone: phone ?? "",
+        last_action_date: last_connection,
+      },
+      is_email_checked
+    )
+    const organization = await createOrganizationIfNotExist(userRecruteurProps)
+    await modifyPermissionToUser(
+      {
+        user_id: user._id,
+        authorized_id: organization._id.toString(),
+        authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
+        origin: origin ?? "createUser",
+      },
+      statusEvent ?? {
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+        status: type === ENTREPRISE ? AccessStatus.AWAITING_VALIDATION : AccessStatus.GRANTED,
+        reason: "",
+      }
+    )
+    return { organization, user, type }
+  } else {
+    throw Boom.internal(`unsupported type ${type}`)
+  }
+}
+
+export const createOpcoUser = async (userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">, opco: OPCOS) => {
+  const user = await createUser2IfNotExist(
+    {
+      ...userProps,
+      last_action_date: new Date(),
+    },
+    false
+  )
+  await modifyPermissionToUser(
+    {
+      user_id: user._id,
+      authorized_id: opco,
+      authorized_type: AccessEntityType.OPCO,
+      origin: "",
+    },
+    {
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
+      status: AccessStatus.GRANTED,
+      reason: "",
+    }
+  )
+  return user
+}
+
+export const createAdminUser = async (userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">) => {
+  const user = await createUser2IfNotExist(
+    {
+      ...userProps,
+      last_action_date: new Date(),
+    },
+    false
+  )
+  await modifyPermissionToUser(
+    {
+      user_id: user._id,
+      authorized_id: "",
+      authorized_type: AccessEntityType.ADMIN,
+      origin: "",
+    },
+    {
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
+      status: AccessStatus.GRANTED,
+      reason: "",
+    }
+  )
+  return user
 }
 
 /**
  * @description création d'un nouveau user recruteur. Le champ status peut être passé ou, s'il n'est pas passé, être sauvé ultérieurement
  */
 export const createUser = async (
-  userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status"> & { statusEvent?: IRoleManagementEvent }
-): Promise<{ userRecruteur: IUserRecruteur; user: IUser2 }> => {
-  const {
+  userProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status">,
+  statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
+): Promise<IUser2> => {
+  const { first_name, last_name, email, phone, type, opco } = userProps
+  const userFields = {
     first_name,
-    is_email_checked,
     last_name,
-    type,
-    address,
-    address_detail,
-    establishment_enseigne,
-    establishment_id,
-    establishment_raison_sociale,
-    establishment_siret,
-    geo_coordinates,
-    idcc,
-    last_connection,
-    opco,
-    origin,
-    phone,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    scope,
-    statusEvent,
-  } = userRecruteurProps
-  const formatedEmail = userRecruteurProps.email.toLocaleLowerCase()
-
-  let user = await User2.findOne({ email: formatedEmail }).lean()
-  if (!user) {
-    const status: IUserStatusEvent[] = []
-    if (is_email_checked) {
-      status.push({
-        date: new Date(),
-        reason: "creation",
-        status: UserEventType.VALIDATION_EMAIL,
-        validation_type: VALIDATION_UTILISATEUR.MANUAL,
-      })
-    }
-    status.push({
-      date: new Date(),
-      reason: "creation",
-      status: UserEventType.ACTIF,
-      validation_type: VALIDATION_UTILISATEUR.MANUAL,
-    })
-    const userFields: Omit<IUser2, "_id" | "createdAt" | "updatedAt"> = {
-      email: formatedEmail,
-      first_name,
-      last_name,
-      phone: phone ?? "",
-      last_action_date: last_connection ?? new Date(),
-      origin,
-      status,
-    }
-    user = await User2.create(userFields)
+    email,
+    phone: phone ?? "",
   }
-  let addedRole: Parameters<typeof modifyPermissionToUser>[0] | null = null
+
   if (type === ENTREPRISE || type === CFA) {
-    if (!establishment_siret) {
-      throw Boom.internal("siret is missing")
-    }
-    let entreprise = await Entreprise.findOne({ siret: establishment_siret }).lean()
-    if (!entreprise) {
-      entreprise = await Entreprise.create({
-        siret: establishment_siret,
-        address,
-        address_detail,
-        enseigne: establishment_enseigne,
-        raison_sociale: establishment_raison_sociale,
-        establishment_id,
-        origin,
-        opco,
-        idcc,
-        geo_coordinates,
-      })
-    }
-    addedRole = {
-      user_id: user._id,
-      authorized_id: entreprise._id.toString(),
-      authorized_type: AccessEntityType.ENTREPRISE,
-      origin: origin ?? "createUser",
-    }
+    const { user } = await createOrganizationUser(userProps, statusEvent)
+    return user
   } else if (type === ADMIN) {
-    addedRole = {
-      user_id: user._id,
-      authorized_id: "",
-      authorized_type: AccessEntityType.ADMIN,
-      origin: origin ?? "createUser",
-    }
+    const user = await createAdminUser(userFields)
+    return user
   } else if (type === OPCO) {
-    addedRole = {
-      user_id: user._id,
-      authorized_id: parseEnumOrError(OPCOS, opco ?? null),
-      authorized_type: AccessEntityType.OPCO,
-      origin: origin ?? "createUser",
-    }
+    const user = await createOpcoUser(userFields, parseEnumOrError(OPCOS, opco ?? null))
+    return user
   } else {
     assertUnreachable(type)
   }
-  if (statusEvent && addedRole) {
-    await modifyPermissionToUser(addedRole, statusEvent)
-  }
-  const userRecruteur = await getUserRecruteurById(user._id)
-  if (!userRecruteur) {
-    throw Boom.internal("unexpected")
-  }
-  return { userRecruteur, user }
 }
 
 /**
@@ -355,41 +359,49 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]): IUserStatus
   return lastValidationEvent.status
 }
 
-export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) => {
-  const response = await updateUserValidationHistory(userId, {
-    validation_type: VALIDATION_UTILISATEUR.AUTO,
-    user: "SERVEUR",
-    status: ETAT_UTILISATEUR.ERROR,
+export const setEntrepriseInError = async (entrepriseId: IEntreprise["_id"], reason: string) => {
+  const entreprise = await Entreprise.findOne({ _id: entrepriseId })
+  if (!entreprise) {
+    throw Boom.internal(`could not find entreprise with id=${entrepriseId}`)
+  }
+  const event: IEntrepriseStatusEvent = {
+    date: new Date(),
     reason,
-  })
-  if (!response) {
-    throw new Error(`could not find user history for user with id=${userId}`)
+    status: EntrepriseStatus.ERROR,
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
   }
-  return response
+  await Entreprise.updateOne(
+    { _id: entrepriseId },
+    {
+      $push: {
+        status: event,
+      },
+    }
+  )
 }
 
-export const autoValidateUser = async (userId: IUserRecruteur["_id"]) => {
-  const response = await updateUserValidationHistory(userId, {
-    validation_type: VALIDATION_UTILISATEUR.AUTO,
-    user: "SERVEUR",
-    status: ETAT_UTILISATEUR.VALIDE,
-  })
-  if (!response) {
-    throw new Error(`could not find user history for user with id=${userId}`)
-  }
-  return response
+const setAccessOfUserOnOrganization = async ({ user, organization, type }: UserAndOrganization, status: AccessStatus) => {
+  await modifyPermissionToUser(
+    {
+      user_id: user._id,
+      authorized_id: organization._id.toString(),
+      authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
+      origin: "",
+    },
+    {
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
+      status,
+      reason: "",
+    }
+  )
 }
 
-export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_id"]) => {
-  const response = await updateUserValidationHistory(userId, {
-    validation_type: VALIDATION_UTILISATEUR.AUTO,
-    user: "SERVEUR",
-    status: ETAT_UTILISATEUR.ATTENTE,
-  })
-  if (!response) {
-    throw new Error(`could not find user history for user with id=${userId}`)
-  }
-  return response
+export const autoValidateUser = async (props: UserAndOrganization) => {
+  await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED)
+}
+
+export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization) => {
+  await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION)
 }
 
 export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: string) => {
@@ -405,8 +417,18 @@ export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: str
   return response
 }
 
-export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
-  const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
+export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
+  const { email, first_name, last_name } = user
+  const role = await RoleManagement.findOne({ authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] } }).lean()
+  if (!role) {
+    throw Boom.internal(`inattendu : pas de role pour user id=${user._id}`)
+  }
+  const isCfa = role.authorized_type === AccessEntityType.CFA
+  const organization = await (isCfa ? Cfa : Entreprise).findOne({ _id: role.authorized_id }).lean()
+  if (!organization) {
+    throw Boom.internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
+  }
+  const { raison_sociale: establishment_raison_sociale } = organization
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
@@ -419,8 +441,8 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
       last_name: sanitizeForEmail(last_name),
       first_name: sanitizeForEmail(first_name),
       email: sanitizeForEmail(email),
-      is_delegated: type === CFA,
-      url: createAuthMagicLink(userRecruteur),
+      is_delegated: isCfa,
+      url: createAuthMagicLink(user2ToUserForToken(user)),
     },
   })
 }
@@ -477,3 +499,5 @@ export const getUsersWithRoles = async () => {
 }
 
 export const isUserEmailChecked = (user: IUser2): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)
+
+export type UserAndOrganization = { user: IUser2; organization: IEntreprise | ICFA; type: "ENTREPRISE" | "CFA" }

@@ -3,10 +3,10 @@ import { setTimeout } from "timers/promises"
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, IUserRecruteur, ZCfaReferentielData } from "shared"
+import { IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, ZCfaReferentielData } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUser2 } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -39,7 +39,15 @@ import {
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
-import { autoValidateUser, createUser, getUserRecruteurByEmail, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
+import {
+  UserAndOrganization,
+  autoValidateUser,
+  createOrganizationUser,
+  getUserRecruteurByEmail,
+  isUserEmailChecked,
+  setEntrepriseInError,
+  setUserHasToBeManuallyValidated,
+} from "./userRecruteur.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -546,20 +554,21 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
   }
 }
 
-export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
-  const validated = await isCompanyValid(userRecruteur)
+export const autoValidateCompany = async (userAndEntreprise: UserAndOrganization) => {
+  const validated = await isCompanyValid(userAndEntreprise)
   if (validated) {
-    userRecruteur = await autoValidateUser(userRecruteur._id)
+    await autoValidateUser(userAndEntreprise)
   } else {
-    if (!(userRecruteur.status.length && getUserStatus(userRecruteur.status) === ETAT_UTILISATEUR.ATTENTE)) {
-      userRecruteur = await setUserHasToBeManuallyValidated(userRecruteur._id)
-    }
+    await setUserHasToBeManuallyValidated(userAndEntreprise)
   }
-  return { userRecruteur, validated }
+  return { validated }
 }
 
-export const isCompanyValid = async (props: { establishment_siret?: string | null; email: string }): Promise<boolean> => {
-  const { establishment_siret: siret, email } = props
+export const isCompanyValid = async (props: UserAndOrganization): Promise<boolean> => {
+  const {
+    organization: { siret },
+    user: { email },
+  } = props
   if (!siret) {
     return false
   }
@@ -744,7 +753,7 @@ export const entrepriseOnboardingWorkflow = {
     }: {
       isUserValidated?: boolean
     } = {}
-  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUserRecruteur }> => {
+  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUser2 }> => {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
@@ -775,17 +784,22 @@ export const entrepriseOnboardingWorkflow = {
       cfa_delegated_siret,
     })
     const formulaireId = formulaireInfo.establishment_id
-    let { userRecruteur: newEntreprise } = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE, is_email_checked: false, is_qualiopi: false })
+    const creationResult = await createOrganizationUser({
+      ...savedData,
+      establishment_id: formulaireId,
+      type: ENTREPRISE,
+      is_email_checked: false,
+      is_qualiopi: false,
+    })
 
     if (hasSiretError) {
-      newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")
+      await setEntrepriseInError(creationResult.organization._id, "Erreur lors de l'appel à l'API SIRET")
     } else if (isUserValidated) {
-      newEntreprise = await autoValidateUser(newEntreprise._id)
+      await autoValidateUser(creationResult)
     } else {
-      const balValidationResult = await autoValidateCompany(newEntreprise)
-      newEntreprise = balValidationResult.userRecruteur
+      await autoValidateCompany(creationResult)
     }
-    return { formulaire: formulaireInfo, user: newEntreprise }
+    return { formulaire: formulaireInfo, user: creationResult.user }
   },
   createFromCFA: async ({
     email,
@@ -858,17 +872,16 @@ export const sendUserConfirmationEmail = async (user: IUser2) => {
   })
 }
 
-export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recruteur: IRecruiter) => {
-  const userStatus = getUserStatus(user.status)
-  if (userStatus === ETAT_UTILISATEUR.ERROR || user.is_email_checked) {
+export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: IRecruiter, accessStatus: AccessStatus, entrepriseStatus: EntrepriseStatus) => {
+  if (entrepriseStatus === EntrepriseStatus.ERROR || isUserEmailChecked(user) || accessStatus === AccessStatus.DENIED) {
     return
   }
-  const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
+  const isUserAwaiting = accessStatus === AccessStatus.AWAITING_VALIDATION
   const { jobs, is_delegated, email } = recruteur
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && is_delegated === false) {
     // Get user account validation link
-    const url = createValidationMagicLink(user)
+    const url = createValidationMagicLink(user2ToUserForToken(user))
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",

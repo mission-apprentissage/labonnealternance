@@ -1,18 +1,20 @@
 import Boom from "boom"
 import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, getUserStatus, zRoutes } from "shared/index"
-import { AccessStatus } from "shared/models/roleManagement.model"
+import { IEntreprise } from "shared/models/entreprise.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 
-import { Recruiter, UserRecruteur } from "../../common/model/index"
+import { Cfa, Entreprise, Recruiter, RoleManagement, UserRecruteur } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
 import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaire, reactivateRecruiter } from "../../services/formulaire.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
-import { getUserAndRecruitersDataForOpcoUser, getValidatorIdentityFromStatus } from "../../services/user.service"
+import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds } from "../../services/user.service"
 import {
   createUser,
   getActiveUsers,
@@ -26,6 +28,7 @@ import {
   updateUser,
   updateUser2Fields,
   updateUserValidationHistory,
+  userAndRoleAndOrganizationToUserRecruteur,
   validateUserEmail,
 } from "../../services/userRecruteur.service"
 import { Server } from "../server"
@@ -103,18 +106,19 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/admin/users"])],
     },
     async (req, res) => {
-      const { userRecruteur } = await createUser({
-        ...req.body,
-        is_email_checked: true,
-        statusEvent: {
+      const user = await createUser(
+        {
+          ...req.body,
+          is_email_checked: true,
+        },
+        {
           reason: "création par l'interface admin",
-          date: new Date(),
           status: AccessStatus.AWAITING_VALIDATION,
           validation_type: VALIDATION_UTILISATEUR.MANUAL,
           granted_by: getUserFromRequest(req, zRoutes.post["/admin/users"]).value._id.toString(),
-        },
-      })
-      return res.status(200).send(userRecruteur)
+        }
+      )
+      return res.status(200).send({ _id: user._id })
     }
   )
 
@@ -163,37 +167,61 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/user/:userId",
+    "/user/:userId/organization/:organizationId",
     {
-      schema: zRoutes.get["/user/:userId"],
-      onRequest: [server.auth(zRoutes.get["/user/:userId"])],
+      schema: zRoutes.get["/user/:userId/organization/:organizationId"],
+      onRequest: [server.auth(zRoutes.get["/user/:userId/organization/:organizationId"])],
     },
     async (req, res) => {
-      const user = await getUserRecruteurById(req.params.userId)
-      const loggedUser = getUserFromRequest(req, zRoutes.get["/user/:userId"]).value
+      const user = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
+      if (!user) throw Boom.badRequest()
+      const { organizationId } = req.params
+      const role = await RoleManagement.findOne({
+        user_id: user._id,
+        authorized_id: organizationId,
+        authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] },
+      }).lean()
+      if (!role) {
+        throw Boom.forbidden()
+      }
+      const type = role.authorized_type === AccessEntityType.CFA ? CFA : ENTREPRISE
+      const organization = await (type === CFA ? Cfa : Entreprise).findOne({ _id: role.authorized_id }).lean()
+      if (!organization) {
+        throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
+      }
 
       let jobs: IJob[] = []
 
-      if (!user) throw Boom.badRequest()
-
-      if (user.type === ENTREPRISE) {
-        const response = await Recruiter.findOne({ establishment_id: user.establishment_id as string })
-          .select({ jobs: 1, _id: 0 })
-          .lean()
+      if (type === ENTREPRISE) {
+        const { establishment_id } = organization as IEntreprise
+        if (!establishment_id) {
+          throw Boom.internal(`inattendu : establishment_id vide pour l'entreprise avec id=${role.authorized_id}`)
+        }
+        const response = await Recruiter.findOne({ establishment_id }).select({ jobs: 1, _id: 0 }).lean()
         if (!response) {
           throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
         }
         jobs = response.jobs
       }
 
-      // remove status data if not authorized to see it, else get identity
-      if ([ENTREPRISE, CFA].includes(loggedUser.type)) {
-        user.status = []
-      } else {
-        user.status = await getValidatorIdentityFromStatus(user.status)
-      }
+      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization)
 
-      return res.status(200).send({ ...user, jobs })
+      const opcoOrAdminRole = await RoleManagement.findOne({
+        user_id: user._id,
+        authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] },
+      }).lean()
+      if (opcoOrAdminRole && getLastStatusEvent(opcoOrAdminRole.status)?.status === AccessStatus.GRANTED) {
+        const userIds = userRecruteur.status.flatMap(({ user }) => (user ? [user] : []))
+        const users = await getUserNamesFromIds(userIds)
+        userRecruteur.status.forEach((event) => {
+          const user = users.find((user) => user._id.toString() === event.user)
+          if (!user) return
+          event.user = `${user.first_name} ${user.last_name}`
+        })
+      }
+      return res.status(200).send({ ...userRecruteur, jobs })
     }
   )
 
@@ -264,16 +292,17 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/user/:userId/history"])],
     },
     async (req, res) => {
-      const history = req.body
+      // TODO gestion couple user/organization
+      const newEvent = req.body
       const validator = getUserFromRequest(req, zRoutes.put["/user/:userId/history"]).value
-      const user = await updateUserValidationHistory(req.params.userId, { ...history, user: validator._id.toString() })
+      const user = await updateUserValidationHistory(req.params.userId, { ...newEvent, user: validator._id.toString() })
 
       if (!user) throw Boom.badRequest()
 
       const { email, last_name, first_name } = user
 
       // if user is disabled, return the user data directly
-      if (history.status === ETAT_UTILISATEUR.DESACTIVE) {
+      if (newEvent.status === ETAT_UTILISATEUR.DESACTIVE) {
         // send email to user to notify him his account has been disabled
         await mailer.sendEmail({
           to: email,
@@ -286,7 +315,7 @@ export default (server: Server) => {
             },
             last_name: sanitizeForEmail(last_name),
             first_name: sanitizeForEmail(first_name),
-            reason: sanitizeForEmail(history.reason),
+            reason: sanitizeForEmail(newEvent.reason),
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
@@ -296,8 +325,8 @@ export default (server: Server) => {
       /**
        * 20230831 kevin todo: share reason between front and back with shared folder
        */
-      // if user isn't part of the OPCO, just send the user straigth back
-      if (history.reason === "Ne relève pas des champs de compétences de mon OPCO") {
+      // if user isn't part of the OPCO, just send the user straight back
+      if (newEvent.reason === "Ne relève pas des champs de compétences de mon OPCO") {
         return res.status(200).send(user)
       }
 
@@ -317,7 +346,7 @@ export default (server: Server) => {
         if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
           // le recruiter étant archivé on se contente de le rendre de nouveau Actif
           await reactivateRecruiter(establishment_id)
-        } else {
+        } else if (userFormulaire.status === RECRUITER_STATUS.ACTIF) {
           // le compte se trouve validé, on procède à l'activation de la première offre et à la notification aux CFAs
           if (userFormulaire?.jobs?.length) {
             await activateEntrepriseRecruiterForTheFirstTime(userFormulaire)

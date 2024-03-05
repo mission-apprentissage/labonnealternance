@@ -2,16 +2,19 @@ import Boom from "boom"
 import { removeUrlsFromText } from "shared/helpers/common"
 import { toPublicUser, zRoutes } from "shared/index"
 
+import { User2 } from "@/common/model"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
+import { getUser2ByEmail } from "@/services/user2.service"
 
 import { startSession, stopSession } from "../../common/utils/session.service"
 import config from "../../config"
 import { sendUserConfirmationEmail } from "../../services/etablissement.service"
 import { controlUserState } from "../../services/login.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
-import { getUserRecruteurByEmail, getUserRecruteurById, updateLastConnectionDate } from "../../services/userRecruteur.service"
+import { isUserEmailChecked, updateLastConnectionDate } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -23,11 +26,11 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const user = await getUserRecruteurById(userId)
+      const user = await User2.findOne({ _id: userId }).lean()
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
-      const { is_email_checked } = user
+      const is_email_checked = isUserEmailChecked(user)
       if (is_email_checked) {
         return res.status(400).send({ error: true, reason: "VERIFIED" })
       }
@@ -44,18 +47,14 @@ export default (server: Server) => {
     async (req, res) => {
       const { email } = req.body
       const formatedEmail = email.toLowerCase()
-      const user = await getUserRecruteurByEmail(formatedEmail)
+      const user = await User2.findOne({ email: formatedEmail }).lean()
 
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
 
-      const { email: userEmail, first_name, last_name, is_email_checked } = user
-
-      const userState = controlUserState(user.status)
-      if (userState?.error) {
-        return res.status(400).send(userState)
-      }
+      const is_email_checked = isUserEmailChecked(user)
+      const { email: userEmail, first_name, last_name } = user
 
       if (!is_email_checked) {
         await sendUserConfirmationEmail(user)
@@ -63,6 +62,11 @@ export default (server: Server) => {
           error: true,
           reason: "VERIFY",
         })
+      }
+
+      const userState = await controlUserState(user)
+      if (userState?.error) {
+        return res.status(400).send(userState)
       }
 
       await mailer.sendEmail({
@@ -75,7 +79,7 @@ export default (server: Server) => {
           },
           last_name: sanitizeForEmail(removeUrlsFromText(last_name)),
           first_name: sanitizeForEmail(removeUrlsFromText(first_name)),
-          connexion_url: createAuthMagicLink(user),
+          connexion_url: createAuthMagicLink(user2ToUserForToken(user)),
         },
       })
       return res.status(200).send({})
@@ -89,31 +93,26 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/login/verification"])],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/login/verification"]).value
-      const { email } = user.identity
+      const userFromRequest = getUserFromRequest(req, zRoutes.post["/login/verification"]).value
+      const { email } = userFromRequest.identity
       const formatedEmail = email.toLowerCase()
 
-      const userData = await getUserRecruteurByEmail(formatedEmail)
+      const user = await getUser2ByEmail(formatedEmail)
 
-      if (!userData) {
+      if (!user) {
         throw Boom.unauthorized()
       }
 
-      const userState = controlUserState(userData?.status)
+      const userState = await controlUserState(user)
 
       if (userState?.error) {
         throw Boom.forbidden()
       }
 
       await updateLastConnectionDate(formatedEmail)
-      const connectedUser = await getUserRecruteurByEmail(formatedEmail)
-      if (!connectedUser) {
-        throw Boom.forbidden()
-      }
-
       await startSession(email, res)
 
-      return res.status(200).send(toPublicUser(connectedUser))
+      return res.status(200).send(toPublicUser(user))
     }
   )
 
@@ -130,8 +129,8 @@ export default (server: Server) => {
       if (!request.user) {
         throw Boom.forbidden()
       }
-      const user = getUserFromRequest(request, zRoutes.get["/auth/session"]).value
-      return response.status(200).send(toPublicUser(user))
+      const userFromRequest = getUserFromRequest(request, zRoutes.get["/auth/session"]).value
+      return response.status(200).send(toPublicUser(userFromRequest))
     }
   )
 

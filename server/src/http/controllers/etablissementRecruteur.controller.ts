@@ -1,13 +1,17 @@
 import Boom from "boom"
-import { toPublicUser, zRoutes } from "shared"
+import { assertUnreachable, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { UserEventType } from "shared/models/user2.model"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { Cfa, Recruiter, UserRecruteur } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
+import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateDepotSimplifieToken } from "@/services/appLinks.service"
+import { getUser2ByEmail } from "@/services/user2.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -24,9 +28,9 @@ import {
 } from "../../services/etablissement.service"
 import {
   autoValidateUser,
-  createUser,
+  createOrganizationUser,
   getUserRecruteurByEmail,
-  getUserStatus,
+  isUserEmailChecked,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
@@ -153,7 +157,8 @@ export default (server: Server) => {
       schema: zRoutes.post["/etablissement/creation"],
     },
     async (req, res) => {
-      switch (req.body.type) {
+      const { type } = req.body
+      switch (type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
           const cfa_delegated_siret = req.body.cfa_delegated_siret ?? undefined
@@ -162,8 +167,8 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
             else throw Boom.badRequest(result.message, result)
           }
-          const token = generateDepotSimplifieToken(result.user)
-          return res.status(200).send({ ...result, token })
+          const token = generateDepotSimplifieToken(user2ToUserForToken(result.user), result.formulaire.establishment_id)
+          return res.status(200).send({ formulaire: result.formulaire, user: result.user, token })
         }
         case CFA: {
           const { email, establishment_siret } = req.body
@@ -178,45 +183,45 @@ export default (server: Server) => {
           const { contacts } = siretInfos
 
           // Creation de l'utilisateur en base de données
-          // eslint-disable-next-line prefer-const
-          let { userRecruteur: newCfa, user: userCfa } = await createUser({ ...req.body, ...siretInfos, is_email_checked: false })
+          const creationResult = await createOrganizationUser({ ...req.body, ...siretInfos, is_email_checked: false })
+          const userCfa = creationResult.user
 
           const slackNotification = {
             subject: "RECRUTEUR",
-            message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${newCfa._id}`,
+            message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
+            await setUserHasToBeManuallyValidated(creationResult)
             await notifyToSlack(slackNotification)
-            return res.status(200).send({ user: newCfa })
+            return res.status(200).send({ user: userCfa })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
-            newCfa = await autoValidateUser(newCfa._id)
+            await autoValidateUser(creationResult)
             await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
-            return res.status(200).send({ user: newCfa })
+            return res.status(200).send({ user: userCfa })
           }
           if (isEmailFromPrivateCompany(formatedEmail)) {
             const domains = getAllDomainsFromEmailList(contacts.map(({ email }) => email))
             const userEmailDomain = getEmailDomain(formatedEmail)
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              newCfa = await autoValidateUser(newCfa._id)
+              await autoValidateUser(creationResult)
               await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
-              return res.status(200).send({ user: newCfa })
+              return res.status(200).send({ user: userCfa })
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
+          await setUserHasToBeManuallyValidated(creationResult)
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
-          return res.status(200).send({ user: newCfa })
+          return res.status(200).send({ user: userCfa })
         }
         default: {
-          throw Boom.badRequest("unsupported type")
+          assertUnreachable(type)
         }
       }
     }
@@ -266,30 +271,24 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissement/validation"])],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
-      const email = user.identity.email.toLocaleLowerCase()
+      const userFromRequest = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
+      const email = userFromRequest.identity.email.toLocaleLowerCase()
 
-      const userRecruteur = await getUserRecruteurByEmail(email)
-      if (!userRecruteur) {
+      const user = await getUser2ByEmail(email)
+      if (!user) {
         throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
-
-      const isUserAwaiting = getUserStatus(userRecruteur.status) === ETAT_UTILISATEUR.ATTENTE
-
-      if (!isUserAwaiting) {
-        await sendWelcomeEmailToUserRecruteur(userRecruteur)
+      const userStatus = getLastStatusEvent(user.status)?.status
+      if (userStatus === UserEventType.DESACTIVE) {
+        throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
+      }
+      if (!isUserEmailChecked(user)) {
+        await sendWelcomeEmailToUserRecruteur(user)
       }
 
-      await updateLastConnectionDate(userRecruteur.email)
-      const connectedUser = await getUserRecruteurByEmail(userRecruteur.email)
-
-      if (!connectedUser) {
-        throw Boom.forbidden()
-      }
-
-      await startSession(userRecruteur.email, res)
-
-      return res.status(200).send(toPublicUser(connectedUser))
+      await updateLastConnectionDate(email)
+      await startSession(email, res)
+      return res.status(200).send(toPublicUser(user))
     }
   )
 }

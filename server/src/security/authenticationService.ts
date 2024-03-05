@@ -4,20 +4,21 @@ import { FastifyRequest } from "fastify"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { ICredential, assertUnreachable } from "shared"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
-import { IUserRecruteur } from "shared/models/usersRecruteur.model"
+import { IUser2 } from "shared/models/user2.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { UserWithType } from "shared/security/permissions"
 
 import { Credential } from "@/common/model"
 import config from "@/config"
 import { getSession } from "@/services/sessions.service"
-import { getUserRecruteurByEmail, updateLastConnectionDate } from "@/services/userRecruteur.service"
+import { getUser2ByEmail } from "@/services/user2.service"
+import { updateLastConnectionDate } from "@/services/userRecruteur.service"
 
 import { controlUserState } from "../services/login.service"
 
 import { IAccessToken, parseAccessToken } from "./accessTokenService"
 
-export type IUserWithType = UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential> | UserWithType<"IAccessToken", IAccessToken>
+export type IUserWithType = UserWithType<"IUser2", IUser2> | UserWithType<"ICredential", ICredential> | UserWithType<"IAccessToken", IAccessToken>
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -26,7 +27,7 @@ declare module "fastify" {
 }
 
 type AuthenticatedUser<AuthScheme extends WithSecurityScheme["securityScheme"]["auth"]> = AuthScheme extends "cookie-session"
-  ? UserWithType<"IUserRecruteur", IUserRecruteur>
+  ? UserWithType<"IUser2", IUser2>
   : AuthScheme extends "api-key"
     ? UserWithType<"ICredential", ICredential>
     : AuthScheme extends "access-token"
@@ -40,7 +41,7 @@ export const getUserFromRequest = <S extends WithSecurityScheme>(req: Pick<Fasti
   return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
 }
 
-async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUserRecruteur", IUserRecruteur> | null> {
+async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUser2", IUser2> | null> {
   const token = req.cookies?.[config.auth.session.cookieName]
 
   if (!token) {
@@ -56,12 +57,12 @@ async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUs
 
     const { email } = jwt.verify(token, config.auth.user.jwtSecret) as JwtPayload
 
-    const user = await getUserRecruteurByEmail(email.toLowerCase())
+    const user = await getUser2ByEmail(email.toLowerCase())
     if (!user) {
       return null
     }
 
-    const userState = controlUserState(user.status)
+    const userState = await controlUserState(user)
 
     if (userState?.error) {
       if (userState.reason !== "VALIDATION") {
@@ -69,7 +70,7 @@ async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUs
       }
     }
 
-    return { type: "IUserRecruteur", value: user }
+    return { type: "IUser2", value: user }
   } catch (error) {
     captureException(error)
     return null

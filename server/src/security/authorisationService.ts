@@ -1,6 +1,7 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
+import { IUser2 } from "shared/models/user2.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, PendingRecruiterRole, RecruiterRole, Role, UserWithType } from "shared/security/permissions"
 import { assertUnreachable } from "shared/utils"
@@ -23,7 +24,7 @@ type Resources = {
 // Specify what we need to simplify mocking in tests
 type IRequest = Pick<FastifyRequest, "user" | "params" | "query">
 
-type NonTokenUserWithType = UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>
+type NonTokenUserWithType = UserWithType<"IUser2", IUser2> | UserWithType<"ICredential", ICredential>
 
 // TODO: Unit test access control
 // TODO: job.delegations
@@ -355,7 +356,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
 
   const userWithType = getUserFromRequest(req, schema)
 
-  if (userWithType.type === "IUserRecruteur" && userWithType.value.type === "ADMIN") {
+  if (userWithType.type === "IUser2" && userWithType.value.type === "ADMIN") {
     return
   }
   if (userWithType.type === "IAccessToken") {

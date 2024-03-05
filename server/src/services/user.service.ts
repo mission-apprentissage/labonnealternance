@@ -1,5 +1,5 @@
 import type { FilterQuery } from "mongoose"
-import { IUser, IUserRecruteur } from "shared"
+import { IUser } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
 
@@ -140,14 +140,10 @@ const getUserAndRecruitersDataForOpcoUser = async (
   return results
 }
 
-const getValidatorIdentityFromStatus = async (status: IUserRecruteur["status"]) => {
-  return await Promise.all(
-    status.map(async (state) => {
-      if (state.user === "SERVEUR") return state
-      const user = await User2.findById(state.user).select({ first_name: 1, last_name: 1, _id: 0 }).lean()
-      return { ...state, user: `${user?.first_name} ${user?.last_name}` }
-    })
-  )
+export const getUserNamesFromIds = async (ids: string[]) => {
+  const deduplicatedIds = [...new Set(ids)]
+  const users = await User2.find({ _id: { $in: deduplicatedIds } }).lean()
+  return users
 }
 
-export { createUser, find, findOne, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, getValidatorIdentityFromStatus, update }
+export { createUser, find, findOne, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, update }

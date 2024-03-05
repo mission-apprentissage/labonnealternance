@@ -3,7 +3,8 @@ import type { ObjectId as ObjectIdType } from "mongodb"
 import pkg from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
-import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUser2 } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -22,7 +23,6 @@ import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getRomeDetailsFromDB } from "./rome.service"
-import { getUserRecruteurByRecruiter, getUserStatus } from "./userRecruteur.service"
 
 const { ObjectId } = pkg
 
@@ -90,43 +90,67 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
 /**
  * @description Create job offer for formulaire
  */
-export const createJob = async ({ job, id }: { job: IJobWritable; id: string }): Promise<IRecruiter> => {
-  // get user data
+export const createJob = async ({ job, id, user }: { job: IJobWritable; id: string; user: IUser2 }): Promise<IRecruiter> => {
+  const userId = user._id
   const recruiter = await Recruiter.findOne({ establishment_id: id }).lean()
   if (!recruiter) {
     throw Boom.internal(`recruiter with establishment_id=${id} not found`)
   }
-  const userRecruteur = await getUserRecruteurByRecruiter(recruiter)
-  const userStatus: ETAT_UTILISATEUR | null = (userRecruteur ? getUserStatus(userRecruteur.status) : null) ?? null
-  const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
+  const { is_delegated, cfa_delegated_siret } = recruiter
+  const organization = await (cfa_delegated_siret ? Cfa.findOne({ siret: cfa_delegated_siret }).lean() : Entreprise.findOne({ establishment_id: id }).lean())
+  if (!organization) {
+    throw Boom.internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${id}`)
+  }
+  const role = await RoleManagement.findOne({
+    user_id: userId,
+    authorized_type: cfa_delegated_siret ? AccessEntityType.CFA : AccessEntityType.ENTREPRISE,
+    authorized_id: organization._id.toString(),
+  }).lean()
+  if (!role) {
+    throw Boom.internal(`inattendu : impossible retrouver le role pour establishment_id=${id}`)
+  }
+  const roleStatus = getLastStatusEvent(role.status)?.status
+  if (!roleStatus) {
+    throw Boom.internal(`inattendu : pas de status pour le role pour establishment_id=${id}`)
+  }
+  const entreprise: IEntreprise | null = cfa_delegated_siret ? null : (organization as IEntreprise)
+  const entrepriseStatus = getLastStatusEvent(entreprise?.status)?.status
+  const isJobActive = roleStatus === AccessStatus.GRANTED && cfa_delegated_siret ? true : entrepriseStatus === EntrepriseStatus.VALIDE
 
-  const jobPartial: Partial<IJob> = job
-  jobPartial.job_status = userRecruteur && isUserAwaiting ? JOB_STATUS.EN_ATTENTE : JOB_STATUS.ACTIVE
+  const newJobStatus = isJobActive ? JOB_STATUS.ACTIVE : JOB_STATUS.EN_ATTENTE
   // get user activation state if not managed by a CFA
-  const codeRome = job.rome_code[0]
+  const codeRome = job.rome_code.at(0)
+  if (!codeRome) {
+    throw Boom.internal(`inattendu : pas de code rome pour une création d'offre pour le recruiter id=${id}`)
+  }
   const romeData = await getRomeDetailsFromDB(codeRome)
   if (!romeData) {
     throw Boom.internal(`could not find rome infos for rome=${codeRome}`)
   }
   const creationDate = new Date()
-  const { job_start_date = creationDate } = job
+  const { job_start_date } = job
   const updatedJob: Partial<IJob> = Object.assign(job, {
+    job_status: newJobStatus,
     job_start_date,
     rome_detail: romeData.fiche_metier,
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
+    managed_by: userId,
   })
   // insert job
   const updatedFormulaire = await createOffre(id, updatedJob)
-  const { is_delegated, cfa_delegated_siret, jobs } = updatedFormulaire
+  const { jobs } = updatedFormulaire
   const createdJob = jobs.at(jobs.length - 1)
   if (!createdJob) {
     throw Boom.internal("unexpected: no job found after job creation")
   }
   // if first offer creation for an Entreprise, send specific mail
-  if (jobs.length === 1 && is_delegated === false && userRecruteur) {
-    await sendEmailConfirmationEntreprise(userRecruteur, updatedFormulaire)
+  if (jobs.length === 1 && is_delegated === false && isJobActive) {
+    if (!entrepriseStatus) {
+      throw Boom.internal(`inattendu : pas de status pour l'entreprise pour establishment_id=${id}`)
+    }
+    await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
     return updatedFormulaire
   }
 

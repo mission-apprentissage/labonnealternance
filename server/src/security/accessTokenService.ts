@@ -8,11 +8,11 @@ import { assertUnreachable } from "shared/utils"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, z } from "zod"
 
+import { User2 } from "@/common/model"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 import { controlUserState } from "../services/login.service"
-import { getUserRecruteurById } from "../services/userRecruteur.service"
 
 // cf https://www.sistrix.com/ask-sistrix/technical-seo/site-structure/url-length-how-long-can-a-url-be
 const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083
@@ -73,13 +73,15 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
       }
     | { type: "lba-company"; siret: string; email: string }
     | { type: "candidat"; email: string }
-    | { type: "IUser2"; email: string; _id: string }
+    | IUser2ForAccessToken
   scopes: ReadonlyArray<IScope<Schema>>
 }
 
+export type IUser2ForAccessToken = { type: "IUser2"; email: string; _id: string }
+
 export type UserForAccessToken = IUserRecruteur | IAccessToken["identity"]
 
-export const user2ToUserForToken = (user: IUser2): UserForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
+export const user2ToUserForToken = (user: IUser2): IUser2ForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
 
 export function generateAccessToken(user: UserForAccessToken, scopes: ReadonlyArray<NewIScope<SchemaWithSecurity>>, options: { expiresIn?: string } = {}): string {
   const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUserRecruteur", _id: user._id.toString(), email: user.email.toLowerCase() } : user
@@ -196,11 +198,11 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
   })
   const token = data.payload as IAccessToken<Schema>
   if (token.identity.type === "IUserRecruteur") {
-    const user = await getUserRecruteurById(token.identity._id)
+    const user = await User2.findOne({ _id: token.identity._id }).lean()
 
     if (!user) throw Boom.unauthorized()
 
-    const userStatus = controlUserState(user?.status)
+    const userStatus = await controlUserState(user)
 
     if (userStatus.error && !authorizedPaths.includes(schema.path)) {
       throw Boom.forbidden()

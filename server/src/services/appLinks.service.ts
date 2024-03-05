@@ -2,9 +2,9 @@ import { IJob, IUserRecruteur } from "shared/models"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
-import { UserForAccessToken, generateAccessToken, generateScope } from "@/security/accessTokenService"
+import { IUser2ForAccessToken, UserForAccessToken, generateAccessToken, generateScope } from "@/security/accessTokenService"
 
-export function createAuthMagicLinkToken(user: IUserRecruteur) {
+export function createAuthMagicLinkToken(user: UserForAccessToken) {
   return generateAccessToken(user, [
     generateScope({
       schema: zRoutes.post["/login/verification"],
@@ -16,13 +16,13 @@ export function createAuthMagicLinkToken(user: IUserRecruteur) {
   ])
 }
 
-export function createAuthMagicLink(user: IUserRecruteur) {
+export function createAuthMagicLink(user: UserForAccessToken) {
   const token = createAuthMagicLinkToken(user)
 
   return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
 }
 
-export function createValidationMagicLink(user: UserForAccessToken) {
+export function createValidationMagicLink(user: IUser2ForAccessToken) {
   const token = generateAccessToken(
     user,
     [
@@ -319,11 +319,7 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
   )
 }
 
-export function generateDepotSimplifieToken(user: IUserRecruteur) {
-  if (!user.establishment_id) {
-    throw new Error("unexpected")
-  }
-  const establishment_id = user.establishment_id
+export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establishment_id: string) {
   return generateAccessToken(
     user,
     [
