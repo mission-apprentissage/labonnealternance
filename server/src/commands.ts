@@ -319,12 +319,6 @@ program
   .action(createJobAction("pe:offre:export"))
 
 program
-  .command("validate-user")
-  .description("Contrôle de validation des entreprises en attente de validation")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("user:validate"))
-
-program
   .command("update-siret-infos-in-error")
   .description("Remplis les données venant du SIRET pour les utilisateurs ayant eu une erreur pendant l'inscription")
   .option("-q, --queued", "Run job asynchronously", false)

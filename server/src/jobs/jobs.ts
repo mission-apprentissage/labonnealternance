@@ -39,7 +39,6 @@ import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
-import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
 import buildSAVE from "./lbb/buildSAVE"
 import updateGeoLocations from "./lbb/updateGeoLocations"
@@ -299,8 +298,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return relanceOpco()
       case "pe:offre:export":
         return exportPE()
-      case "user:validate":
-        return checkAwaitingCompaniesValidation()
       case "siret:inError:update":
         return updateSiretInfosInError()
       case "etablissement:formations:activate:opt-out":
