@@ -4,7 +4,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { getSomeFtJobs } from "./ftjob.service"
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
 import { getSomeCompanies } from "./lbacompany.service"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPeJob } from "./lbaitem.shared.service.types"
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { getLbaJobs } from "./lbajob.service"
 import { jobsQueryValidator } from "./queryValidator.service"
 
@@ -40,7 +40,7 @@ export const getJobsFromApi = async ({
   api?: string
 }): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   try {
     const jobSources = !sources ? ["lba", "offres", "matcha"] : sources.split(",")
@@ -106,7 +106,7 @@ export const getJobsQuery = async (
   query: TJobSearchQuery
 ): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   const parameterControl = await jobsQueryValidator(query)
 
