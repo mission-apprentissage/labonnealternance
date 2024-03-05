@@ -2,6 +2,7 @@ import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
 import Boom from "boom"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
 
 import { getPeJob, getPeReferentiels, searchForPeJobs } from "@/common/apis/Pe"
 
@@ -86,7 +87,7 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
   }
 
   const resultJob: ILbaItemPeJob = {
-    ideaType: "peJob",
+    ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     title: job.intitule,
     contact,
     place: {

@@ -1,4 +1,5 @@
 import { zRoutes } from "shared"
+import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaiten"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { getFormationsQuery } from "../../services/formation.service"
@@ -49,11 +50,11 @@ export default (server: Server) => {
         return res.send(parameterControl)
       }
 
-      const itemSources = sources ? sources.split(",") : ["formations", "lba", "matcha", "offres"]
-      const hasSomeApiTag = ["lba", "lbb", "offres", "matcha"].some((apiTag) => itemSources.includes(apiTag))
+      const itemSources = sources ? sources.split(",") : allLbaItemType
+      const hasSomeApiTag = allLbaItemType.some((apiTag) => itemSources.includes(apiTag))
 
       const [formations, jobs] = await Promise.all([
-        itemSources.includes("formations")
+        itemSources.includes(LBA_ITEM_TYPE.FORMATION)
           ? getFormationsQuery({
               romes: parameterControl.romes,
               ...(latitude ? { latitude: latitude } : {}),

@@ -1,4 +1,5 @@
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaiten"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter } from "@/common/model"
@@ -238,7 +239,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
     const longitude = recruiter?.geopoint?.coordinates[0] ?? 0
 
     const resultJob: ILbaItemLbaJob = {
-      ideaType: "matcha",
+      ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       id: `${recruiter.establishment_id}-${idx}`,
       title: offre.rome_appellation_label ?? offre.rome_label,
       contact: {
