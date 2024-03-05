@@ -124,12 +124,12 @@ export const sendApplication = async ({
         return { error: offreOrError.error }
       }
 
-      validationResult = await checkUserApplicationCount(newApplication.applicant_email.toLowerCase(), newApplication)
+      validationResult = await checkUserApplicationCount(newApplication.applicant_email.toLowerCase(), offreOrError, newApplication.caller)
       if (validationResult !== "ok") {
         return { error: validationResult }
       }
 
-      validationResult = await scanFileContent(newApplication)
+      validationResult = await scanFileContent(newApplication.applicant_file_content)
       if (validationResult !== "ok") {
         return { error: validationResult }
       }
@@ -413,8 +413,8 @@ export const validateJob = async (validable: INewApplication): Promise<OffreOrLb
 /**
  * @description checks if attachment is corrupted
  */
-const scanFileContent = async (validable: INewApplication): Promise<string> => {
-  return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
+const scanFileContent = async (applicant_file_content: string): Promise<string> => {
+  return (await scan(applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
 /**
@@ -430,14 +430,14 @@ export const validatePermanentEmail = (email: string): string => {
 /**
  * @description checks if email's owner has not sent more than allowed count of applications per day
  */
-const checkUserApplicationCount = async (applicantEmail: string, application: INewApplication): Promise<string> => {
+const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany: OffreOrLbbCompany, caller: string | null | undefined): Promise<string> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
   const end = new Date()
   end.setHours(23, 59, 59, 999)
 
-  const { company_type: companyType, company_siret, job_id, caller } = application
+  const { type } = offreOrCompany
 
   let appCount = await Application.countDocuments({
     applicant_email: applicantEmail.toLowerCase(),
@@ -448,36 +448,36 @@ const checkUserApplicationCount = async (applicantEmail: string, application: IN
     return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY
   }
 
-  if (companyType === "lba") {
-    if (!company_siret) {
-      throw new Error("expected a siret")
+  if (type === "lba") {
+    if (!("company" in offreOrCompany)) {
+      throw new Error("expected a company")
     }
     appCount = await Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
-      company_siret,
+      company_siret: offreOrCompany.company.siret,
     })
     if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
     }
-  } else if (companyType === "matcha") {
-    if (!job_id) {
-      throw new Error("expected a job id")
+  } else if (type === "matcha") {
+    if (!("offre" in offreOrCompany)) {
+      throw new Error("expected a job")
     }
     appCount = await Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
-      job_id,
+      job_id: offreOrCompany.offre._id.toString(),
     })
     if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
     }
   } else {
-    assertUnreachable(companyType)
+    assertUnreachable(type)
   }
 
   if (caller) {
     appCount = await Application.countDocuments({
       caller: caller.toLowerCase(),
-      company_siret,
+      company_siret: type === "lba" ? offreOrCompany.company.siret : offreOrCompany.recruiter.establishment_siret,
       created_at: { $gte: start, $lt: end },
     })
     if (appCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
