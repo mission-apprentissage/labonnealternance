@@ -4,7 +4,6 @@ import { db, mongooseInstance } from "@/common/mongodb"
 
 import { logger } from "../logger"
 
-import AccessLog from "./schema/accessLog/accessLog.schema"
 import AnonymizedUser from "./schema/anonymizedUsers/anonymizedUsers.schema"
 import ApiCalls from "./schema/apiCall/apiCall.schema"
 import AnonymizedApplication from "./schema/application/anonymizedApplications.schema"
@@ -42,12 +41,6 @@ const createSpecialIndexes = async () => {
   await db.collection("bonnesboites").createIndex({ geopoint: "2dsphere" })
   await db.collection("formationcatalogues").createIndex({ lieu_formation_geopoint: "2dsphere" })
   await db.collection("recruiters").createIndex({ geopoint: "2dsphere" })
-  await db.collection("accesslogs").createIndex(
-    { created_at: 1 },
-    {
-      expireAfterSeconds: 2 * 365 * 24 * 60 * 60,
-    }
-  )
 }
 
 export async function createMongoDBIndexes() {
@@ -87,7 +80,6 @@ export async function createMongoDBIndexes() {
 }
 
 export {
-  AccessLog,
   AnonymizedApplication,
   AnonymizedUser,
   ApiCalls,
