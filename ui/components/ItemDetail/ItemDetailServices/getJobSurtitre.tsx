@@ -1,5 +1,5 @@
 import { Text } from "@chakra-ui/react"
-import React from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 const detailActivityProperties = {
   fontSize: "1rem",
@@ -15,7 +15,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
   const companyName = selectedItem?.company?.name || ""
 
   if (!isCollapsedHeader) {
-    if (kind === "matcha" && isMandataire) {
+    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) {
       res = (
         // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>
@@ -30,7 +30,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
       )
     }
 
-    if (kind === "peJob" || (kind === "matcha" && !isMandataire)) {
+    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire)) {
       res = (
         // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>
@@ -59,7 +59,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
       )
     }
 
-    if (kind === "lbb" || kind === "lba") {
+    if (kind === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
       res = (
         // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>

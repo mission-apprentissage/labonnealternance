@@ -145,13 +145,13 @@ const SearchForTrainingsAndJobs = () => {
       case "training": {
         return trainings?.find((el) => el.id === itemId)
       }
-      case "peJob": {
+      case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
         return jobs?.peJobs?.find((el) => el.job.id === itemId)
       }
-      case "lba": {
+      case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
         return jobs?.lbaCompanies?.find((el) => el.company.siret === itemId)
       }
-      case "matcha": {
+      case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
         return jobs?.matchas?.find((el) => el.job.id === itemId)
       }
       default:

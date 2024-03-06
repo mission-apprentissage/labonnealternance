@@ -1,3 +1,6 @@
+import { assertUnreachable } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+
 import { campaignParameters } from "../utils/campaignParameters"
 import { testingParameters } from "../utils/testingParameters"
 import { getValueFromPath } from "../utils/tools"
@@ -203,12 +206,32 @@ export const initParametersFromQuery = ({ router, shouldPush = undefined, parame
   }
 }
 
+type QueryParameterType = "matcha" | "lbb" | "lba"
+/**
+ *
+ * KBA 6/03/2024 : to remove once migration as been made to API V2 through API apprentissage
+ */
+const convertTypeForMigration = (type: QueryParameterType) => {
+  switch (type) {
+    case "matcha":
+      return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+
+    case "lba":
+    case "lbb":
+      return LBA_ITEM_TYPE.RECRUTEURS_LBA
+
+    default:
+      assertUnreachable(type)
+      break
+  }
+}
+
 export const initPostulerParametersFromQuery = () => {
   initTestingParameters()
 
   const caller = getValueFromPath("caller") // ex : diagoriente
   const itemId = getValueFromPath("itemId")
-  const type = getValueFromPath("type") // matcha | lba | lbb
+  const type = getValueFromPath("type") as QueryParameterType
 
   if (!caller) {
     throw new Error("missing_caller_parameter")
@@ -223,6 +246,6 @@ export const initPostulerParametersFromQuery = () => {
   return {
     caller,
     itemId,
-    type,
+    type: convertTypeForMigration(type),
   }
 }
