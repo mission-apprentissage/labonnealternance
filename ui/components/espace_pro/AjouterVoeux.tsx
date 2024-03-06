@@ -72,7 +72,6 @@ const AjouterVoeuxForm = (props) => {
   const {
     widget: { isWidget },
   } = useContext(WidgetContext)
-  const [inputJobItems, setInputJobItems] = useState([])
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
 
@@ -99,7 +98,7 @@ const AjouterVoeuxForm = (props) => {
         throw new Error(error)
       }
     }
-    return inputJobItems
+    return []
   }
 
   /**
@@ -218,8 +217,6 @@ const AjouterVoeuxForm = (props) => {
               <FormLabel>Métier</FormLabel>
               <DropdownCombobox
                 handleSearch={handleJobSearch}
-                inputItems={inputJobItems}
-                setInputItems={setInputJobItems}
                 saveSelectedItem={(values) => {
                   /**
                    * validator broken when using setFieldValue : https://github.com/formium/formik/issues/2266

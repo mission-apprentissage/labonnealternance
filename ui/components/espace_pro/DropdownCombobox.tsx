@@ -2,18 +2,28 @@ import { Box, Text } from "@chakra-ui/react"
 import { useCombobox } from "downshift"
 import { useField } from "formik"
 import debounce from "lodash/debounce"
+import { useContext } from "react"
+
+import { DisplayContext } from "@/context/DisplayContextProvider"
 
 import CustomInput from "./CustomInput"
 
 let debouncedOnInputValueChange = null
 
 export default function DropdownCombobox(props) {
-  const { saveSelectedItem, setInputItems, handleSearch, value, placeholder, inputItems, name } = props
+  const { romeItems, setRomeItems } = useContext(DisplayContext)
+
+  const { saveSelectedItem, handleSearch, value, placeholder, name } = props
   const [, , helpers] = useField(props.name)
 
   const itemToString = (item) => (item ? item.appellation : "")
-  const onInputValueChange = async ({ inputValue }) => setInputItems(await handleSearch(inputValue))
-  const onSelectedItemChange = ({ selectedItem }) => saveSelectedItem(selectedItem, reset)
+  const onInputValueChange = async ({ inputValue }) => {
+    const newItems = await handleSearch(inputValue)
+    setRomeItems(newItems)
+  }
+  const onSelectedItemChange = ({ selectedItem }) => {
+    saveSelectedItem(selectedItem)
+  }
   const stateReducer = (_, actions) => {
     const { type, changes } = actions
     switch (type) {
@@ -26,7 +36,7 @@ export default function DropdownCombobox(props) {
     }
   }
 
-  const { isOpen, getMenuProps, getInputProps, getComboboxProps, highlightedIndex, getItemProps, reset } = useCombobox({
+  const { isOpen, getMenuProps, getInputProps, getComboboxProps, highlightedIndex, getItemProps } = useCombobox({
     itemToString,
     onInputValueChange: async ({ inputValue }) => {
       if (!debouncedOnInputValueChange) {
@@ -36,7 +46,7 @@ export default function DropdownCombobox(props) {
     },
     onSelectedItemChange,
     stateReducer,
-    items: inputItems,
+    items: romeItems || [],
     initialInputValue: value ?? [],
   })
 
@@ -62,7 +72,7 @@ export default function DropdownCombobox(props) {
         {...getMenuProps()}
       >
         {isOpen &&
-          inputItems.map((item, index) => (
+          romeItems.map((item, index) => (
             <li
               style={highlightedIndex === index ? { backgroundColor: "lightGrey", width: "100%", padding: "0.5rem" } : { width: "100%", padding: "0.5rem" }}
               key={`${item}${index}`}

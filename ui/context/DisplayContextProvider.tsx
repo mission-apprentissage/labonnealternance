@@ -20,6 +20,7 @@ const initialState = {
   isFormVisible: true,
   shouldMapBeVisible: false,
   activeFilters: defaultFilters,
+  romeItems: [],
 }
 
 const actions = {
@@ -28,6 +29,7 @@ const actions = {
   SET_IS_FORM_VISIBLE: "SET_IS_FORM_VISIBLE",
   SET_SHOULD_MAP_BE_VISIBLE: "SET_SHOULD_MAP_BE_VISIBLE",
   SET_ACTIVE_FILTERS: "SET_ACTIVE_FILTERS",
+  SET_ROME_ITEMS: "SET_ROME_ITEMS",
 }
 
 const reducer = (state, action) => {
@@ -49,6 +51,9 @@ const reducer = (state, action) => {
     case actions.SET_ACTIVE_FILTERS: {
       return { ...state_copy, activeFilters: action.activeFilters }
     }
+    case actions.SET_ROME_ITEMS: {
+      return { ...state_copy, romeItems: action.romeItems }
+    }
     default:
       return state
   }
@@ -65,6 +70,8 @@ export type IContextDisplay = {
   setShouldMapBeVisible: (b: boolean) => void
   activeFilters: string[]
   setActiveFilters: (b: string[]) => void
+  romeItems: any[]
+  setRomeItems: (b: any[]) => void
 }
 // @ts-expect-error: TODO
 export const DisplayContext = createContext<IContextDisplay>()
@@ -88,6 +95,9 @@ const DisplayContextProvider = ({ children }) => {
     },
     setShouldMapBeVisible: (shouldMapBeVisible = false) => {
       dispatch({ type: actions.SET_SHOULD_MAP_BE_VISIBLE, shouldMapBeVisible })
+    },
+    setRomeItems: (romeItems = []) => {
+      dispatch({ type: actions.SET_ROME_ITEMS, romeItems })
     },
   }
 
