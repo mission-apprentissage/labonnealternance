@@ -2,10 +2,8 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { amongst } from "../../utils/arrayutils"
 import { endsWithNumber } from "../../utils/strutils"
 import { getCompanyPathLink, getPathLink } from "../../utils/tools"
-import { string_wrapper as with_str } from "../../utils/wrapper_utils"
 
 const LocationDetail = ({ item, isCfa }) => {
   const kind: LBA_ITEM_TYPE = item?.ideaType
@@ -45,7 +43,7 @@ const LocationDetail = ({ item, isCfa }) => {
     }
     if (res) {
       // au cas où : on n'affiche l'email que si il n'est pas chiffré
-      res = with_str("@").in(item?.contact?.email)
+      res = item?.contact?.email.indexOf("@") >= 0
     }
     return res
   }

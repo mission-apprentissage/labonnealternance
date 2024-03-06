@@ -10,7 +10,6 @@ import { focusWithin } from "@/theme/theme-lba-tools"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
-import { amongst } from "../../utils/arrayutils"
 import { filterLayers } from "../../utils/mapTools"
 import { SendPlausibleEvent } from "../../utils/plausible"
 
@@ -167,11 +166,11 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PeJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <MatchaDetail job={selectedItem} />}
-      {amongst(kind, [LBA_ITEM_TYPE.RECRUTEURS_LBA]) && <LbbCompanyDetail lbb={selectedItem} />}
+      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <LbbCompanyDetail lbb={selectedItem} />}
 
       {kind === LBA_ITEM_TYPE.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
 
-      {amongst(kind, [LBA_ITEM_TYPE.RECRUTEURS_LBA]) && (
+      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && (
         <Box bg="#f5f5fe" border="1px solid #e3e3fd" mx={8} mb={8} px={6} py={4}>
           <Box color="bluefrance.500" fontSize="22px" fontWeight={700}>
             Besoin d&apos;aide ?

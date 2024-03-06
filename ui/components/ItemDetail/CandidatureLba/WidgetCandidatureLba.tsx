@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getItemId } from "../../../utils/getItemId"
-import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
 
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import CandidatureLbaModalBody from "./CandidatureLbaModalBody"
@@ -69,17 +68,17 @@ const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage = null }) => {
 
   return (
     <Box my={4} width="100%" data-testid="CandidatureSpontanee">
-      {!with_str(sendingState).amongst(["ok_sent"]) && hasAlreadySubmittedCandidature({ applied }) ? (
+      {!["ok_sent"].includes(sendingState) && hasAlreadySubmittedCandidature({ applied }) ? (
         <Container maxW="2xl">{getAPostuleMessage()}</Container>
       ) : (
         <form onSubmit={formik.handleSubmit}>
-          {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
+          {["not_sent", "currently_sending"].includes(sendingState) && (
             <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} fromWidget={true} />
           )}
 
-          {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
+          {["ok_sent"].includes(sendingState) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
 
-          {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
+          {!["not_sent", "ok_sent", "currently_sending"].includes(sendingState) && <CandidatureLbaFailed sendingState={sendingState} />}
         </form>
       )}
     </Box>

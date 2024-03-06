@@ -8,7 +8,6 @@ import { JOB_STATUS } from "shared/models/job.model"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
-import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
 
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import CandidatureLbaModalBody from "./CandidatureLbaModalBody"
@@ -100,7 +99,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
                   aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
                   data-testid="postuler-button"
                 >
-                  J&apos;envoie ma candidature{with_str(kind).amongst(["lbb", "lba"]) ? " spontanée" : ""}
+                  J&apos;envoie ma candidature{kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? " spontanée" : ""}
                 </Button>
                 <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size="3xl">
                   <ModalOverlay />
@@ -130,11 +129,11 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
                       </Button>
                     </ModalHeader>
                     <form onSubmit={formik.handleSubmit}>
-                      {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
+                      {["not_sent", "currently_sending"].includes(sendingState) && (
                         <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
                       )}
-                      {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
-                      {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
+                      {["ok_sent"].includes(sendingState) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
+                      {!["not_sent", "ok_sent", "currently_sending"].includes(sendingState) && <CandidatureLbaFailed sendingState={sendingState} />}
                     </form>
                   </ModalContent>
                 </Modal>
