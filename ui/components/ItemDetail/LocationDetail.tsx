@@ -186,7 +186,7 @@ const LocationDetail = ({ item, isCfa }) => {
           </Box>
         )}
 
-        {amongst(kind, [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA]) && (
+        {[LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA].includes(kind) && (
           <>
             <Flex mt={2} mb={4}>
               <Box width="30px" pl="2px" minWidth="30px" mr={2}>
