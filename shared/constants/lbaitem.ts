@@ -5,4 +5,4 @@ export enum LBA_ITEM_TYPE {
   OFFRES_EMPLOI_PARTENAIRES = "offres_emploi_partenaires",
 }
 
-export const allLbaItemType: string[] = [...Object.values(LBA_ITEM_TYPE)]
+export const allLbaItemType: string[] = Object.values(LBA_ITEM_TYPE)
