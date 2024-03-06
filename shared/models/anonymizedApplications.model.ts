@@ -1,3 +1,4 @@
+import { allLbaItemType } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -10,7 +11,10 @@ export const ZAnonymizedApplication = z
     company_feedback_date: z.date().nullable().describe("Date d'intention/avis donnée"),
     company_siret: extensions.siret.describe('Le siret de l\'entreprise. Fourni par La bonne alternance. Example: "00004993900000"'),
     company_naf: z.string().describe('La valeur associée au code NAF de l\'entreprise. Fournie par La bonne alternance. Example: "Boulangerie et boulangerie-pâtisserie"'),
-    job_origin: z.string().nullable().describe('Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance. Example: "lba|lbb|matcha"'),
+    job_origin: z
+      .enum([allLbaItemType[0], ...allLbaItemType.slice(1)])
+      .nullable()
+      .describe('Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance. Example: "lba|lbb|matcha"'),
     job_id: z
       .string()
       .nullable()
