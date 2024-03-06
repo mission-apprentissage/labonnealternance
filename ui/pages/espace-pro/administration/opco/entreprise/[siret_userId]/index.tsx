@@ -67,7 +67,7 @@ function DetailEntreprise() {
   })
 
   const ActivateUserButton = ({ userId }) => {
-    const { activate } = useUserPermissionsActions(userId, organizationId, organizationType)
+    const { activate } = useUserPermissionsActions(userId)
 
     return (
       <Button variant="primary" onClick={() => activate()}>

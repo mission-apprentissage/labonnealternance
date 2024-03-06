@@ -11,7 +11,7 @@ import config from "@/config"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateDepotSimplifieToken } from "@/services/appLinks.service"
-import { getUserTypeOrError } from "@/services/roleManagement.service"
+import { getUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import { getUser2ByEmail } from "@/services/user2.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
@@ -289,7 +289,7 @@ export default (server: Server) => {
 
       await updateLastConnectionDate(email)
       await startSession(email, res)
-      return res.status(200).send(toPublicUser(user, await getUserTypeOrError(user._id)))
+      return res.status(200).send(toPublicUser(user, await getUserRecruteurPropsOrError(user._id)))
     }
   )
 }

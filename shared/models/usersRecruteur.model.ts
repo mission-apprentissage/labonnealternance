@@ -1,6 +1,6 @@
 import { Jsonify } from "type-fest"
 
-import { AUTHTYPE, ETAT_UTILISATEUR } from "../constants/recruteur"
+import { AUTHTYPE, CFA, ETAT_UTILISATEUR } from "../constants/recruteur"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
@@ -112,6 +112,12 @@ export const ZUserRecruteurPublic = ZUserRecruteur.pick({
   last_name: true,
   first_name: true,
   phone: true,
+  establishment_id: true,
+  establishment_siret: true,
+  scope: true,
+}).extend({
+  cfa_delegated_siret: extensions.siret.nullish(),
+  status_current: enumToZod(ETAT_UTILISATEUR).nullish(),
 })
 export type IUserRecruteurPublic = Jsonify<z.output<typeof ZUserRecruteurPublic>>
 
@@ -129,14 +135,20 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
   return lastValidationEvent.status
 }
 
-export function toPublicUser(user: IUser2, type: IUserRecruteurPublic["type"]): z.output<typeof ZUserRecruteurPublic> {
+export function toPublicUser(
+  user: IUser2,
+  userRecruteurProps: Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret">
+): z.output<typeof ZUserRecruteurPublic> {
+  const { type, establishment_siret } = userRecruteurProps
+  const cfa_delegated_siret = type === CFA ? establishment_siret : undefined
   return {
+    ...userRecruteurProps,
     _id: user._id,
     email: user.email,
     last_name: user.last_name,
     first_name: user.first_name,
     phone: user.phone,
-    type,
+    cfa_delegated_siret,
   }
 }
 

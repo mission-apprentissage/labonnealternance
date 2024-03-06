@@ -7,7 +7,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { modifyPermissionToUser } from "@/services/roleManagement.service"
+import { getMainRoleManagement, modifyPermissionToUser } from "@/services/roleManagement.service"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, UserRecruteur } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
@@ -175,10 +175,10 @@ export default (server: Server) => {
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
       if (!user) throw Boom.badRequest()
-      const { organizationId } = req.params
       const role = await RoleManagement.findOne({
         user_id: user._id,
-        authorized_id: organizationId,
+        // TODO à activer lorsque le frontend passe organizationId correctement
+        // authorized_id: organizationId,
         authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] },
         $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] },
       }).lean()
@@ -297,11 +297,18 @@ export default (server: Server) => {
       const user = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
       if (!user) throw Boom.badRequest()
 
+      const mainRole = await getMainRoleManagement(userId)
+      if (!mainRole) {
+        throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
+      }
       const updatedRole = await modifyPermissionToUser(
         {
           user_id: userId,
-          authorized_id: organizationId.toString(),
-          authorized_type: organizationType,
+          authorized_id: mainRole.authorized_id,
+          // WARNING : ce code est temporaire tant qu'on sait qu'un user n'a qu'au plus 1 role
+          // authorized_id: organizationId.toString(),
+          authorized_type: mainRole.authorized_type,
+          // authorized_type: organizationType,
           origin: "action admin ou opco",
         },
         {

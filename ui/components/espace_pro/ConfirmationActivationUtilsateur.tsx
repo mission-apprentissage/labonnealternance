@@ -6,7 +6,7 @@ import { Close } from "../../theme/components/icons"
 
 export const ConfirmationActivationUtilsateur = (props) => {
   const { isOpen, onClose, establishment_raison_social, _id } = props
-  const { activate } = useUserPermissionsActions(_id, organizationId, organizationType)
+  const { activate } = useUserPermissionsActions(_id)
 
   const activateUser = async () => {
     await activate()

@@ -1,9 +1,12 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
+import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
+import { IUserRecruteurPublic } from "shared/models"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { RoleManagement } from "@/common/model"
+import { Cfa, Entreprise, RoleManagement } from "@/common/model"
+import { parseEnumOrError } from "@/common/utils/enumUtils"
 
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "./constant.service"
 
@@ -37,26 +40,90 @@ export const modifyPermissionToUser = async (
   }
 }
 
-export const getGrantedRoles = async (userId: string) => {
+const getGrantedRoles = async (userId: string) => {
   return RoleManagement.find({ user_id: userId, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
 }
 
 // TODO à supprimer lorsque les utilisateurs pourront avoir plusieurs types
-export const getUserType = async (userId: string | ObjectId) => {
+export const getMainRoleManagement = async (userId: string | ObjectId): Promise<IRoleManagement | null> => {
   const roles = await getGrantedRoles(userId.toString())
-  const isAdmin = roles.some((role) => role.authorized_type === AccessEntityType.ADMIN)
-  if (isAdmin) return ADMIN
-  const isOpco = roles.some((role) => role.authorized_type === AccessEntityType.OPCO)
-  if (isOpco) return OPCO
-  const isCfa = roles.some((role) => role.authorized_type === AccessEntityType.CFA)
-  if (isCfa) return CFA
-  const isEntreprise = roles.some((role) => role.authorized_type === AccessEntityType.ENTREPRISE)
-  if (isEntreprise) return ENTREPRISE
+  const adminRole = roles.find((role) => role.authorized_type === AccessEntityType.ADMIN)
+  if (adminRole) return adminRole
+  const opcoRole = roles.find((role) => role.authorized_type === AccessEntityType.OPCO)
+  if (opcoRole) return opcoRole
+  const cfaRole = roles.find((role) => role.authorized_type === AccessEntityType.CFA)
+  if (cfaRole) return cfaRole
+  const entrepriseRole = roles.find((role) => role.authorized_type === AccessEntityType.ENTREPRISE)
+  if (entrepriseRole) return entrepriseRole
   return null
 }
 
-export const getUserTypeOrError = async (userId: string | ObjectId) => {
-  const type = await getUserType(userId)
-  if (!type) throw Boom.internal(`inattendu : aucun type trouvé pour user id=${userId}`)
-  return type
+const roleToUserType = (role: IRoleManagement) => {
+  switch (role.authorized_type) {
+    case AccessEntityType.ADMIN:
+      return ADMIN
+    case AccessEntityType.CFA:
+      return CFA
+    case AccessEntityType.ENTREPRISE:
+      return ENTREPRISE
+    case AccessEntityType.OPCO:
+      return OPCO
+    default:
+      return null
+  }
+}
+
+const roleToStatus = (role: IRoleManagement) => {
+  const lastStatus = getLastStatusEvent(role.status)?.status
+  switch (lastStatus) {
+    case AccessStatus.GRANTED:
+      return ETAT_UTILISATEUR.VALIDE
+    case AccessStatus.DENIED:
+      return ETAT_UTILISATEUR.DESACTIVE
+    case AccessStatus.AWAITING_VALIDATION:
+      return ETAT_UTILISATEUR.ATTENTE
+    default:
+      return null
+  }
+}
+
+export const getUserRecruteurPropsOrError = async (
+  userId: string | ObjectId
+): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
+  const mainRole = await getMainRoleManagement(userId)
+  if (!mainRole) {
+    throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
+  }
+  const type = roleToUserType(mainRole)
+  if (!type) {
+    throw Boom.internal(`inattendu : aucun type trouvé pour user id=${userId}`)
+  }
+  const status_current = roleToStatus(mainRole)
+  if (!status_current) {
+    throw Boom.internal(`inattendu : aucun status trouvé pour user id=${userId}`)
+  }
+  const commonFields = {
+    type,
+    status_current,
+  } as const
+  if (type === CFA) {
+    const cfa = await Cfa.findOne({ _id: mainRole.authorized_id }).lean()
+    if (!cfa) {
+      throw Boom.internal(`inattendu : cfa non trouvé pour user id=${userId}`)
+    }
+    const { siret } = cfa
+    return { ...commonFields, establishment_siret: siret }
+  }
+  if (type === ENTREPRISE) {
+    const entreprise = await Entreprise.findOne({ _id: mainRole.authorized_id }).lean()
+    if (!entreprise) {
+      throw Boom.internal(`inattendu : entreprise non trouvée pour user id=${userId}`)
+    }
+    const { siret, establishment_id } = entreprise
+    return { ...commonFields, establishment_siret: siret, establishment_id }
+  }
+  if (type === OPCO) {
+    return { ...commonFields, scope: parseEnumOrError(OPCOS, mainRole.authorized_id) }
+  }
+  return commonFields
 }

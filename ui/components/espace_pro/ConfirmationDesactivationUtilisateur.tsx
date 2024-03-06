@@ -33,7 +33,7 @@ export const ConfirmationDesactivationUtilisateur = ({
   const _id = (_idObject ?? "").toString()
   const [reason, setReason] = useState()
   const reasonComment = useDisclosure()
-  const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id, organizationId, organizationType)
+  const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id)
 
   if (!userRecruteur) return null
 

@@ -49,7 +49,7 @@ const UserForm = ({
 }) => {
   const toast = useToast()
   const confirmationDesactivationUtilisateur = useDisclosure()
-  const { activate: activateUser } = useUserPermissionsActions(user._id.toString(), organizationId, user.type)
+  const { activate: activateUser } = useUserPermissionsActions(user._id.toString())
   const { values, errors, touched, dirty, handleSubmit, handleChange } = useFormik({
     initialValues: {
       last_name: user?.last_name || "",
@@ -84,6 +84,7 @@ const UserForm = ({
             params: { userId: user._id.toString() },
             body: {
               ...values,
+              // @ts-expect-error
               type: beAdmin ? "ADMIN" : values.type,
             },
           })
@@ -105,6 +106,7 @@ const UserForm = ({
         } else {
           result = await createUser({
             ...values,
+            // @ts-expect-error
             type: beAdmin ? "ADMIN" : values.type,
           }).catch((err) => {
             if (err.statusCode === 409) {
