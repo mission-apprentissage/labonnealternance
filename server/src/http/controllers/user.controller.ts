@@ -7,7 +7,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { modifyPermissionToUser } from "@/services/permissions.service"
+import { modifyPermissionToUser } from "@/services/roleManagement.service"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, UserRecruteur } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
