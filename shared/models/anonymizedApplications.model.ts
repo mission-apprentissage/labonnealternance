@@ -14,7 +14,7 @@ export const ZAnonymizedApplication = z
     job_origin: z
       .enum([allLbaItemType[0], ...allLbaItemType.slice(1)])
       .nullable()
-      .describe('Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance. Example: "lba|lbb|matcha"'),
+      .describe("Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance"),
     job_id: z
       .string()
       .nullable()
