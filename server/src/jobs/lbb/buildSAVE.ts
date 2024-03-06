@@ -218,7 +218,6 @@ const parseAddLine = (line) => {
       phone: terms[9].replace(/"/g, ""),
       website: terms[10].replace(/"/g, ""),
       company_size: terms[16].replace(/"/g, ""),
-      algorithm_origin: lbaScore !== "0" ? "lba" : "lbb",
       recruitment_potential: score,
     }
 
