@@ -87,7 +87,7 @@ const updateRecruiters = (db) =>
             then: "lba",
             else: {
               $cond: {
-                if: { $eq: ["$origin", "lba"] },
+                if: { $eq: ["$origin", "lbb"] },
                 then: "lba",
                 else: "$origin",
               },
