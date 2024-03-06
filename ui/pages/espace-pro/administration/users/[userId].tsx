@@ -23,6 +23,7 @@ import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserStatusValidation } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { AccessStatus } from "shared/models/roleManagement.model"
 import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
@@ -56,7 +57,7 @@ function DetailEntreprise() {
   const { user } = useAuth()
 
   const ActivateUserButton = ({ userId }) => {
-    const updateUserHistory = useUserHistoryUpdate(userId, ETAT_UTILISATEUR.VALIDE)
+    const updateUserHistory = useUserHistoryUpdate(userId, AccessStatus.GRANTED)
 
     return (
       <Button variant="primary" onClick={() => updateUserHistory()}>

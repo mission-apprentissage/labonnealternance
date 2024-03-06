@@ -1,7 +1,8 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes, IUserRecruteur, IUserStatusValidationJson } from "shared"
+import { IJobWritable, INewDelegations, IRoutes, IUserRecruteur } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
 import { publicConfig } from "../config.public"
@@ -60,8 +61,19 @@ const updateUserAdmin = (userId: string, user) => apiPut("/admin/users/:userId",
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
 export const getUserStatusByToken = (userId: string, token: string) =>
   apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
-export const updateUserValidationHistory = (userId: string, state: IUserStatusValidationJson) =>
-  apiPut("/user/:userId/history", { params: { userId }, body: state }).catch(errorHandler)
+export const updateUserValidationHistory = ({
+  userId,
+  organizationId,
+  reason,
+  status,
+  organizationType,
+}: {
+  userId: string
+  organizationId: string
+  status: AccessStatus
+  reason: string
+  organizationType: typeof AccessEntityType.ENTREPRISE | typeof AccessEntityType.CFA
+}) => apiPut("/user/:userId/organization/:organizationId/permission", { params: { userId, organizationId }, body: { organizationType, status, reason } }).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
 export const deleteEntreprise = (userId: string, recruiterId: string) => apiDelete(`/user`, { querystring: { userId, recruiterId } }).catch(errorHandler)
 export const createUser = (userRecruteur: IUserRecruteur) => apiPost("/admin/users", { body: userRecruteur })

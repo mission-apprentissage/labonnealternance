@@ -2,33 +2,35 @@ import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
+import { IUser2 } from "shared/models/user2.model"
 import { SecurityScheme } from "shared/routes/common.routes"
-import { AccessPermission, AccessRessouces, Permission, UserWithType } from "shared/security/permissions"
+import { AccessPermission, AccessRessouces, Permission } from "shared/security/permissions"
 import { describe, expect, it } from "vitest"
 
 import { Application, Recruiter, UserRecruteur } from "@/common/model"
-import { IAccessToken, generateScope } from "@/security/accessTokenService"
+import { generateScope } from "@/security/accessTokenService"
+import { AccessUserToken } from "@/security/authenticationService"
 import { authorizationMiddleware } from "@/security/authorisationService"
 import { useMongo } from "@tests/utils/mongo.utils"
 
 import { createApplicationTest, createCredentialTest, createRecruteurTest, createUserRecruteurTest } from "../../utils/user.utils"
 
 describe("authorisationService", () => {
-  let adminUser: IUserRecruteur
-  let opcoUserO1U1: IUserRecruteur
-  let opcoUserO1U2: IUserRecruteur
-  let cfaUser1: IUserRecruteur
-  let cfaUser2: IUserRecruteur
-  let recruteurUserO1E1R1: IUserRecruteur
+  let adminUser: IUser2
+  let opcoUserO1U1: IUser2
+  let opcoUserO1U2: IUser2
+  let cfaUser1: IUser2
+  let cfaUser2: IUser2
+  let recruteurUserO1E1R1: IUser2
   let recruteurO1E1R1: IRecruiter
-  let recruteurUserO1E1R2: IUserRecruteur
+  let recruteurUserO1E1R2: IUser2
   let recruteurO1E1R2: IRecruiter
-  let recruteurUserO1E2R1: IUserRecruteur
+  let recruteurUserO1E2R1: IUser2
   let recruteurO1E2R1: IRecruiter
-  let opcoUserO2U1: IUserRecruteur
-  let recruteurUserO2E1R1: IUserRecruteur
+  let opcoUserO2U1: IUser2
+  let recruteurUserO2E1R1: IUser2
   let recruteurO2E1R1: IRecruiter
-  let recruteurUserO2E1R1P: IUserRecruteur
+  let recruteurUserO2E1R1P: IUser2
   let recruteurO2E1R1P: IRecruiter
   let credentialO1: ICredential
   let applicationO1E1R1J1A1: IApplication
@@ -325,7 +327,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: adminUser,
                 },
                 ...req,
@@ -349,7 +351,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -370,7 +372,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -391,7 +393,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -412,7 +414,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -434,7 +436,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -455,7 +457,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -477,7 +479,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -499,7 +501,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -521,7 +523,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -543,7 +545,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -565,7 +567,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -587,7 +589,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: opcoUserO1U1,
                 },
                 ...req,
@@ -874,7 +876,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -895,7 +897,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -916,7 +918,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -938,7 +940,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -960,7 +962,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -981,7 +983,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -1003,7 +1005,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -1025,7 +1027,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -1047,7 +1049,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -1069,7 +1071,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -1091,7 +1093,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: cfaUser1,
                 },
                 ...req,
@@ -1115,7 +1117,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1136,7 +1138,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1157,7 +1159,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1178,7 +1180,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1199,7 +1201,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1220,7 +1222,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1241,7 +1243,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1262,7 +1264,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1283,7 +1285,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1304,7 +1306,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1325,7 +1327,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1346,7 +1348,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO1E1R1,
                 },
                 ...req,
@@ -1369,7 +1371,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO2E1R1P,
                 },
                 ...req,
@@ -1390,7 +1392,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO2E1R1P,
                 },
                 ...req,
@@ -1411,7 +1413,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO2E1R1P,
                 },
                 ...req,
@@ -1432,7 +1434,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO2E1R1P,
                 },
                 ...req,
@@ -1453,7 +1455,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO2E1R1P,
                 },
                 ...req,
@@ -1474,7 +1476,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO2E1R1P,
                 },
                 ...req,
@@ -1495,7 +1497,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO2E1R1P,
                 },
                 ...req,
@@ -1516,7 +1518,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO2E1R1P,
                 },
                 ...req,
@@ -1537,7 +1539,7 @@ describe("authorisationService", () => {
               },
               {
                 user: {
-                  type: "IUserRecruteur",
+                  type: "IUser2",
                   value: recruteurUserO2E1R1P,
                 },
                 ...req,
@@ -1578,7 +1580,7 @@ describe("authorisationService", () => {
         },
         {
           user: {
-            type: "IUserRecruteur",
+            type: "IUser2",
             value: recruteurUserO1E1R1,
           },
           query,
@@ -1595,7 +1597,7 @@ describe("authorisationService", () => {
         },
         {
           user: {
-            type: "IUserRecruteur",
+            type: "IUser2",
             value: recruteurUserO1E1R2,
           },
           query,
@@ -1634,7 +1636,7 @@ describe("authorisationService", () => {
         },
         {
           user: {
-            type: "IUserRecruteur",
+            type: "IUser2",
             value: recruteurUserO1E1R1,
           },
           query,
@@ -1651,7 +1653,7 @@ describe("authorisationService", () => {
         },
         {
           user: {
-            type: "IUserRecruteur",
+            type: "IUser2",
             value: recruteurUserO1E1R2,
           },
           query,
@@ -1690,7 +1692,7 @@ describe("authorisationService", () => {
         },
         {
           user: {
-            type: "IUserRecruteur",
+            type: "IUser2",
             value: opcoUserO1U1,
           },
           query,
@@ -1707,7 +1709,7 @@ describe("authorisationService", () => {
         },
         {
           user: {
-            type: "IUserRecruteur",
+            type: "IUser2",
             value: recruteurUserO1E1R1,
           },
           query,
@@ -1733,7 +1735,7 @@ describe("authorisationService", () => {
         },
         {
           user: {
-            type: "IUserRecruteur",
+            type: "IUser2",
             value: opcoUserO1U1,
           },
           query: {},
@@ -1753,7 +1755,7 @@ describe("authorisationService", () => {
             recruiter: [{ _id: { type: "params", key: "id" } }],
           },
         }
-        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+        const userWithType: AccessUserToken = {
           type: "IAccessToken",
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
@@ -1813,7 +1815,7 @@ describe("authorisationService", () => {
             job: [{ _id: { type: "params", key: "id" } }],
           },
         }
-        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+        const userWithType: AccessUserToken = {
           type: "IAccessToken",
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
@@ -1873,7 +1875,7 @@ describe("authorisationService", () => {
             application: [{ _id: { type: "params", key: "id" } }],
           },
         }
-        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+        const userWithType: AccessUserToken = {
           type: "IAccessToken",
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
@@ -1933,7 +1935,7 @@ describe("authorisationService", () => {
             user: [{ _id: { type: "params", key: "id" } }],
           },
         }
-        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
+        const userWithType: AccessUserToken = {
           type: "IAccessToken",
           value: {
             identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },

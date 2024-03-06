@@ -47,7 +47,6 @@ export const zUserRecruteurRoutes = {
         auth: "cookie-session",
         access: { every: ["user:manage", "recruiter:manage"] },
         resources: {
-          user: [{ opco: { type: "query", key: "opco" } }],
           recruiter: [{ opco: { type: "query", key: "opco" } }],
         },
       },

@@ -1,30 +1,43 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
-import { IUser2 } from "shared/models/user2.model"
+import { CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
+import { IApplication, IJob, IRecruiter } from "shared/models"
+import { ICFA } from "shared/models/cfa.model"
+import { IEntreprise } from "shared/models/entreprise.model"
+import { AccessEntityType, AccessStatus, IRoleManagement } from "shared/models/roleManagement.model"
+import { UserEventType } from "shared/models/user2.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, PendingRecruiterRole, RecruiterRole, Role, UserWithType } from "shared/security/permissions"
+import { AccessPermission, AccessResourcePath } from "shared/security/permissions"
 import { assertUnreachable } from "shared/utils"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { Primitive } from "type-fest"
 
-import { Application, Recruiter, UserRecruteur } from "@/common/model"
-import { getUserRecruteurById } from "@/services/userRecruteur.service"
-
-import { controlUserState } from "../services/login.service"
+import { Application, Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "@/common/model"
+import { parseEnum } from "@/common/utils/enumUtils"
+import { isUserEmailChecked } from "@/services/userRecruteur.service"
 
 import { getUserFromRequest } from "./authenticationService"
 
+type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entreprise: IEntreprise } | { type: "CFA"; cfa: ICFA })
+type JobResource = { job: IJob; recruiterResource: RecruiterResource }
+type ApplicationResource = { application: IApplication; jobResource?: JobResource }
+
 type Resources = {
-  recruiters: Array<IRecruiter>
-  jobs: Array<{ job: IJob; recruiter: IRecruiter } | null>
-  users: Array<IUserRecruteur>
-  applications: Array<{ application: IApplication; job: IJob; recruiter: IRecruiter } | null>
+  users: Array<{ _id: string }>
+  recruiters: Array<RecruiterResource>
+  jobs: Array<JobResource>
+  applications: Array<ApplicationResource>
+}
+
+type ComputedUserAccess = {
+  users: string[]
+  entreprises: string[]
+  cfas: string[]
+  opcos: OPCOS[]
 }
 
 // Specify what we need to simplify mocking in tests
 type IRequest = Pick<FastifyRequest, "user" | "params" | "query">
-
-type NonTokenUserWithType = UserWithType<"IUser2", IUser2> | UserWithType<"ICredential", ICredential>
 
 // TODO: Unit test access control
 // TODO: job.delegations
@@ -35,12 +48,34 @@ function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): an
   return obj[path.key]
 }
 
+const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<RecruiterResource> => {
+  const { cfa_delegated_siret, establishment_id } = recruiter
+  if (cfa_delegated_siret) {
+    const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+    if (!cfa) {
+      throw Boom.internal(`could not find cfa for recruiter with id=${recruiter._id}`)
+    }
+    return { recruiter, type: CFA, cfa }
+  } else {
+    const entreprise = await Entreprise.findOne({ establishment_id }).lean()
+    if (!entreprise) {
+      throw Boom.internal(`could not find entreprise for recruiter with id=${recruiter._id}`)
+    }
+    return { recruiter, type: ENTREPRISE, entreprise }
+  }
+}
+
+const jobToJobResource = async (job: IJob, recruiter: IRecruiter): Promise<JobResource> => {
+  const recruiterResource = await recruiterToRecruiterResource(recruiter)
+  return { job, recruiterResource }
+}
+
 async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["recruiters"]> {
   if (!schema.securityScheme.resources.recruiter) {
     return []
   }
 
-  return (
+  const recruiters: IRecruiter[] = (
     await Promise.all(
       schema.securityScheme.resources.recruiter.map(async (recruiterDef): Promise<IRecruiter[]> => {
         if ("_id" in recruiterDef) {
@@ -69,6 +104,7 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
       })
     )
   ).flatMap((_) => _)
+  return (await Promise.all(recruiters.map(recruiterToRecruiterResource))).flatMap((_) => (_ ? [_] : []))
 }
 
 async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["jobs"]> {
@@ -76,28 +112,29 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
     return []
   }
 
-  return Promise.all(
-    schema.securityScheme.resources.job.map(async (j) => {
-      if ("_id" in j) {
-        const id = getAccessResourcePathValue(j._id, req)
-        const recruiter = await Recruiter.findOne({ "jobs._id": id }).lean()
+  return (
+    await Promise.all(
+      schema.securityScheme.resources.job.map(async (jobDef): Promise<JobResource | null> => {
+        if ("_id" in jobDef) {
+          const id = getAccessResourcePathValue(jobDef._id, req)
+          const recruiter = await Recruiter.findOne({ "jobs._id": id }).lean()
 
-        if (!recruiter) {
-          return null
+          if (!recruiter) {
+            return null
+          }
+
+          const job = await recruiter.jobs.find((j) => j._id.toString() === id.toString())
+
+          if (!job) {
+            return null
+          }
+          return jobToJobResource(job, recruiter)
         }
 
-        const job = await recruiter.jobs.find((j) => j._id.toString() === id.toString())
-
-        if (!job) {
-          return null
-        }
-
-        return { recruiter, job }
-      }
-
-      assertUnreachable(j)
-    })
-  )
+        assertUnreachable(jobDef)
+      })
+    )
+  ).flatMap((_) => (_ ? [_] : []))
 }
 
 async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["users"]> {
@@ -109,52 +146,47 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
     await Promise.all(
       schema.securityScheme.resources.user.map(async (userDef) => {
         if ("_id" in userDef) {
-          const userOpt = await getUserRecruteurById(getAccessResourcePathValue(userDef._id, req))
-          return userOpt ? [userOpt] : []
+          const userOpt = await User2.findOne({ _id: getAccessResourcePathValue(userDef._id, req) }).lean()
+          return userOpt ? { _id: userOpt._id.toString() } : null
         }
-        if ("opco" in userDef) {
-          return UserRecruteur.find({ opco: getAccessResourcePathValue(userDef.opco, req) }).lean()
-        }
-
         assertUnreachable(userDef)
       })
     )
-  ).flatMap((_) => _)
+  ).flatMap((_) => (_ ? [_] : []))
 }
 
-async function getApplicationResouce<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["applications"]> {
+async function getApplicationResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["applications"]> {
   if (!schema.securityScheme.resources.application) {
     return []
   }
 
-  return Promise.all(
-    schema.securityScheme.resources.application.map(async (u) => {
-      if ("_id" in u) {
-        const id = getAccessResourcePathValue(u._id, req)
+  const results: (ApplicationResource | null)[] = await Promise.all(
+    schema.securityScheme.resources.application.map(async (applicationDef): Promise<ApplicationResource | null> => {
+      if ("_id" in applicationDef) {
+        const id = getAccessResourcePathValue(applicationDef._id, req)
         const application = await Application.findById(id).lean()
 
-        if (!application || !application.job_id) return null
-
-        const jobId = application.job_id
-
-        const recruiter = await Recruiter.findOne({ "jobs._id": jobId }).lean()
-
+        if (!application) return null
+        const { job_id } = application
+        if (!job_id) {
+          return { application }
+        }
+        const recruiter = await Recruiter.findOne({ "jobs._id": job_id }).lean()
         if (!recruiter) {
-          return null
+          return { application }
         }
-
-        const job = recruiter.jobs.find((j) => j._id.toString() === jobId.toString())
-
+        const job = recruiter.jobs.find((job) => job._id.toString() === job_id)
         if (!job) {
-          return null
+          return { application }
         }
-
-        return { application, recruiter, job }
+        const jobResource = await jobToJobResource(job, recruiter)
+        return { application, jobResource }
       }
 
-      assertUnreachable(u)
+      assertUnreachable(applicationDef)
     })
   )
+  return results.flatMap((_) => (_ ? [_] : []))
 }
 
 export async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
@@ -162,7 +194,7 @@ export async function getResources<S extends WithSecurityScheme>(schema: S, req:
     getRecruitersResource(schema, req),
     getJobsResource(schema, req),
     getUserResource(schema, req),
-    getApplicationResouce(schema, req),
+    getApplicationResource(schema, req),
   ])
 
   return {
@@ -173,176 +205,52 @@ export async function getResources<S extends WithSecurityScheme>(schema: S, req:
   }
 }
 
-export function getUserRole(userWithType: NonTokenUserWithType): Role | null {
-  if (userWithType.type === "ICredential") {
-    return OpcoRole
-  }
-  const userState = controlUserState(userWithType.value.status)
-
-  switch (userWithType.value.type) {
-    case "ADMIN":
-      return AdminRole
-    case "CFA":
-      return CfaRole
-    case "ENTREPRISE":
-      if (userState.error) {
-        if (userState.reason !== "VALIDATION") throw Boom.internal("Unexpected state during user role validation")
-        return PendingRecruiterRole
-      } else {
-        return RecruiterRole
-      }
-    case "OPCO":
-      return OpcoRole
-    default:
-      return assertUnreachable(userWithType.value.type)
-  }
-}
-
-function canAccessRecruiter(userWithType: NonTokenUserWithType, resource: Resources["recruiters"][number]): boolean {
-  if (resource === null) {
+function canAccessRecruiter(userAccess: ComputedUserAccess, resource: Resources["recruiters"][number]): boolean {
+  const recruiterOpco = parseEnum(OPCOS, resource.recruiter.opco ?? null)
+  if (recruiterOpco && userAccess.opcos.includes(recruiterOpco)) {
     return true
   }
-
-  if (userWithType.type === "ICredential") {
-    return resource.opco === userWithType.value.organisation
+  if (resource.type === ENTREPRISE) {
+    return userAccess.entreprises.includes(resource.entreprise._id.toString())
+  } else if (resource.type === CFA) {
+    return userAccess.cfas.includes(resource.cfa._id.toString())
   }
-
-  const user = userWithType.value
-  switch (user.type) {
-    case "ADMIN":
-      return true
-    case "ENTREPRISE":
-      return resource.establishment_id === user.establishment_id
-    case "CFA":
-      return resource.cfa_delegated_siret === user.establishment_siret
-    case "OPCO":
-      return resource.opco === user.scope
-    default:
-      assertUnreachable(user.type)
-  }
+  return false
 }
 
-function canAccessJob(userWithType: NonTokenUserWithType, resource: Resources["jobs"][number]): boolean {
-  if (resource === null) {
-    return true
-  }
-
-  if (userWithType.type === "ICredential") {
-    return resource.recruiter.opco === userWithType.value.organisation
-  }
-
-  const user = userWithType.value
-  switch (user.type) {
-    case "ADMIN":
-      return true
-    case "ENTREPRISE":
-      return resource.recruiter.establishment_id === user.establishment_id
-    case "CFA":
-      return resource.recruiter.cfa_delegated_siret === user.establishment_siret
-    case "OPCO":
-      return resource.recruiter.opco === user.scope
-    default:
-      assertUnreachable(user.type)
-  }
+function canAccessJob(userAccess: ComputedUserAccess, resource: Resources["jobs"][number]): boolean {
+  return canAccessRecruiter(userAccess, resource.recruiterResource)
 }
 
-function canAccessUser(userWithType: NonTokenUserWithType, resource: Resources["users"][number]): boolean {
-  if (resource === null) {
+function canAccessUser(userAccess: ComputedUserAccess, resource: Resources["users"][number]): boolean {
+  if (userAccess.opcos.length) {
     return true
   }
-
-  if (userWithType.type === "ICredential") {
-    return resource.type === "OPCO" && resource.scope === userWithType.value.organisation
-  }
-
-  if (resource._id.toString() === userWithType.value._id.toString()) {
-    return true
-  }
-
-  const user = userWithType.value
-  switch (user.type) {
-    case "ADMIN":
-      return true
-    case "ENTREPRISE":
-      return resource._id.toString() === user._id.toString()
-    case "CFA":
-      return resource._id.toString() === user._id.toString()
-    case "OPCO":
-      return (resource.type === "OPCO" && resource._id === user._id) || (resource.type === "ENTREPRISE" && resource.opco === user.scope)
-    default:
-      assertUnreachable(user.type)
-  }
+  return userAccess.users.includes(resource._id)
 }
 
-function canAccessApplication(userWithType: NonTokenUserWithType, resource: Resources["applications"][number]): boolean {
-  if (resource === null) {
-    return true
-  }
-
-  if (userWithType.type === "ICredential") {
-    return false
-  }
-
-  const user = userWithType.value
-  switch (user.type) {
-    case "ADMIN":
-      return true
-    case "ENTREPRISE": {
-      if (resource.application.job_origin === "matcha") {
-        return resource.recruiter.establishment_id === userWithType.value.establishment_id
-      }
-
-      return false
-    }
-    case "CFA":
-      return false
-    case "OPCO":
-      return false
-    default:
-      assertUnreachable(user.type)
-  }
+function canAccessApplication(userAccess: ComputedUserAccess, resource: Resources["applications"][number]): boolean {
+  const { application, jobResource } = resource
+  // TODO ajout de granularité pour les accès candidat et recruteur
+  return (jobResource && canAccessJob(userAccess, jobResource)) || canAccessUser(userAccess, { _id: application.applicant_id.toString() })
 }
 
-export function isAuthorized(access: AccessPermission, userWithType: NonTokenUserWithType, role: Role | null, resources: Resources): boolean {
+export function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {
   if (typeof access === "object") {
     if ("some" in access) {
-      return access.some.some((a) => isAuthorized(a, userWithType, role, resources))
-    }
-
-    if ("every" in access) {
-      return access.every.every((a) => isAuthorized(a, userWithType, role, resources))
-    }
-
-    assertUnreachable(access)
-  }
-
-  // Role is null for access token but we have permission
-  if (role && !role.permissions.includes(access)) {
-    return false
-  }
-
-  switch (access) {
-    case "recruiter:manage":
-    case "recruiter:add_job":
-      return resources.recruiters.every((recruiter) => canAccessRecruiter(userWithType, recruiter))
-
-    case "job:manage":
-      return resources.jobs.every((job) => canAccessJob(userWithType, job))
-
-    case "school:manage":
-      // School is actually the UserRecruteur
-      return resources.users.every((user) => canAccessUser(userWithType, user))
-    case "application:manage":
-      return resources.applications.every((application) => canAccessApplication(userWithType, application))
-    case "user:validate":
-    case "user:manage":
-      return resources.users.every((user) => canAccessUser(userWithType, user))
-    case "admin":
-      // Admin should already have been approved, otherwise you cannot access to admin
-      return false
-    default:
+      return access.some.some((permission) => isAuthorized(permission, userAccess, resources))
+    } else if ("every" in access) {
+      return access.every.every((permission) => isAuthorized(permission, userAccess, resources))
+    } else {
       assertUnreachable(access)
+    }
   }
+  return (
+    resources.recruiters.every((recruiter) => canAccessRecruiter(userAccess, recruiter)) &&
+    resources.jobs.every((job) => canAccessJob(userAccess, job)) &&
+    resources.applications.every((application) => canAccessApplication(userAccess, application)) &&
+    resources.users.every((user) => canAccessUser(userAccess, user))
+  )
 }
 
 export async function authorizationMiddleware<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(schema: S, req: IRequest) {
@@ -355,19 +263,60 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
   }
 
   const userWithType = getUserFromRequest(req, schema)
+  const userType = userWithType.type
 
-  if (userWithType.type === "IUser2" && userWithType.value.type === "ADMIN") {
-    return
-  }
-  if (userWithType.type === "IAccessToken") {
+  if (userType === "IAccessToken") {
     // authorization check has already been done in authentication
     return
   }
+  let grantedRoles: IRoleManagement[] = []
+  if (userType === "IUser2") {
+    const user = userWithType.value
+    if (!isUserEmailChecked(user)) {
+      throw Boom.forbidden("l'email doit être validé")
+    }
+    if (getLastStatusEvent(user.status)?.status === UserEventType.DESACTIVE) {
+      throw Boom.forbidden("user désactivé")
+    }
+    const { _id } = user
+    grantedRoles = await RoleManagement.find({ user_id: _id, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
+    const isAdmin = grantedRoles.some((role) => role.authorized_type === AccessEntityType.ADMIN)
+    if (isAdmin) {
+      return
+    }
+    if (!grantedRoles.length) {
+      throw Boom.forbidden("aucun role")
+    }
+  }
 
   const resources = await getResources(schema, req)
-  const role = getUserRole(userWithType)
 
-  if (!isAuthorized(schema.securityScheme.access, userWithType, role, resources)) {
-    throw Boom.forbidden()
+  if (userType === "ICredential") {
+    const { organisation } = userWithType.value
+    const opco = parseEnum(OPCOS, organisation)
+    const userAccess: ComputedUserAccess = {
+      users: [],
+      cfas: [],
+      entreprises: [],
+      opcos: opco ? [opco] : [],
+    }
+    if (!isAuthorized(schema.securityScheme.access, userAccess, resources)) {
+      throw Boom.forbidden()
+    }
+  } else if (userType === "IUser2") {
+    const { _id } = userWithType.value
+    // TODO
+    // const indirectUserRoles = await RoleManagement.find({  })
+    const userAccess: ComputedUserAccess = {
+      users: [_id.toString()],
+      cfas: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : [])),
+      entreprises: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : [])),
+      opcos: [],
+    }
+    if (!isAuthorized(schema.securityScheme.access, userAccess, resources)) {
+      throw Boom.forbidden()
+    }
+  } else {
+    assertUnreachable(userType)
   }
 }

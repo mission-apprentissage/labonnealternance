@@ -18,7 +18,10 @@ import { controlUserState } from "../services/login.service"
 
 import { IAccessToken, parseAccessToken } from "./accessTokenService"
 
-export type IUserWithType = UserWithType<"IUser2", IUser2> | UserWithType<"ICredential", ICredential> | UserWithType<"IAccessToken", IAccessToken>
+export type AccessUser2 = UserWithType<"IUser2", IUser2>
+export type AccessUserCredential = UserWithType<"ICredential", ICredential>
+export type AccessUserToken = UserWithType<"IAccessToken", IAccessToken>
+export type IUserWithType = AccessUser2 | AccessUserCredential | AccessUserToken
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -27,11 +30,11 @@ declare module "fastify" {
 }
 
 type AuthenticatedUser<AuthScheme extends WithSecurityScheme["securityScheme"]["auth"]> = AuthScheme extends "cookie-session"
-  ? UserWithType<"IUser2", IUser2>
+  ? AccessUser2
   : AuthScheme extends "api-key"
-    ? UserWithType<"ICredential", ICredential>
+    ? AccessUserCredential
     : AuthScheme extends "access-token"
-      ? UserWithType<"IAccessToken", IAccessToken>
+      ? AccessUserToken
       : never
 
 export const getUserFromRequest = <S extends WithSecurityScheme>(req: Pick<FastifyRequest, "user">, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
@@ -41,7 +44,7 @@ export const getUserFromRequest = <S extends WithSecurityScheme>(req: Pick<Fasti
   return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
 }
 
-async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUser2", IUser2> | null> {
+async function authCookieSession(req: FastifyRequest): Promise<AccessUser2 | null> {
   const token = req.cookies?.[config.auth.session.cookieName]
 
   if (!token) {
@@ -77,7 +80,7 @@ async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUs
   }
 }
 
-async function authApiKey(req: FastifyRequest): Promise<UserWithType<"ICredential", ICredential> | null> {
+async function authApiKey(req: FastifyRequest): Promise<AccessUserCredential | null> {
   const token = req.headers.authorization
 
   if (token === null) {
@@ -102,7 +105,7 @@ function extractBearerTokenFromHeader(req: FastifyRequest): null | string {
   return matches === null ? null : matches[1]
 }
 
-async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyRequest, schema: S): Promise<UserWithType<"IAccessToken", IAccessToken> | null> {
+async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyRequest, schema: S): Promise<AccessUserToken | null> {
   const token = extractBearerTokenFromHeader(req)
   if (token === null) {
     return null

@@ -1,20 +1,15 @@
 import { useToast } from "@chakra-ui/react"
 import { useCallback } from "react"
 import { useQueryClient } from "react-query"
-import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { updateUserValidationHistory } from "../../utils/api"
 
-export default function useUserHistoryUpdate(userId: string, status: ETAT_UTILISATEUR, reason?: string) {
+export default function useUserHistoryUpdate(props: Parameters<typeof updateUserValidationHistory>[0]) {
   const client = useQueryClient()
   const toast = useToast()
 
   return useCallback(async () => {
-    await updateUserValidationHistory(userId, {
-      validation_type: VALIDATION_UTILISATEUR.MANUAL,
-      status,
-      reason,
-    })
+    await updateUserValidationHistory(props)
       .then(() => ["user-list-opco", "user-list", "user"].map((x) => client.invalidateQueries(x)))
       .then(() =>
         toast({
@@ -25,5 +20,5 @@ export default function useUserHistoryUpdate(userId: string, status: ETAT_UTILIS
           isClosable: true,
         })
       )
-  }, [client, reason, status, toast, userId])
+  }, [client, toast, ...Object.values(props)])
 }
