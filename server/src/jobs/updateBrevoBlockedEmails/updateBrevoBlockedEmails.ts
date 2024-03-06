@@ -13,7 +13,7 @@ const saveBlacklistEmails = async (contacts) => {
     const email = contacts[i].email
     const blackListedEmail = await EmailBlacklist.findOne({ email })
     if (!blackListedEmail) {
-      await processBlacklistedEmail(email, "brevo")
+      await processBlacklistedEmail(email, "brevo_spam")
     }
   }
 }

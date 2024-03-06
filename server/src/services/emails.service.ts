@@ -31,7 +31,7 @@ export const processHardBounceWebhookEvent = async (payload) => {
     }
 
     if (await isHardbounceEventFromEtablissement(payload)) {
-      origin = "prise_de_rdv"
+      origin = "invitation_prise_de_rdv"
     }
 
     await processBlacklistedEmail(email, origin)

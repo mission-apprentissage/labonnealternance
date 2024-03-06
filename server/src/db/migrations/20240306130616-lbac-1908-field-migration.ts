@@ -53,25 +53,19 @@ const updateBonneBoites = (db) => db.collection("bonnesboites").updateMany({}, {
 const updateEmailblacklists = (db) =>
   db.collection("emailblacklists").updateMany(
     {
-      $or: [{ blacklisting_origin: "brevo_spam" }, { blacklisting_origin: "matcha" }, { blacklisting_origin: "lba" }],
+      $or: [{ blacklisting_origin: "matcha" }, { blacklisting_origin: "lba" }],
     },
     {
       $set: {
         blacklisting_origin: {
           $cond: {
-            if: { $eq: ["$blacklisting_origin", "brevo_spam"] },
-            then: "brevo",
+            if: { $eq: ["$blacklisting_origin", "matcha"] },
+            then: "candidature_offre",
             else: {
               $cond: {
-                if: { $eq: ["$blacklisting_origin", "matcha"] },
-                then: "candidature_offre",
-                else: {
-                  $cond: {
-                    if: { $eq: ["$blacklisting_origin", "lba"] },
-                    then: "candidature_spontanee",
-                    else: "$blacklisting_origin",
-                  },
-                },
+                if: { $eq: ["$blacklisting_origin", "lba"] },
+                then: "candidature_spontanee",
+                else: "$blacklisting_origin",
               },
             },
           },
