@@ -1,4 +1,5 @@
-import { IJob, IUserRecruteur } from "shared/models"
+import { IJob } from "shared/models"
+import { IUser2 } from "shared/models/user2.model"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
@@ -351,7 +352,7 @@ export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establis
   )
 }
 
-export function generateOffreToken(user: IUserRecruteur, offre: IJob) {
+export function generateOffreToken(user: IUser2, offre: IJob) {
   return generateAccessToken(
     user,
     [

@@ -1,7 +1,6 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
-import { UserRecruteur } from "@/common/model"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
 import { getUser2ByEmail } from "@/services/user2.service"
@@ -219,11 +218,6 @@ export default (server: Server) => {
         rome_code,
         rome_label,
       } = req.body
-      const userRecruteur = await UserRecruteur.findOne({ establishment_id }).lean()
-      if (!userRecruteur) {
-        throw Boom.notFound()
-      }
-
       const updatedFormulaire = await createJob({
         job: {
           is_disabled_elligible,
@@ -246,7 +240,7 @@ export default (server: Server) => {
       if (!job) {
         throw new Error("unexpected")
       }
-      const token = generateOffreToken(userRecruteur, job)
+      const token = generateOffreToken(user, job)
       return res.status(200).send({ recruiter: updatedFormulaire, token })
     }
   )
@@ -283,10 +277,6 @@ export default (server: Server) => {
         rome_code,
         rome_label,
       } = req.body
-      const userRecruteur = await UserRecruteur.findOne({ establishment_id }).lean()
-      if (!userRecruteur) {
-        throw Boom.notFound()
-      }
       const updatedFormulaire = await createJob({
         job: {
           is_disabled_elligible,
@@ -309,7 +299,7 @@ export default (server: Server) => {
       if (!job) {
         throw new Error("unexpected")
       }
-      const token = generateOffreToken(userRecruteur, job)
+      const token = generateOffreToken(user, job)
       return res.status(200).send({ recruiter: updatedFormulaire, token })
     }
   )
