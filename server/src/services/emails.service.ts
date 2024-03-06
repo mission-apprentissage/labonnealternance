@@ -19,22 +19,22 @@ export const processWebhookEvent = async (payload) => {
 export const processHardBounceWebhookEvent = async (payload) => {
   const { event, email } = payload
 
-  let hardbounceOrigin = "campaign"
+  let origin = "campaign"
 
   if (event === BrevoEventStatus.HARD_BOUNCE) {
     if (await processApplicationHardbounceEvent(payload)) {
-      hardbounceOrigin = "lba"
+      origin = "candidature_spontanee"
     }
 
     if (await isHardbounceEventFromAppointment(payload)) {
-      hardbounceOrigin = "prise_de_rdv"
+      origin = "prise_de_rdv"
     }
 
     if (await isHardbounceEventFromEtablissement(payload)) {
-      hardbounceOrigin = "invitation_prise_de_rdv"
+      origin = "prise_de_rdv"
     }
 
-    await processBlacklistedEmail(email, hardbounceOrigin)
+    await processBlacklistedEmail(email, origin)
   } else {
     throw new Error("Non hardbounce event received on hardbounce webhook route")
   }
