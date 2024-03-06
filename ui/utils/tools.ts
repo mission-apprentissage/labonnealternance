@@ -78,9 +78,13 @@ const getItemElement = (item) => {
       id = `matcha${realItem.job.id}`
       break
     }
-    default: {
-      // aka. LBA_ITEM_TYPE.RECRUTEURS_LBA
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
       id = `${realItem.ideaType}${realItem.company.siret}`
+      break
+    }
+    default: {
+      // TODO : typer item
+      // assertUnreachable(item)
       break
     }
   }
