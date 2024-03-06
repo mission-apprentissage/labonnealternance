@@ -25,11 +25,11 @@ import { IUserStatusValidation } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
+import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
 
 import { AUTHTYPE } from "../../../../../../common/contants"
-import useUserHistoryUpdate from "../../../../../../common/hooks/useUserHistoryUpdate"
 import {
   AnimationContainer,
   ConfirmationDesactivationUtilisateur,
@@ -67,10 +67,10 @@ function DetailEntreprise() {
   })
 
   const ActivateUserButton = ({ userId }) => {
-    const updateUserHistory = useUserHistoryUpdate(userId, ETAT_UTILISATEUR.VALIDE)
+    const { activate } = useUserPermissionsActions(userId, organizationId, organizationType)
 
     return (
-      <Button variant="primary" onClick={() => updateUserHistory()}>
+      <Button variant="primary" onClick={() => activate()}>
         Activer le compte
       </Button>
     )

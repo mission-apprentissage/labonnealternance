@@ -3,20 +3,20 @@ import { useFormik } from "formik"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import useUserHistoryUpdate from "@/common/hooks/useUserHistoryUpdate"
+import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { createUser } from "@/utils/api"
 import { apiDelete, apiPut } from "@/utils/api.utils"
 
 import ConfirmationDesactivationUtilisateur from "../../ConfirmationDesactivationUtilisateur"
 
 const ActivateUserButton = ({ userId, onUpdate }) => {
-  const updateUserHistory = useUserHistoryUpdate(userId, ETAT_UTILISATEUR.VALIDE)
+  const { activate } = useUserPermissionsActions(userId, organizationId, organizationType)
 
   return (
     <Button
       variant="primary"
       onClick={() => {
-        updateUserHistory()
+        activate()
         onUpdate?.()
       }}
     >
