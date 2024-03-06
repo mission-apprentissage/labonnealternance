@@ -7,6 +7,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
+import { getUserTypeOrError } from "@/services/roleManagement.service"
 import { getUser2ByEmail } from "@/services/user2.service"
 
 import { startSession, stopSession } from "../../common/utils/session.service"
@@ -112,7 +113,7 @@ export default (server: Server) => {
       await updateLastConnectionDate(formatedEmail)
       await startSession(email, res)
 
-      return res.status(200).send(toPublicUser(user))
+      return res.status(200).send(toPublicUser(user, await getUserTypeOrError(user._id)))
     }
   )
 
@@ -130,7 +131,7 @@ export default (server: Server) => {
         throw Boom.forbidden()
       }
       const userFromRequest = getUserFromRequest(request, zRoutes.get["/auth/session"]).value
-      return response.status(200).send(toPublicUser(userFromRequest))
+      return response.status(200).send(toPublicUser(userFromRequest, await getUserTypeOrError(userFromRequest._id)))
     }
   )
 

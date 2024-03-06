@@ -1,8 +1,11 @@
 import Boom from "boom"
-import { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
+import { ObjectId } from "mongodb"
+import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { RoleManagement } from "@/common/model"
+
+import { ADMIN, CFA, ENTREPRISE, OPCO } from "./constant.service"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
@@ -32,4 +35,28 @@ export const modifyPermissionToUser = async (
     const role = await RoleManagement.create(newRole)
     return role
   }
+}
+
+export const getGrantedRoles = async (userId: string) => {
+  return RoleManagement.find({ user_id: userId, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
+}
+
+// TODO à supprimer lorsque les utilisateurs pourront avoir plusieurs types
+export const getUserType = async (userId: string | ObjectId) => {
+  const roles = await getGrantedRoles(userId.toString())
+  const isAdmin = roles.some((role) => role.authorized_type === AccessEntityType.ADMIN)
+  if (isAdmin) return ADMIN
+  const isOpco = roles.some((role) => role.authorized_type === AccessEntityType.OPCO)
+  if (isOpco) return OPCO
+  const isCfa = roles.some((role) => role.authorized_type === AccessEntityType.CFA)
+  if (isCfa) return CFA
+  const isEntreprise = roles.some((role) => role.authorized_type === AccessEntityType.ENTREPRISE)
+  if (isEntreprise) return ENTREPRISE
+  return null
+}
+
+export const getUserTypeOrError = async (userId: string | ObjectId) => {
+  const type = await getUserType(userId)
+  if (!type) throw Boom.internal(`inattendu : aucun type trouvé pour user id=${userId}`)
+  return type
 }
