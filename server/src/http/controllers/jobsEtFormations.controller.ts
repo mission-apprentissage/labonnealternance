@@ -51,7 +51,7 @@ export default (server: Server) => {
       }
 
       const itemSources = sources ? sources.split(",") : allLbaItemType
-      const hasSomeApiTag = allLbaItemType.some((apiTag) => itemSources.includes(apiTag))
+      const hasSomeApiTag = allLbaItemType.filter((x) => x !== LBA_ITEM_TYPE.FORMATION).some((apiTag) => itemSources.includes(apiTag))
 
       const [formations, jobs] = await Promise.all([
         itemSources.includes(LBA_ITEM_TYPE.FORMATION)
