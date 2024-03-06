@@ -8,11 +8,7 @@ import UserView from "@/components/espace_pro/Admin/utilisateurs/UserView"
 import { authProvider, withAuth } from "@/components/espace_pro/withAuth"
 import { apiGet } from "@/utils/api.utils"
 
-interface Props {
-  params: { userId: string }
-}
-
-const AdminUserView = ({ params }: Props) => {
+const AdminUserView = ({ userId }: { userId: string }) => {
   const {
     data: user,
     isLoading,
@@ -20,13 +16,13 @@ const AdminUserView = ({ params }: Props) => {
   } = useQuery<IUserRecruteurJson>({
     queryKey: ["adminusersview"],
     queryFn: async () => {
-      const user = await apiGet("/admin/users/:userId", { params })
+      const user = await apiGet("/admin/users/:userId", { params: { userId } })
       return user
     },
-    enabled: !!params.userId,
+    enabled: !!userId,
   })
 
-  if (isLoading || !params.userId) {
+  if (isLoading || !userId) {
     return <LoadingEmptySpace />
   }
 
@@ -39,7 +35,7 @@ function AdminUserViewPage() {
 
   return (
     <Layout footer={false}>
-      <AdminUserView params={{ userId }} />
+      <AdminUserView userId={userId} />
     </Layout>
   )
 }

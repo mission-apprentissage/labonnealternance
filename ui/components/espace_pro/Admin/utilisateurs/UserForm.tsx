@@ -1,6 +1,8 @@
 import { Box, Button, Checkbox, FormControl, FormErrorMessage, FormLabel, HStack, Input, VStack, useDisclosure, useToast } from "@chakra-ui/react"
 import { useFormik } from "formik"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { IUserRecruteurJson } from "shared"
+import { AccessStatus } from "shared/models/roleManagement.model"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import * as Yup from "yup"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
@@ -9,52 +11,45 @@ import { apiDelete, apiPut } from "@/utils/api.utils"
 
 import ConfirmationDesactivationUtilisateur from "../../ConfirmationDesactivationUtilisateur"
 
-const ActivateUserButton = ({ userId, onUpdate }) => {
-  const { activate } = useUserPermissionsActions(userId, organizationId, organizationType)
-
+const ActivateUserButton = ({ onClick }) => {
   return (
-    <Button
-      variant="primary"
-      onClick={() => {
-        activate()
-        onUpdate?.()
-      }}
-    >
+    <Button variant="primary" onClick={onClick}>
       Activer le compte
     </Button>
   )
 }
 
-const DisableUserButton = ({ confirmationDesactivationUtilisateur }) => {
+const DisableUserButton = ({ onClick }) => {
   return (
-    <Button variant="primary-red" onClick={() => confirmationDesactivationUtilisateur.onOpen()}>
+    <Button variant="primary-red" onClick={onClick}>
       Désactiver le compte
     </Button>
   )
 }
 
-const getActionButtons = (userHistory, userId, confirmationDesactivationUtilisateur, onUpdate) => {
-  switch (userHistory?.status) {
-    case ETAT_UTILISATEUR.ATTENTE:
-      return (
-        <>
-          <ActivateUserButton userId={userId} onUpdate={onUpdate} />
-          <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
-        </>
-      )
-    case ETAT_UTILISATEUR.VALIDE:
-      return <DisableUserButton confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur} />
-    case ETAT_UTILISATEUR.DESACTIVE:
-      return <ActivateUserButton userId={userId} onUpdate={onUpdate} />
-
-    default:
-      return <></>
-  }
+const ActionButtons = ({ currentStatus, onDisableUser, onActivateUser }: { currentStatus: AccessStatus; onDisableUser: () => void; onActivateUser: () => void }) => {
+  return (
+    <>
+      {currentStatus !== AccessStatus.GRANTED && <ActivateUserButton onClick={onActivateUser} />}
+      {currentStatus !== AccessStatus.DENIED && <DisableUserButton onClick={onDisableUser} />}
+    </>
+  )
 }
 
-const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?: (result: void, error?: any) => void; onDelete?: () => void; onUpdate?: () => void }) => {
+const UserForm = ({
+  user,
+  onCreate,
+  onDelete,
+  onUpdate,
+}: {
+  user: IUserRecruteurJson
+  onCreate?: (result: void, error?: any) => void
+  onDelete?: () => void
+  onUpdate?: () => void
+}) => {
   const toast = useToast()
   const confirmationDesactivationUtilisateur = useDisclosure()
+  const { activate: activateUser } = useUserPermissionsActions(user._id.toString(), organizationId, user.type)
   const { values, errors, touched, dirty, handleSubmit, handleChange } = useFormik({
     initialValues: {
       last_name: user?.last_name || "",
@@ -86,7 +81,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
       try {
         if (user) {
           result = await apiPut("/admin/users/:userId", {
-            params: { userId: user._id },
+            params: { userId: user._id.toString() },
             body: {
               ...values,
               type: beAdmin ? "ADMIN" : values.type,
@@ -154,8 +149,8 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
     },
   })
 
-  const onDeleteClicked = async (e) => {
-    e.preventDefault()
+  const onDeleteClicked = async (event) => {
+    event.preventDefault()
     if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
       const result = (await apiDelete("/admin/users/:userId", { params: { userId: user._id as string }, querystring: {} })) as any
       if (result?.ok) {
@@ -177,7 +172,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
     }
   }
 
-  const [lastUserState] = user?.status.slice(-1) || ""
+  const accessStatus = getLastStatusEvent(user?.status ?? [])?.status
 
   return (
     <>
@@ -191,7 +186,15 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
           <HStack mb={4} alignItems="baseline">
             <Box w="300px">Statut du compte </Box>=
             <HStack spacing={6}>
-              <Box> {lastUserState?.status}</Box> {getActionButtons(lastUserState, user._id, confirmationDesactivationUtilisateur, onUpdate)}{" "}
+              <Box> {accessStatus}</Box>
+              <ActionButtons
+                currentStatus={accessStatus}
+                onDisableUser={() => confirmationDesactivationUtilisateur.onOpen()}
+                onActivateUser={() => {
+                  activateUser()
+                  onUpdate?.()
+                }}
+              />{" "}
               <Box>
                 <Button variant="outline" colorScheme="red" borderRadius="none" onClick={onDeleteClicked}>
                   Supprimer l&apos;utilisateur
@@ -206,7 +209,7 @@ const UserForm = ({ user, onCreate, onDelete, onUpdate }: { user: any; onCreate?
           {user && (
             <FormControl py={2}>
               <FormLabel>Identifiant</FormLabel>
-              <Input type="text" id="id" name="id" value={user._id} disabled />
+              <Input type="text" id="id" name="id" value={user._id.toString()} disabled />
             </FormControl>
           )}
           <FormControl py={2} isInvalid={!!errors.first_name}>
