@@ -221,7 +221,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE.FORMATION && !buttonRdvShouldBeDisplayed(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
-      {amongst(kind, [LBA_ITEM_TYPE.RECRUTEURS_LBA]) && !isCandidatureLba(selectedItem) && (
+      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && !isCandidatureLba(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
     </Box>
