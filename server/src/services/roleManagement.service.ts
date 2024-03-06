@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { ObjectId } from "mongodb"
+import type { ObjectId } from "mongodb"
 import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
 import { IUserRecruteurPublic } from "shared/models"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
@@ -35,7 +35,7 @@ export const modifyPermissionToUser = async (
       ...props,
       status: [event],
     }
-    const role = await RoleManagement.create(newRole)
+    const role = (await RoleManagement.create(newRole)).toObject()
     return role
   }
 }

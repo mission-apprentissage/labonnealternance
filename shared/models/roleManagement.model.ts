@@ -2,7 +2,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
-import { ZValidationUtilisateur } from "./user2.model.js"
+import { ZValidationUtilisateur } from "./user2.model"
 
 export enum AccessEntityType {
   USER = "USER",

@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify"
-import { ObjectId } from "mongodb"
+import type { ObjectId } from "mongodb"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IUser2 } from "shared/models/user2.model"

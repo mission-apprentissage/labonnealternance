@@ -52,6 +52,7 @@ const entrepriseSchema = new Schema<IEntreprise>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 )
 

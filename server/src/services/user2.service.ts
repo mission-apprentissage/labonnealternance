@@ -33,7 +33,7 @@ export const createUser2IfNotExist = async (userProps: Omit<IUser2, "_id" | "cre
       origin,
       status,
     }
-    user = await User2.create(userFields)
+    user = (await User2.create(userFields)).toObject()
   }
   return user
 }

@@ -30,7 +30,7 @@ export const createOrganizationIfNotExist = async (organization: Omit<IUserRecru
         geo_coordinates,
         status: [],
       }
-      entreprise = await Entreprise.create(entrepriseFields)
+      entreprise = (await Entreprise.create(entrepriseFields)).toObject()
     }
     if (type === CFA) {
       let cfa = await Cfa.findOne({ siret: establishment_siret }).lean()
@@ -44,7 +44,7 @@ export const createOrganizationIfNotExist = async (organization: Omit<IUserRecru
           origin,
           geo_coordinates,
         }
-        cfa = await Cfa.create(cfaFields)
+        cfa = (await Cfa.create(cfaFields)).toObject()
       }
       return cfa
     }

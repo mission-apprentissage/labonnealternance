@@ -73,6 +73,7 @@ const User2Schema = new Schema<IUser2>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 )
 

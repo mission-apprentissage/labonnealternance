@@ -61,6 +61,7 @@ const roleManagementSchema = new Schema<IRoleManagement>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 )
 
