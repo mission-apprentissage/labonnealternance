@@ -23,7 +23,7 @@ import { createAuthMagicLink } from "./appLinks.service"
 import { ADMIN, OPCO } from "./constant.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { createOrganizationIfNotExist } from "./organization.service"
-import { modifyPermissionToUser } from "./permissions.service"
+import { modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist } from "./user2.service"
 
 /**

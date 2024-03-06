@@ -129,13 +129,14 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
   return lastValidationEvent.status
 }
 
-export function toPublicUser(user: IUser2): z.output<typeof ZUserRecruteurPublic> {
+export function toPublicUser(user: IUser2, type: IUserRecruteurPublic["type"]): z.output<typeof ZUserRecruteurPublic> {
   return {
     _id: user._id,
     email: user.email,
     last_name: user.last_name,
     first_name: user.first_name,
     phone: user.phone,
+    type,
   }
 }
 
