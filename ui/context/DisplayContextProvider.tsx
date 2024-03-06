@@ -20,7 +20,7 @@ const initialState = {
   isFormVisible: true,
   shouldMapBeVisible: false,
   activeFilters: defaultFilters,
-  romeItems: [],
+  appellationRomeMetierItems: [],
 }
 
 const actions = {
@@ -29,7 +29,7 @@ const actions = {
   SET_IS_FORM_VISIBLE: "SET_IS_FORM_VISIBLE",
   SET_SHOULD_MAP_BE_VISIBLE: "SET_SHOULD_MAP_BE_VISIBLE",
   SET_ACTIVE_FILTERS: "SET_ACTIVE_FILTERS",
-  SET_ROME_ITEMS: "SET_ROME_ITEMS",
+  SET_APPELLATION_ROME_METIER_ITEMS: "SET_APPELLATION_ROME_METIER_ITEMS",
 }
 
 const reducer = (state, action) => {
@@ -51,12 +51,17 @@ const reducer = (state, action) => {
     case actions.SET_ACTIVE_FILTERS: {
       return { ...state_copy, activeFilters: action.activeFilters }
     }
-    case actions.SET_ROME_ITEMS: {
-      return { ...state_copy, romeItems: action.romeItems }
+    case actions.SET_APPELLATION_ROME_METIER_ITEMS: {
+      return { ...state_copy, appellationRomeMetierItems: action.appellationRomeMetierItems }
     }
     default:
       return state
   }
+}
+interface ICoupleAppellationRomeMetier {
+  codeRome: string
+  intitule: string
+  appellation: string
 }
 
 export type IContextDisplay = {
@@ -70,8 +75,8 @@ export type IContextDisplay = {
   setShouldMapBeVisible: (b: boolean) => void
   activeFilters: string[]
   setActiveFilters: (b: string[]) => void
-  romeItems: any[]
-  setRomeItems: (b: any[]) => void
+  appellationRomeMetierItems: ICoupleAppellationRomeMetier[]
+  setAppellationRomeMetierItems: (b: ICoupleAppellationRomeMetier[]) => void
 }
 // @ts-expect-error: TODO
 export const DisplayContext = createContext<IContextDisplay>()
@@ -96,8 +101,8 @@ const DisplayContextProvider = ({ children }) => {
     setShouldMapBeVisible: (shouldMapBeVisible = false) => {
       dispatch({ type: actions.SET_SHOULD_MAP_BE_VISIBLE, shouldMapBeVisible })
     },
-    setRomeItems: (romeItems = []) => {
-      dispatch({ type: actions.SET_ROME_ITEMS, romeItems })
+    setAppellationRomeMetierItems: (appellationRomeMetierItems = []) => {
+      dispatch({ type: actions.SET_APPELLATION_ROME_METIER_ITEMS, appellationRomeMetierItems })
     },
   }
 

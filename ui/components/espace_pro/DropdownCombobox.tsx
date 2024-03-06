@@ -11,7 +11,7 @@ import CustomInput from "./CustomInput"
 let debouncedOnInputValueChange = null
 
 export default function DropdownCombobox(props) {
-  const { romeItems, setRomeItems } = useContext(DisplayContext)
+  const { appellationRomeMetierItems, setAppellationRomeMetierItems } = useContext(DisplayContext)
 
   const { saveSelectedItem, handleSearch, value, placeholder, name } = props
   const [, , helpers] = useField(props.name)
@@ -19,7 +19,7 @@ export default function DropdownCombobox(props) {
   const itemToString = (item) => (item ? item.appellation : "")
   const onInputValueChange = async ({ inputValue }) => {
     const newItems = await handleSearch(inputValue)
-    setRomeItems(newItems)
+    setAppellationRomeMetierItems(newItems)
   }
   const onSelectedItemChange = ({ selectedItem }) => {
     saveSelectedItem(selectedItem)
@@ -46,7 +46,7 @@ export default function DropdownCombobox(props) {
     },
     onSelectedItemChange,
     stateReducer,
-    items: romeItems || [],
+    items: appellationRomeMetierItems || [],
     initialInputValue: value ?? [],
   })
 
@@ -72,7 +72,7 @@ export default function DropdownCombobox(props) {
         {...getMenuProps()}
       >
         {isOpen &&
-          romeItems.map((item, index) => (
+          appellationRomeMetierItems.map((item, index) => (
             <li
               style={highlightedIndex === index ? { backgroundColor: "lightGrey", width: "100%", padding: "0.5rem" } : { width: "100%", padding: "0.5rem" }}
               key={`${item}${index}`}
