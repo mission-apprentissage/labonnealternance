@@ -30,13 +30,15 @@ export const migrationUsers = async () => {
   await migrationCandidats(now)
 }
 
+const parallelism = 20
+
 const migrationRecruiters = async () => {
   logger.info(`Migration: lecture des recruiteurs...`)
   const recruiters: IRecruiter[] = await Recruiter.find({}).lean()
   logger.info(`Migration: ${recruiters.length} recruiteurs à mettre à jour`)
   const stats = { success: 0, failure: 0, jobSuccess: 0 }
 
-  await asyncForEachGrouped(recruiters, 100, async (recruiter, index) => {
+  await asyncForEachGrouped(recruiters, parallelism, async (recruiter, index) => {
     index % 1000 === 0 && logger.info(`import du recruiteur n°${index}`)
     try {
       const { establishment_id, cfa_delegated_siret, jobs } = recruiter
@@ -52,7 +54,6 @@ const migrationRecruiters = async () => {
           throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_id=${establishment_id}`)
         }
       }
-
       await Promise.all(
         jobs.map(async (job) => {
           await Recruiter.findOneAndUpdate(
@@ -69,7 +70,7 @@ const migrationRecruiters = async () => {
       )
       stats.success++
     } catch (err) {
-      logger.error(`erreur lors de l'import du user recruteur avec id=${recruiter._id}`)
+      logger.error(`erreur lors de l'import du recruiteur avec id=${recruiter._id}`)
       logger.error(err)
       stats.failure++
     }
@@ -94,7 +95,7 @@ const migrationUserRecruteurs = async () => {
   logger.info(`Migration: ${userRecruteurs.length} user recruteurs à mettre à jour`)
   const stats = { success: 0, failure: 0, entrepriseCreated: 0, cfaCreated: 0, userCreated: 0, adminAccess: 0, opcoAccess: 0 }
 
-  await asyncForEachGrouped(userRecruteurs, 100, async (userRecruteur, index) => {
+  await asyncForEachGrouped(userRecruteurs, parallelism, async (userRecruteur, index) => {
     const {
       last_name,
       first_name,
@@ -116,11 +117,11 @@ const migrationUserRecruteurs = async () => {
       is_email_checked,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       is_qualiopi,
-      status: oldStatus,
       last_connection,
       createdAt,
       updatedAt,
     } = userRecruteur
+    const oldStatus: IUserRecruteur["status"] | undefined = userRecruteur.status
     const origin = originRaw || "user migration"
     index % 1000 === 0 && logger.info(`import du user recruteur n°${index}`)
     try {
@@ -271,7 +272,7 @@ const migrationCandidats = async (now: Date) => {
   logger.info(`Migration: ${candidats.length} user candidats à mettre à jour`)
   const stats = { success: 0, failure: 0, alreadyExist: 0 }
 
-  await asyncForEachGrouped(candidats, 100, async (candidat, index) => {
+  await asyncForEachGrouped(candidats, parallelism, async (candidat, index) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { firstname, lastname, phone, email, role, type, last_action_date, is_anonymized, _id } = candidat
     index % 1000 === 0 && logger.info(`import du candidat n°${index}`)
@@ -328,8 +329,18 @@ const migrationCandidats = async (now: Date) => {
   return stats
 }
 
-function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["status"]): IRoleManagementEvent[] {
-  return allStatus.flatMap((statusEvent) => {
+function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["status"] | undefined): IRoleManagementEvent[] {
+  if (!allStatus) {
+    return [
+      {
+        date: new Date(),
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+        reason: "multi compte : aucun status",
+        status: AccessStatus.DENIED,
+      },
+    ]
+  }
+  return (allStatus ?? []).flatMap((statusEvent) => {
     const { date, reason, status, user, validation_type } = statusEvent
     const statusMapping: Record<ETAT_UTILISATEUR, AccessStatus | null> = {
       [ETAT_UTILISATEUR.DESACTIVE]: AccessStatus.DENIED,
@@ -353,7 +364,17 @@ function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["st
   })
 }
 
-function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status"]): IEntrepriseStatusEvent[] {
+function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status"] | undefined): IEntrepriseStatusEvent[] {
+  if (!allStatus) {
+    return [
+      {
+        date: new Date(),
+        reason: "migration multi compte : aucun status présent",
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+        status: EntrepriseStatus.ERROR,
+      },
+    ]
+  }
   return allStatus.flatMap((statusEvent) => {
     const { date, reason, status, user, validation_type } = statusEvent
     const statusMapping: Record<ETAT_UTILISATEUR, EntrepriseStatus | null> = {
