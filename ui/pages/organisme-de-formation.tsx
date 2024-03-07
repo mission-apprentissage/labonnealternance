@@ -2,6 +2,7 @@ import { Box, Container, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React from "react"
 
+import OffresAutoExposees from "@/components/HomeComponents/OffresAutoExposees"
 import PromoRessources from "@/components/Ressources/promoRessources"
 
 import Breadcrumb from "../components/breadcrumb"
@@ -30,6 +31,7 @@ const Organisme = () => {
           <CFA />
 
           <Box as="section" mt="16">
+            <OffresAutoExposees />
             <FacilitezRDVA />
           </Box>
 
