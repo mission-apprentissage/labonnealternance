@@ -4,7 +4,7 @@ import React from "react"
 const FacilitezRDVA = () => {
   return (
     <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }} gap={4}>
-      <GridItem colSpan={{ base: 1, md: 5 }}>
+      <GridItem order={{ base: 2, md: 1 }} colSpan={{ base: 1, md: 5 }}>
         <Text as="h2" variant="homeEditorialH2">
           Répondez facilement aux candidats intéressés par vos formations
         </Text>
@@ -12,11 +12,14 @@ const FacilitezRDVA = () => {
           Vous recevez directement dans votre boite mail des demandes de candidats intéressés par vos formations et pouvez leur répondre en quelques clics.
         </Text>
         <Text fontSize="14px" mt={6}>
-          *Vous pouvez à tout moment vous désinscrire de ce service en contactant notre équipe.
-          <Link href="/faq" variant="homeEditorialLink" aria-label="Lien vers la Foire aux questions"></Link>
+          *Vous pouvez à tout moment vous désinscrire de ce service en{" "}
+          <Link href="mailto:labonnealternance@beta.gouv.fr" variant="basicUnderlined" aria-label="Adresse email de l'équipe La bonne alternance">
+            contactant notre équipe
+          </Link>
+          .
         </Text>
       </GridItem>
-      <GridItem colSpan={{ base: 1, md: 7 }}>
+      <GridItem order={{ base: 1, md: 2 }} colSpan={{ base: 1, md: 7 }}>
         <Box display="flex" alignItems="flex-start" justifyContent={{ base: "center", lg: "flex-end" }} mr={{ base: 0, lg: 4 }} height="100%">
           <Image src="/images/home_pics/facilitezRDVA.svg" alt="" aria-hidden={true}></Image>
         </Box>
