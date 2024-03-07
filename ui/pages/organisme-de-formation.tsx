@@ -30,7 +30,7 @@ const Organisme = () => {
         <Container variant="pageContainer" bg="white">
           <CFA />
 
-          <Box as="section" mt="16">
+          <Box as="section" bg="beige" borderRadius={10} p={{ base: 3, md: 6, lg: 12 }} mt="16">
             <OffresAutoExposees />
             <FacilitezRDVA />
           </Box>
