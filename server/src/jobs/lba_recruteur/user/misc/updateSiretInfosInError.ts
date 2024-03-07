@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { JOB_STATUS } from "shared"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { CFA, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -14,7 +14,7 @@ import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { ENTREPRISE } from "../../../../services/constant.service"
 import { EntrepriseData, autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
-import { activateEntrepriseRecruiterForTheFirstTime, archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
+import { activateEntrepriseRecruiterForTheFirstTime, archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
 import { UserAndOrganization, deactivateUser, setEntrepriseInError } from "../../../../services/userRecruteur.service"
 
 const updateEntreprisesInfosInError = async () => {
@@ -24,14 +24,12 @@ const updateEntreprisesInfosInError = async () => {
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des entreprises en erreur: ${entreprises.length} entreprises à mettre à jour...`)
   await asyncForEach(entreprises, async (entreprise) => {
-    const { siret: siret, _id, establishment_id } = entreprise
+    const { siret, _id } = entreprise
     try {
-      if (!establishment_id || !siret) {
-        throw Boom.internal("unexpected: no establishment_id and/or establishment_siret for userRecruteur of type ENTREPRISE", { id: entreprise._id })
+      if (!siret) {
+        throw Boom.internal("unexpected: no siret for userRecruteur of type ENTREPRISE", { id: entreprise._id })
       }
-      let recruteur = await getFormulaire({ establishment_id })
-      const { cfa_delegated_siret } = recruteur
-      const siretResponse = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret: cfa_delegated_siret ?? undefined })
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: entreprise id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
         await deactivateUser(_id, siretResponse.message)
@@ -42,7 +40,8 @@ const updateEntreprisesInfosInError = async () => {
         if (!updatedEntreprise) {
           throw Boom.internal(`could not find and update entreprise with id=${_id}`)
         }
-        recruteur = await updateFormulaire(recruteur.establishment_id, entrepriseData)
+        await Recruiter.updateMany({ establishment_siret: siret }, entrepriseData)
+        const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
         const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: updatedEntreprise._id.toString() }).lean()
         const users = await User2.find({ _id: { $in: roles.map((role) => role.user_id) } }).lean()
         await Promise.all(
@@ -50,13 +49,17 @@ const updateEntreprisesInfosInError = async () => {
             const userAndOrganization: UserAndOrganization = { user, type: ENTREPRISE, organization: updatedEntreprise }
             const result = await autoValidateCompany(userAndOrganization)
             if (result.validated) {
-              await activateEntrepriseRecruiterForTheFirstTime(recruteur)
+              const recruiter = recruiters.find((recruiter) => recruiter.email === user.email && recruiter.establishment_siret === siret)
+              if (!recruiter) {
+                throw Boom.internal(`inattendu : recruiter non trouvé`, { email: user.email, siret })
+              }
+              await activateEntrepriseRecruiterForTheFirstTime(recruiter)
               const role = roles.find((role) => role.user_id.toString() === user._id.toString())
               const status = getLastStatusEvent(role?.status)?.status
               if (!status) {
                 throw Boom.internal("inattendu : status du role non trouvé")
               }
-              await sendEmailConfirmationEntreprise(user, recruteur, status, EntrepriseStatus.VALIDE)
+              await sendEmailConfirmationEntreprise(user, recruiter, status, EntrepriseStatus.VALIDE)
             }
           })
         )
@@ -90,7 +93,7 @@ const updateRecruteursSiretInfosInError = async () => {
       return
     }
     try {
-      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret })
+      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, type: CFA })
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: recruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
         await archiveFormulaire(establishment_id)

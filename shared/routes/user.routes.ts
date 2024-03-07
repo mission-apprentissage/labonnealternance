@@ -1,6 +1,8 @@
+import { OPCOS } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
+import { enumToZod } from "../models/enumToZod"
 import { AccessEntityType, ZRoleManagementEvent } from "../models/roleManagement.model"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
@@ -31,7 +33,7 @@ export const zUserRecruteurRoutes = {
       path: "/user/opco",
       querystring: z
         .object({
-          opco: z.string(),
+          opco: enumToZod(OPCOS),
         })
         .strict(),
       response: {
@@ -225,7 +227,9 @@ export const zUserRecruteurRoutes = {
       method: "put",
       path: "/admin/users/:userId",
       params: z.object({ userId: zObjectId }).strict(),
-      body: ZUserRecruteurWritable.partial(),
+      body: ZUserRecruteurWritable.omit({
+        status: true,
+      }).partial(),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
         "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),

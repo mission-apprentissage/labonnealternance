@@ -110,6 +110,7 @@ const migrationUserRecruteurs = async () => {
       email,
       scope,
       type,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       establishment_id,
       origin: originRaw,
       is_email_checked,
@@ -165,7 +166,6 @@ const migrationUserRecruteurs = async () => {
           address,
           address_detail,
           enseigne: establishment_enseigne,
-          establishment_id,
           raison_sociale: establishment_raison_sociale,
           geo_coordinates,
           idcc,

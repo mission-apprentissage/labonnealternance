@@ -97,7 +97,7 @@ export const createJob = async ({ job, id, user }: { job: IJobWritable; id: stri
     throw Boom.internal(`recruiter with establishment_id=${id} not found`)
   }
   const { is_delegated, cfa_delegated_siret } = recruiter
-  const organization = await (cfa_delegated_siret ? Cfa.findOne({ siret: cfa_delegated_siret }).lean() : Entreprise.findOne({ establishment_id: id }).lean())
+  const organization = await (cfa_delegated_siret ? Cfa.findOne({ siret: cfa_delegated_siret }).lean() : Entreprise.findOne({ siret: recruiter.establishment_siret }).lean())
   if (!organization) {
     throw Boom.internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${id}`)
   }
@@ -179,7 +179,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   }
   const offre = getJobFromRecruiter(recruiter, jobId.toString())
   const managingUser = await getUser2ManagingOffer(offre)
-  const entreprise = await Entreprise.findOne({ establishment_id: recruiter.establishment_id }).lean()
+  const entreprise = await Entreprise.findOne({ siret: recruiter.establishment_siret }).lean()
   let shouldSentMailToCfa = false
   if (entreprise) {
     const role = await RoleManagement.findOne({ user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }).lean()
@@ -307,8 +307,8 @@ export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Pro
  * @param {IRecruiter["establishment_id"]} establishment_id
  * @returns {Promise<boolean>}
  */
-export const reactivateRecruiter = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
-  const recruiter = await Recruiter.findOne({ establishment_id: id })
+export const reactivateRecruiter = async (id: IRecruiter["_id"]): Promise<boolean> => {
+  const recruiter = await Recruiter.findOne({ _id: id })
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }
@@ -629,4 +629,12 @@ export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob 
     throw new Error(`could not find job with id=${jobId} in recruiter with id=${recruiter._id}`)
   }
   return job
+}
+
+export const getFormulaireFromUserId = async (userId: string) => {
+  const formulaire = await Recruiter.findOne({ "jobs.managed_by": userId }).lean()
+  if (!formulaire) {
+    throw Boom.internal(`inattendu : formulaire non trouvé`, { userId })
+  }
+  return formulaire
 }

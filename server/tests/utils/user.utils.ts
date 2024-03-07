@@ -1,4 +1,3 @@
-import type { ObjectId } from "mongodb"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, IUserRecruteur, ZApplication, ZCredential, ZEmailBlacklist, ZRecruiter, ZUserRecruteur } from "shared/models"
@@ -6,6 +5,7 @@ import { zObjectId } from "shared/models/common"
 import { Fixture, Generator } from "zod-fixture"
 
 import { Application, Credential, EmailBlacklist, Recruiter, UserRecruteur } from "@/common/model"
+import { ObjectId } from "@/common/mongodb"
 
 let seed = 0
 function getFixture() {

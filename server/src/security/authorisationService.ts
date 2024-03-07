@@ -49,7 +49,7 @@ function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): an
 }
 
 const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<RecruiterResource> => {
-  const { cfa_delegated_siret, establishment_id } = recruiter
+  const { cfa_delegated_siret, establishment_siret } = recruiter
   if (cfa_delegated_siret) {
     const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
     if (!cfa) {
@@ -57,7 +57,7 @@ const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<Recr
     }
     return { recruiter, type: CFA, cfa }
   } else {
-    const entreprise = await Entreprise.findOne({ establishment_id }).lean()
+    const entreprise = await Entreprise.findOne({ siret: establishment_siret }).lean()
     if (!entreprise) {
       throw Boom.internal(`could not find entreprise for recruiter with id=${recruiter._id}`)
     }

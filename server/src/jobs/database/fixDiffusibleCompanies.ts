@@ -1,9 +1,11 @@
-import { ILbaCompany, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
+import { ILbaCompany, IRecruiter, JOB_STATUS } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
-import { ETAT_UTILISATEUR, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { IEntreprise } from "shared/models/entreprise.model"
+import { AccessEntityType } from "shared/models/roleManagement.model"
 
 import { logger } from "@/common/logger"
-import { Recruiter, UserRecruteur } from "@/common/model"
+import { Entreprise, Recruiter, RoleManagement } from "@/common/model"
 import { db } from "@/common/mongodb"
 import { getDiffusionStatus } from "@/services/etablissement.service"
 
@@ -56,32 +58,11 @@ const deactivateRecruiter = async (recruiter: IRecruiter) => {
   await Recruiter.updateOne({ _id: recruiter._id }, { $set: { ...recruiter } })
 }
 
-const deactivateUserRecruteur = async (userRecruteur: IUserRecruteur) => {
-  console.log("deactivating non diffusible userRecruteur : ", userRecruteur.establishment_siret)
-
-  const userStatus = {
-    user: "SERVEUR",
-    validation_type: VALIDATION_UTILISATEUR.AUTO,
-    status: ETAT_UTILISATEUR.DESACTIVE,
-    reason: "Anonymisation des données",
-    date: new Date(),
-  }
-  if (!userRecruteur.status) {
-    userRecruteur.status = []
-  }
-  const lastStatus = userRecruteur.status.at(-1)
-  if (lastStatus && lastStatus.status !== ETAT_UTILISATEUR.DESACTIVE) {
-    userRecruteur.status.push(userStatus)
-  }
-
-  userRecruteur.address = ANONYMIZED
-  userRecruteur.geo_coordinates = FAKE_GEOLOCATION
-
-  if (userRecruteur.address_detail) {
-    userRecruteur.address_detail = { libelle_commune: ANONYMIZED }
-  }
-
-  await UserRecruteur.updateOne({ _id: userRecruteur._id }, { $set: { ...userRecruteur } })
+const deactivateEntreprise = async (entreprise: IEntreprise) => {
+  const { siret } = entreprise
+  console.log("deactivating non diffusible entreprise : ", siret)
+  await Entreprise.deleteOne({ _id: entreprise._id })
+  await RoleManagement.deleteMany({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() })
 }
 
 const fixRecruiters = async () => {
@@ -111,22 +92,23 @@ const fixRecruiters = async () => {
     }
   }
 
-  const userRecruteurs: AsyncIterable<IUserRecruteur> = await db.collection("userrecruteurs").find({})
+  const entreprises: AsyncIterable<IEntreprise> = await db.collection("entreprises").find({})
 
   count = 0
   deactivatedCount = 0
   errorCount = 0
 
-  for await (const userRecruteur of userRecruteurs) {
+  for await (const entreprise of entreprises) {
     if (count % 100 === 0) {
-      logger.info(`${count} userRecruteurs checked. ${deactivatedCount} removed. ${errorCount} errors`)
+      logger.info(`${count} entreprises checked. ${deactivatedCount} removed. ${errorCount} errors`)
     }
     count++
     try {
-      const isDiffusible = userRecruteur.establishment_siret ? await getDiffusionStatus(userRecruteur.establishment_siret) : EDiffusibleStatus.NOT_FOUND
+      const { siret } = entreprise
+      const isDiffusible = siret ? await getDiffusionStatus(siret) : EDiffusibleStatus.NOT_FOUND
 
-      if (userRecruteur.establishment_siret && isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
-        deactivateUserRecruteur(userRecruteur)
+      if (siret && isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
+        deactivateEntreprise(entreprise)
 
         deactivatedCount++
       }

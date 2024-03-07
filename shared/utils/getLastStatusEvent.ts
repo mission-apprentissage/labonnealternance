@@ -1,4 +1,4 @@
-export const getLastStatusEvent = <Status, T extends { date?: Date; status?: Status }>(stateArray?: T[]): T | null => {
+export const getLastStatusEvent = <Status, T extends { date?: Date | null; status?: Status }>(stateArray?: T[]): T | null => {
   if (!stateArray) {
     return null
   }

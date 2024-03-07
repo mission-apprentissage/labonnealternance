@@ -1,7 +1,8 @@
 import type { FilterQuery } from "mongoose"
 import { IUser } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { Recruiter, User, User2, UserRecruteur } from "../common/model/index"
 
@@ -63,8 +64,8 @@ const find = (conditions: FilterQuery<IUser>) => User.find(conditions)
  */
 const findOne = (conditions: FilterQuery<IUser>) => User.findOne(conditions)
 
-const getUserAndRecruitersDataForOpcoUser = async (
-  opco: string
+export const getUserAndRecruitersDataForOpcoUser = async (
+  opco: OPCOS
 ): Promise<{
   awaiting: IUserForOpco[]
   active: IUserForOpco[]
@@ -99,11 +100,11 @@ const getUserAndRecruitersDataForOpcoUser = async (
 
   const results = users.reduce(
     (acc, user) => {
-      const status = user.status?.at(-1)?.status ?? null
+      const status = getLastStatusEvent(user.status)?.status
       if (status === null) {
         return acc
       }
-      const form = recruiterPerEtablissement.get(user.establishment_id)
+      const recruiter = recruiterPerEtablissement.get(user.establishment_id)
 
       const { _id, first_name, last_name, establishment_id, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type } = user
       const userForOpco: IUserForOpco = {
@@ -117,8 +118,8 @@ const getUserAndRecruitersDataForOpcoUser = async (
         email,
         phone,
         type,
-        jobs_count: form?.jobs?.length ?? 0,
-        origin: form?.origin ?? "",
+        jobs_count: recruiter?.jobs?.length ?? 0,
+        origin: recruiter?.origin ?? "",
       }
       if (status === ETAT_UTILISATEUR.ATTENTE) {
         acc.awaiting.push(userForOpco)
@@ -146,4 +147,4 @@ export const getUserNamesFromIds = async (ids: string[]) => {
   return users
 }
 
-export { createUser, find, findOne, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, update }
+export { createUser, find, findOne, getUserById, getUserByMail, update }

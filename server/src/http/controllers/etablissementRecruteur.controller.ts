@@ -5,7 +5,7 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Recruiter, UserRecruteur } from "@/common/model"
+import { Cfa, Recruiter, User2 } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { user2ToUserForToken } from "@/security/accessTokenService"
@@ -76,7 +76,7 @@ export default (server: Server) => {
         throw Boom.badRequest(cfaVerification.message)
       }
 
-      const result = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+      const result = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
 
       if ("error" in result) {
         throw Boom.badRequest(result.message, result)
@@ -256,7 +256,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { _id, ...rest } = req.body
-      const exists = await UserRecruteur.findOne({ email: req.body.email.toLocaleLowerCase(), _id: { $ne: _id } })
+      const exists = await User2.findOne({ email: req.body.email.toLocaleLowerCase(), _id: { $ne: _id } })
       if (exists) {
         throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
       }

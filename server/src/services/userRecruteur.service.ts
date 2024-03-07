@@ -1,9 +1,8 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
-import type { ObjectId } from "mongodb"
-import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IRecruiter, IUserRecruteur, IUserRecruteurWritable, IUserStatusValidation, UserRecruteurForAdminProjection, assertUnreachable } from "shared"
+import type { ModelUpdateOptions, UpdateQuery } from "mongoose"
+import { IRecruiter, IUserRecruteur, IUserStatusValidation, UserRecruteurForAdminProjection, assertUnreachable } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
@@ -12,6 +11,7 @@ import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.mod
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
+import { ObjectId, ObjectIdType } from "@/common/mongodb"
 import { parseEnumOrError } from "@/common/utils/enumUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { user2ToUserForToken } from "@/security/accessTokenService"
@@ -21,6 +21,7 @@ import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
 import { ADMIN, OPCO } from "./constant.service"
+import { getFormulaireFromUserId } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { createOrganizationIfNotExist } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
@@ -73,10 +74,10 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
   }
 }
 
-export const getUserRecruteurById = (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
+export const getUserRecruteurById = (id: string | ObjectIdType) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
 export const getUserRecruteurByEmail = (email: string) => getUserRecruteurByUser2Query({ email })
 export const getUserRecruteurByRecruiter = async (recruiter: IRecruiter): Promise<IUserRecruteur | null> => {
-  const { cfa_delegated_siret, establishment_id } = recruiter
+  const { cfa_delegated_siret, establishment_siret } = recruiter
   if (cfa_delegated_siret) {
     const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
     if (!cfa) {
@@ -87,18 +88,16 @@ export const getUserRecruteurByRecruiter = async (recruiter: IRecruiter): Promis
       throw new Error(`role with authorized_id=${cfa._id} not found`)
     }
     return getUserRecruteurById(role.user_id)
-  } else if (establishment_id) {
-    const entreprise = await Entreprise.findOne({ establishment_id }).lean()
+  } else {
+    const entreprise = await Entreprise.findOne({ siret: establishment_siret }).lean()
     if (!entreprise) {
-      throw new Error(`entreprise with establishment_id=${establishment_id} not found`)
+      throw new Error(`entreprise with establishment_siret=${establishment_siret} not found`)
     }
     return getUserRecruteurById(entreprise._id)
-  } else {
-    throw new Error("inattendu: pas de establishment_id ni de cfa_delegated_siret")
   }
 }
 
-export const userAndRoleAndOrganizationToUserRecruteur = (user: IUser2, role: IRoleManagement, organisme: ICFA | IEntreprise): IUserRecruteur => {
+export const userAndRoleAndOrganizationToUserRecruteur = (user: IUser2, role: IRoleManagement, organisme: ICFA | IEntreprise, formulaire: IRecruiter | null): IUserRecruteur => {
   const { email, first_name, last_name, phone, last_action_date, _id } = user
   const organismeType = "status" in organisme ? ENTREPRISE : CFA
   const lastEntrepriseEvent = "status" in organisme ? getLastStatusEvent(organisme.status) : null
@@ -119,14 +118,15 @@ export const userAndRoleAndOrganizationToUserRecruteur = (user: IUser2, role: IR
   const type = roleType ?? organismeType ?? null
   if (!type) throw Boom.internal("unexpected: no type found")
   const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme
-  const entrepriseFields =
-    "idcc" in organisme
-      ? {
-          idcc: organisme.idcc,
-          opco: organisme.opco,
-          establishment_id: organisme.establishment_id,
-        }
-      : {}
+  let entrepriseFields = {}
+  if ("idcc" in organisme) {
+    if (!formulaire) {
+      throw Boom.internal("formulaire est obligatoire dans le cas d'une entreprise")
+    }
+    const { establishment_id } = formulaire
+    const { idcc, opco } = organisme
+    entrepriseFields = { idcc, opco, establishment_id }
+  }
   const userRecruteur: IUserRecruteur = {
     ...entrepriseFields,
     establishment_siret: siret,
@@ -159,7 +159,8 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
   if (!role) return null
   const organisme = await getOrganismeFromRole(role)
   if (!organisme) return null
-  return userAndRoleAndOrganizationToUserRecruteur(user, role, organisme)
+  const formulaire = role.authorized_type === AccessEntityType.ENTREPRISE ? await getFormulaireFromUserId(user._id.toString()) : null
+  return userAndRoleAndOrganizationToUserRecruteur(user, role, organisme, formulaire)
 }
 
 export const createOrganizationUser = async (
@@ -275,30 +276,11 @@ export const createUser = async (
   }
 }
 
-/**
- * @description update user
- * @param {Filter<IUserRecruteur>} query
- * @param {UpdateQuery<IUserRecruteur>} update
- * @param {ModelUpdateOptions} options
- * @returns {Promise<IUserRecruteur>}
- */
-export const updateUser = async (
-  query: FilterQuery<IUserRecruteur>,
-  update: Partial<IUserRecruteurWritable>,
-  options: ModelUpdateOptions = { new: true }
-): Promise<IUserRecruteur> => {
-  const userRecruterOpt = await UserRecruteur.findOneAndUpdate(query, update, options).lean()
-  if (!userRecruterOpt) {
-    throw Boom.internal(`could not update one user from query=${JSON.stringify(query)}`)
-  }
-  return userRecruterOpt
-}
-
-export const updateUser2Fields = (userId: ObjectId, fields: Partial<IUser2>) => {
+export const updateUser2Fields = (userId: ObjectIdType, fields: Partial<IUser2>) => {
   return User2.findOneAndUpdate({ _id: userId }, fields, { new: true })
 }
 
-export const validateUserEmail = async (userId: ObjectId) => {
+export const validateUserEmail = async (userId: ObjectIdType) => {
   const event: IUserStatusEvent = {
     date: new Date(),
     status: UserEventType.VALIDATION_EMAIL,

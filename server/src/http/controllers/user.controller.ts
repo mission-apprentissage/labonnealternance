@@ -1,7 +1,6 @@
 import Boom from "boom"
 import { CFA, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { IJob, getUserStatus, zRoutes } from "shared/index"
-import { IEntreprise } from "shared/models/entreprise.model"
+import { IJob, IRecruiter, getUserStatus, zRoutes } from "shared/index"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
@@ -9,11 +8,11 @@ import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { getMainRoleManagement, modifyPermissionToUser } from "@/services/roleManagement.service"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, UserRecruteur } from "../../common/model/index"
+import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
-import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaire, reactivateRecruiter } from "../../services/formulaire.service"
+import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaireFromUserId, reactivateRecruiter } from "../../services/formulaire.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds } from "../../services/user.service"
 import {
@@ -24,9 +23,9 @@ import {
   getDisabledUsers,
   getErrorUsers,
   getUserRecruteurById,
+  getUsersWithRoles,
   removeUser,
   sendWelcomeEmailToUserRecruteur,
-  updateUser,
   updateUser2Fields,
   userAndRoleAndOrganizationToUserRecruteur,
   validateUserEmail,
@@ -53,6 +52,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user"])],
     },
     async (req, res) => {
+      await getUsersWithRoles()
       // TODO KEVIN: ADD PAGINATION
       const [awaiting, active, disabled, error] = await Promise.all([getAwaitingUsers(), getActiveUsers(), getDisabledUsers(), getErrorUsers()])
       return res.status(200).send({ awaiting, active, disabled, error })
@@ -133,7 +133,7 @@ export default (server: Server) => {
       const { userId } = req.params
       const formattedEmail = email?.toLocaleLowerCase()
 
-      const exist = await UserRecruteur.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
+      const exist = await User2.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
 
       if (exist) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
@@ -141,7 +141,10 @@ export default (server: Server) => {
 
       const update = { email: formattedEmail, ...userPayload }
 
-      await updateUser({ _id: userId }, update)
+      const updatedUser = await User2.findOneAndUpdate({ _id: userId }, update).lean()
+      if (!updatedUser) {
+        throw Boom.internal(`could not update one user from query=${JSON.stringify({ _id: userId })}`)
+      }
       return res.status(200).send({ ok: true })
     }
   )
@@ -192,20 +195,14 @@ export default (server: Server) => {
       }
 
       let jobs: IJob[] = []
+      let formulaire: IRecruiter | null = null
 
       if (type === ENTREPRISE) {
-        const { establishment_id } = organization as IEntreprise
-        if (!establishment_id) {
-          throw Boom.internal(`inattendu : establishment_id vide pour l'entreprise avec id=${role.authorized_id}`)
-        }
-        const response = await Recruiter.findOne({ establishment_id }).select({ jobs: 1, _id: 0 }).lean()
-        if (!response) {
-          throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
-        }
-        jobs = response.jobs
+        formulaire = await getFormulaireFromUserId(user._id.toString())
+        jobs = formulaire.jobs
       }
 
-      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization)
+      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
 
       const opcoOrAdminRole = await RoleManagement.findOne({
         user_id: user._id,
@@ -271,7 +268,7 @@ export default (server: Server) => {
 
       const formattedEmail = email?.toLocaleLowerCase()
 
-      const exist = await UserRecruteur.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
+      const exist = await User2.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
 
       if (exist) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
@@ -293,6 +290,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { reason, status, organizationType } = req.body
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
       const user = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
       if (!user) throw Boom.badRequest()
@@ -355,22 +353,16 @@ export default (server: Server) => {
       }
 
       if (organizationType === AccessEntityType.ENTREPRISE) {
-        const entreprise = await Entreprise.findOne({ _id: organizationId }).lean()
-        const establishment_id = entreprise?.establishment_id
-        if (!establishment_id) {
-          throw Boom.internal("unexpected: no establishment_id on userRecruteur of type ENTREPRISE", { userId: user._id })
-        }
         /**
          * if entreprise type of user is validated :
          * - activate offer
          * - update expiration date to one month later
          * - send email to delegation if available
          */
-        const userFormulaire = await getFormulaire({ establishment_id })
-
+        const userFormulaire = await getFormulaireFromUserId(user._id.toString())
         if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
           // le recruiter étant archivé on se contente de le rendre de nouveau Actif
-          await reactivateRecruiter(establishment_id)
+          await reactivateRecruiter(userFormulaire._id)
         } else if (userFormulaire.status === RECRUITER_STATUS.ACTIF) {
           // le compte se trouve validé, on procède à l'activation de la première offre et à la notification aux CFAs
           if (userFormulaire?.jobs?.length) {

@@ -5,10 +5,11 @@ import { IUserRecruteurPublic } from "shared/models"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Entreprise, RoleManagement } from "@/common/model"
+import { Cfa, Entreprise, RoleManagement, User2 } from "@/common/model"
 import { parseEnumOrError } from "@/common/utils/enumUtils"
 
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "./constant.service"
+import { getFormulaireFromUserId } from "./formulaire.service"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
@@ -119,8 +120,13 @@ export const getUserRecruteurPropsOrError = async (
     if (!entreprise) {
       throw Boom.internal(`inattendu : entreprise non trouvée pour user id=${userId}`)
     }
-    const { siret, establishment_id } = entreprise
-    return { ...commonFields, establishment_siret: siret, establishment_id }
+    const { siret } = entreprise
+    const user = await User2.findOne({ _id: userId }).lean()
+    if (!user) {
+      throw Boom.internal(`inattendu : user non trouvé`, { userId })
+    }
+    const recruiter = await getFormulaireFromUserId(user._id.toString())
+    return { ...commonFields, establishment_siret: siret, establishment_id: recruiter.establishment_id }
   }
   if (type === OPCO) {
     return { ...commonFields, scope: parseEnumOrError(OPCOS, mainRole.authorized_id) }

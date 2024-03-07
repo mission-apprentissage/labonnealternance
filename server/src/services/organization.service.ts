@@ -8,8 +8,7 @@ import { Cfa, Entreprise } from "@/common/model"
 import { CFA, ENTREPRISE } from "./constant.service"
 
 export const createOrganizationIfNotExist = async (organization: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status">): Promise<IEntreprise | ICFA> => {
-  const { address, address_detail, establishment_enseigne, establishment_id, establishment_raison_sociale, establishment_siret, geo_coordinates, idcc, opco, origin, type } =
-    organization
+  const { address, address_detail, establishment_enseigne, establishment_raison_sociale, establishment_siret, geo_coordinates, idcc, opco, origin, type } = organization
 
   if (!establishment_siret) {
     throw Boom.internal("siret is missing")
@@ -23,7 +22,6 @@ export const createOrganizationIfNotExist = async (organization: Omit<IUserRecru
         address_detail,
         enseigne: establishment_enseigne,
         raison_sociale: establishment_raison_sociale,
-        establishment_id,
         origin,
         opco,
         idcc,

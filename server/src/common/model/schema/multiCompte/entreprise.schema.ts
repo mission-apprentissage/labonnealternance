@@ -45,10 +45,6 @@ const entrepriseSchema = new Schema<IEntreprise>(
       default: null,
       description: "Information sur l'opco de l'entreprise",
     },
-    establishment_id: {
-      type: String,
-      description: "Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique",
-    },
   },
   {
     timestamps: true,

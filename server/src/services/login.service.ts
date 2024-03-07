@@ -16,11 +16,8 @@ export const controlUserState = async (user: IUser2): Promise<{ error: boolean; 
     case UserEventType.ACTIF: {
       const roles = await RoleManagement.find({ user_id: user._id.toString() }).lean()
       const rolesWithAccess = roles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
-      if (!rolesWithAccess.length) {
-        return { error: true, reason: "VALIDATION" }
-      }
-      const cfaRoles = rolesWithAccess.filter((role) => role.authorized_type === AccessEntityType.CFA)
-      if (cfaRoles.length) {
+      const cfaOpcoOrAdminRoles = rolesWithAccess.filter((role) => [AccessEntityType.ADMIN, AccessEntityType.OPCO, AccessEntityType.CFA].includes(role.authorized_type))
+      if (cfaOpcoOrAdminRoles.length) {
         return { error: false }
       }
       const entrepriseRoles = rolesWithAccess.filter((role) => role.authorized_type === AccessEntityType.ENTREPRISE)

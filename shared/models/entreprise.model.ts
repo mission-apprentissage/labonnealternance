@@ -39,8 +39,6 @@ export const ZEntreprise = z
     geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse de l'entreprise"),
     opco: z.string().nullish().describe("Opco de l'entreprise"),
     status: z.array(ZEntrepriseStatusEvent).describe("historique de la mise à jour des données entreprise"),
-
-    establishment_id: z.string().nullish().describe("Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique"),
   })
   .strict()
 

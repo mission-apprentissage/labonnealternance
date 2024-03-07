@@ -3,7 +3,7 @@ import { IUser2 } from "shared/models/user2.model"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
-import { IUser2ForAccessToken, UserForAccessToken, generateAccessToken, generateScope } from "@/security/accessTokenService"
+import { IUser2ForAccessToken, UserForAccessToken, generateAccessToken, generateScope, user2ToUserForToken } from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: UserForAccessToken) {
   return generateAccessToken(user, [
@@ -354,7 +354,7 @@ export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establis
 
 export function generateOffreToken(user: IUser2, offre: IJob) {
   return generateAccessToken(
-    user,
+    user2ToUserForToken(user),
     [
       generateScope({
         schema: zRoutes.post["/formulaire/offre/:jobId/delegation/by-token"],

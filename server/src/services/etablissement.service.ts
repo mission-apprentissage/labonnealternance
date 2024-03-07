@@ -24,7 +24,7 @@ import config from "../config"
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
-import { ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
+import { CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import {
   IAPIAdresse,
@@ -654,7 +654,7 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
   }
 }
 
-export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
+export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: string; type: "CFA" | "ENTREPRISE" }) => {
   const result = await getEtablissementFromGouvSafe(siret)
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
@@ -672,7 +672,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
     return errorFactory("Cette entreprise est considérée comme fermée.", BusinessErrorCodes.CLOSED)
   }
   // Check if a CFA already has the company as partenaire
-  if (!cfa_delegated_siret) {
+  if (type === ENTREPRISE) {
     // Allow cfa to add themselves as a company
     if (activite_principale.code.startsWith("85")) {
       return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
@@ -680,7 +680,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   }
   const entrepriseData = formatEntrepriseData(result.data)
   if (!entrepriseData.establishment_raison_sociale) {
-    throw Boom.internal("pas de raison sociale trouvée", { siret, cfa_delegated_siret, entrepriseData, apiData: result.data })
+    throw Boom.internal("pas de raison sociale trouvée", { siret, type, entrepriseData, apiData: result.data })
   }
   const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
   const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
@@ -764,7 +764,7 @@ export const entrepriseOnboardingWorkflow = {
     let entrepriseData: Partial<EntrepriseData>
     let hasSiretError = false
     try {
-      const siretResponse = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
       if ("error" in siretResponse) {
         return siretResponse
       } else {
@@ -828,7 +828,7 @@ export const entrepriseOnboardingWorkflow = {
     let entrepriseData: Partial<EntrepriseData>
     let siretCallInError = false
     try {
-      const siretResponse = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
       if ("error" in siretResponse) {
         return siretResponse
       } else {

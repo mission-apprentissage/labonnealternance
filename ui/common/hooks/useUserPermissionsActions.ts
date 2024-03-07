@@ -8,7 +8,7 @@ type UpdateProps = Parameters<typeof updateUserValidationHistory>[0]
 
 export const useUserPermissionsActions = (
   userId: UpdateProps["userId"],
-  organizationId: UpdateProps["organizationId"] = "", // TODO not passed and not processed by API
+  organizationId: UpdateProps["organizationId"] = userId, // TODO not passed and not processed by API. It should be a valid ObjectId since it is still validated by zod.
   organizationType: AccessEntityType = AccessEntityType.ENTREPRISE // TODO not passed and not processed by API
 ) => {
   const update = useUserHistoryUpdate()

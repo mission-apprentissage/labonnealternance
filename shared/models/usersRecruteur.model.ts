@@ -145,9 +145,9 @@ export function toPublicUser(
     ...userRecruteurProps,
     _id: user._id,
     email: user.email,
-    last_name: user.last_name,
-    first_name: user.first_name,
-    phone: user.phone,
+    last_name: user.last_name ?? "",
+    first_name: user.first_name ?? "",
+    phone: user.phone ?? "",
     cfa_delegated_siret,
   }
 }
