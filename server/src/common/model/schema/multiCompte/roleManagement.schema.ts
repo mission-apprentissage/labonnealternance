@@ -1,7 +1,7 @@
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
 
-import { Schema } from "../../../mongodb.js"
+import { ObjectId, Schema } from "../../../mongodb.js"
 
 import { buildMongooseModel } from "./buildMongooseModel.js"
 
@@ -16,6 +16,7 @@ const roleManagementEventSchema = new Schema<IRoleManagementEvent>(
       type: String,
       enum: Object.values(AccessStatus),
       description: "Statut de l'accès",
+      index: true,
     },
     reason: {
       type: String,
@@ -48,15 +49,18 @@ const roleManagementSchema = new Schema<IRoleManagement>(
     authorized_id: {
       type: String,
       description: "ID de l'entité sur laquelle l'accès est exercé",
+      index: true,
     },
     authorized_type: {
       type: String,
       enum: Object.values(AccessEntityType),
       description: "Type de l'entité sur laquelle l'accès est exercé",
+      index: true,
     },
     user_id: {
-      type: String,
+      type: ObjectId,
       description: "ID de l'utilisateur ayant accès",
+      index: true,
     },
   },
   {

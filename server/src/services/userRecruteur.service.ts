@@ -11,7 +11,7 @@ import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.mod
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
-import { ObjectId, ObjectIdType } from "@/common/mongodb"
+import { ObjectId, ObjectIdType, db } from "@/common/mongodb"
 import { parseEnumOrError } from "@/common/utils/enumUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { user2ToUserForToken } from "@/security/accessTokenService"
@@ -466,17 +466,22 @@ export const getErrorUsers = () =>
     .lean()
 
 export const getUsersWithRoles = async () => {
-  const usersWithRoles = await RoleManagement.aggregate([
-    {
-      $lookup: {
-        from: "user2",
-        localField: "user_id",
-        foreignField: "_id",
-        as: "roles",
+  const usersWithRoles = await db
+    .collection("user2")
+    .aggregate([
+      {
+        $lookup: {
+          from: "rolemanagements",
+          localField: "_id",
+          foreignField: "user_id",
+          as: "roles",
+        },
       },
-    },
-  ])
-  console.log(usersWithRoles.slice(0, 3))
+      { $limit: 5 },
+    ])
+    .toArray()
+
+  console.log(JSON.stringify(usersWithRoles, null, 2))
   return usersWithRoles
 }
 

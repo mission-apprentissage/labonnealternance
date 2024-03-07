@@ -8,6 +8,7 @@ import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/mo
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
 import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent.js"
 
 import { logger } from "../../common/logger.js"
 import { Appointment, Recruiter, User, UserRecruteur } from "../../common/model/index.js"
@@ -126,6 +127,7 @@ const migrationUserRecruteurs = async () => {
     index % 1000 === 0 && logger.info(`import du user recruteur n°${index}`)
     try {
       const newStatus: IUserStatusEvent[] = []
+      const lastOldStatus = getLastStatusEvent(oldStatus)?.status
       if (is_email_checked) {
         newStatus.push({
           date: createdAt,
@@ -138,7 +140,7 @@ const migrationUserRecruteurs = async () => {
       newStatus.push({
         date: createdAt,
         reason: "migration",
-        status: UserEventType.ACTIF,
+        status: lastOldStatus === ETAT_UTILISATEUR.DESACTIVE ? UserEventType.DESACTIVE : UserEventType.ACTIF,
         validation_type: VALIDATION_UTILISATEUR.AUTO,
         granted_by: "migration",
       })
@@ -330,17 +332,7 @@ const migrationCandidats = async (now: Date) => {
 }
 
 function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["status"] | undefined): IRoleManagementEvent[] {
-  if (!allStatus) {
-    return [
-      {
-        date: new Date(),
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-        reason: "multi compte : aucun status",
-        status: AccessStatus.DENIED,
-      },
-    ]
-  }
-  return (allStatus ?? []).flatMap((statusEvent) => {
+  const computedStatus = (allStatus ?? []).flatMap((statusEvent) => {
     const { date, reason, status, user, validation_type } = statusEvent
     const statusMapping: Record<ETAT_UTILISATEUR, AccessStatus | null> = {
       [ETAT_UTILISATEUR.DESACTIVE]: AccessStatus.DENIED,
@@ -362,20 +354,21 @@ function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["st
       return []
     }
   })
-}
-
-function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status"] | undefined): IEntrepriseStatusEvent[] {
-  if (!allStatus) {
+  if (!computedStatus.length) {
     return [
       {
         date: new Date(),
-        reason: "migration multi compte : aucun status présent",
         validation_type: VALIDATION_UTILISATEUR.AUTO,
-        status: EntrepriseStatus.ERROR,
+        reason: "multi compte : aucun status",
+        status: AccessStatus.DENIED,
       },
     ]
   }
-  return allStatus.flatMap((statusEvent) => {
+  return computedStatus
+}
+
+function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status"] | undefined): IEntrepriseStatusEvent[] {
+  const computedStatus = (allStatus ?? []).flatMap((statusEvent) => {
     const { date, reason, status, user, validation_type } = statusEvent
     const statusMapping: Record<ETAT_UTILISATEUR, EntrepriseStatus | null> = {
       [ETAT_UTILISATEUR.VALIDE]: EntrepriseStatus.VALIDE,
@@ -397,4 +390,15 @@ function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status
       return []
     }
   })
+  if (!computedStatus.length) {
+    return [
+      {
+        date: new Date(),
+        reason: "migration multi compte : aucun status présent",
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+        status: EntrepriseStatus.ERROR,
+      },
+    ]
+  }
+  return computedStatus
 }

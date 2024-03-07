@@ -16,6 +16,7 @@ const userStatusEventSchema = new Schema<IUserStatusEvent>(
       type: String,
       enum: Object.values(UserEventType),
       description: "Statut de l'utilisateur",
+      index: true,
     },
     reason: {
       type: String,
@@ -59,6 +60,7 @@ const User2Schema = new Schema<IUser2>(
       type: String,
       default: null,
       description: "L'email",
+      index: true,
     },
     phone: {
       type: String,
@@ -69,6 +71,7 @@ const User2Schema = new Schema<IUser2>(
       type: Date,
       default: null,
       description: "Date de dernière connexion",
+      index: true,
     },
   },
   {
