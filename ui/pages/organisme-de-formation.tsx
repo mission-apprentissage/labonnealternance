@@ -14,8 +14,6 @@ import FacilitezRDVA from "../components/HomeComponents/FacilitezRDVA"
 import FollowLinkedIn from "../components/HomeComponents/FollowLinkedIn"
 import GerezEntreprise from "../components/HomeComponents/GerezEntreprise"
 import OffresGratuites from "../components/HomeComponents/OffresGratuites"
-import PostezVotreOffreAlternance from "../components/HomeComponents/PostezVotreOffreAlternance"
-import ReseauEntreprise from "../components/HomeComponents/ReseauEntreprise"
 import Navigation from "../components/navigation"
 
 const Organisme = () => {
@@ -36,10 +34,8 @@ const Organisme = () => {
           </Box>
 
           <Box as="section" bg="beige" borderRadius={10} p={{ base: 3, md: 6, lg: 12 }} mt={16}>
-            <PostezVotreOffreAlternance />
             <GerezEntreprise />
             <OffresGratuites />
-            <ReseauEntreprise />
           </Box>
 
           <Box as="section">
