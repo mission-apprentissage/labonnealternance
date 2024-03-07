@@ -68,7 +68,7 @@ const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
   )
 }
 
-const AjouterVoeuxForm = (props) => {
+const FormulaireOffreLba = (props) => {
   const {
     widget: { isWidget },
   } = useContext(WidgetContext)
@@ -487,7 +487,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
   }
 }
 
-export const PageAjouterVoeux = (props) => {
+export const PageFormulaireOffreLba = (props) => {
   const [romeInformation, setRomeInformation] = useState({})
   const [loading, setLoading] = useState(false)
   const { widget } = useContext(WidgetContext)
@@ -525,7 +525,7 @@ export const PageAjouterVoeux = (props) => {
           Merci de renseigner les champs ci-dessous pour créer votre offre
         </Text>
         <Box>
-          <AjouterVoeuxForm {...props} getRomeInformation={getRomeInformation} />
+          <FormulaireOffreLba {...props} getRomeInformation={getRomeInformation} />
         </Box>
       </Box>
       <Box>
@@ -542,4 +542,4 @@ export const PageAjouterVoeux = (props) => {
   )
 }
 
-export default PageAjouterVoeux
+export default PageFormulaireOffreLba
