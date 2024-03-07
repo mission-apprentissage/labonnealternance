@@ -142,7 +142,7 @@ export const sendApplication = async ({
       const application = newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
       const fileContent = newApplication.applicant_file_content
 
-      const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, newApplication)
+      const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, offreOrError)
       const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
       const searched_for_job_label = newApplication.searched_for_job_label || ""
 
@@ -217,19 +217,19 @@ export const sendApplication = async ({
 /**
  * Build url to access item detail on LBA ui
  */
-const buildUrlsOfDetail = (publicUrl: string, newApplication: INewApplication) => {
-  const { company_type, job_id, company_siret } = newApplication
+const buildUrlsOfDetail = (publicUrl: string, offreOrCompany: OffreOrLbbCompany) => {
+  const { type } = offreOrCompany
   const urlSearchParams = new URLSearchParams()
   urlSearchParams.append("display", "list")
   urlSearchParams.append("page", "fiche")
-  urlSearchParams.append("type", company_type)
-  if (company_type === "matcha" && job_id) {
-    urlSearchParams.append("itemId", job_id)
-  } else if (company_type === "lba") {
-    urlSearchParams.append("itemId", company_siret)
+  urlSearchParams.append("type", type)
+  if (type === "matcha") {
+    urlSearchParams.append("itemId", offreOrCompany.offre._id.toString())
+  } else if (type === "lba") {
+    urlSearchParams.append("itemId", offreOrCompany.company.siret)
   }
   const paramsWithoutUtm = urlSearchParams.toString()
-  if (company_type === "matcha") {
+  if (type === "matcha") {
     urlSearchParams.append("utm_source", "jecandidate")
     urlSearchParams.append("utm_medium", "email")
     urlSearchParams.append("utm_campaign", "jecandidaterecruteur")
