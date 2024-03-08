@@ -1,3 +1,4 @@
+import { LBA_ITEM_TYPE, allLbaItemType } from "../constants/lbaitem"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
@@ -67,10 +68,13 @@ export const ZApplication = z
       description: "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
       example: "38 RUE DES HAMECONS, 75021 PARIS-21",
     }),
-    job_origin: z.enum(["lba", "lbb", "matcha"]).nullable().openapi({
-      description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-      example: "matcha",
-    }),
+    job_origin: z
+      .enum([allLbaItemType[0], ...allLbaItemType.slice(1)])
+      .nullable()
+      .openapi({
+        description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
+        example: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+      }),
     job_title: z.string().openapi({
       description:
         'Le titre de l\'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est "matcha" . La valeur est fournie par La bonne alternance. ',

@@ -85,7 +85,6 @@ const parseUpdateLine = (line) => {
 
     const romesAlternanceToRemove = terms[18]?.replace(/"/g, "")
 
-    const scoreAlternance = terms[20]
     const phoneAlternance = terms[22]?.replace(/"/g, "")
     const websiteAlternance = terms[23]
     const newCompanyName = terms[27]?.replace(/"/g, "")
@@ -98,12 +97,6 @@ const parseUpdateLine = (line) => {
     website = removeWebsite === "1" ? "remove" : website
     telephone = removePhone === "1" ? "remove" : telephone
     email = removeEmail === "1" ? "remove" : email
-
-    let type = "lbb"
-    // si la moindre info concerne l'alternance on force le type à lba
-    if (emailAlternance || phoneAlternance || websiteAlternance || scoreAlternance || romesAlternance) {
-      type = "lba"
-    }
 
     let romes: any[] = []
     if (romesToBoost || romesAlternance) {
@@ -127,7 +120,6 @@ const parseUpdateLine = (line) => {
         email,
         phone: telephone,
         website,
-        algorithm_origin: type,
         rome_codes: romes,
         removedRomes,
       }
@@ -181,7 +173,6 @@ const parseAddLine = (line) => {
       phone: terms[9].replace(/"/g, ""),
       website: terms[10],
       company_size: terms[16].replace(/"/g, ""),
-      algorithm_origin: lbaScore !== "0" ? "lba" : "lbb",
       recruitment_potential: score,
     }
 

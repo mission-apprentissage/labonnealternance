@@ -37,7 +37,7 @@ const Formulaire = ({ submitForm }) => {
         first_name: "",
         phone: "",
         email,
-        origin: origin ?? "matcha",
+        origin: origin ?? "lba",
       }}
       validationSchema={Yup.object().shape({
         last_name: Yup.string().required("champ obligatoire"),

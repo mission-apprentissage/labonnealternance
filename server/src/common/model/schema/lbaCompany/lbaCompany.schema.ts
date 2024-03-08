@@ -93,11 +93,6 @@ export const lbaCompanySchema = new Schema<ILbaCompany>(
       default: null,
       description: "URL du site Internet",
     },
-    algorithm_origin: {
-      type: String,
-      default: "lba",
-      description: "Type de bonne boîte : lba | lbb",
-    },
     opco: {
       type: String,
       default: null,
