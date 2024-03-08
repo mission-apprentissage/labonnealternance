@@ -29,7 +29,7 @@ const FollowLinkedIn = () => {
           _hover={{ color: "white", textDecoration: "underline" }}
         >
           Voir notre page &nbsp;
-          <Image src="/images/icons/linkedin.svg" alt=""></Image>
+          <Image src="/images/icons/linkedin.svg" aria-hidden={true} alt=""></Image>
           <ExternalLinkIcon mx="2px" />
         </Link>
       </GridItem>

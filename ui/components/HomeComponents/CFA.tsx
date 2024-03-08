@@ -19,7 +19,7 @@ const CFA = () => {
         </GridItem>
         <GridItem colSpan={{ base: 1, md: 7 }}>
           <Show above="md">
-            <Image src="/images/home_pics/illu-entreprisesmandatees.svg" alt=""></Image>
+            <Image src="/images/home_pics/illu-entreprisesmandatees.svg" aria-hidden={true} alt=""></Image>
           </Show>
         </GridItem>
       </Grid>

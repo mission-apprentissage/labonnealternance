@@ -20,7 +20,7 @@ const getText = (target: string) => {
 const PromoRessources = ({ target }) => {
   return (
     <Container textAlign="center" variant="responsiveContainer">
-      <Image margin="auto" src="/images/pages_ressources/outils.svg" alt="" />
+      <Image margin="auto" src="/images/pages_ressources/outils.svg" aria-hidden={true} alt="" />
       <Text fontSize={24} fontWeight={700}>
         {getText(target)}
       </Text>
