@@ -3,7 +3,7 @@ import React from "react"
 
 const FacilitezRDVA = () => {
   return (
-    <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }} gap={4}>
+    <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }} gap={4} mb={{ base: 4, md: 0 }}>
       <GridItem order={{ base: 2, md: 1 }} colSpan={{ base: 1, md: 5 }}>
         <Text as="h2" variant="homeEditorialH2">
           Répondez facilement aux candidats intéressés par vos formations
