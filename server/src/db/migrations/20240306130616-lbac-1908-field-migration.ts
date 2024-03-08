@@ -75,7 +75,7 @@ const updateEmailblacklists = (db) =>
   )
 
 const updateRecruiters = (db) =>
-  db.collection("emailblacklists").updateMany(
+  db.collection("recruiters").updateMany(
     {
       $or: [{ origin: "matcha" }, { origin: "lbb" }],
     },
