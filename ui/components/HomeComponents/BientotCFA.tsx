@@ -7,7 +7,7 @@ const BientotCFA = () => {
       <Grid templateColumns={{ base: "1fr", lg: "repeat(4, 1fr)" }} templateRows={{ base: "auto", lg: "repeat(5, 1fr)" }}>
         <GridItem gridColumn={{ base: "1fr", lg: "1 / 3" }} gridRow={{ base: "auto", lg: "1 / 6" }} order={{ base: "2", md: "auto" }} mt={{ base: 6, lg: 0 }}>
           <Box display="flex" alignItems="center" justifyContent="center" height="100%" mr={{ base: 0, lg: 6 }}>
-            <Image src="/images/home_pics/illu-candidatures.svg" alt="" width={{ base: "320px", lg: "511px" }} />
+            <Image src="/images/home_pics/illu-candidatures.svg" alt="" aria-hidden={true} width={{ base: "320px", lg: "511px" }} />
           </Box>
         </GridItem>
         <GridItem gridColumn={{ base: "1fr", lg: "3 / 5" }} gridRow={{ base: "auto", lg: "1 / 1" }} order={{ base: "1", md: "auto" }} mt={0}>
