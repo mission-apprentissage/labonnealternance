@@ -1,3 +1,4 @@
+import { allLbaItemType } from "shared/constants/lbaitem"
 import { IAnonymizedApplication } from "shared/models/anonymizedApplications.model"
 
 import { model, Schema } from "../../../mongodb"
@@ -31,7 +32,8 @@ export const anonymizedApplicationSchema = new Schema<IAnonymizedApplication>(
     job_origin: {
       type: String,
       default: null,
-      description: "Le type de société / offre au sens source d'info La bonne alternance. Ex : lba, lbb, matcha, pejob",
+      enum: allLbaItemType,
+      description: "Le type de société / offre au sens source d'info La bonne alternance",
     },
     job_id: {
       type: String,

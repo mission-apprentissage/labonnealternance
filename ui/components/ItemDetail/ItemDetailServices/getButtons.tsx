@@ -1,7 +1,7 @@
 import { Box, Button, Image } from "@chakra-ui/react"
 import { findIndex } from "lodash"
-import React from "react"
 import { useSwipeable } from "react-swipeable"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 const navigationButtonProperties = {
   background: "white",
@@ -19,7 +19,7 @@ const navigationButtonProperties = {
 }
 
 export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
-  return oneKind === "peJob" && oneItem?.url
+  return oneKind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && oneItem?.url
 }
 
 /**

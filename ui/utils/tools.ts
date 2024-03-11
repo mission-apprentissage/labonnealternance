@@ -1,3 +1,5 @@
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+
 import { rawPostalAddress } from "./addressUtils"
 //import * as Sentry from "@sentry/react";
 
@@ -61,23 +63,28 @@ const getItemElement = (item) => {
   let id = ""
 
   const realItem = item.items ? item.items[0] : item
+  const kind: LBA_ITEM_TYPE = realItem.ideaType
 
-  switch (realItem.ideaType) {
-    case "peJob": {
+  switch (kind) {
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
       id = `peJob${realItem.job.id}`
       break
     }
-    case "formation": {
+    case LBA_ITEM_TYPE.FORMATION: {
       id = `id${realItem.id}`
       break
     }
-    case "matcha": {
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       id = `matcha${realItem.job.id}`
       break
     }
-    default: {
-      //aka. lbb et lba
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
       id = `${realItem.ideaType}${realItem.company.siret}`
+      break
+    }
+    default: {
+      // TODO : typer item
+      // assertUnreachable(item)
       break
     }
   }
@@ -96,4 +103,4 @@ const logError = (title, error = undefined) => {
   console.error(`Error ${title} sent to Sentry`)
 }
 
-export { getPathLink, getCompanyPathLink, getValueFromPath, scrollToTop, scrollToElementInContainer, getItemElement, logError }
+export { getCompanyPathLink, getItemElement, getPathLink, getValueFromPath, logError, scrollToElementInContainer, scrollToTop }

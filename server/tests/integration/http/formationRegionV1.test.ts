@@ -1,9 +1,7 @@
-import { describe, it, expect } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
-
-import __filename from "../../../src/common/filename"
 
 // Skip from CI (ES is not populated correctly)
 describe.skipIf(process.env.CI)("formationRegionV1", () => {

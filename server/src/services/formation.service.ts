@@ -1,6 +1,7 @@
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError } from "../common/utils/errorManager"
@@ -329,7 +330,7 @@ const transformFormationForIdea = (rawFormation: IFormationCatalogue): ILbaItemF
   const duration = getDurationFromSessions(sessions)
 
   const resultFormation: ILbaItemFormation = {
-    ideaType: "formation",
+    ideaType: LBA_ITEM_TYPE.FORMATION,
     title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
     longTitle: rawFormation.intitule_long ?? null,
     id: rawFormation.cle_ministere_educatif ?? null,

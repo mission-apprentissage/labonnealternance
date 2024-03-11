@@ -5,6 +5,7 @@ import type { EnforceDocument } from "mongoose"
 import { IApplication, IJob, ILbaCompany, INewApplication, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 
@@ -243,9 +244,9 @@ const buildUrlsOfDetail = (publicUrl: string, offreOrCompany: OffreOrLbbCompany)
 
 const buildUserToken = (application: IApplication, userRecruteur?: IUserRecruteur): UserForAccessToken => {
   const { job_origin, company_siret, company_email } = application
-  if (job_origin === "lba") {
+  if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return { type: "lba-company", siret: company_siret, email: company_email }
-  } else if (job_origin === "matcha") {
+  } else if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     if (!userRecruteur) {
       throw Boom.internal("un user recruteur était attendu")
     }
@@ -567,7 +568,7 @@ export const sendMailToApplicant = async ({
  * @description triggers action from hardbounce webhook
  */
 export const sendNotificationForApplicationHardbounce = async ({ application }: { payload: any; application: IApplication }): Promise<void> => {
-  if (application.job_origin === "matcha") {
+  if (application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     await warnMatchaTeamAboutBouncedEmail({ application })
   }
 
