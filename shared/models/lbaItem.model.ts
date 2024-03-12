@@ -1,3 +1,4 @@
+import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -269,8 +270,8 @@ export type ILbaItemTraining = z.output<typeof ZLbaItemTraining>
 
 export const ZLbaItemFormation = z
   .object({
-    ideaType: z.literal("formation").openapi({
-      example: "formation",
+    ideaType: z.literal(LBA_ITEM_TYPE.FORMATION).openapi({
+      example: LBA_ITEM_TYPE.FORMATION,
       description: "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
     }),
     title: z.string().nullish().openapi({
@@ -365,7 +366,7 @@ export type ILbaItemFormation = z.output<typeof ZLbaItemFormation>
 
 export const ZLbaItemLbaJob = z
   .object({
-    ideaType: z.literal("matcha"),
+    ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
     title: z.string().nullish(), // matcha -> offres.libelle || offres.rome_appellation_label
     contact: ZLbaItemContact.nullable(),
     place: ZLbaItemPlace.nullable(),
@@ -391,7 +392,7 @@ export type ILbaItemLbaJob = z.output<typeof ZLbaItemLbaJob>
 
 export const ZLbaItemLbaCompany = z
   .object({
-    ideaType: z.literal("lba"),
+    ideaType: z.literal(LBA_ITEM_TYPE.RECRUTEURS_LBA),
     title: z.string().nullish(), // lbb/lba -> enseigne
     contact: ZLbaItemContact.nullable(),
     place: ZLbaItemPlace.nullable(),
@@ -408,7 +409,7 @@ export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
 
 export const ZLbaItemFtJob = z
   .object({
-    ideaType: z.literal("peJob"),
+    ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES),
     title: z.string().nullish(), // pe -> intitule
     contact: ZLbaItemContact.nullable(),
     place: ZLbaItemPlace.nullable(),

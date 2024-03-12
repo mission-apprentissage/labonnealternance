@@ -188,7 +188,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
   useEffect(() => {
     if (isWidget) {
       setWidget({ isWidget: true, mobile: mobile ?? false })
-      setOrganisation(origin ?? "matcha")
+      setOrganisation(origin ?? "lba")
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])

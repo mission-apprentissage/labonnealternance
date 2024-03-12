@@ -1,4 +1,5 @@
 import { IApplication } from "shared"
+import { allLbaItemType } from "shared/constants/lbaitem"
 
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
@@ -83,7 +84,8 @@ export const applicationSchema = new Schema<IApplication>(
     job_origin: {
       type: String,
       default: null,
-      description: "Le type de société / offre au sens source d'info La bonne alternance. Ex : lba, lbb, matcha, pejob",
+      enum: allLbaItemType,
+      description: "Le type de société / offre au sens source d'info La bonne alternance",
     },
     job_title: {
       type: String,

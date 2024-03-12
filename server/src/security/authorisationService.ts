@@ -1,5 +1,6 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, PendingRecruiterRole, RecruiterRole, Role, UserWithType } from "shared/security/permissions"
@@ -286,7 +287,7 @@ function canAccessApplication(userWithType: NonTokenUserWithType, resource: Reso
     case "ADMIN":
       return true
     case "ENTREPRISE": {
-      if (resource.application.job_origin === "matcha") {
+      if (resource.application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
         return resource.recruiter.establishment_id === userWithType.value.establishment_id
       }
 
