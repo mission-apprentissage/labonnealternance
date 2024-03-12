@@ -101,7 +101,7 @@ export const ZNewApplication = ZApplication.extend({
     description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
     example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
   }),
-  company_type: z.enum(["matcha", "lba"]).openapi({
+  company_type: z.enum([allLbaItemType[0], ...allLbaItemType.slice(1)]).openapi({
     description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
     example: "lba",
   }),
