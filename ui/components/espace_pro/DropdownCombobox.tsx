@@ -1,18 +1,19 @@
 import { Box, Text } from "@chakra-ui/react"
 import { useCombobox } from "downshift"
 import { useField } from "formik"
-import debounce from "lodash/debounce"
+import { useState } from "react"
 
 import CustomInput from "./CustomInput"
 
-let debouncedOnInputValueChange = null
-
 export default function DropdownCombobox(props) {
-  const { saveSelectedItem, setInputItems, handleSearch, value, placeholder, inputItems, name } = props
+  const [inputItems, setInputJobItems] = useState([])
+
+  const { saveSelectedItem, handleSearch, value, placeholder, name } = props
   const [, , helpers] = useField(props.name)
 
   const itemToString = (item) => (item ? item.appellation : "")
-  const onInputValueChange = async ({ inputValue }) => setInputItems(await handleSearch(inputValue))
+  const onInputValueChange = ({ inputValue }) => handleSearch(inputValue)?.then((data) => setInputJobItems(data))
+
   const onSelectedItemChange = ({ selectedItem }) => saveSelectedItem(selectedItem, reset)
   const stateReducer = (_, actions) => {
     const { type, changes } = actions
@@ -28,12 +29,7 @@ export default function DropdownCombobox(props) {
 
   const { isOpen, getMenuProps, getInputProps, getComboboxProps, highlightedIndex, getItemProps, reset } = useCombobox({
     itemToString,
-    onInputValueChange: async ({ inputValue }) => {
-      if (!debouncedOnInputValueChange) {
-        debouncedOnInputValueChange = debounce(onInputValueChange, 300)
-      }
-      debouncedOnInputValueChange({ inputValue })
-    },
+    onInputValueChange: ({ inputValue }) => onInputValueChange({ inputValue }),
     onSelectedItemChange,
     stateReducer,
     items: inputItems,
