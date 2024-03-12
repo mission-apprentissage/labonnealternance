@@ -1,3 +1,4 @@
+import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { NIVEAUX_POUR_LBA } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -88,12 +89,14 @@ export const zInseeParams = z
     },
   })
 
+const allLbaItemTypes = Object.values(LBA_ITEM_TYPE)
+
 export const zSourcesParams = z
-  .string()
+  .enum([allLbaItemTypes[0], ...allLbaItemTypes.slice(1)])
   .optional()
   .openapi({
     param: {
-      description: 'comma separated list of job opportunities sources and trainings (possible values : "formations", "lba", "matcha", "offres")',
+      description: `comma separated list of job opportunities sources and trainings (possible values : ${allLbaItemTypes.join(", ")})`,
     },
   })
 

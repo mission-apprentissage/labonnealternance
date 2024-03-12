@@ -1,5 +1,5 @@
 import { Box, Text, Textarea } from "@chakra-ui/react"
-import React from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 const CandidatureLbaMessage = ({ formik, kind }) => {
   const getFieldTitle = () => {
@@ -15,7 +15,7 @@ const CandidatureLbaMessage = ({ formik, kind }) => {
 
   const getFieldError = () => {
     let errorMsg = <></>
-    if (kind === "matcha") {
+    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
       if (formik.touched.message && formik.errors.message) {
         errorMsg = (
           <Box fontSize="12px" color="#e10600">

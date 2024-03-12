@@ -1,11 +1,13 @@
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+
 export default function getActualTitle({ selectedItem, kind }) {
   let title = ""
 
-  if (kind === "formation") {
+  if (kind === LBA_ITEM_TYPE.FORMATION) {
     title = selectedItem?.title || selectedItem?.longTitle
-  } else if (kind === "matcha") {
+  } else if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     title = selectedItem?.title
-  } else if (kind === "peJob") {
+  } else if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
     title = selectedItem?.title
   } else {
     // lba / lbb

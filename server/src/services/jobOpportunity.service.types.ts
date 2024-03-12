@@ -1,3 +1,5 @@
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+
 import { IApiError } from "../common/utils/errorManager"
 
 import { ILbaItemCompany, ILbaItemFormation, ILbaItemJob, ILbaItemPeJob } from "./lbaitem.shared.service.types"
@@ -12,7 +14,7 @@ export type TJobSearchQuery = {
   longitude?: number
   radius?: number
   insee?: string
-  sources?: string
+  sources?: LBA_ITEM_TYPE
   diploma?: string
   opco?: string
   opcoUrl?: string

@@ -1,7 +1,19 @@
 import { chunk, forEach, includes, reject } from "lodash"
 
 import { astuces } from "../../../config/astuces"
-import { randomWithin } from "../../../utils/arrayutils"
+
+const randomWithin = (collection, limitation = undefined) => {
+  let searchLimit = collection.length - 1
+
+  if (limitation !== undefined && limitation < collection.length - 1) {
+    searchLimit = limitation
+  }
+
+  const randomIndex = Math.floor(Math.random() * (searchLimit + 1))
+  return collection[randomIndex]
+}
+
+export { randomWithin }
 
 function anyMessageAmongst(messages, alreadyShownMessages = []) {
   if (alreadyShownMessages.length > 0 && alreadyShownMessages.length <= messages.length) {
