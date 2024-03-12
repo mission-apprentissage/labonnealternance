@@ -11,7 +11,7 @@ const GerezEntreprise = () => {
       </GridItem>
       <GridItem colSpan={{ base: 1, md: 5 }}>
         <Text as="h2" variant="homeEditorialH2">
-          Développez et gérez votre réseau d'entreprises vos entreprises partenaires
+          Développez et gérez vos entreprises partenaires
         </Text>
         <Text fontSize="18px" mt={4}>
           3 étapes seulement pour mettre en ligne les besoins de vos entreprises partenaires. Vos offres regroupant formation et emploi seront mises en avant sur les différents
