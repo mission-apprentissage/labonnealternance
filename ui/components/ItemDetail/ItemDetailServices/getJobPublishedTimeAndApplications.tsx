@@ -1,5 +1,5 @@
 import { Flex, Image, Text } from "@chakra-ui/react"
-import React from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getDaysSinceDate } from "../../../utils/dateUtils"
 
@@ -11,7 +11,7 @@ export default function getJobPublishedTimeAndApplications({ item }) {
           Publiée depuis {getDaysSinceDate(item.job.creationDate)} jour(s)
         </Text>
       )}
-      {["matcha", "lba"].includes(item?.ideaType) && (
+      {[LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA].includes(item?.ideaType) && (
         <Flex alignItems="center">
           <Image mr={1} src="/images/eclair.svg" alt="" />
           <Text color="#0063CB" display="flex" fontSize="12px" whiteSpace="nowrap" mr={2}>
