@@ -13,7 +13,7 @@ const FacilitezRDVA = () => {
         </Text>
         <Text fontSize="14px" mt={6}>
           *Vous pouvez à tout moment vous désinscrire de ce service en{" "}
-          <Link href="mailto:labonnealternance@beta.gouv.fr" variant="basicUnderlined" aria-label="Adresse email de l'équipe La bonne alternance">
+          <Link href="mailto:labonnealternance@beta.gouv.fr?subject=CFA désactivation RDVA" variant="basicUnderlined" aria-label="Adresse email de l'équipe La bonne alternance">
             contactant notre équipe
           </Link>
           .
