@@ -54,6 +54,8 @@ const images: object = {
   },
 }
 
+type OffreOrLbbCompany = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; company: ILbaCompany } | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; offre: IJob; recruiter: IRecruiter }
+
 /**
  * @description Get applications by job id
  */
@@ -135,8 +137,8 @@ export const sendApplication = async ({
         return { error: validationResult }
       }
 
-      const { type: offreType } = offreOrError
-      const recruteurEmail = (offreType === "matcha" ? offreOrError.recruiter.email : offreOrError.company.email)?.toLowerCase()
+      const { type } = offreOrError
+      const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? offreOrError.recruiter.email : offreOrError.company.email)?.toLowerCase()
       if (!recruteurEmail) {
         return { error: "email du recruteur manquant" }
       }
@@ -147,8 +149,8 @@ export const sendApplication = async ({
       const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
       const searched_for_job_label = newApplication.searched_for_job_label || ""
 
-      const buildTopic = (aCompanyType: INewApplication["company_type"], aJobTitle: string) => {
-        if (aCompanyType === "matcha") {
+      const buildTopic = (company_type: INewApplication["company_type"], aJobTitle: string) => {
+        if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
           return `Candidature en alternance - ${aJobTitle}`
         } else {
           return `Candidature spontanée en alternance ${searched_for_job_label ? "- " + searched_for_job_label : ""}`
@@ -178,7 +180,7 @@ export const sendApplication = async ({
       const emailCandidat = await mailer.sendEmail({
         to: application.applicant_email,
         subject: `Votre candidature chez ${application.company_name}`,
-        template: getEmailTemplate(offreType === "matcha" ? "mail-candidat-matcha" : "mail-candidat"),
+        template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-matcha" : "mail-candidat"),
         data: { ...sanitizeApplicationForEmail(application.toObject()), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
         attachments: [
           {
@@ -224,13 +226,13 @@ const buildUrlsOfDetail = (publicUrl: string, newApplication: INewApplication) =
   urlSearchParams.append("display", "list")
   urlSearchParams.append("page", "fiche")
   urlSearchParams.append("type", company_type)
-  if (company_type === "matcha" && job_id) {
+  if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && job_id) {
     urlSearchParams.append("itemId", job_id)
-  } else if (company_type === "lba") {
+  } else if (company_type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     urlSearchParams.append("itemId", company_siret)
   }
   const paramsWithoutUtm = urlSearchParams.toString()
-  if (company_type === "matcha") {
+  if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     urlSearchParams.append("utm_source", "jecandidate")
     urlSearchParams.append("utm_medium", "email")
     urlSearchParams.append("utm_campaign", "jecandidaterecruteur")
@@ -312,7 +314,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
 
 const offreOrCompanyToCompanyFields = (offreOrCompany: OffreOrLbbCompany): Partial<IApplication> => {
   const { type } = offreOrCompany
-  if (type === "lba") {
+  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     const { company } = offreOrCompany
     const { siret, enseigne, naf_label } = company
     const application: Partial<IApplication> = {
@@ -323,7 +325,7 @@ const offreOrCompanyToCompanyFields = (offreOrCompany: OffreOrLbbCompany): Parti
       company_address: buildLbaCompanyAddress(company),
     }
     return application
-  } else if (type === "matcha") {
+  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const { offre, recruiter } = offreOrCompany
     const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label } = recruiter
     const { rome_appellation_label, rome_label } = offre
@@ -354,7 +356,7 @@ const cleanApplicantFields = (newApplication: INewApplication): Partial<IApplica
 }
 
 /**
- * Initialize application object from query parameters
+ * @description Initialize application object from query parameters
  */
 const newApplicationToApplicationDocument = (newApplication: INewApplication, offreOrCompany: OffreOrLbbCompany, recruteurEmail: string) => {
   const res = new Application({
@@ -369,22 +371,18 @@ const newApplicationToApplicationDocument = (newApplication: INewApplication, of
 
 /**
  * @description Return template file path for given type
- * @param {string} type
- * @return {string}
  */
 export const getEmailTemplate = (type = "mail-candidat"): string => {
   return getStaticFilePath(`./templates/${type}.mjml.ejs`)
 }
 
-type OffreOrLbbCompany = { type: "lba"; company: ILbaCompany } | { type: "matcha"; offre: IJob; recruiter: IRecruiter }
-
 /**
  * @description checks if job applied to is valid
  */
-export const validateJob = async (validable: INewApplication): Promise<OffreOrLbbCompany | { error: string }> => {
-  const { company_type, job_id, company_siret } = validable
+export const validateJob = async (application: INewApplication): Promise<OffreOrLbbCompany | { error: string }> => {
+  const { company_type, job_id, company_siret } = application
 
-  if (company_type === "matcha") {
+  if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     if (!job_id) {
       return { error: "job_id manquant" }
     }
@@ -396,8 +394,8 @@ export const validateJob = async (validable: INewApplication): Promise<OffreOrLb
     if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE) {
       return { error: "offre expirée" }
     }
-    return { type: "matcha", offre: job, recruiter }
-  } else if (company_type === "lba") {
+    return { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, offre: job, recruiter }
+  } else if (company_type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     if (!company_siret) {
       return { error: "company_siret manquant" }
     }
@@ -405,9 +403,9 @@ export const validateJob = async (validable: INewApplication): Promise<OffreOrLb
     if (!lbaCompany) {
       return { error: "société manquante" }
     }
-    return { type: "lba", company: lbaCompany }
+    return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, company: lbaCompany }
   } else {
-    assertUnreachable(company_type)
+    assertUnreachable(company_type as never)
   }
 }
 
@@ -438,7 +436,7 @@ const checkUserApplicationCount = async (applicantEmail: string, application: IN
   const end = new Date()
   end.setHours(23, 59, 59, 999)
 
-  const { company_type: companyType, company_siret, job_id, caller } = application
+  const { company_type, company_siret, job_id, caller } = application
 
   let appCount = await Application.countDocuments({
     applicant_email: applicantEmail.toLowerCase(),
@@ -449,7 +447,7 @@ const checkUserApplicationCount = async (applicantEmail: string, application: IN
     return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY
   }
 
-  if (companyType === "lba") {
+  if (company_type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     if (!company_siret) {
       throw new Error("expected a siret")
     }
@@ -460,7 +458,7 @@ const checkUserApplicationCount = async (applicantEmail: string, application: IN
     if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
     }
-  } else if (companyType === "matcha") {
+  } else if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     if (!job_id) {
       throw new Error("expected a job id")
     }
@@ -472,7 +470,7 @@ const checkUserApplicationCount = async (applicantEmail: string, application: IN
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
     }
   } else {
-    assertUnreachable(companyType)
+    assertUnreachable(company_type as never)
   }
 
   if (caller) {
