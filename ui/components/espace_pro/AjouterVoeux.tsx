@@ -197,7 +197,7 @@ const AjouterVoeuxForm = (props) => {
         rome_detail: props.rome_detail ?? {},
         is_disabled_elligible: props.is_disabled_elligible ?? false,
         job_count: props.job_count ?? 1,
-        job_duration: props.job_duration ?? 6,
+        job_duration: props.job_duration ?? 12,
         job_rythm: props.job_rythm ?? undefined,
         job_delegation_count: props.job_delegation_count ?? 0,
       }}
