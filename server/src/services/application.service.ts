@@ -405,7 +405,7 @@ export const validateJob = async (application: INewApplication): Promise<OffreOr
     }
     return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, company: lbaCompany }
   } else {
-    assertUnreachable(company_type)
+    assertUnreachable(company_type as never)
   }
 }
 
@@ -470,7 +470,7 @@ const checkUserApplicationCount = async (applicantEmail: string, application: IN
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
     }
   } else {
-    assertUnreachable(company_type)
+    assertUnreachable(company_type as never)
   }
 
   if (caller) {
