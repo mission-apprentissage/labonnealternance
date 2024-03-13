@@ -4,6 +4,8 @@ import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { ObjectId } from "@/common/mongodb"
+
 import { Recruiter, User, User2, UserRecruteur } from "../common/model/index"
 
 /**
@@ -142,7 +144,7 @@ export const getUserAndRecruitersDataForOpcoUser = async (
 }
 
 export const getUserNamesFromIds = async (ids: string[]) => {
-  const deduplicatedIds = [...new Set(ids)]
+  const deduplicatedIds = [...new Set(ids)].filter((id) => ObjectId.isValid(id))
   const users = await User2.find({ _id: { $in: deduplicatedIds } }).lean()
   return users
 }

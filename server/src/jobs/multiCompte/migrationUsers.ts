@@ -1,14 +1,13 @@
 import dayjs from "dayjs"
+import { getLastStatusEvent, IRecruiter, parseEnumOrError } from "shared"
 import { AppointmentUserType } from "shared/constants/appointment.js"
 import { EApplicantRole } from "shared/constants/rdva.js"
 import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
-import { IRecruiter } from "shared/index.js"
 import { ICFA } from "shared/models/cfa.model.js"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
 import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
-import { getLastStatusEvent } from "shared/utils/getLastStatusEvent.js"
 
 import { logger } from "../../common/logger.js"
 import { Appointment, Recruiter, User, UserRecruteur } from "../../common/model/index.js"
@@ -17,7 +16,6 @@ import { Entreprise } from "../../common/model/schema/multiCompte/entreprise.sch
 import { RoleManagement } from "../../common/model/schema/multiCompte/roleManagement.schema.js"
 import { User2 } from "../../common/model/schema/multiCompte/user2.schema.js"
 import { asyncForEachGrouped } from "../../common/utils/asyncUtils.js"
-import { parseEnumOrError } from "../../common/utils/enumUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 export const migrationUsers = async () => {

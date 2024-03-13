@@ -2,17 +2,15 @@ import { randomUUID } from "crypto"
 
 import Boom from "boom"
 import type { ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IRecruiter, IUserRecruteur, IUserStatusValidation, UserRecruteurForAdminProjection, assertUnreachable } from "shared"
+import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, parseEnumOrError } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-import { entriesToTypedRecord, typedKeys } from "shared/utils/objectUtils"
 
-import { ObjectId, ObjectIdType, db } from "@/common/mongodb"
-import { parseEnumOrError } from "@/common/utils/enumUtils"
+import { ObjectId, ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 
@@ -100,7 +98,6 @@ export const getUserRecruteurByRecruiter = async (recruiter: IRecruiter): Promis
 export const userAndRoleAndOrganizationToUserRecruteur = (user: IUser2, role: IRoleManagement, organisme: ICFA | IEntreprise, formulaire: IRecruiter | null): IUserRecruteur => {
   const { email, first_name, last_name, phone, last_action_date, _id } = user
   const organismeType = "status" in organisme ? ENTREPRISE : CFA
-  const lastEntrepriseEvent = "status" in organisme ? getLastStatusEvent(organisme.status) : null
   const oldStatus: IUserStatusValidation[] = [
     ...role.status.map(({ date, reason, status, validation_type, granted_by }) => {
       const userRecruteurStatus = roleStatusToUserRecruteurStatus(status)
@@ -112,20 +109,25 @@ export const userAndRoleAndOrganizationToUserRecruteur = (user: IUser2, role: IR
         user: granted_by ?? "",
       }
     }),
-    ...(lastEntrepriseEvent?.status === EntrepriseStatus.ERROR ? [entrepriseStatusEventToUserRecruteurStatusEvent(lastEntrepriseEvent, ETAT_UTILISATEUR.ERROR)] : []),
   ]
+  if ("status" in organisme) {
+    organisme.status
+      .flatMap((event) => (event.status === EntrepriseStatus.ERROR ? [entrepriseStatusEventToUserRecruteurStatusEvent(event, ETAT_UTILISATEUR.ERROR)] : []))
+      .forEach((event) => oldStatus.push(event))
+  }
+
   const roleType = role.authorized_type === AccessEntityType.OPCO ? OPCO : role.authorized_type === AccessEntityType.ADMIN ? ADMIN : null
   const type = roleType ?? organismeType ?? null
   if (!type) throw Boom.internal("unexpected: no type found")
   const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme
   let entrepriseFields = {}
   if ("idcc" in organisme) {
-    if (!formulaire) {
-      throw Boom.internal("formulaire est obligatoire dans le cas d'une entreprise")
-    }
-    const { establishment_id } = formulaire
     const { idcc, opco } = organisme
-    entrepriseFields = { idcc, opco, establishment_id }
+    entrepriseFields = { idcc, opco }
+    if (formulaire) {
+      const { establishment_id } = formulaire
+      Object.assign(entrepriseFields, { establishment_id })
+    }
   }
   const userRecruteur: IUserRecruteur = {
     ...entrepriseFields,
@@ -429,60 +431,79 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
   })
 }
 
-const projection = entriesToTypedRecord(typedKeys(UserRecruteurForAdminProjection).map((key) => [key, 1 as const]))
-
 export const getAdminUsers = () => UserRecruteur.find({ type: ADMIN }).lean()
 
-export const getActiveUsers = () =>
-  UserRecruteur.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] },
-    $or: [{ type: CFA }, { type: ENTREPRISE }],
-  })
-    .select(projection)
-    .lean()
-
-export const getAwaitingUsers = () =>
-  UserRecruteur.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
-    $or: [{ type: CFA }, { type: ENTREPRISE }],
-  })
-    .select(projection)
-    .lean()
-
-export const getDisabledUsers = () =>
-  UserRecruteur.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.DESACTIVE] },
-    $or: [{ type: CFA }, { type: ENTREPRISE }],
-  })
-    .select(projection)
-    .lean()
-
-export const getErrorUsers = () =>
-  UserRecruteur.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
-    $or: [{ type: CFA }, { type: ENTREPRISE }],
-  })
-    .select(projection)
-    .lean()
-
-export const getUsersWithRoles = async () => {
-  const usersWithRoles = await db
-    .collection("user2")
-    .aggregate([
-      {
-        $lookup: {
-          from: "rolemanagements",
-          localField: "_id",
-          foreignField: "user_id",
-          as: "roles",
-        },
-      },
-      { $limit: 5 },
-    ])
-    .toArray()
-
-  console.log(JSON.stringify(usersWithRoles, null, 2))
-  return usersWithRoles
+export const getUsersForAdmin = async () => {
+  const roles = await RoleManagement.find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
+  const userIds = roles.map((role) => role.user_id.toString())
+  const users = await User2.find({ _id: { $in: userIds } }).lean()
+  const entreprises = await Entreprise.find({}).lean()
+  const cfas = await Cfa.find({}).lean()
+  const userRecruteurs = roles
+    .flatMap<{ user: IUser2; role: IRoleManagement } & ({ entreprise: IEntreprise } | { cfa: ICFA })>((role) => {
+      const user = users.find((user) => user._id.toString() === role.user_id.toString())
+      if (!user) return []
+      const { authorized_type } = role
+      if (authorized_type === AccessEntityType.ENTREPRISE) {
+        const entreprise = entreprises.find((entreprise) => entreprise._id.toString() === role.authorized_id)
+        if (!entreprise) return []
+        return [{ user, role, entreprise, type: ENTREPRISE }]
+      } else if (authorized_type === AccessEntityType.CFA) {
+        const cfa = cfas.find((cfa) => cfa._id.toString() === role.authorized_id)
+        if (!cfa) return []
+        return [{ user, role, cfa, type: CFA }]
+      } else {
+        return []
+      }
+    })
+    .map((result) => {
+      const { user, role } = result
+      const organization = "entreprise" in result ? result.entreprise : result.cfa
+      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, null)
+      const { _id, establishment_raison_sociale, establishment_siret, type, first_name, last_name, email, phone, createdAt, origin, opco, status } = userRecruteur
+      const userRecruteurForAdmin: IUserRecruteurForAdmin = {
+        _id,
+        establishment_raison_sociale,
+        establishment_siret,
+        type,
+        first_name,
+        last_name,
+        email,
+        phone,
+        createdAt,
+        origin,
+        opco,
+        status,
+      }
+      return userRecruteurForAdmin
+    })
+  return userRecruteurs.reduce(
+    (acc, userRecruteur) => {
+      const lastStatus = getLastStatusEvent(userRecruteur.status)?.status
+      switch (lastStatus) {
+        case ETAT_UTILISATEUR.DESACTIVE: {
+          acc.disabled.push(userRecruteur)
+          return acc
+        }
+        case ETAT_UTILISATEUR.ATTENTE: {
+          acc.awaiting.push(userRecruteur)
+          return acc
+        }
+        case ETAT_UTILISATEUR.ERROR: {
+          acc.error.push(userRecruteur)
+          return acc
+        }
+        default:
+          return acc
+      }
+    },
+    {
+      awaiting: [] as IUserRecruteurForAdmin[],
+      active: [] as IUserRecruteurForAdmin[],
+      disabled: [] as IUserRecruteurForAdmin[],
+      error: [] as IUserRecruteurForAdmin[],
+    }
+  )
 }
 
 export const isUserEmailChecked = (user: IUser2): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)

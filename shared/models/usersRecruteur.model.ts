@@ -175,7 +175,6 @@ export type IAnonymizedUserRecruteur = z.output<typeof ZAnonymizedUserRecruteur>
 
 export const UserRecruteurForAdminProjection = {
   _id: true,
-  establishment_id: true,
   establishment_raison_sociale: true,
   establishment_siret: true,
   type: true,
@@ -190,3 +189,5 @@ export const UserRecruteurForAdminProjection = {
 } as const
 
 export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminProjection)
+
+export type IUserRecruteurForAdmin = z.output<typeof ZUserRecruteurForAdmin>

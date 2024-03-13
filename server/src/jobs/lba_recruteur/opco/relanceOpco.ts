@@ -1,7 +1,7 @@
+import { isEnum } from "shared"
 import { OPCOS } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
-import { isEnum } from "@/common/utils/enumUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Entreprise, RoleManagement, User2 } from "../../../common/model/index"

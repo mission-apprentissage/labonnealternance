@@ -14,16 +14,12 @@ import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
 import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaireFromUserId, reactivateRecruiter } from "../../services/formulaire.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
-import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds } from "../../services/user.service"
+import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "../../services/user.service"
 import {
   createUser,
-  getActiveUsers,
   getAdminUsers,
-  getAwaitingUsers,
-  getDisabledUsers,
-  getErrorUsers,
   getUserRecruteurById,
-  getUsersWithRoles,
+  getUsersForAdmin,
   removeUser,
   sendWelcomeEmailToUserRecruteur,
   updateUser2Fields,
@@ -52,10 +48,8 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user"])],
     },
     async (req, res) => {
-      await getUsersWithRoles()
-      // TODO KEVIN: ADD PAGINATION
-      const [awaiting, active, disabled, error] = await Promise.all([getAwaitingUsers(), getActiveUsers(), getDisabledUsers(), getErrorUsers()])
-      return res.status(200).send({ awaiting, active, disabled, error })
+      const groupedUsers = await getUsersForAdmin()
+      return res.status(200).send(groupedUsers)
     }
   )
   server.get(
@@ -176,17 +170,21 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user/:userId/organization/:organizationId"])],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
-      if (!user) throw Boom.badRequest()
+      const requestUser = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
+      if (!requestUser) throw Boom.badRequest()
+      const { userId } = req.params
       const role = await RoleManagement.findOne({
-        user_id: user._id,
+        user_id: userId,
         // TODO à activer lorsque le frontend passe organizationId correctement
         // authorized_id: organizationId,
         authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] },
-        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] },
       }).lean()
       if (!role) {
-        throw Boom.forbidden()
+        throw Boom.badRequest("role not found")
+      }
+      const user = await User2.findOne({ _id: userId }).lean()
+      if (!user) {
+        throw Boom.badRequest("user not found")
       }
       const type = role.authorized_type === AccessEntityType.CFA ? CFA : ENTREPRISE
       const organization = await (type === CFA ? Cfa : Entreprise).findOne({ _id: role.authorized_id }).lean()
@@ -198,20 +196,20 @@ export default (server: Server) => {
       let formulaire: IRecruiter | null = null
 
       if (type === ENTREPRISE) {
-        formulaire = await getFormulaireFromUserId(user._id.toString())
+        formulaire = await getFormulaireFromUserId(userId)
         jobs = formulaire.jobs
       }
 
       const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
 
       const opcoOrAdminRole = await RoleManagement.findOne({
-        user_id: user._id,
+        user_id: requestUser._id,
         authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
         $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] },
       }).lean()
       if (opcoOrAdminRole && getLastStatusEvent(opcoOrAdminRole.status)?.status === AccessStatus.GRANTED) {
         const userIds = userRecruteur.status.flatMap(({ user }) => (user ? [user] : []))
-        const users = await getUserNamesFromIds(userIds)
+        const users = await getUsersFromIds(userIds)
         userRecruteur.status.forEach((event) => {
           const user = users.find((user) => user._id.toString() === event.user)
           if (!user) return

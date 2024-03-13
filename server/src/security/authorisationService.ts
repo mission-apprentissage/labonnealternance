@@ -8,12 +8,11 @@ import { AccessEntityType, AccessStatus, IRoleManagement } from "shared/models/r
 import { UserEventType } from "shared/models/user2.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath } from "shared/security/permissions"
-import { assertUnreachable } from "shared/utils"
+import { assertUnreachable, parseEnum } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { Primitive } from "type-fest"
 
 import { Application, Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "@/common/model"
-import { parseEnum } from "@/common/utils/enumUtils"
 import { isUserEmailChecked } from "@/services/userRecruteur.service"
 
 import { getUserFromRequest } from "./authenticationService"

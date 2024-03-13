@@ -1,7 +1,8 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes, IUserRecruteur } from "shared"
+import { IJobWritable, INewDelegations, IRoutes, IUserRecruteur, parseEnumOrError } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { OPCOS } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
@@ -153,4 +154,4 @@ export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: a
  * Administration OPCO
  */
 
-export const getOpcoUsers = (opco: string) => apiGet("/user/opco", { querystring: { opco } })
+export const getOpcoUsers = (opco: string) => apiGet("/user/opco", { querystring: { opco: parseEnumOrError(OPCOS, opco) } })
