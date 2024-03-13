@@ -1,4 +1,4 @@
-import { allLbaItemType } from "../constants/lbaitem"
+import { LBA_ITEM_TYPE, allLbaItemType } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -19,7 +19,7 @@ export const ZAnonymizedApplication = z
       .string()
       .nullable()
       .describe(
-        'L\'identifiant de l\'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est "matcha" . La valeur est fournie par La bonne alternance. Example: "...59c24c059b..."'
+        `L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}. La valeur est fournie par La bonne alternance. Example: "...59c24c059b..."`
       ),
     caller: z.string().nullable().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
     created_at: z.date().nullable().describe("La date création de la demande"),

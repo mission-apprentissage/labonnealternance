@@ -76,15 +76,16 @@ export const ZApplication = z
         example: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       }),
     job_title: z.string().openapi({
-      description:
-        'Le titre de l\'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est "matcha" . La valeur est fournie par La bonne alternance. ',
+      description: `Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `,
       example: "Téléconseil, vente à distance",
     }),
-    job_id: z.string().nullable().openapi({
-      description:
-        "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \"matcha\" . La valeur est fournie par La bonne alternance. ",
-      example: "...59c24c059b...",
-    }),
+    job_id: z
+      .string()
+      .nullable()
+      .openapi({
+        description: `L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `,
+        example: "...59c24c059b...",
+      }),
     to_applicant_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé au candidat"),
     to_company_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé à l'entreprise"),
     caller: z.string().nullable().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
@@ -103,7 +104,7 @@ export const ZNewApplication = ZApplication.extend({
   }),
   company_type: z.enum([allLbaItemType[0], ...allLbaItemType.slice(1)]).openapi({
     description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-    example: "lba",
+    example: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }),
   iv: z.string().optional().openapi({
     description: "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
