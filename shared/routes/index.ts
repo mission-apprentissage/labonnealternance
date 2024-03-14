@@ -2,6 +2,7 @@ import { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
 import { zApplicationRoutes } from "./application.routes"
+import { zApplicationRoutesV2 } from "./application.routes.v2"
 import { zAppointmentsRoute } from "./appointments.routes"
 import { IRouteSchema, IRouteSchemaWrite } from "./common.routes"
 import { zCoreRoutes } from "./core.routes"
@@ -10,8 +11,10 @@ import { zEmailsRoutes } from "./emails.routes"
 import { zEtablissementRoutes } from "./etablissement.routes"
 import { zFormationRoute } from "./formations.routes"
 import { zFormulaireRoute } from "./formulaire.route"
+import { zJobsEtFormationsRoutesV2 } from "./jobsEtFormations.routes.v2"
 import { zLoginRoutes } from "./login.routes"
 import { zMetiersRoutes } from "./metiers.routes"
+import { zMetiersRoutesV2 } from "./metiers.routes.v2"
 import { zMetiersDAvenirRoutes } from "./metiersdavenir.routes"
 import { zOptoutRoutes } from "./optout.routes"
 import { zPartnersRoutes } from "./partners.routes"
@@ -31,6 +34,7 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zMetiersDAvenirRoutes.get,
   ...zMetiersRoutes.get,
+  ...zMetiersRoutesV2.get,
 } as const
 
 const zRoutesGetP2 = {
@@ -46,6 +50,7 @@ const zRoutesGetP3 = {
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationRoute.get,
   ...zOptoutRoutes.get,
+  ...zJobsEtFormationsRoutesV2.get,
 } as const
 
 const zRoutesGetP4 = {
@@ -76,6 +81,7 @@ const zRoutesPost1 = {
 const zRoutesPost2 = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
+  ...zApplicationRoutesV2.post,
 }
 
 const zRoutesPost3 = {

@@ -22,8 +22,9 @@ import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligibleTr
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
 import formationsRoute from "./controllers/admin/formations.controller"
 import application from "./controllers/application.controller"
-import applicationAPI from "./controllers/applicationAPI.controller"
+import applicationRouteV2 from "./controllers/application.controller.v2"
 import appointmentRequestRoute from "./controllers/appointmentRequest.controller"
+import appointmentRequestRouteV2 from "./controllers/appointmentRequest.controller.v2"
 import { coreRoutes } from "./controllers/core.controller"
 import emailsRoute from "./controllers/emails.controller"
 import etablissementRoute from "./controllers/etablissement.controller"
@@ -33,8 +34,10 @@ import formationsV1Route from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
 import jobsV1Route from "./controllers/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
+import jobsEtFormationsRouteV2 from "./controllers/jobsEtFormations.controller.v2"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
+import metierv2 from "./controllers/metiers.controller.v2"
 import metiersDAvenirRoute from "./controllers/metiersDAvenir.controller"
 import optoutRoute from "./controllers/optout.controller"
 import partnersRoute from "./controllers/partners.controller"
@@ -115,17 +118,6 @@ export async function bind(app: Server) {
       coreRoutes(typedSubApp)
 
       /**
-       * Swaggers
-       */
-      // app.get("/api-docs/swagger.json", (req, res) => {
-      //   res.sendFile(getStaticFilePath("./api-docs/swagger.json"))
-      // })
-
-      // app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-      // app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(deprecatedSwaggerDocument, swaggerUIOptions))
-      // app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions))
-
-      /**
        * LBACandidat
        */
       version(typedSubApp)
@@ -133,7 +125,6 @@ export async function bind(app: Server) {
       rome(typedSubApp)
       updateLbaCompany(typedSubApp)
       application(typedSubApp)
-      applicationAPI(typedSubApp)
       unsubscribeLbaCompany(typedSubApp)
       metiersDAvenirRoute(typedSubApp)
       jobsV1Route(typedSubApp)
@@ -167,9 +158,26 @@ export async function bind(app: Server) {
       etablissementsRecruteurRoute(typedSubApp)
 
       trainingLinks(typedSubApp)
+
       done()
     },
     { prefix: "/api" }
+  )
+
+  /**
+   * API V2
+   * Routé dédié à la passerelle API Apprentissage
+   */
+  app.register(
+    (subApp, _, done) => {
+      const typedSubApp = subApp.withTypeProvider<ZodTypeProvider>()
+      metierv2(typedSubApp)
+      jobsEtFormationsRouteV2(typedSubApp)
+      applicationRouteV2(typedSubApp)
+      appointmentRequestRouteV2(typedSubApp)
+      done()
+    },
+    { prefix: "/api/v2" }
   )
 
   initBrevoWebhooks()
