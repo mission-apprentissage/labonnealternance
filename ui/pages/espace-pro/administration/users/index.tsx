@@ -22,6 +22,7 @@ import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
+import { getLastStatusEvent, IUserRecruteur } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
@@ -165,10 +166,8 @@ function Users() {
       id: "action",
       maxWidth: "80",
       disableSortBy: true,
-      accessor: (row) => {
-        const { status: statusArray = [] } = row
-        const lastStatus = statusArray[statusArray.length - 1]
-        const { status } = lastStatus
+      accessor: (row: IUserRecruteur) => {
+        const status = getLastStatusEvent(row.status)?.status
         const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)
         const canDeactivate = [ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.ATTENTE].includes(status)
         return (
@@ -235,7 +234,7 @@ function Users() {
           <Box mx={8}>
             <TabList>
               <Tab width="300px">En attente de vérification ({data.awaiting.length})</Tab>
-              <Tab width="300px">Actifs ({data.active.length})</Tab>
+              <Tab width="300px">Actifs</Tab>
               <Tab width="300px">Désactivés ({data.disabled.length})</Tab>
               <Tab width="300px">En erreur ({data.error.length})</Tab>
             </TabList>

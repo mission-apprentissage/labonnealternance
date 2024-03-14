@@ -310,7 +310,15 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       users: [_id.toString()],
       cfas: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : [])),
       entreprises: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : [])),
-      opcos: [],
+      opcos: grantedRoles.flatMap((role) => {
+        if (role.authorized_type === AccessEntityType.OPCO) {
+          const opco = parseEnum(OPCOS, role.authorized_id)
+          if (opco) {
+            return [opco]
+          }
+        }
+        return []
+      }),
     }
     if (!isAuthorized(schema.securityScheme.access, userAccess, resources)) {
       throw Boom.forbidden()
