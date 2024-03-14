@@ -67,6 +67,8 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
       timeout: 3000,
     })
 
+    console.log("getPeAccessToken", response)
+
     return {
       ...response.data,
       expire: dayjs().add(response.data.expires_in - 10, "s"),
@@ -107,12 +109,12 @@ export const searchForPeJobs = async (params: {
       },
     })
 
-    console.log(response)
+    console.log("searchForPeJobs", response)
     return response.data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     sentryCaptureException(error)
-    console.log(error.response)
+    console.log("searchForPeJobs - error", { resp: error.response, data: error.response.data, head: error.response.headers })
     throw new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
   }
 }
@@ -131,12 +133,12 @@ export const getPeJob = async (id: string) => {
       },
     })
 
-    console.log(result)
+    console.log("getPeJob", result)
     return result // PEResponse
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     sentryCaptureException(error)
-    console.log(error.response)
+    console.log("getPeJob - error", { resp: error.response, data: error.response.data, head: error.response.headers })
     new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
   }
 }
