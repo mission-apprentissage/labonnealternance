@@ -1,4 +1,5 @@
 import { IAppointment } from "shared"
+import { AppointmentUserType } from "shared/constants/appointment"
 
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
@@ -146,6 +147,12 @@ export const appointmentSchema = new Schema<IAppointment>(
       required: false,
       default: null,
       description: "Adresse email CFA",
+    },
+    applicant_type: {
+      type: String,
+      enum: [...Object.values(AppointmentUserType), null],
+      default: null,
+      description: "Role du demandeur : parent ou etudiant",
     },
   },
   {

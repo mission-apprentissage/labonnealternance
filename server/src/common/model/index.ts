@@ -25,6 +25,10 @@ import InternalJobs from "./schema/internalJobs/internalJobs.schema"
 import Job from "./schema/jobs/jobs.schema"
 import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
 import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
+import { Cfa } from "./schema/multiCompte/cfa.schema"
+import { Entreprise } from "./schema/multiCompte/entreprise.schema"
+import { RoleManagement } from "./schema/multiCompte/roleManagement.schema"
+import { User2 } from "./schema/multiCompte/user2.schema"
 import Opco from "./schema/opco/opco.schema"
 import Optout from "./schema/optout/optout.schema"
 import Recruiter from "./schema/recruiter/recruiter.schema"
@@ -112,4 +116,8 @@ export {
   User,
   UserRecruteur,
   eligibleTrainingsForAppointmentHistory,
+  User2,
+  Entreprise,
+  Cfa,
+  RoleManagement,
 }
