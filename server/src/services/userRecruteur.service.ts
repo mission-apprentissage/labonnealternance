@@ -19,7 +19,7 @@ import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
 import { ADMIN, OPCO } from "./constant.service"
-import { getFormulaireFromUserId } from "./formulaire.service"
+import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { createOrganizationIfNotExist } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
@@ -161,7 +161,7 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
   if (!role) return null
   const organisme = await getOrganismeFromRole(role)
   if (!organisme) return null
-  const formulaire = role.authorized_type === AccessEntityType.ENTREPRISE ? await getFormulaireFromUserId(user._id.toString()) : null
+  const formulaire = role.authorized_type === AccessEntityType.ENTREPRISE ? await getFormulaireFromUserIdOrError(user._id.toString()) : null
   return userAndRoleAndOrganizationToUserRecruteur(user, role, organisme, formulaire)
 }
 

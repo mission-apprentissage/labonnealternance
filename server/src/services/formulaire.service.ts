@@ -632,7 +632,11 @@ export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob 
 }
 
 export const getFormulaireFromUserId = async (userId: string) => {
-  const formulaire = await Recruiter.findOne({ "jobs.managed_by": userId }).lean()
+  return Recruiter.findOne({ "jobs.managed_by": userId }).lean()
+}
+
+export const getFormulaireFromUserIdOrError = async (userId: string) => {
+  const formulaire = await getFormulaireFromUserId(userId)
   if (!formulaire) {
     throw Boom.internal(`inattendu : formulaire non trouvé`, { userId })
   }

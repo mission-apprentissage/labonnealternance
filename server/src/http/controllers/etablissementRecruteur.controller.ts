@@ -12,7 +12,7 @@ import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateDepotSimplifieToken } from "@/services/appLinks.service"
 import { getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { getUser2ByEmail } from "@/services/user2.service"
+import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -284,6 +284,7 @@ export default (server: Server) => {
         throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
+        await validateUser2Email(user._id.toString())
         await sendWelcomeEmailToUserRecruteur(user)
       }
 

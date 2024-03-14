@@ -12,7 +12,13 @@ import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../../common/
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
-import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaireFromUserId, reactivateRecruiter } from "../../services/formulaire.service"
+import {
+  activateEntrepriseRecruiterForTheFirstTime,
+  deleteFormulaire,
+  getFormulaireFromUserId,
+  getFormulaireFromUserIdOrError,
+  reactivateRecruiter,
+} from "../../services/formulaire.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "../../services/user.service"
 import {
@@ -197,7 +203,7 @@ export default (server: Server) => {
 
       if (type === ENTREPRISE) {
         formulaire = await getFormulaireFromUserId(userId)
-        jobs = formulaire.jobs
+        jobs = formulaire?.jobs ?? []
       }
 
       const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
@@ -359,7 +365,7 @@ export default (server: Server) => {
          * - update expiration date to one month later
          * - send email to delegation if available
          */
-        const userFormulaire = await getFormulaireFromUserId(user._id.toString())
+        const userFormulaire = await getFormulaireFromUserIdOrError(user._id.toString())
         if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
           // le recruiter étant archivé on se contente de le rendre de nouveau Actif
           await reactivateRecruiter(userFormulaire._id)

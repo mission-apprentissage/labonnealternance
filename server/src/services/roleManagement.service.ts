@@ -9,7 +9,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { Cfa, Entreprise, RoleManagement, User2 } from "@/common/model"
 
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "./constant.service"
-import { getFormulaireFromUserId } from "./formulaire.service"
+import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
@@ -125,7 +125,7 @@ export const getPublicUserRecruteurPropsOrError = async (
     if (!user) {
       throw Boom.internal(`inattendu : user non trouvé`, { userId })
     }
-    const recruiter = await getFormulaireFromUserId(user._id.toString())
+    const recruiter = await getFormulaireFromUserIdOrError(user._id.toString())
     return { ...commonFields, establishment_siret: siret, establishment_id: recruiter.establishment_id }
   }
   if (type === OPCO) {

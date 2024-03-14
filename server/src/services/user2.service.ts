@@ -1,3 +1,4 @@
+import Boom from "boom"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
 
@@ -36,6 +37,21 @@ export const createUser2IfNotExist = async (userProps: Omit<IUser2, "_id" | "cre
     user = (await User2.create(userFields)).toObject()
   }
   return user
+}
+
+export const validateUser2Email = async (id: string): Promise<IUser2> => {
+  const event: IUserStatusEvent = {
+    date: new Date(),
+    status: UserEventType.VALIDATION_EMAIL,
+    validation_type: VALIDATION_UTILISATEUR.MANUAL,
+    granted_by: id,
+    reason: "auto-validation",
+  }
+  const newUser = await User2.findOneAndUpdate({ _id: id }, { $push: { status: event } }, { new: true }).lean()
+  if (!newUser) {
+    throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
+  }
+  return newUser
 }
 
 export const getUser2ByEmail = async (email: string): Promise<IUser2 | null> => User2.findOne({ email: email.toLocaleLowerCase() }).lean()

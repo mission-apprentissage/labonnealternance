@@ -178,6 +178,7 @@ export function getAccessTokenScope<Schema extends SchemaWithSecurity>(
   )
 }
 
+// TODO on devrait pouvoir le supprimer ainsi que controlUserState
 const authorizedPaths = [
   "/etablissement/validation",
   "/formulaire/:establishment_id/by-token",
