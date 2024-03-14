@@ -371,8 +371,8 @@ function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status
     const statusMapping: Record<ETAT_UTILISATEUR, EntrepriseStatus | null> = {
       [ETAT_UTILISATEUR.VALIDE]: EntrepriseStatus.VALIDE,
       [ETAT_UTILISATEUR.ERROR]: EntrepriseStatus.ERROR,
-      [ETAT_UTILISATEUR.ATTENTE]: null,
-      [ETAT_UTILISATEUR.DESACTIVE]: null,
+      [ETAT_UTILISATEUR.ATTENTE]: EntrepriseStatus.VALIDE,
+      [ETAT_UTILISATEUR.DESACTIVE]: EntrepriseStatus.VALIDE,
     }
     const entrepriseStatus = status ? statusMapping[status] : null
     if (entrepriseStatus && date) {

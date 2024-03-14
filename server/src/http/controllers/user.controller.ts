@@ -290,7 +290,9 @@ export default (server: Server) => {
       const { reason, status, organizationType } = req.body
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
-      const user = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
+      const requestUser = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
+      if (!requestUser) throw Boom.badRequest()
+      const user = await User2.findOne({ _id: userId }).lean()
       if (!user) throw Boom.badRequest()
 
       const mainRole = await RoleManagement.findOne({ user_id: userId }).lean()
@@ -311,7 +313,7 @@ export default (server: Server) => {
           validation_type: VALIDATION_UTILISATEUR.MANUAL,
           reason,
           status,
-          granted_by: user._id.toString(),
+          granted_by: requestUser._id.toString(),
         }
       )
 
