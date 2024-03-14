@@ -208,6 +208,8 @@ const getPeJobs = async ({
 
     const jobs = await searchForPeJobs(params)
 
+    console.log("getPeJobs", jobs)
+
     const data: PEResponse | IApiError | "" = jobs
 
     if (data === "") {

@@ -113,8 +113,9 @@ export const searchForPeJobs = async (params: {
     return response.data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    console.log("searchForPeJobs-errorlog")
     sentryCaptureException(error)
-    console.log("searchForPeJobs - error", { resp: error.response, data: error.response.data, head: error.response.headers })
+    console.log("searchForPeJobs - error", { req: error.request, error: error, resp: error.response, data: error.response?.data, head: error.response?.headers })
     throw new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
   }
 }
@@ -137,8 +138,9 @@ export const getPeJob = async (id: string) => {
     return result // PEResponse
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    console.log("getPeJob-errorlog")
     sentryCaptureException(error)
-    console.log("getPeJob - error", { resp: error.response, data: error.response.data, head: error.response.headers })
+    console.log("getPeJob - error", { req: error.request, error: error, resp: error.response, data: error.response?.data, head: error.response?.headers })
     new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
   }
 }
