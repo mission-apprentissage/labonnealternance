@@ -5,6 +5,7 @@ import Boom from "boom"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getPeJob, getPeReferentiels, searchForPeJobs } from "@/common/apis/Pe"
+import config from "@/config"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -24,7 +25,8 @@ const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
  *
  * @param {string} referentiel
  */
-export const getPeApiReferentiels = async (referentiel: string) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getPeApiReferentiels = async (referentiel: string) => {
   try {
     const referentiels = await getPeReferentiels(referentiel)
     console.info(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
@@ -228,6 +230,9 @@ const getPeJobs = async ({
  * - suppressions de données non autorisées pour des consommateurs extérieurs
  */
 export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult<ILbaItemPeJob>> => {
+  if (config.franceTravail.isDisabled) {
+    return { results: [] }
+  }
   let peResponse: PEResponse | IApiError | null = null
   const currentRadius = radius || 20000
   const jobLimit = 150
@@ -286,6 +291,9 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
  * Retourne un tableau contenant la seule offre Pôle emploi identifiée
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
+  if (config.franceTravail.isDisabled) {
+    throw Boom.notFound("france travail disabled")
+  }
   try {
     const job = await getPeJob(id)
 
