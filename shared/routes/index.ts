@@ -4,6 +4,7 @@ import z, { ZodType } from "zod"
 import { zApplicationRoutes } from "./application.routes"
 import { zApplicationRoutesV2 } from "./application.routes.v2"
 import { zAppointmentsRoute } from "./appointments.routes"
+import { zAppointmentsRouteV2 } from "./appointments.routes.v2"
 import { IRouteSchema, IRouteSchemaWrite } from "./common.routes"
 import { zCoreRoutes } from "./core.routes"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAppointment.routes"
@@ -82,6 +83,7 @@ const zRoutesPost2 = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
   ...zApplicationRoutesV2.post,
+  ...zAppointmentsRouteV2.post,
 }
 
 const zRoutesPost3 = {

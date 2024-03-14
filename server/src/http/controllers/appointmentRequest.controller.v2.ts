@@ -11,10 +11,10 @@ import { Server } from "../server"
 
 export default (server: Server) => {
   server.post(
-    "/appointment-request/context/create",
+    "/appointment",
     {
-      schema: zRoutes.post["/appointment-request/context/create"],
-      onRequest: server.auth(zRoutes.post["/appointment-request/context/create"]),
+      schema: zRoutes.post["/appointment"],
+      onRequest: server.auth(zRoutes.post["/appointment"]),
     },
     async (req, res) => {
       const { referrer } = req.body

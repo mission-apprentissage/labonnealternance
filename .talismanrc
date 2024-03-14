@@ -123,6 +123,8 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+- filename: shared/routes/appointments.routes.v2.ts
+  checksum: 5e337f232b69f9eb065dffb950dd7cfefb6a368841e0a2147b1b3355aa82d828
 scopeconfig:
 - scope: node
 custom_patterns:

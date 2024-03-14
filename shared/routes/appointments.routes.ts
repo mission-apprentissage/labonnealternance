@@ -235,7 +235,7 @@ export const zAppointmentsRoute = {
         "404": z.union([ZResError, z.literal("Formation introuvable")]),
         "400": z.union([ZResError, z.literal("Critère de recherche non conforme.")]),
       },
-      securityScheme: { auth: "api-key", access: null, resources: {} },
+      securityScheme: null,
       openapi: {
         operationId: "appointmentCreateContext",
         description: "Appointment request",
