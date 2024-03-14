@@ -73,6 +73,7 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
     }
   } catch (error: any) {
     sentryCaptureException(error)
+    console.log(error.response)
     return error.response.data
   }
 }
@@ -97,7 +98,7 @@ export const searchForPeJobs = async (params: {
       partenaires: PE_LBA_PARTENAIRE,
       modeSelectionPartenaires: PE_PARTENAIRE_MODE,
     }
-    const { data } = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/search`, {
+    const response = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/search`, {
       params: extendedParams,
       headers: {
         "Content-Type": "application/json",
@@ -106,9 +107,12 @@ export const searchForPeJobs = async (params: {
       },
     })
 
-    return data
+    console.log(response)
+    return response.data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    sentryCaptureException(error)
+    console.log(error.response)
     throw new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
   }
 }
@@ -127,9 +131,12 @@ export const getPeJob = async (id: string) => {
       },
     })
 
+    console.log(result)
     return result // PEResponse
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    sentryCaptureException(error)
+    console.log(error.response)
     new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
   }
 }
