@@ -88,7 +88,7 @@ const roleToStatus = (role: IRoleManagement) => {
   }
 }
 
-export const getUserRecruteurPropsOrError = async (
+export const getPublicUserRecruteurPropsOrError = async (
   userId: string | ObjectId
 ): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
   const mainRole = await getMainRoleManagement(userId)

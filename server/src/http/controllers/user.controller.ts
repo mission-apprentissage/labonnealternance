@@ -6,7 +6,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { getMainRoleManagement, modifyPermissionToUser } from "@/services/roleManagement.service"
+import { modifyPermissionToUser } from "@/services/roleManagement.service"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
@@ -293,7 +293,7 @@ export default (server: Server) => {
       const user = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
       if (!user) throw Boom.badRequest()
 
-      const mainRole = await getMainRoleManagement(userId)
+      const mainRole = await RoleManagement.findOne({ user_id: userId }).lean()
       if (!mainRole) {
         throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
       }

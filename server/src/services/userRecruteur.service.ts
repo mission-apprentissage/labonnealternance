@@ -293,18 +293,8 @@ export const validateUserEmail = async (userId: ObjectIdType) => {
   await User2.updateOne({ _id: userId }, { $push: { status: event } })
 }
 
-/**
- * @description delete user from collection
- * @param {IUserRecruteur["_id"]} id
- * @returns {Promise<void>}
- */
-export const removeUser = async (id: IUserRecruteur["_id"] | string) => {
-  const user = await getUserRecruteurById(id)
-  if (!user) {
-    throw new Error(`Unable to find user ${id}`)
-  }
-
-  return await UserRecruteur.deleteOne({ _id: id })
+export const removeUser = async (id: IUser2["_id"] | string) => {
+  await RoleManagement.deleteMany({ user_id: id })
 }
 
 /**
@@ -434,11 +424,22 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
 export const getAdminUsers = () => UserRecruteur.find({ type: ADMIN }).lean()
 
 export const getUsersForAdmin = async () => {
-  const roles = await RoleManagement.find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
+  const nonGrantedRoles = await RoleManagement.find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
+  const lastGrantedRoles = await RoleManagement.find({ $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } })
+    .sort({ updatedAt: -1 })
+    .limit(20)
+    .lean()
+  const roles = [...nonGrantedRoles, ...lastGrantedRoles]
+
   const userIds = roles.map((role) => role.user_id.toString())
   const users = await User2.find({ _id: { $in: userIds } }).lean()
-  const entreprises = await Entreprise.find({}).lean()
-  const cfas = await Cfa.find({}).lean()
+
+  const entrepriseIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : []))
+  const entreprises = await Entreprise.find({ _id: { $in: entrepriseIds } }).lean()
+
+  const cfaIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : []))
+  const cfas = await Cfa.find({ _id: { $in: cfaIds } }).lean()
+
   const userRecruteurs = roles
     .flatMap<{ user: IUser2; role: IRoleManagement } & ({ entreprise: IEntreprise } | { cfa: ICFA })>((role) => {
       const user = users.find((user) => user._id.toString() === role.user_id.toString())
@@ -491,6 +492,10 @@ export const getUsersForAdmin = async () => {
         }
         case ETAT_UTILISATEUR.ERROR: {
           acc.error.push(userRecruteur)
+          return acc
+        }
+        case ETAT_UTILISATEUR.VALIDE: {
+          acc.active.push(userRecruteur)
           return acc
         }
         default:
