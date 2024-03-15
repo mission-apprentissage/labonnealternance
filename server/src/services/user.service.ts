@@ -6,7 +6,9 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId } from "@/common/mongodb"
 
-import { Recruiter, User, User2, UserRecruteur } from "../common/model/index"
+import { Recruiter, User, User2 } from "../common/model/index"
+
+import { getUserRecruteursForManagement } from "./userRecruteur.service"
 
 /**
  * @description Returns user from its email.
@@ -73,49 +75,34 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   active: IUserForOpco[]
   disable: IUserForOpco[]
 }> => {
-  const [users, recruiters] = await Promise.all([
-    UserRecruteur.find({
-      $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
-      opco,
+  const userRecruteurs = await getUserRecruteursForManagement({ opco })
+  const filteredUserRecruteurs = [...userRecruteurs.active, ...userRecruteurs.awaiting, ...userRecruteurs.disabled]
+  const userIds = [...new Set(filteredUserRecruteurs.map(({ _id }) => _id.toString()))]
+  const recruiters = await Recruiter.find({ "jobs.managed_by": { $in: userIds } })
+    .select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 })
+    .lean()
+
+  const recruiterMap = new Map<string, (typeof recruiters)[0]>()
+  recruiters.forEach((recruiter) => {
+    recruiter.jobs.forEach((job) => {
+      recruiterMap.set(job.managed_by.toString(), recruiter)
     })
-      .select({
-        _id: 1,
-        first_name: 1,
-        last_name: 1,
-        establishment_id: 1,
-        establishment_raison_sociale: 1,
-        establishment_siret: 1,
-        createdAt: 1,
-        email: 1,
-        phone: 1,
-        status: 1,
-        type: 1,
-      })
-      .lean(),
-    Recruiter.find({ opco }).select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 }).lean(),
-  ])
+  })
 
-  const recruiterPerEtablissement = new Map()
-  for (const recruiter of recruiters) {
-    recruiterPerEtablissement.set(recruiter.establishment_id, recruiter)
-  }
-
-  const results = users.reduce(
-    (acc, user) => {
-      const status = getLastStatusEvent(user.status)?.status
-      if (status === null) {
-        return acc
-      }
-      const recruiter = recruiterPerEtablissement.get(user.establishment_id)
-
-      const { _id, first_name, last_name, establishment_id, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type } = user
+  const results = filteredUserRecruteurs.reduce(
+    (acc, userRecruteur) => {
+      const status = getLastStatusEvent(userRecruteur.status)?.status
+      if (!status) return acc
+      const recruiter = recruiterMap.get(userRecruteur._id.toString())
+      const { establishment_id } = recruiter ?? {}
+      const { _id, first_name, last_name, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type } = userRecruteur
       const userForOpco: IUserForOpco = {
         _id,
         first_name,
         last_name,
-        establishment_id,
         establishment_raison_sociale,
         establishment_siret,
+        establishment_id,
         createdAt,
         email,
         phone,

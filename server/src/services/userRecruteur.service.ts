@@ -423,11 +423,11 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
 
 export const getAdminUsers = () => UserRecruteur.find({ type: ADMIN }).lean()
 
-export const getUsersForAdmin = async () => {
+export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: { opco?: OPCOS; activeRoleLimit?: number }) => {
   const nonGrantedRoles = await RoleManagement.find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
   const lastGrantedRoles = await RoleManagement.find({ $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } })
     .sort({ updatedAt: -1 })
-    .limit(20)
+    .limit(activeRoleLimit ?? -1)
     .lean()
   const roles = [...nonGrantedRoles, ...lastGrantedRoles]
 
@@ -435,9 +435,9 @@ export const getUsersForAdmin = async () => {
   const users = await User2.find({ _id: { $in: userIds } }).lean()
 
   const entrepriseIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : []))
-  const entreprises = await Entreprise.find({ _id: { $in: entrepriseIds } }).lean()
+  const entreprises = await Entreprise.find({ _id: { $in: entrepriseIds }, opco }).lean()
 
-  const cfaIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : []))
+  const cfaIds = opco ? roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : [])) : []
   const cfas = await Cfa.find({ _id: { $in: cfaIds } }).lean()
 
   const userRecruteurs = roles
@@ -509,6 +509,10 @@ export const getUsersForAdmin = async () => {
       error: [] as IUserRecruteurForAdmin[],
     }
   )
+}
+
+export const getUsersForAdmin = async () => {
+  return getUserRecruteursForManagement({ activeRoleLimit: 40 })
 }
 
 export const isUserEmailChecked = (user: IUser2): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)

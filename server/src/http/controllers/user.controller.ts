@@ -347,7 +347,7 @@ export default (server: Server) => {
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
-        return res.status(200).send(user)
+        return res.status(200).send({})
       }
 
       /**
@@ -355,7 +355,7 @@ export default (server: Server) => {
        */
       // if user isn't part of the OPCO, just send the user straight back
       if (newEvent.reason === "Ne relève pas des champs de compétences de mon OPCO") {
-        return res.status(200).send(user)
+        return res.status(200).send({})
       }
 
       if (organizationType === AccessEntityType.ENTREPRISE) {
@@ -380,7 +380,7 @@ export default (server: Server) => {
       // validate user email addresse
       await validateUserEmail(user._id)
       await sendWelcomeEmailToUserRecruteur(user)
-      return res.status(200).send(user)
+      return res.status(200).send({})
     }
   )
 
