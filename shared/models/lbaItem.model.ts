@@ -411,7 +411,7 @@ export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
 
 export const ZLbaItemPeJob = z
   .object({
-    ideaType: z.literal(LBA_ITEM_TYPE_OLD.PE),
+    ideaType: z.literal("peJob"),
     // ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES),
     title: z.string().nullish(), // pe -> intitule
     contact: ZLbaItemContact.nullable(),
