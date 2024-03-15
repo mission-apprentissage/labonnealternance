@@ -65,8 +65,6 @@ export const getJobsFromApi = async ({
       })
       .join(",")
 
-    console.log({ sources, convertedSource })
-
     const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
     const finalRadius = radius ?? 0
 
