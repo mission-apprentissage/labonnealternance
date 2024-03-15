@@ -1113,7 +1113,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "ideaType": {
             "enum": [
-              "recruteurs_lba",
+              "lba",
             ],
             "type": "string",
           },
@@ -1373,7 +1373,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "ideaType": {
             "enum": [
-              "offres_emploi_lba",
+              "matcha",
             ],
             "type": "string",
           },
@@ -1816,7 +1816,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "ideaType": {
             "enum": [
-              "offres_emploi_partenaires",
+              "offres",
             ],
             "type": "string",
           },
@@ -3709,17 +3709,11 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, recruteurs_lba, offres_emploi_lba, offres_emploi_partenaires)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, offres)",
             "in": "query",
             "name": "sources",
             "required": false,
             "schema": {
-              "enum": [
-                "formation",
-                "recruteurs_lba",
-                "offres_emploi_lba",
-                "offres_emploi_partenaires",
-              ],
               "type": "string",
             },
           },
@@ -5265,17 +5259,11 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, recruteurs_lba, offres_emploi_lba, offres_emploi_partenaires)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, offres)",
             "in": "query",
             "name": "sources",
             "required": false,
             "schema": {
-              "enum": [
-                "formation",
-                "recruteurs_lba",
-                "offres_emploi_lba",
-                "offres_emploi_partenaires",
-              ],
               "type": "string",
             },
           },
