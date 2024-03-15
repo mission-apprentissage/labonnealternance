@@ -194,6 +194,7 @@ const getCompanies = async ({
 
     return companies
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from DB (${api})` })
   }
 }
@@ -291,6 +292,7 @@ export const getCompanyFromSiret = async ({
       return { error: "not_found", status: 404, result: "not_found", message: "Société non trouvée" }
     }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({
       error,
       api_path: "jobV1/company",

@@ -160,6 +160,7 @@ export const getLbaJobs = async ({
 
     return matchas
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from Matcha (${api})` })
   }
 }
@@ -204,6 +205,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
     return { matchas: job }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
   }
 }
