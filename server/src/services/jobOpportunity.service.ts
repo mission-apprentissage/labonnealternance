@@ -35,7 +35,8 @@ export const getJobsFromApi = async ({
   longitude?: number
   radius?: number
   insee?: string
-  sources?: LBA_ITEM_TYPE
+  sources?: string
+  // sources?: LBA_ITEM_TYPE
   diploma?: string
   opco?: string
   opcoUrl?: string
@@ -45,7 +46,28 @@ export const getJobsFromApi = async ({
   | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   try {
-    const jobSources = !sources ? allLbaItemType : sources.split(",")
+    const convertedSource = sources
+      ?.split(",")
+      .map((source) => {
+        switch (source) {
+          case "matcha":
+            return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+          case "lba":
+          case "lbb":
+            return LBA_ITEM_TYPE.RECRUTEURS_LBA
+
+          case "offres":
+            return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
+
+          default:
+            return
+        }
+      })
+      .join(",")
+
+    console.log({ sources, convertedSource })
+
+    const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
     const finalRadius = radius ?? 0
 
     const [peJobs, lbaCompanies, matchas] = await Promise.all([
