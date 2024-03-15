@@ -8,8 +8,6 @@ import { PEResponse } from "@/services/pejob.service.types"
 import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
-import { ApiError } from "../utils/apiUtils"
-import { IApiError } from "../utils/errorManager"
 import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
@@ -67,16 +65,13 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
       timeout: 3000,
     })
 
-    console.log("getPeAccessToken", response)
-
     return {
       ...response.data,
       expire: dayjs().add(response.data.expires_in - 10, "s"),
     }
   } catch (error: any) {
-    sentryCaptureException(error)
-    console.log(error.response)
-    return error.response.data
+    sentryCaptureException(error.response?.data)
+    return error.response?.data
   }
 }
 
@@ -92,7 +87,7 @@ export const searchForPeJobs = async (params: {
   niveauFormation?: string
   insee?: string
   distance?: number
-}): Promise<IApiError | PEResponse | ""> => {
+}): Promise<PEResponse | null> => {
   tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
   try {
     const extendedParams = {
@@ -100,7 +95,7 @@ export const searchForPeJobs = async (params: {
       partenaires: PE_LBA_PARTENAIRE,
       modeSelectionPartenaires: PE_PARTENAIRE_MODE,
     }
-    const response = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/search`, {
+    const { data } = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/search`, {
       params: extendedParams,
       headers: {
         "Content-Type": "application/json",
@@ -109,14 +104,11 @@ export const searchForPeJobs = async (params: {
       },
     })
 
-    console.log("searchForPeJobs", response)
-    return response.data
+    return data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log("searchForPeJobs-errorlog")
-    sentryCaptureException(error)
-    console.log("searchForPeJobs - error", { req: error.request, error: error, resp: error.response, data: error.response?.data, head: error.response?.headers })
-    throw new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
+    sentryCaptureException(error.response?.data)
+    return null
   }
 }
 
@@ -134,14 +126,10 @@ export const getPeJob = async (id: string) => {
       },
     })
 
-    console.log("getPeJob", result)
     return result // PEResponse
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log("getPeJob-errorlog")
-    sentryCaptureException(error)
-    console.log("getPeJob - error", { req: error.request, error: error, resp: error.response, data: error.response?.data, head: error.response?.headers })
-    new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
+    sentryCaptureException(error.response?.data)
   }
 }
 
@@ -186,7 +174,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 
     return data
   } catch (error: any) {
-    sentryCaptureException(error)
+    sentryCaptureException(error.response?.data)
     return null
   }
 }
