@@ -1816,7 +1816,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "ideaType": {
             "enum": [
-              "offres",
+              "peJob",
             ],
             "type": "string",
           },
