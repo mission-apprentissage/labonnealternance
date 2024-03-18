@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useState } from "react"
 import ReactHtmlParser from "react-html-parser"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
 
@@ -27,7 +27,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
 
   const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
 
-  const kind: LBA_ITEM_TYPE = job?.ideaType
+  const kind: LBA_ITEM_TYPE_OLD = job?.ideaType
 
   const onSelectItem = (e) => {
     e.preventDefault()
@@ -165,7 +165,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
                     Publiée {`${daysPublished ? `depuis ${daysPublished} jour(s)` : "aujourd'hui"}`}
                   </Text>
                 )}
-                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && (
+                {kind === LBA_ITEM_TYPE_OLD.MATCHA && (
                   <Flex alignItems="center">
                     <Image mr={1} src="/images/eclair.svg" alt="" />
                     <Text color="#0063CB" display="flex" fontSize="12px" whiteSpace="nowrap" mr={2}>

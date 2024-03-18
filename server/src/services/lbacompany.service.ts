@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { ILbaCompany } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { LbaCompany } from "../common/model/index"
 import { encryptMailWithIV } from "../common/utils/encryptString"
@@ -45,7 +45,8 @@ const transformCompany = ({
   const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
 
   const resultCompany: ILbaItemLbaCompany = {
-    ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    ideaType: LBA_ITEM_TYPE_OLD.LBA,
+    // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
     title: company.enseigne,
     contact,
     place: {
@@ -194,6 +195,7 @@ const getCompanies = async ({
 
     return companies
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from DB (${api})` })
   }
 }
@@ -291,6 +293,7 @@ export const getCompanyFromSiret = async ({
       return { error: "not_found", status: 404, result: "not_found", message: "Société non trouvée" }
     }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({
       error,
       api_path: "jobV1/company",

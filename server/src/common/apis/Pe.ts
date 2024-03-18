@@ -8,8 +8,6 @@ import { PEResponse } from "@/services/pejob.service.types"
 import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
-import { ApiError } from "../utils/apiUtils"
-import { IApiError } from "../utils/errorManager"
 import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
@@ -72,8 +70,8 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
       expire: dayjs().add(response.data.expires_in - 10, "s"),
     }
   } catch (error: any) {
-    sentryCaptureException(error)
-    return error.response.data
+    sentryCaptureException(error.response?.data)
+    return error.response?.data
   }
 }
 
@@ -89,7 +87,7 @@ export const searchForPeJobs = async (params: {
   niveauFormation?: string
   insee?: string
   distance?: number
-}): Promise<IApiError | PEResponse | ""> => {
+}): Promise<PEResponse | null | ""> => {
   tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
   try {
     const extendedParams = {
@@ -109,7 +107,8 @@ export const searchForPeJobs = async (params: {
     return data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    throw new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
+    sentryCaptureException(error.response?.data)
+    return null
   }
 }
 
@@ -130,7 +129,7 @@ export const getPeJob = async (id: string) => {
     return result // PEResponse
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
+    sentryCaptureException(error.response?.data)
   }
 }
 
@@ -175,7 +174,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 
     return data
   } catch (error: any) {
-    sentryCaptureException(error)
+    sentryCaptureException(error.response?.data)
     return null
   }
 }

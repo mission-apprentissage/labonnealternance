@@ -1,9 +1,17 @@
-export const debounce = (func, timeout = 300) => {
+export function debounce(callback, delay) {
   let timer
+
   return (...args) => {
-    clearTimeout(timer)
-    timer = setTimeout(() => {
-      func.apply(this, args)
-    }, timeout)
+    return new Promise((resolve, reject) => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        try {
+          const output = callback(...args)
+          resolve(output)
+        } catch (err) {
+          reject(err)
+        }
+      }, delay)
+    })
   }
 }

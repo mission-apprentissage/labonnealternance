@@ -216,7 +216,7 @@ describe("jobEtFormationV1", () => {
       expect(response.statusCode).toBe(400)
       assert.deepStrictEqual(
         JSON.parse(response.body).message,
-        "querystring.sources: Invalid enum value. Expected 'formation' | 'recruteurs_lba' | 'offres_emploi_lba' | 'offres_emploi_partenaires', received 'lba,lbc'"
+        "querystring.sources: Invalid source format. Must be a comma-separated list of valid sources of formation,matcha,lba,offres,peJob"
       )
     })
 
