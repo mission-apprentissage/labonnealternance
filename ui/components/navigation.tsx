@@ -12,7 +12,16 @@ const Navigation = ({ currentPage = undefined }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
-    <Box as="header">
+    <Box
+      sx={
+        ["organisme-de-formation", "acces-recruteur"].includes(currentPage)
+          ? {
+              boxShadow: "0px 1px 8px rgba(8, 67, 85, 0.24)",
+            }
+          : {}
+      }
+      as="header"
+    >
       <Container variant="responsiveContainer">
         <Flex py={2} direction={["column", "column", "column", "row"]} justify="space-between">
           <Flex alignItems="center" wrap="wrap">
