@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE, allLbaItemType } from "../constants/lbaitem"
+import { LBA_ITEM_TYPE, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
@@ -102,7 +102,7 @@ export const ZNewApplication = ZApplication.extend({
     description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
     example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
   }),
-  company_type: z.enum([allLbaItemType[0], ...allLbaItemType.slice(1)]).openapi({
+  company_type: z.enum([allLbaItemTypeOLD[0], ...allLbaItemTypeOLD.slice(1)]).openapi({
     description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
     example: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }),

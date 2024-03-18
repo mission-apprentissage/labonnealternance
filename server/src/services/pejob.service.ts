@@ -209,7 +209,7 @@ const getPeJobs = async ({
 
     const jobs = await searchForPeJobs(params)
 
-    if (jobs === null) {
+    if (jobs === null || jobs === "") {
       const emptyPeResponse: PEResponse = { resultats: [] }
       return emptyPeResponse
     }

@@ -87,7 +87,7 @@ export const searchForPeJobs = async (params: {
   niveauFormation?: string
   insee?: string
   distance?: number
-}): Promise<PEResponse | null> => {
+}): Promise<PEResponse | null | ""> => {
   tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
   try {
     const extendedParams = {
