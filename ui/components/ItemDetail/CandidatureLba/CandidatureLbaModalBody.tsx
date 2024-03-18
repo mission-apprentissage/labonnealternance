@@ -1,7 +1,8 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Container, Flex, FormControl, FormErrorMessage, FormLabel, Input, Link, ModalBody, ModalFooter, Text } from "@chakra-ui/react"
 import emailMisspelled, { top100 } from "email-misspelled"
-import React, { useState } from "react"
+import { useState } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { testingParameters } from "../../../utils/testingParameters"
 
@@ -43,7 +44,7 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
     <>
       <PostulerBody fromWidget={fromWidget}>
         <Text as="h1" fontWeight={700} fontSize="24px" data-testid="CandidatureSpontaneeTitle">
-          {kind === "matcha" ? (
+          {kind === LBA_ITEM_TYPE_OLD.MATCHA ? (
             <>
               Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
             </>

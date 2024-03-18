@@ -1,15 +1,13 @@
 import { Button, Flex, Spinner, Text } from "@chakra-ui/react"
-import React from "react"
-
-import { amongst } from "../../../utils/arrayutils"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 const CandidatureLbaSubmit = (props) => {
   const sendingState = props.sendingState
-  const kind = props?.item?.ideaType || ""
+  const kind: LBA_ITEM_TYPE_OLD = props?.item?.ideaType || ""
 
   switch (sendingState) {
     case "not_sent": {
-      return amongst(kind, ["lbb", "lba"]) ? (
+      return kind === LBA_ITEM_TYPE_OLD.LBA ? (
         <Button data-tracking-id="postuler-entreprise-algo" aria-label="Envoyer la candidature spontanée" variant="blackButton" type="submit" data-testid="candidature-not-sent">
           J'envoie ma candidature spontanée
         </Button>

@@ -1,4 +1,5 @@
 import axios from "axios"
+import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 
 import { isOriginLocal } from "../common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
@@ -182,16 +183,14 @@ const validateInsee = (insee: string | undefined, error_messages: string[]) => {
   }
 }
 
-const validateApiSources = (apiSources: string | undefined, error_messages: string[], allowedSources = ["formations", "lbb", "lba", "offres", "matcha"]) => {
-  // source mal formée si présente
+const validateApiSources = (apiSources: string | undefined, errorMessages: string[]) => {
   if (apiSources) {
     const sources = apiSources.split(",")
-    let areSourceOk = true
-    sources.forEach((source) => {
-      if (allowedSources.indexOf(source) < 0) areSourceOk = false
-    })
-    if (!areSourceOk)
-      error_messages.push(`sources : Optional sources argument used with wrong value. Should contains comma separated values among '${allowedSources.join("', '")}'.`)
+    const areSourcesOk = sources.every((source) => allLbaItemTypeOLD.includes(source.trim()))
+
+    if (!areSourcesOk) {
+      errorMessages.push(`sources: Optional sources argument used with wrong value. Should contain comma-separated values among ${allLbaItemTypeOLD.join(", ")}.`)
+    }
   }
 }
 
@@ -236,7 +235,7 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
   }
 
   // source mal formée si présente
-  validateApiSources(sources, error_messages, ["lbb", "lba", "offres", "matcha"])
+  validateApiSources(sources, error_messages)
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 
@@ -337,7 +336,7 @@ export const jobsEtFormationsQueryValidator = async (
   }
 
   // source mal formée si présente
-  validateApiSources(query.sources, error_messages, ["formations", "lbb", "lba", "offres", "matcha"])
+  validateApiSources(query.sources, error_messages)
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 

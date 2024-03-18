@@ -1,3 +1,5 @@
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+
 export const getItemId = (item) => {
   return getItemIdAndType(item).itemId
 }
@@ -7,17 +9,18 @@ export * from "shared/validators/siretValidator"
 export const getItemIdAndType = (item) => {
   let itemId = item.id
   let type = "training"
+  const kind: LBA_ITEM_TYPE_OLD = item.ideaType
 
-  if (item.ideaType !== "formation") {
-    type = item.ideaType
+  if (kind !== LBA_ITEM_TYPE_OLD.FORMATION) {
+    type = kind
   }
 
   if (!item.directId) {
-    if (item.ideaType === "peJob") {
+    if (kind === LBA_ITEM_TYPE_OLD.PEJOB) {
       itemId = item.job.id
-    } else if (item.ideaType === "matcha") {
+    } else if (kind === LBA_ITEM_TYPE_OLD.MATCHA) {
       itemId = item.job.id
-    } else if (item.ideaType !== "formation") {
+    } else if (kind !== LBA_ITEM_TYPE_OLD.FORMATION) {
       itemId = item?.company?.siret || "siret"
     }
   }

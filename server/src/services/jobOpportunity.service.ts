@@ -1,3 +1,5 @@
+import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
+
 import { IApiError } from "../common/utils/errorManager"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 
@@ -34,6 +36,7 @@ export const getJobsFromApi = async ({
   radius?: number
   insee?: string
   sources?: string
+  // sources?: LBA_ITEM_TYPE
   diploma?: string
   opco?: string
   opcoUrl?: string
@@ -43,11 +46,30 @@ export const getJobsFromApi = async ({
   | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   try {
-    const jobSources = !sources ? ["lba", "offres", "matcha"] : sources.split(",")
+    const convertedSource = sources
+      ?.split(",")
+      .map((source) => {
+        switch (source) {
+          case "matcha":
+            return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+          case "lba":
+          case "lbb":
+            return LBA_ITEM_TYPE.RECRUTEURS_LBA
+
+          case "offres":
+            return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
+
+          default:
+            return
+        }
+      })
+      .join(",")
+
+    const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
     const finalRadius = radius ?? 0
 
     const [peJobs, lbaCompanies, matchas] = await Promise.all([
-      jobSources.includes("offres")
+      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
         ? getSomePeJobs({
             romes: romes?.split(","),
             insee: insee,
@@ -61,7 +83,7 @@ export const getJobsFromApi = async ({
             opcoUrl,
           })
         : null,
-      jobSources.includes("lba")
+      jobSources.includes(LBA_ITEM_TYPE.RECRUTEURS_LBA)
         ? getSomeCompanies({
             romes,
             latitude,
@@ -74,7 +96,7 @@ export const getJobsFromApi = async ({
             opcoUrl,
           })
         : null,
-      jobSources.includes("matcha")
+      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
         ? getLbaJobs({
             romes,
             latitude,

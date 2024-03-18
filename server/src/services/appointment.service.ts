@@ -2,7 +2,6 @@ import dayjs from "dayjs"
 import type { FilterQuery, ObjectId } from "mongoose"
 import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 
-import { logger } from "@/common/logger"
 import { mailType } from "@/common/model/constants/appointments"
 import { ReferrerObject } from "@/common/model/constants/referrers"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -10,10 +9,7 @@ import config from "@/config"
 
 import { Appointment } from "../common/model/index"
 
-import { addEmailToBlacklist } from "./application.service"
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
-import { BrevoEventStatus } from "./brevo.service"
-import * as eligibleTrainingsForAppointmentService from "./eligibleTrainingsForAppointment.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 
 export type NewAppointment = Pick<
@@ -116,20 +112,13 @@ export const sendFormateurAppointmentEmail = async (
     throw new Error("Etablissement formateur_siret not found")
   }
 
-  let emailCfaSubject = `${subjectPrefix ?? ""}[${referrerObj.full_name}] - Un candidat a un message pour vous`
-
-  if (eligibleTrainingsForAppointment.lieu_formation_zip_code) {
-    emailCfaSubject = `${emailCfaSubject} - [${eligibleTrainingsForAppointment.lieu_formation_zip_code.slice(0, 2)}]`
-  }
-  const toEmail = appointment.cfa_recipient_email
-
   const email = await mailer.sendEmail({
-    to: toEmail,
-    subject: emailCfaSubject,
+    to: appointment.cfa_recipient_email,
+    subject: `${subjectPrefix ?? ""} ${referrerObj.full_name} - un candidat a un message pour vous`,
     template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
     data: {
       ...getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
-      link: createRdvaAppointmentIdPageLink(toEmail, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
+      link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
     },
   })
   await findOneAndUpdate(
@@ -188,7 +177,7 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
 
     await appointment.update({
       $push: {
-        to_etablissement_emails: {
+        to_cfa_mails: {
           campaign: firstEmailEvent.campaign,
           status: event,
           message_id: firstEmailEvent.message_id,
@@ -197,24 +186,17 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
       },
     })
 
-    // Disable eligibleTrainingsForAppointments in case of hard_bounce
-    if (event === BrevoEventStatus.HARD_BOUNCE) {
-      const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: appointment.cfa_recipient_email })
-
-      await Promise.all(
-        eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
-          await eligibleTrainingsForAppointment.update({ referrers: [] })
-
-          logger.info('Widget parameters disabled for "hard_bounce" reason', {
-            eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
-            cfa_recipient_email: appointment.cfa_recipient_email,
-          })
-        })
-      )
-      await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
-    }
-
     return false
   }
   return true
+}
+
+export const isHardbounceEventFromAppointment = async (payload) => {
+  const messageId = payload["message-id"]
+
+  const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
+  if (appointment) {
+    return true
+  }
+  return false
 }

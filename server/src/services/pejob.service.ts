@@ -8,6 +8,7 @@ import { getPeJob, getPeReferentiels, searchForPeJobs } from "@/common/apis/Pe"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
@@ -87,6 +88,7 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
 
   const resultJob: ILbaItemPeJob = {
     ideaType: "peJob",
+    // ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     title: job.intitule,
     contact,
     place: {
@@ -207,15 +209,14 @@ const getPeJobs = async ({
 
     const jobs = await searchForPeJobs(params)
 
-    const data: PEResponse | IApiError | "" = jobs
-
-    if (data === "") {
+    if (jobs === null || jobs === "") {
       const emptyPeResponse: PEResponse = { resultats: [] }
       return emptyPeResponse
     }
 
-    return data
+    return jobs
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
   }
 }
@@ -311,6 +312,7 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
 
     return { peJobs: [peJob] }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
   }
 }

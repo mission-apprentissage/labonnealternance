@@ -13,6 +13,7 @@ export type TJobSearchQuery = {
   radius?: number
   insee?: string
   sources?: string
+  // sources?: LBA_ITEM_TYPE
   diploma?: string
   opco?: string
   opcoUrl?: string

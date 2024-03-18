@@ -2,8 +2,8 @@ import distance from "@turf/distance"
 import { round } from "lodash"
 import * as mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
-import React from "react"
 import { createRoot } from "react-dom/client"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { MapPopup } from "../components/SearchForTrainingsAndJobs/components"
 import { fetchAddresses } from "../services/baseAdresse"
@@ -552,9 +552,9 @@ const setSelectedMarker = async (item) => {
     const marker = {
       coords: getCoordinates(item),
       items: [item],
-      ideaType: item.ideaType === "formation" ? "formation" : "job",
+      ideaType: item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? LBA_ITEM_TYPE_OLD.FORMATION : "job",
     }
-    if (item.ideaType === "formation") {
+    if (item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
       setSelectedTrainingMarker(marker)
       setSelectedJobMarker(marker)
     } else {
@@ -589,7 +589,7 @@ const updateSelectedMarkerCollection = async (item, layer) => {
         },
         properties: {
           id: 0,
-          ...(item.ideaType === "formation" ? { training: item } : { job: item }),
+          ...(item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? { training: item } : { job: item }),
         },
       })
     }
@@ -617,7 +617,7 @@ const setTrainingMarkers = async ({ trainingList, options = undefined, tryCount 
       }
 
       trainingList.map((training, idx) => {
-        training.ideaType = "formation"
+        training.ideaType = LBA_ITEM_TYPE_OLD.FORMATION
         features.push({
           type: "Feature",
           geometry: {

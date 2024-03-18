@@ -1,4 +1,5 @@
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter } from "@/common/model"
@@ -159,6 +160,7 @@ export const getLbaJobs = async ({
 
     return matchas
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from Matcha (${api})` })
   }
 }
@@ -203,6 +205,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
     return { matchas: job }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
   }
 }
@@ -238,7 +241,8 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
     const longitude = recruiter?.geopoint?.coordinates[0] ?? 0
 
     const resultJob: ILbaItemLbaJob = {
-      ideaType: "matcha",
+      ideaType: LBA_ITEM_TYPE_OLD.MATCHA,
+      // ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       id: `${recruiter.establishment_id}-${idx}`,
       title: offre.rome_appellation_label ?? offre.rome_label,
       contact: {
