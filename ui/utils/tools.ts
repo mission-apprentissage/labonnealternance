@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { rawPostalAddress } from "./addressUtils"
 //import * as Sentry from "@sentry/react";
@@ -63,22 +63,22 @@ const getItemElement = (item) => {
   let id = ""
 
   const realItem = item.items ? item.items[0] : item
-  const kind: LBA_ITEM_TYPE = realItem.ideaType
+  const kind: LBA_ITEM_TYPE_OLD = realItem.ideaType
 
   switch (kind) {
-    case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
+    case LBA_ITEM_TYPE_OLD.PEJOB: {
       id = `peJob${realItem.job.id}`
       break
     }
-    case LBA_ITEM_TYPE.FORMATION: {
+    case LBA_ITEM_TYPE_OLD.FORMATION: {
       id = `id${realItem.id}`
       break
     }
-    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
+    case LBA_ITEM_TYPE_OLD.MATCHA: {
       id = `matcha${realItem.job.id}`
       break
     }
-    case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
+    case LBA_ITEM_TYPE_OLD.LBA: {
       id = `${realItem.ideaType}${realItem.company.siret}`
       break
     }

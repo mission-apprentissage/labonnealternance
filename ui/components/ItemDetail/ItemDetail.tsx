@@ -2,7 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { defaultTo } from "lodash"
 import { useContext, useEffect, useState } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
 import { focusWithin } from "@/theme/theme-lba-tools"
@@ -33,7 +33,7 @@ import PeJobDetail from "./PeJobDetail"
 import TrainingDetail from "./TrainingDetail"
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
-  const kind: LBA_ITEM_TYPE = selectedItem?.ideaType
+  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
 
   const { activeFilters } = useContext(DisplayContext)
 
@@ -111,7 +111,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
 
-          {kind === LBA_ITEM_TYPE.FORMATION && (
+          {kind === LBA_ITEM_TYPE_OLD.FORMATION && (
             <Text as="p" textAlign="left" color="grey.600" mt={4} mb={3} fontWeight={700} fontSize="1rem">
               <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
               <Text as="span" fontWeight={400}>
@@ -126,7 +126,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           <Text
             as="h1"
             fontSize={isCollapsedHeader ? "20px" : "28px"}
-            color={kind !== LBA_ITEM_TYPE.FORMATION ? "pinksoft.600" : "greensoft.500"}
+            color={kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"}
             sx={{
               fontWeight: 700,
               marginBottom: "11px",
@@ -155,7 +155,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             </>
           )}
 
-          {kind === LBA_ITEM_TYPE.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
+          {kind === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
               <Divider my={2} />
               <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
@@ -164,13 +164,13 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
         </Box>
       </Box>
 
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PeJobDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <MatchaDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <LbbCompanyDetail lbb={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.PEJOB && <PeJobDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <MatchaDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.LBA && <LbbCompanyDetail lbb={selectedItem} />}
 
-      {kind === LBA_ITEM_TYPE.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
+      {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
 
-      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && (
+      {kind === LBA_ITEM_TYPE_OLD.LBA && (
         <Box bg="#f5f5fe" border="1px solid #e3e3fd" mx={8} mb={8} px={6} py={4}>
           <Box color="bluefrance.500" fontSize="22px" fontWeight={700}>
             Besoin d&apos;aide ?
@@ -209,7 +209,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
       <AideApprentissage item={selectedItem}></AideApprentissage>
 
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (
+      {kind === LBA_ITEM_TYPE_OLD.PEJOB && (
         <>
           <DidYouKnow />
           {!buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
@@ -217,10 +217,10 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           )}
         </>
       )}
-      {kind === LBA_ITEM_TYPE.FORMATION && !buttonRdvShouldBeDisplayed(selectedItem) && (
+      {kind === LBA_ITEM_TYPE_OLD.FORMATION && !buttonRdvShouldBeDisplayed(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
-      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && !isCandidatureLba(selectedItem) && (
+      {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
     </Box>
