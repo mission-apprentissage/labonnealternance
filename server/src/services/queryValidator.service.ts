@@ -1,5 +1,5 @@
 import axios from "axios"
-import { allLbaItemType } from "shared/constants/lbaitem"
+import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 
 import { isOriginLocal } from "../common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
@@ -186,10 +186,10 @@ const validateInsee = (insee: string | undefined, error_messages: string[]) => {
 const validateApiSources = (apiSources: string | undefined, errorMessages: string[]) => {
   if (apiSources) {
     const sources = apiSources.split(",")
-    const areSourcesOk = sources.every((source) => allLbaItemType.includes(source.trim()))
+    const areSourcesOk = sources.every((source) => allLbaItemTypeOLD.includes(source.trim()))
 
     if (!areSourcesOk) {
-      errorMessages.push(`sources: Optional sources argument used with wrong value. Should contain comma-separated values among ${allLbaItemType.join(", ")}.`)
+      errorMessages.push(`sources: Optional sources argument used with wrong value. Should contain comma-separated values among ${allLbaItemTypeOLD.join(", ")}.`)
     }
   }
 }

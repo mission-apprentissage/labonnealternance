@@ -8,8 +8,6 @@ import { FTResponse } from "@/services/ftjob.service.types"
 import { IAppelattionDetailsFromAPI, IFTAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
-import { ApiError } from "../utils/apiUtils"
-import { IApiError } from "../utils/errorManager"
 import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
@@ -72,8 +70,8 @@ const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPI
       expire: dayjs().add(response.data.expires_in - 10, "s"),
     }
   } catch (error: any) {
-    sentryCaptureException(error)
-    return error.response.data
+    sentryCaptureException(error.response?.data)
+    return error.response?.data
   }
 }
 
@@ -89,8 +87,7 @@ export const searchForFtJobs = async (params: {
   niveauFormation?: string
   insee?: string
   distance?: number
-}): Promise<IApiError | FTResponse | ""> => {
-  tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
+}): Promise<FTResponse | null | ""> => {
   try {
     const extendedParams = {
       ...params,
@@ -109,7 +106,8 @@ export const searchForFtJobs = async (params: {
     return data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    throw new ApiError("Api PE", error.message, error.code || error.response?.status, error?.response?.status)
+    sentryCaptureException(error.response?.data)
+    return null
   }
 }
 
@@ -130,7 +128,7 @@ export const getFtJob = async (id: string) => {
     return result
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    new ApiError("Api FT", error.message, error.code || error.response?.status, error?.response?.status)
+    sentryCaptureException(error.response?.data)
   }
 }
 
@@ -175,7 +173,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 
     return data
   } catch (error: any) {
-    sentryCaptureException(error)
+    sentryCaptureException(error.response?.data)
     return null
   }
 }

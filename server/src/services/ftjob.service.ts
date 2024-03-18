@@ -2,13 +2,13 @@ import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
 import Boom from "boom"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getFtJob, getFtReferentiels, searchForFtJobs } from "@/common/apis/FranceTravail"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service"
 import { FTJob, FTResponse } from "./ftjob.service.types"
@@ -87,7 +87,8 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
   }
 
   const resultJob: ILbaItemFtJob = {
-    ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+    ideaType: "peJob",
+    //ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     title: job.intitule,
     contact,
     place: {
@@ -208,15 +209,14 @@ const getFtJobs = async ({
 
     const jobs = await searchForFtJobs(params)
 
-    const data: FTResponse | IApiError | "" = jobs
-
-    if (data === "") {
+    if (jobs === null || jobs === "") {
       const emptyPeResponse: FTResponse = { resultats: [] }
       return emptyPeResponse
     }
 
-    return data
+    return jobs
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
   }
 }
@@ -312,6 +312,7 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
 
     return { peJobs: [ftJob] }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
   }
 }

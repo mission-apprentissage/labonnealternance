@@ -25,6 +25,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, options } = req.query
+
       const parameterControl = await jobsEtFormationsQueryValidator({
         romes,
         rncp,

@@ -37,6 +37,7 @@ import * as Yup from "yup"
 import { useAuth } from "@/context/UserContext"
 
 import { AUTHTYPE } from "../../common/contants"
+import { debounce } from "../../common/utils/debounce"
 import { publicConfig } from "../../config.public"
 import { LogoContext } from "../../context/contextLogo"
 import { WidgetContext } from "../../context/contextWidget"
@@ -72,7 +73,7 @@ const AjouterVoeuxForm = (props) => {
   const {
     widget: { isWidget },
   } = useContext(WidgetContext)
-  const [inputJobItems, setInputJobItems] = useState([])
+
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
 
@@ -99,7 +100,7 @@ const AjouterVoeuxForm = (props) => {
         throw new Error(error)
       }
     }
-    return inputJobItems
+    return []
   }
 
   /**
@@ -196,7 +197,7 @@ const AjouterVoeuxForm = (props) => {
         rome_detail: props.rome_detail ?? {},
         is_disabled_elligible: props.is_disabled_elligible ?? false,
         job_count: props.job_count ?? 1,
-        job_duration: props.job_duration ?? 6,
+        job_duration: props.job_duration ?? 12,
         job_rythm: props.job_rythm ?? undefined,
         job_delegation_count: props.job_delegation_count ?? 0,
       }}
@@ -217,9 +218,7 @@ const AjouterVoeuxForm = (props) => {
             <FormControl isRequired>
               <FormLabel>Métier</FormLabel>
               <DropdownCombobox
-                handleSearch={handleJobSearch}
-                inputItems={inputJobItems}
-                setInputItems={setInputJobItems}
+                handleSearch={debounce(handleJobSearch, 300)}
                 saveSelectedItem={(values) => {
                   /**
                    * validator broken when using setFieldValue : https://github.com/formium/formik/issues/2266

@@ -1,5 +1,5 @@
 import { Box, Button, Flex } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { getItemId } from "../../utils/getItemId"
 import { SendPlausibleEvent } from "../../utils/plausible"
@@ -8,13 +8,13 @@ import { useSessionStorage } from "../../utils/useSessionStorage"
 const GoingToContactQuestion = ({ kind, uniqId, item }) => {
   const [thanks, setThanks] = useSessionStorage(uniqId, false)
 
-  const workplace = kind === LBA_ITEM_TYPE.FORMATION ? "cet établissement" : "cette entreprise"
+  const workplace = kind === LBA_ITEM_TYPE_OLD.FORMATION ? "cet établissement" : "cette entreprise"
 
   const getType = () => {
-    if (kind === LBA_ITEM_TYPE.FORMATION) {
+    if (kind === LBA_ITEM_TYPE_OLD.FORMATION) {
       return "formation"
     }
-    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+    if (kind === LBA_ITEM_TYPE_OLD.PEJOB) {
       return "entreprise Offre PE"
     }
     return "entreprise Algo"

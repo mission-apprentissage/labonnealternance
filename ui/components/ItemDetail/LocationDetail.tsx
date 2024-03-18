@@ -1,12 +1,12 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { endsWithNumber } from "../../utils/strutils"
 import { getCompanyPathLink, getPathLink } from "../../utils/tools"
 
 const LocationDetail = ({ item, isCfa }) => {
-  const kind: LBA_ITEM_TYPE = item?.ideaType
+  const kind: LBA_ITEM_TYPE_OLD = item?.ideaType
 
   const getGoogleSearchParameters = () => {
     return encodeURIComponent(`${item.company.name} ${item.place.city || item.place.address}`)
@@ -26,11 +26,11 @@ const LocationDetail = ({ item, isCfa }) => {
     const oneKind = oneItem?.ideaType
     const isMandataire = item?.company?.mandataire
     let res = "Quelques informations sur l'entreprise"
-    if (oneKind === LBA_ITEM_TYPE.FORMATION) {
+    if (oneKind === LBA_ITEM_TYPE_OLD.FORMATION) {
       res = "Quelques informations sur le centre de formation"
-    } else if (oneKind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire) {
+    } else if (oneKind === LBA_ITEM_TYPE_OLD.MATCHA && !isMandataire) {
       res = "Quelques informations sur l'établissement"
-    } else if (oneKind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) {
+    } else if (oneKind === LBA_ITEM_TYPE_OLD.MATCHA && isMandataire) {
       res = "Contactez le CFA pour avoir plus d'informations"
     }
     return res
@@ -38,7 +38,7 @@ const LocationDetail = ({ item, isCfa }) => {
 
   const shouldDisplayEmail = (oneItem) => {
     let res = false
-    if (oneItem?.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    if (oneItem?.ideaType === LBA_ITEM_TYPE_OLD.MATCHA) {
       res = !!item?.company?.mandataire
     }
     if (res) {
@@ -50,7 +50,7 @@ const LocationDetail = ({ item, isCfa }) => {
 
   return (
     <>
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && item?.company?.mandataire && (
+      {kind === LBA_ITEM_TYPE_OLD.MATCHA && item?.company?.mandataire && (
         <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
           <Text as="h2" variant="itemDetailH2" mt={2}>
             {getTitle({})}
@@ -184,7 +184,7 @@ const LocationDetail = ({ item, isCfa }) => {
           </Box>
         )}
 
-        {[LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA].includes(kind) && (
+        {[LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.LBA].includes(kind) && (
           <>
             <Flex mt={2} mb={4}>
               <Box width="30px" pl="2px" minWidth="30px" mr={2}>
