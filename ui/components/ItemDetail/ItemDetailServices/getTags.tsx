@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import TagCandidatureSpontanee from "../TagCandidatureSpontanee"
 import TagCfaDEntreprise from "../TagCfaDEntreprise"
@@ -10,10 +10,10 @@ import TagOffreEmploi from "../TagOffreEmploi"
 export default function getTags({ kind, isCfa, isMandataire }) {
   return (
     <Box mb={4} mr="auto" textAlign="left">
-      {kind === LBA_ITEM_TYPE.FORMATION && <>{isCfa ? <TagCfaDEntreprise /> : <TagFormation />}</>}
-      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <TagCandidatureSpontanee />}
-      {[LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES].includes(kind) && <TagOffreEmploi />}
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && <TagFormationAssociee isMandataire />}
+      {kind === LBA_ITEM_TYPE_OLD.FORMATION && <>{isCfa ? <TagCfaDEntreprise /> : <TagFormation />}</>}
+      {kind === LBA_ITEM_TYPE_OLD.LBA && <TagCandidatureSpontanee />}
+      {[LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.PEJOB].includes(kind) && <TagOffreEmploi />}
+      {kind === LBA_ITEM_TYPE_OLD.MATCHA && isMandataire && <TagFormationAssociee isMandataire />}
     </Box>
   )
 }

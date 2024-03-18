@@ -1,6 +1,6 @@
 import { Box, Button, ChakraProvider, Flex, Image, Text, VStack } from "@chakra-ui/react"
 import { useEffect } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { ErrorMessage } from "../.."
 import theme from "../../../theme"
@@ -42,7 +42,7 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
                     <Button as="a" variant="mapPopupItem" aria-label={`Accéder au détail de l'opportunité d'emploi ${job.title}`} onClick={() => openItemDetail(job)}>
                       {job.title}
                     </Button>
-                    {job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && job?.company?.name && (
+                    {job.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && job?.company?.name && (
                       <Text ml={4} as="span" color="grey.700" fontSize="14px">
                         - {job.company.name}
                       </Text>

@@ -123,9 +123,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
             "enum": [
               "formation",
-              "recruteurs_lba",
-              "offres_emploi_lba",
-              "offres_emploi_partenaires",
+              "matcha",
+              "lba",
+              "offres",
+              "peJob",
             ],
             "example": "recruteurs_lba",
             "type": "string",
@@ -3709,7 +3710,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, offres)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, offres, peJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -5259,7 +5260,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, offres)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, offres, peJob)",
             "in": "query",
             "name": "sources",
             "required": false,

@@ -32,7 +32,7 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { IJob } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { useAuth } from "@/context/UserContext"
 
@@ -248,7 +248,7 @@ export default function ListeOffres() {
                     <MenuItem>
                       <Link
                         isExternal
-                        href={`${publicConfig.baseUrl}/recherche-apprentissage?&type=${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}&itemId=${row._id}`}
+                        href={`${publicConfig.baseUrl}/recherche-apprentissage?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`}
                         aria-label="Lien vers l'offre - nouvelle fenêtre"
                       >
                         Voir l'offre en ligne

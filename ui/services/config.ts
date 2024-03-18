@@ -1,5 +1,5 @@
 import { assertUnreachable } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { campaignParameters } from "../utils/campaignParameters"
 import { testingParameters } from "../utils/testingParameters"
@@ -214,11 +214,11 @@ type QueryParameterType = "matcha" | "lbb" | "lba"
 const convertTypeForMigration = (type: QueryParameterType) => {
   switch (type) {
     case "matcha":
-      return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+      return LBA_ITEM_TYPE_OLD.MATCHA
 
     case "lba":
     case "lbb":
-      return LBA_ITEM_TYPE.RECRUTEURS_LBA
+      return LBA_ITEM_TYPE_OLD.LBA
 
     default:
       assertUnreachable(type)
