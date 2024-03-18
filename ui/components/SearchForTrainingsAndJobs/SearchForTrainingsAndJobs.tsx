@@ -1,7 +1,7 @@
 import { Box, Flex } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
@@ -129,7 +129,7 @@ const SearchForTrainingsAndJobs = () => {
       pushHistory({
         router,
         scopeContext,
-        item: { id: itemId, ideaType: type === "training" ? LBA_ITEM_TYPE.FORMATION : type, directId: true },
+        item: { id: itemId, ideaType: type === "training" ? LBA_ITEM_TYPE_OLD.FORMATION : type, directId: true },
         page: "fiche",
         display: "list",
         searchParameters: formValues,
@@ -145,13 +145,13 @@ const SearchForTrainingsAndJobs = () => {
       case "training": {
         return trainings?.find((el) => el.id === itemId)
       }
-      case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
+      case LBA_ITEM_TYPE_OLD.PE: {
         return jobs?.peJobs?.find((el) => el.job.id === itemId)
       }
-      case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
+      case LBA_ITEM_TYPE_OLD.LBA: {
         return jobs?.lbaCompanies?.find((el) => el.company.siret === itemId)
       }
-      case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
+      case LBA_ITEM_TYPE_OLD.MATCHA: {
         return jobs?.matchas?.find((el) => el.job.id === itemId)
       }
       default:

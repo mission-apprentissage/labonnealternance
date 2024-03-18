@@ -9,7 +9,7 @@ export enum LBA_ITEM_TYPE_OLD {
   FORMATION = "formation",
   MATCHA = "matcha",
   LBA = "lba",
-  PE = "offres",
+  PE = "peJob",
 }
 
 export const allLbaItemType: string[] = Object.values(LBA_ITEM_TYPE)

@@ -1,5 +1,5 @@
 import { Text } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 const detailActivityProperties = {
   fontSize: "1rem",
@@ -15,7 +15,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
   const companyName = selectedItem?.company?.name || ""
 
   if (!isCollapsedHeader) {
-    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) {
+    if (kind === LBA_ITEM_TYPE_OLD.MATCHA && isMandataire) {
       res = (
         // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>
@@ -30,7 +30,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
       )
     }
 
-    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire)) {
+    if (kind === LBA_ITEM_TYPE_OLD.PE || (kind === LBA_ITEM_TYPE_OLD.MATCHA && !isMandataire)) {
       res = (
         // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>
@@ -59,7 +59,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
       )
     }
 
-    if (kind === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    if (kind === LBA_ITEM_TYPE_OLD.LBA) {
       res = (
         // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>
