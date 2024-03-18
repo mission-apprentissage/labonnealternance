@@ -30,7 +30,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
       )
     }
 
-    if (kind === LBA_ITEM_TYPE_OLD.PE || (kind === LBA_ITEM_TYPE_OLD.MATCHA && !isMandataire)) {
+    if (kind === LBA_ITEM_TYPE_OLD.PEJOB || (kind === LBA_ITEM_TYPE_OLD.MATCHA && !isMandataire)) {
       res = (
         // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>

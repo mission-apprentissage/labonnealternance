@@ -19,7 +19,7 @@ const navigationButtonProperties = {
 }
 
 export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
-  return oneKind === LBA_ITEM_TYPE_OLD.PE && oneItem?.url
+  return oneKind === LBA_ITEM_TYPE_OLD.PEJOB && oneItem?.url
 }
 
 /**

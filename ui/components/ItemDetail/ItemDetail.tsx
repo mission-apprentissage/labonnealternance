@@ -164,7 +164,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
         </Box>
       </Box>
 
-      {kind === LBA_ITEM_TYPE_OLD.PE && <PeJobDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.PEJOB && <PeJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <MatchaDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <LbbCompanyDetail lbb={selectedItem} />}
 
@@ -209,7 +209,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
       <AideApprentissage item={selectedItem}></AideApprentissage>
 
-      {kind === LBA_ITEM_TYPE_OLD.PE && (
+      {kind === LBA_ITEM_TYPE_OLD.PEJOB && (
         <>
           <DidYouKnow />
           {!buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (

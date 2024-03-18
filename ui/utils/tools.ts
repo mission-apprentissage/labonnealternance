@@ -66,7 +66,7 @@ const getItemElement = (item) => {
   const kind: LBA_ITEM_TYPE_OLD = realItem.ideaType
 
   switch (kind) {
-    case LBA_ITEM_TYPE_OLD.PE: {
+    case LBA_ITEM_TYPE_OLD.PEJOB: {
       id = `peJob${realItem.job.id}`
       break
     }

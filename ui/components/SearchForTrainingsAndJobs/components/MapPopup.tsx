@@ -42,7 +42,7 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
                     <Button as="a" variant="mapPopupItem" aria-label={`Accéder au détail de l'opportunité d'emploi ${job.title}`} onClick={() => openItemDetail(job)}>
                       {job.title}
                     </Button>
-                    {job.ideaType === LBA_ITEM_TYPE_OLD.PE && job?.company?.name && (
+                    {job.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && job?.company?.name && (
                       <Text ml={4} as="span" color="grey.700" fontSize="14px">
                         - {job.company.name}
                       </Text>

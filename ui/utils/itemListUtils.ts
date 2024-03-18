@@ -52,7 +52,7 @@ const sortMergedSources = (mergedArray) => {
     const dA = a.place.distance
     const dB = b.place.distance
 
-    if (a.ideaType === LBA_ITEM_TYPE_OLD.PE && isDepartmentJob(a)) {
+    if (a.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && isDepartmentJob(a)) {
       return 1
     }
     if (dA > dB) {

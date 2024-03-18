@@ -16,7 +16,7 @@ export const getItemIdAndType = (item) => {
   }
 
   if (!item.directId) {
-    if (kind === LBA_ITEM_TYPE_OLD.PE) {
+    if (kind === LBA_ITEM_TYPE_OLD.PEJOB) {
       itemId = item.job.id
     } else if (kind === LBA_ITEM_TYPE_OLD.MATCHA) {
       itemId = item.job.id

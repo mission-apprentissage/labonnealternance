@@ -215,7 +215,7 @@ const ResultLists = ({
       return (
         <>
           {mergedOpportunities.map((opportunity, idx) => {
-            if ([LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.PE].includes(opportunity.ideaType)) {
+            if ([LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.PEJOB].includes(opportunity.ideaType)) {
               return renderJob(isTestMode, idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)
             } else {
               return renderLbb(isTestMode, idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)

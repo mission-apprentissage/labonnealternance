@@ -96,7 +96,7 @@ export const loadItem = async ({
       let responseResult = null
 
       switch (item.type) {
-        case LBA_ITEM_TYPE_OLD.PE: {
+        case LBA_ITEM_TYPE_OLD.PEJOB: {
           const response = await axios.get(offreApi + "/" + item.itemId)
 
           // gestion des erreurs

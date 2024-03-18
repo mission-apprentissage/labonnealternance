@@ -145,7 +145,7 @@ const SearchForTrainingsAndJobs = () => {
       case "training": {
         return trainings?.find((el) => el.id === itemId)
       }
-      case LBA_ITEM_TYPE_OLD.PE: {
+      case LBA_ITEM_TYPE_OLD.PEJOB: {
         return jobs?.peJobs?.find((el) => el.job.id === itemId)
       }
       case LBA_ITEM_TYPE_OLD.LBA: {

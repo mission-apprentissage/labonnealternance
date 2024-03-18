@@ -7,7 +7,7 @@ export default function getActualTitle({ selectedItem, kind }) {
     title = selectedItem?.title || selectedItem?.longTitle
   } else if (kind === LBA_ITEM_TYPE_OLD.MATCHA) {
     title = selectedItem?.title
-  } else if (kind === LBA_ITEM_TYPE_OLD.PE) {
+  } else if (kind === LBA_ITEM_TYPE_OLD.PEJOB) {
     title = selectedItem?.title
   } else {
     // lba / lbb

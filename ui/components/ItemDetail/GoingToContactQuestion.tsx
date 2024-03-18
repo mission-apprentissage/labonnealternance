@@ -14,7 +14,7 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
     if (kind === LBA_ITEM_TYPE_OLD.FORMATION) {
       return "formation"
     }
-    if (kind === LBA_ITEM_TYPE_OLD.PE) {
+    if (kind === LBA_ITEM_TYPE_OLD.PEJOB) {
       return "entreprise Offre PE"
     }
     return "entreprise Algo"
