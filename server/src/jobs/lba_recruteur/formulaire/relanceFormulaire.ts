@@ -66,6 +66,7 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
           },
           last_name: sanitizeForEmail(contactUser.last_name),

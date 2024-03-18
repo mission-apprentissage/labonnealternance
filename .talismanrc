@@ -29,6 +29,8 @@ fileignoreconfig:
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
   checksum: 7b101f10db1e047f483ba510e901723e59f54a92a54a059c1240cc9ae3f81f82
+- filename: cypress/api/loginClient.ts
+  checksum: c3baa7cb63e9bdd3c8e55d8117e2b7db418d600af008611aff567f7e27e301d1
 - filename: cypress/pages/FlowAdminPage.ts
   checksum: cbb0a8651ca4c5d807f03eeeba6204c7d6d3a5f17ffb0734921f18d54f99f6b0
 - filename: docker-compose.yml
@@ -37,6 +39,8 @@ fileignoreconfig:
   checksum: 69332e43a85e702b93d00e62edf109c3b22189660de33e50e766ba15ea58f8b8
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
+- filename: server/src/common/utils/awsUtils.ts
+  checksum: 0acc085847288b9f2d5235f118e29199a168b368c33a7e37ab7dfc7e143fb507
 - filename: server/src/config.ts
   checksum: 35c729e66f2b345f9be3197def8b033d7afe9b92258be9f2ed13a8a0e97c9602
 - filename: server/src/db/migrations/20231127120528-remove-password.ts
@@ -63,8 +67,12 @@ fileignoreconfig:
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
 - filename: server/src/services/userRecruteur.service.ts
   checksum: fb8fc73f5ac4491b2a7be99ceaebf96c79bffa63fa6b164eed6e2d3d9fe5dae0
+- filename: server/static/templates/mail-bienvenue-entreprise-sans-offre.mjml.ejs
+  checksum: 7faa143002ddac04b361a762916615c2d442023ab3e5a711946144f5cb167fd1
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
+- filename: server/static/templates/mail-candidature-spontanee.mjml.ejs
+  checksum: df09ab6fa67ec1ea2715145d36eb4a7bcd9b36032a92d95e4dbe747b22cb5549
 - filename: server/tests/integration/http/formationV1.test.ts
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
@@ -145,8 +153,6 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-- filename: server/src/common/utils/awsUtils.ts
-  checksum: 0acc085847288b9f2d5235f118e29199a168b368c33a7e37ab7dfc7e143fb507
 scopeconfig:
 - scope: node
 custom_patterns:

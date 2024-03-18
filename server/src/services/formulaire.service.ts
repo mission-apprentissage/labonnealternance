@@ -239,19 +239,25 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       etablissement_gestionnaire_courriel: { $nin: [null, ""] },
       catalogue_published: true,
     },
-    { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1, etablissement_gestionnaire_id: 1, etablissement_formateur_id: 1 }
+    {
+      etablissement_gestionnaire_courriel: 1,
+      etablissement_formateur_siret: 1,
+      etablissement_gestionnaire_id: 1,
+      etablissement_formateur_id: 1,
+      etablissement_formateur_adresse: 1,
+    }
   )
 
   await Promise.all(
     etablissementCatalogueIds.map(async (etablissementId) => {
       const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
-      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formation ?? {}
+      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email, etablissement_formateur_adresse } = formation ?? {}
       if (!email || !siret_code) {
         // This shouldn't happen considering the query filter
         throw Boom.internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
       }
 
-      delegations.push({ siret_code, email })
+      delegations.push({ siret_code, email, address: etablissement_formateur_adresse })
 
       if (shouldSentMailToCfa) {
         await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
@@ -665,6 +671,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
     data: {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
       nom: sanitizeForEmail(is_delegated ? contactCFA?.last_name : last_name),
       prenom: sanitizeForEmail(is_delegated ? contactCFA?.first_name : first_name),
