@@ -88,6 +88,7 @@ export const searchForFtJobs = async (params: {
   insee?: string
   distance?: number
 }): Promise<FTResponse | null | ""> => {
+  tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
   try {
     const extendedParams = {
       ...params,

@@ -228,16 +228,16 @@ const getFtJobs = async ({
  * - suppressions de données non autorisées pour des consommateurs extérieurs
  */
 export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult<ILbaItemFtJob>> => {
-  let peResponse: FTResponse | IApiError | null = null
+  let ftResponse: FTResponse | IApiError | null = null
   const currentRadius = radius || 20000
   const jobLimit = 150
 
   let trys = 0
 
   while (trys < 3) {
-    peResponse = await getFtJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
+    ftResponse = await getFtJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
 
-    if ("status" in peResponse && peResponse.status === 429) {
+    if ("status" in ftResponse && ftResponse.status === 429) {
       console.warn("PE jobs api quota exceeded. Retrying : ", trys + 1)
       // trois essais pour gérer les 429 quotas exceeded des apis PE.
       trys++
@@ -247,11 +247,11 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
     }
   }
 
-  if (peResponse && "error" in peResponse && peResponse?.result === "error") {
-    return peResponse
+  if (ftResponse && "error" in ftResponse && ftResponse?.result === "error") {
+    return ftResponse
   }
 
-  const resultats = peResponse && "resultats" in peResponse ? peResponse.resultats : []
+  const resultats = ftResponse && "resultats" in ftResponse ? ftResponse.resultats : []
 
   let jobs = transformFtJobs({ jobs: resultats, radius: currentRadius, latitude, longitude })
 
