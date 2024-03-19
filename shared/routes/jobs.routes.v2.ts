@@ -228,9 +228,9 @@ export const zJobsRoutesV2 = {
         description: "Get job opportunities matching the query parameters",
       },
     },
-    "/jobs/company/:siret": {
+    "/jobs/entreprise_lba/:siret": {
       method: "get",
-      path: "/jobs/company/:siret",
+      path: "/jobs/entreprise_lba/:siret",
       params: z
         .object({
           siret: extensions.siret,

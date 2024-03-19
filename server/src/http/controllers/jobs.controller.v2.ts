@@ -359,10 +359,10 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/jobs/company/:siret",
+    "/jobs/entreprise_lba/:siret",
     {
-      schema: zRoutes.get["/jobs/company/:siret"],
-      onRequest: server.auth(zRoutes.get["/jobs/company/:siret"]),
+      schema: zRoutes.get["/jobs/entreprise_lba/:siret"],
+      onRequest: server.auth(zRoutes.get["/jobs/entreprise_lba/:siret"]),
       config,
     },
     async (req, res) => {
