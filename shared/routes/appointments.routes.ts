@@ -238,7 +238,6 @@ export const zAppointmentsRoute = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Appointment Request"] as string[],
-        operationId: "appointmentCreateContext",
         description: "Appointment request",
       },
     },

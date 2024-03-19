@@ -95,7 +95,6 @@ export const zV1JobsEtFormationsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Jobs et formations"] as string[],
-        operationId: "getJobsEtFormations",
       },
     },
   },

@@ -28,7 +28,6 @@ export const zMetiersRoutes = {
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
         tags: ["V1 - Metiers"] as string[],
-        operationId: "getMetiersParCfd",
       },
     },
     "/v1/metiers/all": {
@@ -41,7 +40,6 @@ export const zMetiersRoutes = {
       openapi: {
         description: "Retourne la liste de tous les métiers référencés sur LBA",
         tags: ["V1 - Metiers"] as string[],
-        operationId: "getTousLesMetiers",
       },
     },
     "/v1/metiers": {
@@ -86,7 +84,6 @@ export const zMetiersRoutes = {
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
         tags: ["V1 - Metiers"] as string[],
-        operationId: "getMetiers",
       },
     },
     "/v1/metiers/intitule": {
@@ -106,7 +103,6 @@ export const zMetiersRoutes = {
       openapi: {
         description: "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
         tags: ["V1 - Metiers"] as string[],
-        operationId: "getCoupleAppellationRomeIntitule",
       },
     },
   },

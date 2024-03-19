@@ -240,7 +240,6 @@ export const zFormationsRoutesV2 = {
       securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
         tags: ["V2 - Jobs et formations"] as string[],
-        operationId: "getJobsEtFormations",
       },
     },
   },
