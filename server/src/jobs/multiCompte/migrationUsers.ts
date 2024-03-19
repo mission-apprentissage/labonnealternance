@@ -36,6 +36,7 @@ const migrationRecruiters = async () => {
   const recruiters: IRecruiter[] = await Recruiter.find({}).lean()
   logger.info(`Migration: ${recruiters.length} recruiteurs à mettre à jour`)
   const stats = { success: 0, failure: 0, jobSuccess: 0 }
+  const recruiterOrphans: string[] = []
 
   await asyncForEachGrouped(recruiters, parallelism, async (recruiter, index) => {
     index % 1000 === 0 && logger.info(`import du recruiteur n°${index}`)
@@ -50,6 +51,7 @@ const migrationRecruiters = async () => {
       } else {
         userRecruiter = await UserRecruteur.findOne({ establishment_id }).lean()
         if (!userRecruiter) {
+          recruiterOrphans.push(establishment_id)
           throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_id=${establishment_id}`)
         }
       }
@@ -74,6 +76,9 @@ const migrationRecruiters = async () => {
       stats.failure++
     }
   })
+  logger.info(`recruiters orphelins :
+  ${JSON.stringify(recruiterOrphans, null, 2)}
+  `)
   logger.info(`Migration: user candidats terminés`)
   const message = `${stats.success} recruiteurs repris avec succès.
   ${stats.failure} recruiteurs en erreur.
@@ -358,7 +363,7 @@ function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["st
         date: new Date(),
         validation_type: VALIDATION_UTILISATEUR.AUTO,
         reason: "multi compte : aucun status",
-        status: AccessStatus.DENIED,
+        status: AccessStatus.GRANTED,
       },
     ]
   }

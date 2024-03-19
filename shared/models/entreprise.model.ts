@@ -10,6 +10,7 @@ import { ZValidationUtilisateur } from "./user2.model"
 export enum EntrepriseStatus {
   ERROR = "ERROR",
   VALIDE = "VALIDE",
+  DESACTIVE = "DESACTIVE",
 }
 
 export const ZEntrepriseStatusEvent = z

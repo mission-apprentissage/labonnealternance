@@ -15,7 +15,7 @@ import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { ENTREPRISE } from "../../../../services/constant.service"
 import { EntrepriseData, autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
 import { activateEntrepriseRecruiterForTheFirstTime, archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
-import { UserAndOrganization, deactivateUser, setEntrepriseInError } from "../../../../services/userRecruteur.service"
+import { UserAndOrganization, deactivateEntreprise, setEntrepriseInError } from "../../../../services/userRecruteur.service"
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await Entreprise.find({
@@ -32,7 +32,7 @@ const updateEntreprisesInfosInError = async () => {
       const siretResponse = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: entreprise id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
-        await deactivateUser(_id, siretResponse.message)
+        await deactivateEntreprise(_id, siretResponse.message)
         stats.deactivated++
       } else {
         const entrepriseData: Partial<EntrepriseData> = siretResponse

@@ -1,7 +1,6 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
-import type { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, parseEnumOrError } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ICFA } from "shared/models/cfa.model"
@@ -307,19 +306,6 @@ export const updateLastConnectionDate = async (email: IUserRecruteur["email"]): 
 }
 
 /**
- * @description update user validation status
- * @param {IUserRecruteur["_id"]} userId
- * @param {UpdateQuery<IUserRecruteur["status"]} state
- * @param {ModelUpdateOptions} [options={new:true}]
- * @returns {Promise<IUserRecruteur>}
- */
-export const updateUserValidationHistory = async (
-  userId: IUserRecruteur["_id"],
-  state: UpdateQuery<IUserStatusValidation>,
-  options: ModelUpdateOptions = { new: true }
-): Promise<IUserRecruteur | null> => await UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options).lean()
-
-/**
  * @description get last user validation state from status array, by creation date
  * @param {IUserRecruteur["status"]} stateArray
  * @returns {IUserRecruteur["status"]}
@@ -334,6 +320,10 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]): IUserStatus
 }
 
 export const setEntrepriseInError = async (entrepriseId: IEntreprise["_id"], reason: string) => {
+  return setEntrepriseStatus(entrepriseId, reason, EntrepriseStatus.ERROR)
+}
+
+export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reason: string, status: EntrepriseStatus) => {
   const entreprise = await Entreprise.findOne({ _id: entrepriseId })
   if (!entreprise) {
     throw Boom.internal(`could not find entreprise with id=${entrepriseId}`)
@@ -341,7 +331,7 @@ export const setEntrepriseInError = async (entrepriseId: IEntreprise["_id"], rea
   const event: IEntrepriseStatusEvent = {
     date: new Date(),
     reason,
-    status: EntrepriseStatus.ERROR,
+    status,
     validation_type: VALIDATION_UTILISATEUR.AUTO,
   }
   await Entreprise.updateOne(
@@ -378,17 +368,8 @@ export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization
   await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION)
 }
 
-export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: string) => {
-  const response = await updateUserValidationHistory(userId, {
-    validation_type: VALIDATION_UTILISATEUR.AUTO,
-    user: "SERVEUR",
-    status: ETAT_UTILISATEUR.DESACTIVE,
-    reason,
-  })
-  if (!response) {
-    throw new Error(`could not find user history for user with id=${userId}`)
-  }
-  return response
+export const deactivateEntreprise = async (entrepriseId: IEntreprise["_id"], reason: string) => {
+  return setEntrepriseStatus(entrepriseId, reason, EntrepriseStatus.DESACTIVE)
 }
 
 export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
@@ -427,7 +408,7 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   const nonGrantedRoles = await RoleManagement.find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
   const lastGrantedRoles = await RoleManagement.find({ $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } })
     .sort({ updatedAt: -1 })
-    .limit(activeRoleLimit ?? -1)
+    .limit(activeRoleLimit ?? 1000)
     .lean()
   const roles = [...nonGrantedRoles, ...lastGrantedRoles]
 
@@ -435,10 +416,10 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   const users = await User2.find({ _id: { $in: userIds } }).lean()
 
   const entrepriseIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : []))
-  const entreprises = await Entreprise.find({ _id: { $in: entrepriseIds }, opco }).lean()
+  const entreprises = await Entreprise.find({ _id: { $in: entrepriseIds }, ...(opco ? { opco } : {}) }).lean()
 
-  const cfaIds = opco ? roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : [])) : []
-  const cfas = await Cfa.find({ _id: { $in: cfaIds } }).lean()
+  const cfaIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : []))
+  const cfas = cfaIds.length ? await Cfa.find({ _id: { $in: cfaIds } }).lean() : []
 
   const userRecruteurs = roles
     .flatMap<{ user: IUser2; role: IRoleManagement } & ({ entreprise: IEntreprise } | { cfa: ICFA })>((role) => {
