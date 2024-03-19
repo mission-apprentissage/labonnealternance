@@ -13,7 +13,7 @@ import { ObjectId, ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Entreprise, RoleManagement, User2, UserRecruteur } from "../common/model/index"
+import { Cfa, Entreprise, RoleManagement, User2 } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
@@ -402,7 +402,15 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
   })
 }
 
-export const getAdminUsers = () => UserRecruteur.find({ type: ADMIN }).lean()
+export const getAdminUsers = async () => {
+  const grantedRoles = await RoleManagement.find({
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] },
+    authorized_type: AccessEntityType.ADMIN,
+  }).lean()
+  const userIds = grantedRoles.map((role) => role.user_id.toString())
+  const users = await User2.find({ _id: { $in: userIds } }).lean()
+  return users
+}
 
 export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: { opco?: OPCOS; activeRoleLimit?: number }) => {
   const nonGrantedRoles = await RoleManagement.find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()

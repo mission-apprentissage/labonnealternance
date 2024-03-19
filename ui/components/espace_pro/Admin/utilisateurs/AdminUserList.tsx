@@ -1,9 +1,8 @@
 import { Box, Button, Flex, Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useQuery } from "react-query"
-import { IUserRecruteur } from "shared"
+import { IUser2 } from "shared/models/user2.model"
 
-import { AUTHTYPE } from "@/common/contants"
 import { sortReactTableString } from "@/common/utils/dateUtils"
 import Link from "@/components/Link"
 import { ArrowRightLine2 } from "@/theme/components/icons"
@@ -14,19 +13,18 @@ import TableNew from "../../TableNew"
 
 import UserForm from "./UserForm"
 
-const UserList = () => {
+const AdminUserList = () => {
   const newUser = useDisclosure()
 
   const {
     data: users,
     isLoading,
     refetch: refetchUsers,
-  } = useQuery<IUserRecruteur[]>({
+  } = useQuery<IUser2[]>({
     queryKey: ["adminusers"],
     queryFn: async () => {
-      const data = await apiGet("/admin/users", {})
-
-      return data.users
+      const users = await apiGet("/admin/users", {})
+      return users.users
     },
   })
 
@@ -79,21 +77,9 @@ const UserList = () => {
             filter: "fuzzyText",
           },
           {
-            Header: "Administrateur",
-            accessor: "type",
-            Cell: ({ value }) => (value === AUTHTYPE.ADMIN ? "Oui" : "Non"),
-            filter: "text",
-          },
-          {
-            Header: "Scope",
-            id: "scope",
-            accessor: ({ scope }) => scope,
-          },
-          {
             Header: "Actif",
             id: "last_connection",
-            accessor: ({ last_connection }) => {
-              const date = last_connection
+            accessor: ({ last_action_date: date }) => {
               return date ? dayjs(date).format("DD/MM/YYYY") : "Jamais"
             },
           },
@@ -119,4 +105,4 @@ const UserList = () => {
   )
 }
 
-export default UserList
+export default AdminUserList

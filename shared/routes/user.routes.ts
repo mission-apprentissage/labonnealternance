@@ -4,6 +4,7 @@ import { ZJob, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
 import { enumToZod } from "../models/enumToZod"
 import { AccessEntityType, ZRoleManagementEvent } from "../models/roleManagement.model"
+import { ZUser2 } from "../models/user2.model"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
@@ -80,7 +81,7 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z
           .object({
-            users: z.array(ZUserRecruteur),
+            users: z.array(ZUser2),
           })
           .strict(),
       },
