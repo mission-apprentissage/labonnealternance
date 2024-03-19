@@ -1,6 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react"
 import { useContext, useState } from "react"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { ErrorMessage } from "../.."
 import { DisplayContext } from "../../../context/DisplayContextProvider"
@@ -215,7 +215,7 @@ const ResultLists = ({
       return (
         <>
           {mergedOpportunities.map((opportunity, idx) => {
-            if ([LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES].includes(opportunity.ideaType)) {
+            if ([LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.PEJOB].includes(opportunity.ideaType)) {
               return renderJob(isTestMode, idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)
             } else {
               return renderLbb(isTestMode, idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)

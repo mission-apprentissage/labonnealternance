@@ -1,6 +1,7 @@
 import { Box, Container, Divider, Grid, GridItem, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { NotionRenderer } from "react-notion-x"
 
 import Breadcrumb from "../components/breadcrumb"
@@ -49,6 +50,24 @@ const tabParams = {
 const focusedTabParams = {}
 
 const FAQ = ({ recruteur, organisme, candidat }) => {
+  const { asPath } = useRouter()
+
+  const [tabIndex, setTabIndex] = useState(0)
+
+  const handleTabsChange = (index) => {
+    setTabIndex(index)
+  }
+
+  useEffect(() => {
+    const hash = asPath.split("#")[1]
+    if (hash === "cfa") {
+      setTabIndex(2)
+    }
+    if (hash === "recruteur") {
+      setTabIndex(1)
+    }
+  }, [asPath])
+
   return (
     <Box>
       <NextSeo title="F.A.Q | La bonne alternance | Trouvez votre alternance" description="Questions fréquemment posées. Résultats entreprises, résultats formations, etc..." />
@@ -75,7 +94,7 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
           </GridItem>
           <GridItem px={0} colSpan={[12, 12, 12, 7]}>
             <Box>
-              <Tabs variant="unstyled">
+              <Tabs variant="unstyled" index={tabIndex} onChange={handleTabsChange}>
                 <TabList px={0}>
                   <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
                     Candidat

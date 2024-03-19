@@ -101,6 +101,8 @@ fileignoreconfig:
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/HomeComponents/FacilitezRDVA.tsx
+  checksum: cdeae2ef94431bbe8fd1bb0f1bc0c007c938c1a1d4513316cc44cb966b7f4268
 - filename: ui/components/ItemDetail/ItemDetail.tsx
   checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
 - filename: ui/components/Ressources/conseilsEtAstuces.tsx
@@ -119,6 +121,10 @@ fileignoreconfig:
   checksum: 47a40c539f076c13460dbb9d0b6a6e05086289b8bd5a606e64b1ea30fdbf783d
 - filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx
   checksum: 4b65ee1cab8a6297037abb32ff06a72a54ccfaf2165745ed780f52699bb7a4c6
+- filename: ui/public/images/home_pics/illu-offreformation.svg
+  checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
+- filename: ui/public/images/home_pics/illu-plateformesjeunes.svg
+  checksum: 9b2847599887988c02e13055aef1488349aca1808b22fa9f24aa8d98dc4468d1
 - filename: ui/utils/api.utils.test.ts
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
