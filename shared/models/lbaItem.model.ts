@@ -417,7 +417,6 @@ export const ZLbaItemPeJob = z
     contact: ZLbaItemContact.nullable(),
     place: ZLbaItemPlace.nullable(),
     company: ZLbaItemCompany.nullable(),
-
     url: z.string().nullable(), // pe -> reconstruction depuis id
     job: ZLbaItemJob.nullable(),
     romes: z.array(ZLbaItemRome).nullable(),

@@ -12,6 +12,7 @@ import { zEmailsRoutes } from "./emails.routes"
 import { zEtablissementRoutes } from "./etablissement.routes"
 import { zFormationRoute } from "./formations.routes"
 import { zFormulaireRoute } from "./formulaire.route"
+import { zJobsRoutesV2 } from "./jobs.routes.v2"
 import { zJobsEtFormationsRoutesV2 } from "./jobsEtFormations.routes.v2"
 import { zLoginRoutes } from "./login.routes"
 import { zMetiersRoutes } from "./metiers.routes"
@@ -63,11 +64,16 @@ const zRoutesGetP4 = {
   ...zLoginRoutes.get,
 } as const
 
-const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 = {
+const zRoutesGetP5 = {
+  ...zJobsRoutesV2.get,
+} as const
+
+const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 & typeof zRoutesGetP5 = {
   ...zRoutesGetP1,
   ...zRoutesGetP2,
   ...zRoutesGetP3,
   ...zRoutesGetP4,
+  ...zRoutesGetP5,
 } as const
 
 const zRoutesPost1 = {
@@ -90,6 +96,7 @@ const zRoutesPost3 = {
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
+  ...zJobsRoutesV2.post,
 }
 
 const zRoutesPost = {
@@ -114,6 +121,7 @@ const zRoutesPatch = {
   ...zFormulaireRoute.patch,
   ...zEtablissementRoutes.patch,
   ...zEligibleTrainingsForAppointmentRoutes.patch,
+  ...zJobsRoutesV2.patch,
 } as const
 
 export type IGetRoutes = typeof zRoutesGet

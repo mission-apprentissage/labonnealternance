@@ -283,7 +283,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
 }
 
 /**
- * Retourne un tableau contenant la seule offre Pôle emploi identifiée
+ * @description Retourne un tableau contenant la seule offre Pôle emploi identifiée
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
@@ -314,5 +314,39 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
+  }
+}
+/**
+ * @description Retourne un tableau contenant la seule offre Pôle emploi identifiée
+ */
+export const getPeJobFromIdV2 = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<{ job: ILbaItemPeJob } | null> => {
+  try {
+    const job = await getPeJob(id)
+
+    if (!job) {
+      throw Boom.badRequest()
+    }
+
+    if (job.status === 204 || job.status === 400 || job.data === "") {
+      if (caller) {
+        trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
+      }
+      throw Boom.badRequest()
+    }
+
+    const peJob = transformPeJob({ job: job.data })
+
+    if (caller) {
+      trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "job/offres_emploi_partenaires", response: "OK" })
+      // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+      if (peJob.company) {
+        peJob.company.siret = null
+      }
+    }
+
+    return { job: peJob }
+  } catch (error) {
+    sentryCaptureException(error)
+    return null
   }
 }
