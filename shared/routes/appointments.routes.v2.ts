@@ -111,9 +111,9 @@ export const zAppointmentsRouteV2 = {
       },
       securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
+        tags: ["V2 - Appointment Request"] as string[],
         operationId: "appointmentCreateContext",
         description: "Appointment request",
-        tags: ["Appointment Request"] as string[],
       },
     },
   },

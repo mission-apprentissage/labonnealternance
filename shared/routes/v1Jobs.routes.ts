@@ -54,7 +54,7 @@ export const zV1JobsRoutes = {
         resources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         description: "Get existing establishment id from siret & email",
       },
     },
@@ -120,7 +120,7 @@ export const zV1JobsRoutes = {
         resources: {},
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         description: "Get all jobs related to my organization",
         operationId: "getJobs",
       },
@@ -157,7 +157,7 @@ export const zV1JobsRoutes = {
         resources: { job: [{ _id: { type: "params", key: "jobId" } }] },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "getDelegation",
         description: "Get related training organization related to a job offer.",
       },
@@ -220,7 +220,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "getJobOpportunities",
         description: "Get job opportunities matching the query parameters",
       },
@@ -252,7 +252,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "getCompany",
         description: "Get one company identified by it's siret",
       },
@@ -288,7 +288,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "getLbaJob",
         description: "Get one lba job identified by it's id",
       },
@@ -320,7 +320,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "getPeJob",
         description: "Get one pe job identified by it's id",
       },
@@ -359,7 +359,7 @@ export const zV1JobsRoutes = {
         resources: {},
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         description: "Create an establishment entity",
         operationId: "createEstablishment",
       },
@@ -410,7 +410,7 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         description: "Create a job offer inside an establishment entity.",
         operationId: "createJob",
       },
@@ -440,7 +440,7 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "createDelegation",
         description: "Create delegation related to a job offer.",
       },
@@ -464,7 +464,7 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         description: 'Update a job offer status to "Provided"',
         operationId: "setJobAsProvided",
       },
@@ -488,7 +488,7 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "setJobAsCanceled",
         description: 'Update a job offer status to "Canceled".',
       },
@@ -512,7 +512,7 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "extendJobExpiration",
         description: "Update a job expiration date by 30 days.",
       },
@@ -530,7 +530,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "statsViewLbaJob",
         description: "Notifies that the detail of a matcha job has been viewed",
       },
@@ -573,7 +573,7 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         operationId: "updateJob",
         description: "Update a job offer specific fields inside an establishment entity.",
       },

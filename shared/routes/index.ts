@@ -11,9 +11,9 @@ import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAp
 import { zEmailsRoutes } from "./emails.routes"
 import { zEtablissementRoutes } from "./etablissement.routes"
 import { zFormationRoute } from "./formations.routes"
+import { zFormationsRoutesV2 } from "./formations.routes.v2"
 import { zFormulaireRoute } from "./formulaire.route"
 import { zJobsRoutesV2 } from "./jobs.routes.v2"
-import { zJobsEtFormationsRoutesV2 } from "./jobsEtFormations.routes.v2"
 import { zLoginRoutes } from "./login.routes"
 import { zMetiersRoutes } from "./metiers.routes"
 import { zMetiersRoutesV2 } from "./metiers.routes.v2"
@@ -52,7 +52,8 @@ const zRoutesGetP3 = {
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationRoute.get,
   ...zOptoutRoutes.get,
-  ...zJobsEtFormationsRoutesV2.get,
+  ...zFormationsRoutesV2.get,
+  ...zJobsRoutesV2.get,
 } as const
 
 const zRoutesGetP4 = {
@@ -64,16 +65,11 @@ const zRoutesGetP4 = {
   ...zLoginRoutes.get,
 } as const
 
-const zRoutesGetP5 = {
-  ...zJobsRoutesV2.get,
-} as const
-
-const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 & typeof zRoutesGetP5 = {
+const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 = {
   ...zRoutesGetP1,
   ...zRoutesGetP2,
   ...zRoutesGetP3,
   ...zRoutesGetP4,
-  ...zRoutesGetP5,
 } as const
 
 const zRoutesPost1 = {
