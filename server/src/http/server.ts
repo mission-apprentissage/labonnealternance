@@ -31,8 +31,10 @@ import etablissementRoute from "./controllers/etablissement.controller"
 import etablissementsRecruteurRoute from "./controllers/etablissementRecruteur.controller"
 import formationsRegionV1Route from "./controllers/formationRegion.controller"
 import formationsV1Route from "./controllers/formations.controller"
+import formationsRouteV2 from "./controllers/formations.controller.v2"
 import formulaireRoute from "./controllers/formulaire.controller"
 import jobsV1Route from "./controllers/jobs.controller"
+import jobsRouteV2 from "./controllers/jobs.controller.v2"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import jobsEtFormationsRouteV2 from "./controllers/jobsEtFormations.controller.v2"
 import login from "./controllers/login.controller"
@@ -175,6 +177,8 @@ export async function bind(app: Server) {
       jobsEtFormationsRouteV2(typedSubApp)
       applicationRouteV2(typedSubApp)
       appointmentRequestRouteV2(typedSubApp)
+      formationsRouteV2(typedSubApp)
+      jobsRouteV2(typedSubApp)
       done()
     },
     { prefix: "/api/v2" }
