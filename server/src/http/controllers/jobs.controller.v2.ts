@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { IJob, ILbaItemLbaJob, ILbaItemPeJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { IJob, ILbaItemLbaJob, ILbaItemFtJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -399,7 +399,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { source, id } = req.params
       const { caller } = req.query
-      let result: { job: ILbaItemLbaJob[] | ILbaItemPeJob } | null
+      let result: { job: ILbaItemLbaJob[] | ILbaItemFtJob } | null
 
       switch (source) {
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
