@@ -107,15 +107,16 @@ export default (server: Server) => {
     async (req, res) => {
       const { email, ...userPayload } = req.body
       const { userId } = req.params
-      const formattedEmail = email?.toLocaleLowerCase()
+      const newEmail = email?.toLocaleLowerCase()
 
-      const exist = await User2.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
-
-      if (exist) {
-        return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
+      if (newEmail) {
+        const exist = await User2.findOne({ email: newEmail, _id: { $ne: userId } }).lean()
+        if (exist) {
+          return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
+        }
       }
 
-      const update = { email: formattedEmail, ...userPayload }
+      const update = { ...userPayload, ...(newEmail ? { email: newEmail } : {}) }
 
       const updatedUser = await User2.findOneAndUpdate({ _id: userId }, update).lean()
       if (!updatedUser) {
