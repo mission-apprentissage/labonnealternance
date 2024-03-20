@@ -24,6 +24,7 @@ describe("create-entreprise-account-no-delegation", () => {
       email,
     })
     FlowCreationEntreprise.personalInfosPage.submit()
+    FlowCreationEntreprise.personalInfosPage.confirmAccountCreation()
     FlowCreationEntreprise.offerPage.fillForm({
       romeLabel,
       contractType: {
