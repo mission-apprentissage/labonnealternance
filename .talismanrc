@@ -82,11 +82,11 @@ fileignoreconfig:
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: 4c52ccaab38f3151e125d924d06eafd9f861be93c1d39cf70b563d081a3851fc
+  checksum: a854d2fcb7769e24d8dbefd73ae60c41ed1c85be9c87099b7d730e52d30ec66a
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
-  checksum: 7fea07b04529a8981bd57f26420f4389337ab92404442c17772565f1d0ddc6f5
+  checksum: 0db1feff739fda6ff77b2a460e214c03bbeb0451c2e4cf44556f5314c1896bd7
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
@@ -129,6 +129,8 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+- filename: shared/routes/appointments.routes.v2.ts
+  checksum: 5e337f232b69f9eb065dffb950dd7cfefb6a368841e0a2147b1b3355aa82d828
 scopeconfig:
 - scope: node
 custom_patterns:

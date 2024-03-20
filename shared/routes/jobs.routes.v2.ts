@@ -22,11 +22,11 @@ import {
 } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
 
-export const zV1JobsRoutes = {
+export const zJobsRoutesV2 = {
   get: {
-    "/v1/jobs/establishment": {
+    "/jobs/establishment": {
       method: "get",
-      path: "/v1/jobs/establishment",
+      path: "/jobs/establishment",
       querystring: z
         .object({
           establishment_siret: extensions.siret,
@@ -54,14 +54,13 @@ export const zV1JobsRoutes = {
         resources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
         description: "Get existing establishment id from siret & email",
       },
     },
-    "/v1/jobs/bulk": {
+    "/jobs/bulk": {
       method: "get",
-      path: "/v1/jobs/bulk",
-      // TODO_SECURITY_FIX
+      path: "/jobs/bulk",
       querystring: z
         .object({
           query: z
@@ -120,13 +119,14 @@ export const zV1JobsRoutes = {
         resources: {},
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
         description: "Get all jobs related to my organization",
+        operationId: "getJobs",
       },
     },
-    "/v1/jobs/delegations/:jobId": {
+    "/jobs/delegations/:jobId": {
       method: "get",
-      path: "/v1/jobs/delegations/:jobId",
+      path: "/jobs/delegations/:jobId",
       params: z
         .object({
           jobId: zObjectId,
@@ -156,13 +156,14 @@ export const zV1JobsRoutes = {
         resources: { job: [{ _id: { type: "params", key: "jobId" } }] },
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "getDelegation",
         description: "Get related training organization related to a job offer.",
       },
     },
-    "/v1/jobs": {
+    "/jobs": {
       method: "get",
-      path: "/v1/jobs",
+      path: "/jobs",
       querystring: z
         .object({
           romes: zRomesParams("rncp"),
@@ -216,15 +217,20 @@ export const zV1JobsRoutes = {
         "400": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "api-key",
+        access: null,
+        resources: {},
+      },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "getJobOpportunities",
         description: "Get job opportunities matching the query parameters",
       },
     },
-    "/v1/jobs/company/:siret": {
+    "/jobs/entreprise_lba/:siret": {
       method: "get",
-      path: "/v1/jobs/company/:siret",
+      path: "/jobs/entreprise_lba/:siret",
       params: z
         .object({
           siret: extensions.siret,
@@ -247,17 +253,23 @@ export const zV1JobsRoutes = {
         "404": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "api-key",
+        access: null,
+        resources: {},
+      },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "getCompany",
         description: "Get one company identified by it's siret",
       },
     },
-    "/v1/jobs/matcha/:id": {
+    "/jobs/:source/:id": {
       method: "get",
-      path: "/v1/jobs/matcha/:id",
+      path: "/jobs/:source/:id",
       params: z
         .object({
+          source: zSourcesParams,
           id: z.string().openapi({
             param: {
               description: "the id the lba job looked for.",
@@ -273,57 +285,31 @@ export const zV1JobsRoutes = {
         .passthrough(),
       headers: zRefererHeaders,
       response: {
-        "200": z
-          .object({
-            matchas: z.array(ZLbaItemLbaJob),
-          })
-          .strict(),
-        //"419": le code correspondant a disparu. ticket bug ouvert
-        "400": z.union([ZResError, ZLbacError, ZApiError]),
-        "500": z.union([ZResError, ZLbacError, ZApiError]),
+        "200": z.union([
+          z
+            .object({
+              job: z.union([z.array(ZLbaItemLbaJob), ZLbaItemPeJob]),
+            })
+            .strict(),
+          z.null(),
+        ]),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "api-key",
+        access: null,
+        resources: {},
+      },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "getLbaJob",
         description: "Get one lba job identified by it's id",
-      },
-    },
-    "/v1/jobs/job/:id": {
-      method: "get",
-      path: "/v1/jobs/job/:id",
-      params: z
-        .object({
-          id: z.string(),
-        })
-        .strict(),
-      querystring: z
-        .object({
-          caller: zCallerParam,
-        })
-        .strict()
-        .passthrough(),
-      headers: zRefererHeaders,
-      response: {
-        "200": z
-          .object({
-            peJobs: z.array(ZLbaItemPeJob),
-          })
-          .strict(),
-        "400": z.union([ZResError, ZLbacError, ZApiError]),
-        "404": z.union([ZResError, ZLbacError, ZApiError]),
-        "500": z.union([ZResError, ZLbacError, ZApiError]),
-      },
-      securityScheme: null,
-      openapi: {
-        tags: ["V1 - Jobs"] as string[],
-        description: "Get one pe job identified by it's id",
       },
     },
   },
   post: {
-    "/v1/jobs/establishment": {
+    "/jobs/establishment": {
       method: "post",
-      path: "/v1/jobs/establishment",
+      path: "/jobs/establishment",
       body: z
         .object({
           establishment_siret: extensions.siret,
@@ -353,13 +339,14 @@ export const zV1JobsRoutes = {
         resources: {},
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
         description: "Create an establishment entity",
+        operationId: "createEstablishment",
       },
     },
-    "/v1/jobs/:establishmentId": {
+    "/jobs/:establishmentId": {
       method: "post",
-      path: "/v1/jobs/:establishmentId",
+      path: "/jobs/:establishmentId",
       params: z.object({ establishmentId: z.string() }).strict(),
       body: ZJobFields.pick({
         job_level_label: true,
@@ -403,13 +390,14 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
         description: "Create a job offer inside an establishment entity.",
+        operationId: "createJob",
       },
     },
-    "/v1/jobs/delegations/:jobId": {
+    "/jobs/delegations/:jobId": {
       method: "post",
-      path: "/v1/jobs/delegations/:jobId",
+      path: "/jobs/delegations/:jobId",
       params: z
         .object({
           jobId: zObjectId,
@@ -432,13 +420,14 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "createDelegation",
         description: "Create delegation related to a job offer.",
       },
     },
-    "/v1/jobs/provided/:jobId": {
+    "/jobs/provided/:jobId": {
       method: "post",
-      path: "/v1/jobs/provided/:jobId",
+      path: "/jobs/provided/:jobId",
       params: z
         .object({
           jobId: zObjectId,
@@ -455,13 +444,14 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
         description: 'Update a job offer status to "Provided"',
+        operationId: "setJobAsProvided",
       },
     },
-    "/v1/jobs/canceled/:jobId": {
+    "/jobs/canceled/:jobId": {
       method: "post",
-      path: "/v1/jobs/canceled/:jobId",
+      path: "/jobs/canceled/:jobId",
       params: z
         .object({
           jobId: zObjectId,
@@ -478,13 +468,14 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "setJobAsCanceled",
         description: 'Update a job offer status to "Canceled".',
       },
     },
-    "/v1/jobs/extend/:jobId": {
+    "/jobs/extend/:jobId": {
       method: "post",
-      path: "/v1/jobs/extend/:jobId",
+      path: "/jobs/extend/:jobId",
       params: z
         .object({
           jobId: zObjectId,
@@ -501,13 +492,14 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "extendJobExpiration",
         description: "Update a job expiration date by 30 days.",
       },
     },
-    "/v1/jobs/matcha/:id/stats/view-details": {
+    "/jobs/matcha/:id/stats/view-details": {
       method: "post",
-      path: "/v1/jobs/matcha/:id/stats/view-details",
+      path: "/jobs/matcha/:id/stats/view-details",
       params: z
         .object({
           id: zObjectId,
@@ -518,15 +510,16 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "statsViewLbaJob",
         description: "Notifies that the detail of a matcha job has been viewed",
       },
     },
   },
   patch: {
-    "/v1/jobs/:jobId": {
+    "/jobs/:jobId": {
       method: "patch",
-      path: "/v1/jobs/:jobId",
+      path: "/jobs/:jobId",
       params: z
         .object({
           jobId: zObjectId,
@@ -560,7 +553,8 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["V1 - Jobs"] as string[],
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "updateJob",
         description: "Update a job offer specific fields inside an establishment entity.",
       },
     },
