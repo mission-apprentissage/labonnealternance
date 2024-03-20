@@ -120,7 +120,7 @@ const DemandeDeContact = (props: Props) => {
             lastname: values.lastname,
             phone: values.phone,
             email: values.email,
-            type: values.applicantType,
+            type: applicantType,
             applicantMessageToCfa: values.applicantMessageToCfa,
             cleMinistereEducatif: props.context.cle_ministere_educatif,
             applicantReasons: applicantReasons.filter(({ checked }) => checked).map(({ key }) => key),

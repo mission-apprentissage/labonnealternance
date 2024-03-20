@@ -2,7 +2,7 @@ import Boom from "boom"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
-import { IApplication, IJob, ILbaCompany, INewApplication, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
+import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -111,7 +111,7 @@ export const sendApplication = async ({
   newApplication,
   referer,
 }: {
-  newApplication: INewApplication
+  newApplication: INewApplicationV2
   referer: string | undefined
 }): Promise<{ error: string } | { result: "ok"; message: "messages sent" }> => {
   if (!validateCaller({ caller: newApplication.caller, referer })) {
@@ -149,7 +149,7 @@ export const sendApplication = async ({
       const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
       const searched_for_job_label = newApplication.searched_for_job_label || ""
 
-      const buildTopic = (company_type: INewApplication["company_type"], aJobTitle: string) => {
+      const buildTopic = (company_type: INewApplicationV2["company_type"], aJobTitle: string) => {
         if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
           return `Candidature en alternance - ${aJobTitle}`
         } else {
@@ -220,7 +220,7 @@ export const sendApplication = async ({
 /**
  * Build url to access item detail on LBA ui
  */
-const buildUrlsOfDetail = (publicUrl: string, newApplication: INewApplication) => {
+const buildUrlsOfDetail = (publicUrl: string, newApplication: INewApplicationV2) => {
   const { company_type, job_id, company_siret } = newApplication
   const urlSearchParams = new URLSearchParams()
   urlSearchParams.append("display", "list")
@@ -343,7 +343,7 @@ const offreOrCompanyToCompanyFields = (offreOrCompany: OffreOrLbbCompany): Parti
   }
 }
 
-const cleanApplicantFields = (newApplication: INewApplication): Partial<IApplication> => {
+const cleanApplicantFields = (newApplication: INewApplicationV2): Partial<IApplication> => {
   return {
     applicant_first_name: newApplication.applicant_first_name,
     applicant_last_name: newApplication.applicant_last_name,
@@ -358,7 +358,7 @@ const cleanApplicantFields = (newApplication: INewApplication): Partial<IApplica
 /**
  * @description Initialize application object from query parameters
  */
-const newApplicationToApplicationDocument = (newApplication: INewApplication, offreOrCompany: OffreOrLbbCompany, recruteurEmail: string) => {
+const newApplicationToApplicationDocument = (newApplication: INewApplicationV2, offreOrCompany: OffreOrLbbCompany, recruteurEmail: string) => {
   const res = new Application({
     ...offreOrCompanyToCompanyFields(offreOrCompany),
     ...cleanApplicantFields(newApplication),
@@ -379,7 +379,7 @@ export const getEmailTemplate = (type = "mail-candidat"): string => {
 /**
  * @description checks if job applied to is valid
  */
-export const validateJob = async (application: INewApplication): Promise<OffreOrLbbCompany | { error: string }> => {
+export const validateJob = async (application: INewApplicationV2): Promise<OffreOrLbbCompany | { error: string }> => {
   const { company_type, job_id, company_siret } = application
 
   if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
@@ -412,7 +412,7 @@ export const validateJob = async (application: INewApplication): Promise<OffreOr
 /**
  * @description checks if attachment is corrupted
  */
-const scanFileContent = async (validable: INewApplication): Promise<string> => {
+const scanFileContent = async (validable: INewApplicationV2): Promise<string> => {
   return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
@@ -429,7 +429,7 @@ export const validatePermanentEmail = (email: string): string => {
 /**
  * @description checks if email's owner has not sent more than allowed count of applications per day
  */
-const checkUserApplicationCount = async (applicantEmail: string, application: INewApplication): Promise<string> => {
+const checkUserApplicationCount = async (applicantEmail: string, application: INewApplicationV2): Promise<string> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 

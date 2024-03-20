@@ -186,7 +186,7 @@ const validateInsee = (insee: string | undefined, error_messages: string[]) => {
 const validateApiSources = (apiSources: string | undefined, errorMessages: string[]) => {
   if (apiSources) {
     const sources = apiSources.split(",")
-    const areSourcesOk = sources.every((source) => allLbaItemTypeOLD.includes(source.trim()))
+    const areSourcesOk = sources.every((source) => (allLbaItemTypeOLD as string[]).includes(source.trim()))
 
     if (!areSourcesOk) {
       errorMessages.push(`sources: Optional sources argument used with wrong value. Should contain comma-separated values among ${allLbaItemTypeOLD.join(", ")}.`)

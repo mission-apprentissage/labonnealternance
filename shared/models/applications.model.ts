@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
@@ -104,7 +104,7 @@ export const ZNewApplication = ZApplication.extend({
   }),
   company_type: z.enum([allLbaItemTypeOLD[0], ...allLbaItemTypeOLD.slice(1)]).openapi({
     description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-    example: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    example: LBA_ITEM_TYPE_OLD.LBA,
   }),
   iv: z.string().optional().openapi({
     description: "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
@@ -154,6 +154,68 @@ export const ZUsedNewApplication = ZNewApplication.pick({
   secret: true,
   company_email: true,
 })
+
+export const ZNewApplicationV2 = ZApplication.extend({
+  message: ZApplication.shape.applicant_message_to_company.optional(),
+  applicant_file_name: ZApplication.shape.applicant_attachment_name,
+  applicant_file_content: z.string().max(4215276).openapi({
+    description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+    example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
+  }),
+  company_type: z.enum([allLbaItemType[0], ...allLbaItemType.slice(1)]).openapi({
+    description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
+    example: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+  }),
+  iv: z.string().optional().openapi({
+    description: "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
+    example: "...59c24c059b...",
+  }),
+  secret: z.string().nullish(),
+  company_email: z.string().nullish().openapi({
+    description: "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
+    example: "fake@dummy.com",
+  }),
+  crypted_company_email: z.string().nullish(),
+  caller: zCallerParam.nullish(),
+  job_id: ZApplication.shape.job_id.optional(),
+  searched_for_job_label: z.string().nullish().openapi({
+    description: "Le métier recherché par le candidat envoyant une candidature spontanée.",
+    example: "Vente de fleurs, végétaux",
+  }),
+})
+  .omit({
+    _id: true,
+    applicant_message_to_company: true,
+    applicant_attachment_name: true,
+    job_origin: true,
+    to_applicant_message_id: true,
+    to_company_message_id: true,
+    company_recruitment_intention: true,
+    company_feedback: true,
+    company_feedback_date: true,
+    created_at: true,
+    last_update_at: true,
+  })
+  .openapi("ApplicationUi")
+
+export const ZUsedNewApplicationV2 = ZNewApplication.pick({
+  caller: true,
+  applicant_email: true,
+  company_siret: true,
+  applicant_file_content: true,
+  searched_for_job_label: true,
+  job_id: true,
+  company_type: true,
+  applicant_first_name: true,
+  applicant_last_name: true,
+  applicant_file_name: true,
+  message: true,
+  applicant_phone: true,
+  secret: true,
+  company_email: true,
+})
+
+export type INewApplicationV2 = z.output<typeof ZNewApplicationV2>
 
 export type INewApplication = z.output<typeof ZUsedNewApplication>
 
