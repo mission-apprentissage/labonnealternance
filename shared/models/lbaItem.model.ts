@@ -239,6 +239,7 @@ const ZLbaItemJob = z
     dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat
     quantiteContrat: z.number().nullish(), // matcha -> offres.quantite
     status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullish(),
+    type: z.array(z.enum(["apprentissage", "professionnalisation"])).nullish(),
   })
   .strict()
   .openapi("LbacJob") // uniquement pour pe et matcha
