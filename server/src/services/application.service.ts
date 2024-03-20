@@ -430,7 +430,6 @@ export const validatePermanentEmail = (email: string): string => {
  * @description checks if email's owner has not sent more than allowed count of applications per day
  */
 const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany: OffreOrLbbCompany, caller: string | null | undefined): Promise<string> => {
-
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
