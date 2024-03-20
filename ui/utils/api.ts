@@ -1,9 +1,10 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes, IUserRecruteur, parseEnumOrError } from "shared"
+import { IJobWritable, INewDelegations, IRoutes, parseEnumOrError } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { OPCOS } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { IUser2 } from "shared/models/user2.model"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
 import { publicConfig } from "../config.public"
@@ -77,7 +78,7 @@ export const updateUserValidationHistory = ({
 }) => apiPut("/user/:userId/organization/:organizationId/permission", { params: { userId, organizationId }, body: { organizationType, status, reason } }).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
 export const deleteEntreprise = (userId: string, recruiterId: string) => apiDelete(`/user`, { querystring: { userId, recruiterId } }).catch(errorHandler)
-export const createUser = (userRecruteur: IUserRecruteur) => apiPost("/admin/users", { body: userRecruteur })
+export const createAdminUser = (user: IUser2) => apiPost("/admin/users", { body: user })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**

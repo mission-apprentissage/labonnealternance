@@ -11,7 +11,7 @@ import { apiGet } from "../../../../utils/api.utils"
 import LoadingEmptySpace from "../../LoadingEmptySpace"
 import TableNew from "../../TableNew"
 
-import UserForm from "./UserForm"
+import { AdminUserForm } from "./AdminUserForm"
 
 const AdminUserList = () => {
   const newUser = useDisclosure()
@@ -46,8 +46,9 @@ const AdminUserList = () => {
             fermer
             <Box paddingLeft="1w" as="i" className="ri-close-line" />
           </ModalCloseButton>
-          <UserForm
-            user={null}
+          <AdminUserForm
+            user={undefined}
+            role={undefined}
             onCreate={async (_, error) => {
               if (!error) {
                 newUser.onClose()

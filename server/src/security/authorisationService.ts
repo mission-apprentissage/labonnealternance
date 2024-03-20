@@ -257,7 +257,9 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     throw Boom.internal(`authorizationMiddleware: route doesn't have security scheme`, { method: schema.method, path: schema.path })
   }
 
-  if (schema.securityScheme.access === null) {
+  const requestedAccess = schema.securityScheme.access
+
+  if (requestedAccess === null) {
     return
   }
 
@@ -288,6 +290,10 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     }
   }
 
+  if (requestedAccess === "admin") {
+    throw Boom.forbidden("admin required")
+  }
+
   const resources = await getResources(schema, req)
 
   if (userType === "ICredential") {
@@ -299,7 +305,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       entreprises: [],
       opcos: opco ? [opco] : [],
     }
-    if (!isAuthorized(schema.securityScheme.access, userAccess, resources)) {
+    if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw Boom.forbidden()
     }
   } else if (userType === "IUser2") {
@@ -320,7 +326,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
         return []
       }),
     }
-    if (!isAuthorized(schema.securityScheme.access, userAccess, resources)) {
+    if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw Boom.forbidden()
     }
   } else {

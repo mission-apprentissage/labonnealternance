@@ -1,3 +1,5 @@
+import { Jsonify } from "type-fest"
+
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
@@ -44,4 +46,5 @@ export const ZRoleManagement = z
   .strict()
 
 export type IRoleManagement = z.output<typeof ZRoleManagement>
+export type IRoleManagementJson = Jsonify<z.input<typeof ZRoleManagement>>
 export type IRoleManagementEvent = z.output<typeof ZRoleManagementEvent>

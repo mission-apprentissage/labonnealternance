@@ -8,7 +8,7 @@ import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser } from "@/services/roleManagement.service"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../../common/model/index"
+import { Cfa, Entreprise, RoleManagement, User2 } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
@@ -22,7 +22,7 @@ import {
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "../../services/user.service"
 import {
-  createUser,
+  createAdminUser,
   getAdminUsers,
   getUserRecruteurById,
   getUsersForAdmin,
@@ -78,24 +78,10 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const userRecruteur = await getUserRecruteurById(userId)
-      let jobs: IJob[] = []
-
-      if (!userRecruteur) throw Boom.notFound(`user with id=${userId} not found`)
-
-      const { establishment_id } = userRecruteur
-      if (userRecruteur.type === ENTREPRISE) {
-        if (!establishment_id) {
-          throw Boom.internal("Unexpected: no establishment_id in userRecruteur of type ENTREPRISE", { userId: userRecruteur._id })
-        }
-        const recruiterOpt = await Recruiter.findOne({ establishment_id }).select({ jobs: 1, _id: 0 }).lean()
-        if (!recruiterOpt) {
-          throw Boom.internal("Get establishement from user failed to fetch", { userId: userRecruteur._id })
-        }
-        jobs = recruiterOpt.jobs
-      }
-
-      return res.status(200).send({ ...userRecruteur, jobs })
+      const user = await User2.findById(userId).lean()
+      if (!user) throw Boom.notFound(`user with id=${userId} not found`)
+      const role = await RoleManagement.findOne({ user_id: userId, authorized_type: AccessEntityType.ADMIN }).lean()
+      return res.status(200).send({ ...user, role: role ?? undefined })
     }
   )
 
@@ -106,18 +92,8 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/admin/users"])],
     },
     async (req, res) => {
-      const user = await createUser(
-        {
-          ...req.body,
-          is_email_checked: true,
-        },
-        {
-          reason: "création par l'interface admin",
-          status: AccessStatus.AWAITING_VALIDATION,
-          validation_type: VALIDATION_UTILISATEUR.MANUAL,
-          granted_by: getUserFromRequest(req, zRoutes.post["/admin/users"]).value._id.toString(),
-        }
-      )
+      const { origin, ...userFields } = req.body
+      const user = await createAdminUser(userFields, "création par l'interface admin", origin ?? "")
       return res.status(200).send({ _id: user._id })
     }
   )

@@ -224,7 +224,7 @@ export const createOpcoUser = async (userProps: Pick<IUser2, "email" | "first_na
   return user
 }
 
-export const createAdminUser = async (userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">) => {
+export const createAdminUser = async (userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">, reason: string = "", origin: string = "") => {
   const user = await createUser2IfNotExist(
     {
       ...userProps,
@@ -237,12 +237,12 @@ export const createAdminUser = async (userProps: Pick<IUser2, "email" | "first_n
       user_id: user._id,
       authorized_id: "",
       authorized_type: AccessEntityType.ADMIN,
-      origin: "",
+      origin,
     },
     {
       validation_type: VALIDATION_UTILISATEUR.AUTO,
       status: AccessStatus.GRANTED,
-      reason: "",
+      reason,
     }
   )
   return user

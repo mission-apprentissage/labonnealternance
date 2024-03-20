@@ -1,9 +1,9 @@
 import { OPCOS } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob, ZRecruiter } from "../models"
+import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
 import { enumToZod } from "../models/enumToZod"
-import { AccessEntityType, ZRoleManagementEvent } from "../models/roleManagement.model"
+import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model"
 import { ZUser2 } from "../models/user2.model"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
@@ -100,8 +100,8 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "200": ZUserRecruteur.extend({
-          jobs: ZRecruiter.shape.jobs,
+        "200": ZUser2.extend({
+          role: ZRoleManagement.optional(),
         }),
       },
       securityScheme: {
@@ -186,10 +186,12 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      body: ZUserRecruteurWritable.omit({
-        is_email_checked: true,
-        is_qualiopi: true,
-        status: true,
+      body: ZUser2.pick({
+        first_name: true,
+        last_name: true,
+        email: true,
+        phone: true,
+        origin: true,
       }),
       response: {
         "200": z.object({ _id: zObjectId }).strict(),
