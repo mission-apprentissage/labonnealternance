@@ -1,6 +1,6 @@
 // warning: types écrits à partir d'un échantillon de données
 
-type PEContact = {
+type FTContact = {
   nom: string
   courriel: string
   coordonnees1: string
@@ -8,14 +8,14 @@ type PEContact = {
   coordonnees3: string
 }
 
-type PEEntreprise = {
+type FTEntreprise = {
   nom: string
   logo: string
   description: string
   siret: string
 }
 
-export type PEJob = {
+export type FTJob = {
   id: string
   intitule: string
   description: string
@@ -31,7 +31,7 @@ export type PEJob = {
   romeCode: string
   romeLibelle: string
   appellationlibelle: string
-  entreprise: PEEntreprise
+  entreprise: FTEntreprise
   typeContrat: string
   typeContratLibelle: string
   natureContrat: string
@@ -42,7 +42,7 @@ export type PEJob = {
   dureeTravailLibelle?: string
   dureeTravailLibelleConverti?: string
   alternance: boolean
-  contact?: PEContact
+  contact?: FTContact
   agence?: object[]
   nombrePostes: number
   accessibleTH: boolean
@@ -62,6 +62,6 @@ export type PEJob = {
   appellationLibelle: string
 }
 
-export type PEResponse = {
-  resultats: PEJob[]
+export type FTResponse = {
+  resultats: FTJob[]
 }

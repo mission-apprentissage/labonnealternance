@@ -1,21 +1,27 @@
-import { Box, Image, SimpleGrid, Text } from "@chakra-ui/react"
+import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
 import React from "react"
 
 const GerezEntreprise = () => {
   return (
-    <Box as="section" py={3} mb={{ base: "2", md: "5" }}>
-      <SimpleGrid columns={{ sm: 1, md: 2 }} spacing="40px" alignItems={"center"} mt={12}>
-        <Box>
-          <Image src="/images/home_pics/illu-listeoffres.svg" alt=""></Image>
+    <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }} gap={4} mb={10}>
+      <GridItem colSpan={{ base: 1, md: 7 }}>
+        <Box display="flex" alignItems="flex-start" justifyContent={{ base: "center", lg: "flex-end" }} mr={{ base: 0, lg: 4 }} height="100%">
+          <Image src="/images/home_pics/illu-listeoffres.svg" aria-hidden={true} alt=""></Image>
         </Box>
-        <Box>
-          <Text as="h2" variant="homeEditorialH2">
-            Gérez vos entreprises partenaires et leurs offres grâce à un tableau de bord
-          </Text>
-          <Text>Modifiez les offres, recevez les candidatures et préqualifiez les candidats pour vos entreprises et vos formations.</Text>
-        </Box>
-      </SimpleGrid>
-    </Box>
+      </GridItem>
+      <GridItem colSpan={{ base: 1, md: 5 }}>
+        <Text as="h2" variant="homeEditorialH2">
+          Développez et gérez vos entreprises partenaires
+        </Text>
+        <Text fontSize="18px" mt={4}>
+          3 étapes seulement pour mettre en ligne les besoins de vos entreprises partenaires. Vos offres regroupant formation et emploi seront mises en avant sur les différents
+          sites.
+        </Text>
+        <Text fontSize="18px" mt={4}>
+          Recevez dans votre boîte mail des demandes de contact d’entreprises en recherche d’alternants.
+        </Text>
+      </GridItem>
+    </Grid>
   )
 }
 

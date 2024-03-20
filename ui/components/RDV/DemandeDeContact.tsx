@@ -13,6 +13,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Image,
   Input,
   Link,
   Modal,
@@ -36,7 +37,6 @@ import * as Yup from "yup"
 
 import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
-import { PaperPlane } from "@/theme/components/icons/PaperPlane"
 import { apiGet, apiPost } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
@@ -120,7 +120,7 @@ const DemandeDeContact = (props: Props) => {
             lastname: values.lastname,
             phone: values.phone,
             email: values.email,
-            type: values.applicantType,
+            type: applicantType,
             applicantMessageToCfa: values.applicantMessageToCfa,
             cleMinistereEducatif: props.context.cle_ministere_educatif,
             applicantReasons: applicantReasons.filter(({ checked }) => checked).map(({ key }) => key),
@@ -343,9 +343,12 @@ const DemandeDeContact = (props: Props) => {
 
   const formConfirmed = () => (
     <Box mt={2}>
-      <Text as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
-        <PaperPlane width="56px" height="56px" /> Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
-      </Text>
+      <Flex alignItems="center">
+        <Image mr={2} src="/images/paperplane2.svg" aria-hidden={true} alt="" />
+        <Text mb={2} as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
+          Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
+        </Text>
+      </Flex>
       <Box mt={6}>
         <Text fontWeight="700" color="grey.750">
           {onSuccessSubmitResponse.formation.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}

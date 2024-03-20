@@ -29,7 +29,7 @@ import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
-import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
+import { exportToFranceTravail } from "./lba_recruteur/formulaire/misc/exportToFranceTravail"
 import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
@@ -95,7 +95,7 @@ export const CronsMap = {
     cron_string: "30 0 * * 1,3,5",
     handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
   },
-  "Send CSV offers to Pôle emploi": {
+  "Send CSV offers to France Travail": {
     cron_string: "30 5 * * *",
     handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" }, productionOnly: true }),
   },
@@ -303,7 +303,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "opco:relance":
         return relanceOpco()
       case "pe:offre:export":
-        return exportPE()
+        return exportToFranceTravail()
       case "user:validate":
         return checkAwaitingCompaniesValidation()
       case "siret:inError:update":

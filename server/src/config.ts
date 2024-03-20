@@ -72,9 +72,9 @@ const config = {
     queryUrl: env.get("LBA_DIAGORIENTE_QUERY_URL").required().asString(),
     realm: env.get("LBA_DIAGORIENTE_REALM").required().asString(),
   },
-  poleEmploiDepotOffres: {
-    login: env.get("LBA_POLE_EMPLOI_DEPOT_OFFRES_LOGIN").required().asString(),
-    password: env.get("LBA_POLE_EMPLOI_DEPOT_OFFRES_PASSWORD").required().asString(),
+  franceTravailDepotOffres: {
+    login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),
+    password: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_PASSWORD").required().asString(),
     nomFlux: "LABONATA",
   },
   bal: {

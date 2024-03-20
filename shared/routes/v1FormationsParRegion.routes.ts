@@ -67,8 +67,7 @@ export const zV1FormationsParRegion = {
       securityScheme: null,
       openapi: {
         description: "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
-        tags: ["Formations par région"] as string[],
-        operationId: "getFormations",
+        tags: ["V1 - Formations par région"] as string[],
       },
     },
   },
