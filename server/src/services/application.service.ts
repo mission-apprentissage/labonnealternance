@@ -127,12 +127,12 @@ export const sendApplication = async ({
         return { error: offreOrError.error }
       }
 
-      validationResult = await checkUserApplicationCount(newApplication.applicant_email.toLowerCase(), newApplication)
+      validationResult = await checkUserApplicationCount(newApplication.applicant_email.toLowerCase(), offreOrError, newApplication.caller)
       if (validationResult !== "ok") {
         return { error: validationResult }
       }
 
-      validationResult = await scanFileContent(newApplication)
+      validationResult = await scanFileContent(newApplication.applicant_file_content)
       if (validationResult !== "ok") {
         return { error: validationResult }
       }
@@ -145,7 +145,7 @@ export const sendApplication = async ({
       const application = newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
       const fileContent = newApplication.applicant_file_content
 
-      const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, newApplication)
+      const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, offreOrError)
       const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
       const searched_for_job_label = newApplication.searched_for_job_label || ""
 
@@ -220,19 +220,19 @@ export const sendApplication = async ({
 /**
  * Build url to access item detail on LBA ui
  */
-const buildUrlsOfDetail = (publicUrl: string, newApplication: INewApplicationV2) => {
-  const { company_type, job_id, company_siret } = newApplication
+const buildUrlsOfDetail = (publicUrl: string, offreOrCompany: OffreOrLbbCompany) => {
+  const { type } = offreOrCompany
   const urlSearchParams = new URLSearchParams()
   urlSearchParams.append("display", "list")
   urlSearchParams.append("page", "fiche")
-  urlSearchParams.append("type", company_type)
-  if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && job_id) {
-    urlSearchParams.append("itemId", job_id)
-  } else if (company_type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    urlSearchParams.append("itemId", company_siret)
+  urlSearchParams.append("type", type)
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    urlSearchParams.append("itemId", offreOrCompany.offre._id.toString())
+  } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    urlSearchParams.append("itemId", offreOrCompany.company.siret)
   }
   const paramsWithoutUtm = urlSearchParams.toString()
-  if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     urlSearchParams.append("utm_source", "jecandidate")
     urlSearchParams.append("utm_medium", "email")
     urlSearchParams.append("utm_campaign", "jecandidaterecruteur")
@@ -412,8 +412,8 @@ export const validateJob = async (application: INewApplicationV2): Promise<Offre
 /**
  * @description checks if attachment is corrupted
  */
-const scanFileContent = async (validable: INewApplicationV2): Promise<string> => {
-  return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
+const scanFileContent = async (applicant_file_content: string): Promise<string> => {
+  return (await scan(applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
 /**
@@ -429,14 +429,14 @@ export const validatePermanentEmail = (email: string): string => {
 /**
  * @description checks if email's owner has not sent more than allowed count of applications per day
  */
-const checkUserApplicationCount = async (applicantEmail: string, application: INewApplicationV2): Promise<string> => {
+const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany: OffreOrLbbCompany, caller: string | null | undefined): Promise<string> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
   const end = new Date()
   end.setHours(23, 59, 59, 999)
 
-  const { company_type, company_siret, job_id, caller } = application
+  const { type } = offreOrCompany
 
   let appCount = await Application.countDocuments({
     applicant_email: applicantEmail.toLowerCase(),
@@ -447,36 +447,36 @@ const checkUserApplicationCount = async (applicantEmail: string, application: IN
     return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY
   }
 
-  if (company_type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    if (!company_siret) {
-      throw new Error("expected a siret")
+  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    if (!("company" in offreOrCompany)) {
+      throw new Error("expected a company")
     }
     appCount = await Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
-      company_siret,
+      company_siret: offreOrCompany.company.siret,
     })
     if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
     }
-  } else if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    if (!job_id) {
-      throw new Error("expected a job id")
+  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    if (!("offre" in offreOrCompany)) {
+      throw new Error("expected a job")
     }
     appCount = await Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
-      job_id,
+      job_id: offreOrCompany.offre._id.toString(),
     })
     if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
     }
   } else {
-    assertUnreachable(company_type as never)
+    assertUnreachable(type as never)
   }
 
   if (caller) {
     appCount = await Application.countDocuments({
       caller: caller.toLowerCase(),
-      company_siret,
+      company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.company.siret : offreOrCompany.recruiter.establishment_siret,
       created_at: { $gte: start, $lt: end },
     })
     if (appCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
