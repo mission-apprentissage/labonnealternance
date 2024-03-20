@@ -70,7 +70,7 @@ const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPI
       expire: dayjs().add(response.data.expires_in - 10, "s"),
     }
   } catch (error: any) {
-    sentryCaptureException(error.response?.data)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     return error.response?.data
   }
 }
@@ -107,7 +107,7 @@ export const searchForFtJobs = async (params: {
     return data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    sentryCaptureException(error.response?.data)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     return null
   }
 }
@@ -129,7 +129,7 @@ export const getFtJob = async (id: string) => {
     return result
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    sentryCaptureException(error.response?.data)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
   }
 }
 
@@ -143,7 +143,7 @@ export const getFtReferentiels = async (referentiel: string) => {
   try {
     tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
 
-    const referentiels = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
+    const data = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -151,9 +151,9 @@ export const getFtReferentiels = async (referentiel: string) => {
       },
     })
 
-    console.log(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
-  } catch (error) {
-    console.log("error getReferentiel ", error)
+    return data
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
   }
 }
 
@@ -174,7 +174,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 
     return data
   } catch (error: any) {
-    sentryCaptureException(error.response?.data)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     return null
   }
 }
@@ -191,7 +191,7 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
 
     return data
   } catch (error: any) {
-    sentryCaptureException(error)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     if (error.response.status === 404) {
       return null
     }
@@ -217,7 +217,7 @@ export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => 
     })
 
     return data
-  } catch (error) {
-    sentryCaptureException(error)
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
   }
 }
