@@ -111,6 +111,10 @@ export function generateOpenApiSchema(version: string, env: string, publicUrl: s
         url: publicUrl,
         description: env,
       },
+      {
+        url: `${publicUrl}/v2`,
+        description: `${env} V2`,
+      },
     ],
   })
 }

@@ -125,10 +125,11 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "formation",
               "matcha",
               "lba",
+              "lbb",
               "offres",
               "peJob",
             ],
-            "example": "recruteurs_lba",
+            "example": "lba",
             "type": "string",
           },
           "crypted_company_email": {
@@ -2852,7 +2853,241 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
   },
   "openapi": "3.1.0",
   "paths": {
-    "/appointment-request/context/create": {
+    "/application": {
+      "post": {
+        "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
+L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bonne alternance.
+",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ApplicationUi",
+                  },
+                  {
+                    "properties": {
+                      "applicant_email": {
+                        "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
+                        "example": "john.smith@mail.com",
+                        "format": "email",
+                        "type": "string",
+                      },
+                      "applicant_file_content": {
+                        "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+                        "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
+                        "maxLength": 4215276,
+                        "type": "string",
+                      },
+                      "applicant_file_name": {
+                        "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
+                        "example": "cv.pdf",
+                        "pattern": "((.*?))(\\\\.)+(docx|pdf)$",
+                        "type": "string",
+                      },
+                      "applicant_first_name": {
+                        "description": "Le prénom du candidat.",
+                        "example": "Jean",
+                        "maxLength": 50,
+                        "type": "string",
+                      },
+                      "applicant_last_name": {
+                        "description": "Le nom du candidat.",
+                        "example": "Dupont",
+                        "maxLength": 50,
+                        "type": "string",
+                      },
+                      "applicant_phone": {
+                        "description": "Le numéro de téléphone du candidat.",
+                        "example": "0101010101",
+                        "type": "string",
+                      },
+                      "caller": {
+                        "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+                        "example": "contact@domaine nom_de_societe",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "company_address": {
+                        "description": "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
+                        "example": "38 RUE DES HAMECONS, 75021 PARIS-21",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "company_email": {
+                        "description": "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
+                        "example": "fake@dummy.com",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "company_naf": {
+                        "description": "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
+                        "example": "Boulangerie et boulangerie-pâtisserie",
+                        "type": "string",
+                      },
+                      "company_name": {
+                        "description": "Le nom de la société. Fourni par La bonne alternance. ",
+                        "example": "Au bon pain d'antan",
+                        "type": "string",
+                      },
+                      "company_siret": {
+                        "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
+                        "example": "00004993900000",
+                        "pattern": "^[0-9]{14}$",
+                        "type": "string",
+                      },
+                      "company_type": {
+                        "description": "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
+                        "enum": [
+                          "formation",
+                          "recruteurs_lba",
+                          "offres_emploi_lba",
+                          "offres_emploi_partenaires",
+                        ],
+                        "example": "recruteurs_lba",
+                        "type": "string",
+                      },
+                      "crypted_company_email": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "iv": {
+                        "description": "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
+                        "example": "...59c24c059b...",
+                        "type": "string",
+                      },
+                      "job_id": {
+                        "description": "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est offres_emploi_lba . La valeur est fournie par La bonne alternance. ",
+                        "example": "...59c24c059b...",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "job_title": {
+                        "description": "Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est offres_emploi_lba . La valeur est fournie par La bonne alternance. ",
+                        "example": "Téléconseil, vente à distance",
+                        "type": "string",
+                      },
+                      "message": {
+                        "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
+                        "example": "Madame, monsieur...",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "searched_for_job_label": {
+                        "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
+                        "example": "Vente de fleurs, végétaux",
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "secret": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "message": {
+                      "enum": [
+                        "messages sent",
+                      ],
+                      "type": "string",
+                    },
+                    "result": {
+                      "description": "Indique le succès ou l'échec de l'opération",
+                      "enum": [
+                        "ok",
+                      ],
+                      "example": "ok",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "result",
+                    "message",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Bad Request",
+                },
+              },
+            },
+            "description": "Bad Request",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Internal Server Error",
+                },
+              },
+            },
+            "description": "Internal Server Error",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Applications",
+        ],
+      },
+    },
+    "/appointment": {
       "post": {
         "description": "Appointment request",
         "operationId": "appointmentCreateContext",
@@ -3075,22 +3310,97 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "",
           },
         },
-        "security": [],
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
         "tags": [
-          "Appointment Request",
+          "V2 - Appointment Request",
         ],
       },
     },
-    "/v1/application": {
+    "/appointment-request/context/create": {
       "post": {
-        "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
-L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bonne alternance.
-",
+        "description": "Appointment request",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ApplicationUi",
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "idParcoursup": {
+                        "type": "string",
+                      },
+                      "referrer": {
+                        "enum": [
+                          "parcoursup",
+                        ],
+                        "type": "string",
+                      },
+                      "trainingHasJob": {
+                        "type": "boolean",
+                      },
+                    },
+                    "required": [
+                      "idParcoursup",
+                      "referrer",
+                    ],
+                    "type": "object",
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "idActionFormation": {
+                        "minLength": 1,
+                        "type": "string",
+                      },
+                      "referrer": {
+                        "enum": [
+                          "onisep",
+                        ],
+                        "type": "string",
+                      },
+                      "trainingHasJob": {
+                        "type": "boolean",
+                      },
+                    },
+                    "required": [
+                      "idActionFormation",
+                      "referrer",
+                    ],
+                    "type": "object",
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "idCleMinistereEducatif": {
+                        "minLength": 1,
+                        "type": "string",
+                      },
+                      "referrer": {
+                        "enum": [
+                          "parcoursup",
+                          "lba",
+                          "onisep",
+                          "jeune_1_solution",
+                          "affelnet",
+                        ],
+                        "type": "string",
+                      },
+                      "trainingHasJob": {
+                        "type": "boolean",
+                      },
+                    },
+                    "required": [
+                      "idCleMinistereEducatif",
+                      "referrer",
+                    ],
+                    "type": "object",
+                  },
+                ],
               },
             },
           },
@@ -3101,28 +3411,91 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "message": {
-                      "enum": [
-                        "messages sent",
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "cfd": {
+                          "example": "24113401",
+                          "type": "string",
+                        },
+                        "cle_ministere_educatif": {
+                          "example": "101249P01313538697790003635386977900036-93006#L01",
+                          "type": "string",
+                        },
+                        "code_postal": {
+                          "example": "93170",
+                          "type": "string",
+                        },
+                        "etablissement_formateur_entreprise_raison_sociale": {
+                          "example": "CAMPUS FONDERIE DE L'IMAGE",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "etablissement_formateur_siret": {
+                          "description": "Le numéro de SIRET de l'établissement",
+                          "example": "78424186100011",
+                          "pattern": "^[0-9]{14}$",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "form_url": {
+                          "example": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
+                          "type": "string",
+                        },
+                        "id_rco_formation": {
+                          "example": "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "intitule_long": {
+                          "example": "METIERS D'ART ET DU DESIGN (DN)",
+                          "type": "string",
+                        },
+                        "lieu_formation_adresse": {
+                          "example": "80 Rue Jules Ferry",
+                          "type": "string",
+                        },
+                        "localite": {
+                          "example": "Bagnolet",
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "etablissement_formateur_entreprise_raison_sociale",
+                        "intitule_long",
+                        "lieu_formation_adresse",
+                        "code_postal",
+                        "cfd",
+                        "localite",
+                        "id_rco_formation",
+                        "cle_ministere_educatif",
+                        "form_url",
                       ],
-                      "type": "string",
+                      "type": "object",
                     },
-                    "result": {
-                      "description": "Indique le succès ou l'échec de l'opération",
-                      "enum": [
-                        "ok",
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "error": {
+                          "enum": [
+                            "Prise de rendez-vous non disponible.",
+                          ],
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "error",
                       ],
-                      "example": "ok",
-                      "type": "string",
+                      "type": "object",
                     },
-                  },
-                  "required": [
-                    "result",
-                    "message",
                   ],
-                  "type": "object",
                 },
               },
             },
@@ -3137,16 +3510,18 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                       "$ref": "#/components/schemas/Error",
                     },
                     {
-                      "$ref": "#/components/schemas/LbacError",
+                      "enum": [
+                        "Critère de recherche non conforme.",
+                      ],
+                      "type": "string",
                     },
                   ],
-                  "description": "Bad Request",
                 },
               },
             },
-            "description": "Bad Request",
+            "description": "",
           },
-          "500": {
+          "404": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3155,23 +3530,25 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                       "$ref": "#/components/schemas/Error",
                     },
                     {
-                      "$ref": "#/components/schemas/LbacError",
+                      "enum": [
+                        "Formation introuvable",
+                      ],
+                      "type": "string",
                     },
                   ],
-                  "description": "Internal Server Error",
                 },
               },
             },
-            "description": "Internal Server Error",
+            "description": "",
           },
         },
         "security": [],
         "tags": [
-          "Applications",
+          "V1 - Appointment Request",
         ],
       },
     },
-    "/v1/formations": {
+    "/formations": {
       "get": {
         "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
         "operationId": "getFormations",
@@ -3347,13 +3724,17 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "description": "Internal Server Error",
           },
         },
-        "security": [],
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
         "tags": [
-          "Formations",
+          "V2 - Formations",
         ],
       },
     },
-    "/v1/formations/formation/{id}": {
+    "/formations/formation/{id}": {
       "get": {
         "description": "Get one formation identified by it's clé ministère éducatif",
         "operationId": "getFormation",
@@ -3455,13 +3836,17 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "description": "",
           },
         },
-        "security": [],
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
         "tags": [
-          "Formations",
+          "V2 - Formations",
         ],
       },
     },
-    "/v1/formationsParRegion": {
+    "/formationsParRegion": {
       "get": {
         "description": "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
         "operationId": "getFormations",
@@ -3617,13 +4002,17 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "description": "Internal Server Error",
           },
         },
-        "security": [],
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
         "tags": [
-          "Formations par région",
+          "V2 - Formations",
         ],
       },
     },
-    "/v1/jobs": {
+    "/jobs": {
       "get": {
         "description": "Get job opportunities matching the query parameters",
         "operationId": "getJobOpportunities",
@@ -3710,7 +4099,2554 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "in": "query",
+            "name": "sources",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Le niveau de diplôme visé en fin d'études",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "description": "filter opportunities on opco name",
+            "in": "query",
+            "name": "opco",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "filter opportunities on opco url",
+            "in": "query",
+            "name": "opcoUrl",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "lbaCompanies": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/LbaCompany",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "lbbCompanies": {
+                      "type": "null",
+                    },
+                    "matchas": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/LbaJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "peJobs": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/PeJob",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                  },
+                  "required": [
+                    "peJobs",
+                    "matchas",
+                    "lbaCompanies",
+                    "lbbCompanies",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/bulk": {
+      "get": {
+        "description": "Get all jobs related to my organization",
+        "operationId": "getJobs",
+        "parameters": [
+          {
+            "description": "query mongodb query allowing specific filtering, JSON stringified",
+            "in": "query",
+            "name": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "select fields to return",
+            "in": "query",
+            "name": "select",
+            "required": false,
+            "schema": {
+              "example": "{_id: 1, first_name:1, last_name:0}",
+              "type": "string",
+            },
+          },
+          {
+            "description": "the current page.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "the limit of results per page",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/Recruiter",
+                      },
+                      "type": "array",
+                    },
+                    "pagination": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "number_of_page": {
+                          "type": "number",
+                        },
+                        "page": {
+                          "type": "number",
+                        },
+                        "result_per_page": {
+                          "type": "number",
+                        },
+                        "total": {
+                          "type": "number",
+                        },
+                      },
+                      "type": "object",
+                    },
+                  },
+                  "required": [
+                    "pagination",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/canceled/{jobId}": {
+      "post": {
+        "description": "Update a job offer status to \\"Canceled\\".",
+        "operationId": "setJobAsCanceled",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "responses": {
+          "204": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/delegations/{jobId}": {
+      "get": {
+        "description": "Get related training organization related to a job offer.",
+        "operationId": "getDelegation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "_id": {
+                        "description": "Identifiant unique",
+                      },
+                      "code_postal": {
+                        "type": "string",
+                      },
+                      "distance_en_km": {
+                        "type": "number",
+                      },
+                      "entreprise_raison_sociale": {
+                        "type": "string",
+                      },
+                      "geo_coordonnees": {
+                        "type": "string",
+                      },
+                      "nom_departement": {
+                        "type": "string",
+                      },
+                      "nom_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "numero_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                      "type_voie": {
+                        "type": [
+                          "string",
+                          "null",
+                        ],
+                      },
+                    },
+                    "required": [
+                      "code_postal",
+                      "nom_departement",
+                      "entreprise_raison_sociale",
+                      "geo_coordonnees",
+                      "distance_en_km",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+              },
+            },
+            "description": "",
+          },
+          "4xx": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+      "post": {
+        "description": "Create delegation related to a job offer.",
+        "operationId": "createDelegation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "establishmentIds": {
+                    "items": {
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
+                },
+                "required": [
+                  "establishmentIds",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recruiter",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/entreprise_lba/{siret}": {
+      "get": {
+        "description": "Get one company identified by it's siret",
+        "operationId": "getCompany",
+        "parameters": [
+          {
+            "description": "Le numéro de SIRET de l'établissement",
+            "in": "path",
+            "name": "siret",
+            "required": true,
+            "schema": {
+              "description": "Le numéro de SIRET de l'établissement",
+              "example": "78424186100011",
+              "pattern": "^[0-9]{14}$",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "lbaCompanies": {
+                      "items": {
+                        "$ref": "#/components/schemas/LbaCompany",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "lbaCompanies",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ApiError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/establishment": {
+      "get": {
+        "description": "Get existing establishment id from siret & email",
+        "parameters": [
+          {
+            "description": "Le numéro de SIRET de l'établissement",
+            "in": "query",
+            "name": "establishment_siret",
+            "required": true,
+            "schema": {
+              "description": "Le numéro de SIRET de l'établissement",
+              "example": "78424186100011",
+              "pattern": "^[0-9]{14}$",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Establishment email",
+            "in": "query",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "format": "email",
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Etablishment id",
+                  "type": "string",
+                },
+              },
+            },
+            "description": "Etablishment id",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                  ],
+                  "description": "Bad Request",
+                },
+              },
+            },
+            "description": "Bad Request",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+      "post": {
+        "description": "Create an establishment entity",
+        "operationId": "createEstablishment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "email": {
+                    "format": "email",
+                    "type": "string",
+                  },
+                  "establishment_siret": {
+                    "description": "Le numéro de SIRET de l'établissement",
+                    "example": "78424186100011",
+                    "pattern": "^[0-9]{14}$",
+                    "type": "string",
+                  },
+                  "first_name": {
+                    "type": "string",
+                  },
+                  "idcc": {
+                    "type": "string",
+                  },
+                  "last_name": {
+                    "type": "string",
+                  },
+                  "origin": {
+                    "description": "always prefixed with you identification name declared at the API user creation. BETA GOUV with an origin set to 'campaign2023' will be betagouv-campaign2023.",
+                    "example": "betagouv-campaign2023",
+                    "type": "string",
+                  },
+                  "phone": {
+                    "pattern": "^0[1-9]\\\\d{8}$",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "establishment_siret",
+                  "first_name",
+                  "last_name",
+                  "email",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recruiter",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/extend/{jobId}": {
+      "post": {
+        "description": "Update a job expiration date by 30 days.",
+        "operationId": "extendJobExpiration",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "responses": {
+          "204": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/matcha/{id}/stats/view-details": {
+      "post": {
+        "description": "Notifies that the detail of a matcha job has been viewed",
+        "operationId": "statsViewLbaJob",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/provided/{jobId}": {
+      "post": {
+        "description": "Update a job offer status to \\"Provided\\"",
+        "operationId": "setJobAsProvided",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "responses": {
+          "204": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {},
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/{establishmentId}": {
+      "post": {
+        "description": "Create a job offer inside an establishment entity.",
+        "operationId": "createJob",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "establishmentId",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "appellation_code": {
+                    "pattern": "^[0-9]+$",
+                    "type": "string",
+                  },
+                  "custom_address": {
+                    "description": "Adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "custom_geo_coordinates": {
+                    "description": "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "is_disabled_elligible": {
+                    "default": false,
+                    "description": "Poste ouvert aux personnes en situation de handicap",
+                    "type": [
+                      "boolean",
+                      "null",
+                    ],
+                  },
+                  "job_count": {
+                    "default": 1,
+                    "description": "Nombre de poste(s) ouvert(s) pour cette offre",
+                    "type": [
+                      "number",
+                      "null",
+                    ],
+                  },
+                  "job_description": {
+                    "description": "Description de l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_duration": {
+                    "description": "Durée du contrat en mois",
+                    "maximum": 36,
+                    "minimum": 6,
+                    "type": [
+                      "number",
+                      "null",
+                    ],
+                  },
+                  "job_employer_description": {
+                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_level_label": {
+                    "description": "Niveau de formation visé en fin de stage",
+                    "enum": [
+                      "Cap, autres formations niveau (Infrabac)",
+                      "BP, Bac, autres formations niveau (Bac)",
+                      "BTS, DEUST, autres formations niveau (Bac+2)",
+                      "Licence, autres formations niveau (Bac+3)",
+                      "Master, titre ingénieur, autres formations niveau (Bac+5)",
+                      "Indifférent",
+                    ],
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_rythm": {
+                    "description": "Répartition de la présence de l'alternant en formation/entreprise",
+                    "enum": [
+                      "Indifférent",
+                      "1 jour / 4 jours",
+                      "2 jours / 3 jours",
+                      "1 semaine / 1 semaine",
+                      "2 semaines / 3 semaines",
+                      "6 semaines / 6 semaines",
+                    ],
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_start_date": {
+                    "description": "Date de début de l'alternance",
+                    "type": "string",
+                  },
+                  "job_type": {
+                    "description": "Type de contrat",
+                    "items": {
+                      "enum": [
+                        "Apprentissage",
+                        "Professionnalisation",
+                      ],
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
+                },
+                "required": [
+                  "job_type",
+                  "job_start_date",
+                  "appellation_code",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recruiter",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/{jobId}": {
+      "patch": {
+        "description": "Update a job offer specific fields inside an establishment entity.",
+        "operationId": "updateJob",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "custom_address": {
+                    "description": "Adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "custom_geo_coordinates": {
+                    "description": "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "is_disabled_elligible": {
+                    "default": false,
+                    "description": "Poste ouvert aux personnes en situation de handicap",
+                    "type": [
+                      "boolean",
+                      "null",
+                    ],
+                  },
+                  "job_count": {
+                    "default": 1,
+                    "description": "Nombre de poste(s) ouvert(s) pour cette offre",
+                    "type": [
+                      "number",
+                      "null",
+                    ],
+                  },
+                  "job_description": {
+                    "description": "Description de l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_duration": {
+                    "description": "Durée du contrat en mois",
+                    "maximum": 36,
+                    "minimum": 6,
+                    "type": [
+                      "number",
+                      "null",
+                    ],
+                  },
+                  "job_employer_description": {
+                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_level_label": {
+                    "description": "Niveau de formation visé en fin de stage",
+                    "enum": [
+                      "Cap, autres formations niveau (Infrabac)",
+                      "BP, Bac, autres formations niveau (Bac)",
+                      "BTS, DEUST, autres formations niveau (Bac+2)",
+                      "Licence, autres formations niveau (Bac+3)",
+                      "Master, titre ingénieur, autres formations niveau (Bac+5)",
+                      "Indifférent",
+                    ],
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_rythm": {
+                    "description": "Répartition de la présence de l'alternant en formation/entreprise",
+                    "enum": [
+                      "Indifférent",
+                      "1 jour / 4 jours",
+                      "2 jours / 3 jours",
+                      "1 semaine / 1 semaine",
+                      "2 semaines / 3 semaines",
+                      "6 semaines / 6 semaines",
+                    ],
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_start_date": {
+                    "description": "Date de début de l'alternance",
+                    "type": "string",
+                  },
+                  "job_type": {
+                    "description": "Type de contrat",
+                    "items": {
+                      "enum": [
+                        "Apprentissage",
+                        "Professionnalisation",
+                      ],
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
+                },
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recruiter",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobs/{source}/{id}": {
+      "get": {
+        "description": "Get one lba job identified by it's id",
+        "operationId": "getLbaJob",
+        "parameters": [
+          {
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "in": "path",
+            "name": "source",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "the id the lba job looked for.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "job": {
+                          "anyOf": [
+                            {
+                              "items": {
+                                "$ref": "#/components/schemas/LbaJob",
+                              },
+                              "type": "array",
+                            },
+                            {
+                              "$ref": "#/components/schemas/PeJob",
+                            },
+                          ],
+                        },
+                      },
+                      "required": [
+                        "job",
+                      ],
+                      "type": "object",
+                    },
+                    {
+                      "type": "null",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
+    "/jobsEtFormations": {
+      "get": {
+        "parameters": [
+          {
+            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "example": "F1603,I1308",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Un code RNCP. <br />rome et rncp sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "rncp",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": "string",
+            },
+          },
+          {
+            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "example": 48.845,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "example": 2.3752,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le rayon de recherche en kilomètres",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "example": 30,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "search center insee code",
+            "in": "query",
+            "name": "insee",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
+            "in": "query",
+            "name": "sources",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Le niveau de diplôme visé en fin d'études",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "description": "filter opportunities on opco name",
+            "in": "query",
+            "name": "opco",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "filter opportunities on opco url",
+            "in": "query",
+            "name": "opcoUrl",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "options",
+            "required": false,
+            "schema": {
+              "enum": [
+                "with_description",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "formations": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "results": {
+                              "items": {
+                                "$ref": "#/components/schemas/Formation",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "required": [
+                            "results",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "jobs": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "lbaCompanies": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "results": {
+                                      "items": {
+                                        "$ref": "#/components/schemas/LbaCompany",
+                                      },
+                                      "type": "array",
+                                    },
+                                  },
+                                  "required": [
+                                    "results",
+                                  ],
+                                  "type": "object",
+                                },
+                                {
+                                  "$ref": "#/components/schemas/ApiError",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                              ],
+                            },
+                            "lbbCompanies": {
+                              "type": "null",
+                            },
+                            "matchas": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "results": {
+                                      "items": {
+                                        "$ref": "#/components/schemas/LbaJob",
+                                      },
+                                      "type": "array",
+                                    },
+                                  },
+                                  "required": [
+                                    "results",
+                                  ],
+                                  "type": "object",
+                                },
+                                {
+                                  "$ref": "#/components/schemas/ApiError",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                              ],
+                            },
+                            "peJobs": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "results": {
+                                      "items": {
+                                        "$ref": "#/components/schemas/PeJob",
+                                      },
+                                      "type": "array",
+                                    },
+                                  },
+                                  "required": [
+                                    "results",
+                                  ],
+                                  "type": "object",
+                                },
+                                {
+                                  "$ref": "#/components/schemas/ApiError",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                                {
+                                  "type": "null",
+                                },
+                              ],
+                            },
+                          },
+                          "required": [
+                            "peJobs",
+                            "matchas",
+                            "lbaCompanies",
+                            "lbbCompanies",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "$ref": "#/components/schemas/ApiError",
+                        },
+                        {
+                          "type": "null",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                  },
+                  "required": [
+                    "formations",
+                    "jobs",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs et formations",
+        ],
+      },
+    },
+    "/metiers": {
+      "get": {
+        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
+        "operationId": "getMetiers",
+        "parameters": [
+          {
+            "description": "Un terme libre de recherche de métier.",
+            "in": "query",
+            "name": "title",
+            "required": true,
+            "schema": {
+              "example": "Décoration",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s).",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "example": "F1603,I1308",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Une liste de codes RNCP séparés par des virgules correspondant au(x) métier(s) recherché(s).",
+            "in": "query",
+            "name": "rncps",
+            "required": false,
+            "schema": {
+              "example": "RNCP500,RNCP806",
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "labelsAndRomes": {
+                      "description": "Un tableau de métiers correspondantes aux critères",
+                      "items": {
+                        "$ref": "#/components/schemas/MetierEnrichi",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "labelsAndRomes",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Metiers",
+        ],
+      },
+    },
+    "/metiers/all": {
+      "get": {
+        "description": "Retourne la liste de tous les métiers référencés sur LBA",
+        "operationId": "getTousLesMetiers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "metiers": {
+                      "description": "Un tableau des noms des métiers triés par ordre alphabétique",
+                      "items": {
+                        "description": "Un nom de métier du référentiel La bonne alternance",
+                        "example": "Accueil touristique",
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "metiers",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Metiers",
+        ],
+      },
+    },
+    "/metiers/intitule": {
+      "get": {
+        "description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+        "operationId": "getCoupleAppellationRomeIntitule",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "label",
+            "required": true,
+            "schema": {
+              "description": "le(s) terme(s) de recherche",
+              "minLength": 1,
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "coupleAppellationRomeMetier": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "appellation": {
+                            "type": "string",
+                          },
+                          "codeRome": {
+                            "type": "string",
+                          },
+                          "intitule": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "codeRome",
+                          "intitule",
+                          "appellation",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "coupleAppellationRomeMetier",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Metiers",
+        ],
+      },
+    },
+    "/metiers/metiersParFormation/{cfd}": {
+      "get": {
+        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
+        "operationId": "getMetiersParCfd",
+        "parameters": [
+          {
+            "description": "L'identifiant CFD de la formation.",
+            "in": "path",
+            "name": "cfd",
+            "required": true,
+            "schema": {
+              "example": "50022137",
+              "minLength": 1,
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "metiers": {
+                      "description": "Un tableau des noms des métiers triés par ordre alphabétique",
+                      "items": {
+                        "description": "Un nom de métier du référentiel La bonne alternance",
+                        "example": "Accueil touristique",
+                        "type": "string",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "metiers",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Metiers",
+        ],
+      },
+    },
+    "/v1/application": {
+      "post": {
+        "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
+L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bonne alternance.
+",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplicationUi",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "message": {
+                      "enum": [
+                        "messages sent",
+                      ],
+                      "type": "string",
+                    },
+                    "result": {
+                      "description": "Indique le succès ou l'échec de l'opération",
+                      "enum": [
+                        "ok",
+                      ],
+                      "example": "ok",
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "result",
+                    "message",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Bad Request",
+                },
+              },
+            },
+            "description": "Bad Request",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Internal Server Error",
+                },
+              },
+            },
+            "description": "Internal Server Error",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V1 - Applications",
+        ],
+      },
+    },
+    "/v1/formations": {
+      "get": {
+        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
+        "parameters": [
+          {
+            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "example": "F1603,I1308",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romeDomain",
+            "required": false,
+            "schema": {
+              "example": "F ou I13",
+              "type": "string",
+            },
+          },
+          {
+            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "example": 48.845,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "example": 2.3752,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le rayon de recherche en kilomètres",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "example": 30,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le niveau de diplôme visé en fin d'études",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Ajoute la description au résultat de retour",
+            "in": "query",
+            "name": "options",
+            "required": false,
+            "schema": {
+              "enum": [
+                "with_description",
+              ],
+              "example": "with_description",
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+                  "properties": {
+                    "results": {
+                      "description": "Un tableau de formations correspondantes aux critères",
+                      "items": {
+                        "$ref": "#/components/schemas/Formation",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "results",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Bad Request",
+                },
+              },
+            },
+            "description": "Bad Request",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Internal Server Error",
+                },
+              },
+            },
+            "description": "Internal Server Error",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V1 - Formations",
+        ],
+      },
+    },
+    "/v1/formations/formation/{id}": {
+      "get": {
+        "description": "Get one formation identified by it's clé ministère éducatif",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+                  "properties": {
+                    "results": {
+                      "description": "Un tableau de formations correspondantes aux critères",
+                      "items": {
+                        "$ref": "#/components/schemas/Formation",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "results",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V1 - Formations",
+        ],
+      },
+    },
+    "/v1/formationsParRegion": {
+      "get": {
+        "description": "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
+        "parameters": [
+          {
+            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné dans le cas d'une recherche France entière.</strong>",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "example": "F1603,I1308",
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "romeDomain",
+            "required": false,
+            "schema": {
+              "description": "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre).<br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné dans le cas d'une recherche France entière.</strong>",
+              "example": "F ou I13",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Le numéro à 2 chiffres d'un département français ou à 3 chiffres pour un département d'outre-mer.<br />region et departement sont incompatibles.<br /><strong>Si aucun des deux n'est renseigné la recherche portera sur France entière.</strong><br /><strong>France entière ne peut être utilisé sans rome ou romeDomain.</strong>",
+            "in": "query",
+            "name": "departement",
+            "required": false,
+            "schema": {
+              "example": "09 ou 974",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Le code Insee d'une région française.<br />region et departement sont incompatibles.<br /><strong>Si aucun des deux n'est renseigné la recherche portera sur France entière.</strong><br /><strong>France entière ne peut être utilisé sans rome ou romeDomain.</strong><br /><ul><li>84 : Auvergne-Rhône-Alpes</li><li>27 : Bourgogne-Franche-Comté</li><li>53 : Bretagne</li><li>24 : Centre-Val de Loire</li><li>94 : Corse</li><li>44 : Grand Est</li><li>32 : Hauts-de-France</li><li>11 : Île-de-France</li><li>28 : Normandie</li><li>75 : Nouvelle-Aquitaine</li><li>76 : Occitanie</li><li>52 : Pays de la Loire</li><li>93 : Provence-Alpes-Côte d'Azur</li><li>01 : Guadeloupe</li><li>02 : Martinique</li><li>03 : Guyane</li><li>04 : La Réunion</li><li>06 : Mayotte</li></ul>",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "example": "84",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Le niveau de diplôme visé en fin d'études",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "enum": [
+                "3 (CAP...)",
+                "4 (BAC...)",
+                "5 (BTS, DEUST...)",
+                "6 (Licence, BUT...)",
+                "7 (Master, titre ingénieur...)",
+              ],
+              "type": "string",
+            },
+          },
+          {
+            "description": "Ajoute la description au résultat de retour",
+            "in": "query",
+            "name": "options",
+            "required": false,
+            "schema": {
+              "enum": [
+                "with_description",
+              ],
+              "example": "with_description",
+              "type": "string",
+            },
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+                  "properties": {
+                    "results": {
+                      "description": "Un tableau de formations correspondantes aux critères",
+                      "items": {
+                        "$ref": "#/components/schemas/Formation",
+                      },
+                      "type": "array",
+                    },
+                  },
+                  "required": [
+                    "results",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Bad Request",
+                },
+              },
+            },
+            "description": "Bad Request",
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                  "description": "Internal Server Error",
+                },
+              },
+            },
+            "description": "Internal Server Error",
+          },
+        },
+        "security": [],
+        "tags": [
+          "V1 - Formations par région",
+        ],
+      },
+    },
+    "/v1/jobs": {
+      "get": {
+        "description": "Get job opportunities matching the query parameters",
+        "parameters": [
+          {
+            "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "example": "F1603,I1308",
+              "type": "string",
+            },
+          },
+          {
+            "description": "Un code RNCP. <br />rome et rncp sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
+            "in": "query",
+            "name": "rncp",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+              "example": "contact@domaine nom_de_societe",
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "example": 48.845,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "example": 2.3752,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "Le rayon de recherche en kilomètres",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "example": 30,
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          {
+            "description": "search center insee code",
+            "in": "query",
+            "name": "insee",
+            "required": false,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -3902,14 +6838,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/bulk": {
       "get": {
         "description": "Get all jobs related to my organization",
-        "operationId": "getJobs",
         "parameters": [
           {
             "description": "query mongodb query allowing specific filtering, JSON stringified",
@@ -4003,14 +6938,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/canceled/{jobId}": {
       "post": {
         "description": "Update a job offer status to \\"Canceled\\".",
-        "operationId": "setJobAsCanceled",
         "parameters": [
           {
             "in": "path",
@@ -4041,14 +6975,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/company/{siret}": {
       "get": {
         "description": "Get one company identified by it's siret",
-        "operationId": "getCompany",
         "parameters": [
           {
             "description": "Le numéro de SIRET de l'établissement",
@@ -4168,14 +7101,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/delegations/{jobId}": {
       "get": {
         "description": "Get related training organization related to a job offer.",
-        "operationId": "getDelegation",
         "parameters": [
           {
             "in": "path",
@@ -4270,12 +7202,11 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
       "post": {
         "description": "Create delegation related to a job offer.",
-        "operationId": "createDelegation",
         "parameters": [
           {
             "in": "path",
@@ -4343,7 +7274,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
@@ -4411,12 +7342,11 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
       "post": {
         "description": "Create an establishment entity",
-        "operationId": "createEstablishment",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4499,14 +7429,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/extend/{jobId}": {
       "post": {
         "description": "Update a job expiration date by 30 days.",
-        "operationId": "extendJobExpiration",
         "parameters": [
           {
             "in": "path",
@@ -4537,14 +7466,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/job/{id}": {
       "get": {
         "description": "Get one pe job identified by it's id",
-        "operationId": "getPeJob",
         "parameters": [
           {
             "in": "path",
@@ -4660,14 +7588,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/matcha/{id}": {
       "get": {
         "description": "Get one lba job identified by it's id",
-        "operationId": "getLbaJob",
         "parameters": [
           {
             "description": "the id the lba job looked for.",
@@ -4764,14 +7691,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/matcha/{id}/stats/view-details": {
       "post": {
         "description": "Notifies that the detail of a matcha job has been viewed",
-        "operationId": "statsViewLbaJob",
         "parameters": [
           {
             "in": "path",
@@ -4798,14 +7724,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/provided/{jobId}": {
       "post": {
         "description": "Update a job offer status to \\"Provided\\"",
-        "operationId": "setJobAsProvided",
         "parameters": [
           {
             "in": "path",
@@ -4836,14 +7761,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/{establishmentId}": {
       "post": {
         "description": "Create a job offer inside an establishment entity.",
-        "operationId": "createJob",
         "parameters": [
           {
             "in": "path",
@@ -5009,14 +7933,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobs/{jobId}": {
       "patch": {
         "description": "Update a job offer specific fields inside an establishment entity.",
-        "operationId": "updateJob",
         "parameters": [
           {
             "in": "path",
@@ -5173,13 +8096,12 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           },
         ],
         "tags": [
-          "Jobs",
+          "V1 - Jobs",
         ],
       },
     },
     "/v1/jobsEtFormations": {
       "get": {
-        "operationId": "getJobsEtFormations",
         "parameters": [
           {
             "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
@@ -5260,7 +8182,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
           },
           {
-            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, offres, peJob)",
+            "description": "comma separated list of job opportunities sources and trainings (possible values : formation, matcha, lba, lbb, offres, peJob)",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -5517,14 +8439,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Jobs et formations",
+          "V1 - Jobs et formations",
         ],
       },
     },
     "/v1/metiers": {
       "get": {
         "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
-        "operationId": "getMetiers",
         "parameters": [
           {
             "description": "Un terme libre de recherche de métier.",
@@ -5584,14 +8505,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Metiers",
+          "V1 - Metiers",
         ],
       },
     },
     "/v1/metiers/all": {
       "get": {
         "description": "Retourne la liste de tous les métiers référencés sur LBA",
-        "operationId": "getTousLesMetiers",
         "responses": {
           "200": {
             "content": {
@@ -5621,14 +8541,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Metiers",
+          "V1 - Metiers",
         ],
       },
     },
     "/v1/metiers/intitule": {
       "get": {
         "description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
-        "operationId": "getCoupleAppellationRomeIntitule",
         "parameters": [
           {
             "in": "query",
@@ -5684,14 +8603,13 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Metiers",
+          "V1 - Metiers",
         ],
       },
     },
     "/v1/metiers/metiersParFormation/{cfd}": {
       "get": {
         "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
-        "operationId": "getMetiersParCfd",
         "parameters": [
           {
             "description": "L'identifiant CFD de la formation.",
@@ -5734,7 +8652,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         },
         "security": [],
         "tags": [
-          "Metiers",
+          "V1 - Metiers",
         ],
       },
     },
@@ -5743,6 +8661,10 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
     {
       "description": "Production",
       "url": "https://labonnealternance.apprentissage.beta.gouv.fr",
+    },
+    {
+      "description": "Production V2",
+      "url": "https://labonnealternance.apprentissage.beta.gouv.fr/v2",
     },
   ],
   "webhooks": {},

@@ -2,16 +2,21 @@ import { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
 import { zApplicationRoutes } from "./application.routes"
+import { zApplicationRoutesV2 } from "./application.routes.v2"
 import { zAppointmentsRoute } from "./appointments.routes"
+import { zAppointmentsRouteV2 } from "./appointments.routes.v2"
 import { IRouteSchema, IRouteSchemaWrite } from "./common.routes"
 import { zCoreRoutes } from "./core.routes"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAppointment.routes"
 import { zEmailsRoutes } from "./emails.routes"
 import { zEtablissementRoutes } from "./etablissement.routes"
 import { zFormationRoute } from "./formations.routes"
+import { zFormationsRoutesV2 } from "./formations.routes.v2"
 import { zFormulaireRoute } from "./formulaire.route"
+import { zJobsRoutesV2 } from "./jobs.routes.v2"
 import { zLoginRoutes } from "./login.routes"
 import { zMetiersRoutes } from "./metiers.routes"
+import { zMetiersRoutesV2 } from "./metiers.routes.v2"
 import { zMetiersDAvenirRoutes } from "./metiersdavenir.routes"
 import { zOptoutRoutes } from "./optout.routes"
 import { zPartnersRoutes } from "./partners.routes"
@@ -31,6 +36,7 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zMetiersDAvenirRoutes.get,
   ...zMetiersRoutes.get,
+  ...zMetiersRoutesV2.get,
 } as const
 
 const zRoutesGetP2 = {
@@ -46,6 +52,8 @@ const zRoutesGetP3 = {
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationRoute.get,
   ...zOptoutRoutes.get,
+  ...zFormationsRoutesV2.get,
+  ...zJobsRoutesV2.get,
 } as const
 
 const zRoutesGetP4 = {
@@ -76,12 +84,15 @@ const zRoutesPost1 = {
 const zRoutesPost2 = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
+  ...zApplicationRoutesV2.post,
+  ...zAppointmentsRouteV2.post,
 }
 
 const zRoutesPost3 = {
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
+  ...zJobsRoutesV2.post,
 }
 
 const zRoutesPost = {
@@ -106,6 +117,7 @@ const zRoutesPatch = {
   ...zFormulaireRoute.patch,
   ...zEtablissementRoutes.patch,
   ...zEligibleTrainingsForAppointmentRoutes.patch,
+  ...zJobsRoutesV2.patch,
 } as const
 
 export type IGetRoutes = typeof zRoutesGet

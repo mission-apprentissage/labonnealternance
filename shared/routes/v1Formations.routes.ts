@@ -44,8 +44,7 @@ export const zV1FormationsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Formations"] as string[],
-        operationId: "getFormations",
+        tags: ["V1 - Formations"] as string[],
         description: "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
       },
     },
@@ -70,8 +69,7 @@ export const zV1FormationsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Formations"] as string[],
-        operationId: "getFormation",
+        tags: ["V1 - Formations"] as string[],
         description: "Get one formation identified by it's clé ministère éducatif",
       },
     },

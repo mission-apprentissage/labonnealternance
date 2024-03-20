@@ -299,17 +299,21 @@ export const getParcoursupAndAffelnetPerimetreFromCatalogueME = async (): Promis
   }
 }
 
-type IRomeResult = {
+export const getRomesFromCatalogue = async ({
+  cfd,
+  siret,
+}: {
+  cfd?: string
+  siret?: string
+}): Promise<{
   romes: string[]
-}
-
-export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
+}> => {
   const query: { cfd?: string; etablissement_formateur_siret?: string } = {}
 
   if (cfd) query.cfd = cfd
   if (siret) query.etablissement_formateur_siret = siret
 
-  const formationsFromDb = await FormationCatalogue.find(query)
+  const formationsFromDb = await FormationCatalogue.find(query).lean()
 
   const romes: Set<string> = new Set()
 
@@ -319,7 +323,7 @@ export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; sire
     }
   })
 
-  const result: IRomeResult = { romes: [...romes] }
+  const result = { romes: [...romes] }
 
   if (!result.romes.length) {
     throw Boom.notFound("No training found")
