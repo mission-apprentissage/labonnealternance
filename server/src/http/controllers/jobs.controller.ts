@@ -22,10 +22,10 @@ import {
   patchOffre,
   provideOffre,
 } from "../../services/formulaire.service"
+import { getFtJobFromId } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../services/lbacompany.service"
 import { addOffreDetailView, getLbaJobById, incrementLbaJobsViewCount } from "../../services/lbajob.service"
-import { getPeJobFromId } from "../../services/pejob.service"
 import { getFicheMetierRomeV3FromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
@@ -448,7 +448,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       const { caller } = req.query
-      const result = await getPeJobFromId({
+      const result = await getFtJobFromId({
         id,
         caller,
       })

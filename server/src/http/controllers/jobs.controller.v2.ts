@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { IJob, ILbaItemLbaJob, ILbaItemPeJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { IJob, ILbaItemLbaJob, ILbaItemFtJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -23,10 +23,10 @@ import {
   patchOffre,
   provideOffre,
 } from "../../services/formulaire.service"
+import { getFtJobFromIdV2 } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../services/lbacompany.service"
 import { addOffreDetailView, getLbaJobByIdV2, incrementLbaJobsViewCount } from "../../services/lbajob.service"
-import { getPeJobFromIdV2 } from "../../services/pejob.service"
 import { getFicheMetierRomeV3FromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
@@ -399,7 +399,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { source, id } = req.params
       const { caller } = req.query
-      let result: { job: ILbaItemLbaJob[] | ILbaItemPeJob } | null
+      let result: { job: ILbaItemLbaJob[] | ILbaItemFtJob } | null
 
       switch (source) {
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
@@ -410,7 +410,7 @@ export default (server: Server) => {
           break
 
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-          result = await getPeJobFromIdV2({
+          result = await getFtJobFromIdV2({
             id,
             caller,
           })

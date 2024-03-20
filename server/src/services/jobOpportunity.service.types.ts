@@ -1,6 +1,6 @@
 import { IApiError } from "../common/utils/errorManager"
 
-import { ILbaItemCompany, ILbaItemFormation, ILbaItemJob, ILbaItemPeJob } from "./lbaitem.shared.service.types"
+import { ILbaItemCompany, ILbaItemFormation, ILbaItemJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 
 export type TJobSearchQuery = {
   romes?: string
@@ -21,7 +21,7 @@ export type TJobSearchQuery = {
 
 export type TFormationSearchQuery = TJobSearchQuery & { region?: string; departement?: string }
 
-export type TLbaItemResult<T extends ILbaItemCompany | ILbaItemFormation | ILbaItemPeJob | ILbaItemJob> =
+export type TLbaItemResult<T extends ILbaItemCompany | ILbaItemFormation | ILbaItemFtJob | ILbaItemJob> =
   | IApiError
   | {
       results: T[]

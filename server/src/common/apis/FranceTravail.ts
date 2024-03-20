@@ -4,22 +4,22 @@ import querystring from "querystring"
 import FormData from "form-data"
 
 import config from "@/config"
-import { PEResponse } from "@/services/pejob.service.types"
-import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
+import { FTResponse } from "@/services/ftjob.service.types"
+import { IAppelattionDetailsFromAPI, IFTAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
 import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
 
-const PE_IO_API_ROME_V1_BASE_URL = "https://api.pole-emploi.io/partenaire/rome/v1"
-const PE_IO_API_OFFRES_BASE_URL = "https://api.pole-emploi.io/partenaire/offresdemploi/v2"
-const PE_AUTH_BASE_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2"
-const PE_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
+const FT_IO_API_ROME_V1_BASE_URL = "https://api.pole-emploi.io/partenaire/rome/v1"
+const FT_IO_API_OFFRES_BASE_URL = "https://api.pole-emploi.io/partenaire/offresdemploi/v2"
+const FT_AUTH_BASE_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2"
+const FT_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
 
 // paramètres exclurant les offres LBA des résultats de l'api PE
-const PE_LBA_PARTENAIRE = "LABONNEALTERNANCE"
-const PE_PARTENAIRE_MODE = "EXCLU"
+const FT_LBA_PARTENAIRE = "LABONNEALTERNANCE"
+const FT_PARTENAIRE_MODE = "EXCLU"
 
 const axiosClient = getApiClient({})
 
@@ -37,22 +37,22 @@ const OFFRES_ACESS = querystring.stringify({
   scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
 })
 
-let tokenOffrePE: IPEAPIToken = {
+let tokenOffreFT: IFTAPIToken = {
   access_token: "",
   scope: "",
   token_type: "",
   expires_in: 0,
 }
-let tokenRomePE: IPEAPIToken = {
+let tokenRomeFT: IFTAPIToken = {
   access_token: "",
   scope: "",
   token_type: "",
   expires_in: 0,
 }
 
-const isTokenValid = (token: IPEAPIToken): any => token?.expire?.isAfter(dayjs())
+const isTokenValid = (token: IFTAPIToken): any => token?.expire?.isAfter(dayjs())
 
-const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPIToken> => {
+const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPIToken> => {
   const isValid = isTokenValid(token)
 
   if (isValid) {
@@ -60,7 +60,7 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
   }
 
   try {
-    const response = await axiosClient.post(`${PE_AUTH_BASE_URL}/access_token?realm=%2Fpartenaire`, access === "OFFRE" ? OFFRES_ACESS : ROME_ACESS, {
+    const response = await axiosClient.post(`${FT_AUTH_BASE_URL}/access_token?realm=%2Fpartenaire`, access === "OFFRE" ? OFFRES_ACESS : ROME_ACESS, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 3000,
     })
@@ -76,9 +76,9 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
 }
 
 /**
- * @description Search for PE Jobs
+ * @description Search for FT Jobs
  */
-export const searchForPeJobs = async (params: {
+export const searchForFtJobs = async (params: {
   codeROME: string
   commune: string
   sort: number
@@ -87,20 +87,20 @@ export const searchForPeJobs = async (params: {
   niveauFormation?: string
   insee?: string
   distance?: number
-}): Promise<PEResponse | null | ""> => {
-  tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
+}): Promise<FTResponse | null | ""> => {
+  tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
   try {
     const extendedParams = {
       ...params,
-      partenaires: PE_LBA_PARTENAIRE,
-      modeSelectionPartenaires: PE_PARTENAIRE_MODE,
+      partenaires: FT_LBA_PARTENAIRE,
+      modeSelectionPartenaires: FT_PARTENAIRE_MODE,
     }
-    const { data } = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/search`, {
+    const { data } = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/offres/search`, {
       params: extendedParams,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${tokenOffrePE.access_token}`,
+        Authorization: `Bearer ${tokenOffreFT.access_token}`,
       },
     })
 
@@ -113,20 +113,20 @@ export const searchForPeJobs = async (params: {
 }
 
 /**
- * @description Get a PE Job
+ * @description Get a FT Job
  */
-export const getPeJob = async (id: string) => {
-  tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
+export const getFtJob = async (id: string) => {
+  tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
   try {
-    const result = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/${id}`, {
+    const result = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/offres/${id}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${tokenOffrePE.access_token}`,
+        Authorization: `Bearer ${tokenOffreFT.access_token}`,
       },
     })
 
-    return result // PEResponse
+    return result
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     sentryCaptureException(error.response?.data)
@@ -134,20 +134,20 @@ export const getPeJob = async (id: string) => {
 }
 
 /**
- * Utilitaire à garder pour interroger les référentiels PE non documentés par ailleurs
+ * Utilitaire à garder pour interroger les référentiels FT non documentés par ailleurs
  * Liste des référentiels disponible sur https://www.emploi-store-dev.fr/portail-developpeur-cms/home/catalogue-des-api/documentation-des-api/api/api-offres-demploi-v2/referentiels.html
  *
  * @param {string} referentiel
  */
-export const getPeReferentiels = async (referentiel: string) => {
+export const getFtReferentiels = async (referentiel: string) => {
   try {
-    tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
+    tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
 
-    const referentiels = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
+    const referentiels = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${tokenOffrePE.access_token}`,
+        Authorization: `Bearer ${tokenOffreFT.access_token}`,
       },
     })
 
@@ -163,12 +163,12 @@ export const getPeReferentiels = async (referentiel: string) => {
  * @returns
  */
 export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDetailsFromAPI | null | undefined> => {
-  tokenRomePE = await getPeAccessToken("ROME", tokenRomePE)
+  tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
 
   try {
-    const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${PE_IO_API_ROME_V1_BASE_URL}/metier/${romeCode}`, {
+    const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/metier/${romeCode}`, {
       headers: {
-        Authorization: `Bearer ${tokenRomePE.access_token}`,
+        Authorization: `Bearer ${tokenRomeFT.access_token}`,
       },
     })
 
@@ -180,12 +180,12 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 }
 
 export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
-  tokenRomePE = await getPeAccessToken("ROME", tokenRomePE)
+  tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
 
   try {
-    const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${PE_IO_API_ROME_V1_BASE_URL}/appellation/${appellationCode}`, {
+    const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/appellation/${appellationCode}`, {
       headers: {
-        Authorization: `Bearer ${tokenRomePE.access_token}`,
+        Authorization: `Bearer ${tokenRomeFT.access_token}`,
       },
     })
 
@@ -199,18 +199,18 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
 }
 
 /**
- * Sends CSV file to Pole Emploi API through a "form data".
+ * Sends CSV file to France Travail API through a "form data".
  */
-export const sendCsvToPE = async (csvPath: string): Promise<void> => {
+export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => {
   const form = new FormData()
-  form.append("login", config.poleEmploiDepotOffres.login)
-  form.append("password", config.poleEmploiDepotOffres.password)
-  form.append("nomFlux", config.poleEmploiDepotOffres.nomFlux)
+  form.append("login", config.franceTravailDepotOffres.login)
+  form.append("password", config.franceTravailDepotOffres.password)
+  form.append("nomFlux", config.franceTravailDepotOffres.nomFlux)
   form.append("fichierAenvoyer", createReadStream(csvPath))
   form.append("periodeRef", "")
 
   try {
-    const { data } = await axiosClient.post(`${PE_PORTAIL_BASE_URL}/depotcurl`, form, {
+    const { data } = await axiosClient.post(`${FT_PORTAIL_BASE_URL}/depotcurl`, form, {
       headers: {
         ...form.getHeaders(),
       },

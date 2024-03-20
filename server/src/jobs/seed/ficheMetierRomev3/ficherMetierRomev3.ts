@@ -1,4 +1,4 @@
-import { getRomeDetailsFromAPI } from "@/common/apis/Pe"
+import { getRomeDetailsFromAPI } from "@/common/apis/FranceTravail"
 
 import { logger } from "../../../common/logger"
 import { FicheMetierRomeV3 } from "../../../common/model"

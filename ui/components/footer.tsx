@@ -42,15 +42,15 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                 </Box>
                 <Flex flexDirection={{ base: "column", lg: "row" }} mt="6">
                   <Link
-                    href="https://pole-emploi.fr"
-                    aria-label="Accès au site de Pôle emploi - nouvelle fenêtre"
+                    href="https://www.francetravail.fr"
+                    aria-label="Accès au site de France Travail - nouvelle fenêtre"
                     isExternal
                     fontSize={14}
                     fontWeight={700}
                     color="grey.425"
                     mr={4}
                   >
-                    pole-emploi.fr <ExternalLinkIcon mx="2px" />
+                    francetravail.fr <ExternalLinkIcon mx="2px" />
                   </Link>
                   <Link
                     href="https://gouvernement.fr"
