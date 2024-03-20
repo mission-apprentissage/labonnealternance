@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models"
-import { ZNewApplication } from "../models/applications.model"
+import { ZNewApplicationV2 } from "../models/applications.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -9,7 +9,7 @@ export const zApplicationRoutesV2 = {
     "/application": {
       path: "/application",
       method: "post",
-      body: ZNewApplication,
+      body: ZNewApplicationV2,
       response: {
         "200": z
           .object({
