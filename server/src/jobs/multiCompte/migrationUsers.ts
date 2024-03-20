@@ -165,7 +165,7 @@ const migrationUserRecruteurs = async () => {
         if (!establishment_siret) {
           throw new Error("inattendu pour une ENTERPRISE: pas de establishment_siret")
         }
-        const entreprise: IEntreprise = {
+        const newEntreprise: IEntreprise = {
           _id: userRecruteur._id,
           origin,
           siret: establishment_siret,
@@ -180,12 +180,15 @@ const migrationUserRecruteurs = async () => {
           updatedAt,
           status: userRecruteurStatusToEntrepriseStatus(oldStatus),
         }
-        const createdEntreprise = await Entreprise.create(entreprise)
-        stats.entrepriseCreated++
+        let entreprise = await Entreprise.findOne({ siret: newEntreprise.siret }).lean()
+        if (!entreprise) {
+          entreprise = await Entreprise.create(newEntreprise)
+          stats.entrepriseCreated++
+        }
         const roleManagement: Omit<IRoleManagement, "_id"> = {
           user_id: userRecruteur._id,
           authorized_type: AccessEntityType.ENTREPRISE,
-          authorized_id: createdEntreprise._id,
+          authorized_id: entreprise._id.toString(),
           createdAt: userRecruteur.createdAt,
           updatedAt: userRecruteur.updatedAt,
           origin,
@@ -196,7 +199,7 @@ const migrationUserRecruteurs = async () => {
         if (!establishment_siret) {
           throw new Error("inattendu pour un CFA: pas de establishment_siret")
         }
-        const cfa: ICFA = {
+        const newCfa: ICFA = {
           _id: userRecruteur._id,
           siret: establishment_siret,
           address,
@@ -208,12 +211,15 @@ const migrationUserRecruteurs = async () => {
           createdAt,
           updatedAt,
         }
-        const createdCfa = await Cfa.create(cfa)
-        stats.cfaCreated++
+        let cfa = await Cfa.findOne({ siret: newCfa.siret }).lean()
+        if (!cfa) {
+          cfa = await Cfa.create(newCfa)
+          stats.cfaCreated++
+        }
         const roleManagement: Omit<IRoleManagement, "_id"> = {
           user_id: userRecruteur._id,
           authorized_type: AccessEntityType.CFA,
-          authorized_id: createdCfa._id,
+          authorized_id: cfa._id.toString(),
           createdAt: userRecruteur.createdAt,
           updatedAt: userRecruteur.updatedAt,
           origin,

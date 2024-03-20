@@ -69,7 +69,7 @@ async function authCookieSession(req: FastifyRequest): Promise<AccessUser2 | nul
 
     if (userState?.error) {
       if (userState.reason !== "VALIDATION") {
-        throw Boom.forbidden()
+        throw Boom.forbidden(`user state invalide : ${userState.reason}`)
       }
     }
 

@@ -84,12 +84,13 @@ export const createAdminUser = (user: IUser2) => apiPost("/admin/users", { body:
 /**
  * KBA 20230511 : (migration db) : casting des valueurs coté collection recruiter, car les champs ne sont plus identiques avec la collection userRecruteur.
  */
-export const updateEntreprise = async (userId: string, establishment_id: string, user: any) =>
-  await Promise.all([
-    updateUser(userId, user),
-    //
-    updateFormulaire(establishment_id, user),
-  ])
+export const updateEntreprise = async (userId: string, establishment_id: string | undefined, user: any) => {
+  const promises: Promise<any>[] = [updateUser(userId, user)]
+  if (establishment_id) {
+    promises.push(updateFormulaire(establishment_id, user))
+  }
+  await Promise.all(promises)
+}
 
 export const updateEntrepriseAdmin = async (userId: string, establishment_id: string, user: any) =>
   await Promise.all([

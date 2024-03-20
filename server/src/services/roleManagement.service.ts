@@ -59,7 +59,7 @@ export const getMainRoleManagement = async (userId: string | ObjectId): Promise<
   return null
 }
 
-const roleToUserType = (role: IRoleManagement) => {
+export const roleToUserType = (role: IRoleManagement) => {
   switch (role.authorized_type) {
     case AccessEntityType.ADMIN:
       return ADMIN

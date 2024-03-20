@@ -94,9 +94,14 @@ export const getUserRecruteurByRecruiter = async (recruiter: IRecruiter): Promis
   }
 }
 
-export const userAndRoleAndOrganizationToUserRecruteur = (user: IUser2, role: IRoleManagement, organisme: ICFA | IEntreprise, formulaire: IRecruiter | null): IUserRecruteur => {
+export const userAndRoleAndOrganizationToUserRecruteur = (
+  user: IUser2,
+  role: IRoleManagement,
+  organisme: ICFA | IEntreprise | null,
+  formulaire: IRecruiter | null
+): IUserRecruteur => {
   const { email, first_name, last_name, phone, last_action_date, _id } = user
-  const organismeType = "status" in organisme ? ENTREPRISE : CFA
+  const organismeType = organisme ? ("status" in organisme ? ENTREPRISE : CFA) : null
   const oldStatus: IUserStatusValidation[] = [
     ...role.status.map(({ date, reason, status, validation_type, granted_by }) => {
       const userRecruteurStatus = roleStatusToUserRecruteurStatus(status)
@@ -109,7 +114,7 @@ export const userAndRoleAndOrganizationToUserRecruteur = (user: IUser2, role: IR
       }
     }),
   ]
-  if ("status" in organisme) {
+  if (organisme && "status" in organisme) {
     organisme.status
       .flatMap((event) => (event.status === EntrepriseStatus.ERROR ? [entrepriseStatusEventToUserRecruteurStatusEvent(event, ETAT_UTILISATEUR.ERROR)] : []))
       .forEach((event) => oldStatus.push(event))
@@ -118,9 +123,9 @@ export const userAndRoleAndOrganizationToUserRecruteur = (user: IUser2, role: IR
   const roleType = role.authorized_type === AccessEntityType.OPCO ? OPCO : role.authorized_type === AccessEntityType.ADMIN ? ADMIN : null
   const type = roleType ?? organismeType ?? null
   if (!type) throw Boom.internal("unexpected: no type found")
-  const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme
+  const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme ?? {}
   let entrepriseFields = {}
-  if ("idcc" in organisme) {
+  if (organisme && "idcc" in organisme) {
     const { idcc, opco } = organisme
     entrepriseFields = { idcc, opco }
     if (formulaire) {
@@ -278,7 +283,8 @@ export const createUser = async (
 }
 
 export const updateUser2Fields = (userId: ObjectIdType, fields: Partial<IUser2>) => {
-  return User2.findOneAndUpdate({ _id: userId }, fields, { new: true })
+  const { email, ...otherFields } = fields
+  return User2.findOneAndUpdate({ _id: userId }, { ...otherFields, ...(email ? { email: email.toLocaleLowerCase() } : {}) }, { new: true })
 }
 
 export const validateUserEmail = async (userId: ObjectIdType) => {

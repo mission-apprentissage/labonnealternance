@@ -1,12 +1,14 @@
 import Boom from "boom"
 import { CFA, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, IRecruiter, getUserStatus, zRoutes } from "shared/index"
+import { ICFA } from "shared/models/cfa.model"
+import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { modifyPermissionToUser } from "@/services/roleManagement.service"
+import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
 
 import { Cfa, Entreprise, RoleManagement, User2 } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
@@ -160,7 +162,6 @@ export default (server: Server) => {
         user_id: userId,
         // TODO à activer lorsque le frontend passe organizationId correctement
         // authorized_id: organizationId,
-        authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] },
       }).lean()
       if (!role) {
         throw Boom.badRequest("role not found")
@@ -169,10 +170,16 @@ export default (server: Server) => {
       if (!user) {
         throw Boom.badRequest("user not found")
       }
-      const type = role.authorized_type === AccessEntityType.CFA ? CFA : ENTREPRISE
-      const organization = await (type === CFA ? Cfa : Entreprise).findOne({ _id: role.authorized_id }).lean()
-      if (!organization) {
-        throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
+      const type = roleToUserType(role)
+      if (!type) {
+        throw Boom.internal("user type not found")
+      }
+      let organization: ICFA | IEntreprise | null = null
+      if (type === CFA || type === ENTREPRISE) {
+        organization = await (type === CFA ? Cfa : Entreprise).findOne({ _id: role.authorized_id }).lean()
+        if (!organization) {
+          throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
+        }
       }
 
       let jobs: IJob[] = []

@@ -305,8 +305,9 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       entreprises: [],
       opcos: opco ? [opco] : [],
     }
+
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
-      throw Boom.forbidden()
+      throw Boom.forbidden("non autorisé")
     }
   } else if (userType === "IUser2") {
     const { _id } = userWithType.value
@@ -327,7 +328,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       }),
     }
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
-      throw Boom.forbidden()
+      throw Boom.forbidden("non autorisé")
     }
   } else {
     assertUnreachable(userType)
