@@ -70,7 +70,7 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
       expire: dayjs().add(response.data.expires_in - 10, "s"),
     }
   } catch (error: any) {
-    sentryCaptureException(error.response?.data)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     return error.response?.data
   }
 }
@@ -78,7 +78,7 @@ const getPeAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IPEAPI
 /**
  * @description Search for PE Jobs
  */
-export const searchForPeJobs = async (params: {
+export const getJobsFromFranceTravailAPI = async (params: {
   codeROME: string
   commune: string
   sort: number
@@ -107,7 +107,7 @@ export const searchForPeJobs = async (params: {
     return data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    sentryCaptureException(error.response?.data)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     return null
   }
 }
@@ -115,7 +115,7 @@ export const searchForPeJobs = async (params: {
 /**
  * @description Get a PE Job
  */
-export const getPeJob = async (id: string) => {
+export const getSingleJobFromFranceTravailAPI = async (id: string) => {
   tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
   try {
     const result = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/offres/${id}`, {
@@ -129,7 +129,7 @@ export const getPeJob = async (id: string) => {
     return result // PEResponse
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    sentryCaptureException(error.response?.data)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
   }
 }
 
@@ -143,7 +143,7 @@ export const getPeReferentiels = async (referentiel: string) => {
   try {
     tokenOffrePE = await getPeAccessToken("OFFRE", tokenOffrePE)
 
-    const referentiels = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
+    const { data } = await axiosClient.get(`${PE_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -151,9 +151,9 @@ export const getPeReferentiels = async (referentiel: string) => {
       },
     })
 
-    console.log(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
-  } catch (error) {
-    console.log("error getReferentiel ", error)
+    return data
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
   }
 }
 
@@ -174,7 +174,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 
     return data
   } catch (error: any) {
-    sentryCaptureException(error.response?.data)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     return null
   }
 }
@@ -191,7 +191,7 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
 
     return data
   } catch (error: any) {
-    sentryCaptureException(error)
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     if (error.response.status === 404) {
       return null
     }
@@ -217,7 +217,7 @@ export const sendCsvToPE = async (csvPath: string): Promise<void> => {
     })
 
     return data
-  } catch (error) {
-    sentryCaptureException(error)
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
   }
 }

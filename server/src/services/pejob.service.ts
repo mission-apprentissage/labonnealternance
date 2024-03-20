@@ -3,7 +3,7 @@ import { setTimeout } from "timers/promises"
 import distance from "@turf/distance"
 import Boom from "boom"
 
-import { getPeJob, getPeReferentiels, searchForPeJobs } from "@/common/apis/Pe"
+import { getJobsFromFranceTravailAPI, getPeReferentiels, getSingleJobFromFranceTravailAPI } from "@/common/apis/Pe"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -207,7 +207,7 @@ const getPeJobs = async ({
       params.distance = distance
     }
 
-    const jobs = await searchForPeJobs(params)
+    const jobs = await getJobsFromFranceTravailAPI(params)
 
     if (jobs === null || jobs === "") {
       const emptyPeResponse: PEResponse = { resultats: [] }
@@ -287,7 +287,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
-    const job = await getPeJob(id)
+    const job = await getSingleJobFromFranceTravailAPI(id)
 
     if (!job) {
       throw Boom.notFound()
