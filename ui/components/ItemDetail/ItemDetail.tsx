@@ -17,6 +17,7 @@ import AideApprentissage from "./AideApprentissage"
 import CandidatureLba from "./CandidatureLba/CandidatureLba"
 import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
+import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
@@ -29,7 +30,6 @@ import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
 import LbbCompanyDetail from "./LbbCompanyDetail"
 import LocationDetail from "./LocationDetail"
 import MatchaDetail from "./MatchaDetail"
-import PeJobDetail from "./PeJobDetail"
 import TrainingDetail from "./TrainingDetail"
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
@@ -65,7 +65,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
     setIsCollapsedHeader(currentScroll > maxScroll)
   }
 
-  const postuleSurPoleEmploi = () => {
+  const postuleSurFranceTravail = () => {
     SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre PE", {
       info_fiche: selectedItem.job.id,
     })
@@ -142,8 +142,15 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
           {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
             <Box my={4}>
-              <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={selectedItem.url} target="poleemploi" onClick={postuleSurPoleEmploi}>
-                Je postule sur Pôle emploi
+              <Link
+                data-tracking-id="postuler-offre-partenaire"
+                {...focusWithin}
+                variant="postuler"
+                href={selectedItem.url}
+                target="francetravail"
+                onClick={postuleSurFranceTravail}
+              >
+                Je postule sur France Travail
               </Link>
             </Box>
           )}
@@ -164,7 +171,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
         </Box>
       </Box>
 
-      {kind === LBA_ITEM_TYPE_OLD.PEJOB && <PeJobDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <MatchaDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <LbbCompanyDetail lbb={selectedItem} />}
 

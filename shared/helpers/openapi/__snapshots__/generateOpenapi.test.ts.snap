@@ -2212,7 +2212,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         "additionalProperties": false,
         "properties": {
           "code": {
-            "description": "Un code ROME provenant de la nomenclature des métiers de Pôle emploi",
+            "description": "Un code ROME provenant de la nomenclature des métiers de France Travail",
             "example": "F1603",
             "type": [
               "string",

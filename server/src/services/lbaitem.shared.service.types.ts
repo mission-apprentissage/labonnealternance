@@ -12,5 +12,5 @@ export type {
   ILbaItemTraining,
   ILbaItemLbaCompany,
   ILbaItemCompany,
-  ILbaItemPeJob,
+  ILbaItemFtJob,
 } from "shared/models/lbaItem.model"
