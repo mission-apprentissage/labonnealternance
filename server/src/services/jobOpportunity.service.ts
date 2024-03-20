@@ -3,11 +3,11 @@ import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { IApiError } from "../common/utils/errorManager"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 
+import { getSomeFtJobs } from "./ftjob.service"
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
 import { getSomeCompanies } from "./lbacompany.service"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPeJob } from "./lbaitem.shared.service.types"
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { getLbaJobs } from "./lbajob.service"
-import { getSomePeJobs } from "./pejob.service"
 import { jobsQueryValidator } from "./queryValidator.service"
 
 /**
@@ -43,7 +43,7 @@ export const getJobsFromApi = async ({
   api?: string
 }): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   try {
     const convertedSource = sources
@@ -70,7 +70,7 @@ export const getJobsFromApi = async ({
 
     const [peJobs, lbaCompanies, matchas] = await Promise.all([
       jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
-        ? getSomePeJobs({
+        ? getSomeFtJobs({
             romes: romes?.split(","),
             insee: insee,
             radius: finalRadius,
@@ -128,7 +128,7 @@ export const getJobsQuery = async (
   query: TJobSearchQuery
 ): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   const parameterControl = await jobsQueryValidator(query)
 

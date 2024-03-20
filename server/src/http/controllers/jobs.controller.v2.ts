@@ -1,5 +1,6 @@
 import Boom from "boom"
-import { IJob, JOB_STATUS, zRoutes } from "shared"
+import { IJob, ILbaItemLbaJob, ILbaItemFtJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
@@ -22,10 +23,10 @@ import {
   patchOffre,
   provideOffre,
 } from "../../services/formulaire.service"
-import { getFtJobFromId } from "../../services/ftjob.service"
+import { getFtJobFromIdV2 } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../services/lbacompany.service"
-import { addOffreDetailView, getLbaJobById, incrementLbaJobsViewCount } from "../../services/lbajob.service"
+import { addOffreDetailView, getLbaJobByIdV2, incrementLbaJobsViewCount } from "../../services/lbajob.service"
 import { getFicheMetierRomeV3FromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
@@ -38,11 +39,11 @@ const config = {
 
 export default (server: Server) => {
   server.get(
-    "/v1/jobs/establishment",
+    "/jobs/establishment",
     {
-      schema: zRoutes.get["/v1/jobs/establishment"],
+      schema: zRoutes.get["/jobs/establishment"],
       config,
-      onRequest: server.auth(zRoutes.get["/v1/jobs/establishment"]),
+      onRequest: server.auth(zRoutes.get["/jobs/establishment"]),
     },
     async (req, res) => {
       const { establishment_siret, email } = req.query
@@ -58,17 +59,16 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/jobs/bulk",
+    "/jobs/bulk",
     {
-      schema: zRoutes.get["/v1/jobs/bulk"],
+      schema: zRoutes.get["/jobs/bulk"],
       config,
-      onRequest: server.auth(zRoutes.get["/v1/jobs/bulk"]),
-      // TODO: AttachValidation Error ?
+      onRequest: server.auth(zRoutes.get["/jobs/bulk"]),
     },
     async (req, res) => {
       const { query, select, page, limit } = req.query
 
-      const user = getUserFromRequest(req, zRoutes.get["/v1/jobs/bulk"]).value
+      const user = getUserFromRequest(req, zRoutes.get["/jobs/bulk"]).value
 
       const qs = query ? JSON.parse(query) : {}
       const slt = select ? JSON.parse(select) : {}
@@ -81,17 +81,17 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/establishment",
+    "/jobs/establishment",
     {
-      schema: zRoutes.post["/v1/jobs/establishment"],
-      onRequest: server.auth(zRoutes.post["/v1/jobs/establishment"]),
+      schema: zRoutes.post["/jobs/establishment"],
+      onRequest: server.auth(zRoutes.post["/jobs/establishment"]),
       config,
     },
     async (req, res) => {
       const { body } = req
 
       const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
-      const user = getUserFromRequest(req, zRoutes.post["/v1/jobs/establishment"]).value
+      const user = getUserFromRequest(req, zRoutes.post["/jobs/establishment"]).value
 
       const result = await entrepriseOnboardingWorkflow.create(
         {
@@ -118,10 +118,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/:establishmentId",
+    "/jobs/:establishmentId",
     {
-      schema: zRoutes.post["/v1/jobs/:establishmentId"],
-      onRequest: server.auth(zRoutes.post["/v1/jobs/:establishmentId"]),
+      schema: zRoutes.post["/jobs/:establishmentId"],
+      onRequest: server.auth(zRoutes.post["/jobs/:establishmentId"]),
       config,
     },
     async (req, res) => {
@@ -174,10 +174,10 @@ export default (server: Server) => {
   )
 
   server.patch(
-    "/v1/jobs/:jobId",
+    "/jobs/:jobId",
     {
-      schema: zRoutes.patch["/v1/jobs/:jobId"],
-      onRequest: server.auth(zRoutes.patch["/v1/jobs/:jobId"]),
+      schema: zRoutes.patch["/jobs/:jobId"],
+      onRequest: server.auth(zRoutes.patch["/jobs/:jobId"]),
       config,
     },
     async (req, res) => {
@@ -195,10 +195,10 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/jobs/delegations/:jobId",
+    "/jobs/delegations/:jobId",
     {
-      schema: zRoutes.get["/v1/jobs/delegations/:jobId"],
-      onRequest: server.auth(zRoutes.get["/v1/jobs/delegations/:jobId"]),
+      schema: zRoutes.get["/jobs/delegations/:jobId"],
+      onRequest: server.auth(zRoutes.get["/jobs/delegations/:jobId"]),
       config,
     },
     async (req, res) => {
@@ -236,10 +236,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/delegations/:jobId",
+    "/jobs/delegations/:jobId",
     {
-      schema: zRoutes.post["/v1/jobs/delegations/:jobId"],
-      onRequest: server.auth(zRoutes.post["/v1/jobs/delegations/:jobId"]),
+      schema: zRoutes.post["/jobs/delegations/:jobId"],
+      onRequest: server.auth(zRoutes.post["/jobs/delegations/:jobId"]),
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -256,10 +256,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/provided/:jobId",
+    "/jobs/provided/:jobId",
     {
-      schema: zRoutes.post["/v1/jobs/provided/:jobId"],
-      onRequest: server.auth(zRoutes.post["/v1/jobs/provided/:jobId"]),
+      schema: zRoutes.post["/jobs/provided/:jobId"],
+      onRequest: server.auth(zRoutes.post["/jobs/provided/:jobId"]),
       config,
     },
     async (req, res) => {
@@ -281,10 +281,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/canceled/:jobId",
+    "/jobs/canceled/:jobId",
     {
-      schema: zRoutes.post["/v1/jobs/canceled/:jobId"],
-      onRequest: server.auth(zRoutes.post["/v1/jobs/canceled/:jobId"]),
+      schema: zRoutes.post["/jobs/canceled/:jobId"],
+      onRequest: server.auth(zRoutes.post["/jobs/canceled/:jobId"]),
       config,
     },
     async (req, res) => {
@@ -306,10 +306,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/extend/:jobId",
+    "/jobs/extend/:jobId",
     {
-      schema: zRoutes.post["/v1/jobs/extend/:jobId"],
-      onRequest: server.auth(zRoutes.post["/v1/jobs/extend/:jobId"]),
+      schema: zRoutes.post["/jobs/extend/:jobId"],
+      onRequest: server.auth(zRoutes.post["/jobs/extend/:jobId"]),
       config,
     },
     async (req, res) => {
@@ -334,9 +334,10 @@ export default (server: Server) => {
     }
   )
   server.get(
-    "/v1/jobs",
+    "/jobs",
     {
-      schema: zRoutes.get["/v1/jobs"],
+      schema: zRoutes.get["/jobs"],
+      onRequest: server.auth(zRoutes.get["/jobs"]),
       config,
     },
     async (req, res) => {
@@ -358,9 +359,10 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/jobs/company/:siret",
+    "/jobs/entreprise_lba/:siret",
     {
-      schema: zRoutes.get["/v1/jobs/company/:siret"],
+      schema: zRoutes.get["/jobs/entreprise_lba/:siret"],
+      onRequest: server.auth(zRoutes.get["/jobs/entreprise_lba/:siret"]),
       config,
     },
     async (req, res) => {
@@ -388,82 +390,49 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/jobs/matcha/:id",
+    "/jobs/:source/:id",
     {
-      schema: zRoutes.get["/v1/jobs/matcha/:id"],
+      schema: zRoutes.get["/jobs/:source/:id"],
+      onRequest: server.auth(zRoutes.get["/jobs/:source/:id"]),
       config,
     },
     async (req, res) => {
-      const { id } = req.params
+      const { source, id } = req.params
       const { caller } = req.query
-      const result = await getLbaJobById({
-        id,
-        caller,
-      })
+      let result: { job: ILbaItemLbaJob[] | ILbaItemFtJob } | null
 
-      if ("error" in result) {
-        switch (result.error) {
-          case "wrong_parameters": {
-            res.status(400)
-            break
-          }
-          case "not_found": {
-            res.status(404)
-            break
-          }
-          case "expired_job": {
-            res.status(419)
-            break
-          }
-          default: {
-            res.status(500)
-            break
-          }
-        }
+      switch (source) {
+        case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
+          result = await getLbaJobByIdV2({
+            id,
+            caller,
+          })
+          break
+
+        case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
+          result = await getFtJobFromIdV2({
+            id,
+            caller,
+          })
+          break
+
+        default:
+          assertUnreachable(source as never)
       }
-
       return res.send(result)
     }
   )
 
   server.post(
-    "/v1/jobs/matcha/:id/stats/view-details",
+    "/jobs/matcha/:id/stats/view-details",
     {
-      schema: zRoutes.post["/v1/jobs/matcha/:id/stats/view-details"],
+      schema: zRoutes.post["/jobs/matcha/:id/stats/view-details"],
       config,
     },
     async (req, res) => {
       const { id } = req.params
       await addOffreDetailView(id)
       return res.send({})
-    }
-  )
-
-  server.get(
-    "/v1/jobs/job/:id",
-    {
-      schema: zRoutes.get["/v1/jobs/job/:id"],
-      config,
-    },
-    async (req, res) => {
-      const { id } = req.params
-      const { caller } = req.query
-      const result = await getFtJobFromId({
-        id,
-        caller,
-      })
-
-      if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else if (result.error === "not_found") {
-          res.status(404)
-        } else {
-          res.status(500)
-        }
-      }
-
-      return res.send(result)
     }
   )
 }

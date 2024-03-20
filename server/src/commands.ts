@@ -321,7 +321,7 @@ program
 
 program
   .command("export-offre-pole-emploi")
-  .description("Exporte les offres vers Pôle Emploi")
+  .description("Exporte les offres vers France Travail")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("pe:offre:export"))
 

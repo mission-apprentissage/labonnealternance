@@ -16,7 +16,7 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
 - filename: .infra/.env_server
-  checksum: 391ca152f34fa1de57f15803bfb7a6e3233b915cb58ccdacd036ea6052a6de9a
+  checksum: 6558cb49387af378d27ce4f16134137df3506e001b388bf04f2153a3d74b71a5
 - filename: .infra/env.ini
   checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
@@ -28,11 +28,11 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: ef76e22aeb3264344db750f98a2ff4a06568014351795bf2ae302e45d4e790fe
+  checksum: 82b2d53027ca3d9d7e40fbee2452b4a3e16ab5689b7012acadfffac6ca1ca5ae
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: a6dead33c8cb4ebb1afd83a7f977c449eadfa0602c05cb7feb59c76182ebaa9b
+  checksum: a5416822ec3c607557a69a8f20014de9fc40d8a871884bb79cc3906078c4ef15
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts
@@ -82,15 +82,17 @@ fileignoreconfig:
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: 4c52ccaab38f3151e125d924d06eafd9f861be93c1d39cf70b563d081a3851fc
+  checksum: abbe7b8adddef20c38b9002a0c51ba7a949119b1a8872e6c65876febafdfedd5
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
-  checksum: 7fea07b04529a8981bd57f26420f4389337ab92404442c17772565f1d0ddc6f5
+  checksum: 0db1feff739fda6ff77b2a460e214c03bbeb0451c2e4cf44556f5314c1896bd7
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
   checksum: 46d94affa911e46d6e3f72d453412c4b5378a4ef71e6ee6cb3ab2f43eee3d5d4
+- filename: shared/routes/appointments.routes.v2.ts
+  checksum: 87bd633c10c7301e6c3029f96770b42519533afe2c89d712cbe5951dc165fed1
 - filename: shared/routes/formulaire.route.ts
   checksum: aaebcb3889eeb066dd5b44f95e8d23a1a988608b382eb107dad4d87d24a97074
 - filename: shared/routes/password.routes.ts

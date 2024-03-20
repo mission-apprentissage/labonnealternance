@@ -3,11 +3,11 @@ import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/met
 
 import { IRoutesDef } from "./common.routes"
 
-export const zMetiersRoutes = {
+export const zMetiersRoutesV2 = {
   get: {
-    "/v1/metiers/metiersParFormation/:cfd": {
+    "/metiers/metiersParFormation/:cfd": {
       method: "get",
-      path: "/v1/metiers/metiersParFormation/:cfd",
+      path: "/metiers/metiersParFormation/:cfd",
       params: z
         .object({
           cfd: z
@@ -24,27 +24,29 @@ export const zMetiersRoutes = {
       response: {
         200: ZMetiers,
       },
-      securityScheme: null,
+      securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
-        tags: ["V1 - Metiers"] as string[],
+        tags: ["V2 - Metiers"] as string[],
+        operationId: "getMetiersParCfd",
       },
     },
-    "/v1/metiers/all": {
+    "/metiers/all": {
       method: "get",
-      path: "/v1/metiers/all",
+      path: "/metiers/all",
       response: {
         200: ZMetiers,
       },
-      securityScheme: null,
+      securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
         description: "Retourne la liste de tous les métiers référencés sur LBA",
-        tags: ["V1 - Metiers"] as string[],
+        tags: ["V2 - Metiers"] as string[],
+        operationId: "getTousLesMetiers",
       },
     },
-    "/v1/metiers": {
+    "/metiers": {
       method: "get",
-      path: "/v1/metiers",
+      path: "/metiers",
       querystring: z
         .object({
           title: z.string().openapi({
@@ -80,15 +82,16 @@ export const zMetiersRoutes = {
           })
           .strict(),
       },
-      securityScheme: null,
+      securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
-        tags: ["V1 - Metiers"] as string[],
+        tags: ["V2 - Metiers"] as string[],
+        operationId: "getMetiers",
       },
     },
-    "/v1/metiers/intitule": {
+    "/metiers/intitule": {
       method: "get",
-      path: "/v1/metiers/intitule",
+      path: "/metiers/intitule",
       querystring: z
         .object({
           label: z.string().nonempty().openapi({
@@ -99,10 +102,11 @@ export const zMetiersRoutes = {
       response: {
         200: ZAppellationsRomes.strict(),
       },
-      securityScheme: null,
+      securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
         description: "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
-        tags: ["V1 - Metiers"] as string[],
+        tags: ["V2 - Metiers"] as string[],
+        operationId: "getCoupleAppellationRomeIntitule",
       },
     },
   },

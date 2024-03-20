@@ -95,7 +95,7 @@ const ZLbaItemRome = z
       .string()
       .openapi({
         example: "F1603",
-        description: "Un code ROME provenant de la nomenclature des métiers de Pôle emploi",
+        description: "Un code ROME provenant de la nomenclature des métiers de France Travail",
       })
       .nullable(), // pe -> romeCode | lbb/lba -> rome_codes | matcha -> offres.romes
     label: z
@@ -409,7 +409,7 @@ export const ZLbaItemLbaCompany = z
 
 export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
 
-export const ZLbaItemPeJob = z
+export const ZLbaItemFtJob = z
   .object({
     ideaType: z.literal("peJob"),
     // ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES),
@@ -417,7 +417,6 @@ export const ZLbaItemPeJob = z
     contact: ZLbaItemContact.nullable(),
     place: ZLbaItemPlace.nullable(),
     company: ZLbaItemCompany.nullable(),
-
     url: z.string().nullable(), // pe -> reconstruction depuis id
     job: ZLbaItemJob.nullable(),
     romes: z.array(ZLbaItemRome).nullable(),
@@ -426,7 +425,7 @@ export const ZLbaItemPeJob = z
   .strict()
   .openapi("PeJob")
 
-export type ILbaItemPeJob = z.output<typeof ZLbaItemPeJob>
+export type ILbaItemFtJob = z.output<typeof ZLbaItemFtJob>
 
 export const ZLbaItemFormationResult = z
   .object({

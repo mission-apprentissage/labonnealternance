@@ -30,7 +30,7 @@ export const zApplicationRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Applications"] as string[],
+        tags: ["V1 - Applications"] as string[],
         description:
           "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique \"Ne pas répondre\" de La bonne alternance.\n",
       },
