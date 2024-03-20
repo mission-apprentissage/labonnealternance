@@ -23,7 +23,7 @@ export type IAuthorization = null
 declare module "fastify" {
   interface FastifyRequest {
     user?: null | undefined | IUserWithType
-    authorizationContext?: null | undefined | { role: Role; resources?: any }
+    authorizationContext?: null | undefined | { role: Role | null; resources?: any }
   }
 }
 
