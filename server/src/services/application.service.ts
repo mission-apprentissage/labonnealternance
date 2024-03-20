@@ -476,7 +476,7 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
   if (caller) {
     appCount = await Application.countDocuments({
       caller: caller.toLowerCase(),
-      company_siret: type === "lba" ? offreOrCompany.company.siret : offreOrCompany.recruiter.establishment_siret,
+      company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.company.siret : offreOrCompany.recruiter.establishment_siret,
       created_at: { $gte: start, $lt: end },
     })
     if (appCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
