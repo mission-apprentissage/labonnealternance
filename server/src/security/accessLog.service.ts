@@ -6,6 +6,8 @@ import { IAccessLog } from "@/security/accessLog.types"
 
 import { logger } from "../common/logger"
 
+const loggerAccess = logger.child({ module: "accessLog" })
+
 export const createAccessLog = async <S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest, authorized: boolean) => {
   if (schema?.securityScheme?.skipLogAccess) {
     return
@@ -59,5 +61,5 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
     }
   }
 
-  authorized ? logger.info(acl) : logger.warn(acl)
+  authorized ? loggerAccess.info(acl) : loggerAccess.warn(acl)
 }
