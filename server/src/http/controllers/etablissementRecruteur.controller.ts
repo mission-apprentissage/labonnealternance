@@ -129,16 +129,16 @@ export default (server: Server) => {
    * Retourne les entreprises gérées par un CFA
    */
   server.get(
-    "/etablissement/cfa/:userRecruteurId/entreprises",
+    "/etablissement/cfa/:cfaId/entreprises",
     {
-      schema: zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"],
-      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"])],
+      schema: zRoutes.get["/etablissement/cfa/:cfaId/entreprises"],
+      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:cfaId/entreprises"])],
     },
     async (req, res) => {
-      const { userRecruteurId } = req.params
-      const cfa = await Cfa.findOne({ _id: userRecruteurId }).lean()
+      const { cfaId } = req.params
+      const cfa = await Cfa.findOne({ _id: cfaId }).lean()
       if (!cfa) {
-        throw Boom.notFound(`Aucun CFA ayant pour id ${userRecruteurId.toString()}`)
+        throw Boom.notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
       }
       const cfa_delegated_siret = cfa.siret
       if (!cfa_delegated_siret) {

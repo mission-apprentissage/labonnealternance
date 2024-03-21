@@ -108,7 +108,7 @@ export const sendValidationLink = async (userId: string) => await apiPost("/logi
 /**
  * Etablissement API
  */
-export const getEntreprisesManagedByCfa = (userId: string) => apiGet("/etablissement/cfa/:userRecruteurId/entreprises", { params: { userRecruteurId: userId } })
+export const getEntreprisesManagedByCfa = (cfaId: string) => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
 export const getCfaInformation = async (siret: string) => apiGet("/etablissement/cfa/:siret", { params: { siret } })
 
 export const getEntrepriseInformation = async (

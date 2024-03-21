@@ -105,10 +105,10 @@ export const zRecruiterRoutes = {
       },
       securityScheme: null,
     },
-    "/etablissement/cfa/:userRecruteurId/entreprises": {
+    "/etablissement/cfa/:cfaId/entreprises": {
       method: "get",
-      path: "/etablissement/cfa/:userRecruteurId/entreprises",
-      params: z.object({ userRecruteurId: zObjectId }).strict(),
+      path: "/etablissement/cfa/:cfaId/entreprises",
+      params: z.object({ cfaId: zObjectId }).strict(),
       response: {
         "200": z.array(ZRecruiter),
       },

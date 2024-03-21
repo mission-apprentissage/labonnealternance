@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
 import { CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
-import { IApplication, IJob, IRecruiter } from "shared/models"
+import { ComputedUserAccess, IApplication, IJob, IRecruiter } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, IRoleManagement } from "shared/models/roleManagement.model"
@@ -27,14 +27,6 @@ type Resources = {
   recruiters: Array<RecruiterResource>
   jobs: Array<JobResource>
   applications: Array<ApplicationResource>
-}
-
-export type ComputedUserAccess = {
-  admin: boolean
-  users: string[]
-  entreprises: string[]
-  cfas: string[]
-  opcos: OPCOS[]
 }
 
 // Specify what we need to simplify mocking in tests

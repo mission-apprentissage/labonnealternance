@@ -7,7 +7,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
-import { getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import { getUser2ByEmail } from "@/services/user2.service"
 
 import { startSession, stopSession } from "../../common/utils/session.service"
@@ -132,6 +132,23 @@ export default (server: Server) => {
       }
       const userFromRequest = getUserFromRequest(request, zRoutes.get["/auth/session"]).value
       return response.status(200).send(toPublicUser(userFromRequest, await getPublicUserRecruteurPropsOrError(userFromRequest._id)))
+    }
+  )
+
+  server.get(
+    "/auth/access",
+    {
+      schema: zRoutes.get["/auth/access"],
+      onRequest: [server.auth(zRoutes.get["/auth/access"])],
+    },
+    async (request, response) => {
+      if (!request.user) {
+        throw Boom.forbidden()
+      }
+      const userFromRequest = getUserFromRequest(request, zRoutes.get["/auth/access"]).value
+      const userId = userFromRequest._id.toString()
+      const userAccess = getComputedUserAccess(userId, await getGrantedRoles(userId))
+      return response.status(200).send(userAccess)
     }
   )
 

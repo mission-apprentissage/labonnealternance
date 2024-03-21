@@ -1,5 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZUserRecruteurPublic } from "../models"
+import { ZComputedUserAccess, ZUserRecruteurPublic } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
@@ -57,6 +57,18 @@ export const zLoginRoutes = {
       path: "/auth/session",
       response: {
         "200": ZUserRecruteurPublic,
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: null,
+        resources: {},
+      },
+    },
+    "/auth/access": {
+      method: "get",
+      path: "/auth/access",
+      response: {
+        "200": ZComputedUserAccess,
       },
       securityScheme: {
         auth: "cookie-session",
