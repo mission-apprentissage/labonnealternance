@@ -109,13 +109,13 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
   if (!type) throw Boom.internal("unexpected: no type found")
   const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme ?? {}
   let entrepriseFields = {}
-  if (organisme && "idcc" in organisme) {
+  if (organisme && "opco" in organisme) {
     const { idcc, opco } = organisme
     entrepriseFields = { idcc, opco }
-    if (formulaire) {
-      const { establishment_id } = formulaire
-      Object.assign(entrepriseFields, { establishment_id })
-    }
+  }
+  if (formulaire) {
+    const { establishment_id } = formulaire
+    Object.assign(entrepriseFields, { establishment_id })
   }
   const userRecruteur: IUserRecruteur = {
     ...entrepriseFields,
