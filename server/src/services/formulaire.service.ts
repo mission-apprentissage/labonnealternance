@@ -22,6 +22,7 @@ import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.
 import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
+import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 
 const { ObjectId } = pkg
@@ -87,6 +88,11 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
   }
 }
 
+const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectIdType; entrepriseId: ObjectIdType }) => {
+  const access = getComputedUserAccess(userId.toString(), await getGrantedRoles(userId.toString()))
+  return access.admin || access.entreprises.includes(entrepriseId.toString())
+}
+
 /**
  * @description Create job offer for formulaire
  */
@@ -101,21 +107,15 @@ export const createJob = async ({ job, id, user }: { job: IJobWritable; id: stri
   if (!organization) {
     throw Boom.internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${id}`)
   }
-  const role = await RoleManagement.findOne({
-    user_id: userId,
-    authorized_type: cfa_delegated_siret ? AccessEntityType.CFA : AccessEntityType.ENTREPRISE,
-    authorized_id: organization._id.toString(),
-  }).lean()
-  if (!role) {
-    throw Boom.internal(`inattendu : impossible retrouver le role pour establishment_id=${id}`)
+  let isOrganizationValid = false
+  let entrepriseStatus: EntrepriseStatus | null = null
+  if (cfa_delegated_siret) {
+    isOrganizationValid = true
+  } else if ("status" in organization) {
+    entrepriseStatus = getLastStatusEvent((organization as IEntreprise).status)?.status ?? null
+    isOrganizationValid = entrepriseStatus === EntrepriseStatus.VALIDE && (await isAuthorizedToPublishJob({ userId, entrepriseId: organization._id }))
   }
-  const roleStatus = getLastStatusEvent(role.status)?.status
-  if (!roleStatus) {
-    throw Boom.internal(`inattendu : pas de status pour le role pour establishment_id=${id}`)
-  }
-  const entreprise: IEntreprise | null = cfa_delegated_siret ? null : (organization as IEntreprise)
-  const entrepriseStatus = getLastStatusEvent(entreprise?.status)?.status
-  const isJobActive = roleStatus === AccessStatus.GRANTED && cfa_delegated_siret ? true : entrepriseStatus === EntrepriseStatus.VALIDE
+  const isJobActive = isOrganizationValid
 
   const newJobStatus = isJobActive ? JOB_STATUS.ACTIVE : JOB_STATUS.EN_ATTENTE
   // get user activation state if not managed by a CFA
@@ -150,6 +150,8 @@ export const createJob = async ({ job, id, user }: { job: IJobWritable; id: stri
     if (!entrepriseStatus) {
       throw Boom.internal(`inattendu : pas de status pour l'entreprise pour establishment_id=${id}`)
     }
+    const role = await RoleManagement.findOne({ userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() }).lean()
+    const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
     return updatedFormulaire
   }

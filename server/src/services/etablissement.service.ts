@@ -872,8 +872,13 @@ export const sendUserConfirmationEmail = async (user: IUser2) => {
   })
 }
 
-export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: IRecruiter, accessStatus: AccessStatus, entrepriseStatus: EntrepriseStatus) => {
-  if (entrepriseStatus === EntrepriseStatus.ERROR || isUserEmailChecked(user) || accessStatus === AccessStatus.DENIED) {
+export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: IRecruiter, accessStatus: AccessStatus | null, entrepriseStatus: EntrepriseStatus | null) => {
+  if (
+    entrepriseStatus !== EntrepriseStatus.VALIDE ||
+    isUserEmailChecked(user) ||
+    !accessStatus ||
+    ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)
+  ) {
     return
   }
   const isUserAwaiting = accessStatus === AccessStatus.AWAITING_VALIDATION

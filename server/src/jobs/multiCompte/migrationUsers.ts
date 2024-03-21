@@ -63,6 +63,7 @@ const migrationRecruiters = async () => {
             { "jobs._id": job._id },
             {
               $set: {
+                // les ids des users sont identiques aux userRecruteurs. Les userRecruteurs sont migrés après pour écraser les infos de contact
                 "jobs.$.managed_by": userRecruiter._id,
               },
             },

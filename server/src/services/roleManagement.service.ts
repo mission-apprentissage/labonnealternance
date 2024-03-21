@@ -3,10 +3,11 @@ import type { ObjectId } from "mongodb"
 import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
 import { IUserRecruteurPublic } from "shared/models"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { parseEnumOrError } from "shared/utils"
+import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { Cfa, Entreprise, RoleManagement, User2 } from "@/common/model"
+import { ComputedUserAccess } from "@/security/authorisationService"
 
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "./constant.service"
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
@@ -41,7 +42,7 @@ export const modifyPermissionToUser = async (
   }
 }
 
-const getGrantedRoles = async (userId: string) => {
+export const getGrantedRoles = async (userId: string) => {
   return RoleManagement.find({ user_id: userId, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
 }
 
@@ -132,4 +133,25 @@ export const getPublicUserRecruteurPropsOrError = async (
     return { ...commonFields, scope: parseEnumOrError(OPCOS, mainRole.authorized_id) }
   }
   return commonFields
+}
+
+export const getComputedUserAccess = (userId: string, grantedRoles: IRoleManagement[]) => {
+  // TODO
+  // const indirectUserRoles = await RoleManagement.find({  })
+  const userAccess: ComputedUserAccess = {
+    admin: grantedRoles.some((role) => role.authorized_type === AccessEntityType.ADMIN),
+    users: [userId],
+    cfas: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : [])),
+    entreprises: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : [])),
+    opcos: grantedRoles.flatMap((role) => {
+      if (role.authorized_type === AccessEntityType.OPCO) {
+        const opco = parseEnum(OPCOS, role.authorized_id)
+        if (opco) {
+          return [opco]
+        }
+      }
+      return []
+    }),
+  }
+  return userAccess
 }

@@ -4,7 +4,7 @@ import { CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
 import { IApplication, IJob, IRecruiter } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
-import { AccessEntityType, AccessStatus, IRoleManagement } from "shared/models/roleManagement.model"
+import { AccessEntityType, IRoleManagement } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/user2.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath } from "shared/security/permissions"
@@ -12,7 +12,8 @@ import { assertUnreachable, parseEnum } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { Primitive } from "type-fest"
 
-import { Application, Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "@/common/model"
+import { Application, Cfa, Entreprise, Recruiter, User2 } from "@/common/model"
+import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { isUserEmailChecked } from "@/services/userRecruteur.service"
 
 import { getUserFromRequest } from "./authenticationService"
@@ -28,7 +29,8 @@ type Resources = {
   applications: Array<ApplicationResource>
 }
 
-type ComputedUserAccess = {
+export type ComputedUserAccess = {
+  admin: boolean
   users: string[]
   entreprises: string[]
   cfas: string[]
@@ -280,7 +282,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       throw Boom.forbidden("user désactivé")
     }
     const { _id } = user
-    grantedRoles = await RoleManagement.find({ user_id: _id, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
+    grantedRoles = await getGrantedRoles(_id.toString())
     const isAdmin = grantedRoles.some((role) => role.authorized_type === AccessEntityType.ADMIN)
     if (isAdmin) {
       return
@@ -300,6 +302,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     const { organisation } = userWithType.value
     const opco = parseEnum(OPCOS, organisation)
     const userAccess: ComputedUserAccess = {
+      admin: false,
       users: [],
       cfas: [],
       entreprises: [],
@@ -311,22 +314,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     }
   } else if (userType === "IUser2") {
     const { _id } = userWithType.value
-    // TODO
-    // const indirectUserRoles = await RoleManagement.find({  })
-    const userAccess: ComputedUserAccess = {
-      users: [_id.toString()],
-      cfas: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : [])),
-      entreprises: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : [])),
-      opcos: grantedRoles.flatMap((role) => {
-        if (role.authorized_type === AccessEntityType.OPCO) {
-          const opco = parseEnum(OPCOS, role.authorized_id)
-          if (opco) {
-            return [opco]
-          }
-        }
-        return []
-      }),
-    }
+    const userAccess: ComputedUserAccess = getComputedUserAccess(_id.toString(), grantedRoles)
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw Boom.forbidden("non autorisé")
     }
