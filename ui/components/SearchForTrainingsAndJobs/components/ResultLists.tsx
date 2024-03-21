@@ -9,7 +9,7 @@ import { SearchResultContext } from "../../../context/SearchResultContextProvide
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
-import { getJobCount } from "../services/utils"
+import { allJobSearchErrorText, getJobCount, partialJobSearchErrorText } from "../services/utils"
 
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
@@ -102,7 +102,7 @@ const ResultLists = ({
   }
 
   const getJobResult = () => {
-    if (hasSearch && !isJobSearchLoading && !isPartnerJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
+    if (hasSearch && (!isJobSearchLoading || !isPartnerJobSearchLoading) && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
       const jobCount = getJobCount(jobs)
 
       if (jobCount) {
@@ -236,8 +236,8 @@ const ResultLists = ({
     ) : (
       <>
         {trainingSearchError && <ErrorMessage message={trainingSearchError} />}
-        {jobSearchError && <ErrorMessage message={jobSearchError} />}
-        {partnerJobSearchError && <ErrorMessage message={partnerJobSearchError} />}
+        {jobSearchError && partnerJobSearchError && <ErrorMessage message={allJobSearchErrorText} />}
+        {(jobSearchError ^ partnerJobSearchError) === 1 && <ErrorMessage message={partialJobSearchErrorText} />}
       </>
     )
   }

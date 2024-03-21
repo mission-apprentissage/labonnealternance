@@ -109,7 +109,7 @@ export const searchForJobsFunction = async ({
       })`
     )
     logError("Job search error", err)
-    setJobSearchError(allJobSearchErrorText)
+    setJobSearchError(partialJobSearchErrorText)
   }
 
   setIsJobSearchLoading(false)
@@ -232,7 +232,7 @@ export const searchForPartnerJobsFunction = async ({
       })`
     )
     logError("Job search error", err)
-    setPartnerJobSearchError(allJobSearchErrorText)
+    setPartnerJobSearchError(partialJobSearchErrorText)
   }
 
   setIsPartnerJobSearchLoading(false)
