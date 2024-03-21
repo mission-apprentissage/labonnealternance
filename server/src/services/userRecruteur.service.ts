@@ -45,12 +45,16 @@ const getOrganismeFromRole = async (role: IRoleManagement): Promise<IEntreprise 
   switch (role.authorized_type) {
     case AccessEntityType.ENTREPRISE: {
       const entreprise = await Entreprise.findOne({ _id: role.authorized_id }).lean()
-      if (!entreprise) return null
+      if (!entreprise) {
+        throw Boom.internal(`could not find entreprise for role ${role._id}`)
+      }
       return entreprise
     }
     case AccessEntityType.CFA: {
       const cfa = await Cfa.findOne({ _id: role.authorized_id }).lean()
-      if (!cfa) return null
+      if (!cfa) {
+        throw Boom.internal(`could not find cfa for role ${role._id}`)
+      }
       return cfa
     }
     default:
@@ -73,26 +77,6 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
 
 export const getUserRecruteurById = (id: string | ObjectIdType) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
 export const getUserRecruteurByEmail = (email: string) => getUserRecruteurByUser2Query({ email })
-export const getUserRecruteurByRecruiter = async (recruiter: IRecruiter): Promise<IUserRecruteur | null> => {
-  const { cfa_delegated_siret, establishment_siret } = recruiter
-  if (cfa_delegated_siret) {
-    const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
-    if (!cfa) {
-      throw new Error(`cfa with cfa_delegated_siret=${cfa_delegated_siret} not found`)
-    }
-    const role = await RoleManagement.findOne({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
-    if (!role) {
-      throw new Error(`role with authorized_id=${cfa._id} not found`)
-    }
-    return getUserRecruteurById(role.user_id)
-  } else {
-    const entreprise = await Entreprise.findOne({ siret: establishment_siret }).lean()
-    if (!entreprise) {
-      throw new Error(`entreprise with establishment_siret=${establishment_siret} not found`)
-    }
-    return getUserRecruteurById(entreprise._id)
-  }
-}
 
 export const userAndRoleAndOrganizationToUserRecruteur = (
   user: IUser2,

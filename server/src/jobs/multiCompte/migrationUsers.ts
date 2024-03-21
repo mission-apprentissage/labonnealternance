@@ -9,6 +9,8 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
 
+import { ObjectId } from "@/common/mongodb.js"
+
 import { logger } from "../../common/logger.js"
 import { Appointment, Recruiter, User, UserRecruteur } from "../../common/model/index.js"
 import { Cfa } from "../../common/model/schema/multiCompte/cfa.schema.js"
@@ -166,7 +168,7 @@ const migrationUserRecruteurs = async () => {
           throw new Error("inattendu pour une ENTERPRISE: pas de establishment_siret")
         }
         const newEntreprise: IEntreprise = {
-          _id: userRecruteur._id,
+          _id: new ObjectId(),
           origin,
           siret: establishment_siret,
           address,
@@ -186,7 +188,7 @@ const migrationUserRecruteurs = async () => {
           stats.entrepriseCreated++
         }
         const roleManagement: Omit<IRoleManagement, "_id"> = {
-          user_id: userRecruteur._id,
+          user_id: newUser._id,
           authorized_type: AccessEntityType.ENTREPRISE,
           authorized_id: entreprise._id.toString(),
           createdAt: userRecruteur.createdAt,
@@ -200,7 +202,7 @@ const migrationUserRecruteurs = async () => {
           throw new Error("inattendu pour un CFA: pas de establishment_siret")
         }
         const newCfa: ICFA = {
-          _id: userRecruteur._id,
+          _id: new ObjectId(),
           siret: establishment_siret,
           address,
           address_detail,
@@ -217,7 +219,7 @@ const migrationUserRecruteurs = async () => {
           stats.cfaCreated++
         }
         const roleManagement: Omit<IRoleManagement, "_id"> = {
-          user_id: userRecruteur._id,
+          user_id: newUser._id,
           authorized_type: AccessEntityType.CFA,
           authorized_id: cfa._id.toString(),
           createdAt: userRecruteur.createdAt,
@@ -228,7 +230,7 @@ const migrationUserRecruteurs = async () => {
         await RoleManagement.create(roleManagement)
       } else if (type === "ADMIN") {
         const roleManagement: Omit<IRoleManagement, "_id"> = {
-          user_id: userRecruteur._id,
+          user_id: newUser._id,
           authorized_type: AccessEntityType.ADMIN,
           authorized_id: "",
           createdAt: userRecruteur.createdAt,
@@ -241,7 +243,7 @@ const migrationUserRecruteurs = async () => {
       } else if (type === "OPCO") {
         const opco = parseEnumOrError(OPCOS, scope ?? null)
         const roleManagement: Omit<IRoleManagement, "_id"> = {
-          user_id: userRecruteur._id,
+          user_id: newUser._id,
           authorized_type: AccessEntityType.OPCO,
           authorized_id: opco,
           createdAt: userRecruteur.createdAt,

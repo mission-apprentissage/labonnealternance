@@ -107,7 +107,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/admin/users/:userId"])],
     },
     async (req, res) => {
-      const { email, ...userPayload } = req.body
+      const { email } = req.body
       const { userId } = req.params
       const newEmail = email?.toLocaleLowerCase()
 
@@ -118,9 +118,7 @@ export default (server: Server) => {
         }
       }
 
-      const update = { ...userPayload, ...(newEmail ? { email: newEmail } : {}) }
-
-      const updatedUser = await User2.findOneAndUpdate({ _id: userId }, update).lean()
+      const updatedUser = await updateUser2Fields(userId, req.body)
       if (!updatedUser) {
         throw Boom.internal(`could not update one user from query=${JSON.stringify({ _id: userId })}`)
       }
@@ -251,20 +249,14 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/user/:userId"])],
     },
     async (req, res) => {
-      const { email, ...userPayload } = req.body
+      const { email } = req.body
       const { userId } = req.params
-
       const formattedEmail = email?.toLocaleLowerCase()
-
       const exist = await User2.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
-
       if (exist) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
-
-      const update = { email: formattedEmail, ...userPayload }
-
-      await updateUser2Fields(userId, update)
+      await updateUser2Fields(userId, req.body)
       const user = await getUserRecruteurById(userId)
       return res.status(200).send(user)
     }
