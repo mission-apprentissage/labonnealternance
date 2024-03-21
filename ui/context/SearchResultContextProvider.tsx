@@ -19,6 +19,8 @@ const initialState = {
 const actions = {
   SET_TRAININGS: "SET_TRAININGS",
   SET_JOBS: "SET_JOBS",
+  SET_INTERNAL_JOBS: "SET_INTERNAL_JOBS",
+  SET_PARTNER_JOBS: "SET_PARTNER_JOBS",
   SET_SELECTED_ITEM: "SET_SELECTED_ITEM",
   SET_ITEM_TO_SCROLL_TO: "SET_ITEM_TO_SCROLL_TO",
   SET_EXTENDED_SEARCH: "SET_EXTENDED_SEARCH",
@@ -35,6 +37,14 @@ const reducer = (state, action) => {
       return { ...state_copy, trainings: action.trainings }
     }
     case actions.SET_JOBS: {
+      return { ...state_copy, jobs: action.jobs }
+    }
+    case actions.SET_INTERNAL_JOBS: {
+      //TODO amender jobs existants
+      return { ...state_copy, jobs: action.jobs }
+    }
+    case actions.SET_PARTNER_JOBS: {
+      //TODO amender jobs existants{
       return { ...state_copy, jobs: action.jobs }
     }
     case actions.SET_SELECTED_ITEM: {
@@ -66,6 +76,8 @@ export type IContextSearch = {
   setTrainings: (b: any[]) => void
   jobs: any[] | any // Sometime array sometime object... // TODO
   setJobs: (b: any[]) => void
+  setInternalJobs: (b: any[]) => void
+  setPartnerJobs: (b: any[]) => void
   itemToScrollTo: object
   setItemToScrollTo: (b: object) => void
   selectedItem: object
@@ -90,6 +102,12 @@ const SearchResultContextProvider = ({ children }) => {
     },
     setJobs: (jobs = []) => {
       dispatch({ type: actions.SET_JOBS, jobs })
+    },
+    setInternalJobs: (jobs = []) => {
+      dispatch({ type: actions.SET_INTERNAL_JOBS, jobs })
+    },
+    setPartnerJobs: (jobs = []) => {
+      dispatch({ type: actions.SET_PARTNER_JOBS, jobs })
     },
     setSelectedItem: (selectedItem = null) => {
       dispatch({ type: actions.SET_SELECTED_ITEM, selectedItem })

@@ -31,7 +31,7 @@ import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
 
 import { ChoiceColumn, MapListSwitchButton } from "./components"
 import { loadItem } from "./services/loadItem"
-import { searchForJobsFunction } from "./services/searchForJobs"
+import { searchForJobsFunction, searchForPartnerJobsFunction } from "./services/searchForJobs"
 import { searchForTrainingsFunction } from "./services/searchForTrainings"
 
 const SearchForTrainingsAndJobs = () => {
@@ -49,8 +49,9 @@ const SearchForTrainingsAndJobs = () => {
   const [shouldShowWelcomeMessage, setShouldShowWelcomeMessage] = useState(hasSearch ? false : true)
 
   const [isJobSearchLoading, setIsJobSearchLoading] = useState(hasSearch ? false : true)
+  const [isPartnerJobSearchLoading, setIsPartnerJobSearchLoading] = useState(hasSearch ? false : true)
   const [jobSearchError, setJobSearchError] = useState("")
-  const [allJobSearchError, setAllJobSearchError] = useState(false)
+  const [partnerJobSearchError, setPartnerJobSearchError] = useState("")
   const [trainingSearchError, setTrainingSearchError] = useState("")
   const [isLoading, setIsLoading] = useState(hasSearch ? false : true)
 
@@ -212,8 +213,10 @@ const SearchForTrainingsAndJobs = () => {
       factorTrainingsForMap,
       setIsTrainingSearchLoading,
       setIsJobSearchLoading,
+      setIsPartnerJobSearchLoading,
       computeMissingPositionAndDistance,
       setJobSearchError,
+      setPartnerJobSearchError,
       setJobs,
       setJobMarkers,
       factorJobsForMap,
@@ -247,8 +250,6 @@ const SearchForTrainingsAndJobs = () => {
       setIsJobSearchLoading,
       setHasSearch,
       setJobSearchError,
-      setAllJobSearchError,
-      computeMissingPositionAndDistance,
       widgetParameters,
       setJobs,
       setJobMarkers,
@@ -259,6 +260,24 @@ const SearchForTrainingsAndJobs = () => {
       opcoFilter,
       opcoUrlFilter,
       showCombinedJob,
+    })
+
+    searchForPartnerJobsFunction({
+      values,
+      searchTimestamp,
+      setIsPartnerJobSearchLoading,
+      setHasSearch,
+      setPartnerJobSearchError,
+      computeMissingPositionAndDistance,
+      widgetParameters,
+      setJobs,
+      setJobMarkers,
+      factorJobsForMap,
+      scopeContext,
+      followUpItem,
+      selectFollowUpItem,
+      opcoFilter,
+      opcoUrlFilter,
     })
   }
 
@@ -381,10 +400,12 @@ const SearchForTrainingsAndJobs = () => {
       <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} setIsLoading={setIsLoading} />
       <WidgetHeader
         handleSearchSubmit={handleSearchSubmit}
-        allJobSearchError={allJobSearchError}
         trainingSearchError={trainingSearchError}
+        jobSearchError={jobSearchError}
+        partnerJobSearchError={partnerJobSearchError}
         isTrainingSearchLoading={isTrainingSearchLoading}
         isJobSearchLoading={isJobSearchLoading}
+        isPartnerJobSearchLoading={isPartnerJobSearchLoading}
       />
       <Flex direction="row" overflow="hidden" height="100%">
         <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" flexDirection="column">
@@ -401,8 +422,9 @@ const SearchForTrainingsAndJobs = () => {
             trainingSearchError={trainingSearchError}
             searchForJobs={searchForJobs}
             isJobSearchLoading={isJobSearchLoading}
+            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             jobSearchError={jobSearchError}
-            allJobSearchError={allJobSearchError}
+            partnerJobSearchError={partnerJobSearchError}
             isLoading={isLoading}
           />
         </Box>

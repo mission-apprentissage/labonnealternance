@@ -12,6 +12,7 @@ export const storeTrainingsInSession = ({ trainings, searchTimestamp }) => {
 
 export const storeJobsInSession = ({ jobs, searchTimestamp }) => {
   try {
+    //TODO ICI amender l'existant
     trimSessionStorage()
     const search = JSON.parse(sessionStorage.getItem(searchTimestamp))
     sessionStorage.setItem(searchTimestamp, JSON.stringify({ jobs, ...search }))

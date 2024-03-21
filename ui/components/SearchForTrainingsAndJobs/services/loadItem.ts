@@ -5,7 +5,7 @@ import { flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import { logError } from "../../../utils/tools"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
-import { searchForJobsFunction } from "./searchForJobs"
+import { searchForJobsFunction, searchForPartnerJobsFunction } from "./searchForJobs"
 import { companyApi, matchaApi, notFoundErrorText, offreApi, partialJobSearchErrorText, trainingApi, trainingErrorText } from "./utils"
 
 export const loadItem = async ({
@@ -73,9 +73,22 @@ export const loadItem = async ({
         setIsJobSearchLoading,
         setHasSearch,
         setJobSearchError,
+        setJobs,
+        setJobMarkers,
+        factorJobsForMap,
+        scopeContext: {
+          isTraining: true,
+          isJob: true,
+        },
+      })
+      searchForPartnerJobsFunction({
+        values,
+        searchTimestamp,
+        setIsPartnerJobSearchLoading,
+        setHasSearch,
+        setPartnerJobSearchError,
         computeMissingPositionAndDistance,
         setJobs,
-        setAllJobSearchError: () => {},
         setJobMarkers,
         factorJobsForMap,
         scopeContext: {
