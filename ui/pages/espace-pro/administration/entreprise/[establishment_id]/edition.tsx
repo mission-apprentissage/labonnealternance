@@ -160,6 +160,7 @@ function EditionEntrepriseContact() {
   const { user } = useAuth()
 
   const { establishment_id } = router.query as { establishment_id: string }
+  // TODO pourquoi afficher le formulaire ?
   const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(establishment_id), { cacheTime: 0, enabled: !!establishment_id })
 
   if (isLoading || !establishment_id) {
