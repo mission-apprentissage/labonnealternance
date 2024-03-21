@@ -2,6 +2,7 @@ import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
 import Boom from "boom"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 
 import { getFtJob, getFtReferentiels, searchForFtJobs } from "@/common/apis/FranceTravail"
 
@@ -16,7 +17,12 @@ import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
-const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
+const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "openclassrooms", "mewo"]
+
+const correspondancesNatureContrat = {
+  "Cont. professionnalisation": TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION,
+  "Contrat apprentissage": TRAINING_CONTRACT_TYPE.APPRENTISSAGE,
+}
 
 /**
  * Utilitaire à garder pour interroger les référentiels PE non documentés par ailleurs
@@ -109,6 +115,7 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
       contractType: job.typeContrat,
       contractDescription: job.typeContratLibelle,
       duration: job.dureeTravailLibelle,
+      type: [correspondancesNatureContrat[job.natureContrat]] || null,
     },
     romes: job.romeCode
       ? [

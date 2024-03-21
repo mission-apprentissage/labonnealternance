@@ -320,6 +320,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
         quantiteContrat: offre.job_count,
         elligibleHandicap: offre.is_disabled_elligible,
         status: recruiter.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
+        type: offre.job_type?.length ? offre.job_type : null,
       },
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,

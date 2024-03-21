@@ -2,6 +2,7 @@ import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
+import { ZJobType } from "./job.model"
 import { ZRomeDetail } from "./rome.model"
 
 const ZLbaItemPlace = z
@@ -239,7 +240,7 @@ const ZLbaItemJob = z
     dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat
     quantiteContrat: z.number().nullish(), // matcha -> offres.quantite
     status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullish(),
-    type: z.array(z.enum(["apprentissage", "professionnalisation"])).nullish(),
+    type: ZJobType.nullish(),
   })
   .strict()
   .openapi("LbacJob") // uniquement pour pe et matcha
