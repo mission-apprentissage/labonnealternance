@@ -3,7 +3,7 @@ import axios from "axios"
 import { logError } from "../../../utils/tools"
 
 import { storeJobsInSession } from "./handleSessionStorage"
-import { allJobSearchErrorText, getRomeFromParameters, jobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
+import { getRomeFromParameters, jobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
 
 export const searchForJobsFunction = async ({
   values,
@@ -201,7 +201,7 @@ export const searchForPartnerJobsFunction = async ({
     if (response.data.peJobs.result === "error") {
       //TODO: définition niveau d'erreur JOB total
       setPartnerJobSearchError(true)
-      jobErrorMessage = allJobSearchErrorText
+      jobErrorMessage = partialJobSearchErrorText
       logError("Partner Job Search Error", `Partner job source in error. FT : ${response.data.peJobs.message}`)
     } else {
       if (

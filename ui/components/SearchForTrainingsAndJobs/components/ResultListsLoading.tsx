@@ -12,10 +12,10 @@ const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSea
 
   let jobLoading = <></>
 
-  if (scopeContext.isJob && isJobSearchLoading && isPartnerJobSearchLoading) {
+  if (scopeContext.isJob && (isJobSearchLoading || isPartnerJobSearchLoading)) {
     jobLoading = (
       <Flex p={5} color="pinksoft.600">
-        <Text mr={4}>Recherche des entreprises en cours</Text>
+        <Text mr={4}>Recherche d'entreprises en cours</Text>
         <Spinner thickness="4px" />
       </Flex>
     )
