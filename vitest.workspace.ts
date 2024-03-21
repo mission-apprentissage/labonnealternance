@@ -11,9 +11,13 @@ export default defineWorkspace([
       include: ["./tests/**/*.test.ts"],
       setupFiles: ["./tests/utils/setup.ts"],
       globalSetup: ["./server/tests/utils/globalSetup.ts"],
-      threads: true,
       // Isolate doesn't work with Mongoose
       isolate: false,
+      poolOptions: {
+        threads: {
+          singleThread: true,
+        },
+      },
     },
   },
   {
