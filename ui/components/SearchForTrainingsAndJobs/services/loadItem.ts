@@ -78,12 +78,6 @@ export const loadItem = async ({
         setHasSearch,
         setJobSearchError,
         setInternalJobs,
-        setJobMarkers,
-        factorJobsForMap,
-        scopeContext: {
-          isTraining: true,
-          isJob: true,
-        },
       })
       searchForPartnerJobsFunction({
         values,
@@ -93,12 +87,6 @@ export const loadItem = async ({
         setPartnerJobSearchError,
         computeMissingPositionAndDistance,
         setPartnerJobs,
-        setJobMarkers,
-        factorJobsForMap,
-        scopeContext: {
-          isTraining: true,
-          isJob: true,
-        },
       })
     } else {
       const results = {

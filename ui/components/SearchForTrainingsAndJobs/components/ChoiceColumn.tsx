@@ -118,7 +118,7 @@ const ChoiceColumn = ({
     setExtendedSearch(true)
     scrollToTop("choiceColumn")
 
-    setJobs([])
+    setJobs({ peJobs: [], lbaCompanies: [], matchas: [] })
     const searchTimestamp = new Date().getTime()
     pushHistory({
       router,
