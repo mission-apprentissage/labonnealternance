@@ -1,3 +1,4 @@
+import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
 import React, { createContext, useReducer } from "react"
 
 const initialState = {
@@ -66,7 +67,7 @@ const reducer = (state, action) => {
 export type IContextSearch = {
   trainings: any[]
   setTrainings: (b: any[]) => void
-  jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }
+  jobs: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null }
   setJobs: (b: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }) => void
   setInternalJobs: (b: any[]) => void
   setPartnerJobs: (b: any[]) => void
