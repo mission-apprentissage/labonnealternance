@@ -1,14 +1,8 @@
 import React, { createContext, useReducer } from "react"
 
-// jobs: {
-//   peJobs
-// lbaCompanies
-// matchas
-// }
-
 const initialState = {
   trainings: [],
-  jobs: [],
+  jobs: { peJobs: null, matchas: null, lbaCompanies: null },
   itemToScrollTo: null,
   selectedItem: null,
   extendedSearch: false,
@@ -72,8 +66,8 @@ const reducer = (state, action) => {
 export type IContextSearch = {
   trainings: any[]
   setTrainings: (b: any[]) => void
-  jobs: any[] | any // Sometime array sometime object... // TODO
-  setJobs: (b: any[]) => void
+  jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }
+  setJobs: (b: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }) => void
   setInternalJobs: (b: any[]) => void
   setPartnerJobs: (b: any[]) => void
   itemToScrollTo: object

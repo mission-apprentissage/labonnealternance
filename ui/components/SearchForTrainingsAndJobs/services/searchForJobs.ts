@@ -12,9 +12,6 @@ export const searchForJobsFunction = async ({
   setHasSearch,
   setJobSearchError,
   setInternalJobs,
-  setJobMarkers,
-  factorJobsForMap,
-  scopeContext,
   widgetParameters = undefined,
   followUpItem = undefined,
   selectFollowUpItem = undefined,
@@ -23,7 +20,6 @@ export const searchForJobsFunction = async ({
   showCombinedJob = undefined,
 }) => {
   try {
-    const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
     const romes = getRomeFromParameters({ values, widgetParameters })
     const rncp = romes ? "" : values?.job?.rncp
 
@@ -100,8 +96,6 @@ export const searchForJobsFunction = async ({
     setInternalJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
-
-    setJobMarkers({ jobList: factorJobsForMap(results), searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
     console.error(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${
@@ -123,9 +117,6 @@ export const searchForPartnerJobsFunction = async ({
   setPartnerJobSearchError,
   computeMissingPositionAndDistance,
   setPartnerJobs,
-  setJobMarkers,
-  factorJobsForMap,
-  scopeContext,
   widgetParameters = undefined,
   followUpItem = undefined,
   selectFollowUpItem = undefined,
@@ -139,8 +130,6 @@ export const searchForPartnerJobsFunction = async ({
     const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
     const romes = getRomeFromParameters({ values, widgetParameters })
     const rncp = romes ? "" : values?.job?.rncp
-
-    console.log("OU 1")
 
     const params: {
       romes?: string
@@ -170,8 +159,6 @@ export const searchForPartnerJobsFunction = async ({
       params.diploma = values.diploma
     }
 
-    console.log("OU 2")
-
     const response = await axios.get(jobsApi, {
       params,
     })
@@ -179,8 +166,6 @@ export const searchForPartnerJobsFunction = async ({
     let peJobs = null
 
     let results = {} as any
-
-    console.log("OU 3")
 
     if (response.data === "romes_missing") {
       setPartnerJobSearchError(technicalErrorText)
@@ -202,8 +187,6 @@ export const searchForPartnerJobsFunction = async ({
       }
     }
 
-    console.log("OU 4")
-
     // gestion des erreurs
     let jobErrorMessage = ""
     if (response.data.peJobs.result === "error") {
@@ -219,8 +202,6 @@ export const searchForPartnerJobsFunction = async ({
     setPartnerJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
-
-    setJobMarkers({ jobList: factorJobsForMap(results), searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
     console.error(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${
