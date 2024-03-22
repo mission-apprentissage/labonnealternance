@@ -37,7 +37,8 @@ import { searchForTrainingsFunction } from "./services/searchForTrainings"
 const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)
 
-  const { hasSearch, trainings, jobs, setTrainings, setJobs, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } = useContext(SearchResultContext)
+  const { hasSearch, trainings, jobs, setTrainings, setJobs, setInternalJobs, setPartnerJobs, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } =
+    useContext(SearchResultContext)
 
   const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch, showCombinedJob } = useContext(ParameterContext)
 
@@ -218,6 +219,8 @@ const SearchForTrainingsAndJobs = () => {
       setJobSearchError,
       setPartnerJobSearchError,
       setJobs,
+      setInternalJobs,
+      setPartnerJobs,
       setJobMarkers,
       factorJobsForMap,
     })
@@ -251,7 +254,7 @@ const SearchForTrainingsAndJobs = () => {
       setHasSearch,
       setJobSearchError,
       widgetParameters,
-      setJobs,
+      setInternalJobs,
       setJobMarkers,
       factorJobsForMap,
       scopeContext,
@@ -270,7 +273,7 @@ const SearchForTrainingsAndJobs = () => {
       setPartnerJobSearchError,
       computeMissingPositionAndDistance,
       widgetParameters,
-      setJobs,
+      setPartnerJobs,
       setJobMarkers,
       factorJobsForMap,
       scopeContext,

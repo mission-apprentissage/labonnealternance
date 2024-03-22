@@ -40,12 +40,10 @@ const reducer = (state, action) => {
       return { ...state_copy, jobs: action.jobs }
     }
     case actions.SET_INTERNAL_JOBS: {
-      //TODO amender jobs existants
-      return { ...state_copy, jobs: action.jobs }
+      return { ...state_copy, jobs: { peJobs: state_copy.jobs.peJobs, ...action.jobs } }
     }
     case actions.SET_PARTNER_JOBS: {
-      //TODO amender jobs existants{
-      return { ...state_copy, jobs: action.jobs }
+      return { ...state_copy, jobs: { ...state_copy.jobs, peJobs: action.jobs.peJobs } }
     }
     case actions.SET_SELECTED_ITEM: {
       return { ...state_copy, selectedItem: action.selectedItem }

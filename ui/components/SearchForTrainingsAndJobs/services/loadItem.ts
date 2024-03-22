@@ -25,6 +25,8 @@ export const loadItem = async ({
   setJobSearchError,
   setPartnerJobSearchError,
   setJobs,
+  setInternalJobs,
+  setPartnerJobs,
   setJobMarkers,
   factorJobsForMap,
 }) => {
@@ -75,7 +77,7 @@ export const loadItem = async ({
         setIsJobSearchLoading,
         setHasSearch,
         setJobSearchError,
-        setJobs,
+        setInternalJobs,
         setJobMarkers,
         factorJobsForMap,
         scopeContext: {
@@ -90,7 +92,7 @@ export const loadItem = async ({
         setHasSearch,
         setPartnerJobSearchError,
         computeMissingPositionAndDistance,
-        setJobs,
+        setPartnerJobs,
         setJobMarkers,
         factorJobsForMap,
         scopeContext: {
@@ -187,5 +189,6 @@ export const loadItem = async ({
 
   setIsTrainingSearchLoading(false)
   setIsJobSearchLoading(false)
+  setIsPartnerJobSearchLoading(false)
   return
 }

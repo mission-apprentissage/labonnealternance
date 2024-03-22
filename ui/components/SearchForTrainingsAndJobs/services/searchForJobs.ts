@@ -11,7 +11,7 @@ export const searchForJobsFunction = async ({
   setIsJobSearchLoading,
   setHasSearch,
   setJobSearchError,
-  setJobs,
+  setInternalJobs,
   setJobMarkers,
   factorJobsForMap,
   scopeContext,
@@ -97,7 +97,7 @@ export const searchForJobsFunction = async ({
       setJobSearchError(jobErrorMessage)
     }
 
-    setJobs(results)
+    setInternalJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
 
@@ -122,7 +122,7 @@ export const searchForPartnerJobsFunction = async ({
   setHasSearch,
   setPartnerJobSearchError,
   computeMissingPositionAndDistance,
-  setJobs,
+  setPartnerJobs,
   setJobMarkers,
   factorJobsForMap,
   scopeContext,
@@ -139,6 +139,8 @@ export const searchForPartnerJobsFunction = async ({
     const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
     const romes = getRomeFromParameters({ values, widgetParameters })
     const rncp = romes ? "" : values?.job?.rncp
+
+    console.log("OU 1")
 
     const params: {
       romes?: string
@@ -168,6 +170,8 @@ export const searchForPartnerJobsFunction = async ({
       params.diploma = values.diploma
     }
 
+    console.log("OU 2")
+
     const response = await axios.get(jobsApi, {
       params,
     })
@@ -175,6 +179,8 @@ export const searchForPartnerJobsFunction = async ({
     let peJobs = null
 
     let results = {} as any
+
+    console.log("OU 3")
 
     if (response.data === "romes_missing") {
       setPartnerJobSearchError(technicalErrorText)
@@ -196,31 +202,21 @@ export const searchForPartnerJobsFunction = async ({
       }
     }
 
+    console.log("OU 4")
+
     // gestion des erreurs
     let jobErrorMessage = ""
     if (response.data.peJobs.result === "error") {
-      //TODO: définition niveau d'erreur JOB total
       setPartnerJobSearchError(true)
       jobErrorMessage = partialJobSearchErrorText
       logError("Partner Job Search Error", `Partner job source in error. FT : ${response.data.peJobs.message}`)
-    } else {
-      if (
-        response.data.peJobs.result === "error" ||
-        //response.data.matchas.result === "error" ||
-        response.data.lbaCompanies.result === "error"
-      ) {
-        jobErrorMessage = partialJobSearchErrorText
-        if (response.data.peJobs.result === "error") logError("Job Search Error", `PE Error : ${response.data.peJobs.message}`)
-        if (response.data.lbaCompanies.result === "error") logError("Job Search Error", `LBA Error : ${response.data.lbaCompanies.message}`)
-        if (response.data.matchas.result === "error") logError("Job Search Error", `Matcha Error : ${response.data.matchas.message}`)
-      }
     }
 
     if (jobErrorMessage) {
       setPartnerJobSearchError(jobErrorMessage)
     }
 
-    setJobs(results)
+    setPartnerJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
 
