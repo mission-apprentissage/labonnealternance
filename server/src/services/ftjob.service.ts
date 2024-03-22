@@ -115,7 +115,7 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
       contractType: job.typeContrat,
       contractDescription: job.typeContratLibelle,
       duration: job.dureeTravailLibelle,
-      type: [correspondancesNatureContrat[job.natureContrat]] || null,
+      type: correspondancesNatureContrat[job.natureContrat] ? [correspondancesNatureContrat[job.natureContrat]] : null,
     },
     romes: job.romeCode
       ? [
