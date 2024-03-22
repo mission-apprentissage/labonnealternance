@@ -3,6 +3,7 @@ module.exports = {
   rules: {
     "react/no-unescaped-entities": 0,
     "react-hooks/exhaustive-deps": 0,
+    "import/no-extraneous-dependencies": 0,
   },
   settings: {
     next: {
