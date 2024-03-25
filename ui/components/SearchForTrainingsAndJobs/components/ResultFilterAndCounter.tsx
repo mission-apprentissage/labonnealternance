@@ -32,6 +32,7 @@ const ResultFilterAndCounter = ({
     if (!filters.length || (!partnerJobCount && filters.length === 1 && filters[0] === "duo")) {
       filters = ["jobs", "trainings", "duo"]
     }
+    filters = filters.filter((filter) => filter !== "duo" || partnerJobCount)
 
     setActiveFilters(filters)
     filterLayers(filters)
