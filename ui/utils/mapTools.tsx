@@ -322,21 +322,30 @@ const factorTrainingsForMap = (list) => {
   return factorPlacesForMap(list)
 }
 
-// rassemble les emplois ayant une même géoloc pour avoir une seule icône sur la map
-const factorJobsForMap = (lists) => {
+const factorPartnerJobsForMap = (lists) => {
+  return factorJobsForMap(lists, jobLayerType.PARTNER)
+}
+
+const factorInternalJobsForMap = (lists) => {
+  return factorJobsForMap(lists, jobLayerType.INTERNAL)
+}
+
+// rassemble les emplois internes ayant une même géoloc pour avoir une seule icône sur la map
+const factorJobsForMap = (lists, type) => {
   let sortedList = []
 
-  // concaténation des quatre sources d'emploi
-  if (lists.peJobs) {
-    sortedList = lists.peJobs
-  }
+  if (type === jobLayerType.PARTNER) {
+    if (lists.peJobs) {
+      sortedList = lists.peJobs
+    }
+  } else {
+    if (lists.lbaCompanies) {
+      sortedList = sortedList.length ? sortedList.concat(lists.lbaCompanies) : lists.lbaCompanies
+    }
 
-  if (lists.lbaCompanies) {
-    sortedList = sortedList.length ? sortedList.concat(lists.lbaCompanies) : lists.lbaCompanies
-  }
-
-  if (lists.matchas) {
-    sortedList = sortedList.length ? sortedList.concat(lists.matchas) : lists.matchas
+    if (lists.matchas) {
+      sortedList = sortedList.length ? sortedList.concat(lists.matchas) : lists.matchas
+    }
   }
 
   // tri de la liste de tous les emplois selon les coordonnées geo (l'objectif est d'avoir les emplois au même lieu proches)
@@ -470,7 +479,7 @@ const resizeMap = () => {
   }
 }
 
-const setJobMarkers = async ({ jobList, searchCenter = null, hasTrainings = false, tryCount = 0 }) => {
+const setJobMarkers = async ({ jobList, type, searchCenter = null, hasTrainings = false, tryCount = 0 }) => {
   if (isMapInitialized) {
     await waitForMapReadiness()
 
@@ -501,12 +510,13 @@ const setJobMarkers = async ({ jobList, searchCenter = null, hasTrainings = fals
       })
     })
 
-    map.getSource("job-points").setData({ type: "FeatureCollection", features })
+    map.getSource(`${type === jobLayerType.INTERNAL ? "job" : "partnerJob"}-points`).setData({ type: "FeatureCollection", features })
   } else {
-    if (tryCount < 5)
+    if (tryCount < 5) {
       setTimeout(() => {
-        setJobMarkers({ jobList, searchCenter, hasTrainings, tryCount: tryCount++ })
+        setJobMarkers({ jobList, type, searchCenter, hasTrainings, tryCount: tryCount++ })
       }, 100)
+    }
   }
 }
 
@@ -609,7 +619,8 @@ const coordinatesOfFrance = [2.213749, 46.227638]
 const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
   setTimeout(() => {
     if (scopeContext.isJob) {
-      setJobMarkers({ jobList: factorJobsForMap(jobs), hasTrainings: trainings })
+      setJobMarkers({ jobList: factorInternalJobsForMap(jobs), type: jobLayerType.INTERNAL, hasTrainings: trainings })
+      setJobMarkers({ jobList: factorPartnerJobsForMap(jobs), type: jobLayerType.PARTNER, hasTrainings: trainings })
     }
     if (scopeContext.isTraining) {
       setTrainingMarkers({ trainingList: factorTrainingsForMap(trainings) })
@@ -622,7 +633,8 @@ export {
   closeMapPopups,
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
-  factorJobsForMap,
+  factorPartnerJobsForMap,
+  factorInternalJobsForMap,
   factorTrainingsForMap,
   filterLayers,
   flyToLocation,
@@ -639,4 +651,5 @@ export {
   setSelectedTrainingMarker,
   setTrainingMarkers,
   waitForMapReadiness,
+  jobLayerType,
 }

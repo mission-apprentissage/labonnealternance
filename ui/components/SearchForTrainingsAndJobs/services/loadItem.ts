@@ -1,7 +1,17 @@
 import axios from "axios"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+import {
+  flyToMarker,
+  jobLayerType,
+  setSelectedMarker,
+  setTrainingMarkers,
+  computeMissingPositionAndDistance,
+  factorTrainingsForMap,
+  setJobMarkers,
+  factorPartnerJobsForMap,
+  factorInternalJobsForMap,
+} from "../../../utils/mapTools"
 import { logError } from "../../../utils/tools"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
@@ -13,22 +23,17 @@ export const loadItem = async ({
   setTrainings,
   setHasSearch,
   setIsFormVisible,
-  setTrainingMarkers,
   setSelectedItem,
   setCurrentPage,
   setTrainingSearchError,
-  factorTrainingsForMap,
   setIsTrainingSearchLoading,
   setIsJobSearchLoading,
   setIsPartnerJobSearchLoading,
-  computeMissingPositionAndDistance,
   setJobSearchError,
   setPartnerJobSearchError,
   setJobs,
   setInternalJobs,
   setPartnerJobs,
-  setJobMarkers,
-  factorJobsForMap,
 }) => {
   try {
     setHasSearch(true)
@@ -154,7 +159,11 @@ export const loadItem = async ({
 
         setHasSearch(true)
 
-        setJobMarkers({ jobList: factorJobsForMap(results) })
+        if (item.type === LBA_ITEM_TYPE_OLD.PEJOB) {
+          setJobMarkers({ jobList: factorInternalJobsForMap(results), type: jobLayerType.PARTNER, hasTrainings: false })
+        } else {
+          setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: jobLayerType.PARTNER, hasTrainings: false })
+        }
 
         setSelectedItem(loadedItem)
         setSelectedMarker(loadedItem)

@@ -13,14 +13,12 @@ import {
   closeMapPopups,
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
-  factorJobsForMap,
   factorTrainingsForMap,
   flyToLocation,
   flyToMarker,
   isMapInitialized,
   refreshLocationMarkers,
   resizeMap,
-  setJobMarkers,
   setSelectedMarker,
   setTrainingMarkers,
 } from "../../utils/mapTools"
@@ -55,7 +53,6 @@ const SearchForTrainingsAndJobs = () => {
   const [partnerJobSearchError, setPartnerJobSearchError] = useState("")
   const [trainingSearchError, setTrainingSearchError] = useState("")
   const [isLoading, setIsLoading] = useState(hasSearch ? false : true)
-  const [randomSearchId, setRandomSearchId] = useState(0)
 
   const router = useRouter()
 
@@ -98,19 +95,6 @@ const SearchForTrainingsAndJobs = () => {
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])
-
-  useEffect(() => {
-    // recharge les positions des opportunités d'emploi sur la map lorsque le chargement
-    // des requête partner et internal est terminé pour une nouvelle recherche
-    // identifiée par le randomSearchId
-    if (!isJobSearchLoading && !isPartnerJobSearchLoading) {
-      setJobMarkers({
-        jobList: factorJobsForMap({ ...jobs }),
-        searchCenter: formValues?.location?.value ? [formValues.location.value.coordinates[0], formValues.location.value.coordinates[1]] : null,
-        hasTrainings: scopeContext.isTraining,
-      })
-    }
-  }, [randomSearchId, isJobSearchLoading, isPartnerJobSearchLoading])
 
   const executeSearch = (values) => {
     setIsLoading(true)
@@ -221,22 +205,17 @@ const SearchForTrainingsAndJobs = () => {
       setTrainings,
       setHasSearch,
       setIsFormVisible,
-      setTrainingMarkers,
       setSelectedItem,
       setCurrentPage,
       setTrainingSearchError,
-      factorTrainingsForMap,
       setIsTrainingSearchLoading,
       setIsJobSearchLoading,
       setIsPartnerJobSearchLoading,
-      computeMissingPositionAndDistance,
       setJobSearchError,
       setPartnerJobSearchError,
       setJobs,
       setInternalJobs,
       setPartnerJobs,
-      setJobMarkers,
-      factorJobsForMap,
     })
 
     setIsFormVisible(false)
@@ -261,8 +240,6 @@ const SearchForTrainingsAndJobs = () => {
   }
 
   const searchForJobs = async ({ values, searchTimestamp, followUpItem, selectFollowUpItem }) => {
-    setRandomSearchId(Math.random())
-
     searchForJobsFunction({
       values,
       searchTimestamp,
@@ -271,6 +248,7 @@ const SearchForTrainingsAndJobs = () => {
       setJobSearchError,
       widgetParameters,
       setInternalJobs,
+      setInternalJobMarkers,
       followUpItem,
       selectFollowUpItem,
       opcoFilter,
@@ -287,6 +265,7 @@ const SearchForTrainingsAndJobs = () => {
       computeMissingPositionAndDistance,
       widgetParameters,
       setPartnerJobs,
+      setPartnerJobMarkers,
       followUpItem,
       selectFollowUpItem,
       opcoFilter,
