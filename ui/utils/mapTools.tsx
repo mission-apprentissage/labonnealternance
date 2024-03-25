@@ -11,7 +11,7 @@ import { fetchAddresses } from "../services/baseAdresse"
 import { isArea } from "./isArea"
 import { getItemElement, scrollToElementInContainer } from "./tools"
 
-enum jobLayerType {
+enum layerType {
   PARTNER = "PARTNER",
   INTERNAL = "INTERNAL",
   TRAINING = "TRAINING",
@@ -29,15 +29,15 @@ const zoomWholeFrance = 5
 const addLayers = ({ map, type, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem }) => {
   let layerName = ""
   switch (type) {
-    case jobLayerType.INTERNAL: {
+    case layerType.INTERNAL: {
       layerName = "job"
       break
     }
-    case jobLayerType.PARTNER: {
+    case layerType.PARTNER: {
       layerName = "partnerJob"
       break
     }
-    case jobLayerType.TRAINING: {
+    case layerType.TRAINING: {
       layerName = "training"
       break
     }
@@ -82,7 +82,7 @@ const addLayers = ({ map, type, selectItemOnMap, unselectItem, unselectMapPopupI
     source: `${layerName}-points`,
     type: "symbol",
     layout: {
-      "icon-image": type === jobLayerType.TRAINING ? "training" : "job", // cf. images chargées en amont
+      "icon-image": type === layerType.TRAINING ? "training" : "job", // cf. images chargées en amont
       "icon-padding": 0,
       "icon-allow-overlap": true,
     },
@@ -122,7 +122,7 @@ const addLayers = ({ map, type, selectItemOnMap, unselectItem, unselectMapPopupI
     source: `selected-${layerName}-point`,
     type: "symbol",
     layout: {
-      "icon-image": type === jobLayerType.TRAINING ? "training-large" : "job-large", // cf. images chargées en amont
+      "icon-image": type === layerType.TRAINING ? "training-large" : "job-large", // cf. images chargées en amont
       "icon-padding": 0,
       "icon-allow-overlap": true,
     },
@@ -186,13 +186,13 @@ const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMo
     }
 
     if (!map.getLayer("job-points-layer")) {
-      addLayers({ map, type: jobLayerType.INTERNAL, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem })
-      addLayers({ map, type: jobLayerType.PARTNER, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem })
+      addLayers({ map, type: layerType.INTERNAL, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem })
+      addLayers({ map, type: layerType.PARTNER, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem })
     }
 
     // ajout des layers et events liés aux formations
     if (!map.getLayer("training-points-layer")) {
-      addLayers({ map, type: jobLayerType.TRAINING, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem })
+      addLayers({ map, type: layerType.TRAINING, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem })
     }
   })
 
@@ -323,18 +323,18 @@ const factorTrainingsForMap = (list) => {
 }
 
 const factorPartnerJobsForMap = (lists) => {
-  return factorJobsForMap(lists, jobLayerType.PARTNER)
+  return factorJobsForMap(lists, layerType.PARTNER)
 }
 
 const factorInternalJobsForMap = (lists) => {
-  return factorJobsForMap(lists, jobLayerType.INTERNAL)
+  return factorJobsForMap(lists, layerType.INTERNAL)
 }
 
 // rassemble les emplois internes ayant une même géoloc pour avoir une seule icône sur la map
 const factorJobsForMap = (lists, type) => {
   let sortedList = []
 
-  if (type === jobLayerType.PARTNER) {
+  if (type === layerType.PARTNER) {
     if (lists.peJobs) {
       sortedList = lists.peJobs
     }
@@ -510,7 +510,7 @@ const setJobMarkers = async ({ jobList, type, searchCenter = null, hasTrainings 
       })
     })
 
-    map.getSource(type === jobLayerType.INTERNAL ? "job-points" : "partnerJob-points").setData({ type: "FeatureCollection", features })
+    map.getSource(type === layerType.INTERNAL ? "job-points" : "partnerJob-points").setData({ type: "FeatureCollection", features })
   } else {
     if (tryCount < 5) {
       setTimeout(() => {
@@ -619,8 +619,8 @@ const coordinatesOfFrance = [2.213749, 46.227638]
 const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
   setTimeout(() => {
     if (scopeContext.isJob) {
-      setJobMarkers({ jobList: factorInternalJobsForMap(jobs), type: jobLayerType.INTERNAL, hasTrainings: trainings })
-      setJobMarkers({ jobList: factorPartnerJobsForMap(jobs), type: jobLayerType.PARTNER, hasTrainings: trainings })
+      setJobMarkers({ jobList: factorInternalJobsForMap(jobs), type: layerType.INTERNAL, hasTrainings: trainings })
+      setJobMarkers({ jobList: factorPartnerJobsForMap(jobs), type: layerType.PARTNER, hasTrainings: trainings })
     }
     if (scopeContext.isTraining) {
       setTrainingMarkers({ trainingList: factorTrainingsForMap(trainings) })
@@ -651,5 +651,5 @@ export {
   setSelectedTrainingMarker,
   setTrainingMarkers,
   waitForMapReadiness,
-  jobLayerType,
+  layerType,
 }

@@ -1,6 +1,6 @@
 import axios from "axios"
 
-import { factorInternalJobsForMap, factorPartnerJobsForMap, jobLayerType, setJobMarkers } from "@/utils/mapTools"
+import { factorInternalJobsForMap, factorPartnerJobsForMap, layerType, setJobMarkers } from "@/utils/mapTools"
 
 import { logError } from "../../../utils/tools"
 
@@ -100,7 +100,7 @@ export const searchForJobsFunction = async ({
     setInternalJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
-    setJobMarkers({ jobList: factorInternalJobsForMap(results), type: jobLayerType.INTERNAL, searchCenter, hasTrainings: scopeContext.isTraining })
+    setJobMarkers({ jobList: factorInternalJobsForMap(results), type: layerType.INTERNAL, searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
     console.error(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${
@@ -208,7 +208,7 @@ export const searchForPartnerJobsFunction = async ({
     setPartnerJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
-    setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: jobLayerType.PARTNER, searchCenter, hasTrainings: scopeContext.isTraining })
+    setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: layerType.PARTNER, searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
     console.error(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${

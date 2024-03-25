@@ -3,7 +3,7 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import {
   flyToMarker,
-  jobLayerType,
+  layerType,
   setSelectedMarker,
   setTrainingMarkers,
   computeMissingPositionAndDistance,
@@ -160,9 +160,9 @@ export const loadItem = async ({
         setHasSearch(true)
 
         if (item.type === LBA_ITEM_TYPE_OLD.PEJOB) {
-          setJobMarkers({ jobList: factorInternalJobsForMap(results), type: jobLayerType.PARTNER, hasTrainings: false })
+          setJobMarkers({ jobList: factorInternalJobsForMap(results), type: layerType.PARTNER, hasTrainings: false })
         } else {
-          setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: jobLayerType.PARTNER, hasTrainings: false })
+          setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: layerType.PARTNER, hasTrainings: false })
         }
 
         setSelectedItem(loadedItem)
