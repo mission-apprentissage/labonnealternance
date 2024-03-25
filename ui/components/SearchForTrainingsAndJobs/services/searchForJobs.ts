@@ -208,7 +208,7 @@ export const searchForPartnerJobsFunction = async ({
     setPartnerJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
-    setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: jobLayerType.INTERNAL, searchCenter, hasTrainings: scopeContext.isTraining })
+    setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: jobLayerType.PARTNER, searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
     console.error(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${
