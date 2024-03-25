@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   mongodb:
-    image: mongo:6.0.11
+    image: mongo:7.0.7-jammy
     restart: unless-stopped
     hostname: mongodb
     mem_limit: 5g
@@ -34,7 +34,7 @@ services:
       - lba_clamav_data:/var/lib/clamav
 
   smtp:
-    image: axllent/mailpit:v1.10.1
+    image: axllent/mailpit:v1.15
     restart: unless-stopped
     ports:
       - 1025:1025
