@@ -64,15 +64,15 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
     },
   })
 
-  const jobs: IRecruiter[] = await Recruiter.aggregate(stages)
+  const recruiters: IRecruiter[] = await Recruiter.aggregate(stages)
 
   const filteredJobs = await Promise.all(
-    jobs.map(async (job) => {
+    recruiters.map(async (job) => {
       const jobs: any[] = []
 
       if (job.is_delegated && job.cfa_delegated_siret) {
         const cfa = await Cfa.findOne({ siret: job.cfa_delegated_siret })
-        const cfaUser = await getUser2ManagingOffer(job)
+        const cfaUser = await getUser2ManagingOffer(jobs[0])
 
         job.phone = cfaUser.phone
         job.email = cfaUser.email
