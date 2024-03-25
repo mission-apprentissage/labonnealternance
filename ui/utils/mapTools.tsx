@@ -93,13 +93,14 @@ const addLayers = ({ map, type, selectItemOnMap, unselectItem, unselectMapPopupI
 
   map.on("click", `${layerName}-points-layer`, function (e) {
     e.originalEvent.STOP = "STOP" // un classique stopPropagation ne suffit pour empêcher d'ouvrir deux popups si des points de deux layers se superposent
+    e.originalEvent.STOP_SOURCE = layerName
 
     const features = e.features
     setTimeout(() => {
-      // setTimeout de 5 ms pour que l'event soit traité au niveau de la layer training et que le flag stop puisse être posé
-      // en effet la layer job reçoit l'event en premier du fait de son positionnement dans la liste des layers de la map
+      // setTimeout de 5 ms pour que l'event soit traité au niveau de la layer et que le flag stop puisse être posé
+      // afin d'éviter que plusiers popup n'apparaissent si le click a lieu sur plusieurs markers se chevauchant
       if (e?.originalEvent) {
-        if (!e.originalEvent.STOP) {
+        if (e.originalEvent.STOP_SOURCE === layerName) {
           e.features = features // on réinsert les features de l'event qui sinon sont perdues en raison du setTimeout
           onLayerClick(e, layerName, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem)
         }
@@ -308,11 +309,15 @@ const factorPlacesForMap = (list) => {
       if (!isEqualCoords(currentMarker.coords, coords)) {
         resultList.push(currentMarker)
         currentMarker = { coords, items: [list[i]] }
-      } else currentMarker.items.push(list[i])
+      } else {
+        currentMarker.items.push(list[i])
+      }
     }
   }
 
-  if (currentMarker) resultList.push(currentMarker)
+  if (currentMarker) {
+    resultList.push(currentMarker)
+  }
 
   return resultList
 }
