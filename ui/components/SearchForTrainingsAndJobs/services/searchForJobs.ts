@@ -1,5 +1,7 @@
 import axios from "axios"
 
+import { factorInternalJobsForMap, factorPartnerJobsForMap, jobLayerType, setJobMarkers } from "@/utils/mapTools"
+
 import { logError } from "../../../utils/tools"
 
 import { storeJobsInSession } from "./handleSessionStorage"
@@ -11,6 +13,7 @@ export const searchForJobsFunction = async ({
   setIsJobSearchLoading,
   setHasSearch,
   setJobSearchError,
+  scopeContext,
   setInternalJobs,
   widgetParameters = undefined,
   followUpItem = undefined,
@@ -20,6 +23,7 @@ export const searchForJobsFunction = async ({
   showCombinedJob = undefined,
 }) => {
   try {
+    const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
     const romes = getRomeFromParameters({ values, widgetParameters })
     const rncp = romes ? "" : values?.job?.rncp
 
@@ -96,6 +100,7 @@ export const searchForJobsFunction = async ({
     setInternalJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
+    setJobMarkers({ jobList: factorInternalJobsForMap(results), type: jobLayerType.INTERNAL, searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
     console.error(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${
@@ -116,6 +121,7 @@ export const searchForPartnerJobsFunction = async ({
   setHasSearch,
   setPartnerJobSearchError,
   computeMissingPositionAndDistance,
+  scopeContext,
   setPartnerJobs,
   widgetParameters = undefined,
   followUpItem = undefined,
@@ -202,6 +208,7 @@ export const searchForPartnerJobsFunction = async ({
     setPartnerJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
+    setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: jobLayerType.INTERNAL, searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
     console.error(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${
