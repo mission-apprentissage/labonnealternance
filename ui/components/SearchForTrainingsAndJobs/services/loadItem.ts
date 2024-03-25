@@ -80,6 +80,10 @@ export const loadItem = async ({
         values,
         searchTimestamp,
         setIsJobSearchLoading,
+        scopeContext: {
+          isTraining: true,
+          isJob: true,
+        },
         setHasSearch,
         setJobSearchError,
         setInternalJobs,
@@ -88,6 +92,10 @@ export const loadItem = async ({
         values,
         searchTimestamp,
         setIsPartnerJobSearchLoading,
+        scopeContext: {
+          isTraining: true,
+          isJob: true,
+        },
         setHasSearch,
         setPartnerJobSearchError,
         computeMissingPositionAndDistance,
