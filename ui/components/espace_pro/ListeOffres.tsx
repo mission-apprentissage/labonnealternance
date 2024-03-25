@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import {
   Badge,
   Box,
@@ -31,6 +32,7 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { IJob } from "shared"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { useAuth } from "@/context/UserContext"
 
@@ -244,15 +246,23 @@ export default function ListeOffres() {
                       </Link>
                     </MenuItem>
                     <MenuItem>
-                      <Link isExternal href={`${publicConfig.baseUrl}/recherche-apprentissage?&type=matcha&itemId=${row._id}`}>
+                      <Link
+                        isExternal
+                        href={`${publicConfig.baseUrl}/recherche-apprentissage?&type=${LBA_ITEM_TYPE_OLD.MATCHA}&itemId=${row._id}`}
+                        aria-label="Lien vers l'offre - nouvelle fenêtre"
+                      >
                         Voir l'offre en ligne
                         <ExternalLinkLine ml={1} color="bluefrance.500" />
                       </Link>
                     </MenuItem>
                     {user.type !== AUTHTYPE.CFA && (
                       <MenuItem>
-                        <Link isExternal href={`${publicConfig.baseUrl}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}>
-                          Voir les centres de formations
+                        <Link
+                          isExternal
+                          href={`${publicConfig.baseUrl}/recherche-apprentissage-formation?&caller=lba_recruteur&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}
+                          aria-label="Lien vers les formations - nouvelle fenêtre"
+                        >
+                          Voir les centres de formations <ExternalLinkIcon mx="2px" />
                         </Link>
                       </MenuItem>
                     )}

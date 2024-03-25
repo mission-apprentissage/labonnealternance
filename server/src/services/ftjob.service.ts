@@ -3,17 +3,18 @@ import { setTimeout } from "timers/promises"
 import distance from "@turf/distance"
 import Boom from "boom"
 
-import { getPeJob, getPeReferentiels, searchForPeJobs } from "@/common/apis/Pe"
+import { getFtJob, getFtReferentiels, searchForFtJobs } from "@/common/apis/FranceTravail"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service"
+import { FTJob, FTResponse } from "./ftjob.service.types"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
-import { ILbaItemCompany, ILbaItemContact, ILbaItemPeJob } from "./lbaitem.shared.service.types"
+import { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
-import { PEJob, PEResponse } from "./pejob.service.types"
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
@@ -23,9 +24,9 @@ const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
  *
  * @param {string} referentiel
  */
-export const getPeApiReferentiels = async (referentiel: string) => {
+export const getFtApiReferentiels = async (referentiel: string) => {
   try {
-    const referentiels = await getPeReferentiels(referentiel)
+    const referentiels = await getFtReferentiels(referentiel)
     console.info(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
   } catch (error) {
     console.error("error getReferentiel ", error)
@@ -44,12 +45,12 @@ const getRoundedRadius = (radius: number) => {
 /**
  * Calcule la distance au centre de recherche lorsque l'information est manquante
  * Dépend de turf
- * @param {PEJob} job l'offre géolocalisée dont nous n'avons pas la distance au centre
+ * @param {FTJob} job l'offre géolocalisée dont nous n'avons pas la distance au centre
  * @param {string} latitude la latitude du centre de recherche
  * @param {string} longitude la longitude du centre de recherche
  * @return {number}
  */
-const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitude: string) => {
+const computeJobDistanceToSearchCenter = (job: FTJob, latitude: string, longitude: string) => {
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
     return roundDistance(distance([parseFloat(longitude), parseFloat(latitude)], [parseFloat(job.lieuTravail.longitude), parseFloat(job.lieuTravail.latitude)]))
   }
@@ -60,7 +61,7 @@ const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitud
 /**
  * Adaptation au modèle LBA et conservation des seules infos utilisées des offres
  */
-const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string | null; longitude?: string | null }): ILbaItemPeJob => {
+const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob; latitude?: string | null; longitude?: string | null }): ILbaItemFtJob => {
   const contact: ILbaItemContact | null = job.contact
     ? {
         name: job.contact.nom,
@@ -85,8 +86,9 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
     company.siret = job.entreprise.siret
   }
 
-  const resultJob: ILbaItemPeJob = {
+  const resultJob: ILbaItemFtJob = {
     ideaType: "peJob",
+    //ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
     title: job.intitule,
     contact,
     place: {
@@ -99,7 +101,7 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
       fullAddress: `${job.lieuTravail.libelle}${job.lieuTravail.codePostal ? " " + job.lieuTravail.codePostal : ""}`,
     },
     company,
-    url: `https://candidat.pole-emploi.fr/offres/recherche/detail/${job.id}?at_medium=CMP&at_campaign=labonnealternance_candidater_a_une_offre`,
+    url: `https://candidat.francetravail.fr/offres/recherche/detail/${job.id}?at_medium=CMP&at_campaign=labonnealternance_candidater_a_une_offre`,
     job: {
       id: job.id,
       creationDate: new Date(job.dateCreation),
@@ -130,14 +132,14 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
 }
 
 /**
- * Converti les offres issues de l'api Pôle emploi en objets de type ILbaItem
+ * Converti les offres issues de l'api France Travail en objets de type ILbaItem
  */
-const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[]; radius: number; latitude: string; longitude: string }) => {
-  const resultJobs: ILbaItemPeJob[] = []
+const transformFtJobs = ({ jobs, radius, latitude, longitude }: { jobs: FTJob[]; radius: number; latitude: string; longitude: string }) => {
+  const resultJobs: ILbaItemFtJob[] = []
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
-      const job = transformPeJob({ job: jobs[i], latitude, longitude })
+      const job = transformFtJob({ job: jobs[i], latitude, longitude })
 
       const d = job.place?.distance ?? 0
       if (d < getRoundedRadius(radius)) {
@@ -152,9 +154,9 @@ const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[];
 }
 
 /**
- * Récupère une liste d'offres depuis l'API Pôle emploi
+ * Récupère une liste d'offres depuis l'API France Travail
  */
-const getPeJobs = async ({
+const getFtJobs = async ({
   romes,
   insee,
   radius,
@@ -205,38 +207,37 @@ const getPeJobs = async ({
       params.distance = distance
     }
 
-    const jobs = await searchForPeJobs(params)
+    const jobs = await searchForFtJobs(params)
 
-    const data: PEResponse | IApiError | "" = jobs
-
-    if (data === "") {
-      const emptyPeResponse: PEResponse = { resultats: [] }
+    if (jobs === null || jobs === "") {
+      const emptyPeResponse: FTResponse = { resultats: [] }
       return emptyPeResponse
     }
 
-    return data
+    return jobs
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
   }
 }
 
 /**
- * Retourne une liste d'offres Pôle emploi au format unifié La bonne alternance
+ * Retourne une liste d'offres France Travail au format unifié La bonne alternance
  * applique post traitements suivants :
  * - filtrage optionnel sur les opco
  * - suppressions de données non autorisées pour des consommateurs extérieurs
  */
-export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult<ILbaItemPeJob>> => {
-  let peResponse: PEResponse | IApiError | null = null
+export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult<ILbaItemFtJob>> => {
+  let ftResponse: FTResponse | IApiError | null = null
   const currentRadius = radius || 20000
   const jobLimit = 150
 
   let trys = 0
 
   while (trys < 3) {
-    peResponse = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
+    ftResponse = await getFtJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
 
-    if ("status" in peResponse && peResponse.status === 429) {
+    if ("status" in ftResponse && ftResponse.status === 429) {
       console.warn("PE jobs api quota exceeded. Retrying : ", trys + 1)
       // trois essais pour gérer les 429 quotas exceeded des apis PE.
       trys++
@@ -246,13 +247,13 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
     }
   }
 
-  if (peResponse && "error" in peResponse && peResponse?.result === "error") {
-    return peResponse
+  if (ftResponse && "error" in ftResponse && ftResponse?.result === "error") {
+    return ftResponse
   }
 
-  const resultats = peResponse && "resultats" in peResponse ? peResponse.resultats : []
+  const resultats = ftResponse && "resultats" in ftResponse ? ftResponse.resultats : []
 
-  let jobs = transformPeJobs({ jobs: resultats, radius: currentRadius, latitude, longitude })
+  let jobs = transformFtJobs({ jobs: resultats, radius: currentRadius, latitude, longitude })
 
   // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {
@@ -282,11 +283,11 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
 }
 
 /**
- * Retourne un tableau contenant la seule offre Pôle emploi identifiée
+ * @description Retourne un tableau contenant la seule offre France Travail identifiée
  */
-export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
+export const getFtJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemFtJob[] }> => {
   try {
-    const job = await getPeJob(id)
+    const job = await getFtJob(id)
 
     if (!job) {
       throw Boom.notFound()
@@ -299,18 +300,53 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
       throw Boom.notFound()
     }
 
-    const peJob = transformPeJob({ job: job.data })
+    const ftJob = transformFtJob({ job: job.data })
 
     if (caller) {
       trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
       // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-      if (peJob.company) {
-        peJob.company.siret = null
+      if (ftJob.company) {
+        ftJob.company.siret = null
       }
     }
 
-    return { peJobs: [peJob] }
+    return { peJobs: [ftJob] }
   } catch (error) {
-    return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
+    sentryCaptureException(error)
+    return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
+  }
+}
+/**
+ * @description Retourne un tableau contenant la seule offre Pôle emploi identifiée
+ */
+export const getFtJobFromIdV2 = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<{ job: ILbaItemFtJob } | null> => {
+  try {
+    const job = await getFtJob(id)
+
+    if (!job) {
+      throw Boom.badRequest()
+    }
+
+    if (job.status === 204 || job.status === 400 || job.data === "") {
+      if (caller) {
+        trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
+      }
+      throw Boom.badRequest()
+    }
+
+    const ftJob = transformFtJob({ job: job.data })
+
+    if (caller) {
+      trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "job/offres_emploi_partenaires", response: "OK" })
+      // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+      if (ftJob.company) {
+        ftJob.company.siret = null
+      }
+    }
+
+    return { job: ftJob }
+  } catch (error) {
+    sentryCaptureException(error)
+    return null
   }
 }

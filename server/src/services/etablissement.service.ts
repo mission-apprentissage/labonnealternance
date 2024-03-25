@@ -3,7 +3,7 @@ import { setTimeout } from "timers/promises"
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, ZCfaReferentielData } from "shared"
+import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, ZCfaReferentielData } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
@@ -466,6 +466,11 @@ function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undef
   }
 }
 
+const addressDetailToString = (address: IAdresseV3): string => {
+  const { l4 = "", l6 = "", l7 = "" } = address?.acheminement_postal ?? {}
+  return [l4, l6, l7 === "FRANCE" ? null : l7].filter((_) => _).join(" ")
+}
+
 /**
  * @description Format Entreprise data
  */
@@ -479,7 +484,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
     establishment_siret: d.siret,
     establishment_raison_sociale: getRaisonSocialeFromGouvResponse(d),
     address_detail: d.adresse,
-    address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
+    address: addressDetailToString(d.adresse),
     contacts: [], // conserve la coherence avec l'UI
     naf_code: d.activite_principale.code,
     naf_label: d.activite_principale.libelle,
@@ -661,7 +666,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: strin
   }
   if (result === BusinessErrorCodes.NON_DIFFUSIBLE) {
     return errorFactory(
-      `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank">Contacter le support pour en savoir plus</a>`,
+      `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank" title="contacter le support - nouvelle fenêtre">Contacter le support pour en savoir plus</a>`,
       BusinessErrorCodes.NON_DIFFUSIBLE
     )
   }
@@ -941,9 +946,19 @@ export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "af
         formateur_zip_code: etablissement.formateur_zip_code,
         formateur_city: etablissement.formateur_city,
         formateur_siret: etablissement.formateur_siret,
-        gestionnaire_email: etablissement.gestionnaire_email,
+        email: etablissement.gestionnaire_email,
       },
       activationDate: dayjs().format("DD/MM/YYYY"),
     },
   })
+}
+
+export const isHardbounceEventFromEtablissement = async (payload) => {
+  const messageId = payload["message-id"]
+
+  const etablissement = await findOne({ to_CFA_invite_optout_last_message_id: messageId })
+  if (etablissement) {
+    return true
+  }
+  return false
 }

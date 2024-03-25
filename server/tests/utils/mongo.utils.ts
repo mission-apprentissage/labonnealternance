@@ -4,10 +4,13 @@ import { afterAll, beforeAll, beforeEach } from "vitest"
 import { connectToMongo } from "@/common/mongodb"
 import config from "@/config"
 
+import { createMongoDBIndexes } from "../../src/common/model"
+
 export const startAndConnectMongodb = async () => {
   const workerId = `${process.env.VITEST_POOL_ID}-${process.env.VITEST_WORKER_ID}`
 
   await connectToMongo(config.mongodb.uri.replace("VITEST_POOL_ID", workerId))
+  await createMongoDBIndexes()
 }
 
 export const stopMongodb = async () => {

@@ -70,7 +70,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
     count++
 
     // send the invitation mail
-    await mailer.sendEmail({
+    const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e !`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite.mjml.ejs"),
@@ -92,6 +92,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
       { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
         premium_affelnet_invitation_date: dayjs().toDate(),
+        to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
       }
     )
   }

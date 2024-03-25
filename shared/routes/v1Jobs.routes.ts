@@ -3,7 +3,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
-import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
+import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
 import {
@@ -54,7 +54,7 @@ export const zV1JobsRoutes = {
         resources: { recruiter: [{ establishment_siret: { type: "query", key: "establishment_siret" }, email: { type: "query", key: "email" } }] },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         description: "Get existing establishment id from siret & email",
       },
     },
@@ -120,9 +120,8 @@ export const zV1JobsRoutes = {
         resources: {},
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         description: "Get all jobs related to my organization",
-        operationId: "getJobs",
       },
     },
     "/v1/jobs/delegations/:jobId": {
@@ -157,8 +156,7 @@ export const zV1JobsRoutes = {
         resources: { job: [{ _id: { type: "params", key: "jobId" } }] },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "getDelegation",
+        tags: ["V1 - Jobs"] as string[],
         description: "Get related training organization related to a job offer.",
       },
     },
@@ -188,7 +186,7 @@ export const zV1JobsRoutes = {
             peJobs: z.union([
               z
                 .object({
-                  results: z.array(ZLbaItemPeJob),
+                  results: z.array(ZLbaItemFtJob),
                 })
                 .strict()
                 .nullable(),
@@ -220,8 +218,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "getJobOpportunities",
+        tags: ["V1 - Jobs"] as string[],
         description: "Get job opportunities matching the query parameters",
       },
     },
@@ -252,8 +249,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "getCompany",
+        tags: ["V1 - Jobs"] as string[],
         description: "Get one company identified by it's siret",
       },
     },
@@ -288,8 +284,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "getLbaJob",
+        tags: ["V1 - Jobs"] as string[],
         description: "Get one lba job identified by it's id",
       },
     },
@@ -311,7 +306,7 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            peJobs: z.array(ZLbaItemPeJob),
+            peJobs: z.array(ZLbaItemFtJob),
           })
           .strict(),
         "400": z.union([ZResError, ZLbacError, ZApiError]),
@@ -320,8 +315,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "getPeJob",
+        tags: ["V1 - Jobs"] as string[],
         description: "Get one pe job identified by it's id",
       },
     },
@@ -359,9 +353,8 @@ export const zV1JobsRoutes = {
         resources: {},
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         description: "Create an establishment entity",
-        operationId: "createEstablishment",
       },
     },
     "/v1/jobs/:establishmentId": {
@@ -410,9 +403,8 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
+        tags: ["V1 - Jobs"] as string[],
         description: "Create a job offer inside an establishment entity.",
-        operationId: "createJob",
       },
     },
     "/v1/jobs/delegations/:jobId": {
@@ -440,8 +432,7 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "createDelegation",
+        tags: ["V1 - Jobs"] as string[],
         description: "Create delegation related to a job offer.",
       },
     },
@@ -464,9 +455,8 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
-        description: 'Update a job offer status to "Provided"',
-        operationId: "setJobAsProvided",
+        tags: ["V1 - Jobs"] as string[],
+        description: "Update a job offer status to Provided",
       },
     },
     "/v1/jobs/canceled/:jobId": {
@@ -488,9 +478,8 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "setJobAsCanceled",
-        description: 'Update a job offer status to "Canceled".',
+        tags: ["V1 - Jobs"] as string[],
+        description: "Update a job offer status to Canceled",
       },
     },
     "/v1/jobs/extend/:jobId": {
@@ -512,8 +501,7 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "extendJobExpiration",
+        tags: ["V1 - Jobs"] as string[],
         description: "Update a job expiration date by 30 days.",
       },
     },
@@ -530,8 +518,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: null,
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "statsViewLbaJob",
+        tags: ["V1 - Jobs"] as string[],
         description: "Notifies that the detail of a matcha job has been viewed",
       },
     },
@@ -573,8 +560,7 @@ export const zV1JobsRoutes = {
         },
       },
       openapi: {
-        tags: ["Jobs"] as string[],
-        operationId: "updateJob",
+        tags: ["V1 - Jobs"] as string[],
         description: "Update a job offer specific fields inside an establishment entity.",
       },
     },

@@ -96,16 +96,16 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
 /**
  * @description Create job offer for formulaire
  */
-export const createJob = async ({ job, id, user }: { job: IJobWritable; id: string; user: IUser2 }): Promise<IRecruiter> => {
+export const createJob = async ({ job, establishment_id, user }: { job: IJobWritable; establishment_id: string; user: IUser2 }): Promise<IRecruiter> => {
   const userId = user._id
-  const recruiter = await Recruiter.findOne({ establishment_id: id }).lean()
+  const recruiter = await Recruiter.findOne({ establishment_id: establishment_id }).lean()
   if (!recruiter) {
-    throw Boom.internal(`recruiter with establishment_id=${id} not found`)
+    throw Boom.internal(`recruiter with establishment_id=${establishment_id} not found`)
   }
   const { is_delegated, cfa_delegated_siret } = recruiter
   const organization = await (cfa_delegated_siret ? Cfa.findOne({ siret: cfa_delegated_siret }).lean() : Entreprise.findOne({ siret: recruiter.establishment_siret }).lean())
   if (!organization) {
-    throw Boom.internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${id}`)
+    throw Boom.internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${establishment_id}`)
   }
   let isOrganizationValid = false
   let entrepriseStatus: EntrepriseStatus | null = null
@@ -121,7 +121,7 @@ export const createJob = async ({ job, id, user }: { job: IJobWritable; id: stri
   // get user activation state if not managed by a CFA
   const codeRome = job.rome_code.at(0)
   if (!codeRome) {
-    throw Boom.internal(`inattendu : pas de code rome pour une création d'offre pour le recruiter id=${id}`)
+    throw Boom.internal(`inattendu : pas de code rome pour une création d'offre pour le recruiter id=${establishment_id}`)
   }
   const romeData = await getRomeDetailsFromDB(codeRome)
   if (!romeData) {
@@ -139,7 +139,7 @@ export const createJob = async ({ job, id, user }: { job: IJobWritable; id: stri
     managed_by: userId,
   })
   // insert job
-  const updatedFormulaire = await createOffre(id, updatedJob)
+  const updatedFormulaire = await createOffre(establishment_id, updatedJob)
   const { jobs } = updatedFormulaire
   const createdJob = jobs.at(jobs.length - 1)
   if (!createdJob) {
@@ -148,7 +148,7 @@ export const createJob = async ({ job, id, user }: { job: IJobWritable; id: stri
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false && isJobActive) {
     if (!entrepriseStatus) {
-      throw Boom.internal(`inattendu : pas de status pour l'entreprise pour establishment_id=${id}`)
+      throw Boom.internal(`inattendu : pas de status pour l'entreprise pour establishment_id=${establishment_id}`)
     }
     const role = await RoleManagement.findOne({ userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() }).lean()
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
@@ -353,8 +353,8 @@ export async function getOffre(id: string | ObjectIdType) {
 /**
  * Create job offer on existing formulaire
  */
-export async function createOffre(id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> {
-  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, { new: true }).lean()
+export async function createOffre(establishment_id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id }, { $push: { jobs: payload } }, { new: true }).lean()
 
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")

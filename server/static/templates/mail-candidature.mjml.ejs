@@ -29,7 +29,7 @@
             Vous avez reçu une candidature !
           </mj-text>
           <mj-text font-size="16px" line-height="24px">
-            <% if (data.job_origin == "matcha") { %> Bonjour,
+            <% if (data.job_origin == "offres_emploi_lba") { %> Bonjour,
             <br /><br />
 
             <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé à
@@ -148,7 +148,7 @@
                 <img width="120" src="<%= data.images.logoLba %>" alt="Logo du site La bonne alternance" />
               </td>
               <td valign="top" style="font-family: Roboto, Arial, sans-serif; font-size: 16px; line-height: 22px; padding-left: 40px; padding-top: 0">
-                <% if (data.job_origin == "matcha" ) { %> Vous recevez cette candidature car vous avez déposé une offre sur le
+                <% if (data.job_origin == "offres_emploi_lba" ) { %> Vous recevez cette candidature car vous avez déposé une offre sur le
                 <a style="font-weight: bold; color: black" href="<%= data.lbaRecruiterUrl %>"> service de dépôt d'offre simplifié </a>
                 de La bonne alternance.
                 <br /><br />
@@ -175,7 +175,7 @@
             <span style="font-weight: bold">Une question ?</span>
           </mj-text>
 
-          <% if (data.job_origin == "matcha" ) { %>
+          <% if (data.job_origin == "offres_emploi_lba" ) { %>
           <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
             >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <a class="link-black" href="<%= data.jobProvidedUrl %>"> ✅ Indiquer que mon offre est pourvue</a>
@@ -219,7 +219,7 @@
             <tr>
               <td valign="top" style="padding-top: 5px"><img width="89" height="auto" src="<%= data.images.logoRF %>" alt="Logo République française" /></td>
               <td valign="top" style="line-height: 22px; padding-left: 40px; padding-top: 0">
-                <% if (data.job_origin == "lba" ) { %>
+                <% if (data.job_origin == "recruteurs_lba" ) { %>
                 <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
                   La bonne alternance est un site développé par la
                   <a class="link-black" href="https://mission-apprentissage.gitbook.io/general/"> Mission interministérielle pour l'apprentissage</a>, au sein de l’État,
@@ -230,7 +230,7 @@
                   L.34-5 du code des postes et communications électroniques, vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse
                   <a
                     class="link-black"
-                    href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Déréférencer%20entreprise%20-%20Candidature%20spontanée&body=Bonjour,%0A%0APouvez-vous%20proc%C3%A9der%20au%20d%C3%A9r%C3%A9f%C3%A9rencement%20de%20mon%20entreprise%20du%20service%20gouvernemental%20La%20bonne%20alternance%20%3F%0A%0AEn%20effet,%20mon%20entreprise%20%28merci%20de%20pr%C3%A9ciser%20la%20raison%20de%20votre%20demande%29%0A-%20A%20d%C3%A9j%C3%A0%20recrut%C3%A9%20tous%20ses%20alternants%20pour%20l'ann%C3%A9e%20en%20cours%0A-%20Re%C3%A7oit%20des%20candidatures%20qui%20ne%20correspondent%20pas%20%C3%A0%20notre%20besoin%0A-%20Utilise%20d'autres%20canaux%20pour%20ses%20recrutements%0A-%20Ne%20recrute%20pas%20en%20alternance%0A-%20Autre"
+                    href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Déréférencer%20entreprise%20-%20Candidature%20spontanée&body=Bonjour,%0A%0APouvez-vous%20proc%C3%A9der%20au%20d%C3%A9r%C3%A9f%C3%A9rencement%20de%20mon%20entreprise%20du%20service%20gouvernemental%20La%20bonne%20alternance%20%3F%0A%0AEn%20effet,%20mon%20entreprise%20%28pr%C3%A9ciser%20parmi%20les%20raisons%20suivantes%29%0A-%20A%20d%C3%A9j%C3%A0%20recrut%C3%A9%20tous%20ses%20alternants%20pour%20l'ann%C3%A9e%20en%20cours%0A-%20Re%C3%A7oit%20des%20candidatures%20qui%20ne%20correspondent%20pas%20%C3%A0%20notre%20besoin%0A-%20Utilise%20d'autres%20canaux%20pour%20ses%20recrutements%0A-%20Ne%20recrute%20pas%20en%20alternance%0A-%20Autre"
                   >
                     labonnealternance@apprentissage.beta.gouv.fr</a
                   >.

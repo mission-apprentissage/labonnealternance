@@ -109,6 +109,12 @@ export const etablissementSchema = new Schema<IEtablissement>(
       default: null,
       description: "Date de la dernière synchronisation avec le Catalogue",
     },
+    to_CFA_invite_optout_last_message_id: {
+      type: String,
+      default: null,
+      description: "Identifiant chez le transporteur du dernier email d'invitation envoyé",
+      index: true,
+    },
     created_at: {
       type: Date,
       default: Date.now,

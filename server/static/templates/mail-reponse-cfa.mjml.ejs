@@ -1,6 +1,6 @@
 <mjml>
   <mj-head>
-    <mj-title>[La bonne alternance] Le centre de formation vous répond</mj-title>
+    <mj-title>La bonne alternance - Le centre de formation vous répond</mj-title>
     <mj-font name="Arial" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
     <mj-style inline="inline"> .grey {color: #1E1E1E;} </mj-style>
     <mj-attributes>
@@ -18,20 +18,29 @@
       <mj-section padding="15px">
         <mj-column>
           <mj-text font-size="16px" line-height="24px"> Bonjour <%= data.prenom %> <%= data.nom %>, </mj-text>
+          <% if (!data.nom_cfa && !data.nom_formation) { %>
+          <mj-text font-size="16px" line-height="24px">
+            Voici la réponse du centre de formation :
+          </mj-text>
+          <% } %>
+          <% if (data.nom_cfa && data.nom_formation) { %>
           <mj-text font-size="16px" line-height="24px">
             Voici la réponse du centre de formation <strong> <%= data.nom_cfa %> </strong> à propos de la formation <strong> <%= data.nom_formation %> </strong> :
           </mj-text>
+          <% } %>
           <mj-section padding="10px" margin="10px" background-color="#F6F6F6">
             <mj-column>
               <mj-text font-size="16px" line-height="24px" color="#161616"> <%= data.message %> </mj-text>
             </mj-column>
           </mj-section>
+          <% if (data.cfa_email) { %>
           <mj-text font-size="18px" font-weight="700">Vous souhaitez répondre ?</mj-text>
           <mj-text font-size="16px" line-height="24px">Email : <%= data.cfa_email %></mj-text>
+          <% } %>
           <% if (data.cfa_phone) { %>
           <mj-text font-size="16px" line-height="24px">Téléphone : <%= data.cfa_phone %></mj-text>
           <% } %>
-          <mj-text font-size="16px" line-height="24px"><i>Pensez à vous présenter et à redonner le contexte de vos échanges dans votre message afin que le destinataire puisse vous répondre au mieux.</i></mj-text>
+          <mj-text font-size="16px" line-height="24px"><i>Si vous recontactez le centre de formation, pensez à vous présenter et à redonner le contexte de vos échanges dans votre message afin que le destinataire puisse vous répondre au mieux.</i></mj-text>
         </mj-column>
       </mj-section>
     </mj-wrapper>

@@ -13,6 +13,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Image,
   Input,
   Link,
   Modal,
@@ -28,7 +29,7 @@ import {
 } from "@chakra-ui/react"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
@@ -36,7 +37,6 @@ import * as Yup from "yup"
 
 import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
-import { PaperPlane } from "@/theme/components/icons/PaperPlane"
 import { apiGet, apiPost } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
@@ -53,6 +53,7 @@ const DemandeDeContact = (props: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [applicantReasons, setApplicantReasons] = useState<typeof reasons>(reasons)
+  const [showApplicantReasonError, setShowApplicantReasonError] = useState(false)
   const [applicantType, setApplicantType] = useState<EApplicantType>(EApplicantType.ETUDIANT)
   const [onSuccessSubmitResponse, setOnSuccessSubmitResponse] = useState(null)
   const [error, setError] = useState<string | null>(null)
@@ -65,15 +66,19 @@ const DemandeDeContact = (props: Props) => {
     }
   }, [props.context.cle_ministere_educatif, isOpen])
 
+  useEffect(() => {
+    resetForm()
+  }, [props.context.cle_ministere_educatif])
+
   const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
   const yupInputs = {
-    firstname: Yup.string().required("Requis"),
-    lastname: Yup.string().required("Requis"),
+    firstname: Yup.string().required("⚠ Le prénom est obligatoire"),
+    lastname: Yup.string().required("⚠ Le nom est obligatoire"),
     phone: Yup.string()
-      .matches(/^[0-9]{10}$/, "Requis")
-      .required("Requis"),
-    email: Yup.string().required("Requis"),
+      .matches(/^[0-9]{10}$/, "⚠ Numéro de téléphone invalide")
+      .required("⚠ Le numéro de téléphone est obligatoire"),
+    email: Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
     applicantMessageToCfa: Yup.string(),
     applicantType: Yup.string(),
   }
@@ -115,7 +120,7 @@ const DemandeDeContact = (props: Props) => {
             lastname: values.lastname,
             phone: values.phone,
             email: values.email,
-            type: values.applicantType,
+            type: applicantType,
             applicantMessageToCfa: values.applicantMessageToCfa,
             cleMinistereEducatif: props.context.cle_ministere_educatif,
             applicantReasons: applicantReasons.filter(({ checked }) => checked).map(({ key }) => key),
@@ -150,12 +155,26 @@ const DemandeDeContact = (props: Props) => {
     }))
 
     setApplicantReasons(applicantReasonsUpdated)
+    setShowApplicantReasonError(!hasApplicantReasonChecked())
   }
+
+  const hasApplicantReasonChecked = () => applicantReasons.filter(({ checked }) => checked).length > 0
 
   const submitForm = async (e) => {
     e.preventDefault()
-    await formik.submitForm()
+    setShowApplicantReasonError(!hasApplicantReasonChecked())
+    if (hasApplicantReasonChecked()) {
+      await formik.submitForm()
+    } else {
+      formik.setTouched({ firstname: true, lastname: true, phone: true, email: true }, true)
+    }
+  }
+
+  const resetForm = () => {
     formik.resetForm()
+    setShowApplicantReasonError(false)
+    setOnSuccessSubmitResponse(null)
+    setError(null)
   }
 
   const formElement = () => (
@@ -226,7 +245,7 @@ const DemandeDeContact = (props: Props) => {
       </Flex>
       <Flex direction={["column", "column", "row"]} mt={4}>
         <FormControl data-testid="fieldset-reasons" mt={{ base: 3, md: "0" }}>
-          <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ?</FormLabel>
+          <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
           <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4}>
             <AccordionItem>
               <h2>
@@ -240,7 +259,7 @@ const DemandeDeContact = (props: Props) => {
                   }}
                 >
                   <Box as="span" flex="1" textAlign="left" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {applicantReasons.filter(({ checked }) => checked).length
+                    {hasApplicantReasonChecked()
                       ? applicantReasons
                           .filter(({ checked }) => checked)
                           .map(({ title }) => title)
@@ -278,22 +297,25 @@ const DemandeDeContact = (props: Props) => {
               <FormErrorMessage>{formik.errors.applicantMessageToCfa}</FormErrorMessage>
             </FormControl>
           )}
+          <FormControl isInvalid={!hasApplicantReasonChecked() && showApplicantReasonError}>
+            <FormErrorMessage>Le(s) sujet(s) que je souhaite aborder doit/doivent être renseigné(s).</FormErrorMessage>
+          </FormControl>
         </FormControl>
       </Flex>
       <Box width="95%" my={4} fontSize="12px">
-        <Text mb={2} color="grey.600" mt={10}>
+        <Text mb={2} color="grey.600" mt={6}>
           * Champs obligatoires
         </Text>
         <Text mt={4}>
           En remplissant ce formulaire, vous acceptez les{" "}
-          <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank">
-            Conditions générales d&apos;utilisation
+          <Link href="/cgu" color="grey.800" textDecoration="underline" isExternal title="Conditions générales d'utilisation - nouvelle fenêtre">
+            Conditions générales d&apos;utilisation <ExternalLinkIcon mx="2px" />
           </Link>{" "}
           du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {props.context.etablissement_formateur_entreprise_raison_sociale}.
           <br />
           Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-          <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank">
-            Politique de confidentialité
+          <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" isExternal title="politique de confidentialité - nouvelle fenêtre">
+            Politique de confidentialité <ExternalLinkIcon mx="2px" />
           </Link>{" "}
           de La bonne alternance.
         </Text>
@@ -311,7 +333,7 @@ const DemandeDeContact = (props: Props) => {
           type="submit"
           fontWeight="700"
           onClick={submitForm}
-          isDisabled={!formik.isValid}
+          isDisabled={formik.isSubmitting}
         >
           J'envoie ma demande
         </Button>
@@ -321,12 +343,15 @@ const DemandeDeContact = (props: Props) => {
 
   const formConfirmed = () => (
     <Box mt={2}>
-      <Text as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
-        <PaperPlane width="56px" height="56px" /> Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
-      </Text>
+      <Flex alignItems="center">
+        <Image mr={2} src="/images/paperplane2.svg" aria-hidden={true} alt="" />
+        <Text mb={2} as="h1" fontWeight={700} fontSize="20px" data-testid="DemandeDeContactConfirmationTitle">
+          Voilà une bonne chose de faite {onSuccessSubmitResponse.user.firstname} {onSuccessSubmitResponse.user.lastname} !
+        </Text>
+      </Flex>
       <Box mt={6}>
         <Text fontWeight="700" color="grey.750">
-          {onSuccessSubmitResponse.etablissement.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
+          {onSuccessSubmitResponse.formation.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
           <Text color="bluefrance.500" as="span">
             {onSuccessSubmitResponse.user.phone.match(/.{1,2}/g).join(".")}
           </Text>{" "}
@@ -351,7 +376,7 @@ const DemandeDeContact = (props: Props) => {
           </Text>
           <Text fontSize="16px" mt="12px">
             <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
-            <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" target="_blank">
+            <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" isExternal title="Prendre contact avec une école - nouvelle fenêtre">
               <u>Prendre contact avec une école</u> <ExternalLinkIcon mt="-5px" />
             </Link>
           </Text>
@@ -359,12 +384,12 @@ const DemandeDeContact = (props: Props) => {
       </Flex>
       <Box borderBottom="1px solid #D0C9C4" mt={10} />
       <Box my={10}>
-        {onSuccessSubmitResponse.etablissement?.lieu_formation_email && (
+        {onSuccessSubmitResponse.formation?.lieu_formation_email && (
           <Text fontSize="14px">
             Vous souhaitez modifier ou annuler cette demande ? <br />
             Envoyez un email à{" "}
             <u>
-              <a href={`mailto:${onSuccessSubmitResponse.etablissement.lieu_formation_email}`}>{onSuccessSubmitResponse.etablissement.lieu_formation_email}</a>
+              <a href={`mailto:${onSuccessSubmitResponse.formation.lieu_formation_email}`}>{onSuccessSubmitResponse.formation.lieu_formation_email}</a>
             </u>
           </Text>
         )}
@@ -404,6 +429,7 @@ const DemandeDeContact = (props: Props) => {
                   fontWeight={400}
                   background="none"
                   alignItems="baseline"
+                  data-testid="close-rdv-form"
                   height="1.5rem"
                   sx={{
                     _hover: {

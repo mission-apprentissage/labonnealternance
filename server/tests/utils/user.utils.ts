@@ -2,6 +2,7 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, IUserRecruteur, ZApplication, ZCredential, ZEmailBlacklist, ZRecruiter, ZUserRecruteur } from "shared/models"
 import { zObjectId } from "shared/models/common"
+import { ZodObject, ZodString } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
 import { Application, Credential, EmailBlacklist, Recruiter, UserRecruteur } from "@/common/model"
@@ -11,6 +12,19 @@ let seed = 0
 function getFixture() {
   seed++
   return new Fixture({ seed }).extend([
+    Generator({
+      schema: ZodObject,
+      filter: ({ context }) => context.path.at(-1) === "geopoint",
+      output: ({ transform }) => ({
+        type: "Point",
+        coordinates: [transform.utils.random.float(), transform.utils.random.float()],
+      }),
+    }),
+    Generator({
+      schema: ZodString,
+      filter: ({ context }) => context.path.at(-1) === "email",
+      output: () => `rando${seed}@email.com`,
+    }),
     Generator({
       schema: zObjectId,
       output: () => new ObjectId(),

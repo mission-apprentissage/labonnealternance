@@ -120,7 +120,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
           <Box>
             <Text as="span">Descriptif du {training.title ? training.title : training.longTitle} sur&nbsp;</Text>
             <Text as="span">
-              <Link variant="basicUnderlined" href={training.onisepUrl} isExternal>
+              <Link variant="basicUnderlined" href={training.onisepUrl} isExternal aria-label="Formation sur le site de l'onisep - nouvelle fenêtre">
                 le site Onisep&nbsp;
                 <ExternalLinkIcon mb="3px" ml="2px" />
               </Link>
@@ -133,7 +133,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
             isExternal
             variant="basicUnderlined"
             href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
-            aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
+            aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA - nouvelle fenêtre"
           >
             Préparez votre premier contact avec un CFA&nbsp;
             <ExternalLinkIcon mb="3px" ml="2px" />

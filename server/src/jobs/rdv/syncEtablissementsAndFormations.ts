@@ -32,16 +32,24 @@ export const syncEtablissementsAndFormations = async () => {
           Etablissement.find({
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
-            .select({ optout_activation_date: 1, premium_activation_date: 1, gestionnaire_email: 1 })
+            .select({
+              premium_affelnet_activation_date: 1,
+              optout_refusal_date: 1,
+              optout_activation_date: 1,
+              premium_refusal_date: 1,
+              premium_activation_date: 1,
+              premium_affelnet_refusal_date: 1,
+              gestionnaire_email: 1,
+            })
             .lean(),
           ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])
 
+        const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")
         const hasOptOutRefusal = hasDateProperty(etablissements, "optout_refusal_date")
         const hasOptOutActivation = hasDateProperty(etablissements, "optout_activation_date")
         const hasPremiumRefusal = hasDateProperty(etablissements, "premium_refusal_date")
         const hasPremiumActivation = hasDateProperty(etablissements, "premium_activation_date")
-        const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")
         const hasPremiumAffelnetRefusal = hasDateProperty(etablissements, "premium_affelnet_refusal_date")
 
         const emailArray = etablissements.map((etab) => {
@@ -60,7 +68,7 @@ export const syncEtablissementsAndFormations = async () => {
         }
 
         // Activate parcoursup premium referrer
-        if (hasPremiumActivation && !hasPremiumRefusal && formation.parcoursup_id && formation.parcoursup_statut === "publié") {
+        if (hasPremiumActivation && !hasPremiumRefusal && formation.parcoursup_visible) {
           referrersToActivate.push(referrers.PARCOURSUP.name)
         }
         // Activate affelnet premium referrer
@@ -84,8 +92,7 @@ export const syncEtablissementsAndFormations = async () => {
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
-            parcoursup_statut: formation.parcoursup_statut,
-            affelnet_statut: formation.affelnet_statut,
+            parcoursup_visible: formation.parcoursup_visible,
             affelnet_visible: formation.affelnet_visible,
             training_code_formation_diplome: formation.cfd,
             etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
@@ -115,8 +122,7 @@ export const syncEtablissementsAndFormations = async () => {
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
-            parcoursup_statut: formation.parcoursup_statut,
-            affelnet_statut: formation.affelnet_statut,
+            parcoursup_visible: formation.parcoursup_visible,
             affelnet_visible: formation.affelnet_visible,
             cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,

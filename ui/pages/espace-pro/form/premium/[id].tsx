@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Container, Flex, Stack, Text } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
@@ -137,7 +138,7 @@ export default function PremiumForm() {
                 </Text>
               </Box>
               <Text fontWeight="700" my={5}>
-                Afin de bénéficier de la parution du service RDV Apprentissage, je m'engage auprès de Parcoursup à
+                Afin de bénéficier de l'activation du service RDV Apprentissage, je m'engage auprès de Parcoursup à:
               </Text>
               <Stack direction="row" align="center">
                 <SuccessCircle fillHexaColor="#00AC8C" />
@@ -149,8 +150,14 @@ export default function PremiumForm() {
               </Stack>
               <Text mt={6}>
                 Je prends acte du fait que la{" "}
-                <a style={{ textDecoration: "underline", cursor: "pointer" }} href="https://mission-apprentissage.gitbook.io/general/" target="_blank" rel="noreferrer">
-                  Mission interministérielle pour l’apprentissage
+                <a
+                  style={{ textDecoration: "underline", cursor: "pointer" }}
+                  href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Mission interministérielle pour l’apprentissage - nouvelle fenêtre"
+                >
+                  Mission interministérielle pour l’apprentissage <ExternalLinkIcon mx="2px" />
                 </a>{" "}
                 pourra prendre toutes les mesures utiles pour mesurer le fait que cet engagement soit tenu (dont enquêtes en ligne ou orales auprès des candidats et des CFA).
               </Text>
@@ -172,45 +179,13 @@ export default function PremiumForm() {
                 </Text>
               </Flex>
               <Box>
-                <Text mt="-7px">Le service sera activé sur toutes les formations référencées dans Parcoursup de l’organisme suivant :</Text>
-                <Stack dir="column" bg="#F9F8F6" px={10} py={6} mt={3} spacing={4}>
-                  <Text>
-                    Raison sociale :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.raison_sociale}
-                    </Text>
+                <Text mt="-7px">
+                  Le service sera activé sur toutes les formations éligibles à être affichées sur Parcoursup, liées à votre SIRET{" "}
+                  <Text as="span" fontWeight="700">
+                    {etablissement.gestionnaire_siret}
                   </Text>
-                  <Text>
-                    SIRET Gestionnaire :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.gestionnaire_siret}
-                    </Text>
-                  </Text>
-                  <Text>
-                    SIRET Formateur :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.formateur_siret}
-                    </Text>
-                  </Text>
-                  <Text>
-                    Adresse :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.formateur_address}
-                    </Text>
-                  </Text>
-                  <Text>
-                    Code postal :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.formateur_zip_code}
-                    </Text>
-                  </Text>
-                  <Text>
-                    Ville :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.formateur_city}
-                    </Text>
-                  </Text>
-                </Stack>
+                  .
+                </Text>
               </Box>
             </>
           )}

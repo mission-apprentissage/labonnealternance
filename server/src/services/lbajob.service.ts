@@ -1,4 +1,6 @@
+import Boom from "boom"
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Cfa, Recruiter } from "@/common/model"
@@ -159,6 +161,7 @@ export const getLbaJobs = async ({
 
     return matchas
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from Matcha (${api})` })
   }
 }
@@ -180,7 +183,7 @@ function transformLbaJobs({ jobs, applicationCountByJob }: { jobs: IRecruiter[];
 }
 
 /**
- * Retourne une offre LBA identifiée par son id
+ * @description Retourne une offre LBA identifiée par son id
  */
 export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
@@ -203,7 +206,37 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
     return { matchas: job }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
+  }
+}
+
+/**
+ * @description Retourne une offre LBA identifiée par son id
+ */
+export const getLbaJobByIdV2 = async ({ id, caller }: { id: string; caller?: string }): Promise<{ job: ILbaItemLbaJob[] } | null> => {
+  try {
+    const rawJob = await getOffreAvecInfoMandataire(id)
+
+    if (!rawJob) {
+      throw Boom.badRequest()
+    }
+
+    const applicationCountByJob = await getApplicationByJobCount([id])
+
+    const job = transformLbaJob({
+      recruiter: rawJob.recruiter,
+      applicationCountByJob,
+    })
+
+    if (caller) {
+      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "job/offre_emploi_lba", response: "OK" })
+    }
+
+    return { job }
+  } catch (error) {
+    sentryCaptureException(error)
+    return null
   }
 }
 
@@ -238,7 +271,8 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
     const longitude = recruiter?.geopoint?.coordinates[0] ?? 0
 
     const resultJob: ILbaItemLbaJob = {
-      ideaType: "matcha",
+      ideaType: LBA_ITEM_TYPE_OLD.MATCHA,
+      // ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       id: `${recruiter.establishment_id}-${idx}`,
       title: offre.rome_appellation_label ?? offre.rome_label,
       contact: {

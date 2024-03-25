@@ -5,9 +5,10 @@ import { Server } from "../server"
 
 export default function (server: Server) {
   server.post(
-    "/v1/application",
+    "/application",
     {
-      schema: zRoutes.post["/v1/application"],
+      schema: zRoutes.post["/application"],
+      onRequest: server.auth(zRoutes.post["/application"]),
       config: {
         rateLimit: {
           max: 5,

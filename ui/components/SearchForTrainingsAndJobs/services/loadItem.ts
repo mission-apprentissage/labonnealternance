@@ -1,4 +1,5 @@
 import axios from "axios"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import { logError } from "../../../utils/tools"
@@ -95,7 +96,7 @@ export const loadItem = async ({
       let responseResult = null
 
       switch (item.type) {
-        case "peJob": {
+        case LBA_ITEM_TYPE_OLD.PEJOB: {
           const response = await axios.get(offreApi + "/" + item.itemId)
 
           // gestion des erreurs
@@ -110,7 +111,7 @@ export const loadItem = async ({
           }
           break
         }
-        case "matcha": {
+        case LBA_ITEM_TYPE_OLD.MATCHA: {
           const matchaUrl = `${matchaApi}/${item.itemId}`
           const response = await axios.get(matchaUrl)
 

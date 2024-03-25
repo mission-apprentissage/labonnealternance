@@ -29,7 +29,7 @@ import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
-import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
+import { exportToFranceTravail } from "./lba_recruteur/formulaire/misc/exportToFranceTravail"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
 import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire/misc/sendDelegationEmailWithSecuredToken"
@@ -48,7 +48,7 @@ import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { migrationUsers } from "./multiCompte/migrationUsers"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
-import { anonymizeUsers } from "./rdv/anonymizeUsers"
+import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
@@ -91,7 +91,7 @@ export const CronsMap = {
     cron_string: "30 0 * * 1,3,5",
     handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
   },
-  "Send CSV offers to Pôle emploi": {
+  "Send CSV offers to France Travail": {
     cron_string: "30 5 * * *",
     handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" }, productionOnly: true }),
   },
@@ -115,10 +115,10 @@ export const CronsMap = {
     cron_string: "0 9 * * *",
     handler: () => addJob({ name: "etablissement:invite:premium:parcoursup", payload: {} }),
   },
-  // "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
-  //   cron_string: "30 9 * * *",
-  //   handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
-  // },
+  "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
+    cron_string: "30 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
+  },
   "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
     cron_string: "45 2 * * *",
     handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
@@ -143,14 +143,14 @@ export const CronsMap = {
     cron_string: "10 0 1 * *",
     handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
   },
-  // "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-  //   cron_string: "15 9 * * *",
-  //   handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
-  // },
-  // "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-  //   cron_string: "45 9 * * *",
-  //   handler: () => addJob({ name: "etablissement:invite:premium:affelnet:follow-up", payload: {} }),
-  // },
+  "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
+    cron_string: "15 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
+  },
+  "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
+    cron_string: "45 9 * * *",
+    handler: () => addJob({ name: "etablissement:invite:premium:affelnet:follow-up", payload: {} }),
+  },
   "Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
     cron_string: "45 23 * * 2",
     handler: () => addJob({ name: "referentiel:onisep:import", payload: {} }),
@@ -184,7 +184,7 @@ export const CronsMap = {
     handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true } }),
   },
   "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
-    cron_string: "0 0 1 * *",
+    cron_string: "5 1 * * *",
     handler: () => addJob({ name: "users:anonimize", payload: {} }),
   },
   "Contrôle quotidien des candidatures": {
@@ -297,7 +297,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "opco:relance":
         return relanceOpco()
       case "pe:offre:export":
-        return exportPE()
+        return exportToFranceTravail()
       case "siret:inError:update":
         return updateSiretInfosInError()
       case "etablissement:formations:activate:opt-out":
@@ -321,7 +321,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "appointments:anonimize":
         return anonimizeAppointments()
       case "users:anonimize":
-        return anonymizeUsers()
+        return anonymizeOldUsers()
       case "catalogue:trainings:appointments:archive:eligible":
         return eligibleTrainingsForAppointmentsHistoryWithCatalogue()
       case "referentiel:onisep:import":

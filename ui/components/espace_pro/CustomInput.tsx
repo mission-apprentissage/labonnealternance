@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input } from "@chakra-ui/react"
 import { useField } from "formik"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -24,11 +25,12 @@ export const CustomInput = (props) => {
               </Flex>
               <Link
                 href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles"
+                title="contacter l'équipe labonnealternance - nouvelle fenêtre"
                 target="_blank"
                 textColor="bluefrance.500"
                 textDecoration="underline"
               >
-                Contacter le support pour en savoir plus
+                Contacter le support pour en savoir plus <ExternalLinkIcon mx="2px" />
               </Link>
             </Box>
           ) : (

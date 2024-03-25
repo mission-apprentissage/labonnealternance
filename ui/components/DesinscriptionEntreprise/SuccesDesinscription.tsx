@@ -37,16 +37,16 @@ const SuccesDesinscription = () => (
           </ListItem>
           <ListItem mb="3">
             Celles ayant diffusé une offre d'emploi sur{" "}
-            <Link aria-label="Accéder au site de Pôle emploi" variant="basicUnderlined" isExternal href="https://www.pole-emploi.fr">
-              Pôle emploi
+            <Link aria-label="Accéder au site de France Travail - nouvelle fenêtre" variant="basicUnderlined" isExternal href="https://www.francetravail.fr">
+              France Travail
               <ExternalLinkIcon mx="2px" />
             </Link>{" "}
             ou ses{" "}
             <Link
-              aria-label="Accéder au site de Pôle emploi"
+              aria-label="Accéder au site de France Travail - nouvelle fenêtre"
               variant="basicUnderlined"
               isExternal
-              href="https://www.pole-emploi.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
+              href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
             >
               sites partenaires
               <ExternalLinkIcon mx="2px" />
@@ -62,7 +62,7 @@ const SuccesDesinscription = () => (
         <Text>
           Pour cette raison, il était affiché sur La bonne alternance et vous receviez des candidatures spontanées en conséquence.
           <br />
-          L'email ainsi que le numéro de téléphone référencés sur votre entreprise sont issus de votre espace recruteur Pôle emploi.
+          L'email ainsi que le numéro de téléphone référencés sur votre entreprise sont issus de votre espace recruteur France Travail.
         </Text>
         <Text mt={4}>
           Nous restons à votre disposition si vous souhaitez de nouveau être référencé sur La bonne alternance.
@@ -93,7 +93,7 @@ const SuccesDesinscription = () => (
             <ListItem>Disposer d'un regard nouveau et sensibilisé aux enjeux de demain</ListItem>
             <ListItem>
               <Link
-                aria-label="Accès au site de simulation des aides au recrutement en alternance"
+                aria-label="Accès au site de simulation des aides au recrutement en alternance - nouvelle fenêtre"
                 variant="basicUnderlined"
                 isExternal
                 href="https://alternance.emploi.gouv.fr/simulateur-employeur/etape-1"

@@ -1,7 +1,8 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { defaultTo } from "lodash"
-import React, { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
 import { focusWithin } from "@/theme/theme-lba-tools"
@@ -9,7 +10,6 @@ import { focusWithin } from "@/theme/theme-lba-tools"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
-import { amongst } from "../../utils/arrayutils"
 import { filterLayers } from "../../utils/mapTools"
 import { SendPlausibleEvent } from "../../utils/plausible"
 
@@ -17,6 +17,7 @@ import AideApprentissage from "./AideApprentissage"
 import CandidatureLba from "./CandidatureLba/CandidatureLba"
 import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
+import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
@@ -29,11 +30,10 @@ import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
 import LbbCompanyDetail from "./LbbCompanyDetail"
 import LocationDetail from "./LocationDetail"
 import MatchaDetail from "./MatchaDetail"
-import PeJobDetail from "./PeJobDetail"
 import TrainingDetail from "./TrainingDetail"
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
-  const kind = selectedItem?.ideaType
+  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
 
   const { activeFilters } = useContext(DisplayContext)
 
@@ -65,7 +65,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
     setIsCollapsedHeader(currentScroll > maxScroll)
   }
 
-  const postuleSurPoleEmploi = () => {
+  const postuleSurFranceTravail = () => {
     SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre PE", {
       info_fiche: selectedItem.job.id,
     })
@@ -111,7 +111,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
 
-          {kind === "formation" && (
+          {kind === LBA_ITEM_TYPE_OLD.FORMATION && (
             <Text as="p" textAlign="left" color="grey.600" mt={4} mb={3} fontWeight={700} fontSize="1rem">
               <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
               <Text as="span" fontWeight={400}>
@@ -126,7 +126,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           <Text
             as="h1"
             fontSize={isCollapsedHeader ? "20px" : "28px"}
-            color={kind !== "formation" ? "pinksoft.600" : "greensoft.500"}
+            color={kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"}
             sx={{
               fontWeight: 700,
               marginBottom: "11px",
@@ -142,8 +142,15 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
           {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
             <Box my={4}>
-              <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={selectedItem.url} target="poleemploi" onClick={postuleSurPoleEmploi}>
-                Je postule sur Pôle emploi
+              <Link
+                data-tracking-id="postuler-offre-partenaire"
+                {...focusWithin}
+                variant="postuler"
+                href={selectedItem.url}
+                target="francetravail"
+                onClick={postuleSurFranceTravail}
+              >
+                Je postule sur France Travail
               </Link>
             </Box>
           )}
@@ -155,7 +162,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             </>
           )}
 
-          {kind === "formation" && buttonRdvShouldBeDisplayed(selectedItem) && (
+          {kind === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
               <Divider my={2} />
               <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
@@ -164,13 +171,13 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
         </Box>
       </Box>
 
-      {kind === "peJob" ? <PeJobDetail job={selectedItem} /> : ""}
-      {kind === "matcha" ? <MatchaDetail job={selectedItem} /> : ""}
-      {amongst(kind, ["lbb", "lba"]) ? <LbbCompanyDetail lbb={selectedItem} /> : ""}
+      {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <MatchaDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.LBA && <LbbCompanyDetail lbb={selectedItem} />}
 
-      {kind === "formation" ? <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} /> : ""}
+      {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
 
-      {amongst(kind, ["lbb", "lba"]) && (
+      {kind === LBA_ITEM_TYPE_OLD.LBA && (
         <Box bg="#f5f5fe" border="1px solid #e3e3fd" mx={8} mb={8} px={6} py={4}>
           <Box color="bluefrance.500" fontSize="22px" fontWeight={700}>
             Besoin d&apos;aide ?
@@ -179,13 +186,25 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           <Box pl={6}>
             <Box pt={4}>
               &bull;
-              <Link variant="basicUnderlined" ml={4} isExternal href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e">
+              <Link
+                variant="basicUnderlined"
+                ml={4}
+                isExternal
+                href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
+                aria-label="Formation Chercher un employeur - nouvelle fenêtre"
+              >
                 Chercher un employeur <ExternalLinkIcon mb="3px" mx="2px" />
               </Link>
             </Box>
             <Box pt={4}>
               &bull;
-              <Link variant="basicUnderlined" ml={4} isExternal href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac">
+              <Link
+                variant="basicUnderlined"
+                ml={4}
+                isExternal
+                href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
+                aria-label="Formation préparer un entretien avec un employeur - nouvelle fenêtre"
+              >
                 Préparer un entretien avec un employeur <ExternalLinkIcon mb="3px" mx="2px" />
               </Link>
             </Box>
@@ -197,7 +216,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
       <AideApprentissage item={selectedItem}></AideApprentissage>
 
-      {kind === "peJob" && (
+      {kind === LBA_ITEM_TYPE_OLD.PEJOB && (
         <>
           <DidYouKnow />
           {!buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
@@ -205,10 +224,10 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           )}
         </>
       )}
-      {kind === "formation" && !buttonRdvShouldBeDisplayed(selectedItem) && (
+      {kind === LBA_ITEM_TYPE_OLD.FORMATION && !buttonRdvShouldBeDisplayed(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
-      {(kind === "lbb" || kind === "lba") && !isCandidatureLba(selectedItem) && (
+      {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
     </Box>

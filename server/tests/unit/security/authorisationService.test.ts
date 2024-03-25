@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify"
-import type { ObjectId } from "mongodb"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IUser2 } from "shared/models/user2.model"
@@ -8,6 +8,7 @@ import { AccessPermission, AccessRessouces, Permission } from "shared/security/p
 import { describe, expect, it } from "vitest"
 
 import { Application, Recruiter, UserRecruteur } from "@/common/model"
+import { ObjectId } from "@/common/mongodb"
 import { generateScope } from "@/security/accessTokenService"
 import { AccessUserToken } from "@/security/authenticationService"
 import { authorizationMiddleware } from "@/security/authorisationService"
@@ -182,17 +183,17 @@ describe("authorisationService", () => {
     )
     applicationO1E1R1J1A1 = await createApplicationTest({
       job_id: O1E1R1J1Id.toString(),
-      job_origin: "matcha",
+      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       applicant_message_to_company: "#O1#E1#R1#J1#A1",
     })
     applicationO1E1R1J1A2 = await createApplicationTest({
       job_id: O1E1R1J1Id.toString(),
-      job_origin: "matcha",
+      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       applicant_message_to_company: "#O1#E1#R1#J1#A2",
     })
     applicationO1E1R1J2A1 = await createApplicationTest({
       job_id: O1E1R1J2Id.toString(),
-      job_origin: "matcha",
+      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       applicant_message_to_company: "#O1#E1#R1#J2#A1",
     })
 
@@ -212,7 +213,7 @@ describe("authorisationService", () => {
     )
     applicationO1E1R2J1A1 = await createApplicationTest({
       job_id: O1E1R2J1Id.toString(),
-      job_origin: "matcha",
+      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       applicant_message_to_company: "#O1#E1#R2#J1#A1",
     })
 
