@@ -510,7 +510,7 @@ const setJobMarkers = async ({ jobList, type, searchCenter = null, hasTrainings 
       })
     })
 
-    map.getSource(`${type === jobLayerType.INTERNAL ? "job" : "partnerJob"}-points`).setData({ type: "FeatureCollection", features })
+    map.getSource(type === jobLayerType.INTERNAL ? "job-points" : "partnerJob-points").setData({ type: "FeatureCollection", features })
   } else {
     if (tryCount < 5) {
       setTimeout(() => {
