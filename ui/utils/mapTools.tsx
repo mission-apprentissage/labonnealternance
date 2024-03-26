@@ -500,7 +500,7 @@ const setJobMarkers = async ({ jobList, type, searchCenter = null, hasTrainings 
 
     const features = []
     jobList.map((job, idx) => {
-      job.ideaType = "job"
+      job.ideaType = job.ideaType === LBA_ITEM_TYPE_OLD.PEJOB ? "partnerJob" : "job"
 
       features.push({
         type: "Feature",
@@ -526,31 +526,29 @@ const setJobMarkers = async ({ jobList, type, searchCenter = null, hasTrainings 
 }
 
 const setSelectedMarker = async (item) => {
-  if (item) {
-    const marker = {
-      coords: getCoordinates(item),
-      items: [item],
-      ideaType: item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? LBA_ITEM_TYPE_OLD.FORMATION : "job",
-    }
-    if (item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
-      setSelectedTrainingMarker(marker)
-      setSelectedJobMarker(marker)
-    } else {
-      setSelectedJobMarker(marker)
-      setSelectedTrainingMarker(null)
-    }
-  } else {
-    setSelectedJobMarker(null)
-    setSelectedTrainingMarker(null)
-  }
+  console.log("SETSELECTE ? ", item)
+
+  const marker: { coords: any; items: any[]; ideaType: string } | null = item
+    ? {
+        coords: getCoordinates(item),
+        items: [item],
+        ideaType: item.ideaType,
+      }
+    : null
+
+  setSelectedJobMarker(item && item.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION ? marker : null)
+  setSelectedTrainingMarker(item && item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? marker : null)
 }
 
-const setSelectedJobMarker = async (job) => {
-  updateSelectedMarkerCollection(job, job?.ideaType === LBA_ITEM_TYPE_OLD.PEJOB ? "selected-partnerJob-point" : "selected-job-point")
+const setSelectedJobMarker = async (marker) => {
+  console.log("marker JOB : ", marker)
+  updateSelectedMarkerCollection(marker && marker.ideaType === LBA_ITEM_TYPE_OLD.PEJOB ? marker : null, "selected-partnerJob-point")
+  updateSelectedMarkerCollection(marker && marker.ideaType !== LBA_ITEM_TYPE_OLD.PEJOB ? marker : null, "selected-job-point")
 }
 
-const setSelectedTrainingMarker = async (training) => {
-  updateSelectedMarkerCollection(training, "selected-training-point")
+const setSelectedTrainingMarker = async (marker) => {
+  console.log("marker TRAINING : ", marker)
+  updateSelectedMarkerCollection(marker, "selected-training-point")
 }
 
 const updateSelectedMarkerCollection = async (item, layer) => {
@@ -573,7 +571,6 @@ const updateSelectedMarkerCollection = async (item, layer) => {
     }
 
     const results = { type: "FeatureCollection", features }
-
     map.getSource(layer).setData(results)
   }
 }
