@@ -10,7 +10,6 @@ import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
-import { checkDiffusibleCompanies, fixDiffusibleCompanies } from "./database/fixDiffusibleCompanies"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
 import { fixRDVACollections } from "./database/temp/fixRDVACollections"
@@ -374,14 +373,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       ///////
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
-      case "fix-diffusible-companies":
-        return fixDiffusibleCompanies(job.payload)
       case "anonymize-individual": {
         const { collection, id } = job.payload
         return anonymizeIndividual({ collection, id })
       }
-      case "check-diffusible-companies":
-        return checkDiffusibleCompanies()
       case "db:validate":
         return validateModels()
       case "db:obfuscate":
