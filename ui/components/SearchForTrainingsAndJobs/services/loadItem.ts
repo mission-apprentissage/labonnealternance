@@ -168,9 +168,9 @@ export const loadItem = async ({
         setHasSearch(true)
 
         if (item.type === LBA_ITEM_TYPE_OLD.PEJOB) {
-          setJobMarkers({ jobList: factorInternalJobsForMap(results), type: layerType.PARTNER, hasTrainings: false })
-        } else {
           setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: layerType.PARTNER, hasTrainings: false })
+        } else {
+          setJobMarkers({ jobList: factorInternalJobsForMap(results), type: layerType.INTERNAL, hasTrainings: false })
         }
 
         setSelectedItem(loadedItem)
