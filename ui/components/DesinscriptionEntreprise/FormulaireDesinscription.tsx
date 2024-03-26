@@ -98,8 +98,8 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
                   </Field>
                   {emailError && (
                     <Flex mt={2} align="flex-start">
-                      <Image mt={1} src="/images/icons/error_stop.svg" alt="" mr={1} />
-                      <Text fontSize="12px" color="error">
+                      <Image mt={1} src="/images/icons/error_info.svg" alt="" mr={1} />
+                      <Text fontSize="12px" color="#0063CB">
                         {emailError}
                       </Text>
                     </Flex>
