@@ -2,8 +2,7 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormL
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
-import { IRecruiterJson, IUserStatusValidationJson } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { IRecruiterJson } from "shared"
 import { IUser2Json } from "shared/models/user2.model"
 import * as Yup from "yup"
 
@@ -168,8 +167,8 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
         if (!data) {
           throw new Error("no data")
         }
-        const statusArray: IUserStatusValidationJson[] = data.user?.status ?? []
-        if (statusArray?.at(0)?.status === ETAT_UTILISATEUR.VALIDE) {
+        const isValidated = data.validated
+        if (isValidated) {
           if (type === AUTHTYPE.ENTREPRISE) {
             // Dépot simplifié
             router.push({

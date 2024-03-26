@@ -309,6 +309,10 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]): IUserStatus
   return lastValidationEvent.status
 }
 
+export const setEntrepriseValid = async (entrepriseId: IEntreprise["_id"]) => {
+  return setEntrepriseStatus(entrepriseId, "", EntrepriseStatus.VALIDE)
+}
+
 export const setEntrepriseInError = async (entrepriseId: IEntreprise["_id"], reason: string) => {
   return setEntrepriseStatus(entrepriseId, reason, EntrepriseStatus.ERROR)
 }
@@ -318,6 +322,8 @@ export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reas
   if (!entreprise) {
     throw Boom.internal(`could not find entreprise with id=${entrepriseId}`)
   }
+  const lastStatus = getLastStatusEvent(entreprise.status)?.status
+  if (lastStatus === status && status === EntrepriseStatus.VALIDE) return
   const event: IEntrepriseStatusEvent = {
     date: new Date(),
     reason,

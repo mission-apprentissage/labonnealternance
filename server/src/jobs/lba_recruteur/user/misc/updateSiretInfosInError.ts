@@ -13,7 +13,7 @@ import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { ENTREPRISE } from "../../../../services/constant.service"
-import { EntrepriseData, autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
+import { EntrepriseData, autoValidateUserRoleOnCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
 import { activateEntrepriseRecruiterForTheFirstTime, archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
 import { UserAndOrganization, deactivateEntreprise, setEntrepriseInError } from "../../../../services/userRecruteur.service"
 
@@ -47,7 +47,7 @@ const updateEntreprisesInfosInError = async () => {
         await Promise.all(
           users.map(async (user) => {
             const userAndOrganization: UserAndOrganization = { user, type: ENTREPRISE, organization: updatedEntreprise }
-            const result = await autoValidateCompany(userAndOrganization)
+            const result = await autoValidateUserRoleOnCompany(userAndOrganization)
             if (result.validated) {
               const recruiter = recruiters.find((recruiter) => recruiter.email === user.email && recruiter.establishment_siret === siret)
               if (!recruiter) {

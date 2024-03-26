@@ -146,11 +146,11 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
     throw Boom.internal("unexpected: no job found after job creation")
   }
   // if first offer creation for an Entreprise, send specific mail
-  if (jobs.length === 1 && is_delegated === false && isJobActive) {
+  if (jobs.length === 1 && is_delegated === false) {
     if (!entrepriseStatus) {
       throw Boom.internal(`inattendu : pas de status pour l'entreprise pour establishment_id=${establishment_id}`)
     }
-    const role = await RoleManagement.findOne({ userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() }).lean()
+    const role = await RoleManagement.findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() }).lean()
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
     return updatedFormulaire

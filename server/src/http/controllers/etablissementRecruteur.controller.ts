@@ -169,7 +169,7 @@ export default (server: Server) => {
             else throw Boom.badRequest(result.message, result)
           }
           const token = generateDepotSimplifieToken(user2ToUserForToken(result.user), result.formulaire.establishment_id)
-          return res.status(200).send({ formulaire: result.formulaire, user: result.user, token })
+          return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
           const { email, establishment_siret } = req.body
@@ -290,7 +290,7 @@ export default (server: Server) => {
 
       await updateLastConnectionDate(email)
       await startSession(email, res)
-      return res.status(200).send(toPublicUser(user, await getPublicUserRecruteurPropsOrError(user._id)))
+      return res.status(200).send(toPublicUser(user, await getPublicUserRecruteurPropsOrError(user._id, true)))
     }
   )
 }

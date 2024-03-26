@@ -46,8 +46,12 @@ export const getGrantedRoles = async (userId: string) => {
 }
 
 // TODO à supprimer lorsque les utilisateurs pourront avoir plusieurs types
-export const getMainRoleManagement = async (userId: string | ObjectId): Promise<IRoleManagement | null> => {
-  const roles = await getGrantedRoles(userId.toString())
+export const getMainRoleManagement = async (userId: string | ObjectId, includeUserAwaitingValidation: boolean = false): Promise<IRoleManagement | null> => {
+  let roles = await getGrantedRoles(userId.toString())
+  if (includeUserAwaitingValidation) {
+    const awaitingRoles = await RoleManagement.find({ user_id: userId, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.AWAITING_VALIDATION] } }).lean()
+    roles = roles.concat(awaitingRoles)
+  }
   const adminRole = roles.find((role) => role.authorized_type === AccessEntityType.ADMIN)
   if (adminRole) return adminRole
   const opcoRole = roles.find((role) => role.authorized_type === AccessEntityType.OPCO)
@@ -89,9 +93,10 @@ const roleToStatus = (role: IRoleManagement) => {
 }
 
 export const getPublicUserRecruteurPropsOrError = async (
-  userId: string | ObjectId
+  userId: string | ObjectId,
+  includeUserAwaitingValidation: boolean = false
 ): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
-  const mainRole = await getMainRoleManagement(userId)
+  const mainRole = await getMainRoleManagement(userId, includeUserAwaitingValidation)
   if (!mainRole) {
     throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
   }

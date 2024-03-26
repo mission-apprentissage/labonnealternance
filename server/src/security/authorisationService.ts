@@ -300,7 +300,6 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       entreprises: [],
       opcos: opco ? [opco] : [],
     }
-
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw Boom.forbidden("non autorisé")
     }

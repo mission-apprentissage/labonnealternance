@@ -41,11 +41,12 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import {
   UserAndOrganization,
-  autoValidateUser,
+  autoValidateUser as authorizeUserOnEntreprise,
   createOrganizationUser,
   getUserRecruteurByEmail,
   isUserEmailChecked,
   setEntrepriseInError,
+  setEntrepriseValid,
   setUserHasToBeManuallyValidated,
 } from "./userRecruteur.service"
 
@@ -559,10 +560,10 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
   }
 }
 
-export const autoValidateCompany = async (userAndEntreprise: UserAndOrganization) => {
+export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOrganization) => {
   const validated = await isCompanyValid(userAndEntreprise)
   if (validated) {
-    await autoValidateUser(userAndEntreprise)
+    await authorizeUserOnEntreprise(userAndEntreprise)
   } else {
     await setUserHasToBeManuallyValidated(userAndEntreprise)
   }
@@ -596,7 +597,6 @@ export const isCompanyValid = async (props: UserAndOrganization): Promise<boolea
   const validEmails = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
 
   // Check BAL API for validation
-
   const isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
   if (isValid) {
     return true
@@ -758,7 +758,7 @@ export const entrepriseOnboardingWorkflow = {
     }: {
       isUserValidated?: boolean
     } = {}
-  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUser2 }> => {
+  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUser2; validated: boolean }> => {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
@@ -797,14 +797,21 @@ export const entrepriseOnboardingWorkflow = {
       is_qualiopi: false,
     })
 
+    let validated = false
     if (hasSiretError) {
       await setEntrepriseInError(creationResult.organization._id, "Erreur lors de l'appel à l'API SIRET")
-    } else if (isUserValidated) {
-      await autoValidateUser(creationResult)
     } else {
-      await autoValidateCompany(creationResult)
+      await setEntrepriseValid(creationResult.organization._id)
+      if (isUserValidated) {
+        await authorizeUserOnEntreprise(creationResult)
+        validated = true
+      } else {
+        const result = await autoValidateUserRoleOnCompany(creationResult)
+        validated = result.validated
+      }
     }
-    return { formulaire: formulaireInfo, user: creationResult.user }
+
+    return { formulaire: formulaireInfo, user: creationResult.user, validated }
   },
   createFromCFA: async ({
     email,

@@ -9,7 +9,6 @@ import { zObjectId } from "./common"
 export const ZApplication = z
   .object({
     _id: zObjectId,
-    applicant_id: zObjectId,
     applicant_email: z.string().email().openapi({
       description: "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
       example: "john.smith@mail.com",
