@@ -166,13 +166,6 @@ function createJobAction(name) {
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
-  .command("fix-diffusible-companies")
-  .description("Clean companies not diffusible.")
-  .option("-c, --collection_list <string>", " <collection_list> est la liste des collections à réparer séparées par des ,")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("fix-diffusible-companies"))
-
-program
   .command("anonymize-individual")
   .description("Anonymize elements based on id")
   .requiredOption("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
@@ -180,7 +173,6 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("anonymize-individual"))
 
-program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
 program
   .command("fix:duplicate:users")
   .description("Fix duplicated users in users collections and update appointment collection accordingly")

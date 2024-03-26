@@ -48,11 +48,19 @@ const updateDiplomeMetier = ({ initial, toAdd }) => {
   return initial
 }
 
+/**
+ * retire les codes romes qui se terminent par 00 ou font moins de 5 caractères
+ */
+const filterWrongRomes = (formation) => {
+  formation.rome_codes = formation.rome_codes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
+}
+
 const getIntitulesFormations = async () => {
   const intitulesFormations = await FormationCatalogue.find({}, { _id: 0, intitule_long: 1, rome_codes: 1, rncp_code: 1 }).lean()
 
   for (const formation of intitulesFormations) {
-    if (formation.intitule_long) {
+    filterWrongRomes(formation)
+    if (formation.intitule_long && formation.rome_codes && formation.rome_codes.length) {
       if (!diplomesMetiers[formation.intitule_long]) {
         diplomesMetiers[formation.intitule_long] = {
           intitule_long: formation.intitule_long,
