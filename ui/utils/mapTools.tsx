@@ -526,8 +526,6 @@ const setJobMarkers = async ({ jobList, type, searchCenter = null, hasTrainings 
 }
 
 const setSelectedMarker = async (item) => {
-  console.log("SETSELECTE ? ", item)
-
   const marker: { coords: any; items: any[]; ideaType: string } | null = item
     ? {
         coords: getCoordinates(item),
@@ -541,13 +539,11 @@ const setSelectedMarker = async (item) => {
 }
 
 const setSelectedJobMarker = async (marker) => {
-  console.log("marker JOB : ", marker)
   updateSelectedMarkerCollection(marker && marker.ideaType === LBA_ITEM_TYPE_OLD.PEJOB ? marker : null, "selected-partnerJob-point")
   updateSelectedMarkerCollection(marker && marker.ideaType !== LBA_ITEM_TYPE_OLD.PEJOB ? marker : null, "selected-job-point")
 }
 
 const setSelectedTrainingMarker = async (marker) => {
-  console.log("marker TRAINING : ", marker)
   updateSelectedMarkerCollection(marker, "selected-training-point")
 }
 
