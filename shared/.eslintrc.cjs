@@ -8,6 +8,7 @@ module.exports = {
   rules: {
     "zod/prefer-enum": "error",
     "zod/require-strict": "error",
+    "import/no-extraneous-dependencies": 0,
   },
   parserOptions: {
     project: "shared/tsconfig.json",
