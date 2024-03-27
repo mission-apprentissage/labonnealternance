@@ -1,15 +1,15 @@
-import { ETAT_UTILISATEUR, OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist, ZUserRecruteur } from "shared/models"
+import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist } from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
-import { IEntreprise, ZEntreprise } from "shared/models/entreprise.model"
+import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUser2, ZUser2 } from "shared/models/user2.model"
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Cfa, Credential, EmailBlacklist, Entreprise, Recruiter, RoleManagement, User2, UserRecruteur } from "@/common/model"
+import { Application, Cfa, Credential, EmailBlacklist, Entreprise, Recruiter, RoleManagement, User2 } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 
 let seed = 0
@@ -99,6 +99,17 @@ export const roleManagementEventFactory = ({
 export const saveEntreprise = async (data: Partial<IEntreprise> = {}) => {
   return saveDbEntity(ZEntreprise, (item) => new Entreprise(item), data)
 }
+
+export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEvent> = {}): IEntrepriseStatusEvent => {
+  return {
+    date: new Date(),
+    reason: "test",
+    status: EntrepriseStatus.VALIDE,
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    ...props,
+  }
+}
+
 export const saveCfa = async (data: Partial<ICFA> = {}) => {
   return saveDbEntity(zCFA, (item) => new Cfa(item), data)
 }
@@ -138,16 +149,6 @@ export const jobFactory = (props: Partial<IJob> = {}) => {
     ...props,
   }
   return job
-}
-
-export async function createUserRecruteurTest(data: Partial<IUserRecruteur>, userState: string = ETAT_UTILISATEUR.VALIDE) {
-  const u = new UserRecruteur({
-    ...getFixture().fromSchema(ZUserRecruteur),
-    status: [{ validation_type: "AUTOMATIQUE", status: userState }],
-    ...data,
-  })
-  await u.save()
-  return u
 }
 
 export async function createCredentialTest(data: Partial<ICredential>) {
@@ -227,14 +228,15 @@ export const saveAdminUserTest = async (userProps: Partial<IUser2> = {}) => {
   return { user, role }
 }
 
-export const saveEntrepriseUserTest = async () => {
-  const user = await saveUser2()
-  const entreprise = await saveEntreprise()
+export const saveEntrepriseUserTest = async (userProps: Partial<IUser2> = {}, roleProps: Partial<IRoleManagement> = {}, entrepriseProps: Partial<IEntreprise> = {}) => {
+  const user = await saveUser2(userProps)
+  const entreprise = await saveEntreprise(entrepriseProps)
   const role = await saveRoleManagement({
     user_id: user._id,
     authorized_id: entreprise._id.toString(),
     authorized_type: AccessEntityType.ENTREPRISE,
     status: [roleManagementEventFactory()],
+    ...roleProps,
   })
   const recruiter = await saveRecruiter({
     is_delegated: false,

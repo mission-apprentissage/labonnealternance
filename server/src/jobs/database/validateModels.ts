@@ -21,7 +21,6 @@ import {
   ZUnsubscribeOF,
   ZUnsubscribedLbaCompany,
   ZUser,
-  ZUserRecruteur,
   zFormationCatalogueSchema,
 } from "shared/models"
 import { ZodType } from "zod"
@@ -50,7 +49,6 @@ import {
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
-  UserRecruteur,
   eligibleTrainingsForAppointmentHistory,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
@@ -120,6 +118,5 @@ export async function validateModels(): Promise<void> {
   await validateModel(ReferentielOpco, ZReferentielOpco)
   await validateModel(UnsubscribeOF, ZUnsubscribeOF)
   await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
-  await validateModel(UserRecruteur, ZUserRecruteur)
   await validateModel(eligibleTrainingsForAppointmentHistory, ZEligibleTrainingsForAppointmentSchema)
 }

@@ -1,25 +1,50 @@
-import { IUserRecruteur, zRoutes } from "shared"
-import { ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { zRoutes } from "shared"
 import { z } from "shared/helpers/zodWithOpenApi"
+import { EntrepriseStatus } from "shared/models/entreprise.model"
+import { AccessStatus } from "shared/models/roleManagement.model"
+import { IUser2 } from "shared/models/user2.model"
 import { describe, expect, it } from "vitest"
+
+import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.utils"
 
 import { SchemaWithSecurity, generateAccessToken, generateScope, parseAccessToken } from "../../../src/security/accessTokenService"
 import { useMongo } from "../../utils/mongo.utils"
-import { createUserRecruteurTest } from "../../utils/user.utils"
 
 describe("accessTokenService", () => {
-  let userACTIVE: IUserRecruteur
-  let userPENDING: IUserRecruteur
-  let userDISABLED: IUserRecruteur
-  let userERROR: IUserRecruteur
+  let userACTIVE: IUser2
+  let userPENDING: IUser2
+  let userDISABLED: IUser2
+  let userERROR: IUser2
   let userCFA
   let userLbaCompany
 
+  const saveEntrepriseUserWithStatus = async (status: AccessStatus) => {
+    const result = await saveEntrepriseUserTest(
+      {},
+      {
+        status: [
+          roleManagementEventFactory({
+            status,
+          }),
+        ],
+      }
+    )
+    return result.user
+  }
+
   const mockData = async () => {
-    userACTIVE = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.VALIDE)
-    userPENDING = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.ATTENTE)
-    userDISABLED = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.DESACTIVE)
-    userERROR = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.ERROR)
+    userACTIVE = await saveEntrepriseUserWithStatus(AccessStatus.GRANTED)
+    userPENDING = await saveEntrepriseUserWithStatus(AccessStatus.AWAITING_VALIDATION)
+    userDISABLED = await saveEntrepriseUserWithStatus(AccessStatus.DENIED)
+    userERROR = (
+      await saveEntrepriseUserTest(
+        {},
+        {},
+        {
+          status: [entrepriseStatusEventFactory({ status: EntrepriseStatus.ERROR })],
+        }
+      )
+    ).user
     userCFA = { type: "cfa" as const, email: "plop@gmail.com", siret: "12343154300012" }
     userLbaCompany = { type: "lba-company", email: "plop@gmail.com", siret: "12343154300012" }
   }
