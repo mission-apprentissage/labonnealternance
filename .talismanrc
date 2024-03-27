@@ -131,6 +131,8 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+- filename: .yarn/plugins/@yarnpkg/plugin-interactive-tools.cjs
+  checksum: a663e9955c2825bee3af55be1ebd6e26cd0a17fe7c614a13d726ddd4c7959b82
 scopeconfig:
 - scope: node
 custom_patterns:
