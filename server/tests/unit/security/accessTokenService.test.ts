@@ -2,19 +2,26 @@ import { zRoutes } from "shared"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessStatus } from "shared/models/roleManagement.model"
-import { IUser2 } from "shared/models/user2.model"
 import { describe, expect, it } from "vitest"
 
 import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.utils"
 
-import { SchemaWithSecurity, generateAccessToken, generateScope, parseAccessToken } from "../../../src/security/accessTokenService"
+import {
+  IUser2ForAccessToken,
+  SchemaWithSecurity,
+  UserForAccessToken,
+  generateAccessToken,
+  generateScope,
+  parseAccessToken,
+  user2ToUserForToken,
+} from "../../../src/security/accessTokenService"
 import { useMongo } from "../../utils/mongo.utils"
 
 describe("accessTokenService", () => {
-  let userACTIVE: IUser2
-  let userPENDING: IUser2
-  let userDISABLED: IUser2
-  let userERROR: IUser2
+  let userACTIVE: IUser2ForAccessToken
+  let userPENDING: IUser2ForAccessToken
+  let userDISABLED: IUser2ForAccessToken
+  let userERROR: IUser2ForAccessToken
   let userCFA
   let userLbaCompany
 
@@ -33,18 +40,20 @@ describe("accessTokenService", () => {
   }
 
   const mockData = async () => {
-    userACTIVE = await saveEntrepriseUserWithStatus(AccessStatus.GRANTED)
-    userPENDING = await saveEntrepriseUserWithStatus(AccessStatus.AWAITING_VALIDATION)
-    userDISABLED = await saveEntrepriseUserWithStatus(AccessStatus.DENIED)
-    userERROR = (
-      await saveEntrepriseUserTest(
-        {},
-        {},
-        {
-          status: [entrepriseStatusEventFactory({ status: EntrepriseStatus.ERROR })],
-        }
-      )
-    ).user
+    userACTIVE = user2ToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.GRANTED))
+    userPENDING = user2ToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.AWAITING_VALIDATION))
+    userDISABLED = user2ToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.DENIED))
+    userERROR = user2ToUserForToken(
+      (
+        await saveEntrepriseUserTest(
+          {},
+          {},
+          {
+            status: [entrepriseStatusEventFactory({ status: EntrepriseStatus.ERROR })],
+          }
+        )
+      ).user
+    )
     userCFA = { type: "cfa" as const, email: "plop@gmail.com", siret: "12343154300012" }
     userLbaCompany = { type: "lba-company", email: "plop@gmail.com", siret: "12343154300012" }
   }
@@ -77,11 +86,11 @@ describe("accessTokenService", () => {
       skip: "3",
     },
   } as const
-  const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
+  const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).resolves.toBeTruthy()
   const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).rejects.toThrow()
 
   describe("valid tokens", () => {
-    describe.each([
+    describe.each<[string, () => UserForAccessToken]>([
       ["ACTIVE user", () => userACTIVE],
       ["CFA", () => userCFA],
       ["LBA COMPANY user", () => userLbaCompany],
@@ -115,7 +124,7 @@ describe("accessTokenService", () => {
     })
   })
   describe("invalid tokens", () => {
-    describe.each([
+    describe.each<[string, () => UserForAccessToken]>([
       ["ERROR user", () => userERROR],
       ["PENDING user", () => userPENDING],
       ["DISABLED user", () => userDISABLED],
