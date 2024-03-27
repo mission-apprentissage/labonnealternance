@@ -1,3 +1,4 @@
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "@/../shared/constants/recruteur"
 import {
   ModalBody,
   Box,
@@ -99,12 +100,12 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
 
   const handleUnsubsribeSubmit = async (values) => {
     setEmailError(null)
-    validationPopup.onOpen()
     const response = await postUnsubscribe(values)
 
-    if (response === "OK") {
+    if (response.result === "OK") {
       handleUnsubscribeSuccess()
-    } else {
+    } else if (response.result === UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES) {
+      validationPopup.onOpen()
       /**
        * Si siret mutliple alors ouvrir popup avec liste de siret
        * construire la liste
@@ -119,8 +120,8 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
        *
        *
        */
-
-      setEmailError(EMAIL_ERRORS[response])
+    } else {
+      setEmailError(EMAIL_ERRORS[response.result])
     }
   }
 

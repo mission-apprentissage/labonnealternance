@@ -1,6 +1,8 @@
 import { zRoutes } from "shared"
+import { IUnsubscribeCompanyData } from "shared/models/unsubscribeLbaCompany.model"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { buildLbaCompanyAddress } from "@/services/lbacompany.service"
 
 import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
 import config from "../../config"
@@ -23,7 +25,7 @@ export default function (server: Server) {
       },
     },
     async (req, res) => {
-      let result: "OK" | UNSUBSCRIBE_EMAIL_ERRORS = "OK"
+      let result: { result: "OK" | UNSUBSCRIBE_EMAIL_ERRORS; companies?: IUnsubscribeCompanyData[] } = { result: "OK" }
 
       const email = req.body.email.toLowerCase()
       const reason = req.body.reason
@@ -31,9 +33,12 @@ export default function (server: Server) {
       const lbaCompaniesToUnsubscribe = await LbaCompany.find({ email }).lean()
 
       if (!lbaCompaniesToUnsubscribe.length) {
-        result = UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU
+        result = { result: UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU }
       } else if (lbaCompaniesToUnsubscribe.length > 1) {
-        result = UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES
+        const companies = lbaCompaniesToUnsubscribe.map((company) => {
+          return { enseigne: company.enseigne, siret: company.siret, address: buildLbaCompanyAddress(company) }
+        })
+        result = { result: UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES, companies }
       } else {
         const { siret, raison_sociale, enseigne, naf_code, naf_label, rome_codes, insee_city_code, zip_code, city, company_size, created_at, last_update_at } =
           lbaCompaniesToUnsubscribe[0]
