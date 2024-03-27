@@ -1,8 +1,8 @@
 import { createReadStream } from "fs"
 import path from "path"
 
-import Joi from "joi"
 import { filterData, oleoduc, transformData, writeData } from "oleoduc"
+import { z } from "zod"
 
 import __dirname from "../../../../common/dirname"
 import { logger } from "../../../../common/logger"
@@ -39,15 +39,14 @@ const importer = async (filePath, remoteFileName, opco_label) => {
 
       for (const email of emailAsArray) {
         stat.total++
-        const { error, value } = Joi.string().email().validate(email, { abortEarly: false })
 
-        if (error) {
+        if (!z.string().email().safeParse(email).success) {
           stat.error++
           return
         }
 
         stat.imported++
-        emails.push(value)
+        emails.push(email)
       }
 
       return { siret_code: Siret, emails: [...new Set(emails)] }

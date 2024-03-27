@@ -1,6 +1,5 @@
 import Boom from "boom"
 import { isEmailBurner } from "burner-email-providers"
-import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, IUserRecruteur, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
@@ -8,6 +7,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import { z } from "zod"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { UserForAccessToken } from "@/security/accessTokenService"
@@ -501,14 +501,15 @@ interface IApplicationFeedback {
  * @return {Promise<string>}
  */
 export const validateFeedbackApplicationComment = async (validable: Partial<IApplicationFeedback>): Promise<string> => {
-  const schema = Joi.object({
-    id: Joi.string().required(),
-    iv: Joi.string().required(),
-    comment: Joi.string().required(),
-    avis: Joi.optional(),
-    intention: Joi.optional(),
-  })
-  await schema.validateAsync(validable)
+  await z
+    .object({
+      id: z.string(),
+      iv: z.string(),
+      comment: z.string(),
+      avis: z.string().optional(),
+      intention: z.string().optional(),
+    })
+    .parse(validable)
 
   return "ok"
 }

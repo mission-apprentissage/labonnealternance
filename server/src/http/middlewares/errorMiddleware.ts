@@ -2,7 +2,6 @@ import { captureException } from "@sentry/node"
 import Boom from "boom"
 import { FastifyError } from "fastify"
 import { ResponseValidationError } from "fastify-type-provider-zod"
-import joi, { ValidationError } from "joi"
 import { IResError } from "shared/routes/common.routes"
 import { ZodError } from "zod"
 
@@ -21,7 +20,7 @@ function getZodMessageError(error: ZodError, context: string): string {
   }, "")
 }
 
-export function boomify(rawError: FastifyError | ValidationError | Boom<unknown> | Error | ZodError): Boom<unknown> {
+export function boomify(rawError: FastifyError | Boom<unknown> | Error | ZodError): Boom<unknown> {
   if (Boom.isBoom(rawError)) {
     return rawError
   }
@@ -38,11 +37,6 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
     return Boom.badRequest(getZodMessageError(rawError, (rawError as unknown as FastifyError).validationContext ?? ""), { validationError: rawError })
   }
 
-  // Joi validation error throw from code
-  if (joi.isError(rawError)) {
-    return Boom.badRequest(undefined, { details: rawError.details })
-  }
-
   if ((rawError as FastifyError).statusCode) {
     return new Boom(rawError.message, { statusCode: (rawError as FastifyError).statusCode, data: { rawError } })
   }
@@ -55,7 +49,7 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
 }
 
 export function errorMiddleware(server: Server) {
-  server.setErrorHandler<FastifyError | ValidationError | Boom<unknown> | Error | ZodError, { Reply: IResError }>(async (rawError, _request, reply) => {
+  server.setErrorHandler<FastifyError | Boom<unknown> | Error | ZodError, { Reply: IResError }>(async (rawError, _request, reply) => {
     const error = boomify(rawError)
 
     if (error.output.statusCode === 403) {

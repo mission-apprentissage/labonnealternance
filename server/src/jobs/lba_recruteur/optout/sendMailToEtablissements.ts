@@ -1,5 +1,5 @@
-import Joi from "joi"
 import { differenceBy } from "lodash-es"
+import { z } from "zod"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { createOptoutValidateMagicLink } from "@/services/appLinks.service"
@@ -37,9 +37,9 @@ runScript(async () => {
       return
     }
 
-    const { error, value: email } = Joi.string().email().validate(contact[0].email, { abortEarly: false })
+    const email = contact[0].email
 
-    if (error) {
+    if (!z.string().email().safeParse(contact[0].email).success) {
       await Optout.findByIdAndUpdate(etablissement._id, { $push: { mail: { email, messageId: "INVALIDE_EMAIL" } } })
       return
     }
@@ -62,7 +62,7 @@ runScript(async () => {
         },
       })
     } catch (errror) {
-      console.log(`ERROR : ${email} - ${etablissement.siret}`, "-----", error)
+      console.log(`ERROR : ${email} - ${etablissement.siret}`)
       return
     }
 

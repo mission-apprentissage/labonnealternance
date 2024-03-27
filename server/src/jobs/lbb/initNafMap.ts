@@ -1,4 +1,4 @@
-import miniget from "miniget"
+import axios from "axios"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 
 import { logMessage } from "../../common/utils/logMessage"
@@ -46,8 +46,12 @@ export default async function () {
   try {
     logMessage("info", " -- Start updating rome naf -- ")
 
+    const response = await axios.get("https://raw.githubusercontent.com/StartupsPoleEmploi/labonneboite/master/labonneboite/common/data/rome_naf_mapping.csv", {
+      responseType: "stream",
+    })
+
     await oleoduc(
-      miniget("https://raw.githubusercontent.com/StartupsPoleEmploi/labonneboite/master/labonneboite/common/data/rome_naf_mapping.csv"),
+      response.data,
       readLineByLine(),
       transformData((line) => parseLine(line)),
       writeData(async (line) => computeLine(line))

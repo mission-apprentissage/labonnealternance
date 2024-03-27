@@ -19,7 +19,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^7.17.13",
     "@fastify/cookie": "^9.1.0",
     "@fastify/cors": "^8.4.0",
     "@fastify/rate-limit": "^9.0.1",
@@ -62,14 +61,12 @@
     "got": "^12.5.2",
     "iconv-lite": "^0.6.3",
     "is-semver": "^1.0.11",
-    "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
     "lil-http-terminator": "^1.2.3",
     "lodash-es": "^4.17.21",
     "match-sorter": "^6.3.1",
     "memoizee": "^0.4.15",
     "migrate-mongo": "^11.0.0",
-    "miniget": "^4.2.3",
     "mjml": "^4.14.1",
     "mongodb": "^3.7.4",
     "mongoose": "^5.13.20",
@@ -89,7 +86,6 @@
     "tcp-port-used": "^1.0.2",
     "type-fest": "^4.3.3",
     "xlsx": "^0.18.5",
-    "xml2js": "^0.6.2",
     "zod": "3.21.4"
   },
   "devDependencies": {

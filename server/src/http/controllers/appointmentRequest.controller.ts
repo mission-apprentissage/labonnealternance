@@ -1,7 +1,7 @@
 import Boom from "boom"
-import Joi from "joi"
 import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
+import { z } from "zod"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -19,11 +19,11 @@ import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import * as users from "../../services/user.service"
 import { Server } from "../server"
 
-const appointmentReplySchema = Joi.object({
-  appointment_id: Joi.string().required(),
-  cfa_intention_to_applicant: Joi.string().required(),
-  cfa_message_to_applicant_date: Joi.date().required(),
-  cfa_message_to_applicant: Joi.string().allow("").optional(),
+const appointmentReplySchema = z.object({
+  appointment_id: z.string(),
+  cfa_intention_to_applicant: z.string(),
+  cfa_message_to_applicant_date: z.date(),
+  cfa_message_to_applicant: z.string().optional(),
 })
 
 export default (server: Server) => {
@@ -309,7 +309,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/appointment-request/reply"])],
     },
     async (req, res) => {
-      await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
+      await appointmentReplySchema.parse(req.body)
       const { appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } = req.body
 
       const appointment = await Appointment.findById(appointment_id)
