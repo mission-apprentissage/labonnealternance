@@ -3,7 +3,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
-import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob } from "../models/lbaItem.model"
+import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
 import {
@@ -445,7 +445,7 @@ export const zJobsRoutesV2 = {
       },
       openapi: {
         tags: ["V2 - Jobs"] as string[],
-        description: 'Update a job offer status to "Provided"',
+        description: "Update a job offer status to Provided",
         operationId: "setJobAsProvided",
       },
     },
@@ -470,7 +470,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs"] as string[],
         operationId: "setJobAsCanceled",
-        description: 'Update a job offer status to "Canceled".',
+        description: "Update a job offer status to Canceled",
       },
     },
     "/jobs/extend/:jobId": {

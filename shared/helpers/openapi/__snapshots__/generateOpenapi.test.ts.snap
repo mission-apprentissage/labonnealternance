@@ -59,7 +59,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_file_name": {
             "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
             "example": "cv.pdf",
-            "pattern": "((.*?))(\\\\.)+(docx|pdf)$",
+            "pattern": "((.*?))(\\.)+(docx|pdf)$",
             "type": "string",
           },
           "applicant_first_name": {
@@ -2856,7 +2856,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
     "/application": {
       "post": {
         "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
-L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bonne alternance.
+L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.
 ",
         "requestBody": {
           "content": {
@@ -2883,7 +2883,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                       "applicant_file_name": {
                         "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
                         "example": "cv.pdf",
-                        "pattern": "((.*?))(\\\\.)+(docx|pdf)$",
+                        "pattern": "((.*?))(\\.)+(docx|pdf)$",
                         "type": "string",
                       },
                       "applicant_first_name": {
@@ -4402,7 +4402,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
     },
     "/jobs/canceled/{jobId}": {
       "post": {
-        "description": "Update a job offer status to \\"Canceled\\".",
+        "description": "Update a job offer status to Canceled",
         "operationId": "setJobAsCanceled",
         "parameters": [
           {
@@ -4845,7 +4845,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "phone": {
-                    "pattern": "^0[1-9]\\\\d{8}$",
+                    "pattern": "^0[1-9]\\d{8}$",
                     "type": "string",
                   },
                 },
@@ -4974,7 +4974,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
     },
     "/jobs/provided/{jobId}": {
       "post": {
-        "description": "Update a job offer status to \\"Provided\\"",
+        "description": "Update a job offer status to Provided",
         "operationId": "setJobAsProvided",
         "parameters": [
           {
@@ -6024,7 +6024,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
     "/v1/application": {
       "post": {
         "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
-L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bonne alternance.
+L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.
 ",
         "requestBody": {
           "content": {
@@ -6944,7 +6944,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
     },
     "/v1/jobs/canceled/{jobId}": {
       "post": {
-        "description": "Update a job offer status to \\"Canceled\\".",
+        "description": "Update a job offer status to Canceled",
         "parameters": [
           {
             "in": "path",
@@ -7378,7 +7378,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                     "type": "string",
                   },
                   "phone": {
-                    "pattern": "^0[1-9]\\\\d{8}$",
+                    "pattern": "^0[1-9]\\d{8}$",
                     "type": "string",
                   },
                 },
@@ -7730,7 +7730,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
     },
     "/v1/jobs/provided/{jobId}": {
       "post": {
-        "description": "Update a job offer status to \\"Provided\\"",
+        "description": "Update a job offer status to Provided",
         "parameters": [
           {
             "in": "path",
