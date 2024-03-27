@@ -1556,6 +1556,20 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "type": {
+            "description": "Type de contrat",
+            "items": {
+              "enum": [
+                "Apprentissage",
+                "Professionnalisation",
+              ],
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
         },
         "required": [
           "description",
