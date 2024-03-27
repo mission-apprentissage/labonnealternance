@@ -1,9 +1,10 @@
-import { CloseIcon } from "@chakra-ui/icons"
 import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { JOB_STATUS } from "shared/models/job.model"
+
+import LBAModalCloseButton from "@/components/lbaModalCloseButton"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { getItemId } from "../../../utils/getItemId"
@@ -106,27 +107,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
                   <ModalContent>
                     {/* @ts-expect-error: Chakra error */}
                     <ModalHeader paddingTop="8px" paddingBottom="0" align="right">
-                      <Button
-                        data-testid="close-application-form"
-                        fontSize="14px"
-                        color="bluefrance.500"
-                        fontWeight={400}
-                        background="none"
-                        alignItems="baseline"
-                        height="1.5rem"
-                        sx={{
-                          _hover: {
-                            background: "none",
-                            textDecoration: "none",
-                          },
-                          _active: {
-                            background: "none",
-                          },
-                        }}
-                        onClick={onModalClose}
-                      >
-                        Fermer <CloseIcon w={2} h={2} ml={2} />
-                      </Button>
+                      <LBAModalCloseButton onClose={onModalClose} />
                     </ModalHeader>
                     <form onSubmit={formik.handleSubmit}>
                       {["not_sent", "currently_sending"].includes(sendingState) && (

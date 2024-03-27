@@ -1,4 +1,3 @@
-import { CloseIcon } from "@chakra-ui/icons"
 import {
   ModalBody,
   Box,
@@ -28,6 +27,7 @@ import React, { useState } from "react"
 import * as Yup from "yup"
 
 import postUnsubscribe from "../../services/postUnsubscribe"
+import LBAModalCloseButton from "../lbaModalCloseButton"
 
 const UNSUBSCRIBE_REASON = {
   RECRUTEMENT_CLOS: "Nous avons déjà trouvé nos alternants pour l’année en cours",
@@ -78,27 +78,7 @@ const ConfirmationDesinscription = ({ isOpen, onClose }) => {
       <ModalOverlay />
       <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} borderRadius={0}>
         <ModalHeader mt={4} paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
-          <Button
-            fontSize="14px"
-            color="bluefrance.500"
-            fontWeight={400}
-            background="none"
-            alignItems="baseline"
-            data-testid="close-rdv-form"
-            height="1.5rem"
-            sx={{
-              _hover: {
-                background: "none",
-                textDecoration: "none",
-              },
-              _active: {
-                background: "none",
-              },
-            }}
-            onClick={onClose}
-          >
-            Fermer <CloseIcon w={2} h={2} ml={2} />
-          </Button>
+          <LBAModalCloseButton onClose={onClose} />
           <Heading as="h2" fontSize="24px">
             <Flex>
               <Image mt={1} src="/images/icons/arrow_right.svg" alt="" width="16px" mr={1} /> Plusieurs établissements correspondent à cet email
