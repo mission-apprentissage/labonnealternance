@@ -18,7 +18,6 @@ import { controlUserState } from "../services/login.service"
 import { IAccessToken, parseAccessToken } from "./accessTokenService"
 
 export type IUserWithType = UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential> | UserWithType<"IAccessToken", IAccessToken>
-export type IAuthorization = null
 
 declare module "fastify" {
   interface FastifyRequest {
