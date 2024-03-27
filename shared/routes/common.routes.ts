@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from "@asteasolutions/zod-to-openapi"
+import * as OpenAPIV3 from "openapi3-ts/oas30"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, ZodType } from "zod"
 
