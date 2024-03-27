@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^6.4.0",
-    "@fastify/swagger": "^8.11.0",
+    "@fastify/swagger": "^8.14.0",
     "bson": "^1.1.4",
     "dayjs": "^1.11.10",
     "lodash-es": "^4.17.21",
