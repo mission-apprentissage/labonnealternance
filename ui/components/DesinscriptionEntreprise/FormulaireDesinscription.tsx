@@ -1,4 +1,27 @@
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Image, Input, Link, Select, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import { CloseIcon } from "@chakra-ui/icons"
+import {
+  ModalBody,
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
+  Heading,
+  Image,
+  Input,
+  Link,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react"
 import { Formik, Field, Form } from "formik"
 import { useRouter } from "next/router"
 import React, { useState } from "react"
@@ -49,23 +72,81 @@ const buildReasonOptions = () => {
   )
 }
 
+const ConfirmationDesinscription = ({ isOpen, onClose }) => {
+  return (
+    <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="3xl" isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} borderRadius={0}>
+        <ModalHeader mt={4} paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
+          <Button
+            fontSize="14px"
+            color="bluefrance.500"
+            fontWeight={400}
+            background="none"
+            alignItems="baseline"
+            data-testid="close-rdv-form"
+            height="1.5rem"
+            sx={{
+              _hover: {
+                background: "none",
+                textDecoration: "none",
+              },
+              _active: {
+                background: "none",
+              },
+            }}
+            onClick={onClose}
+          >
+            Fermer <CloseIcon w={2} h={2} ml={2} />
+          </Button>
+          <Heading as="h2" fontSize="24px">
+            <Flex>
+              <Image mt={1} src="/images/icons/arrow_right.svg" alt="" width="16px" mr={1} /> Plusieurs établissements correspondent à cet email
+            </Flex>
+          </Heading>
+        </ModalHeader>
+        <ModalBody pb={6}>Veuillez sélectionner les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées.</ModalBody>
+      </ModalContent>
+    </Modal>
+  )
+}
+
 const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
   const [emailError, setEmailError] = useState(null)
+  const [popupData /*, setPopupData*/] = useState({})
+  const validationPopup = useDisclosure()
   const router = useRouter()
 
   const handleUnsubsribeSubmit = async (values) => {
     setEmailError(null)
+    validationPopup.onOpen()
     const response = await postUnsubscribe(values)
 
     if (response === "OK") {
       handleUnsubscribeSuccess()
     } else {
+      /**
+       * Si siret mutliple alors ouvrir popup avec liste de siret
+       * construire la liste
+       * submit desinscription avec la liste de siret et l'adresse email et le motif
+       * Gérer state de liste de siret
+       * gérer state de submitting popup
+       * gérer state de liste de siret sélectionnés
+       * gérer state de values
+       *
+       * modifier endpoint pour pouvoir retourner liste de siret si plusieurs
+       * modifier endpoint pour accepter liste de siret optionnels
+       *
+       *
+       */
+
       setEmailError(EMAIL_ERRORS[response])
     }
   }
 
   return (
     <Box as="section" p={3} mb={{ base: "2", md: "0" }} backgroundColor="white">
+      <ConfirmationDesinscription {...popupData} {...validationPopup} />
       <SimpleGrid columns={{ md: 1, lg: 2 }} spacing="40px" mb={12}>
         <Box>
           <Text as="h1" variant="homeEditorialH1" mb={3}>
