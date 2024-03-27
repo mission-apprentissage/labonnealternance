@@ -11,7 +11,15 @@ import { getJobCount, getPartnerJobCount } from "../services/utils"
 
 import FilterButton from "./FilterButton"
 
-const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, showSearchForm }) => {
+const ResultFilterAndCounter = ({
+  jobSearchError,
+  partnerJobSearchError,
+  trainingSearchError,
+  isTrainingSearchLoading,
+  isJobSearchLoading,
+  isPartnerJobSearchLoading,
+  showSearchForm,
+}) => {
   const scopeContext = useContext(ScopeContext)
 
   const { jobs, trainings } = useContext(SearchResultContext)
@@ -24,6 +32,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
     if (!filters.length || (!partnerJobCount && filters.length === 1 && filters[0] === "duo")) {
       filters = ["jobs", "trainings", "duo"]
     }
+    filters = filters.filter((filter) => filter !== "duo" || partnerJobCount)
 
     setActiveFilters(filters)
     filterLayers(filters)
@@ -32,7 +41,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
     }
   }
 
-  if (allJobSearchError && trainingSearchError) {
+  if (jobSearchError && partnerJobSearchError && trainingSearchError) {
     return <></>
   }
 
@@ -40,7 +49,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
   let jobCount = 0
   let partnerJobCount = 0
 
-  if (scopeContext.isJob && !isJobSearchLoading && !allJobSearchError) {
+  if (scopeContext.isJob && !isJobSearchLoading && !isPartnerJobSearchLoading) {
     jobCount = getJobCount(jobs)
     partnerJobCount = getPartnerJobCount(jobs)
   }
