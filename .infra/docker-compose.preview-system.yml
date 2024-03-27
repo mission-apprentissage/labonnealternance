@@ -49,7 +49,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2g
+          memory: 4g
     ports:
       - "127.0.0.1:27017:27017"
     command: ["-f", "/etc/mongod/mongod.conf"]
