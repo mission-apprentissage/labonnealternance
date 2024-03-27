@@ -68,7 +68,7 @@ fileignoreconfig:
 - filename: server/tests/unit/security/accessTokenService.test.ts
   checksum: 9c157ea55171c74fa50b493577f1529f5c5c005c8137b390c9dfa719f6ba87ba
 - filename: server/tests/unit/security/authorisationService.test.ts
-  checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
+  checksum: fa777cbd1d241d1d9d187f4fb7e882200b7221b9d4794233be95009d555f372e
 - filename: server/tests/unit/services/eligibleTrainingsForAppointment.service.test.ts
   checksum: 089218ccdaf2553d5a427cb81d0b556f51badaba5b5523299e5fe74e7ef5a802
 - filename: server/tests/unit/util.test.ts

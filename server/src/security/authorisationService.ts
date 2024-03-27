@@ -14,13 +14,14 @@ import { Primitive } from "type-fest"
 
 import { Application, Cfa, Entreprise, Recruiter, User2 } from "@/common/model"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
+import { getUser2ByEmail } from "@/services/user2.service"
 import { isUserEmailChecked } from "@/services/userRecruteur.service"
 
 import { getUserFromRequest } from "./authenticationService"
 
 type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entreprise: IEntreprise } | { type: "CFA"; cfa: ICFA })
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }
-type ApplicationResource = { application: IApplication; jobResource?: JobResource }
+type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string }
 
 type Resources = {
   users: Array<{ _id: string }>
@@ -173,7 +174,8 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
           return { application }
         }
         const jobResource = await jobToJobResource(job, recruiter)
-        return { application, jobResource }
+        const user = await getUser2ByEmail(application.applicant_email)
+        return { application, jobResource, applicantId: user?._id.toString() }
       }
 
       assertUnreachable(applicationDef)
@@ -182,7 +184,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
   return results.flatMap((_) => (_ ? [_] : []))
 }
 
-export async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
+async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
   const [recruiters, jobs, users, applications] = await Promise.all([
     getRecruitersResource(schema, req),
     getJobsResource(schema, req),
@@ -223,12 +225,12 @@ function canAccessUser(userAccess: ComputedUserAccess, resource: Resources["user
 }
 
 function canAccessApplication(userAccess: ComputedUserAccess, resource: Resources["applications"][number]): boolean {
-  const { application, jobResource } = resource
+  const { jobResource, applicantId } = resource
   // TODO ajout de granularité pour les accès candidat et recruteur
-  return (jobResource && canAccessJob(userAccess, jobResource)) || canAccessUser(userAccess, { _id: application.applicant_id.toString() })
+  return (jobResource && canAccessJob(userAccess, jobResource)) || (applicantId ? canAccessUser(userAccess, { _id: applicantId }) : false)
 }
 
-export function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {
+function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {
   if (typeof access === "object") {
     if ("some" in access) {
       return access.some.some((permission) => isAuthorized(permission, userAccess, resources))
