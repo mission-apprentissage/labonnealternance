@@ -116,7 +116,7 @@ export const zRecruiterRoutes = {
         auth: "cookie-session",
         access: "user:manage",
         resources: {
-          user: [{ _id: { type: "params", key: "userRecruteurId" } }],
+          user: [{ _id: { type: "params", key: "cfaId" } }],
         },
       },
     },

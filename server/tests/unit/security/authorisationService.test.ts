@@ -1,6 +1,4 @@
 import { FastifyRequest } from "fastify"
-import { OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { AccessEntityType, AccessStatus, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUser2 } from "shared/models/user2.model"
 import { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessRessouces } from "shared/security/permissions"
@@ -9,8 +7,7 @@ import { describe, expect, it } from "vitest"
 import { AccessUser2, AccessUserCredential, AccessUserToken } from "@/security/authenticationService"
 import { authorizationMiddleware } from "@/security/authorisationService"
 import { useMongo } from "@tests/utils/mongo.utils"
-
-import { jobFactory, saveCfa, saveEntreprise, saveRecruiter, saveRoleManagement, saveUser2 } from "../../utils/user.utils"
+import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.utils"
 
 type MockedRequest = Pick<FastifyRequest, "params" | "query">
 const emptyRequest: MockedRequest = { params: {}, query: {} }
@@ -45,90 +42,6 @@ const givenARoute = ({
 const everyResourceType: ResourceType[] = ["application", "appointment", "formationCatalogue", "job", "recruiter", "user"]
 const everyAuthStrategy: AuthStrategy[] = ["access-token", "api-key", "cookie-session"]
 
-const roleManagementEventFactory = ({
-  date = new Date(),
-  granted_by,
-  reason = "reason",
-  status = AccessStatus.GRANTED,
-  validation_type = VALIDATION_UTILISATEUR.AUTO,
-}: Partial<IRoleManagementEvent> = {}): IRoleManagementEvent => {
-  return {
-    date,
-    granted_by,
-    reason,
-    status,
-    validation_type,
-  }
-}
-
-const createAdminUser = async () => {
-  const user = await saveUser2()
-  const role = await saveRoleManagement({
-    user_id: user._id,
-    authorized_type: AccessEntityType.ADMIN,
-    authorized_id: undefined,
-    status: [roleManagementEventFactory()],
-  })
-  return { user, role }
-}
-
-const createEntrepriseUser = async () => {
-  const user = await saveUser2()
-  const entreprise = await saveEntreprise()
-  const role = await saveRoleManagement({
-    user_id: user._id,
-    authorized_id: entreprise._id.toString(),
-    authorized_type: AccessEntityType.ENTREPRISE,
-    status: [roleManagementEventFactory()],
-  })
-  const recruiter = await saveRecruiter({
-    is_delegated: false,
-    cfa_delegated_siret: null,
-    status: RECRUITER_STATUS.ACTIF,
-    establishment_siret: entreprise.siret,
-    opco: entreprise.opco,
-    jobs: [
-      jobFactory({
-        managed_by: user._id,
-      }),
-    ],
-  })
-  return { user, role, entreprise, recruiter }
-}
-
-const createCfaUser = async () => {
-  const user = await saveUser2()
-  const cfa = await saveCfa()
-  const role = await saveRoleManagement({
-    user_id: user._id,
-    authorized_id: cfa._id.toString(),
-    authorized_type: AccessEntityType.CFA,
-    status: [roleManagementEventFactory()],
-  })
-  const recruiter = await saveRecruiter({
-    is_delegated: true,
-    cfa_delegated_siret: cfa.siret,
-    status: RECRUITER_STATUS.ACTIF,
-    jobs: [
-      jobFactory({
-        managed_by: user._id,
-      }),
-    ],
-  })
-  return { user, role, cfa, recruiter }
-}
-
-const createOpcoUser = async () => {
-  const user = await saveUser2()
-  const role = await saveRoleManagement({
-    user_id: user._id,
-    authorized_id: OPCOS.AKTO,
-    authorized_type: AccessEntityType.OPCO,
-    status: [roleManagementEventFactory()],
-  })
-  return { user, role }
-}
-
 const givenATokenUser = (): AccessUserToken => {
   return {
     type: "IAccessToken",
@@ -158,20 +71,20 @@ const givenARequest = ({ user, resourceId }: { user: AccessUserToken | AccessUse
 }
 
 describe("authorisationService", async () => {
-  let adminUser: Awaited<ReturnType<typeof createAdminUser>>
-  let entrepriseUserA: Awaited<ReturnType<typeof createEntrepriseUser>>
-  let entrepriseUserB: Awaited<ReturnType<typeof createEntrepriseUser>>
-  let cfaUserA: Awaited<ReturnType<typeof createCfaUser>>
-  let cfaUserB: Awaited<ReturnType<typeof createCfaUser>>
-  let opcoUserA: Awaited<ReturnType<typeof createOpcoUser>>
+  let adminUser: Awaited<ReturnType<typeof saveAdminUserTest>>
+  let entrepriseUserA: Awaited<ReturnType<typeof saveEntrepriseUserTest>>
+  let entrepriseUserB: Awaited<ReturnType<typeof saveEntrepriseUserTest>>
+  let cfaUserA: Awaited<ReturnType<typeof saveCfaUserTest>>
+  let cfaUserB: Awaited<ReturnType<typeof saveCfaUserTest>>
+  let opcoUserA: Awaited<ReturnType<typeof saveOpcoUserTest>>
 
   useMongo(async () => {
-    adminUser = await createAdminUser()
-    entrepriseUserA = await createEntrepriseUser()
-    entrepriseUserB = await createEntrepriseUser()
-    cfaUserA = await createCfaUser()
-    cfaUserB = await createCfaUser()
-    opcoUserA = await createOpcoUser()
+    adminUser = await saveAdminUserTest()
+    entrepriseUserA = await saveEntrepriseUserTest()
+    entrepriseUserB = await saveEntrepriseUserTest()
+    cfaUserA = await saveCfaUserTest()
+    cfaUserB = await saveCfaUserTest()
+    opcoUserA = await saveOpcoUserTest()
   }, "beforeAll")
 
   const givenACookieUser = (user: IUser2): AccessUser2 => {
