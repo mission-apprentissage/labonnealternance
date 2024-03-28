@@ -11,9 +11,11 @@ import ResultFilterAndCounter from "../SearchForTrainingsAndJobs/components/Resu
 const WidgetHeader = ({
   handleSearchSubmit,
   isHome = false,
-  allJobSearchError = undefined,
+  jobSearchError = undefined,
+  partnerJobSearchError = undefined,
   trainingSearchError = undefined,
   isJobSearchLoading = undefined,
+  isPartnerJobSearchLoading = undefined,
   isTrainingSearchLoading = undefined,
 }) => {
   const router = useRouter()
@@ -48,9 +50,11 @@ const WidgetHeader = ({
         </Flex>
         {!isHome && (
           <ResultFilterAndCounter
-            allJobSearchError={allJobSearchError}
+            jobSearchError={jobSearchError}
+            partnerJobSearchError={partnerJobSearchError}
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
+            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
             showSearchForm={() => {}}
           />

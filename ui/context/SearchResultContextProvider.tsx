@@ -1,14 +1,9 @@
+import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
 import React, { createContext, useReducer } from "react"
-
-// jobs: {
-//   peJobs
-// lbaCompanies
-// matchas
-// }
 
 const initialState = {
   trainings: [],
-  jobs: [],
+  jobs: { peJobs: null, matchas: null, lbaCompanies: null },
   itemToScrollTo: null,
   selectedItem: null,
   extendedSearch: false,
@@ -19,6 +14,8 @@ const initialState = {
 const actions = {
   SET_TRAININGS: "SET_TRAININGS",
   SET_JOBS: "SET_JOBS",
+  SET_INTERNAL_JOBS: "SET_INTERNAL_JOBS",
+  SET_PARTNER_JOBS: "SET_PARTNER_JOBS",
   SET_SELECTED_ITEM: "SET_SELECTED_ITEM",
   SET_ITEM_TO_SCROLL_TO: "SET_ITEM_TO_SCROLL_TO",
   SET_EXTENDED_SEARCH: "SET_EXTENDED_SEARCH",
@@ -36,6 +33,12 @@ const reducer = (state, action) => {
     }
     case actions.SET_JOBS: {
       return { ...state_copy, jobs: action.jobs }
+    }
+    case actions.SET_INTERNAL_JOBS: {
+      return { ...state_copy, jobs: { peJobs: state_copy.jobs.peJobs, ...action.jobs } }
+    }
+    case actions.SET_PARTNER_JOBS: {
+      return { ...state_copy, jobs: { ...state_copy.jobs, peJobs: action.jobs.peJobs } }
     }
     case actions.SET_SELECTED_ITEM: {
       return { ...state_copy, selectedItem: action.selectedItem }
@@ -64,8 +67,10 @@ const reducer = (state, action) => {
 export type IContextSearch = {
   trainings: any[]
   setTrainings: (b: any[]) => void
-  jobs: any[] | any // Sometime array sometime object... // TODO
-  setJobs: (b: any[]) => void
+  jobs: { peJobs: ILbaItemFtJob[] | null; lbaCompanies: ILbaItemLbaCompany[] | null; matchas: ILbaItemLbaJob[] | null }
+  setJobs: (b: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }) => void
+  setInternalJobs: (b: any[]) => void
+  setPartnerJobs: (b: any[]) => void
   itemToScrollTo: object
   setItemToScrollTo: (b: object) => void
   selectedItem: object
@@ -90,6 +95,12 @@ const SearchResultContextProvider = ({ children }) => {
     },
     setJobs: (jobs = []) => {
       dispatch({ type: actions.SET_JOBS, jobs })
+    },
+    setInternalJobs: (jobs = []) => {
+      dispatch({ type: actions.SET_INTERNAL_JOBS, jobs })
+    },
+    setPartnerJobs: (jobs = []) => {
+      dispatch({ type: actions.SET_PARTNER_JOBS, jobs })
     },
     setSelectedItem: (selectedItem = null) => {
       dispatch({ type: actions.SET_SELECTED_ITEM, selectedItem })
