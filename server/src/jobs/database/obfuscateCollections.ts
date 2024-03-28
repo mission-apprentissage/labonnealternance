@@ -2,7 +2,7 @@ import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
 import { IEmailBlacklist, IUser, IUserRecruteur } from "shared"
-import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { AUTHTYPE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
 import {
@@ -132,6 +132,27 @@ const obfuscateFormations = async () => {
 
 const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
+const keepSpecificUser = async (email: string, type: string) => {
+  const user: IUserRecruteur = await db.collection("userrecruteurs").findOne({ type })
+  await db.collection("userrecruteurs").findOneAndUpdate(
+    { _id: user._id },
+    {
+      $set: {
+        email,
+        status: [
+          {
+            user: "SERVEUR",
+            validation_type: VALIDATION_UTILISATEUR.AUTO,
+            status: ETAT_UTILISATEUR.VALIDE,
+            reason: "Anonymisation des données",
+            date: new Date(),
+          },
+        ],
+      },
+    }
+  )
+}
+
 const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
 const obfuscateRecruiter = async () => {
   logger.info(`obfuscating recruiters`)
@@ -141,14 +162,14 @@ const obfuscateRecruiter = async () => {
     const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
 
     switch (user.type) {
-      case ENTREPRISE: {
+      case AUTHTYPE.ENTREPRISE: {
         await Promise.all([
           db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
           db.collection("recruiters").findOneAndUpdate({ establishment_id: user.establishment_id }, replacement),
         ])
         break
       }
-      case CFA: {
+      case AUTHTYPE.CFA: {
         await Promise.all([
           db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
           db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, replacement),
@@ -164,24 +185,16 @@ const obfuscateRecruiter = async () => {
   }
 
   // restoring one admin
-  const user: IUserRecruteur = await db.collection("userrecruteurs").findOne({ type: ADMIN })
-  await db.collection("userrecruteurs").findOneAndUpdate(
-    { _id: user._id },
-    {
-      $set: {
-        email: ADMIN_EMAIL,
-        status: [
-          {
-            user: "SERVEUR",
-            validation_type: VALIDATION_UTILISATEUR.AUTO,
-            status: ETAT_UTILISATEUR.VALIDE,
-            reason: "Anonymisation des données",
-            date: new Date(),
-          },
-        ],
-      },
-    }
-  )
+  await keepSpecificUser(ADMIN_EMAIL, AUTHTYPE.ADMIN)
+
+  // restoring one CFA user
+  await keepSpecificUser("cfa@mail.com", AUTHTYPE.CFA)
+
+  // restoring one ENTREPRISE user
+  await keepSpecificUser("entreprise@mail.com", AUTHTYPE.ENTREPRISE)
+
+  // restoring one OPCO user
+  await keepSpecificUser("opco@mail.com", AUTHTYPE.OPCO)
 
   const remainingUsers: AsyncIterable<IUserRecruteur> = db.collection("recruiters").find({ first_name: { $ne: "prenom" } })
   for await (const user of remainingUsers) {
