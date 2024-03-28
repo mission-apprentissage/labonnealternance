@@ -70,7 +70,7 @@ const NumberCell = ({ children }) => {
   )
 }
 
-export default function ListeOffres() {
+export default function ListeOffres({ hideModify = false }: { hideModify?: boolean }) {
   const router = useRouter()
   const confirmationSuppression = useDisclosure()
   const [currentOffre, setCurrentOffre] = useState()
@@ -120,7 +120,7 @@ export default function ListeOffres() {
             {entrepriseTitle}
           </Text>
           <Box>
-            {user.type !== AUTHTYPE.OPCO && (
+            {!hideModify && user.type !== AUTHTYPE.OPCO && (
               <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(`/espace-pro/administration/entreprise/${establishment_id}/edition`)}>
                 Modifier l'entreprise
               </Button>
@@ -322,7 +322,7 @@ export default function ListeOffres() {
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
         </Text>
         <Box>
-          {user.type !== AUTHTYPE.OPCO && (
+          {!hideModify && user.type !== AUTHTYPE.OPCO && (
             <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(`/espace-pro/administration/entreprise/${establishment_id}/edition`)}>
               {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
             </Button>

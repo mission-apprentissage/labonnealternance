@@ -1,36 +1,31 @@
 import { useRouter } from "next/router"
 import { useQuery } from "react-query"
-import { IUserRecruteurJson } from "shared"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { Layout, LoadingEmptySpace } from "@/components/espace_pro"
-import UserView from "@/components/espace_pro/Admin/utilisateurs/UserView"
+import { AdminUserForm } from "@/components/espace_pro/Admin/utilisateurs/AdminUserForm"
 import { authProvider, withAuth } from "@/components/espace_pro/withAuth"
 import { apiGet } from "@/utils/api.utils"
 
-interface Props {
-  params: { userId: string }
-}
-
-const AdminUserView = ({ params }: Props) => {
+const AdminUserView = ({ userId }: { userId: string }) => {
   const {
     data: user,
     isLoading,
     refetch: refetchUser,
-  } = useQuery<IUserRecruteurJson>({
+  } = useQuery({
     queryKey: ["adminusersview"],
     queryFn: async () => {
-      const user = await apiGet("/admin/users/:userId", { params })
+      const user = await apiGet("/admin/users/:userId", { params: { userId } })
       return user
     },
-    enabled: !!params.userId,
+    enabled: !!userId,
   })
 
-  if (isLoading || !params.userId) {
+  if (isLoading || !userId) {
     return <LoadingEmptySpace />
   }
 
-  return <UserView user={user} refetchUser={refetchUser} />
+  return <AdminUserForm user={user} role={user.role} onUpdate={refetchUser} onDelete={refetchUser} />
 }
 
 function AdminUserViewPage() {
@@ -39,7 +34,7 @@ function AdminUserViewPage() {
 
   return (
     <Layout footer={false}>
-      <AdminUserView params={{ userId }} />
+      <AdminUserView userId={userId} />
     </Layout>
   )
 }

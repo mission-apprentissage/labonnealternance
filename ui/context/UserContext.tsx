@@ -1,12 +1,13 @@
 import { Spinner } from "@chakra-ui/react"
-import React, { useState, useEffect, createContext, FC, PropsWithChildren, useContext } from "react"
-import { IUserRecruteurPublic } from "shared"
+import React, { createContext, useContext, useEffect, useState } from "react"
+import { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 
 import { emitter } from "@/common/utils/emitter"
 import { apiGet } from "@/utils/api.utils"
 
 interface IAuthContext {
   user?: IUserRecruteurPublic
+  userAccess?: ComputedUserAccess
   setUser: (user?: IUserRecruteurPublic) => void
 }
 
@@ -14,10 +15,6 @@ export const AuthContext = createContext<IAuthContext>({
   user: null,
   setUser: () => {},
 })
-
-interface Props extends PropsWithChildren {
-  initialUser?: IUserRecruteurPublic
-}
 
 export async function getSession(): Promise<IUserRecruteurPublic | undefined> {
   try {
@@ -28,14 +25,32 @@ export async function getSession(): Promise<IUserRecruteurPublic | undefined> {
   }
 }
 
-export const UserContext: FC<Props> = ({ children, initialUser }) => {
+export async function getUserAccess() {
+  try {
+    const userAccess: ComputedUserAccess = await apiGet(`/auth/access`, {})
+    return userAccess
+  } catch (error) {
+    return null
+  }
+}
+
+export const UserContext = ({
+  children,
+  user: initialUser,
+  userAccess: initialUserAccess,
+}: Pick<IAuthContext, "user" | "userAccess"> & {
+  children: React.ReactNode
+}) => {
   const [user, setUser] = useState<IUserRecruteurPublic | null>(initialUser)
+  const [userAccess, setUserAccess] = useState<ComputedUserAccess | null>(initialUserAccess)
   const [isLoading, setIsLoading] = useState(!initialUser)
 
   useEffect(() => {
     async function getUser() {
       const user = initialUser ?? (await getSession())
+      const userAccess = await getUserAccess()
       setUser(user)
+      setUserAccess(userAccess)
       setIsLoading(false)
     }
     if (!initialUser) {
@@ -49,6 +64,7 @@ export const UserContext: FC<Props> = ({ children, initialUser }) => {
       if (response.status === 401) {
         //Auto logout user when token is invalid
         setUser(null)
+        setUserAccess(null)
       }
     }
     emitter.on("http:error", handler)
@@ -59,7 +75,7 @@ export const UserContext: FC<Props> = ({ children, initialUser }) => {
     return <Spinner />
   }
 
-  return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, setUser, userAccess }}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => useContext(AuthContext)

@@ -212,13 +212,6 @@ program
   .action(createJobAction("recruiters:get-missing-address-detail"))
 
 // Temporaire, one shot à executer en recette et prod
-program
-  .command("migration:get-missing-geocoords")
-  .description("Récupération des geocoordonnées manquautes")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("migration:get-missing-geocoords"))
-
-// Temporaire, one shot à executer en recette et prod
 program.command("import:rome").description("import référentiel fiche metier rome v3").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import:rome"))
 // Temporaire, one shot à executer en recette et prod
 program
@@ -316,12 +309,6 @@ program
   .description("Exporte les offres vers France Travail")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("pe:offre:export"))
-
-program
-  .command("validate-user")
-  .description("Contrôle de validation des entreprises en attente de validation")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("user:validate"))
 
 program
   .command("update-siret-infos-in-error")
@@ -532,12 +519,6 @@ program
   .action(createJobAction("referentiel:rncp-romes:update"))
 
 program
-  .command("fill-recruiters-raison-sociale")
-  .description("Remplissage des raisons sociales pour les recruiters et userRecruiters qui n'en ont pas")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recruiters:raison-sociale:fill"))
-
-program
   .command("fix-job-expiration-date")
   .description("Répare les date d'expiration d'offre qui seraient trop dans le futur")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -562,18 +543,6 @@ program
   .action(createJobAction("recruiters:data-validation:fix"))
 
 program
-  .command("fix-data-validation-user-recruteurs")
-  .description("Répare les data de la collection userrecruteurs")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("user-recruters:data-validation:fix"))
-
-program
-  .command("fix-data-validation-user-recruteurs-cfa")
-  .description("Répare les data des userrecruteurs CFA")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("user-recruters-cfa:data-validation:fix"))
-
-program
   .command("anonymize-user-recruteurs")
   .description("Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -592,6 +561,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .requiredOption("--from-date <string>, [fromDate]", "format DD-MM-YYYY. Date depuis laquelle les prises de rendez-vous sont renvoyéees")
   .action(createJobAction("prdv:emails:resend"))
+
+program
+  .command("migrate-multi-compte")
+  .description("Migre les données vers les tables multi-compte")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("migrate-multi-compte"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

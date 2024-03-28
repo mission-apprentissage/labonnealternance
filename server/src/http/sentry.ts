@@ -52,7 +52,6 @@ function extractUserData(request: FastifyRequest) {
       segment: "access-token",
       id: "_id" in identity ? identity._id.toString() : identity.email,
       email: identity.email,
-      type: identity.type,
     }
   }
 
@@ -60,7 +59,6 @@ function extractUserData(request: FastifyRequest) {
     segment: "session",
     id: user.value._id.toString(),
     email: user.value.email,
-    type: user.value.type,
   }
 }
 

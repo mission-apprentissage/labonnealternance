@@ -1,12 +1,16 @@
-import { ObjectId } from "mongodb"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, IUserRecruteur, ZApplication, ZCredential, ZEmailBlacklist, ZRecruiter, ZUserRecruteur } from "shared/models"
+import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist } from "shared/models"
+import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
-import { ZodObject, ZodString } from "zod"
+import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
+import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
+import { IUser2, ZUser2 } from "shared/models/user2.model"
+import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Credential, EmailBlacklist, Recruiter, UserRecruteur } from "@/common/model"
+import { Application, Cfa, Credential, EmailBlacklist, Entreprise, Recruiter, RoleManagement, User2 } from "@/common/model"
+import { ObjectId } from "@/common/mongodb"
 
 let seed = 0
 function getFixture() {
@@ -48,14 +52,103 @@ function getFixture() {
   ])
 }
 
-export async function createUserRecruteurTest(data: Partial<IUserRecruteur>, userState: string = ETAT_UTILISATEUR.VALIDE) {
-  const u = new UserRecruteur({
-    ...getFixture().fromSchema(ZUserRecruteur),
-    status: [{ validation_type: "AUTOMATIQUE", status: userState }],
+export const saveDbEntity = async <T>(schema: ZodTypeAny, dbModel: (item: T) => { save: () => Promise<any> } & T, data: Partial<T>) => {
+  const u = dbModel({
+    ...getFixture().fromSchema(schema),
     ...data,
   })
   await u.save()
   return u
+}
+
+export const saveUser2 = async (data: Partial<IUser2> = {}) => {
+  return saveDbEntity(ZUser2, (item) => new User2(item), data)
+}
+export const saveRoleManagement = async (data: Partial<IRoleManagement> = {}) => {
+  const role: IRoleManagement = {
+    _id: new ObjectId(),
+    authorized_id: "id",
+    authorized_type: AccessEntityType.CFA,
+    createdAt: new Date(),
+    origin: "origin",
+    status: [],
+    updatedAt: new Date(),
+    user_id: new ObjectId(),
+    ...data,
+  }
+  await new RoleManagement(role).save()
+  return role
+}
+
+export const roleManagementEventFactory = ({
+  date = new Date(),
+  granted_by,
+  reason = "reason",
+  status = AccessStatus.GRANTED,
+  validation_type = VALIDATION_UTILISATEUR.AUTO,
+}: Partial<IRoleManagementEvent> = {}): IRoleManagementEvent => {
+  return {
+    date,
+    granted_by,
+    reason,
+    status,
+    validation_type,
+  }
+}
+
+export const saveEntreprise = async (data: Partial<IEntreprise> = {}) => {
+  return saveDbEntity(ZEntreprise, (item) => new Entreprise(item), data)
+}
+
+export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEvent> = {}): IEntrepriseStatusEvent => {
+  return {
+    date: new Date(),
+    reason: "test",
+    status: EntrepriseStatus.VALIDE,
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    ...props,
+  }
+}
+
+export const saveCfa = async (data: Partial<ICFA> = {}) => {
+  return saveDbEntity(zCFA, (item) => new Cfa(item), data)
+}
+
+export const jobFactory = (props: Partial<IJob> = {}) => {
+  const job: IJob = {
+    _id: new ObjectId(),
+    rome_label: "rome_label",
+    rome_appellation_label: "rome_appellation_label",
+    job_level_label: "job_level_label",
+    job_start_date: new Date(),
+    job_description: "job_description",
+    job_employer_description: "job_employer_description",
+    rome_code: ["rome_code"],
+    rome_detail: null,
+    job_creation_date: new Date(),
+    job_expiration_date: new Date(),
+    job_update_date: new Date(),
+    job_last_prolongation_date: new Date(),
+    job_prolongation_count: 0,
+    relance_mail_sent: false,
+    job_status: JOB_STATUS.ACTIVE,
+    job_status_comment: "job_status_comment",
+    job_type: ["Apprentissage"],
+    is_multi_published: false,
+    job_delegation_count: 0,
+    delegations: [],
+    is_disabled_elligible: false,
+    job_count: 1,
+    job_duration: 6,
+    job_rythm: "job_rythm",
+    custom_address: "custom_address",
+    custom_geo_coordinates: "custom_geo_coordinates",
+    stats_detail_view: 0,
+    stats_search_view: 0,
+    managed_by: new ObjectId(),
+    ...props,
+  }
+  return job
 }
 
 export async function createCredentialTest(data: Partial<ICredential>) {
@@ -67,17 +160,41 @@ export async function createCredentialTest(data: Partial<ICredential>) {
   return u
 }
 
-export async function createRecruteurTest(data: Partial<IRecruiter>, jobsData: Partial<IJob>[]) {
-  const u = new Recruiter({
-    ...getFixture().fromSchema(ZRecruiter),
+export async function saveRecruiter(data: Partial<IRecruiter>) {
+  const recruiter: IRecruiter = {
+    _id: new ObjectId(),
+    distance: 10,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    establishment_id: "establishment_id",
+    establishment_raison_sociale: "establishment_raison_sociale",
+    establishment_enseigne: "establishment_enseigne",
+    establishment_siret: "establishment_siret",
+    address_detail: "address_detail",
+    address: "address",
+    geo_coordinates: "geo_coordinates",
+    geopoint: {
+      type: "Point",
+      coordinates: [41, 10],
+    },
+    is_delegated: false,
+    cfa_delegated_siret: "cfa_delegated_siret",
+    last_name: "last_name",
+    first_name: "first_name",
+    phone: "phone",
+    email: "email",
+    jobs: [],
+    origin: "origin",
+    opco: "opco",
+    idcc: "idcc",
+    status: RECRUITER_STATUS.ACTIF,
+    naf_code: "naf_code",
+    naf_label: "naf_label",
+    establishment_size: "establishment_size",
+    establishment_creation_date: new Date(),
     ...data,
-    jobs: jobsData.map((d) => {
-      return {
-        ...getFixture().fromSchema(ZRecruiter),
-        ...d,
-      }
-    }),
-  })
+  }
+  const u = new Recruiter(recruiter)
   await u.save()
   return u
 }
@@ -98,4 +215,73 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   })
   await u.save()
   return u
+}
+
+export const saveAdminUserTest = async (userProps: Partial<IUser2> = {}) => {
+  const user = await saveUser2(userProps)
+  const role = await saveRoleManagement({
+    user_id: user._id,
+    authorized_type: AccessEntityType.ADMIN,
+    authorized_id: undefined,
+    status: [roleManagementEventFactory()],
+  })
+  return { user, role }
+}
+
+export const saveEntrepriseUserTest = async (userProps: Partial<IUser2> = {}, roleProps: Partial<IRoleManagement> = {}, entrepriseProps: Partial<IEntreprise> = {}) => {
+  const user = await saveUser2(userProps)
+  const entreprise = await saveEntreprise(entrepriseProps)
+  const role = await saveRoleManagement({
+    user_id: user._id,
+    authorized_id: entreprise._id.toString(),
+    authorized_type: AccessEntityType.ENTREPRISE,
+    status: [roleManagementEventFactory()],
+    ...roleProps,
+  })
+  const recruiter = await saveRecruiter({
+    is_delegated: false,
+    cfa_delegated_siret: null,
+    status: RECRUITER_STATUS.ACTIF,
+    establishment_siret: entreprise.siret,
+    opco: entreprise.opco,
+    jobs: [
+      jobFactory({
+        managed_by: user._id,
+      }),
+    ],
+  })
+  return { user, role, entreprise, recruiter }
+}
+
+export const saveCfaUserTest = async (userProps: Partial<IUser2> = {}) => {
+  const user = await saveUser2(userProps)
+  const cfa = await saveCfa()
+  const role = await saveRoleManagement({
+    user_id: user._id,
+    authorized_id: cfa._id.toString(),
+    authorized_type: AccessEntityType.CFA,
+    status: [roleManagementEventFactory()],
+  })
+  const recruiter = await saveRecruiter({
+    is_delegated: true,
+    cfa_delegated_siret: cfa.siret,
+    status: RECRUITER_STATUS.ACTIF,
+    jobs: [
+      jobFactory({
+        managed_by: user._id,
+      }),
+    ],
+  })
+  return { user, role, cfa, recruiter }
+}
+
+export const saveOpcoUserTest = async () => {
+  const user = await saveUser2()
+  const role = await saveRoleManagement({
+    user_id: user._id,
+    authorized_id: OPCOS.AKTO,
+    authorized_type: AccessEntityType.OPCO,
+    status: [roleManagementEventFactory()],
+  })
+  return { user, role }
 }

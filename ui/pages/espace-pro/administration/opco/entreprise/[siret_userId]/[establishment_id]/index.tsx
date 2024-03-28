@@ -7,7 +7,7 @@ import { authProvider, withAuth } from "../../../../../../../components/espace_p
 function OpcoEntrepriseListOffre() {
   return (
     <Layout footer={false}>
-      <ListeOffres />
+      <ListeOffres hideModify={true} />
     </Layout>
   )
 }

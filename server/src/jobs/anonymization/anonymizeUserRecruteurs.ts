@@ -1,40 +1,28 @@
 import dayjs from "dayjs"
 
 import { logger } from "../../common/logger"
-import { Recruiter, UserRecruteur } from "../../common/model/index"
+import { Recruiter, User2 } from "../../common/model/index"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymize = async () => {
   const fromDate = dayjs().subtract(2, "years").toDate()
-  const userRecruteurQuery = { $or: [{ last_connection: { $lte: fromDate } }, { last_connection: null, createdAt: { $lte: fromDate } }] }
-  const usersToAnonymize = await UserRecruteur.find(userRecruteurQuery).lean()
-  const establishmentIds = usersToAnonymize.flatMap(({ establishment_id }) => (establishment_id ? [establishment_id] : []))
-  const recruiterQuery = { establishment_id: { $in: establishmentIds } }
-  await UserRecruteur.aggregate([
+  const user2Query = { $or: [{ last_action_date: { $lte: fromDate } }, { last_action_date: null, createdAt: { $lte: fromDate } }] }
+  const usersToAnonymize = await User2.find(user2Query).lean()
+  const userIds = usersToAnonymize.map(({ _id }) => _id.toString())
+  const recruiterQuery = { "jobs.managed_by": { $in: userIds } }
+  await User2.aggregate([
     {
-      $match: userRecruteurQuery,
+      $match: user2Query,
     },
     {
       $project: {
-        opco: 1,
-        idcc: 1,
-        establishment_raison_sociale: 1,
-        establishment_enseigne: 1,
-        establishment_siret: 1,
-        address_detail: 1,
-        address: 1,
-        geo_coordinates: 1,
-        is_email_checked: 1,
-        type: 1,
-        establishment_id: 1,
-        last_connection: 1,
+        last_action_date: 1,
         origin: 1,
         status: 1,
-        is_qualiopi: 1,
       },
     },
     {
-      $merge: "anonymizeduserrecruteurs",
+      $merge: "anonymizeduser2s",
     },
   ])
   await Recruiter.aggregate([
@@ -68,20 +56,20 @@ const anonymize = async () => {
     },
   ])
   const { deletedCount: recruiterCount } = await Recruiter.deleteMany(recruiterQuery)
-  const { deletedCount: userRecruteurCount } = await UserRecruteur.deleteMany(userRecruteurQuery)
-  return { userRecruteurCount, recruiterCount }
+  const { deletedCount: user2Count } = await User2.deleteMany(user2Query)
+  return { user2Count, recruiterCount }
 }
 
 export async function anonimizeUserRecruteurs() {
-  const subject = "ANONYMISATION DES USER RECRUTEURS et RECRUITERS"
+  const subject = "ANONYMISATION DES USERS et RECRUITERS"
   try {
-    logger.info(" -- Anonymisation des user recruteurs de plus de 2 ans -- ")
+    logger.info(" -- Anonymisation des users de plus de 2 ans -- ")
 
-    const { recruiterCount, userRecruteurCount } = await anonymize()
+    const { recruiterCount, user2Count } = await anonymize()
 
     await notifyToSlack({
       subject,
-      message: `Anonymisation des user recruteurs de plus de 2 ans terminée. ${userRecruteurCount} user recruteur(s) anonymisé(s). ${recruiterCount} recruiter(s) anonymisé(s)`,
+      message: `Anonymisation des users de plus de 2 ans terminée. ${user2Count} user(s) anonymisé(s). ${recruiterCount} recruiter(s) anonymisé(s)`,
       error: false,
     })
   } catch (err: any) {

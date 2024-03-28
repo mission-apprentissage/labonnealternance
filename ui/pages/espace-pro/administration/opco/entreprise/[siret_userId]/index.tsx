@@ -25,11 +25,11 @@ import { IUserStatusValidation } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
+import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
 
 import { AUTHTYPE } from "../../../../../../common/contants"
-import useUserHistoryUpdate from "../../../../../../common/hooks/useUserHistoryUpdate"
 import {
   AnimationContainer,
   ConfirmationDesactivationUtilisateur,
@@ -60,17 +60,17 @@ function DetailEntreprise() {
     cacheTime: 0,
   })
 
-  const userMutation = useMutation(({ userId, establishment_id, values }: any) => updateEntrepriseAdmin(userId, establishment_id, values), {
+  const userMutation = useMutation(({ userId, values }: any) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
     onSuccess: () => {
       client.invalidateQueries("user")
     },
   })
 
   const ActivateUserButton = ({ userId }) => {
-    const updateUserHistory = useUserHistoryUpdate(userId, ETAT_UTILISATEUR.VALIDE)
+    const { activate } = useUserPermissionsActions(userId)
 
     return (
-      <Button variant="primary" onClick={() => updateUserHistory()}>
+      <Button variant="primary" onClick={() => activate()}>
         Activer le compte
       </Button>
     )
@@ -211,7 +211,7 @@ function DetailEntreprise() {
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
               // For companies we update the User Collection and the Formulaire collection at the same time
-              userMutation.mutate({ userId: userRecruteur._id, establishment_id: userRecruteur.establishment_id, values })
+              userMutation.mutate({ userId: userRecruteur._id, values })
               toast({
                 title: "Mise à jour enregistrée avec succès",
                 position: "top-right",

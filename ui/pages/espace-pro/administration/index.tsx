@@ -57,7 +57,7 @@ function ListeEntreprise() {
   const [currentEntreprise, setCurrentEntreprise] = useState()
   const confirmationSuppression = useDisclosure()
   const router = useRouter()
-  const { user } = useAuth()
+  const { userAccess } = useAuth()
   const toast = useToast()
 
   useEffect(() => {
@@ -73,7 +73,9 @@ function ListeEntreprise() {
     }
   }, [])
 
-  const { data, isLoading } = useQuery("listeEntreprise", () => getEntreprisesManagedByCfa(user._id.toString()))
+  const cfaId = userAccess?.cfas.at(0)
+
+  const { data, isLoading } = useQuery("listeEntreprise", () => getEntreprisesManagedByCfa(cfaId), { enabled: Boolean(cfaId) })
 
   if (isLoading) {
     return <LoadingEmptySpace />

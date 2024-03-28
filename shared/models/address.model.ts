@@ -68,21 +68,22 @@ export const ZAdresseCFA = z
   .strict()
   .openapi("AdresseCFA")
 
-const ZAdresseV2 = ZAcheminementPostal.extend({
-  numero_voie: z.string(),
-  type_voie: z.string(),
-  nom_voie: z.string(),
-  complement_adresse: z.string(),
-  code_postal: z.string(),
-  localite: z.string(),
-  code_insee_localite: z.string(),
-  cedex: z.null(),
-  acheminement_postal: ZAcheminementPostal.optional(),
-})
+const ZAdresseV2 = z
+  .object({
+    numero_voie: z.string().nullish(),
+    type_voie: z.string().nullish(),
+    nom_voie: z.string().nullish(),
+    complement_adresse: z.string().nullish(),
+    code_postal: z.string().nullish(),
+    localite: z.string().nullish(),
+    code_insee_localite: z.string().nullish(),
+    cedex: z.string().nullish(),
+    acheminement_postal: ZAcheminementPostal.optional(),
+  })
   .strict()
   .openapi("AdresseV2")
 
-const ZAdresseV3 = z
+export const ZAdresseV3 = z
   .object({
     status_diffusion: z.string().nullish(),
     complement_adresse: z.string().nullish(),

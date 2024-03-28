@@ -1,9 +1,14 @@
+import mongodb from "mongodb"
+import type { ObjectId as ObjectIdType } from "mongodb"
 import mongoose from "mongoose"
 
 import config from "../config"
 
 import { logger } from "./logger"
 
+const { ObjectId } = mongodb
+export { ObjectId }
+export type { ObjectIdType }
 export const mongooseInstance = mongoose
 export const { model, Schema } = mongoose
 // @ts-expect-error

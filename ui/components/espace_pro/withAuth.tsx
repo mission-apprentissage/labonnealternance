@@ -37,8 +37,9 @@ export const withAuth = (Component, scope = null) => {
 
 export const authProvider = (Component) => {
   const Wrapper = (props) => {
+    const { user, userAccess } = props
     return (
-      <UserContext initialUser={props.auth}>
+      <UserContext {...{ user, userAccess }}>
         <Component {...props} />
       </UserContext>
     )

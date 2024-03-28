@@ -9,15 +9,22 @@ export const getAuthServerSideProps = async (context) => {
     return {}
   }
   try {
-    const session: IUserRecruteurPublic = await apiGet(
+    const user: IUserRecruteurPublic = await apiGet(
       `/auth/session`,
       {},
       {
         headers: context.req.headers,
       }
     )
-    return { auth: session }
+    const userAccess = await apiGet(
+      `/auth/access`,
+      {},
+      {
+        headers: context.req.headers,
+      }
+    )
+    return { user, userAccess }
   } catch (e) {
-    return { auth: null }
+    return { user: null, userAccess: null }
   }
 }

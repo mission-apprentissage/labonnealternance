@@ -4,8 +4,8 @@ import { JobPage } from "../pages/JobPage"
 import { LoginBar } from "../pages/LoginBar"
 import { generateRandomString } from "../utils/generateRandomString"
 
-describe("create-recruiter-account-siret-inexistent", () => {
-  it("test create-recruiter-account-siret-inexistent", () => {
+describe("create-recruiter-account", () => {
+  it("test create-recruiter-account", () => {
     cy.viewport(1271, 721)
 
     const emailDomain = Cypress.env("ENTREPRISE_AUTOVALIDE_EMAIL_DOMAIN")

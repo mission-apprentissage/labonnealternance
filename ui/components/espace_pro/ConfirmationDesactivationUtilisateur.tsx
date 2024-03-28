@@ -16,10 +16,10 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+
+import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 
 import { AUTHTYPE } from "../../common/contants"
-import useUserHistoryUpdate from "../../common/hooks/useUserHistoryUpdate"
 import { Close } from "../../theme/components/icons"
 import { archiveDelegatedFormulaire, archiveFormulaire, updateEntrepriseAdmin } from "../../utils/api"
 
@@ -33,8 +33,7 @@ export const ConfirmationDesactivationUtilisateur = ({
   const _id = (_idObject ?? "").toString()
   const [reason, setReason] = useState()
   const reasonComment = useDisclosure()
-  const disableUser = useUserHistoryUpdate(_id, ETAT_UTILISATEUR.DESACTIVE, reason)
-  const reassignUserToAdmin = useUserHistoryUpdate(_id, ETAT_UTILISATEUR.ATTENTE, reason)
+  const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id)
 
   if (!userRecruteur) return null
 
@@ -51,17 +50,17 @@ export const ConfirmationDesactivationUtilisateur = ({
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
         if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
-          await Promise.all([updateEntrepriseAdmin(_id, establishment_id, { opco: "inconnu" }), reassignUserToAdmin()])
+          await Promise.all([updateEntrepriseAdmin(_id, { opco: "inconnu" }, establishment_siret), reassignUserToAdmin(reason)])
         } else {
-          await Promise.all([archiveFormulaire(establishment_id), disableUser()])
+          await Promise.all([archiveFormulaire(establishment_id), disableUser(reason)])
         }
         break
 
       case AUTHTYPE.CFA:
-        await Promise.all([archiveDelegatedFormulaire(establishment_siret), disableUser()])
+        await Promise.all([archiveDelegatedFormulaire(establishment_siret), disableUser(reason)])
         break
       case AUTHTYPE.ADMIN:
-        await disableUser()
+        await disableUser(reason)
         break
       default:
         throw new Error(`unsupported type: ${type}`)

@@ -1,8 +1,10 @@
 import { Jsonify } from "type-fest"
 
+import { AppointmentUserType } from "../constants/appointment"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
+import { enumToZod } from "./enumToZod"
 
 export const enum EReasonsKey {
   MODALITE = "modalite",
@@ -32,7 +34,7 @@ export const ZMailing = z
 export const ZAppointment = z
   .object({
     _id: zObjectId,
-    applicant_id: z.string(),
+    applicant_id: zObjectId,
     cfa_intention_to_applicant: z.string().nullish(),
     cfa_message_to_applicant_date: z.date().nullish(),
     cfa_message_to_applicant: z.string().nullish(),
@@ -47,6 +49,7 @@ export const ZAppointment = z
     cle_ministere_educatif: z.string(),
     created_at: z.date().default(() => new Date()),
     cfa_recipient_email: z.string(),
+    applicant_type: enumToZod(AppointmentUserType).nullish(),
   })
   .strict()
   .openapi("Appointment")
