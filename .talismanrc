@@ -54,7 +54,7 @@ fileignoreconfig:
 - filename: server/src/security/accessTokenService.ts
   checksum: 2183e326a88ae3c10193a7033ab5fd421ce576cd1e234c323df247da335f74d7
 - filename: server/src/services/application.service.ts
-  checksum: e1d63d8af96e34f2ceb07862f2338d5ad89265d6e0617995658b15199ab5d1d8
+  checksum: d3ae58c0b6a9d42164b69dff4573734a6d854282974c4a10d065f2c2443f144a
 - filename: server/src/services/userRecruteur.service.ts
   checksum: fb8fc73f5ac4491b2a7be99ceaebf96c79bffa63fa6b164eed6e2d3d9fe5dae0
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
