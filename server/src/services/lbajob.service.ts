@@ -1,9 +1,11 @@
 import Boom from "boom"
+import pkg from "mongodb"
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter } from "@/common/model"
+import { db } from "@/common/mongodb"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -14,9 +16,11 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getEtablissement } from "./etablissement.service"
-import { getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
+import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
+
+const { ObjectId } = pkg
 
 const JOB_SEARCH_LIMIT = 250
 
@@ -320,6 +324,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
         quantiteContrat: offre.job_count,
         elligibleHandicap: offre.is_disabled_elligible,
         status: recruiter.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
+        type: offre.job_type?.length ? offre.job_type : null,
       },
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,
@@ -359,31 +364,39 @@ function sortLbaJobs(jobs: { results: ILbaItemLbaJob[] }) {
 }
 
 /**
- * Incrémente le compteur de vue de la page de détail d'une offre LBA
- * @param {string} jobId
+ * @description Incrémente le compteur de vue de la page de détail d'une offre LBA
  */
 export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
-  await incrementLbaJobViewCount(jobId, {
-    stats_detail_view: 1,
-  })
-}
-
-/**
- * Incrémente le compteur de vue de la page de recherche d'une offre LBA
- */
-export const addOffreSearchView = async (jobId: IJob["_id"] | string) => {
   try {
-    await incrementLbaJobViewCount(jobId, {
-      stats_search_view: 1,
-    })
+    await db.collection("recruiters").updateOne(
+      { "jobs._id": jobId },
+      {
+        $inc: {
+          "jobs.$.stats_detail_view": 1,
+        },
+      }
+    )
   } catch (err) {
     sentryCaptureException(err)
   }
 }
 
 /**
- * Incrémente les compteurs de vue d'un ensemble d'offres lba
+ * @description Incrémente les compteurs de vue d'un ensemble d'offres lba
  */
 export const incrementLbaJobsViewCount = async (lbaJobs) => {
-  await Promise.all(lbaJobs.results.map((lbaJob) => lbaJob?.job?.id && addOffreSearchView(lbaJob.job.id)))
+  const ids = lbaJobs.results.map((job) => new ObjectId(job.job.id))
+  try {
+    await db.collection("recruiters").updateMany(
+      { "jobs._id": { $in: ids } },
+      {
+        $inc: {
+          "jobs.$[elem].stats_search_view": 1,
+        },
+      },
+      { arrayFilters: [{ "elem._id": { $in: ids } }] }
+    )
+  } catch (err) {
+    sentryCaptureException(err)
+  }
 }

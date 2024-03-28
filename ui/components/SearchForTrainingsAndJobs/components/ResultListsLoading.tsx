@@ -3,19 +3,19 @@ import React, { useContext } from "react"
 
 import { ScopeContext } from "../../../context/ScopeContext"
 
-const ResultListsLoading = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading }) => {
+const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, isPartnerJobSearchLoading }) => {
   const scopeContext = useContext(ScopeContext)
 
-  if (allJobSearchError && trainingSearchError) {
+  if (jobSearchError && partnerJobSearchError && trainingSearchError) {
     return <></>
   }
 
   let jobLoading = <></>
 
-  if (scopeContext.isJob && isJobSearchLoading) {
+  if (scopeContext.isJob && (isJobSearchLoading || isPartnerJobSearchLoading)) {
     jobLoading = (
       <Flex p={5} color="pinksoft.600">
-        <Text mr={4}>Recherche des entreprises en cours</Text>
+        <Text mr={4}>Recherche d'entreprises en cours</Text>
         <Spinner thickness="4px" />
       </Flex>
     )
