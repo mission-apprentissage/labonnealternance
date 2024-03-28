@@ -21,8 +21,13 @@ import {
   ZUnsubscribeOF,
   ZUnsubscribedLbaCompany,
   ZUser,
+  ZUserRecruteur,
   zFormationCatalogueSchema,
 } from "shared/models"
+import { zCFA } from "shared/models/cfa.model"
+import { ZEntreprise } from "shared/models/entreprise.model"
+import { ZRoleManagement } from "shared/models/roleManagement.model"
+import { ZUser2 } from "shared/models/user2.model"
 import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
@@ -31,11 +36,13 @@ import {
   Application,
   Appointment,
   AppointmentDetailed,
+  Cfa,
   Credential,
   DiplomesMetiers,
   DomainesMetiers,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
+  Entreprise,
   Etablissement,
   FormationCatalogue,
   GeoLocation,
@@ -46,9 +53,12 @@ import {
   Recruiter,
   ReferentielOnisep,
   ReferentielOpco,
+  RoleManagement,
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
+  User2,
+  UserRecruteur,
   eligibleTrainingsForAppointmentHistory,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
@@ -119,4 +129,9 @@ export async function validateModels(): Promise<void> {
   await validateModel(UnsubscribeOF, ZUnsubscribeOF)
   await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
   await validateModel(eligibleTrainingsForAppointmentHistory, ZEligibleTrainingsForAppointmentSchema)
+  await validateModel(UserRecruteur, ZUserRecruteur)
+  await validateModel(Entreprise, ZEntreprise)
+  await validateModel(Cfa, zCFA)
+  await validateModel(User2, ZUser2)
+  await validateModel(RoleManagement, ZRoleManagement)
 }
