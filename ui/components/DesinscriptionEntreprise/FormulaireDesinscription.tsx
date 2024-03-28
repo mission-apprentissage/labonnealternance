@@ -74,6 +74,8 @@ const buildReasonOptions = () => {
   )
 }
 
+const noPopupData = { companies: null, reason: null, email: null }
+
 const ConfirmationDesinscription = ({
   isOpen,
   onClose,
@@ -160,7 +162,7 @@ const ConfirmationDesinscription = ({
 
 const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
   const [emailError, setEmailError] = useState(null)
-  const [popupData, setPopupData] = useState({ companies: null, reason: null, email: null })
+  const [popupData, setPopupData] = useState(noPopupData)
   const [selectedSirets, setSelectedSirets] = useState(null)
   const [allSelected, setAllSelected] = useState(true)
   const [isMultipleSubmitting, setIsMultipleSubmitting] = useState(false)
@@ -174,14 +176,14 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
     validationPopup.onClose()
 
     if (response.result === "OK") {
-      setPopupData({ companies: null, email: null, reason: null })
+      setPopupData(noPopupData)
       handleUnsubscribeSuccess()
     } else if (response.result === UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES) {
       setSelectedSirets(response.companies.map((company) => company.siret))
       setPopupData({ companies: response.companies, email: values.email, reason: values.reason })
       validationPopup.onOpen()
     } else {
-      setPopupData({})
+      setPopupData(noPopupData)
       setEmailError(EMAIL_ERRORS[response.result])
     }
     setIsMultipleSubmitting(false)
