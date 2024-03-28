@@ -3,7 +3,7 @@ import { writeFile } from "node:fs/promises"
 import { pipeline } from "stream/promises"
 
 import axios from "axios"
-import { oleoduc, transformData, writeData, filterData } from "oleoduc"
+import { filterData, oleoduc, transformData, writeData } from "oleoduc"
 
 import { logger } from "../../common/logger"
 import { ReferentielOnisep } from "../../common/model/index"
@@ -72,10 +72,15 @@ export const importReferentielOnisep = async () => {
         cle_ministere_educatif: row["Clé ministère éducatif MA"],
       }
     }),
-    writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 50 })
+    writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 10 })
   )
 
   stats.afterImportationDatabaseRows = await ReferentielOnisep.estimatedDocumentCount({})
 
-  logger.info("Cron #importReferentielOnisep done.", stats)
+  await notifyToSlack({
+    subject: "IMPORT ONISEP",
+    message: `Import du mapping Onisep — existantes: ${stats.beforeImportationDatabaseRows} / importées: ${stats.afterImportationDatabaseRows}`,
+  })
+
+  logger.info("Cron #importReferentielOnisep done.")
 }
