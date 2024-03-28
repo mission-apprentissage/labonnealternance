@@ -188,13 +188,13 @@ const obfuscateRecruiter = async () => {
   await keepSpecificUser(ADMIN_EMAIL, AUTHTYPE.ADMIN)
 
   // restoring one CFA user
-  await keepSpecificUser("cfa@mail.com", AUTHTYPE.CFA)
+  await keepSpecificUser("cfa@beta.gouv.fr", AUTHTYPE.CFA)
 
   // restoring one ENTREPRISE user
-  await keepSpecificUser("entreprise@mail.com", AUTHTYPE.ENTREPRISE)
+  await keepSpecificUser("entreprise@beta.gouv.fr", AUTHTYPE.ENTREPRISE)
 
   // restoring one OPCO user
-  await keepSpecificUser("opco@mail.com", AUTHTYPE.OPCO)
+  await keepSpecificUser("opco@beta.gouv.fr", AUTHTYPE.OPCO)
 
   const remainingUsers: AsyncIterable<IUserRecruteur> = db.collection("recruiters").find({ first_name: { $ne: "prenom" } })
   for await (const user of remainingUsers) {
