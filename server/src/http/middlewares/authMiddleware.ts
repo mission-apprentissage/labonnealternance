@@ -13,6 +13,7 @@ import {
 } from "fastify"
 import { IRouteSchema, SecurityScheme, WithSecurityScheme } from "shared/routes/common.routes"
 
+import { createAccessLog } from "@/security/accessLog.service"
 import { authenticationMiddleware } from "@/security/authenticationService"
 import { authorizationMiddleware } from "@/security/authorisationService"
 
@@ -20,8 +21,16 @@ const symbol = Symbol("authStrategy")
 
 export function auth<S extends IRouteSchema & WithSecurityScheme>(schema: S) {
   const authMiddleware = async (req: FastifyRequest) => {
-    await authenticationMiddleware(schema, req)
-    await authorizationMiddleware(schema, req)
+    try {
+      await authenticationMiddleware(schema, req)
+      await authorizationMiddleware(schema, req)
+      await createAccessLog(schema, req, true)
+    } catch (error: any) {
+      if (error?.isBoom && (error?.output?.payload.statusCode === 401 || error?.output?.payload.statusCode === 403)) {
+        await createAccessLog(schema, req, false)
+      }
+      throw error
+    }
   }
 
   authMiddleware[symbol] = schema.securityScheme
