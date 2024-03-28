@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { getLastStatusEvent, IRecruiter, parseEnumOrError } from "shared"
+import { getLastStatusEvent, IRecruiter, parseEnumOrError, ZGlobalAddress } from "shared"
 import { AppointmentUserType } from "shared/constants/appointment.js"
 import { EApplicantRole } from "shared/constants/rdva.js"
 import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
@@ -111,7 +111,6 @@ const migrationUserRecruteurs = async () => {
       establishment_raison_sociale,
       establishment_enseigne,
       establishment_siret,
-      address_detail,
       address,
       geo_coordinates,
       phone,
@@ -128,6 +127,7 @@ const migrationUserRecruteurs = async () => {
       createdAt,
       updatedAt,
     } = userRecruteur
+
     const oldStatus: IUserRecruteur["status"] | undefined = userRecruteur.status
     const origin = originRaw || "user migration"
     index % 1000 === 0 && logger.info(`import du user recruteur n°${index}`)
@@ -166,7 +166,15 @@ const migrationUserRecruteurs = async () => {
       stats.userCreated++
       if (type === ENTREPRISE) {
         if (!establishment_siret) {
-          throw new Error("inattendu pour une ENTERPRISE: pas de establishment_siret")
+          throw new Error("inattendu pour une ENTREPRISE: pas de establishment_siret")
+        }
+        const address_detail = fixAddressDetail(userRecruteur.address_detail)
+        checkAddressDetail(address_detail)
+        if (address_detail !== userRecruteur.address_detail && userRecruteur.establishment_id) {
+          const updatedRecruiter = await Recruiter.findOneAndUpdate({ establishment_id: userRecruteur.establishment_id }, { address_detail })
+          if (!updatedRecruiter) {
+            throw new Error("impossible de corriger address_detail : recruiter introuvable")
+          }
         }
         const newEntreprise: IEntreprise = {
           _id: new ObjectId(),
@@ -202,6 +210,8 @@ const migrationUserRecruteurs = async () => {
         if (!establishment_siret) {
           throw new Error("inattendu pour un CFA: pas de establishment_siret")
         }
+        const address_detail = fixAddressDetail(userRecruteur.address_detail)
+        checkAddressDetail(address_detail)
         const newCfa: ICFA = {
           _id: new ObjectId(),
           siret: establishment_siret,
@@ -254,6 +264,8 @@ const migrationUserRecruteurs = async () => {
         }
         await RoleManagement.create(roleManagement)
         stats.opcoAccess++
+      } else {
+        throw new Error(`unsupported type: ${type}`)
       }
       stats.success++
     } catch (err) {
@@ -413,4 +425,23 @@ function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status
     ]
   }
   return computedStatus
+}
+
+const fixAddressDetail = (addressDetail: any) => {
+  const lFields = ["l1", "l2", "l3", "l4", "l5", "l6", "l7"]
+  const normalFields = ["numero_voie", "type_voie", "nom_voie", "complement_adresse", "code_postal", "localite", "code_insee_localite", "cedex"]
+  if (addressDetail && [...lFields, ...normalFields].every((field) => field in addressDetail)) {
+    return Object.fromEntries([
+      ...normalFields.map((field) => [field, addressDetail[field]]),
+      ["acheminement_postal", Object.fromEntries(lFields.map((field) => [field, addressDetail[field]]))],
+    ])
+  } else {
+    return addressDetail
+  }
+}
+
+const checkAddressDetail = (address_detail: any) => {
+  if (!ZGlobalAddress.safeParse(address_detail).success) {
+    throw new Error(`address_detail not ok: ${JSON.stringify(address_detail, null, 2)}`)
+  }
 }
