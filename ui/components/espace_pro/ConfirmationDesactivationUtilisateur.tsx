@@ -50,7 +50,7 @@ export const ConfirmationDesactivationUtilisateur = ({
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
         if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
-          await Promise.all([updateEntrepriseAdmin(_id, establishment_id, { opco: "inconnu" }), reassignUserToAdmin(reason)])
+          await Promise.all([updateEntrepriseAdmin(_id, { opco: "inconnu" }, establishment_siret), reassignUserToAdmin(reason)])
         } else {
           await Promise.all([archiveFormulaire(establishment_id), disableUser(reason)])
         }

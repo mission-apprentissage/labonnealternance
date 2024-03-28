@@ -101,26 +101,23 @@ export default (server: Server) => {
   )
 
   server.put(
-    "/admin/users/:userId",
+    "/admin/users/:userId/organization/:siret",
     {
-      schema: zRoutes.put["/admin/users/:userId"],
-      onRequest: [server.auth(zRoutes.put["/admin/users/:userId"])],
+      schema: zRoutes.put["/admin/users/:userId/organization/:siret"],
+      onRequest: [server.auth(zRoutes.put["/admin/users/:userId/organization/:siret"])],
     },
     async (req, res) => {
-      const { email } = req.body
-      const { userId } = req.params
-      const newEmail = email?.toLocaleLowerCase()
-
-      if (newEmail) {
-        const exist = await User2.findOne({ email: newEmail, _id: { $ne: userId } }).lean()
-        if (exist) {
-          return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
-        }
+      const { userId, siret } = req.params
+      const { opco, ...userFields } = req.body
+      const result = await updateUser2Fields(userId, userFields)
+      if ("error" in result) {
+        return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
-
-      const updatedUser = await updateUser2Fields(userId, req.body)
-      if (!updatedUser) {
-        throw Boom.internal(`could not update one user from query=${JSON.stringify({ _id: userId })}`)
+      if (opco) {
+        const entreprise = await Entreprise.findOneAndUpdate({ siret }, { opco }).lean()
+        if (!entreprise) {
+          throw Boom.badRequest(`pas d'entreprise ayant le siret ${siret}`)
+        }
       }
       return res.status(200).send({ ok: true })
     }
@@ -249,14 +246,11 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/user/:userId"])],
     },
     async (req, res) => {
-      const { email } = req.body
       const { userId } = req.params
-      const formattedEmail = email?.toLocaleLowerCase()
-      const exist = await User2.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
-      if (exist) {
+      const result = await updateUser2Fields(userId, req.body)
+      if ("error" in result) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
-      await updateUser2Fields(userId, req.body)
       const user = await getUserRecruteurById(userId)
       return res.status(200).send(user)
     }

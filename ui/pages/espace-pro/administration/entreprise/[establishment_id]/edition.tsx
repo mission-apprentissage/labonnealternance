@@ -35,7 +35,7 @@ const Formulaire = ({
    * KBA 20230511 : values for recruiter collection are casted in api.js file directly. form values must remain as awaited in userRecruteur collection
    */
   // TODO
-  const entrepriseMutation = useMutation<any, unknown, any, unknown>(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
+  const entrepriseMutation = useMutation<any, unknown, any, unknown>(({ userId, values }) => updateEntreprise(userId, values), {
     onSuccess: () => {
       toast({
         title: "Entreprise mise à jour avec succès.",
@@ -67,7 +67,7 @@ const Formulaire = ({
   const submitForm = async (values, { setSubmitting, setFieldError }) => {
     if (user.type === AUTHTYPE.ENTREPRISE) {
       entrepriseMutation.mutate(
-        { userId: user._id, establishment_id: establishment_id, values },
+        { userId: user._id, values },
         {
           onError: (error: any) => {
             switch (error.response.data.reason) {

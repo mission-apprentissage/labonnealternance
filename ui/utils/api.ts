@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes, parseEnumOrError } from "shared"
+import { IJobWritable, INewDelegations, IRoutes, parseEnumOrError, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { OPCOS } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -9,7 +9,7 @@ import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
 import { publicConfig } from "../config.public"
 
-import { ApiError, apiDelete, apiGet, apiPost, apiPut, removeUndefinedFields } from "./api.utils"
+import { ApiError, apiDelete, apiGet, apiPost, apiPut } from "./api.utils"
 
 const API = Axios.create({
   baseURL: publicConfig.apiEndpoint,
@@ -58,8 +58,6 @@ export const createEtablissementDelegationByToken = ({ data, jobId, token }: { j
  * User API
  */
 export const getUser = (userId: string, organizationId: string = "unused") => apiGet("/user/:userId/organization/:organizationId", { params: { userId, organizationId } })
-const updateUser = (userId: string, user) => apiPut("/user/:userId", { params: { userId }, body: user })
-const updateUserAdmin = (userId: string, user) => apiPut("/admin/users/:userId", { params: { userId }, body: user })
 export const getUserStatus = (userId: string) => apiGet("/user/status/:userId", { params: { userId } })
 export const getUserStatusByToken = (userId: string, token: string) =>
   apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
@@ -84,20 +82,13 @@ export const createAdminUser = (user: IUser2) => apiPost("/admin/users", { body:
 /**
  * KBA 20230511 : (migration db) : casting des valueurs coté collection recruiter, car les champs ne sont plus identiques avec la collection userRecruteur.
  */
-export const updateEntreprise = async (userId: string, establishment_id: string | undefined, user: any) => {
-  const promises: Promise<any>[] = [updateUser(userId, user)]
-  if (establishment_id) {
-    promises.push(updateFormulaire(establishment_id, user))
-  }
-  await Promise.all(promises)
+export const updateEntreprise = async (userId: string, user: any) => {
+  await apiPut("/user/:userId", { params: { userId }, body: user })
 }
 
-export const updateEntrepriseAdmin = async (userId: string, establishment_id: string, user: any) =>
-  await Promise.all([
-    updateUserAdmin(userId, user),
-    //
-    updateFormulaire(establishment_id, user),
-  ])
+export const updateEntrepriseAdmin = async (userId: string, user: any, siret = "unused") => {
+  await apiPut("/admin/users/:userId/organization/:siret", { params: { userId, siret }, body: user })
+}
 
 /**
  * Auth API

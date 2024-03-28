@@ -5,7 +5,7 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Recruiter, User2 } from "@/common/model"
+import { Cfa, Recruiter } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { user2ToUserForToken } from "@/security/accessTokenService"
@@ -256,11 +256,10 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { _id, ...rest } = req.body
-      const exists = await User2.findOne({ email: req.body.email.toLocaleLowerCase(), _id: { $ne: _id } })
-      if (exists) {
+      const result = await updateUser2Fields(req.params.id, rest)
+      if ("error" in result) {
         throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
       }
-      await updateUser2Fields(req.params.id, rest)
       return res.status(200).send({ ok: true })
     }
   )

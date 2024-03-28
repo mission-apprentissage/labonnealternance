@@ -1,7 +1,8 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
-import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, parseEnumOrError } from "shared"
+import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, parseEnumOrError, removeUndefinedFields } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
@@ -13,7 +14,7 @@ import { ObjectId, ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Entreprise, RoleManagement, User2 } from "../common/model/index"
+import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
@@ -266,9 +267,22 @@ export const createUser = async (
   }
 }
 
-export const updateUser2Fields = (userId: ObjectIdType, fields: Partial<IUser2>) => {
-  const { email, ...otherFields } = fields
-  return User2.findOneAndUpdate({ _id: userId }, { ...otherFields, ...(email ? { email: email.toLocaleLowerCase() } : {}) }, { new: true })
+export const updateUser2Fields = async (userId: ObjectIdType, fields: Partial<IUser2>): Promise<IUser2 | { error: BusinessErrorCodes }> => {
+  const { email, first_name, last_name, phone } = fields
+  const newEmail = email?.toLocaleLowerCase()
+
+  if (newEmail) {
+    const exist = await User2.findOne({ email: newEmail, _id: { $ne: userId } }).lean()
+    if (exist) {
+      return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
+    }
+  }
+  const newUser = await User2.findOneAndUpdate({ _id: userId }, removeUndefinedFields({ ...fields, email: newEmail }), { new: true }).lean()
+  if (!newUser) {
+    throw Boom.badRequest("user not found")
+  }
+  await Recruiter.updateMany({ "jobs.managed_by": userId.toString() }, { $set: removeUndefinedFields({ first_name, last_name, phone, email: newEmail }) })
+  return newUser
 }
 
 export const validateUserEmail = async (userId: ObjectIdType) => {

@@ -5,7 +5,7 @@ import { zObjectId } from "../models/common"
 import { enumToZod } from "../models/enumToZod"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model"
 import { ZUser2 } from "../models/user2.model"
-import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
+import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -208,7 +208,7 @@ export const zUserRecruteurRoutes = {
       method: "put",
       path: "/user/:userId",
       params: z.object({ userId: zObjectId }).strict(),
-      body: ZUserRecruteurWritable.pick({
+      body: ZUser2.pick({
         last_name: true,
         first_name: true,
         phone: true,
@@ -226,13 +226,18 @@ export const zUserRecruteurRoutes = {
         },
       },
     },
-    "/admin/users/:userId": {
+    "/admin/users/:userId/organization/:siret": {
       method: "put",
-      path: "/admin/users/:userId",
-      params: z.object({ userId: zObjectId }).strict(),
-      body: ZUserRecruteurWritable.omit({
+      path: "/admin/users/:userId/organization/:siret",
+      params: z.object({ userId: zObjectId, siret: z.string() }).strict(),
+      body: ZUser2.omit({
         status: true,
-      }).partial(),
+        _id: true,
+      })
+        .extend({
+          opco: ZUserRecruteur.shape.opco,
+        })
+        .partial(),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
         "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),

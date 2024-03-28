@@ -6,8 +6,8 @@ import { IUser2Json } from "shared/models/user2.model"
 import * as Yup from "yup"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
-import { createAdminUser } from "@/utils/api"
-import { apiDelete, apiPut } from "@/utils/api.utils"
+import { createAdminUser, updateEntrepriseAdmin } from "@/utils/api"
+import { apiDelete } from "@/utils/api.utils"
 
 import CustomInput from "../../CustomInput"
 
@@ -46,10 +46,7 @@ export const AdminUserForm = ({
 
       try {
         if (user) {
-          result = await apiPut("/admin/users/:userId", {
-            params: { userId: user._id.toString() },
-            body: values,
-          })
+          result = await updateEntrepriseAdmin(user._id.toString(), values)
           if (result?.ok) {
             toast({
               title: "Utilisateur mis à jour",

@@ -120,7 +120,7 @@ function DetailEntreprise() {
 
   const { data: userRecruteur, isLoading } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
   // @ts-expect-error: TODO
-  const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntrepriseAdmin(userId, establishment_id, values), {
+  const userMutation = useMutation(({ userId, values }) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
     onSuccess: () => {
       client.invalidateQueries("user")
     },
@@ -209,7 +209,7 @@ function DetailEntreprise() {
               setSubmitting(true)
               // For companies we update the User Collection and the Formulaire collection at the same time
               // @ts-expect-error: TODO
-              userMutation.mutate({ userId: userRecruteur._id, establishment_id: userRecruteur.establishment_id, values })
+              userMutation.mutate({ userId: userRecruteur._id, values })
               toast({
                 title: "Mise à jour enregistrée avec succès",
                 position: "top-right",
