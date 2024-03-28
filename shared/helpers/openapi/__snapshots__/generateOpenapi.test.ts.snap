@@ -3283,46 +3283,6 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
             },
             "description": "",
           },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "enum": [
-                        "Critère de recherche non conforme.",
-                      ],
-                      "type": "string",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "enum": [
-                        "Formation introuvable",
-                      ],
-                      "type": "string",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
         },
         "security": [
           {
@@ -3508,46 +3468,6 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
                         "error",
                       ],
                       "type": "object",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "enum": [
-                        "Critère de recherche non conforme.",
-                      ],
-                      "type": "string",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "enum": [
-                        "Formation introuvable",
-                      ],
-                      "type": "string",
                     },
                   ],
                 },
