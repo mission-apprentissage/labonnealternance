@@ -1,7 +1,9 @@
 import { zRoutes } from "shared"
 import { IUnsubscribeCompanyData } from "shared/models/unsubscribeLbaCompany.model"
 
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { obfuscateLbaCompanyApplications } from "@/services/application.service"
 import { buildLbaCompanyAddress } from "@/services/lbacompany.service"
 
 import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
@@ -29,42 +31,53 @@ export default function (server: Server) {
 
       const email = req.body.email.toLowerCase()
       const reason = req.body.reason
+      const sirets = req.body.sirets
 
-      const lbaCompaniesToUnsubscribe = await LbaCompany.find({ email }).lean()
+      const criteria: { email: string; siret?: { $in: string[] } } = { email }
+      if (sirets && sirets.length) {
+        criteria.siret = { $in: sirets }
+      }
+
+      const lbaCompaniesToUnsubscribe = await LbaCompany.find(criteria).limit(10).lean()
 
       if (!lbaCompaniesToUnsubscribe.length) {
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU }
-      } else if (lbaCompaniesToUnsubscribe.length > 1) {
+      } else if (lbaCompaniesToUnsubscribe.length > 1 && !sirets) {
         const companies = lbaCompaniesToUnsubscribe.map((company) => {
           return { enseigne: company.enseigne, siret: company.siret, address: buildLbaCompanyAddress(company) }
         })
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES, companies }
       } else {
-        const { siret, raison_sociale, enseigne, naf_code, naf_label, rome_codes, insee_city_code, zip_code, city, company_size, created_at, last_update_at } =
-          lbaCompaniesToUnsubscribe[0]
+        await asyncForEach(lbaCompaniesToUnsubscribe, async (company) => {
+          const { siret, raison_sociale, enseigne, naf_code, naf_label, rome_codes, insee_city_code, zip_code, city, company_size, created_at, last_update_at } = company
 
-        const unsubscribedLbaCompany = new UnsubscribedLbaCompany({
-          siret,
-          raison_sociale,
-          enseigne,
-          naf_code,
-          naf_label,
-          rome_codes,
-          insee_city_code,
-          zip_code,
-          city,
-          company_size,
-          created_at,
-          last_update_at,
-          unsubscribe_reason: reason,
+          const unsubscribedLbaCompany = new UnsubscribedLbaCompany({
+            siret,
+            raison_sociale,
+            enseigne,
+            naf_code,
+            naf_label,
+            rome_codes,
+            insee_city_code,
+            zip_code,
+            city,
+            company_size,
+            created_at,
+            last_update_at,
+            unsubscribe_reason: reason,
+          })
+
+          await unsubscribedLbaCompany.save()
+
+          const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret })
+          if (lbaCompanyToUnsubscribe) {
+            await lbaCompanyToUnsubscribe.remove()
+          }
+
+          if (reason === "OPPOSITION") {
+            await obfuscateLbaCompanyApplications(siret)
+          }
         })
-
-        await unsubscribedLbaCompany.save()
-
-        const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret: lbaCompaniesToUnsubscribe[0].siret })
-        if (lbaCompanyToUnsubscribe) {
-          await lbaCompanyToUnsubscribe.remove()
-        }
 
         await mailer.sendEmail({
           to: email,
