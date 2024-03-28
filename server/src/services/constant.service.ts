@@ -51,16 +51,6 @@ export const NIVEAUX_POUR_OFFRES_PE = {
   "7 (Master, titre ingénieur...)": "NV2",
 }
 
-export const UNSUBSCRIBE_REASON = {
-  RECRUTEMENT_CLOS: "Nous avons déjà trouvé nos alternants pour l’année en cours",
-  CANDIDATURES_INAPPROPRIEES: "Les candidatures ne correspondent pas aux activités de mon entreprise",
-  AUTRES_CANAUX: "J'utilise d'autres canaux pour mes recrutements d'alternants",
-  PAS_BUDGET: "Mon entreprise n’a pas la capacité financière pour recruter un alternant",
-  PAS_ALTERNANT: "Mon entreprise ne recrute pas en alternance",
-  ENTREPRISE_FERMEE: "L’entreprise est fermée",
-  AUTRE: "Autre",
-}
-
 export enum UNSUBSCRIBE_EMAIL_ERRORS {
   NON_RECONNU = "NON_RECONNU",
   ETABLISSEMENTS_MULTIPLES = "ETABLISSEMENTS_MULTIPLES",

@@ -1,4 +1,4 @@
-import { CloseIcon, ExternalLinkIcon } from "@chakra-ui/icons"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import {
   Accordion,
   AccordionButton,
@@ -39,6 +39,8 @@ import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
+
+import LBAModalCloseButton from "../lbaModalCloseButton"
 
 type Props = {
   context: IAppointmentRequestContextCreateFormAvailableResponseSchema
@@ -423,27 +425,7 @@ const DemandeDeContact = (props: Props) => {
             <ModalOverlay />
             <ModalContent>
               <ModalHeader mt={4} paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
-                <Button
-                  fontSize="14px"
-                  color="bluefrance.500"
-                  fontWeight={400}
-                  background="none"
-                  alignItems="baseline"
-                  data-testid="close-rdv-form"
-                  height="1.5rem"
-                  sx={{
-                    _hover: {
-                      background: "none",
-                      textDecoration: "none",
-                    },
-                    _active: {
-                      background: "none",
-                    },
-                  }}
-                  onClick={onClose}
-                >
-                  Fermer <CloseIcon w={2} h={2} ml={2} />
-                </Button>
+                <LBAModalCloseButton onClose={onClose} />
               </ModalHeader>
               <ModalBody data-testid="modalbody-contact-confirmation" mx={onSuccessSubmitResponse ? 12 : 4}>
                 {onSuccessSubmitResponse ? (
