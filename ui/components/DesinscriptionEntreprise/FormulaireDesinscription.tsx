@@ -21,6 +21,7 @@ import {
   Spinner,
   Text,
   useDisclosure,
+  Checkbox,
 } from "@chakra-ui/react"
 import { Formik, Field, Form } from "formik"
 import { useRouter } from "next/router"
@@ -73,7 +74,46 @@ const buildReasonOptions = () => {
   )
 }
 
-const ConfirmationDesinscription = ({ isOpen, onClose }) => {
+const ConfirmationDesinscription = ({
+  isOpen,
+  onClose,
+  companies,
+  reason,
+  email,
+  handleUnsubscribeSubmit,
+  selectedSirets,
+  setSelectedSirets,
+  allSelected,
+  setAllSelected,
+  isMultipleSubmitting,
+  setIsMultipleSubmitting,
+}) => {
+  const allSirets = companies ? companies.map((company) => company.siret) : null
+
+  const handleMultipleUnsubscribeSubmit = () => {
+    setIsMultipleSubmitting(true)
+    handleUnsubscribeSubmit({ email, reason, sirets: selectedSirets })
+  }
+
+  const onCompanyCheckboxChange = (e) => {
+    const checked = e.target.checked
+
+    if (!checked) {
+      setAllSelected(false)
+      setSelectedSirets(selectedSirets.filter((v) => v !== e.target.value))
+    } else {
+      setSelectedSirets(selectedSirets.push(e.target.value))
+    }
+    //const previousSelected = selectedSirets =
+  }
+
+  const selectAllSirets = (e) => {
+    setAllSelected(e.target.checked)
+    if (e.target.checked) {
+      setSelectedSirets(allSirets)
+    }
+  }
+
   return (
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -86,7 +126,33 @@ const ConfirmationDesinscription = ({ isOpen, onClose }) => {
             </Flex>
           </Heading>
         </ModalHeader>
-        <ModalBody pb={6}>Veuillez sélectionner les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées.</ModalBody>
+        <ModalBody>
+          <Text mb={4}>Veuillez sélectionner les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées.</Text>
+          <Box maxHeight={400} overflow="auto">
+            {companies &&
+              companies.map((company) => (
+                <Flex key={company.siret} alignItems="center" border="1px solid #E5E5E5" mb={2} px={4} py={2}>
+                  <Checkbox onChange={onCompanyCheckboxChange} isChecked={selectedSirets?.includes(company.siret)} value={company.siret} defaultChecked />
+                  <Box ml={4}>
+                    <Text>SIRET: {company.siret}</Text>
+                    <Text color="grey.425" fontSize={12}>
+                      {company.enseigne}
+                      <br />
+                      {company.address}
+                    </Text>
+                  </Box>
+                </Flex>
+              ))}
+          </Box>
+          <Flex justifyContent="space-between" my={8}>
+            <Checkbox onChange={selectAllSirets} isChecked={allSelected} defaultChecked>
+              Tout sélectionner
+            </Checkbox>
+            <Button disabled={isMultipleSubmitting} variant="primary" onClick={handleMultipleUnsubscribeSubmit}>
+              {isMultipleSubmitting && <Spinner mr={4} />}Déréférencer
+            </Button>
+          </Flex>
+        </ModalBody>
       </ModalContent>
     </Modal>
   )
@@ -94,40 +160,49 @@ const ConfirmationDesinscription = ({ isOpen, onClose }) => {
 
 const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
   const [emailError, setEmailError] = useState(null)
-  const [popupData /*, setPopupData*/] = useState({})
+  const [popupData, setPopupData] = useState({ companies: null, reason: null, email: null })
+  const [selectedSirets, setSelectedSirets] = useState(null)
+  const [allSelected, setAllSelected] = useState(true)
+  const [isMultipleSubmitting, setIsMultipleSubmitting] = useState(false)
   const validationPopup = useDisclosure()
   const router = useRouter()
 
-  const handleUnsubsribeSubmit = async (values) => {
+  const handleUnsubscribeSubmit = async (values) => {
     setEmailError(null)
     const response = await postUnsubscribe(values)
 
+    validationPopup.onClose()
+
     if (response.result === "OK") {
+      setPopupData({ companies: null, email: null, reason: null })
       handleUnsubscribeSuccess()
     } else if (response.result === UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES) {
+      setSelectedSirets(response.companies.map((company) => company.siret))
+      setPopupData({ companies: response.companies, email: values.email, reason: values.reason })
       validationPopup.onOpen()
-      /**
-       * Si siret mutliple alors ouvrir popup avec liste de siret
-       * construire la liste
-       * submit desinscription avec la liste de siret et l'adresse email et le motif
-       * Gérer state de liste de siret
-       * gérer state de submitting popup
-       * gérer state de liste de siret sélectionnés
-       * gérer state de values
-       *
-       * modifier endpoint pour pouvoir retourner liste de siret si plusieurs
-       * modifier endpoint pour accepter liste de siret optionnels
-       *
-       *
-       */
     } else {
+      setPopupData({})
       setEmailError(EMAIL_ERRORS[response.result])
     }
+    setIsMultipleSubmitting(false)
   }
 
   return (
     <Box as="section" p={3} mb={{ base: "2", md: "0" }} backgroundColor="white">
-      <ConfirmationDesinscription {...popupData} {...validationPopup} />
+      <ConfirmationDesinscription
+        handleUnsubscribeSubmit={handleUnsubscribeSubmit}
+        companies={popupData.companies}
+        reason={popupData.reason}
+        email={popupData.email}
+        isOpen={validationPopup.isOpen}
+        onClose={validationPopup.onClose}
+        selectedSirets={selectedSirets}
+        setSelectedSirets={setSelectedSirets}
+        allSelected={allSelected}
+        setAllSelected={setAllSelected}
+        isMultipleSubmitting={isMultipleSubmitting}
+        setIsMultipleSubmitting={setIsMultipleSubmitting}
+      />
       <SimpleGrid columns={{ md: 1, lg: 2 }} spacing="40px" mb={12}>
         <Box>
           <Text as="h1" variant="homeEditorialH1" mb={3}>
@@ -145,7 +220,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
               email: Yup.string().email("Veuillez saisir une adresse email valide").required("Veuillez saisir une adresse email valide"),
             })}
             initialValues={{ email: router?.query?.email || "", reason: "" }}
-            onSubmit={handleUnsubsribeSubmit}
+            onSubmit={handleUnsubscribeSubmit}
             enableReinitialize={true}
           >
             {({ isSubmitting, errors, touched, submitCount }) => (
