@@ -3,7 +3,7 @@ import { setTimeout } from "timers/promises"
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, ZCfaReferentielData } from "shared"
+import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, ZAdresseV3, ZCfaReferentielData } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
@@ -267,6 +267,7 @@ export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIE
     if (data.data.status_diffusion !== EDiffusibleStatus.DIFFUSIBLE) {
       return BusinessErrorCodes.NON_DIFFUSIBLE
     }
+    ZAdresseV3.parse(data.data.adresse)
     return data
   } catch (error: any) {
     const status = error?.response?.status
