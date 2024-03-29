@@ -9,7 +9,7 @@ import { SearchResultContext } from "../../../context/SearchResultContextProvide
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
-import { getJobCount } from "../services/utils"
+import { allJobSearchErrorText, getJobCount, partialJobSearchErrorText } from "../services/utils"
 
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
@@ -21,6 +21,7 @@ const ResultLists = ({
   handleExtendedSearch,
   handleSelectItem,
   isJobSearchLoading,
+  isPartnerJobSearchLoading,
   isTrainingSearchLoading,
   jobSearchError,
   searchForJobsOnNewCenter,
@@ -29,7 +30,7 @@ const ResultLists = ({
   searchForTrainingsOnNewCenter,
   shouldShowWelcomeMessage,
   showSearchForm,
-  allJobSearchError,
+  partnerJobSearchError,
   trainingSearchError,
   isTestMode = undefined,
   stubbedExtendedSearch = undefined,
@@ -101,7 +102,7 @@ const ResultLists = ({
   }
 
   const getJobResult = () => {
-    if (hasSearch && !allJobSearchError && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
+    if (hasSearch && (!isJobSearchLoading || !isPartnerJobSearchLoading) && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
       const jobCount = getJobCount(jobs)
 
       if (jobCount) {
@@ -142,11 +143,11 @@ const ResultLists = ({
 
       let jobCount = 0
 
-      if (!allJobSearchError && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
+      if (!isJobSearchLoading && !isPartnerJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
         jobCount = getJobCount(jobs)
       }
 
-      const isJobElement = scopeContext.isJob && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))
+      const isJobElement = scopeContext.isJob && !isJobSearchLoading && !isPartnerJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))
       const shouldShowFTJobs = isJobElement && jobCount < 100 // scope offre, moins de 100 offres
       const shouldShowExtendSearchButton = isJobElement && jobCount < 100 && !extendedSearch && formValues?.location?.value // scope offre, moins de 100 offres pas déjà étendu, pas recherche france entière
       const shouldShowNoJob = isJobElement && jobCount === 0 // scope offre, pas d'offre
@@ -230,12 +231,13 @@ const ResultLists = ({
 
   // construit le bloc formaté avec les erreurs remontées
   const getErrorMessages = () => {
-    return trainingSearchError && allJobSearchError ? (
+    return trainingSearchError && jobSearchError && partnerJobSearchError ? (
       <ErrorMessage message="Erreur technique momentanée" type="column" />
     ) : (
       <>
         {trainingSearchError && <ErrorMessage message={trainingSearchError} />}
-        {jobSearchError && <ErrorMessage message={jobSearchError} />}
+        {jobSearchError && partnerJobSearchError && <ErrorMessage message={allJobSearchErrorText} />}
+        {(jobSearchError ^ partnerJobSearchError) === 1 && <ErrorMessage message={partialJobSearchErrorText} />}
       </>
     )
   }
@@ -250,18 +252,22 @@ const ResultLists = ({
       <Box bg="beige" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}>
         <Box display={["flex", "flex", "none"]}>
           <ResultFilterAndCounter
-            allJobSearchError={allJobSearchError}
+            jobSearchError={jobSearchError}
+            partnerJobSearchError={partnerJobSearchError}
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
+            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
             showSearchForm={showSearchForm}
           />
         </Box>
         <Box margin="auto" maxWidth="1310px">
           <ResultListsLoading
-            allJobSearchError={allJobSearchError}
+            jobSearchError={jobSearchError}
+            partnerJobSearchError={partnerJobSearchError}
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
+            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
           />
           {getErrorMessages()}

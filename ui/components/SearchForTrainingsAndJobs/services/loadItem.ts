@@ -1,11 +1,21 @@
 import axios from "axios"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+import {
+  flyToMarker,
+  layerType,
+  setSelectedMarker,
+  setTrainingMarkers,
+  computeMissingPositionAndDistance,
+  factorTrainingsForMap,
+  setJobMarkers,
+  factorPartnerJobsForMap,
+  factorInternalJobsForMap,
+} from "../../../utils/mapTools"
 import { logError } from "../../../utils/tools"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
-import { searchForJobsFunction } from "./searchForJobs"
+import { searchForJobsFunction, searchForPartnerJobsFunction } from "./searchForJobs"
 import { companyApi, matchaApi, notFoundErrorText, offreApi, partialJobSearchErrorText, trainingApi, trainingErrorText } from "./utils"
 
 export const loadItem = async ({
@@ -13,18 +23,17 @@ export const loadItem = async ({
   setTrainings,
   setHasSearch,
   setIsFormVisible,
-  setTrainingMarkers,
   setSelectedItem,
   setCurrentPage,
   setTrainingSearchError,
-  factorTrainingsForMap,
   setIsTrainingSearchLoading,
   setIsJobSearchLoading,
-  computeMissingPositionAndDistance,
+  setIsPartnerJobSearchLoading,
   setJobSearchError,
+  setPartnerJobSearchError,
   setJobs,
-  setJobMarkers,
-  factorJobsForMap,
+  setInternalJobs,
+  setPartnerJobs,
 }) => {
   try {
     setHasSearch(true)
@@ -71,17 +80,26 @@ export const loadItem = async ({
         values,
         searchTimestamp,
         setIsJobSearchLoading,
-        setHasSearch,
-        setJobSearchError,
-        computeMissingPositionAndDistance,
-        setJobs,
-        setAllJobSearchError: () => {},
-        setJobMarkers,
-        factorJobsForMap,
         scopeContext: {
           isTraining: true,
           isJob: true,
         },
+        setHasSearch,
+        setJobSearchError,
+        setInternalJobs,
+      })
+      searchForPartnerJobsFunction({
+        values,
+        searchTimestamp,
+        setIsPartnerJobSearchLoading,
+        scopeContext: {
+          isTraining: true,
+          isJob: true,
+        },
+        setHasSearch,
+        setPartnerJobSearchError,
+        computeMissingPositionAndDistance,
+        setPartnerJobs,
       })
     } else {
       const results = {
@@ -149,7 +167,11 @@ export const loadItem = async ({
 
         setHasSearch(true)
 
-        setJobMarkers({ jobList: factorJobsForMap(results) })
+        if (item.type === LBA_ITEM_TYPE_OLD.PEJOB) {
+          setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: layerType.PARTNER, hasTrainings: false })
+        } else {
+          setJobMarkers({ jobList: factorInternalJobsForMap(results), type: layerType.INTERNAL, hasTrainings: false })
+        }
 
         setSelectedItem(loadedItem)
         setSelectedMarker(loadedItem)
@@ -172,5 +194,6 @@ export const loadItem = async ({
 
   setIsTrainingSearchLoading(false)
   setIsJobSearchLoading(false)
+  setIsPartnerJobSearchLoading(false)
   return
 }

@@ -1,11 +1,9 @@
 import Boom from "boom"
 import type { ObjectId as ObjectIdType } from "mongodb"
-import pkg from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { db } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
@@ -19,8 +17,6 @@ import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablisseme
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
-
-const { ObjectId } = pkg
 
 export interface IOffreExtended extends IJob {
   candidatures: number
@@ -355,23 +351,6 @@ export async function updateOffre(id: string | ObjectIdType, payload: UpdateQuer
     throw Boom.internal("Recruiter not found")
   }
   return recruiter
-}
-
-/**
- * @description Increment field in existing job offer
- * @param {IJob["_id"]} id
- * @param {object} payload
- * @returns {Promise<IRecruiter>}
- */
-export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload: object) => {
-  const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
-
-  await db.collection("recruiters").findOneAndUpdate(
-    { "jobs._id": new ObjectId(id.toString()) },
-    {
-      $inc: incPayload,
-    }
-  )
 }
 
 /**

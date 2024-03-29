@@ -1,4 +1,4 @@
-import { factorJobsForMap, factorTrainingsForMap, setJobMarkers, setTrainingMarkers } from "../../../utils/mapTools"
+import { factorInternalJobsForMap, factorPartnerJobsForMap, factorTrainingsForMap, layerType, setJobMarkers, setTrainingMarkers } from "../../../utils/mapTools"
 
 export const storeTrainingsInSession = ({ trainings, searchTimestamp }) => {
   try {
@@ -12,6 +12,7 @@ export const storeTrainingsInSession = ({ trainings, searchTimestamp }) => {
 
 export const storeJobsInSession = ({ jobs, searchTimestamp }) => {
   try {
+    //TODO ICI amender l'existant
     trimSessionStorage()
     const search = JSON.parse(sessionStorage.getItem(searchTimestamp))
     sessionStorage.setItem(searchTimestamp, JSON.stringify({ jobs, ...search }))
@@ -40,7 +41,8 @@ export const restoreSearchFromSession = ({ searchTimestamp, setTrainings, setJob
 
   if (search?.jobs) {
     setJobs(search.jobs)
-    setJobMarkers({ jobList: factorJobsForMap(search.jobs), hasTrainings: search?.trainings })
+    setJobMarkers({ jobList: factorInternalJobsForMap(search.jobs), type: layerType.INTERNAL, hasTrainings: search?.trainings })
+    setJobMarkers({ jobList: factorPartnerJobsForMap(search.jobs), type: layerType.PARTNER, hasTrainings: search?.trainings })
   }
 
   if (search?.trainings) {
