@@ -14,6 +14,8 @@ import { Server } from "../server"
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
+const ARBITRARY_COMPANY_LIMIT = 50
+
 export default function (server: Server) {
   server.post(
     "/unsubscribe",
@@ -38,7 +40,7 @@ export default function (server: Server) {
         criteria.siret = { $in: sirets }
       }
 
-      const lbaCompaniesToUnsubscribe = await LbaCompany.find(criteria).limit(10).lean()
+      const lbaCompaniesToUnsubscribe = await LbaCompany.find(criteria).limit(ARBITRARY_COMPANY_LIMIT).lean()
 
       if (!lbaCompaniesToUnsubscribe.length) {
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU }
