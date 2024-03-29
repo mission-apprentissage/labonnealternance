@@ -46,7 +46,7 @@ fileignoreconfig:
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
 - filename: server/src/jobs/database/obfuscateCollections.ts
-  checksum: b7bfa1b65f1890760f98701fc826b6f0f2136f068e6fa8cea0c136a2e2530852
+  checksum: c773ff392de466e14ed61b818ad90b7e69ba8a3fcf74263d446d346781e519bb
 - filename: server/src/jobs/job.actions.ts
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
@@ -55,6 +55,8 @@ fileignoreconfig:
   checksum: 2183e326a88ae3c10193a7033ab5fd421ce576cd1e234c323df247da335f74d7
 - filename: server/src/services/application.service.ts
   checksum: e1d63d8af96e34f2ceb07862f2338d5ad89265d6e0617995658b15199ab5d1d8
+- filename: server/src/services/eligibleTrainingsForAppointment.service.ts
+  checksum: 52bfe91cc0cd07121cad6dc9490a7345dbbbeb285f11fc844a8dd8eb74fe310f
 - filename: server/src/services/userRecruteur.service.ts
   checksum: fb8fc73f5ac4491b2a7be99ceaebf96c79bffa63fa6b164eed6e2d3d9fe5dae0
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
@@ -131,8 +133,6 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-- filename: server/src/services/eligibleTrainingsForAppointment.service.ts
-  checksum: 52bfe91cc0cd07121cad6dc9490a7345dbbbeb285f11fc844a8dd8eb74fe310f
 scopeconfig:
 - scope: node
 custom_patterns:
