@@ -113,6 +113,8 @@ const ConfirmationDesinscription = ({
     setAllSelected(e.target.checked)
     if (e.target.checked) {
       setSelectedSirets(allSirets)
+    } else {
+      setSelectedSirets([])
     }
   }
 
@@ -150,7 +152,7 @@ const ConfirmationDesinscription = ({
             <Checkbox onChange={selectAllSirets} isChecked={allSelected} defaultChecked>
               Tout sélectionner
             </Checkbox>
-            <Button disabled={isMultipleSubmitting} variant="primary" onClick={handleMultipleUnsubscribeSubmit}>
+            <Button isDisabled={isMultipleSubmitting || !selectedSirets?.length} variant="primary" onClick={handleMultipleUnsubscribeSubmit}>
               {isMultipleSubmitting && <Spinner mr={4} />}Déréférencer
             </Button>
           </Flex>
@@ -266,7 +268,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
                     Tous les champs sont obligatoires
                   </Text>
 
-                  <Button variant="primary" disabled={isSubmitting} type={"submit"} fontSize="16px" px={6} py={2} fontWeight="400">
+                  <Button variant="primary" isDisabled={isSubmitting} type={"submit"} fontSize="16px" px={6} py={2} fontWeight="400">
                     {isSubmitting && <Spinner mr={4} />}Confirmer
                   </Button>
                 </Flex>
