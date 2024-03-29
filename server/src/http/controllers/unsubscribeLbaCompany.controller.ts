@@ -36,8 +36,12 @@ export default function (server: Server) {
       const sirets = req.body.sirets
 
       const criteria: { email: string; siret?: { $in: string[] } } = { email }
-      if (sirets && sirets.length) {
-        criteria.siret = { $in: sirets }
+      if (sirets) {
+        if (sirets.length) {
+          criteria.siret = { $in: sirets }
+        } else {
+          return res.status(400).send({ result: UNSUBSCRIBE_EMAIL_ERRORS.WRONG_PARAMETERS })
+        }
       }
 
       const lbaCompaniesToUnsubscribe = await LbaCompany.find(criteria).limit(ARBITRARY_COMPANY_LIMIT).lean()
