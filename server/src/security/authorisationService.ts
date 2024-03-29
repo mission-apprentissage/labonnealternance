@@ -180,33 +180,52 @@ export async function getResources<S extends WithSecurityScheme>(schema: S, req:
 
 const getResourceIds = (resources: Resources): ResourceIds => {
   const resourcesIds: ResourceIds = {}
-  if (resources.recruiters.length) {
-    resourcesIds.recruiters = resources.recruiters.map((recruiter) => recruiter._id.toString())
-  }
-  if (resources.users.length) {
-    resourcesIds.users = resources.users.map((user) => user._id.toString())
-  }
-  if (resources.jobs.length) {
-    resourcesIds.jobs = resources.jobs.map((job) =>
-      job
-        ? {
-            job: job.job._id.toString(),
-            recruiter: job.recruiter ? job?.recruiter._id.toString() : null,
-          }
-        : null
-    )
-  }
-  if (resources.applications.length) {
-    resourcesIds.applications = resources.applications.map((application) =>
-      application
-        ? {
-            application: application.application._id.toString(),
-            job: application.job._id.toString(),
-            recruiter: application.recruiter._id.toString(),
-          }
-        : null
-    )
-  }
+
+  Object.keys(resources).map((key) => {
+    switch (key) {
+      case "recruiters": {
+        if (resources.recruiters.length) {
+          resourcesIds.recruiters = resources.recruiters.map((recruiter) => recruiter._id.toString())
+        }
+        break
+      }
+      case "users": {
+        if (resources.users.length) {
+          resourcesIds.users = resources.users.map((user) => user._id.toString())
+        }
+        break
+      }
+      case "jobs": {
+        if (resources.jobs.length) {
+          resourcesIds.jobs = resources.jobs.map((job) =>
+            job
+              ? {
+                  job: job.job._id.toString(),
+                  recruiter: job.recruiter ? job?.recruiter._id.toString() : null,
+                }
+              : null
+          )
+        }
+        break
+      }
+      case "applications": {
+        if (resources.applications.length) {
+          resourcesIds.applications = resources.applications.map((application) =>
+            application
+              ? {
+                  application: application.application._id.toString(),
+                  job: application.job._id.toString(),
+                  recruiter: application.recruiter._id.toString(),
+                }
+              : null
+          )
+        }
+        break
+      }
+      default:
+        assertUnreachable(key)
+    }
+  })
 
   return resourcesIds
 }
