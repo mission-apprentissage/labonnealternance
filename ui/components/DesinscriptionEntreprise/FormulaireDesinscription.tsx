@@ -104,9 +104,10 @@ const ConfirmationDesinscription = ({
       setAllSelected(false)
       setSelectedSirets(selectedSirets.filter((v) => v !== e.target.value))
     } else {
-      setSelectedSirets(selectedSirets.push(e.target.value))
+      const newSelectedSirets = [...selectedSirets]
+      newSelectedSirets.push(e.target.value)
+      setSelectedSirets(newSelectedSirets)
     }
-    //const previousSelected = selectedSirets =
   }
 
   const selectAllSirets = (e) => {
@@ -165,7 +166,7 @@ const ConfirmationDesinscription = ({
 const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
   const [emailError, setEmailError] = useState(null)
   const [popupData, setPopupData] = useState(noPopupData)
-  const [selectedSirets, setSelectedSirets] = useState(null)
+  const [selectedSirets, setSelectedSirets] = useState([])
   const [allSelected, setAllSelected] = useState(true)
   const [isMultipleSubmitting, setIsMultipleSubmitting] = useState(false)
   const validationPopup = useDisclosure()
