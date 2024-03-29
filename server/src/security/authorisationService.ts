@@ -223,7 +223,7 @@ const getResourceIds = (resources: Resources): ResourceIds => {
         break
       }
       default:
-        assertUnreachable(key)
+        assertUnreachable(key as never)
     }
   })
 
