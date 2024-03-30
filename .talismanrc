@@ -22,7 +22,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: a5dd4ea34e6be580800014a3ab36be80edf695c3efb4f082e8d494970cb8819f
+  checksum: f3da269202d63aa1ad66b8eaa148076cf0135eec6b7fabe2394fcc3eabb466d2
 - filename: .infra/files/scripts/seed.sh
   checksum: ddafc86248e8fd5f7c24ca5a62be703083f7704395f17fb7b43bc8e44227d561
 - filename: .infra/local/mongod.conf
@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts
-  checksum: fb73af261de998b70f4a520953c287bd8ac3c4e40311ad53a9b3db75b92468ec
+  checksum: 35c729e66f2b345f9be3197def8b033d7afe9b92258be9f2ed13a8a0e97c9602
 - filename: server/src/db/migrations/20231127120528-remove-password.ts
   checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
@@ -46,7 +46,7 @@ fileignoreconfig:
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
 - filename: server/src/jobs/database/obfuscateCollections.ts
-  checksum: b7bfa1b65f1890760f98701fc826b6f0f2136f068e6fa8cea0c136a2e2530852
+  checksum: c773ff392de466e14ed61b818ad90b7e69ba8a3fcf74263d446d346781e519bb
 - filename: server/src/jobs/job.actions.ts
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
@@ -54,7 +54,9 @@ fileignoreconfig:
 - filename: server/src/security/accessTokenService.ts
   checksum: 2183e326a88ae3c10193a7033ab5fd421ce576cd1e234c323df247da335f74d7
 - filename: server/src/services/application.service.ts
-  checksum: 4f50d501dbbfc19b7171667350115e33a02035d2f0bf5b2ee1770fd1c5a0b658
+  checksum: e1d63d8af96e34f2ceb07862f2338d5ad89265d6e0617995658b15199ab5d1d8
+- filename: server/src/services/eligibleTrainingsForAppointment.service.ts
+  checksum: 52bfe91cc0cd07121cad6dc9490a7345dbbbeb285f11fc844a8dd8eb74fe310f
 - filename: server/src/services/userRecruteur.service.ts
   checksum: fb8fc73f5ac4491b2a7be99ceaebf96c79bffa63fa6b164eed6e2d3d9fe5dae0
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
@@ -68,7 +70,7 @@ fileignoreconfig:
 - filename: server/tests/unit/security/accessTokenService.test.ts
   checksum: 9c157ea55171c74fa50b493577f1529f5c5c005c8137b390c9dfa719f6ba87ba
 - filename: server/tests/unit/security/authorisationService.test.ts
-  checksum: fa777cbd1d241d1d9d187f4fb7e882200b7221b9d4794233be95009d555f372e
+  checksum: 581074420be582973bbfcdfafe1f700ca32f56e331911609cdc1cb2fb2626383
 - filename: server/tests/unit/services/eligibleTrainingsForAppointment.service.test.ts
   checksum: 089218ccdaf2553d5a427cb81d0b556f51badaba5b5523299e5fe74e7ef5a802
 - filename: server/tests/unit/util.test.ts
@@ -82,11 +84,11 @@ fileignoreconfig:
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: d92630e41ad2393e3d428cbbd7b832498ff1bad50905be49c650e05df444c558
+  checksum: abbe7b8adddef20c38b9002a0c51ba7a949119b1a8872e6c65876febafdfedd5
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
-  checksum: af7e357808c9c63f22a4b279ee0fcbc1142f5bfe6ebe8a350add6a47353770ce
+  checksum: 0db1feff739fda6ff77b2a460e214c03bbeb0451c2e4cf44556f5314c1896bd7
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
@@ -105,12 +107,8 @@ fileignoreconfig:
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
 - filename: ui/components/HomeComponents/FacilitezRDVA.tsx
   checksum: cdeae2ef94431bbe8fd1bb0f1bc0c007c938c1a1d4513316cc44cb966b7f4268
-- filename: ui/components/ItemDetail/DidYouKnow.tsx
-  checksum: d6649949682369b511dbb278ca3ad2ad2771e73a72816a96d8310f013c8e4f63
 - filename: ui/components/ItemDetail/ItemDetail.tsx
-  checksum: 39ffe64a75dc92cb1f1f8be9ba3005ff3cf7f7dd525e41bc672081d0a4bbc37f
-- filename: ui/components/RDV/DemandeDeContact.tsx
-  checksum: b733919dd1e3152fea0101afa150c8096e6104ba1293dc79463eb93060a686f7
+  checksum: 1fcc0442306f83b5e45bf7da67304527598d7749b9e2642c6d4628d3b4f15a9c
 - filename: ui/components/Ressources/conseilsEtAstuces.tsx
   checksum: b9f16607c1fb319c2940223e7e9ce5acc48b8b5a5b519e2bb79210e3f0feaf17
 - filename: ui/components/Ressources/misesEnSituation.tsx

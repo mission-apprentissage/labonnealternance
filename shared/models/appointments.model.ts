@@ -46,7 +46,7 @@ export const ZAppointment = z
     cfa_read_appointment_details_date: z.date().nullish(),
     to_applicant_mails: z.array(ZMailing).nullable(),
     to_cfa_mails: z.array(ZMailing),
-    cle_ministere_educatif: z.string().nullish(),
+    cle_ministere_educatif: z.string(),
     created_at: z.date().default(() => new Date()),
     cfa_recipient_email: z.string(),
     applicant_type: enumToZod(AppointmentUserType).nullish(),

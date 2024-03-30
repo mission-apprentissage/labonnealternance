@@ -1,8 +1,8 @@
 import { Jsonify } from "type-fest"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { ZAppointment } from "./appointments.model"
 import { zObjectId } from "./common"
 import { ZEtablissement } from "./etablissement.model"
 
@@ -22,16 +22,16 @@ export const ZEligibleTrainingsForAppointmentSchema = z
     parcoursup_id: z.string().nullable(),
     parcoursup_visible: z.boolean().nullable(),
     affelnet_visible: z.boolean().nullable(),
-    cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
+    cle_ministere_educatif: z.string(),
     etablissement_formateur_raison_sociale: z.string(),
     etablissement_formateur_street: z.string().nullable(),
     departement_etablissement_formateur: z.string().nullable(),
-    etablissement_formateur_city: ZEtablissement.shape.formateur_city,
+    etablissement_formateur_city: z.string().nullish(),
     lieu_formation_street: z.string(),
     lieu_formation_city: z.string(),
     lieu_formation_zip_code: z.string(),
-    etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,
-    etablissement_gestionnaire_siret: ZEtablissement.shape.gestionnaire_siret,
+    etablissement_formateur_siret: extensions.siret.nullish(),
+    etablissement_gestionnaire_siret: extensions.siret.nullish(),
     created_at: z.date().default(() => new Date()),
     historization_date: z.date().nullish(),
   })

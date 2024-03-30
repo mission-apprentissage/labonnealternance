@@ -1,7 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZPointGeometry } from "./address.model"
-import { ZAppointment } from "./appointments.model"
 import { zObjectId } from "./common"
 
 // Define schemas for nested objects
@@ -92,7 +91,7 @@ const stringOrArraySchema = z.union([z.string(), z.array(z.string())])
 export const zFormationCatalogueSchema = z
   .object({
     _id: zObjectId,
-    cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
+    cle_ministere_educatif: z.string().nullish(),
     cfd: z.string(),
     cfd_specialite: z.string().nullish(),
     cfa_outdated: z.boolean().nullish(),
