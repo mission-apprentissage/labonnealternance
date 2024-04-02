@@ -50,7 +50,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
   const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem })
   const kindColor = kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"
 
-  useQuery(["itemDetail", selectedItem.id], () => getItemDetails({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem }), {
+  useQuery(["itemDetail", selectedItem.id], () => getItemDetails({ selectedItem, trainings, /*jobs,*/ setTrainingsAndSelectedItem }), {
     enabled: !!selectedItem && !selectedItem.detailsLoaded,
   })
 
