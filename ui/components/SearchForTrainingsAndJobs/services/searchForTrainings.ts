@@ -44,7 +44,7 @@ export const searchForTrainingsFunction = async ({
       querystring.diploma = values.diploma
     }
 
-    const response = await apiGet("/v1/formations", { querystring })
+    const response = await apiGet("/v1/formations/min", { querystring })
 
     setTrainings(response.results)
     storeTrainingsInSession({ trainings: response.results, searchTimestamp })
