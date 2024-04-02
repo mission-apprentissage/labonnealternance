@@ -270,7 +270,7 @@ const getAtLeastSomeFormations = async ({
   }
 
   rawFormations = deduplicateFormations(rawFormations)
-  const formations = transformFormationsForIdea(rawFormations, isMinimalData)
+  const formations = transformFormations(rawFormations, isMinimalData)
   sortFormations(formations)
   return formations
 }
@@ -307,7 +307,7 @@ export const deduplicateFormations = (formations: IFormationCatalogue[]): IForma
 /**
  * Retourne un ensemble de formations LbaItem à partir de formations issues de la mongo
  */
-const transformFormationsForIdea = (rawFormations: IFormationCatalogue[], isMinimalData: boolean): ILbaItemFormation[] => {
+const transformFormations = (rawFormations: IFormationCatalogue[], isMinimalData: boolean): ILbaItemFormation[] => {
   const formations: ILbaItemFormation[] = []
   if (rawFormations.length) {
     for (let i = 0; i < rawFormations.length; ++i) {
@@ -628,7 +628,7 @@ export const getFormationsParRegionQuery = async ({
       options: options === "with_description" ? ["with_description"] : [],
     })
 
-    const formations = transformFormationsForIdea(rawFormations)
+    const formations = transformFormations(rawFormations, false)
     sortFormations(formations)
 
     return { results: formations }
