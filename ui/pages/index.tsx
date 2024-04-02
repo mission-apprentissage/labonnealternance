@@ -69,11 +69,11 @@ const Home = () => {
           <PromoRessources target="candidat" />
         </Box>
 
-        {/* @ts-expect-error: TODO */}
+        {/* @ts-expect-error: TODO 
         <Box {...blockCssProperties}>
           <AmeliorerLBA />
         </Box>
-      </Box>
+      </Box>*/}
 
       <Footer />
     </Box>
