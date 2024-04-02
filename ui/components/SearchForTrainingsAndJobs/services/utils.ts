@@ -2,7 +2,7 @@ import { publicConfig } from "@/config.public"
 
 const { apiEndpoint } = publicConfig
 
-const trainingsApi = `${apiEndpoint}/v1/formations/min`
+const trainingsApi = "/v1/formations/min"
 const trainingApi = `${apiEndpoint}/v1/formations/formation`
 const jobsApi = `${apiEndpoint}/v1/jobs`
 const offreApi = jobsApi + "/job"
