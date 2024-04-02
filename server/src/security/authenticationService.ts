@@ -6,7 +6,7 @@ import { ICredential, assertUnreachable } from "shared"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUser2 } from "shared/models/user2.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-import { UserWithType } from "shared/security/permissions"
+import { Role, UserWithType } from "shared/security/permissions"
 
 import { Credential } from "@/common/model"
 import config from "@/config"
@@ -26,6 +26,7 @@ export type IUserWithType = AccessUser2 | AccessUserCredential | AccessUserToken
 declare module "fastify" {
   interface FastifyRequest {
     user?: null | undefined | IUserWithType
+    authorizationContext?: null | undefined | { role: Role | null; resources?: any }
   }
 }
 

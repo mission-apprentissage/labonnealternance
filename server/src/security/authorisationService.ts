@@ -32,9 +32,15 @@ type Resources = {
   applications: Array<ApplicationResource>
   entreprises: Array<EntrepriseResource>
 }
+export type ResourceIds = {
+  recruiters?: string[]
+  jobs?: Array<{ job: string; recruiter: string | null } | null>
+  users?: Array<string>
+  applications?: Array<{ application: string; job: string; recruiter: string } | null>
+}
 
 // Specify what we need to simplify mocking in tests
-type IRequest = Pick<FastifyRequest, "user" | "params" | "query">
+type IRequest = Pick<FastifyRequest, "user" | "params" | "query" | "authorizationContext">
 
 // TODO: Unit test access control
 // TODO: job.delegations

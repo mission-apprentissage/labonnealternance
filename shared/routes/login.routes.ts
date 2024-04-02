@@ -61,6 +61,7 @@ export const zLoginRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: null,
+        skipLogAccess: true,
         resources: {},
       },
     },
