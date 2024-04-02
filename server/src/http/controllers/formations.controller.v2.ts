@@ -22,7 +22,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
-      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer })
+      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: false })
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {
