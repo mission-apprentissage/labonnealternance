@@ -200,7 +200,7 @@ async function getResources<S extends WithSecurityScheme>(schema: S, req: IReque
   }
 }
 
-function canAccessRecruiter(userAccess: ComputedUserAccess, resource: Resources["recruiters"][number]): boolean {
+function canAccessRecruiter(userAccess: ComputedUserAccess, resource: RecruiterResource): boolean {
   const recruiterOpco = parseEnum(OPCOS, resource.recruiter.opco ?? null)
   if (recruiterOpco && userAccess.opcos.includes(recruiterOpco)) {
     return true
@@ -213,7 +213,7 @@ function canAccessRecruiter(userAccess: ComputedUserAccess, resource: Resources[
   return false
 }
 
-function canAccessJob(userAccess: ComputedUserAccess, resource: Resources["jobs"][number]): boolean {
+function canAccessJob(userAccess: ComputedUserAccess, resource: JobResource): boolean {
   return canAccessRecruiter(userAccess, resource.recruiterResource)
 }
 
@@ -224,7 +224,7 @@ function canAccessUser(userAccess: ComputedUserAccess, resource: Resources["user
   return userAccess.users.includes(resource._id)
 }
 
-function canAccessApplication(userAccess: ComputedUserAccess, resource: Resources["applications"][number]): boolean {
+function canAccessApplication(userAccess: ComputedUserAccess, resource: ApplicationResource): boolean {
   const { jobResource, applicantId } = resource
   // TODO ajout de granularité pour les accès candidat et recruteur
   return (jobResource && canAccessJob(userAccess, jobResource)) || (applicantId ? canAccessUser(userAccess, { _id: applicantId }) : false)

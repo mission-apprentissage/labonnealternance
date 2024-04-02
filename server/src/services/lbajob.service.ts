@@ -384,8 +384,8 @@ export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
 /**
  * @description Incrémente les compteurs de vue d'un ensemble d'offres lba
  */
-export const incrementLbaJobsViewCount = async (lbaJobs) => {
-  const ids = lbaJobs.results.map((job) => new ObjectId(job.job.id))
+export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
+  const ids = jobIds.map((id) => new ObjectId(id))
   try {
     await db.collection("recruiters").updateMany(
       { "jobs._id": { $in: ids } },
