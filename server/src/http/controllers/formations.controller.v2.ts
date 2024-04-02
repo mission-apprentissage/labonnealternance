@@ -37,7 +37,42 @@ export default (server: Server) => {
       if (caller && "results" in result) {
         trackApiCall({
           caller: caller,
-          api_path: "formationV1",
+          api_path: "formationV2",
+          training_count: result.results?.length,
+          result_count: result.results?.length,
+          response: "OK",
+        })
+      }
+      return res.send(result)
+    }
+  )
+
+  server.get(
+    "/formations/min",
+    {
+      schema: zRoutes.get["/formations/min"],
+      config,
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { referer } = req.headers
+      const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
+      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: true })
+
+      if ("error" in result) {
+        if (result.error === "wrong_parameters") {
+          res.status(400)
+        } else {
+          res.status(500)
+        }
+
+        return res.send(result)
+      }
+
+      if (caller && "results" in result) {
+        trackApiCall({
+          caller: caller,
+          api_path: "formationV2min",
           training_count: result.results?.length,
           result_count: result.results?.length,
           response: "OK",
