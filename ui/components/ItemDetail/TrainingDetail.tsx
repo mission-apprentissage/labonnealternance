@@ -1,12 +1,11 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, Image, Link, Spinner, Text } from "@chakra-ui/react"
+import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { Fragment, useContext, useEffect, useState } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import fetchInserJeuneStats from "../../services/fetchInserJeuneStats"
 import fetchPrdv from "../../services/fetchPrdv"
-import fetchTrainingDetails from "../../services/fetchTrainingDetails"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
 
@@ -21,14 +20,12 @@ const dontBreakOutCssParameters = {
 }
 
 const TrainingDetail = ({ training, hasAlsoJob }) => {
-  const [loading, setLoading] = useState(true)
   const [IJStats, setIJStats] = useState(null)
 
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche formation", {
       info_fiche: `${training.cleMinistereEducatif}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
-    setLoading(true)
   }, [training.id])
 
   useEffect(() => {
@@ -59,33 +56,6 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
     }
   }, [training.id])
 
-  useEffect(() => {
-    if (training && !training.descriptionLoaded) {
-      loadTrainingDetails()
-    } else {
-      setLoading(false)
-    }
-  }, [training.cleMinistereEducatif])
-
-  const loadTrainingDetails = () => {
-    const updatedTrainings = trainings
-    updatedTrainings.forEach(async (v) => {
-      if (v.id === training.id) {
-        if (!v.descriptionLoaded) {
-          const trainingWithDetails = await fetchTrainingDetails(training)
-          if (trainingWithDetails) {
-            v.training = trainingWithDetails.training
-            v.contact = trainingWithDetails.contact
-            v.company = trainingWithDetails.company
-          }
-          v.descriptionLoaded = true
-          setTrainingsAndSelectedItem(updatedTrainings, v)
-        }
-        setLoading(false)
-      }
-    })
-  }
-
   const applyDataFromRdvA = (appointmentContextResponse) => {
     const updatedTrainings = trainings
     updatedTrainings.forEach(async (v) => {
@@ -95,25 +65,12 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
           v.rdvContext = appointmentContextResponse
           setTrainingsAndSelectedItem(updatedTrainings, v)
         }
-        setLoading(false)
       }
     })
   }
 
-  const getLoading = () => {
-    return (
-      loading && (
-        <Flex alignItems="center" m={4} color="greensoft.500">
-          Chargement en cours
-          <Spinner ml={3} />
-        </Flex>
-      )
-    )
-  }
-
   return (
     <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 36px 12px", "1px 24px 36px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
-      {getLoading()}
       {getTrainingDetails(training.training)}
       <Box background="#f6f6f6" borderRadius="8px" mt={8} pl={8} py="10px" pr="10px">
         {training.onisepUrl && (
