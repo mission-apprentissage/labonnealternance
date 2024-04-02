@@ -474,6 +474,7 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
         origin,
         opco,
         status,
+        organizationId: organization._id,
       }
       return userRecruteurForAdmin
     })

@@ -95,7 +95,7 @@ export const getUserAndRecruitersDataForOpcoUser = async (
       if (!status) return acc
       const recruiter = recruiterMap.get(userRecruteur._id.toString())
       const { establishment_id } = recruiter ?? {}
-      const { _id, first_name, last_name, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type } = userRecruteur
+      const { _id, first_name, last_name, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type, organizationId } = userRecruteur
       const userForOpco: IUserForOpco = {
         _id,
         first_name,
@@ -109,6 +109,7 @@ export const getUserAndRecruitersDataForOpcoUser = async (
         type,
         jobs_count: recruiter?.jobs?.length ?? 0,
         origin: recruiter?.origin ?? "",
+        organizationId,
       }
       if (status === ETAT_UTILISATEUR.ATTENTE) {
         acc.awaiting.push(userForOpco)

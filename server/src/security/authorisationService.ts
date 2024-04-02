@@ -13,6 +13,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { Primitive } from "type-fest"
 
 import { Application, Cfa, Entreprise, Recruiter, User2 } from "@/common/model"
+import { ObjectId } from "@/common/mongodb"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUser2ByEmail } from "@/services/user2.service"
 import { isUserEmailChecked } from "@/services/userRecruteur.service"
@@ -22,12 +23,14 @@ import { getUserFromRequest } from "./authenticationService"
 type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entreprise: IEntreprise } | { type: "CFA"; cfa: ICFA })
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }
 type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string }
+type EntrepriseResource = { entreprise: IEntreprise }
 
 type Resources = {
   users: Array<{ _id: string }>
   recruiters: Array<RecruiterResource>
   jobs: Array<JobResource>
   applications: Array<ApplicationResource>
+  entreprises: Array<EntrepriseResource>
 }
 
 // Specify what we need to simplify mocking in tests
@@ -184,12 +187,41 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
   return results.flatMap((_) => (_ ? [_] : []))
 }
 
+async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["entreprises"]> {
+  if (!schema.securityScheme.resources.entreprise) {
+    return []
+  }
+
+  const results: (EntrepriseResource | null)[] = await Promise.all(
+    schema.securityScheme.resources.entreprise.map(async (entrepriseDef): Promise<EntrepriseResource | null> => {
+      if ("siret" in entrepriseDef) {
+        const siret = getAccessResourcePathValue(entrepriseDef.siret, req)
+        const entreprise = await Entreprise.findOne({ siret }).lean()
+        return entreprise ? { entreprise } : null
+      } else if ("_id" in entrepriseDef) {
+        const id = getAccessResourcePathValue(entrepriseDef._id, req)
+        try {
+          new ObjectId(id)
+        } catch (e) {
+          return null
+        }
+        const entreprise = await Entreprise.findById(id).lean()
+        return entreprise ? { entreprise } : null
+      }
+
+      assertUnreachable(entrepriseDef)
+    })
+  )
+  return results.flatMap((_) => (_ ? [_] : []))
+}
+
 async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
-  const [recruiters, jobs, users, applications] = await Promise.all([
+  const [recruiters, jobs, users, applications, entreprises] = await Promise.all([
     getRecruitersResource(schema, req),
     getJobsResource(schema, req),
     getUserResource(schema, req),
     getApplicationResource(schema, req),
+    getEntrepriseResource(schema, req),
   ])
 
   return {
@@ -197,6 +229,7 @@ async function getResources<S extends WithSecurityScheme>(schema: S, req: IReque
     jobs,
     users,
     applications,
+    entreprises,
   }
 }
 
@@ -230,6 +263,12 @@ function canAccessApplication(userAccess: ComputedUserAccess, resource: Applicat
   return (jobResource && canAccessJob(userAccess, jobResource)) || (applicantId ? canAccessUser(userAccess, { _id: applicantId }) : false)
 }
 
+function canAccessEntreprise(userAccess: ComputedUserAccess, resource: EntrepriseResource): boolean {
+  const { entreprise } = resource
+  const entrepriseOpco = parseEnum(OPCOS, entreprise.opco)
+  return userAccess.entreprises.includes(entreprise._id.toString()) || Boolean(entrepriseOpco && userAccess.opcos.includes(entrepriseOpco))
+}
+
 function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, resources: Resources): boolean {
   if (typeof access === "object") {
     if ("some" in access) {
@@ -244,7 +283,8 @@ function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, 
     resources.recruiters.every((recruiter) => canAccessRecruiter(userAccess, recruiter)) &&
     resources.jobs.every((job) => canAccessJob(userAccess, job)) &&
     resources.applications.every((application) => canAccessApplication(userAccess, application)) &&
-    resources.users.every((user) => canAccessUser(userAccess, user))
+    resources.users.every((user) => canAccessUser(userAccess, user)) &&
+    resources.entreprises.every((entreprise) => canAccessEntreprise(userAccess, entreprise))
   )
 }
 

@@ -188,6 +188,8 @@ export const UserRecruteurForAdminProjection = {
   status: true,
 } as const
 
-export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminProjection)
+export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminProjection).extend({
+  organizationId: zObjectId,
+})
 
 export type IUserRecruteurForAdmin = z.output<typeof ZUserRecruteurForAdmin>

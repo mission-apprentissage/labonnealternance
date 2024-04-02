@@ -23,6 +23,7 @@ const ZUserForOpco = ZUserRecruteur.pick({
 }).extend({
   jobs_count: z.number(),
   origin: z.string(),
+  organizationId: zObjectId,
 })
 
 export type IUserForOpco = z.output<typeof ZUserForOpco>
@@ -132,6 +133,7 @@ export const zUserRecruteurRoutes = {
               _id: { type: "params", key: "userId" },
             },
           ],
+          entreprise: [{ _id: { type: "params", key: "organizationId" } }],
         },
       },
     },
@@ -244,8 +246,11 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "admin",
-        resources: {},
+        access: "user:manage",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+          entreprise: [{ siret: { type: "params", key: "siret" } }],
+        },
       },
     },
     "/user/:userId/organization/:organizationId/permission": {

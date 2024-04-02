@@ -43,7 +43,7 @@ const fixLbaCompanies = async () => {
 }
 
 const deactivateRecruiter = async (recruiter: IRecruiter) => {
-  console.log("deactivating non diffusible recruiter : ", recruiter.establishment_siret)
+  console.info("deactivating non diffusible recruiter : ", recruiter.establishment_siret)
   recruiter.status = RECRUITER_STATUS.ARCHIVE
   recruiter.address = ANONYMIZED
   recruiter.geo_coordinates = FAKE_GEOLOCATION
@@ -60,7 +60,7 @@ const deactivateRecruiter = async (recruiter: IRecruiter) => {
 
 const deactivateEntreprise = async (entreprise: IEntreprise) => {
   const { siret } = entreprise
-  console.log("deactivating non diffusible entreprise : ", siret)
+  console.info("deactivating non diffusible entreprise : ", siret)
   await Entreprise.deleteOne({ _id: entreprise._id })
   await RoleManagement.deleteMany({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() })
 }

@@ -73,6 +73,14 @@ export type AccessRessouces = {
   user?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
+  entreprise?: ReadonlyArray<
+    | {
+        _id: AccessResourcePath
+      }
+    | {
+        siret: AccessResourcePath
+      }
+  >
 }
 
 export type UserWithType<T, V> = Readonly<{
