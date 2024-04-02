@@ -3,11 +3,12 @@ import { writeFile } from "node:fs/promises"
 import { pipeline } from "stream/promises"
 
 import axios from "axios"
-import { oleoduc, transformData, writeData, filterData } from "oleoduc"
+import { filterData, oleoduc, transformData, writeData } from "oleoduc"
 
 import { logger } from "../../common/logger"
 import { ReferentielOnisep } from "../../common/model/index"
 import { parseCsv } from "../../common/utils/fileUtils"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 type TCsvRow = {
@@ -62,20 +63,33 @@ export const importReferentielOnisep = async () => {
 
   await ReferentielOnisep.deleteMany({})
 
-  await oleoduc(
-    createReadStream(stats.filePath, { encoding: "utf-8" }),
-    parseCsv(),
-    filterData((row: TCsvRow) => row["ID action IDEO2"] && row["Clé ministère éducatif MA"]),
-    transformData((row: TCsvRow) => {
-      return {
-        id_action_ideo2: row["ID action IDEO2"],
-        cle_ministere_educatif: row["Clé ministère éducatif MA"],
-      }
-    }),
-    writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 50 })
-  )
+  try {
+    await oleoduc(
+      createReadStream(stats.filePath, { encoding: "utf-8" }),
+      parseCsv(),
+      filterData((row: TCsvRow) => row["ID action IDEO2"] && row["Clé ministère éducatif MA"]),
+      transformData((row: TCsvRow) => {
+        return {
+          id_action_ideo2: row["ID action IDEO2"],
+          cle_ministere_educatif: row["Clé ministère éducatif MA"],
+        }
+      }),
+      writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 10 })
+    )
 
-  stats.afterImportationDatabaseRows = await ReferentielOnisep.estimatedDocumentCount({})
+    stats.afterImportationDatabaseRows = await ReferentielOnisep.estimatedDocumentCount({})
 
-  logger.info("Cron #importReferentielOnisep done.", stats)
+    await notifyToSlack({
+      subject: "IMPORT ONISEP",
+      message: `Import du mapping Onisep — existantes: ${stats.beforeImportationDatabaseRows} / importées: ${stats.afterImportationDatabaseRows}`,
+    })
+  } catch (error) {
+    await notifyToSlack({
+      subject: "IMPORT ONISEP",
+      message: `Erreur lors de l'import ONISEP`,
+      error: true,
+    })
+    sentryCaptureException(error)
+  }
+  logger.info("Cron #importReferentielOnisep done.")
 }
