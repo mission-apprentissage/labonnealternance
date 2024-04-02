@@ -65,6 +65,7 @@ export default (server: Server) => {
               options,
               referer,
               api: "jobEtFormationV1",
+              isMinimalData: false,
             })
           : null,
         hasSomeApiTag
