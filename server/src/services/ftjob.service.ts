@@ -166,6 +166,9 @@ const transformFtJobWithMinimalData = ({ job, latitude = null, longitude = null 
       fullAddress: `${job.lieuTravail.libelle}${job.lieuTravail.codePostal ? " " + job.lieuTravail.codePostal : ""}`,
     },
     company,
+    job: {
+      creationDate: new Date(job.dateCreation),
+    },
   }
 
   return resultJob

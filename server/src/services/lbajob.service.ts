@@ -374,6 +374,9 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
         siret: recruiter.establishment_siret,
         name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
       },
+      job: {
+        creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
+      },
       applicationCount: applicationCountForCurrentJob?.count || 0,
     }
 

@@ -226,15 +226,15 @@ export type ILbaItemCompany = z.output<typeof ZLbaItemCompany>
 
 const ZLbaItemJob = z
   .object({
-    description: z.string().nullable(), // pe -> description | matcha -> description
-    employeurDescription: z.string().nullable().optional(), // matcha -> job.job_employer_description
+    description: z.string().nullish(), // pe -> description | matcha -> description
+    employeurDescription: z.string().nullish(), // matcha -> job.job_employer_description
     creationDate: z.date().nullable(), // pe -> dateCreation | matcha -> createdAt
-    id: z.string().nullable(), // pe -> id | matcha -> id mongo offre
-    contractType: z.string().nullable(), // pe -> typeContrat | matcha -> offres.type
+    id: z.string().nullish(), // pe -> id | matcha -> id mongo offre
+    contractType: z.string().nullish(), // pe -> typeContrat | matcha -> offres.type
     contractDescription: z.string().nullish(), // pe -> typeContratLibelle
     duration: z.string().nullish(), // pe -> dureeTravailLibelle
-    jobStartDate: z.date().optional().nullable(), // matcha -> offres.date_debut_apprentissage
-    romeDetails: ZRomeDetail.optional().nullish(), // matcha -> offres.rome_detail -> détail du code ROME
+    jobStartDate: z.date().nullish(), // matcha -> offres.date_debut_apprentissage
+    romeDetails: ZRomeDetail.nullish(), // matcha -> offres.rome_detail -> détail du code ROME
     rythmeAlternance: z.string().nullish(), // matcha -> offres.rythme_alternance
     elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
     dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat
