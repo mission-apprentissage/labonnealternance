@@ -71,32 +71,32 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
   const recruiters: IRecruiter[] = await Recruiter.aggregate(stages)
 
   const filteredJobs = await Promise.all(
-    recruiters.map(async (job) => {
+    recruiters.map(async (recruiter) => {
       const jobs: any[] = []
 
-      if (job.is_delegated && job.cfa_delegated_siret) {
-        const cfa = await Cfa.findOne({ siret: job.cfa_delegated_siret })
-        const cfaUser = await getUser2ManagingOffer(jobs[0])
+      if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
+        const cfa = await Cfa.findOne({ siret: recruiter.cfa_delegated_siret })
+        const cfaUser = await getUser2ManagingOffer(recruiter.jobs[0])
 
-        job.phone = cfaUser.phone
-        job.email = cfaUser.email
-        job.last_name = cfaUser.last_name
-        job.first_name = cfaUser.first_name
-        job.establishment_raison_sociale = cfa?.raison_sociale
-        job.address = cfa?.address
+        recruiter.phone = cfaUser.phone
+        recruiter.email = cfaUser.email
+        recruiter.last_name = cfaUser.last_name
+        recruiter.first_name = cfaUser.first_name
+        recruiter.establishment_raison_sociale = cfa?.raison_sociale
+        recruiter.address = cfa?.address
       }
 
-      job.jobs.forEach((o) => {
-        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === JOB_STATUS.ACTIVE) {
-          o.rome_label = o.rome_appellation_label ?? o.rome_label
-          if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === o.job_level_label || niveau === o.job_level_label) {
-            jobs.push(o)
+      recruiter.jobs.forEach((job) => {
+        if (romes.some((item) => job.rome_code.includes(item)) && job.job_status === JOB_STATUS.ACTIVE) {
+          job.rome_label = job.rome_appellation_label ?? job.rome_label
+          if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === job.job_level_label || niveau === job.job_level_label) {
+            jobs.push(job)
           }
         }
       })
 
-      job.jobs = jobs
-      return job
+      recruiter.jobs = jobs
+      return recruiter
     })
   )
 
