@@ -10,4 +10,5 @@ export const ZUnsubscribeQueryResponse = z
   .object({ result: z.enum(["OK", ...Object.values(UNSUBSCRIBE_EMAIL_ERRORS)]), companies: z.array(ZUnsubscribeCompanyData).nullish() })
   .strict()
 
+export type IUnsubscribeQueryResponse = z.output<typeof ZUnsubscribeQueryResponse>
 export type IUnsubscribeCompanyData = z.output<typeof ZUnsubscribeCompanyData>

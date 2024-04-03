@@ -1,5 +1,5 @@
 import { zRoutes } from "shared"
-import { IUnsubscribeCompanyData } from "shared/models/unsubscribeLbaCompany.model"
+import { IUnsubscribeQueryResponse } from "shared/models/unsubscribeLbaCompany.model"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -29,7 +29,7 @@ export default function (server: Server) {
       },
     },
     async (req, res) => {
-      let result: { result: "OK" | UNSUBSCRIBE_EMAIL_ERRORS; companies?: IUnsubscribeCompanyData[] } = { result: "OK" }
+      let result: IUnsubscribeQueryResponse = { result: "OK" }
 
       const email = req.body.email.toLowerCase()
       const reason = req.body.reason
