@@ -371,7 +371,7 @@ export const ZLbaItemLbaJob = z
     ideaType: z.literal(LBA_ITEM_TYPE_OLD.MATCHA),
     // ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
     title: z.string().nullish(), // matcha -> offres.libelle || offres.rome_appellation_label
-    contact: ZLbaItemContact.nullable(),
+    contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),
     company: ZLbaItemCompany.nullable(),
 
@@ -383,9 +383,9 @@ export const ZLbaItemLbaJob = z
         description: "Le niveau de la formation.",
       })
       .nullish(), // matcha -> offres.niveau
-    job: ZLbaItemJob.nullable(),
-    romes: z.array(ZLbaItemRome).nullable(),
-    nafs: z.array(ZLbaItemNaf).nullable(),
+    job: ZLbaItemJob.nullish(),
+    romes: z.array(ZLbaItemRome).nullish(),
+    nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
   })
   .strict()
@@ -397,13 +397,13 @@ export const ZLbaItemLbaCompany = z
   .object({
     ideaType: z.literal(LBA_ITEM_TYPE_OLD.LBA),
     // ideaType: z.literal(LBA_ITEM_TYPE.RECRUTEURS_LBA),
+    id: z.string().nullable().openapi({}),
     title: z.string().nullish(), // lbb/lba -> enseigne
-    contact: ZLbaItemContact.nullable(),
+    contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),
     company: ZLbaItemCompany.nullable(),
-
-    url: z.null(),
-    nafs: z.array(ZLbaItemNaf).nullable(),
+    url: z.string().nullish(),
+    nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
   })
   .strict()
@@ -415,14 +415,15 @@ export const ZLbaItemFtJob = z
   .object({
     ideaType: z.literal("peJob"),
     // ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES),
+    id: z.string().nullable().openapi({}),
     title: z.string().nullish(), // pe -> intitule
-    contact: ZLbaItemContact.nullable(),
+    contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),
     company: ZLbaItemCompany.nullable(),
-    url: z.string().nullable(), // pe -> reconstruction depuis id
-    job: ZLbaItemJob.nullable(),
-    romes: z.array(ZLbaItemRome).nullable(),
-    nafs: z.array(ZLbaItemNaf).nullable(),
+    url: z.string().nullish(), // pe -> reconstruction depuis id
+    job: ZLbaItemJob.nullish(),
+    romes: z.array(ZLbaItemRome).nullish(),
+    nafs: z.array(ZLbaItemNaf).nullish(),
   })
   .strict()
   .openapi("PeJob")

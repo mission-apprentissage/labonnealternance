@@ -95,6 +95,7 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
   const resultJob: ILbaItemFtJob = {
     ideaType: "peJob",
     //ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+    id: job.id,
     title: job.intitule,
     contact,
     place: {
@@ -139,14 +140,52 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
 }
 
 /**
+ * Adaptation au modèle LBA et conservation des seules infos utilisées des offres avec les données minimale pour l'UI du site LBA
+ */
+const transformFtJobWithMinimalData = ({ job, latitude = null, longitude = null }: { job: FTJob; latitude?: string | null; longitude?: string | null }): ILbaItemFtJob => {
+  const company: ILbaItemCompany = {}
+  if (job.entreprise) {
+    if (job.entreprise.nom) {
+      company.name = job.entreprise.nom
+    }
+    company.siret = job.entreprise.siret
+  }
+
+  const resultJob: ILbaItemFtJob = {
+    ideaType: "peJob",
+    //ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+    id: job.id,
+    title: job.intitule,
+    place: {
+      distance: !latitude || !longitude ? 0 : computeJobDistanceToSearchCenter(job, latitude, longitude),
+      insee: job.lieuTravail.commune,
+      zipCode: job.lieuTravail.codePostal,
+      city: job.lieuTravail.libelle,
+      latitude: job.lieuTravail.latitude ? parseFloat(job.lieuTravail.latitude) : null,
+      longitude: job.lieuTravail.longitude ? parseFloat(job.lieuTravail.longitude) : null,
+      fullAddress: `${job.lieuTravail.libelle}${job.lieuTravail.codePostal ? " " + job.lieuTravail.codePostal : ""}`,
+    },
+    company,
+  }
+
+  return resultJob
+}
+
+/**
  * Converti les offres issues de l'api France Travail en objets de type ILbaItem
  */
-const transformFtJobs = ({ jobs, radius, latitude, longitude }: { jobs: FTJob[]; radius: number; latitude: string; longitude: string }) => {
+const transformFtJobs = ({ jobs, radius, latitude, longitude, isMinimalData }: { jobs: FTJob[]; radius: number; latitude: string; longitude: string; isMinimalData: boolean }) => {
   const resultJobs: ILbaItemFtJob[] = []
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
-      const job = transformFtJob({ job: jobs[i], latitude, longitude })
+      const job = isMinimalData
+        ? transformFtJobWithMinimalData({
+            job: jobs[i],
+            latitude,
+            longitude,
+          })
+        : transformFtJob({ job: jobs[i], latitude, longitude })
 
       const d = job.place?.distance ?? 0
       if (d < getRoundedRadius(radius)) {
@@ -234,7 +273,7 @@ const getFtJobs = async ({
  * - filtrage optionnel sur les opco
  * - suppressions de données non autorisées pour des consommateurs extérieurs
  */
-export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult<ILbaItemFtJob>> => {
+export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api, isMinimalData }): Promise<TLbaItemResult<ILbaItemFtJob>> => {
   let ftResponse: FTResponse | IApiError | null = null
   const currentRadius = radius || 20000
   const jobLimit = 150
@@ -260,7 +299,7 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
 
   const resultats = ftResponse && "resultats" in ftResponse ? ftResponse.resultats : []
 
-  let jobs = transformFtJobs({ jobs: resultats, radius: currentRadius, latitude, longitude })
+  let jobs = transformFtJobs({ jobs: resultats, radius: currentRadius, latitude, longitude, isMinimalData })
 
   // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {

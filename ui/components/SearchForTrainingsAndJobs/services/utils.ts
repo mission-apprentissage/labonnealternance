@@ -5,6 +5,7 @@ const { apiEndpoint } = publicConfig
 const trainingsApi = "/v1/formations/min"
 const trainingApi = `${apiEndpoint}/v1/formations/formation`
 const jobsApi = `${apiEndpoint}/v1/jobs`
+const minimalDataJobsApi = jobsApi + "/min"
 const offreApi = jobsApi + "/job"
 const companyApi = jobsApi + "/company"
 const matchaApi = jobsApi + "/matcha"
@@ -57,6 +58,7 @@ export {
   getPartnerJobCount,
   getRomeFromParameters,
   jobsApi,
+  minimalDataJobsApi,
   matchaApi,
   notFoundErrorText,
   offreApi,

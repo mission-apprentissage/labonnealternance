@@ -27,6 +27,7 @@ export const getJobsFromApi = async ({
   opco,
   opcoUrl,
   api = "jobV1/jobs",
+  isMinimalData,
 }: {
   romes?: string
   referer?: string
@@ -41,6 +42,7 @@ export const getJobsFromApi = async ({
   opco?: string
   opcoUrl?: string
   api?: string
+  isMinimalData: boolean
 }): Promise<
   | IApiError
   | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
@@ -81,6 +83,7 @@ export const getJobsFromApi = async ({
             api,
             opco,
             opcoUrl,
+            isMinimalData,
           })
         : null,
       jobSources.includes(LBA_ITEM_TYPE.RECRUTEURS_LBA)
@@ -94,6 +97,7 @@ export const getJobsFromApi = async ({
             api,
             opco,
             opcoUrl,
+            isMinimalData,
           })
         : null,
       jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
@@ -107,6 +111,7 @@ export const getJobsFromApi = async ({
             diploma,
             opco,
             opcoUrl,
+            isMinimalData,
           })
         : null,
     ])

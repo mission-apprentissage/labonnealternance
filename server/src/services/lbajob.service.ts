@@ -116,6 +116,7 @@ export const getLbaJobs = async ({
   opcoUrl,
   diploma,
   caller,
+  isMinimalData,
 }: {
   romes?: string
   radius?: number
@@ -126,6 +127,7 @@ export const getLbaJobs = async ({
   opcoUrl?: string
   diploma?: string
   caller?: string | null
+  isMinimalData: boolean
 }) => {
   if (radius === 0) {
     radius = 10
@@ -152,7 +154,7 @@ export const getLbaJobs = async ({
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
-    const matchas = transformLbaJobs({ jobs, applicationCountByJob })
+    const matchas = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
@@ -173,15 +175,20 @@ export const getLbaJobs = async ({
 /**
  * Converti les offres issues de la mongo en objet de type ILbaItem
  */
-function transformLbaJobs({ jobs, applicationCountByJob }: { jobs: IRecruiter[]; applicationCountByJob: IApplicationCount[] }): {
+function transformLbaJobs({ jobs, applicationCountByJob, isMinimalData }: { jobs: IRecruiter[]; applicationCountByJob: IApplicationCount[]; isMinimalData: boolean }): {
   results: ILbaItemLbaJob[]
 } {
   return {
     results: jobs.flatMap((job) =>
-      transformLbaJob({
-        recruiter: job,
-        applicationCountByJob,
-      })
+      isMinimalData
+        ? transformLbaJobWithMinimalData({
+            recruiter: job,
+            applicationCountByJob,
+          })
+        : transformLbaJob({
+            recruiter: job,
+            applicationCountByJob,
+          })
     ),
   }
 }
@@ -335,6 +342,46 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
 }
 
 /**
+ * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
+ */
+function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { recruiter: Partial<IRecruiter>; applicationCountByJob: IApplicationCount[] }): ILbaItemLbaJob[] {
+  if (!recruiter.jobs) {
+    return []
+  }
+
+  return recruiter.jobs.map((offre): ILbaItemLbaJob => {
+    const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
+
+    const latitude = recruiter?.geopoint?.coordinates[1] ?? 0
+    const longitude = recruiter?.geopoint?.coordinates[0] ?? 0
+
+    const resultJob: ILbaItemLbaJob = {
+      ideaType: LBA_ITEM_TYPE_OLD.MATCHA,
+      // ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+      id: offre._id.toString(),
+      title: offre.rome_appellation_label ?? offre.rome_label,
+      place: {
+        //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
+        distance: recruiter.distance ?? false ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
+        fullAddress: recruiter.is_delegated ? null : recruiter.address,
+        address: recruiter.is_delegated ? null : recruiter.address,
+        latitude,
+        longitude,
+        city: getCity(recruiter),
+      },
+      company: {
+        // si mandataire contient les données du CFA
+        siret: recruiter.establishment_siret,
+        name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
+      },
+      applicationCount: applicationCountForCurrentJob?.count || 0,
+    }
+
+    return resultJob
+  })
+}
+
+/**
  * tri des ofres selon l'ordre alphabétique du titre (primaire) puis du nom de société (secondaire)
  */
 function sortLbaJobs(jobs: { results: ILbaItemLbaJob[] }) {
@@ -385,7 +432,7 @@ export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
  * @description Incrémente les compteurs de vue d'un ensemble d'offres lba
  */
 export const incrementLbaJobsViewCount = async (lbaJobs) => {
-  const ids = lbaJobs.results.map((job) => new ObjectId(job.job.id))
+  const ids = lbaJobs.results.map((job) => new ObjectId(job.id))
   try {
     await db.collection("recruiters").updateMany(
       { "jobs._id": { $in: ids } },

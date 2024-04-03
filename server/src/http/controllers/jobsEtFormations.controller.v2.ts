@@ -82,6 +82,7 @@ export default (server: Server) => {
               opco,
               opcoUrl,
               api: "jobEtFormationV1",
+              isMinimalData: false,
             })
           : null,
       ])
