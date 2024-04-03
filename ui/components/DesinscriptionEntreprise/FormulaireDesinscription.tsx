@@ -1,10 +1,35 @@
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Image, Input, Link, Select, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "@/../shared/constants/recruteur"
+import {
+  ModalBody,
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
+  Heading,
+  Image,
+  Input,
+  Link,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Text,
+  useDisclosure,
+  Checkbox,
+} from "@chakra-ui/react"
 import { Formik, Field, Form } from "formik"
 import { useRouter } from "next/router"
 import React, { useState } from "react"
 import * as Yup from "yup"
 
 import postUnsubscribe from "../../services/postUnsubscribe"
+import LBAModalCloseButton from "../lbaModalCloseButton"
 
 const UNSUBSCRIBE_REASON = {
   RECRUTEMENT_CLOS: "Nous avons déjà trouvé nos alternants pour l’année en cours",
@@ -12,6 +37,7 @@ const UNSUBSCRIBE_REASON = {
   AUTRES_CANAUX: "J'utilise d'autres canaux pour mes recrutements d'alternants",
   PAS_BUDGET: "Mon entreprise n’a pas la capacité financière pour recruter un alternant",
   PAS_ALTERNANT: "Mon entreprise ne recrute pas en alternance",
+  OPPOSITION: "Je m'oppose au traitement des mes données par La bonne alternance",
   ENTREPRISE_FERMEE: "L’entreprise est fermée",
   AUTRE: "Autre",
 }
@@ -48,30 +74,147 @@ const buildReasonOptions = () => {
   )
 }
 
-const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
-  const [emailError, setEmailError] = useState(null)
-  const router = useRouter()
+const noPopupData = { companies: null, reason: null, email: null }
 
-  const handleUnsubsribeSubmit = async (values) => {
-    setEmailError(null)
-    const response = await postUnsubscribe(values)
+const ConfirmationDesinscription = ({
+  isOpen,
+  onClose,
+  companies,
+  reason,
+  email,
+  handleUnsubscribeSubmit,
+  selectedSirets,
+  setSelectedSirets,
+  allSelected,
+  setAllSelected,
+  isMultipleSubmitting,
+  setIsMultipleSubmitting,
+}) => {
+  const allSirets = companies ? companies.map((company) => company.siret) : null
 
-    if (response === "OK") {
-      handleUnsubscribeSuccess()
+  const handleMultipleUnsubscribeSubmit = () => {
+    setIsMultipleSubmitting(true)
+    handleUnsubscribeSubmit({ email, reason, sirets: selectedSirets })
+  }
+
+  const onCompanyCheckboxChange = (e) => {
+    const checked = e.target.checked
+
+    if (!checked) {
+      setAllSelected(false)
+      setSelectedSirets(selectedSirets.filter((v) => v !== e.target.value))
     } else {
-      setEmailError(EMAIL_ERRORS[response])
+      const newSelectedSirets = [...selectedSirets]
+      newSelectedSirets.push(e.target.value)
+      setSelectedSirets(newSelectedSirets)
+    }
+  }
+
+  const selectAllSirets = (e) => {
+    setAllSelected(e.target.checked)
+    if (e.target.checked) {
+      setSelectedSirets(allSirets)
+    } else {
+      setSelectedSirets([])
     }
   }
 
   return (
+    <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="3xl" isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} borderRadius={0}>
+        <ModalHeader mt={4} paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
+          <LBAModalCloseButton onClose={onClose} />
+          <Heading as="h2" fontSize="24px">
+            <Flex>
+              <Image mt={1} src="/images/icons/arrow_right.svg" alt="" width="16px" mr={1} /> Plusieurs établissements correspondent à cet email
+            </Flex>
+          </Heading>
+        </ModalHeader>
+        <ModalBody>
+          <Text mb={4}>Veuillez sélectionner les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées.</Text>
+          <Box maxHeight={400} overflow="auto">
+            {companies &&
+              companies.map((company) => (
+                <Flex key={company.siret} alignItems="center" border="1px solid #E5E5E5" mb={2} px={4} py={2}>
+                  <Checkbox onChange={onCompanyCheckboxChange} isChecked={selectedSirets?.includes(company.siret)} value={company.siret} defaultChecked />
+                  <Box ml={4}>
+                    <Text>SIRET: {company.siret}</Text>
+                    <Text color="grey.425" fontSize={12}>
+                      {company.enseigne}
+                      <br />
+                      {company.address}
+                    </Text>
+                  </Box>
+                </Flex>
+              ))}
+          </Box>
+          <Flex justifyContent="space-between" my={8}>
+            <Checkbox onChange={selectAllSirets} isChecked={allSelected} defaultChecked>
+              Tout sélectionner
+            </Checkbox>
+            <Button isDisabled={isMultipleSubmitting || !selectedSirets?.length} variant="primary" onClick={handleMultipleUnsubscribeSubmit}>
+              {isMultipleSubmitting && <Spinner mr={4} />}Déréférencer
+            </Button>
+          </Flex>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  )
+}
+
+const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
+  const [emailError, setEmailError] = useState(null)
+  const [popupData, setPopupData] = useState(noPopupData)
+  const [selectedSirets, setSelectedSirets] = useState([])
+  const [allSelected, setAllSelected] = useState(true)
+  const [isMultipleSubmitting, setIsMultipleSubmitting] = useState(false)
+  const validationPopup = useDisclosure()
+  const router = useRouter()
+
+  const handleUnsubscribeSubmit = async (values) => {
+    setEmailError(null)
+    const response = await postUnsubscribe(values)
+
+    validationPopup.onClose()
+
+    if (response.result === "OK") {
+      setPopupData(noPopupData)
+      handleUnsubscribeSuccess()
+    } else if (response.result === UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES) {
+      setSelectedSirets(response.companies.map((company) => company.siret))
+      setPopupData({ companies: response.companies, email: values.email, reason: values.reason })
+      validationPopup.onOpen()
+    } else {
+      setPopupData(noPopupData)
+      setEmailError(EMAIL_ERRORS[response.result])
+    }
+    setIsMultipleSubmitting(false)
+  }
+
+  return (
     <Box as="section" p={3} mb={{ base: "2", md: "0" }} backgroundColor="white">
+      <ConfirmationDesinscription
+        handleUnsubscribeSubmit={handleUnsubscribeSubmit}
+        companies={popupData.companies}
+        reason={popupData.reason}
+        email={popupData.email}
+        isOpen={validationPopup.isOpen}
+        onClose={validationPopup.onClose}
+        selectedSirets={selectedSirets}
+        setSelectedSirets={setSelectedSirets}
+        allSelected={allSelected}
+        setAllSelected={setAllSelected}
+        isMultipleSubmitting={isMultipleSubmitting}
+        setIsMultipleSubmitting={setIsMultipleSubmitting}
+      />
       <SimpleGrid columns={{ md: 1, lg: 2 }} spacing="40px" mb={12}>
         <Box>
           <Text as="h1" variant="homeEditorialH1" mb={3}>
             Vous êtes une entreprise
           </Text>
           <Text as="h2" variant="homeEditorialH2" mb={{ base: "3", lg: "5" }}>
-            Vous ne souhaitez plus recevoir de candidatures spontanées de La bonne alternance
+            Vous souhaitez ne plus recevoir de candidatures spontanées de La bonne alternance
           </Text>
           <Box fontWeight={"500"}>Veuillez remplir le formulaire ci-contre.</Box>
         </Box>
@@ -82,7 +225,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
               email: Yup.string().email("Veuillez saisir une adresse email valide").required("Veuillez saisir une adresse email valide"),
             })}
             initialValues={{ email: router?.query?.email || "", reason: "" }}
-            onSubmit={handleUnsubsribeSubmit}
+            onSubmit={handleUnsubscribeSubmit}
             enableReinitialize={true}
           >
             {({ isSubmitting, errors, touched, submitCount }) => (
@@ -97,8 +240,8 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
                   </Field>
                   {emailError && (
                     <Flex mt={2} align="flex-start">
-                      <Image mt={1} src="/images/icons/error_stop.svg" alt="" mr={1} />
-                      <Text fontSize="12px" color="error">
+                      <Image mt={1} src="/images/icons/error_info.svg" alt="" mr={1} />
+                      <Text fontSize="12px" color="#0063CB">
                         {emailError}
                       </Text>
                     </Flex>
@@ -126,7 +269,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
                     Tous les champs sont obligatoires
                   </Text>
 
-                  <Button variant="primary" disabled={isSubmitting} type={"submit"} fontSize="16px" px={6} py={2} fontWeight="400">
+                  <Button variant="primary" isDisabled={isSubmitting} type={"submit"} fontSize="16px" px={6} py={2} fontWeight="400">
                     {isSubmitting && <Spinner mr={4} />}Confirmer
                   </Button>
                 </Flex>
