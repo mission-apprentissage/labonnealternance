@@ -42,7 +42,6 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
         peJobs: jobs.peJobs,
         lbaCompanies: jobs.lbaCompanies,
         matchas: jobs.matchas.map((v) => {
-          console.log("parcours matchas ??? ", v, jobWithDetails, v.id, jobWithDetails.id)
           if (v.id === jobWithDetails.id) {
             return jobWithDetails
           }
@@ -60,7 +59,6 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
       const updatedJobs = {
         peJobs: jobs.peJobs,
         lbaCompanies: jobs.lbaCompanies.map((v) => {
-          console.log("parcours lba ??? ", v, companyWithDetails, v.id, companyWithDetails.id)
           if (v.id === companyWithDetails.id) {
             return companyWithDetails
           }
@@ -78,7 +76,6 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
       jobWithDetails.detailsLoaded = true
       const updatedJobs = {
         peJobs: jobs.peJobs.map((v) => {
-          console.log("parcours ftjob ??? ", v, jobWithDetails, v.id, jobWithDetails.id)
           if (v.id === jobWithDetails.id) {
             return jobWithDetails
           }
