@@ -4,12 +4,16 @@ import { publicConfig } from "@/config.public"
 
 import { logError } from "../utils/tools"
 
-export default async function postUnsubscribe({ email, reason }) {
-  let res = ""
+export default async function postUnsubscribe({ email, reason, sirets }: { email: string; reason: string; sirets: string[] | null }): Promise<{
+  result: string
+  companies?: { enseigne: string; siret: string; address: string }[]
+}> {
+  let res = { result: "" }
   let isAxiosError = false
 
   try {
-    const response = await axios.post(`${publicConfig.apiEndpoint}/unsubscribe`, { email, reason })
+    const response = await axios.post(`${publicConfig.apiEndpoint}/unsubscribe`, { email, reason, sirets })
+
     res = response?.data?.error || response.data
   } catch (error) {
     console.error("postUnsubscribe error : ", error)
@@ -18,7 +22,7 @@ export default async function postUnsubscribe({ email, reason }) {
   }
 
   if (isAxiosError) {
-    res = "unexpected_error"
+    res = { result: "unexpected_error" }
   }
 
   return res
