@@ -4,6 +4,8 @@ import { useContext } from "react"
 import { useQuery } from "react-query"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import fetchTrainingDetails from "../../services/fetchTrainingDetails"
@@ -15,7 +17,7 @@ import getSoustitre from "./ItemDetailServices/getSoustitre"
 import getTags from "./ItemDetailServices/getTags"
 import LoadedItemDetail from "./loadedItemDetail"
 
-const getItemDetails = async ({ selectedItem, trainings, /*jobs,*/ setTrainingsAndSelectedItem }) => {
+const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem }) => {
   switch (selectedItem?.ideaType) {
     case LBA_ITEM_TYPE_OLD.FORMATION: {
       const trainingWithDetails = await fetchTrainingDetails(selectedItem)
@@ -31,6 +33,53 @@ const getItemDetails = async ({ selectedItem, trainings, /*jobs,*/ setTrainingsA
       break
     }
 
+    case LBA_ITEM_TYPE_OLD.MATCHA: {
+      const jobWithDetails = await fetchLbaJobDetails(selectedItem)
+      jobWithDetails.detailsLoaded = true
+      const updatedJobs = {
+        peJobs: jobs.peJobs,
+        lbaCompanies: jobs.lbaCompanies,
+        matchas: jobs.matchas.map((v) => {
+          console.log("parcours matchas ??? ", v, jobWithDetails, v.id, jobWithDetails.id)
+          if (v.id === jobWithDetails.id) {
+            return jobWithDetails
+          }
+          return v
+        }),
+      }
+
+      setJobsAndSelectedItem(updatedJobs, jobWithDetails)
+      break
+    }
+
+    case LBA_ITEM_TYPE_OLD.LBA: {
+      const companyWithDetails = await fetchTrainingDetails(selectedItem)
+      companyWithDetails.detailsLoaded = true
+      const updatedTrainings = trainings.map((v) => {
+        if (v.id === companyWithDetails.id) {
+          return companyWithDetails
+        }
+        return v
+      })
+
+      setJobsAndSelectedItem(updatedTrainings, companyWithDetails)
+      break
+    }
+
+    case LBA_ITEM_TYPE_OLD.PEJOB: {
+      const jobWithDetails = await fetchTrainingDetails(selectedItem)
+      jobWithDetails.detailsLoaded = true
+      const updatedTrainings = trainings.map((v) => {
+        if (v.id === jobWithDetails.id) {
+          return jobWithDetails
+        }
+        return v
+      })
+
+      setJobsAndSelectedItem(updatedTrainings, jobWithDetails)
+      break
+    }
+
     default: {
       assertUnreachable("shouldNotHappen" as never)
     }
@@ -43,14 +92,13 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
   const actualTitle = getActualTitle({ kind, selectedItem })
   const { activeFilters } = useContext(DisplayContext)
 
-  // @ts-expect-error: TODO not defined in context
-  const { trainings, setTrainingsAndSelectedItem, jobs, extendedSearch } = useContext(SearchResultContext)
+  const { trainings, setTrainingsAndSelectedItem, jobs, setJobsAndSelectedItem, extendedSearch } = useContext(SearchResultContext)
   const currentList = getCurrentList({ store: { trainings, jobs }, activeFilters, extendedSearch })
 
   const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem })
   const kindColor = kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"
 
-  useQuery(["itemDetail", selectedItem.id], () => getItemDetails({ selectedItem, trainings, /*jobs,*/ setTrainingsAndSelectedItem }), {
+  useQuery(["itemDetail", selectedItem.id], () => getItemDetails({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem }), {
     enabled: !!selectedItem && !selectedItem.detailsLoaded,
   })
 

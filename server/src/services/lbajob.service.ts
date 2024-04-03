@@ -273,7 +273,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
     return []
   }
 
-  return recruiter.jobs.map((offre, idx): ILbaItemLbaJob => {
+  return recruiter.jobs.map((offre): ILbaItemLbaJob => {
     const email = encryptMailWithIV({ value: recruiter.email })
     const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
     const romes = offre.rome_code.map((code) => ({ code, label: null }))
@@ -284,7 +284,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
     const resultJob: ILbaItemLbaJob = {
       ideaType: LBA_ITEM_TYPE_OLD.MATCHA,
       // ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-      id: `${recruiter.establishment_id}-${idx}`,
+      id: offre._id.toString(),
       title: offre.rome_appellation_label ?? offre.rome_label,
       contact: {
         ...email,
