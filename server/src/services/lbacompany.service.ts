@@ -47,6 +47,7 @@ const transformCompany = ({
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
     // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    id: company.siret,
     title: company.enseigne,
     contact,
     place: {

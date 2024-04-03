@@ -4,6 +4,8 @@ import { useContext } from "react"
 import { useQuery } from "react-query"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import fetchFtJobDetails from "@/services/fetchFtJobDetails"
+import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
@@ -53,30 +55,40 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
     }
 
     case LBA_ITEM_TYPE_OLD.LBA: {
-      const companyWithDetails = await fetchTrainingDetails(selectedItem)
+      const companyWithDetails = await fetchLbaCompanyDetails(selectedItem)
       companyWithDetails.detailsLoaded = true
-      const updatedTrainings = trainings.map((v) => {
-        if (v.id === companyWithDetails.id) {
-          return companyWithDetails
-        }
-        return v
-      })
+      const updatedJobs = {
+        peJobs: jobs.peJobs,
+        lbaCompanies: jobs.lbaCompanies.map((v) => {
+          console.log("parcours lba ??? ", v, companyWithDetails, v.id, companyWithDetails.id)
+          if (v.id === companyWithDetails.id) {
+            return companyWithDetails
+          }
+          return v
+        }),
+        matchas: jobs.matchas,
+      }
 
-      setJobsAndSelectedItem(updatedTrainings, companyWithDetails)
+      setJobsAndSelectedItem(updatedJobs, companyWithDetails)
       break
     }
 
     case LBA_ITEM_TYPE_OLD.PEJOB: {
-      const jobWithDetails = await fetchTrainingDetails(selectedItem)
+      const jobWithDetails = await fetchFtJobDetails(selectedItem)
       jobWithDetails.detailsLoaded = true
-      const updatedTrainings = trainings.map((v) => {
-        if (v.id === jobWithDetails.id) {
-          return jobWithDetails
-        }
-        return v
-      })
+      const updatedJobs = {
+        peJobs: jobs.peJobs.map((v) => {
+          console.log("parcours ftjob ??? ", v, jobWithDetails, v.id, jobWithDetails.id)
+          if (v.id === jobWithDetails.id) {
+            return jobWithDetails
+          }
+          return v
+        }),
+        lbaCompanies: jobs.lbaCompanies,
+        matchas: jobs.matchas,
+      }
 
-      setJobsAndSelectedItem(updatedTrainings, jobWithDetails)
+      setJobsAndSelectedItem(updatedJobs, jobWithDetails)
       break
     }
 
