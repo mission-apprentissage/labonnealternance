@@ -85,7 +85,7 @@ services:
 
   metabase:
     <<: *default
-    image: metabase/metabase:v0.49.1
+    image: metabase/metabase:v0.49.3
     deploy:
       <<: *deploy-default
       resources:
