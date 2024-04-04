@@ -499,10 +499,10 @@ export const PageAjouterVoeux = (props) => {
 
   const getRomeInformation = (rome: string, appellation, formik) => {
     getRomeDetail(rome)
-      .then((result) => {
+      .then((data) => {
         setLoading(true)
-        formik.setFieldValue("rome_detail", result.data)
-        setRomeInformation({ appellation, ...result.data })
+        formik.setFieldValue("rome_detail", data)
+        setRomeInformation({ appellation, ...data })
       })
       .catch((error) => console.error(error))
       .finally(() => {
