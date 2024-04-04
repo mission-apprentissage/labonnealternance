@@ -132,4 +132,10 @@ export const applicationSchema = new Schema<IApplication>(
 
 applicationSchema.plugin(mongoosePagination)
 
+// Indexes to support checkUserApplicationCount
+applicationSchema.index({ applicant_email: 1, created_at: 1 })
+applicationSchema.index({ applicant_email: 1, company_siret: 1 })
+applicationSchema.index({ applicant_email: 1, job_id: 1 })
+applicationSchema.index({ caller: 1, company_siret: 1, created_at: 1 })
+
 export default model<IApplication, Pagination<IApplication>>("applications", applicationSchema)
