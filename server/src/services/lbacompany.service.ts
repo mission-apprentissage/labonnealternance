@@ -285,7 +285,6 @@ export const getSomeCompanies = async ({
     api,
     opco,
     opcoUrl,
-    isMinimalData,
   })
 
   if (!("error" in companies) && companies instanceof Array) {
