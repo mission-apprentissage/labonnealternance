@@ -25,7 +25,7 @@ export const FlowSendRDV = {
       cy.get("button[type='submit'][data-tracking-id='prendre-rdv-cfa']").click({ timeout: 10000 })
     },
     close() {
-      cy.get("[data-testid='close-rdv-form']").click()
+      cy.get("button").contains("Fermer").click()
     },
     verifyAlreadyApplied() {
       this.openForm()
