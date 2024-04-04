@@ -180,21 +180,31 @@ const authorizedPaths = [
   "/user/status/:userId/by-token",
 ]
 
+export const verifyJwtToken = (jwtToken: string) => {
+  try {
+    const data = jwt.verify(jwtToken, config.auth.user.jwtSecret, {
+      complete: true,
+      issuer: config.publicUrl,
+    })
+    const token = data.payload as IAccessToken<any>
+    return token
+  } catch (err) {
+    console.warn("invalid jwt token", jwtToken, err)
+    throw Boom.forbidden()
+  }
+}
+
 export async function parseAccessToken<Schema extends SchemaWithSecurity>(
-  accessToken: string,
+  jwtToken: string,
   schema: Schema,
   params: PathParam | undefined,
   querystring: QueryString | undefined
 ): Promise<IAccessToken<Schema>> {
-  const data = jwt.verify(accessToken, config.auth.user.jwtSecret, {
-    complete: true,
-    issuer: config.publicUrl,
-  })
-  const token = data.payload as IAccessToken<Schema>
+  const token = verifyJwtToken(jwtToken) as IAccessToken<Schema>
   if (token.identity.type === "IUserRecruteur") {
     const user = await getUser({ _id: token.identity._id })
 
-    if (!user) throw Boom.unauthorized()
+    if (!user) throw Boom.forbidden()
 
     const userStatus = controlUserState(user?.status)
 
