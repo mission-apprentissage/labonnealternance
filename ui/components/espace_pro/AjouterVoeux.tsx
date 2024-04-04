@@ -222,9 +222,8 @@ const AjouterVoeuxForm = (props) => {
                     setFieldValue("rome_label", values.intitule)
                     setFieldValue("rome_appellation_label", values.appellation)
                     setFieldValue("rome_code", [values.codeRome])
+                    props.onSelectRome(values.codeRome, values.appellation)
                   }, 0)
-
-                  props.onSelectRome(values.codeRome, values.appellation)
                 }}
                 name="rome_label"
                 value={values.rome_appellation_label}
@@ -368,10 +367,8 @@ const AjouterVoeuxForm = (props) => {
 }
 
 export const PageAjouterVoeux = (props) => {
-  const {
-    rome_appellation_label,
-    rome_code: [rome],
-  } = props
+  const { rome_appellation_label, rome_code } = props
+  const rome = rome_code?.at(0)
   const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: any }>(
     rome_appellation_label && rome ? { rome, appellation: rome_appellation_label } : null
   )
