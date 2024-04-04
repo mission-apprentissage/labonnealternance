@@ -108,7 +108,7 @@ describe("authorisationService", async () => {
       })
     })
     describe.each<ResourceType>(everyResourceType)("given an accessed resource of type %s", (resourceType) => {
-      it("should always allow a token user", async () => {
+      it("should always allow a token user because authorization has been dealt with in the authentication layer", async () => {
         await expect(
           authorizationMiddleware(givenARoute({ authStrategy: "access-token", resourceType }), givenARequest({ user: givenATokenUser(), resourceId: "resourceId" }))
         ).resolves.toBe(undefined)
@@ -169,7 +169,7 @@ describe("authorisationService", async () => {
           )
         ).resolves.toBe(undefined)
       })
-      it("an entreprise user should NOT have access to another entreprise jobs", async () => {
+      it("an entreprise user should NOT have access to another entreprise's jobs", async () => {
         const user = entrepriseUserA.user
         const { recruiter } = entrepriseUserB
         const [job] = recruiter.jobs
@@ -190,7 +190,7 @@ describe("authorisationService", async () => {
           )
         ).resolves.toBe(undefined)
       })
-      it("a cfa user should NOT have access to another cfa job", async () => {
+      it("a cfa user should NOT have access to another cfa's job", async () => {
         const user = cfaUserA.user
         const { recruiter } = cfaUserB
         const [job] = recruiter.jobs
