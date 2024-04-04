@@ -14,7 +14,6 @@ import {
   Link,
   Select,
   SimpleGrid,
-  Spinner,
   Stack,
   Text,
   Textarea,
@@ -29,17 +28,16 @@ import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recrute
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
+import { AUTHTYPE } from "@/common/contants"
+import { debounce } from "@/common/utils/debounce"
+import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
+import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
+import { publicConfig } from "@/config.public"
+import { LogoContext } from "@/context/contextLogo"
+import { WidgetContext } from "@/context/contextWidget"
 import { useAuth } from "@/context/UserContext"
-
-import { AUTHTYPE } from "../../common/contants"
-import { debounce } from "../../common/utils/debounce"
-import { publicConfig } from "../../config.public"
-import { LogoContext } from "../../context/contextLogo"
-import { WidgetContext } from "../../context/contextWidget"
-import { ArrowRightLine, ExternalLinkLine, Minus, Plus, Warning } from "../../theme/components/icons"
-import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
-import { InfosDiffusionOffre } from "../DepotOffre/InfosDiffusionOffre"
-import { RomeDetail } from "../DepotOffre/RomeDetail"
+import { ArrowRightLine, ExternalLinkLine, Minus, Plus, Warning } from "@/theme/components/icons"
+import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
 
 import DropdownCombobox from "./DropdownCombobox"
 
@@ -226,7 +224,7 @@ const AjouterVoeuxForm = (props) => {
                     setFieldValue("rome_code", [values.codeRome])
                   }, 0)
 
-                  props.getRomeInformation(values.codeRome, values.appellation)
+                  props.onSelectRome(values.codeRome, values.appellation)
                 }}
                 name="rome_label"
                 value={values.rome_appellation_label}
@@ -370,25 +368,20 @@ const AjouterVoeuxForm = (props) => {
 }
 
 export const PageAjouterVoeux = (props) => {
-  const [romeInformation, setRomeInformation] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const {
+    rome_appellation_label,
+    rome_code: [rome],
+  } = props
+  const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: any }>(
+    rome_appellation_label && rome ? { rome, appellation: rome_appellation_label } : null
+  )
   const { widget } = useContext(WidgetContext)
 
   const router = useRouter()
   const { establishment_id } = router.query
 
-  const getRomeInformation = (rome: string, appellation) => {
-    getRomeDetail(rome)
-      .then((data) => {
-        setLoading(true)
-        setRomeInformation({ appellation, ...data })
-      })
-      .catch((error) => console.error(error))
-      .finally(() => {
-        setTimeout(() => {
-          setLoading(false)
-        }, 700)
-      })
+  const onSelectRome = (rome: string, appellation: any) => {
+    setRomeAndAppellation({ rome, appellation })
   }
 
   if (!establishment_id) return <></>
@@ -406,21 +399,10 @@ export const PageAjouterVoeux = (props) => {
           Merci de renseigner les champs ci-dessous pour créer votre offre
         </Text>
         <Box>
-          <AjouterVoeuxForm {...props} getRomeInformation={getRomeInformation} />
+          <AjouterVoeuxForm {...props} onSelectRome={onSelectRome} />
         </Box>
       </Box>
-      <Box>
-        {loading ? (
-          <Flex h="100%" justify="center" align="center" direction="column">
-            <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
-            <Text>Recherche en cours...</Text>
-          </Flex>
-        ) : romeInformation ? (
-          <RomeDetail {...(romeInformation as any)} />
-        ) : (
-          <InfosDiffusionOffre />
-        )}
-      </Box>
+      <Box>{romeAndAppellation ? <RomeDetailWithQuery appellation={romeAndAppellation.appellation} rome={romeAndAppellation.rome} /> : <InfosDiffusionOffre />}</Box>
     </SimpleGrid>
   )
 }
