@@ -47,6 +47,7 @@ const transformCompany = ({
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
     // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    id: company.siret,
     title: company.enseigne,
     contact,
     place: {
@@ -81,6 +82,42 @@ const transformCompany = ({
 }
 
 /**
+ * Adaptation au modèle LBA d'une société issue de l'algo avec les données minimales nécessaires pour l'ui LBA
+ */
+const transformCompanyWithMinimalData = ({ company, applicationCountByCompany }: { company: ILbaCompany; applicationCountByCompany: IApplicationCount[] }): ILbaItemLbaCompany => {
+  // format différent selon accès aux bonnes boîtes par recherche ou par siret
+  const address = buildLbaCompanyAddress(company)
+
+  const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
+
+  const resultCompany: ILbaItemLbaCompany = {
+    ideaType: LBA_ITEM_TYPE_OLD.LBA,
+    id: company.siret,
+    title: company.enseigne,
+    place: {
+      distance: company.distance ? roundDistance(company.distance / 1000) ?? 0 : null,
+      fullAddress: address,
+      latitude: parseFloat(company.geo_coordinates.split(",")[0]),
+      longitude: parseFloat(company.geo_coordinates.split(",")[1]),
+      city: company.city,
+      address,
+    },
+    company: {
+      name: company.enseigne,
+      siret: company.siret,
+    },
+    nafs: [
+      {
+        label: company.naf_label,
+      },
+    ],
+    applicationCount: applicationCount?.count || 0,
+  }
+
+  return resultCompany
+}
+
+/**
  * Transformer au format unifié une liste de sociétés issues de l'algo
  */
 const transformCompanies = ({
@@ -88,23 +125,30 @@ const transformCompanies = ({
   referer,
   caller,
   applicationCountByCompany,
+  isMinimalData,
 }: {
   companies: ILbaCompany[]
   referer?: string
   caller?: string | null
   applicationCountByCompany: IApplicationCount[]
+  isMinimalData: boolean
 }): { results: ILbaItemLbaCompany[] } => {
   const transformedCompanies: { results: ILbaItemLbaCompany[] } = { results: [] }
 
   if (companies?.length) {
     transformedCompanies.results = companies.map((company) => {
       const contactAllowedOrigin = isAllowedSource({ referer, caller })
-      return transformCompany({
-        company,
-        contactAllowedOrigin,
-        caller,
-        applicationCountByCompany,
-      })
+      return isMinimalData
+        ? transformCompanyWithMinimalData({
+            company,
+            applicationCountByCompany,
+          })
+        : transformCompany({
+            company,
+            contactAllowedOrigin,
+            caller,
+            applicationCountByCompany,
+          })
     })
   }
 
@@ -214,6 +258,7 @@ export const getSomeCompanies = async ({
   opco,
   opcoUrl,
   api = "jobV1",
+  isMinimalData,
 }: {
   romes?: string
   latitude?: number
@@ -224,6 +269,7 @@ export const getSomeCompanies = async ({
   opco?: string
   opcoUrl?: string
   api?: string
+  isMinimalData: boolean
 }): Promise<TLbaItemResult<ILbaItemLbaCompany>> => {
   const hasLocation = latitude === undefined ? false : true
   const currentRadius = hasLocation ? radius : 21000
@@ -244,7 +290,7 @@ export const getSomeCompanies = async ({
   if (!("error" in companies) && companies instanceof Array) {
     const sirets = companies.map(({ siret }) => siret)
     const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-    return transformCompanies({ companies, referer, caller, applicationCountByCompany })
+    return transformCompanies({ companies, referer, caller, applicationCountByCompany, isMinimalData })
   } else {
     return companies
   }

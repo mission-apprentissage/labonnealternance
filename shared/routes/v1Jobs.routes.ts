@@ -222,6 +222,68 @@ export const zV1JobsRoutes = {
         description: "Get job opportunities matching the query parameters",
       },
     },
+    "/v1/jobs/min": {
+      method: "get",
+      path: "/v1/jobs/min",
+      querystring: z
+        .object({
+          romes: zRomesParams("rncp"),
+          rncp: zRncpsParams,
+          caller: zCallerParam.nullish(),
+          latitude: ZLatitudeParam,
+          longitude: ZLongitudeParam,
+          radius: ZRadiusParam,
+          insee: zInseeParams,
+          sources: zSourcesParams,
+          diploma: zDiplomaParam,
+          opco: zOpcoParams,
+          opcoUrl: zOpcoUrlParams,
+        })
+        .strict()
+        .passthrough(),
+      headers: zRefererHeaders,
+      response: {
+        "200": z
+          .object({
+            peJobs: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItemFtJob),
+                })
+                .strict()
+                .nullable(),
+              ZApiError,
+            ]),
+            matchas: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItemLbaJob),
+                })
+                .strict()
+                .nullable(),
+              ZApiError,
+            ]),
+            lbaCompanies: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItemLbaCompany),
+                })
+                .strict()
+                .nullable(),
+              ZApiError,
+            ]),
+            lbbCompanies: z.null(), // always null until removal
+          })
+          .strict(),
+        "400": z.union([ZResError, ZLbacError, ZApiError]),
+        "500": z.union([ZResError, ZLbacError, ZApiError]),
+      },
+      securityScheme: null,
+      openapi: {
+        tags: ["V1 - Jobs"] as string[],
+        description: "Get job opportunities matching the query parameters",
+      },
+    },
     "/v1/jobs/company/:siret": {
       method: "get",
       path: "/v1/jobs/company/:siret",

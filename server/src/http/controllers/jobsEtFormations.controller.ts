@@ -66,6 +66,7 @@ export default (server: Server) => {
               options,
               referer,
               api: "jobEtFormationV1",
+              isMinimalData: false,
             })
           : null,
         hasSomeApiTag
@@ -82,6 +83,7 @@ export default (server: Server) => {
               opco,
               opcoUrl,
               api: "jobEtFormationV1",
+              isMinimalData: false,
             })
           : null,
       ])

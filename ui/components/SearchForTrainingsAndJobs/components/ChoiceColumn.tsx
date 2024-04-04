@@ -232,7 +232,7 @@ const ChoiceColumn = ({
   }
 
   const getSelectedItemDetail = () => {
-    return <ItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} />
+    return selectedItem ? <ItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} /> : <></>
   }
 
   const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"

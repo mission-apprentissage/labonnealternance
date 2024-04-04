@@ -67,6 +67,52 @@ export const zFormationsRoutesV2 = {
         description: "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
       },
     },
+    "/formations/min": {
+      method: "get",
+      path: "/formations/min",
+      querystring: z
+        .object({
+          romes: zRomesParams("romeDomain"),
+          romeDomain: z
+            .string()
+            .optional()
+            .openapi({
+              param: {
+                description:
+                  "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
+              },
+              example: "F ou I13",
+            }),
+          latitude: ZLatitudeParam,
+          longitude: ZLongitudeParam,
+          radius: ZRadiusParam.default(30),
+          diploma: zDiplomaParam.optional(),
+          caller: zCallerParam.optional(),
+          options: zGetFormationOptions,
+        })
+        .strict()
+        .passthrough(),
+      headers: zRefererHeaders,
+      response: {
+        "200": ZLbaItemFormationResult,
+        "400": z.union([ZResError, ZLbacError]).openapi({
+          description: "Bad Request",
+        }),
+        "500": z.union([ZResError, ZLbacError]).openapi({
+          description: "Internal Server Error",
+        }),
+      },
+      securityScheme: {
+        auth: "api-key",
+        access: null,
+        resources: {},
+      },
+      openapi: {
+        tags: ["V2 - Formations"] as string[],
+        operationId: "getFormations",
+        description: "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Récupération des données minimales.",
+      },
+    },
     "/formations/formation/:id": {
       method: "get",
       path: "/formations/formation/:id",
