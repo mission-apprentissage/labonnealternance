@@ -4,7 +4,7 @@ export const sentryCaptureException = (error: any, options?: object): void => {
   Sentry.captureException(error, options)
 }
 
-function getTransation() {
+function getTransaction() {
   return Sentry.getCurrentHub()?.getScope()?.getSpan()
 }
 
@@ -16,7 +16,7 @@ export function startSentryPerfRecording(
   }
 ): () => void {
   const childTransaction =
-    getTransation()?.startChild({
+    getTransaction()?.startChild({
       op: category,
       description: operation,
       data,
