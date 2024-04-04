@@ -1,7 +1,7 @@
 import Boom from "boom"
 import mongoose from "mongoose"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { assertUnreachable, zRoutes } from "shared/index"
+import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
+import { zRoutes } from "shared/index"
 
 import { Application } from "../../common/model/index"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
@@ -14,24 +14,6 @@ const rateLimitConfig = {
     timeWindow: "5s",
   },
 } as const
-
-export const convertedCompanyType = (company_type: LBA_ITEM_TYPE_OLD) => {
-  switch (company_type) {
-    case LBA_ITEM_TYPE_OLD.MATCHA:
-      return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-    case LBA_ITEM_TYPE_OLD.LBA:
-    case LBA_ITEM_TYPE_OLD.LBB:
-      return LBA_ITEM_TYPE.RECRUTEURS_LBA
-    case LBA_ITEM_TYPE_OLD.PE:
-      return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
-    case LBA_ITEM_TYPE_OLD.PEJOB:
-      throw new Error("not used")
-    case LBA_ITEM_TYPE_OLD.FORMATION:
-      throw new Error("not used")
-    default:
-      assertUnreachable(company_type)
-  }
-}
 
 export default function (server: Server) {
   server.post(
@@ -50,7 +32,7 @@ export default function (server: Server) {
       const { company_type } = req.body
 
       const result = await sendApplication({
-        newApplication: { ...req.body, company_type: convertedCompanyType(company_type) },
+        newApplication: { ...req.body, company_type: oldItemTypeToNewItemType(company_type) },
         referer: req.headers.referer as string,
       })
 
