@@ -127,7 +127,7 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 2g
+          memory: 4g
     healthcheck:
       test: ["CMD", "/usr/local/bin/clamdcheck.sh"]
       interval: 60s
