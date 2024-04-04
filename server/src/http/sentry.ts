@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/node"
 import { FastifyRequest } from "fastify"
 
 import { mongooseInstance } from "@/common/mongodb"
+import { startSentryPerfRecording } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 import { Server } from "./server"
@@ -129,27 +130,4 @@ function registerMongoosePlugin() {
       })
     })
   })
-}
-
-function getTransation() {
-  return Sentry.getCurrentHub()?.getScope()?.getSpan()
-}
-
-export function startSentryPerfRecording(
-  category: string,
-  operation: string,
-  data?: {
-    [key: string]: any
-  }
-): () => void {
-  const childTransaction =
-    getTransation()?.startChild({
-      op: category,
-      description: operation,
-      data,
-    }) ?? null
-
-  return () => {
-    childTransaction?.finish()
-  }
 }
