@@ -69,7 +69,7 @@ export const ZApplication = z
       example: "38 RUE DES HAMECONS, 75021 PARIS-21",
     }),
     job_origin: z
-      .enum([allLbaItemType[0], ...allLbaItemType.slice(1)])
+      .enum([allLbaItemType[0], ...allLbaItemType.slice(1), ...allLbaItemTypeOLD])
       .nullable()
       .openapi({
         description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",

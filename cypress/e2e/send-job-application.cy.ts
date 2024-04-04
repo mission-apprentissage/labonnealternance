@@ -34,11 +34,13 @@ describe("send-job-application", () => {
     FlowSendApplication.applicationForm.submit()
     FlowSendApplication.applicationForm.verifySuccess()
     FlowSendApplication.applicationForm.close()
+    FlowSendApplication.applicationForm.verifyAlreadyApplied()
 
     smtpClient.getMail(fakeMail, "Votre candidature chez").then((emailContent) => {
       containsText("Votre candidature a bien été envoyée à", emailContent)
+      const offreUrl = smtpClient.findUrlInBrackets(`${Cypress.env("ui")}/recherche-apprentissage?*`, emailContent)
+      cy.visit(offreUrl)
+      FlowSendApplication.applicationForm.verifyAlreadyApplied()
     })
-
-    FlowSendApplication.applicationForm.verifyAlreadyApplied()
   })
 })

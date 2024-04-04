@@ -1,5 +1,5 @@
-import assert from "assert"
+import { assertTrue } from "./assertTrue"
 
 export const containsText = (text: string, content: string) => {
-  assert.ok(content.includes(text), `could not find text "${text}" in ${content}`)
+  assertTrue(content.includes(text), `could not find text "${text}" in ${content}`)
 }
