@@ -1,13 +1,16 @@
-import axios from "axios"
+import { ILbaItemFtJob } from "@/../shared"
 
-import { offreApi } from "@/components/SearchForTrainingsAndJobs/services/utils"
+import { apiGet } from "@/utils/api.utils"
 
-export default async function fetchFtJobDetails(job) {
-  const res = null
-  if (!job) {
-    return res
+const fetchFtJobDetails = async (job): Promise<ILbaItemFtJob> => {
+  const response = await apiGet("/v1/jobs/job/:id", { params: { id: encodeURIComponent(job.id) } })
+
+  if (response?.peJobs?.length) {
+    response.peJobs[0].detailsLoaded = true
+    return response.peJobs[0]
+  } else {
+    throw new Error("unexpected_error")
   }
-  const ftJobApi = `${offreApi}/${encodeURIComponent(job.id)}`
-  const response = await axios.get(ftJobApi)
-  return response.data.peJobs[0]
 }
+
+export default fetchFtJobDetails
