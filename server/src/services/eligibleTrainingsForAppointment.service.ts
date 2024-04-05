@@ -77,14 +77,18 @@ export const findEligibleTrainingByActionFormation = async (idActionFormation: s
   })
 }
 
+export function isOpenForAppointments(eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerName: string) {
+  return eligibleTrainingsForAppointment.referrers.includes(referrerName) && isValidEmail(eligibleTrainingsForAppointment.lieu_formation_email)
+}
+
 export const findOpenAppointments = async (eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerName: string) => {
-  const isOpenForAppointments = await EligibleTrainingsForAppointment.findOne({
+  const item = await EligibleTrainingsForAppointment.findOne({
     cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
     referrers: { $in: [referrerName] },
     lieu_formation_email: { $nin: [null, ""] },
   })
 
-  return isOpenForAppointments && isValidEmail(isOpenForAppointments?.lieu_formation_email)
+  return item && isValidEmail(item?.lieu_formation_email)
 }
 
 export const findEtablissement = async (formateurSiret: string | null | undefined) => {

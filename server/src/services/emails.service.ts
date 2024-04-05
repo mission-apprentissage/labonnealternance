@@ -7,10 +7,7 @@ import { isHardbounceEventFromEtablissement } from "./etablissement.service"
 
 // webhook events excluding hardbounce
 export const processWebhookEvent = async (payload) => {
-  const shouldContinue = await processAppointmentToCfaWebhookEvent(payload)
-  if (shouldContinue) {
-    await processAppointmentToApplicantWebhookEvent(payload)
-  }
+  await Promise.all([processAppointmentToCfaWebhookEvent(payload), processAppointmentToApplicantWebhookEvent(payload)])
 }
 
 /**

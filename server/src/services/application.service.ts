@@ -426,6 +426,30 @@ export const validatePermanentEmail = (email: string): string => {
   return "ok"
 }
 
+async function getApplicationCountForItem(applicantEmail: string, offreOrCompany: OffreOrLbbCompany) {
+  const { type } = offreOrCompany
+
+  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    if (!("company" in offreOrCompany)) {
+      throw new Error("expected a company")
+    }
+    return Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      company_siret: offreOrCompany.company.siret,
+    })
+  }
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    if (!("offre" in offreOrCompany)) {
+      throw new Error("expected a job")
+    }
+    return Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      job_id: offreOrCompany.offre._id.toString(),
+    })
+  }
+  assertUnreachable(type as never)
+}
+
 /**
  * @description checks if email's owner has not sent more than allowed count of applications per day
  */
@@ -438,50 +462,31 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
 
   const { type } = offreOrCompany
 
-  let appCount = await Application.countDocuments({
-    applicant_email: applicantEmail.toLowerCase(),
-    created_at: { $gte: start, $lt: end },
-  })
+  const [todayApplicationsCount, itemApplicationCount, callerApplicationCount] = await Promise.all([
+    Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      created_at: { $gte: start, $lt: end },
+    }),
+    getApplicationCountForItem(applicantEmail, offreOrCompany),
+    caller
+      ? Application.countDocuments({
+          caller: caller.toLowerCase(),
+          company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.company.siret : offreOrCompany.recruiter.establishment_siret,
+          created_at: { $gte: start, $lt: end },
+        })
+      : 0,
+  ])
 
-  if (appCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
+  if (todayApplicationsCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
     return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY
   }
 
-  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    if (!("company" in offreOrCompany)) {
-      throw new Error("expected a company")
-    }
-    appCount = await Application.countDocuments({
-      applicant_email: applicantEmail.toLowerCase(),
-      company_siret: offreOrCompany.company.siret,
-    })
-    if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
-      return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
-    }
-  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    if (!("offre" in offreOrCompany)) {
-      throw new Error("expected a job")
-    }
-    appCount = await Application.countDocuments({
-      applicant_email: applicantEmail.toLowerCase(),
-      job_id: offreOrCompany.offre._id.toString(),
-    })
-    if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
-      return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
-    }
-  } else {
-    assertUnreachable(type as never)
+  if (itemApplicationCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
+    return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
   }
 
-  if (caller) {
-    appCount = await Application.countDocuments({
-      caller: caller.toLowerCase(),
-      company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.company.siret : offreOrCompany.recruiter.establishment_siret,
-      created_at: { $gte: start, $lt: end },
-    })
-    if (appCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
-      return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET
-    }
+  if (callerApplicationCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
+    return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET
   }
 
   return "ok"

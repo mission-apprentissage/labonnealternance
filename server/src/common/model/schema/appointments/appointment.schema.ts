@@ -154,5 +154,6 @@ export const appointmentSchema = new Schema<IAppointment>(
 )
 
 appointmentSchema.plugin(mongoosePagination)
+appointmentSchema.index({ applicant_id: 1, cle_ministere_educatif: 1, created_at: 1 })
 
 export default model<IAppointment, Pagination<IAppointment>>("appointment", appointmentSchema)

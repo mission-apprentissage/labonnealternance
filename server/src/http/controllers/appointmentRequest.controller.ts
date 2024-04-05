@@ -18,8 +18,8 @@ import {
   findEligibleTrainingByParcoursupId,
   findEtablissement,
   findOne,
-  findOpenAppointments,
   getParameterByCleMinistereEducatif,
+  isOpenForAppointments,
 } from "../../services/eligibleTrainingsForAppointment.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import * as users from "../../services/user.service"
@@ -57,9 +57,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Formation introuvable")
       }
 
-      const isOpenForAppointments = await findOpenAppointments(eligibleTrainingsForAppointment, referrerObj.name)
-
-      if (!isOpenForAppointments) {
+      if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerObj.name)) {
         return res.status(200).send({
           error: "Prise de rendez-vous non disponible.",
         })
@@ -108,18 +106,20 @@ export default (server: Server) => {
         throw Boom.badRequest("Formation introuvable.")
       }
 
-      let user = await users.getUserByMail(email)
+      if (!eligibleTrainingsForAppointment.lieu_formation_email) {
+        throw Boom.internal("Le lieu de formation n'a aucun email")
+      }
 
-      // Updates firstname and last name if the user already exists
-      if (user) {
-        user = await users.update(user._id, { firstname, lastname, phone, type, last_action_date: dayjs().format() })
+      const { user, isNew } = await users.createOrUpdateUserByEmail(
+        email,
+        // Updates firstname and last name if the user already exists
+        { firstname, lastname, phone, type, last_action_date: new Date() },
+        { role: EApplicantRole.CANDIDAT }
+      )
 
-        if (!user) {
-          return
-        }
-
+      if (isNew) {
         const appointment = await appointmentService.findOne({
-          applicant_id: user._id,
+          applicant_id: user._id.toString(),
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
           created_at: {
             $gte: dayjs().subtract(4, "days").toDate(),
@@ -129,24 +129,11 @@ export default (server: Server) => {
         if (appointment) {
           throw Boom.badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement en cours de traitement.`)
         }
-      } else {
-        user = await users.createUser({
-          firstname,
-          lastname,
-          phone,
-          email,
-          type,
-          role: EApplicantRole.CANDIDAT,
-          last_action_date: dayjs().toDate(),
-        })
-      }
-      if (!eligibleTrainingsForAppointment.lieu_formation_email) {
-        throw Boom.internal("Le lieu de formation n'a aucun email")
       }
 
       const [createdAppointement, etablissement] = await Promise.all([
         appointmentService.createAppointment({
-          applicant_id: user._id,
+          applicant_id: user._id.toString(),
           cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
           cfa_formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
           applicant_message_to_cfa: applicantMessageToCfa,

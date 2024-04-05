@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import type { FilterQuery } from "mongoose"
 import { IUser, IUserRecruteur } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
@@ -11,6 +12,27 @@ import { Recruiter, User, UserRecruteur } from "../common/model/index"
  * @returns {Promise<IUser>}
  */
 const getUserByMail = (email: string) => User.findOne({ email })
+
+const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
+  const newUserId = new ObjectId()
+  const user = await User.findOneAndUpdate(
+    { email },
+    {
+      $set: update,
+      $setOnInsert: { _id: newUserId, ...create },
+    },
+    {
+      upsert: true,
+      new: true,
+    }
+  )
+
+  return {
+    user,
+    // If the user is new, we will have to update the _id with the default one
+    isNew: user._id.equals(newUserId),
+  }
+}
 
 /**
  * @description Returns user from its identifier.
@@ -150,4 +172,4 @@ const getValidatorIdentityFromStatus = async (status: IUserRecruteur["status"]) 
   )
 }
 
-export { createUser, find, findOne, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, getValidatorIdentityFromStatus, update }
+export { createOrUpdateUserByEmail, createUser, find, findOne, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, getValidatorIdentityFromStatus, update }

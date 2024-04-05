@@ -160,9 +160,7 @@ export const processAppointmentToApplicantWebhookEvent = async (payload) => {
         },
       },
     })
-    return false
   }
-  return true
 }
 
 export const processAppointmentToCfaWebhookEvent = async (payload) => {
@@ -185,10 +183,7 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
         },
       },
     })
-
-    return false
   }
-  return true
 }
 
 export const isHardbounceEventFromAppointment = async (payload) => {
