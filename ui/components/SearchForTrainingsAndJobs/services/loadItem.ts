@@ -1,5 +1,10 @@
+import { assertUnreachable } from "@/../shared"
 import axios from "axios"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+
+import fetchFtJobDetails from "@/services/fetchFtJobDetails"
+import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
+import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
 
 import {
   flyToMarker,
@@ -16,7 +21,7 @@ import { logError } from "../../../utils/tools"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
 import { searchForJobsFunction, searchForPartnerJobsFunction } from "./searchForJobs"
-import { companyApi, matchaApi, notFoundErrorText, offreApi, partialJobSearchErrorText, trainingApi, trainingErrorText } from "./utils"
+import { notFoundErrorText, partialJobSearchErrorText, trainingApi, trainingErrorText } from "./utils"
 
 export const loadItem = async ({
   item,
@@ -110,59 +115,33 @@ export const loadItem = async ({
 
       let loadedItem = null
 
-      let errorMessage = null
-      let responseResult = null
-
-      switch (item.type) {
-        case LBA_ITEM_TYPE_OLD.PEJOB: {
-          const response = await axios.get(offreApi + "/" + item.itemId)
-
-          // gestion des erreurs
-          if (!response?.data?.message) {
-            const peJobs = await computeMissingPositionAndDistance(null, response.data.peJobs)
-
-            results.peJobs = peJobs
-            loadedItem = peJobs[0]
-          } else {
-            errorMessage = `PE Error : ${response.data.message}`
-            responseResult = response.data.result
+      try {
+        switch (item.type) {
+          case LBA_ITEM_TYPE_OLD.PEJOB: {
+            const ftJob = await fetchFtJobDetails({ id: item.itemId })
+            const ftJobs = await computeMissingPositionAndDistance(null, [ftJob])
+            results.peJobs = ftJobs
+            loadedItem = ftJobs[0]
+            break
           }
-          break
-        }
-        case LBA_ITEM_TYPE_OLD.MATCHA: {
-          const matchaUrl = `${matchaApi}/${item.itemId}`
-          const response = await axios.get(matchaUrl)
-
-          // gestion des erreurs
-          if (!response?.data?.message) {
-            const matchas = await computeMissingPositionAndDistance(null, response.data.matchas)
-            results.matchas = matchas
-            loadedItem = matchas[0]
-          } else {
-            errorMessage = `Matcha Error : ${response.data.message}`
-            responseResult = response.data.result
+          case LBA_ITEM_TYPE_OLD.MATCHA: {
+            const lbaJob = await fetchLbaJobDetails({ id: item.itemId })
+            const lbaJobs = await computeMissingPositionAndDistance(null, [lbaJob])
+            results.matchas = lbaJobs
+            loadedItem = lbaJobs[0]
+            break
           }
-          break
+          case LBA_ITEM_TYPE_OLD.LBA: {
+            const lbaCompany = await fetchLbaCompanyDetails({ id: item.itemId })
+            results.matchas = [lbaCompany]
+            loadedItem = lbaCompany
+            break
+          }
+          default: {
+            assertUnreachable("should not happen" as never)
+          }
         }
 
-        default: {
-          const response = await axios.get(`${companyApi}/${item.itemId}`)
-
-          // gestion des erreurs
-          if (!response?.data?.message) {
-            const companies = response.data.lbaCompanies
-
-            loadedItem = companies[0]
-            results.lbaCompanies = companies
-          } else {
-            errorMessage = `${item.type} Error : ${response.data.message}`
-            responseResult = response.data.result
-          }
-          break
-        }
-      }
-
-      if (!errorMessage) {
         setJobs(results)
 
         setHasSearch(true)
@@ -176,9 +155,8 @@ export const loadItem = async ({
         setSelectedItem(loadedItem)
         setSelectedMarker(loadedItem)
         itemMarker = loadedItem
-      } else {
-        logError("Job Load Error", errorMessage)
-        setJobSearchError(responseResult === "not_found" ? notFoundErrorText : partialJobSearchErrorText)
+      } catch (directElementLoadError) {
+        setJobSearchError(directElementLoadError.isNotFoundError() ? notFoundErrorText : partialJobSearchErrorText)
       }
     }
 
