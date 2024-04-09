@@ -1,4 +1,4 @@
-import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
+import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemTraining } from "@/../shared"
 import React, { createContext, useReducer } from "react"
 
 const initialState = {
@@ -22,6 +22,7 @@ const actions = {
   SET_HAS_SEARCH: "SET_HAS_SEARCH",
   SET_TRAININGS_AND_SELECTED_ITEM: "SET_TRAININGS_AND_SELECTED_ITEM",
   SET_SELECTED_MAP_POPUP_ITEM: "SET_SELECTED_MAP_POPUP_ITEM",
+  SET_JOBS_AND_SELECTED_ITEM: "SET_JOBS_AND_SELECTED_ITEM",
 }
 
 const reducer = (state, action) => {
@@ -45,6 +46,9 @@ const reducer = (state, action) => {
     }
     case actions.SET_TRAININGS_AND_SELECTED_ITEM: {
       return { ...state_copy, selectedItem: action.selectedItem, trainings: action.trainings }
+    }
+    case actions.SET_JOBS_AND_SELECTED_ITEM: {
+      return { ...state_copy, selectedItem: action.selectedItem, jobs: action.jobs }
     }
     case actions.SET_ITEM_TO_SCROLL_TO: {
       return { ...state_copy, itemToScrollTo: action.itemToScrollTo }
@@ -81,6 +85,8 @@ export type IContextSearch = {
   setHasSearch: (b: boolean) => void
   selectedMapPopupItem: any
   setSelectedMapPopupItem: (b: object) => void
+  setTrainingsAndSelectedItem: (trainings: ILbaItemTraining[], selectedItem: ILbaItemTraining) => void
+  setJobsAndSelectedItem: (jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }, selectedItem: ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob) => void
 }
 // @ts-expect-error: TODO
 export const SearchResultContext = createContext<IContextSearch>()
@@ -110,6 +116,9 @@ const SearchResultContextProvider = ({ children }) => {
     },
     setTrainingsAndSelectedItem: (trainings = [], selectedItem = null) => {
       dispatch({ type: actions.SET_TRAININGS_AND_SELECTED_ITEM, trainings, selectedItem })
+    },
+    setJobsAndSelectedItem: (jobs = { peJobs: null, lbaCompanies: null, matchas: null }, selectedItem = null) => {
+      dispatch({ type: actions.SET_JOBS_AND_SELECTED_ITEM, jobs, selectedItem })
     },
     setItemToScrollTo: (itemToScrollTo = null) => {
       dispatch({ type: actions.SET_ITEM_TO_SCROLL_TO, itemToScrollTo })

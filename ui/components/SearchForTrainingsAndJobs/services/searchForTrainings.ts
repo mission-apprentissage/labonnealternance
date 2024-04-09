@@ -2,7 +2,7 @@ import { apiGet } from "../../../utils/api.utils"
 import { logError } from "../../../utils/tools"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
-import { getRomeFromParameters, trainingErrorText } from "./utils"
+import { getRomeFromParameters, trainingErrorText, trainingsApi } from "./utils"
 
 export const searchForTrainingsFunction = async ({
   values,
@@ -44,7 +44,7 @@ export const searchForTrainingsFunction = async ({
       querystring.diploma = values.diploma
     }
 
-    const response = await apiGet("/v1/formations", { querystring })
+    const response = await apiGet(trainingsApi, { querystring })
 
     setTrainings(response.results)
     storeTrainingsInSession({ trainings: response.results, searchTimestamp })

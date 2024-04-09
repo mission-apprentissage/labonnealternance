@@ -1,18 +1,16 @@
+import { assertUnreachable } from "@/../shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 export default function getActualTitle({ selectedItem, kind }) {
-  let title = ""
-
-  if (kind === LBA_ITEM_TYPE_OLD.FORMATION) {
-    title = selectedItem?.title || selectedItem?.longTitle
-  } else if (kind === LBA_ITEM_TYPE_OLD.MATCHA) {
-    title = selectedItem?.title
-  } else if (kind === LBA_ITEM_TYPE_OLD.PEJOB) {
-    title = selectedItem?.title
-  } else {
-    // lba / lbb
-    title = selectedItem?.nafs[0]?.label
+  switch (kind) {
+    case LBA_ITEM_TYPE_OLD.FORMATION:
+      return selectedItem?.title || selectedItem?.longTitle
+    case LBA_ITEM_TYPE_OLD.MATCHA:
+    case LBA_ITEM_TYPE_OLD.PEJOB:
+      return selectedItem?.title
+    case LBA_ITEM_TYPE_OLD.LBA:
+      return selectedItem?.nafs[0]?.label
+    default:
+      assertUnreachable("shouldNotHappen" as never)
   }
-
-  return title
 }

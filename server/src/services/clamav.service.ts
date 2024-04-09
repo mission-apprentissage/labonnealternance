@@ -3,6 +3,8 @@ import { Readable } from "stream"
 import NodeClam from "clamscan"
 import tcpPortUsed from "tcp-port-used"
 
+import { startSentryPerfRecording } from "@/common/utils/sentryUtils"
+
 import { logger } from "../common/logger"
 import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
@@ -23,6 +25,8 @@ const initScanner = (): Promise<unknown> => {
   const host = config.env === "local" ? "localhost" : "clamav"
 
   return new Promise((resolve, reject) => {
+    const onFinish = startSentryPerfRecording("clamav", "init")
+
     tcpPortUsed
       .waitUntilUsedOnHost(port, host, 500, 30000)
       .then(() => {
@@ -39,6 +43,7 @@ const initScanner = (): Promise<unknown> => {
         resolve(clamscan)
       })
       .catch(reject)
+      .finally(onFinish)
   })
 }
 
@@ -48,18 +53,24 @@ const initScanner = (): Promise<unknown> => {
  * @returns {Promise<boolean>}
  */
 const scanString = async (fileContent: string): Promise<boolean> => {
-  // le fichier est encodé en base 64 à la suite d'un en-tête.
-  const decodedAscii = Readable.from(Buffer.from(fileContent.substring(fileContent.indexOf(";base64,") + 8), "base64").toString("ascii"))
-  const rs = Readable.from(decodedAscii)
+  const onFinish = startSentryPerfRecording("clamav", "scan")
 
-  const { isInfected, viruses } = await scanner.scanStream(rs)
+  try {
+    // le fichier est encodé en base 64 à la suite d'un en-tête.
+    const decodedAscii = Readable.from(Buffer.from(fileContent.substring(fileContent.indexOf(";base64,") + 8), "base64").toString("ascii"))
+    const rs = Readable.from(decodedAscii)
 
-  if (isInfected) {
-    logger.error(`Virus detected ${viruses.toString()}`)
-    await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
+    const { isInfected, viruses } = await scanner.scanStream(rs)
+
+    if (isInfected) {
+      logger.error(`Virus detected ${viruses.toString()}`)
+      await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
+    }
+
+    return isInfected
+  } finally {
+    onFinish()
   }
-
-  return isInfected
 }
 
 /**
