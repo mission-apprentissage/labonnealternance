@@ -270,6 +270,67 @@ const ZLbaItemTraining = z
 
 export type ILbaItemTraining = z.output<typeof ZLbaItemTraining>
 
+const ZLbaItemTraining2 = z
+  .object({
+    description: z.string().nullable(),
+    objectif: z.string().nullable(),
+    sessions: z.array(ZLbaItemTrainingSession).nullish(),
+    duration: z.number().nullable().openapi("Durée de session en jours"),
+    title: z.string().nullish().openapi({
+      description: "Le titre de la formation",
+      example: "CAP Monteur en Installation Thermique",
+    }), // formation -> intitule_long OU intitule_court
+    idRco: z.string().nullish(), // formation -> id_formation
+    cleMinistereEducatif: z.string().nullish(), // formation
+    diplomaLevel: z
+      .string()
+      .openapi({
+        example: "3 (CAP...)",
+        description: "Le niveau de la formation.",
+      })
+      .nullish(), // formation -> niveau
+    diploma: z
+      .string()
+      .openapi({
+        example: "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
+        description: "Le diplôme délivré par la formation.",
+      })
+      .nullish(), // formation -> diplome
+    cfd: z
+      .string()
+      .openapi({
+        example: "50023324",
+        description: "Le code formation diplôme de l'éducation nationale.",
+      })
+      .nullish(), // formation -> cfd
+    rncpCode: z
+      .string()
+      .openapi({
+        example: "RNCP31899",
+        description: "Le code RNCP.",
+      })
+      .nullish(), // formation -> rncp_code
+    rncpLabel: z
+      .string()
+      .openapi({
+        example: "Intégrateur - Développeur Web",
+        description: "L'intitulé RNCP.",
+      })
+      .nullish(), // formation -> rncp_intitule
+    onisepUrl: z
+      .string()
+      .openapi({
+        example: "http://www.onisep.fr/http/redirection/formation/identifiant/7872",
+        description: "Le lien vers la description de la formation sur le site de l'ONISEP",
+      })
+      .nullish(), // formation -> onisep_url
+    romes: z.array(ZLbaItemRome).nullish(),
+  })
+  .strict()
+  .openapi("Training")
+
+export type ILbaItemTraining2 = z.output<typeof ZLbaItemTraining2>
+
 export const ZLbaItemFormation = z
   .object({
     ideaType: z.literal(LBA_ITEM_TYPE.FORMATION).openapi({
@@ -365,6 +426,28 @@ export const ZLbaItemFormation = z
   .openapi("Formation")
 
 export type ILbaItemFormation = z.output<typeof ZLbaItemFormation>
+
+export const ZLbaItemFormation2 = z
+  .object({
+    type: z.literal(LBA_ITEM_TYPE.FORMATION).openapi({
+      example: LBA_ITEM_TYPE.FORMATION,
+      description: "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
+    }),
+    contact: ZLbaItemContact.nullish(),
+    place: ZLbaItemPlace.openapi({
+      description: "Le lieu de formation",
+    }).nullable(),
+    company: ZLbaItemCompany.omit({
+      id: true,
+      url: true,
+      socialNetwork: true,
+    }).nullable(),
+    training: ZLbaItemTraining.nullish(),
+  })
+  .strict()
+  .openapi("Formation")
+
+export type ILbaItemFormation2 = z.output<typeof ZLbaItemFormation2>
 
 export const ZLbaItemLbaJob = z
   .object({
