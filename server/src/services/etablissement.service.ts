@@ -855,10 +855,13 @@ export const sendUserConfirmationEmail = async (user: IUserRecruteur) => {
     data: {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
       last_name: sanitizeForEmail(user.last_name),
       first_name: sanitizeForEmail(user.first_name),
       confirmation_url: url,
+      email: user.email,
+      establishment_name: user.establishment_raison_sociale,
     },
   })
 }
