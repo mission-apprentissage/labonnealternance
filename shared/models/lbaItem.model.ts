@@ -442,7 +442,7 @@ export const ZLbaItemFormation2 = z
       url: true,
       socialNetwork: true,
     }).nullable(),
-    training: ZLbaItemTraining.nullish(),
+    training: ZLbaItemTraining2.nullish(),
   })
   .strict()
   .openapi("Formation")
