@@ -1,6 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormationResult } from "../models/lbaItem.model"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { zCallerParam, zDiplomaParam, zGetFormationOptions, ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zRefererHeaders, zRomesParams } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
@@ -45,7 +46,10 @@ export const zV1FormationsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Formations"] as string[],
-        description: "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
+        description: `Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique\n${rateLimitDescription({
+          max: 7,
+          timeWindow: "1s",
+        })}`,
       },
     },
     "/v1/formations/min": {
@@ -86,7 +90,9 @@ export const zV1FormationsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Formations"] as string[],
-        description: "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Retour de données minimales",
+        description: `Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Retour de données minimales\n${rateLimitDescription(
+          { max: 7, timeWindow: "1s" }
+        )}`,
       },
     },
     "/v1/formations/formation/:id": {
@@ -111,7 +117,7 @@ export const zV1FormationsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Formations"] as string[],
-        description: "Get one formation identified by it's clé ministère éducatif",
+        description: `Get one formation identified by it's clé ministère éducatif\n${rateLimitDescription({ max: 7, timeWindow: "1s" })}`,
       },
     },
   },

@@ -1,5 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/metiers.model"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -26,7 +27,10 @@ export const zMetiersRoutes = {
       },
       securityScheme: null,
       openapi: {
-        description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
+        description: `Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée\n${rateLimitDescription({
+          max: 20,
+          timeWindow: "1s",
+        })}`,
         tags: ["V1 - Metiers"] as string[],
       },
     },
@@ -38,7 +42,7 @@ export const zMetiersRoutes = {
       },
       securityScheme: null,
       openapi: {
-        description: "Retourne la liste de tous les métiers référencés sur LBA",
+        description: `Retourne la liste de tous les métiers référencés sur LBA\n${rateLimitDescription({ max: 20, timeWindow: "1s" })}`,
         tags: ["V1 - Metiers"] as string[],
       },
     },
@@ -82,7 +86,7 @@ export const zMetiersRoutes = {
       },
       securityScheme: null,
       openapi: {
-        description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
+        description: `Récupérer la liste des noms des métiers du référentiel de La bonne alternance\n${rateLimitDescription({ max: 20, timeWindow: "1s" })}`,
         tags: ["V1 - Metiers"] as string[],
       },
     },
@@ -101,7 +105,10 @@ export const zMetiersRoutes = {
       },
       securityScheme: null,
       openapi: {
-        description: "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+        description: `Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres\n${rateLimitDescription({
+          max: 20,
+          timeWindow: "1s",
+        })}`,
         tags: ["V1 - Metiers"] as string[],
       },
     },

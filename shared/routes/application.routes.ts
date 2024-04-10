@@ -2,6 +2,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models"
 import { ZNewApplication } from "../models/applications.model"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -31,8 +32,9 @@ export const zApplicationRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Applications"] as string[],
-        description:
-          "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.\n",
+        description: `Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.\n${rateLimitDescription(
+          { max: 5, timeWindow: "5s" }
+        )}`,
       },
     },
     "/application/intention/:id": {
@@ -56,6 +58,9 @@ export const zApplicationRoutes = {
         auth: "access-token",
         access: null,
         resources: {},
+      },
+      openapi: {
+        description: rateLimitDescription({ max: 1, timeWindow: "5s" }),
       },
     },
     "/application/intentionComment/:id": {
@@ -89,6 +94,9 @@ export const zApplicationRoutes = {
         auth: "access-token",
         access: null,
         resources: {},
+      },
+      openapi: {
+        description: rateLimitDescription({ max: 1, timeWindow: "5s" }),
       },
     },
   },

@@ -1,5 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/metiers.model"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -26,7 +27,10 @@ export const zMetiersRoutesV2 = {
       },
       securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
-        description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
+        description: `Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée\n${rateLimitDescription({
+          max: 20,
+          timeWindow: "1s",
+        })}`,
         tags: ["V2 - Metiers"] as string[],
         operationId: "getMetiersParCfd",
       },
@@ -39,7 +43,7 @@ export const zMetiersRoutesV2 = {
       },
       securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
-        description: "Retourne la liste de tous les métiers référencés sur LBA",
+        description: `Retourne la liste de tous les métiers référencés sur LBA\n${rateLimitDescription({ max: 20, timeWindow: "1s" })}`,
         tags: ["V2 - Metiers"] as string[],
         operationId: "getTousLesMetiers",
       },
@@ -84,7 +88,7 @@ export const zMetiersRoutesV2 = {
       },
       securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
-        description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
+        description: `Récupérer la liste des noms des métiers du référentiel de La bonne alternance\n${rateLimitDescription({ max: 20, timeWindow: "1s" })}`,
         tags: ["V2 - Metiers"] as string[],
         operationId: "getMetiers",
       },
@@ -104,7 +108,10 @@ export const zMetiersRoutesV2 = {
       },
       securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
-        description: "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+        description: `Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres\n${rateLimitDescription({
+          max: 20,
+          timeWindow: "1s",
+        })}`,
         tags: ["V2 - Metiers"] as string[],
         operationId: "getCoupleAppellationRomeIntitule",
       },

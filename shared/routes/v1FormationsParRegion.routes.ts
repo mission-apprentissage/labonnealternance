@@ -1,6 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormationResult } from "../models/lbaItem.model"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
@@ -66,7 +67,9 @@ export const zV1FormationsParRegion = {
       },
       securityScheme: null,
       openapi: {
-        description: "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
+        description: `Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers\n${rateLimitDescription(
+          { max: 5, timeWindow: "1s" }
+        )}`,
         tags: ["V1 - Formations par région"] as string[],
       },
     },
