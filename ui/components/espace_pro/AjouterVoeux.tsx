@@ -277,9 +277,6 @@ const AjouterVoeuxForm = (props) => {
             <FormControl mt={6} isRequired>
               <FormLabel>Niveau visé en fin d’études</FormLabel>
               <Select size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
-                <option value="" hidden>
-                  Choisissez un niveau
-                </option>
                 <option value="Indifférent">Indifférent</option>
                 <option value="Cap, autres formations niveau (Infrabac)">Cap, autres formations niveau (Infrabac)</option>
                 <option value="BP, Bac, autres formations niveau (Bac)">BP, Bac, autres formations niveau (Bac)</option>
