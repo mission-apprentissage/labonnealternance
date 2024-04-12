@@ -116,7 +116,12 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                 </ListItem>
                 <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href={`/ressources${ressources ? "#" + ressources : ""}`}>
-                    <Link aria-label="Accès à la page Contact">Ressources</Link>
+                    <Link aria-label="Accès à la page Ressources">Ressources</Link>
+                  </NextLink>
+                </ListItem>
+                <ListItem {...basicLink}>
+                  <NextLink legacyBehavior passHref href="https://mission-apprentissage.notion.site/Blog-f583f6fb051843bc8e3097b2e8bab9e3?pvs=25">
+                    <Link aria-label="Accès au blog de La bonne alternance">Blog</Link>
                   </NextLink>
                 </ListItem>
                 <ListItem {...basicLink}>
