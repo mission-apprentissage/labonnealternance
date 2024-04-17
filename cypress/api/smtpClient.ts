@@ -45,7 +45,8 @@ export const smtpClient = {
   },
   findUrlInBrackets(urlLike: string, content: string) {
     const cleanUrl = urlLike.replace(new RegExp("\\*", "g"), ".*").replace("?", "\\?")
-    const urlOpt = new RegExp(`\\[(${cleanUrl})\\]`, "gi").exec(content)?.at(1)
+    const regexpMatch = new RegExp(`\\[(${cleanUrl})\\]`, "gi").exec(content)
+    const urlOpt = regexpMatch[1]
     if (!urlOpt) {
       throw new Error(`could not find url like ${urlLike} in ${content}`)
     }

@@ -5,7 +5,7 @@ import { factorInternalJobsForMap, factorPartnerJobsForMap, layerType, setJobMar
 import { logError } from "../../../utils/tools"
 
 import { storeJobsInSession } from "./handleSessionStorage"
-import { getRomeFromParameters, jobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
+import { getRomeFromParameters, minimalDataJobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
 
 export const searchForJobsFunction = async ({
   values,
@@ -55,7 +55,7 @@ export const searchForJobsFunction = async ({
       params.diploma = values.diploma
     }
 
-    const response = await axios.get(jobsApi, {
+    const response = await axios.get(minimalDataJobsApi, {
       params,
     })
 
@@ -165,7 +165,7 @@ export const searchForPartnerJobsFunction = async ({
       params.diploma = values.diploma
     }
 
-    const response = await axios.get(jobsApi, {
+    const response = await axios.get(minimalDataJobsApi, {
       params,
     })
 

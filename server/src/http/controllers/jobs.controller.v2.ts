@@ -343,7 +343,33 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
-      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl })
+      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: false })
+
+      if ("error" in result) {
+        return res.status(500).send(result)
+      }
+
+      if ("matchas" in result && result.matchas) {
+        const { matchas } = result
+        if ("results" in matchas) {
+          await incrementLbaJobsViewCount(matchas.results.flatMap((job) => (job.job?.id ? [job.job.id] : [])))
+        }
+      }
+
+      return res.status(200).send(result)
+    }
+  )
+
+  server.get(
+    "/jobs/min",
+    {
+      schema: zRoutes.get["/jobs/min"],
+      config,
+    },
+    async (req, res) => {
+      const { referer } = req.headers
+      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
+      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: true })
 
       if ("error" in result) {
         return res.status(500).send(result)

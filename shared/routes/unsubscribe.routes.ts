@@ -1,5 +1,4 @@
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "../constants/recruteur"
-import { z } from "../helpers/zodWithOpenApi"
+import { ZUnsubscribeQueryParams, ZUnsubscribeQueryResponse } from "../models/unsubscribeLbaCompany.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -8,9 +7,9 @@ export const zUnsubscribeRoute = {
     "/unsubscribe": {
       method: "post",
       path: "/unsubscribe",
-      body: z.object({ email: z.string().email(), reason: z.string() }).strict(),
+      body: ZUnsubscribeQueryParams,
       response: {
-        "200": z.enum(["OK", ...Object.values(UNSUBSCRIBE_EMAIL_ERRORS)]),
+        "200": ZUnsubscribeQueryResponse,
       },
       securityScheme: null,
     },

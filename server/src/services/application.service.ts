@@ -5,7 +5,7 @@ import type { EnforceDocument } from "mongoose"
 import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { IUser2 } from "shared/models/user2.model"
@@ -226,7 +226,7 @@ const buildUrlsOfDetail = (publicUrl: string, offreOrCompany: OffreOrLbbCompany)
   const urlSearchParams = new URLSearchParams()
   urlSearchParams.append("display", "list")
   urlSearchParams.append("page", "fiche")
-  urlSearchParams.append("type", type)
+  urlSearchParams.append("type", newItemTypeToOldItemType(type))
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     urlSearchParams.append("itemId", offreOrCompany.offre._id.toString())
   } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
@@ -681,6 +681,14 @@ export const processApplicationHardbounceEvent = async (payload) => {
   }
 
   return false
+}
+
+export const obfuscateLbaCompanyApplications = async (company_siret: string) => {
+  const fakeEmail = "faux_email@faux-domaine-compagnie.com"
+  await Application.updateMany(
+    { job_origin: { $in: [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA] }, company_siret },
+    { $set: { to_company_message_id: fakeEmail, company_email: fakeEmail } }
+  )
 }
 
 const sanitizeApplicationForEmail = (application: IApplication) => {

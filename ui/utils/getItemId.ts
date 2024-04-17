@@ -7,23 +7,8 @@ export const getItemId = (item) => {
 export * from "shared/validators/siretValidator"
 
 export const getItemIdAndType = (item) => {
-  let itemId = item.id
-  let type = "training"
-  const kind: LBA_ITEM_TYPE_OLD = item.ideaType
-
-  if (kind !== LBA_ITEM_TYPE_OLD.FORMATION) {
-    type = kind
-  }
-
-  if (!item.directId) {
-    if (kind === LBA_ITEM_TYPE_OLD.PEJOB) {
-      itemId = item.job.id
-    } else if (kind === LBA_ITEM_TYPE_OLD.MATCHA) {
-      itemId = item.job.id
-    } else if (kind !== LBA_ITEM_TYPE_OLD.FORMATION) {
-      itemId = item?.company?.siret || "siret"
-    }
-  }
+  const itemId = item.id
+  const type = item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "training" : item.ideaType
 
   return { itemId, type }
 }
