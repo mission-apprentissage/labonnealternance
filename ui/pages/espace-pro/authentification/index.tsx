@@ -53,7 +53,7 @@ const ConnexionCompte = () => {
       <Heading fontSize="32px" as="h2">
         Vous avez déjà un compte ?
       </Heading>
-      <Text fontSize="xl">Veuillez indiquer ci-dessous le mail avec lequel vous avez créé votre compte afin de recevoir le lien de connexion à votre espace.</Text>
+      <Text fontSize="xl">Indiquez le mail avec lequel vous avez créé votre compte et vous recevrez un lien pour vous connecter.</Text>
       <Box>
         <Formik
           validateOnMount

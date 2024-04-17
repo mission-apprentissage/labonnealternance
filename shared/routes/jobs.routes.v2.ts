@@ -228,6 +228,72 @@ export const zJobsRoutesV2 = {
         description: "Get job opportunities matching the query parameters",
       },
     },
+    "/jobs/min": {
+      method: "get",
+      path: "/jobs/min",
+      querystring: z
+        .object({
+          romes: zRomesParams("rncp"),
+          rncp: zRncpsParams,
+          caller: zCallerParam.nullish(),
+          latitude: ZLatitudeParam,
+          longitude: ZLongitudeParam,
+          radius: ZRadiusParam,
+          insee: zInseeParams,
+          sources: zSourcesParams,
+          diploma: zDiplomaParam,
+          opco: zOpcoParams,
+          opcoUrl: zOpcoUrlParams,
+        })
+        .strict()
+        .passthrough(),
+      headers: zRefererHeaders,
+      response: {
+        "200": z
+          .object({
+            peJobs: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItemFtJob),
+                })
+                .strict()
+                .nullable(),
+              ZApiError,
+            ]),
+            matchas: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItemLbaJob),
+                })
+                .strict()
+                .nullable(),
+              ZApiError,
+            ]),
+            lbaCompanies: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItemLbaCompany),
+                })
+                .strict()
+                .nullable(),
+              ZApiError,
+            ]),
+          })
+          .strict(),
+        "400": z.union([ZResError, ZLbacError, ZApiError]),
+        "500": z.union([ZResError, ZLbacError, ZApiError]),
+      },
+      securityScheme: {
+        auth: "api-key",
+        access: null,
+        resources: {},
+      },
+      openapi: {
+        tags: ["V2 - Jobs - Min"] as string[],
+        operationId: "getJobOpportunities",
+        description: "Get job opportunities matching the query parameters and returns minimal data",
+      },
+    },
     "/jobs/entreprise_lba/:siret": {
       method: "get",
       path: "/jobs/entreprise_lba/:siret",

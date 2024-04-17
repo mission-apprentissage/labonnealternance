@@ -17,6 +17,7 @@ export type TJobSearchQuery = {
   diploma?: string
   opco?: string
   opcoUrl?: string
+  isMinimalData: boolean
 }
 
 export type TFormationSearchQuery = TJobSearchQuery & { region?: string; departement?: string }

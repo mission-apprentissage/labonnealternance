@@ -42,7 +42,7 @@ const validateRncp = (rncp: string, error_messages: string[]) => {
  * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
  * @returns {undefined}
  */
-const validateRomesOrRncp = async (query: TJobSearchQuery, error_messages: string[], romeLimit = 20) => {
+const validateRomesOrRncp = async (query: Omit<TJobSearchQuery, "isMinimalData">, error_messages: string[], romeLimit = 20) => {
   const { romes, rncp } = query
 
   // codes ROME : romes
@@ -248,7 +248,7 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
  * @returns {Promise<{ result: "passed", romes: string } | { error: string; error_messages: string[] }>}
  */
 export const formationsQueryValidator = async (
-  query: TFormationSearchQuery
+  query: Omit<TFormationSearchQuery, "isMinimalData">
 ): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
@@ -279,7 +279,7 @@ export const formationsQueryValidator = async (
  * @param {TFormationSearchQuery} query paramètres de la requête
  * @returns {{ result: "passed" } | { error: string; error_messages: string[] }}
  */
-export const formationsRegionQueryValidator = (query: TFormationSearchQuery): { result: "passed" } | { error: string; error_messages: string[] } => {
+export const formationsRegionQueryValidator = (query: Omit<TFormationSearchQuery, "isMinimalData">): { result: "passed" } | { error: string; error_messages: string[] } => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
@@ -308,7 +308,7 @@ export const formationsRegionQueryValidator = (query: TFormationSearchQuery): { 
  * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
  */
 export const jobsEtFormationsQueryValidator = async (
-  query: TFormationSearchQuery
+  query: Omit<TFormationSearchQuery, "isMinimalData">
 ): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
