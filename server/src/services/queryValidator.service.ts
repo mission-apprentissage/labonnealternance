@@ -1,4 +1,5 @@
 import axios from "axios"
+import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 
 import { isOriginLocal } from "../common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
@@ -41,7 +42,7 @@ const validateRncp = (rncp: string, error_messages: string[]) => {
  * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
  * @returns {undefined}
  */
-const validateRomesOrRncp = async (query: TJobSearchQuery, error_messages: string[], romeLimit = 20) => {
+const validateRomesOrRncp = async (query: Omit<TJobSearchQuery, "isMinimalData">, error_messages: string[], romeLimit = 20) => {
   const { romes, rncp } = query
 
   // codes ROME : romes
@@ -182,16 +183,14 @@ const validateInsee = (insee: string | undefined, error_messages: string[]) => {
   }
 }
 
-const validateApiSources = (apiSources: string | undefined, error_messages: string[], allowedSources = ["formations", "lbb", "lba", "offres", "matcha"]) => {
-  // source mal formée si présente
+const validateApiSources = (apiSources: string | undefined, errorMessages: string[]) => {
   if (apiSources) {
     const sources = apiSources.split(",")
-    let areSourceOk = true
-    sources.forEach((source) => {
-      if (allowedSources.indexOf(source) < 0) areSourceOk = false
-    })
-    if (!areSourceOk)
-      error_messages.push(`sources : Optional sources argument used with wrong value. Should contains comma separated values among '${allowedSources.join("', '")}'.`)
+    const areSourcesOk = sources.every((source) => (allLbaItemTypeOLD as string[]).includes(source.trim()))
+
+    if (!areSourcesOk) {
+      errorMessages.push(`sources: Optional sources argument used with wrong value. Should contain comma-separated values among ${allLbaItemTypeOLD.join(", ")}.`)
+    }
   }
 }
 
@@ -236,7 +235,7 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
   }
 
   // source mal formée si présente
-  validateApiSources(sources, error_messages, ["lbb", "lba", "offres", "matcha"])
+  validateApiSources(sources, error_messages)
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 
@@ -249,7 +248,7 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
  * @returns {Promise<{ result: "passed", romes: string } | { error: string; error_messages: string[] }>}
  */
 export const formationsQueryValidator = async (
-  query: TFormationSearchQuery
+  query: Omit<TFormationSearchQuery, "isMinimalData">
 ): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
@@ -280,7 +279,7 @@ export const formationsQueryValidator = async (
  * @param {TFormationSearchQuery} query paramètres de la requête
  * @returns {{ result: "passed" } | { error: string; error_messages: string[] }}
  */
-export const formationsRegionQueryValidator = (query: TFormationSearchQuery): { result: "passed" } | { error: string; error_messages: string[] } => {
+export const formationsRegionQueryValidator = (query: Omit<TFormationSearchQuery, "isMinimalData">): { result: "passed" } | { error: string; error_messages: string[] } => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
@@ -309,7 +308,7 @@ export const formationsRegionQueryValidator = (query: TFormationSearchQuery): { 
  * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
  */
 export const jobsEtFormationsQueryValidator = async (
-  query: TFormationSearchQuery
+  query: Omit<TFormationSearchQuery, "isMinimalData">
 ): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
@@ -337,7 +336,7 @@ export const jobsEtFormationsQueryValidator = async (
   }
 
   // source mal formée si présente
-  validateApiSources(query.sources, error_messages, ["formations", "lbb", "lba", "offres", "matcha"])
+  validateApiSources(query.sources, error_messages)
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 

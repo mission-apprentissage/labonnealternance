@@ -2,6 +2,7 @@ import { Box, Container, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React from "react"
 
+import OffresAutoExposees from "@/components/HomeComponents/OffresAutoExposees"
 import PromoRessources from "@/components/Ressources/promoRessources"
 
 import Breadcrumb from "../components/breadcrumb"
@@ -13,8 +14,6 @@ import FacilitezRDVA from "../components/HomeComponents/FacilitezRDVA"
 import FollowLinkedIn from "../components/HomeComponents/FollowLinkedIn"
 import GerezEntreprise from "../components/HomeComponents/GerezEntreprise"
 import OffresGratuites from "../components/HomeComponents/OffresGratuites"
-import PostezVotreOffreAlternance from "../components/HomeComponents/PostezVotreOffreAlternance"
-import ReseauEntreprise from "../components/HomeComponents/ReseauEntreprise"
 import Navigation from "../components/navigation"
 
 const Organisme = () => {
@@ -29,15 +28,14 @@ const Organisme = () => {
         <Container variant="pageContainer" bg="white">
           <CFA />
 
-          <Box as="section" mt="16">
+          <Box as="section" bg="beige" borderRadius={10} p={{ base: 3, md: 6, lg: 12 }} mt="16">
+            <OffresAutoExposees />
             <FacilitezRDVA />
           </Box>
 
           <Box as="section" bg="beige" borderRadius={10} p={{ base: 3, md: 6, lg: 12 }} mt={16}>
-            <PostezVotreOffreAlternance />
             <GerezEntreprise />
             <OffresGratuites />
-            <ReseauEntreprise />
           </Box>
 
           <Box as="section">

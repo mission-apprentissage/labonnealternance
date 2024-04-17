@@ -166,13 +166,6 @@ function createJobAction(name) {
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
-  .command("fix-diffusible-companies")
-  .description("Clean companies not diffusible.")
-  .option("-c, --collection_list <string>", " <collection_list> est la liste des collections à réparer séparées par des ,")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("fix-diffusible-companies"))
-
-program
   .command("anonymize-individual")
   .description("Anonymize elements based on id")
   .requiredOption("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
@@ -180,7 +173,6 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("anonymize-individual"))
 
-program.command("check-diffusible-companies").description("Check companies are diffusible").action(createJobAction("check-diffusible-companies"))
 program
   .command("fix:duplicate:users")
   .description("Fix duplicated users in users collections and update appointment collection accordingly")
@@ -321,7 +313,7 @@ program
 
 program
   .command("export-offre-pole-emploi")
-  .description("Exporte les offres vers Pôle Emploi")
+  .description("Exporte les offres vers France Travail")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("pe:offre:export"))
 
@@ -370,72 +362,66 @@ program
   .action(createJobAction("etablissement:invite:premium:affelnet"))
 
 program
-  .command("invite-etablissement-to-premium-follow-up")
+  .command("etablissement:invite:premium:follow-up")
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissement:invite:premium:follow-up"))
 
 program
-  .command("invite-etablissement-affelnet-to-premium-follow-up")
+  .command("etablissement:invite:premium:affelnet:follow-up")
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissement:invite:premium:affelnet:follow-up"))
 
 program
-  .command("premium-activated-reminder")
+  .command("premium:activated:reminder")
   .description("Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("premium:activated:reminder"))
 
 program
-  .command("premium-invite-one-shot")
+  .command("premium:invite:one-shot")
   .description("Envoi un email à tous les établissements pas encore premium pour les inviter de nouveau")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("premium:invite:one-shot"))
 
 program
-  .command("sync-etablissements-and-formations")
+  .command("etablissements:formations:sync")
   .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissements:formations:sync"))
 
 program
-  .command("sync-etablissements-and-formations-inverted")
+  .command("etablissements:formations:inverted:sync")
   .description("Resynchronise les referrers en partant de la table ETFA")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissements:formations:inverted:sync"))
 
 program
-  .command("sync-etablissements-dates")
+  .command("sync:etablissement:dates")
   .description("Resynchronise les dates de la collection Etablissement par siret gestionnaire")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("sync:etablissement:dates"))
 
 program
-  .command("sync-etablissements-and-formations-affelnet")
-  .description("Récupère la liste de toutes les formations du Catalogue ME du scope AFFELNET et les enregistre.")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("etablissements:formations:affelnet:sync"))
-
-program
-  .command("anonimize-appointments")
+  .command("appointments:anonimize")
   .description("anonimisation des prises de rendez-vous de plus d'un an")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("appointments:anonimize"))
 
 program
-  .command("anonimize-users")
+  .command("users:anonimize")
   .description("anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("users:anonimize"))
 program
-  .command("history-eligible-trainings-for-appointments-catalogue")
+  .command("catalogue:trainings:appointments:archive:eligible")
   .description("Historise l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations (RCO)")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("catalogue:trainings:appointments:archive:eligible"))
 
 program
-  .command("import-referentiel-onisep")
+  .command("referentiel:onisep:import")
   .description("Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:onisep:import"))

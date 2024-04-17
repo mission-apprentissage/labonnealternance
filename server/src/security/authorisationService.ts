@@ -1,5 +1,6 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessPermission, AccessResourcePath, AdminRole, CfaRole, OpcoRole, PendingRecruiterRole, RecruiterRole, Role, UserWithType } from "shared/security/permissions"
@@ -18,9 +19,15 @@ type Resources = {
   users: Array<IUserRecruteur>
   applications: Array<{ application: IApplication; job: IJob; recruiter: IRecruiter } | null>
 }
+export type ResourceIds = {
+  recruiters?: string[]
+  jobs?: Array<{ job: string; recruiter: string | null } | null>
+  users?: Array<string>
+  applications?: Array<{ application: string; job: string; recruiter: string } | null>
+}
 
 // Specify what we need to simplify mocking in tests
-type IRequest = Pick<FastifyRequest, "user" | "params" | "query">
+type IRequest = Pick<FastifyRequest, "user" | "params" | "query" | "authorizationContext">
 
 type NonTokenUserWithType = UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential>
 
@@ -171,6 +178,58 @@ export async function getResources<S extends WithSecurityScheme>(schema: S, req:
   }
 }
 
+const getResourceIds = (resources: Resources): ResourceIds => {
+  const resourcesIds: ResourceIds = {}
+
+  Object.keys(resources).map((key) => {
+    switch (key) {
+      case "recruiters": {
+        if (resources.recruiters.length) {
+          resourcesIds.recruiters = resources.recruiters.map((recruiter) => recruiter._id.toString())
+        }
+        break
+      }
+      case "users": {
+        if (resources.users.length) {
+          resourcesIds.users = resources.users.map((user) => user._id.toString())
+        }
+        break
+      }
+      case "jobs": {
+        if (resources.jobs.length) {
+          resourcesIds.jobs = resources.jobs.map((job) =>
+            job
+              ? {
+                  job: job.job._id.toString(),
+                  recruiter: job.recruiter ? job?.recruiter._id.toString() : null,
+                }
+              : null
+          )
+        }
+        break
+      }
+      case "applications": {
+        if (resources.applications.length) {
+          resourcesIds.applications = resources.applications.map((application) =>
+            application
+              ? {
+                  application: application.application._id.toString(),
+                  job: application.job._id.toString(),
+                  recruiter: application.recruiter._id.toString(),
+                }
+              : null
+          )
+        }
+        break
+      }
+      default:
+        assertUnreachable(key as never)
+    }
+  })
+
+  return resourcesIds
+}
+
 export function getUserRole(userWithType: NonTokenUserWithType): Role | null {
   if (userWithType.type === "ICredential") {
     return OpcoRole
@@ -286,7 +345,7 @@ function canAccessApplication(userWithType: NonTokenUserWithType, resource: Reso
     case "ADMIN":
       return true
     case "ENTREPRISE": {
-      if (resource.application.job_origin === "matcha") {
+      if (resource.application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
         return resource.recruiter.establishment_id === userWithType.value.establishment_id
       }
 
@@ -355,6 +414,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
   const userWithType = getUserFromRequest(req, schema)
 
   if (userWithType.type === "IUserRecruteur" && userWithType.value.type === "ADMIN") {
+    req.authorizationContext = { role: { name: "admin", permissions: [] } }
     return
   }
   if (userWithType.type === "IAccessToken") {
@@ -365,6 +425,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
   const resources = await getResources(schema, req)
   const role = getUserRole(userWithType)
 
+  req.authorizationContext = { role, resources: getResourceIds(resources) }
   if (!isAuthorized(schema.securityScheme.access, userWithType, role, resources)) {
     throw Boom.forbidden()
   }

@@ -4,7 +4,7 @@ import React, { useEffect } from "react"
 
 import Footer from "../components/footer"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
-import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
+// import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
 import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
@@ -69,10 +69,10 @@ const Home = () => {
           <PromoRessources target="candidat" />
         </Box>
 
-        {/* @ts-expect-error: TODO */}
+        {/* @ts-expect-error: TODO 
         <Box {...blockCssProperties}>
           <AmeliorerLBA />
-        </Box>
+        </Box>*/}
       </Box>
 
       <Footer />

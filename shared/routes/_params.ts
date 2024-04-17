@@ -1,3 +1,4 @@
+import { LBA_ITEM_TYPE_OLD } from "../constants/lbaitem"
 import { NIVEAUX_POUR_LBA } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -88,12 +89,27 @@ export const zInseeParams = z
     },
   })
 
+// const allLbaItemTypes = Object.values(LBA_ITEM_TYPE)
+const allLbaItemTypesOLD = Object.values(LBA_ITEM_TYPE_OLD)
+
+const sourceENUM = z.enum([allLbaItemTypesOLD[0], ...allLbaItemTypesOLD.slice(1)])
+const SourceArraySchema = z.array(sourceENUM)
+
 export const zSourcesParams = z
   .string()
+  .refine(
+    (value) => {
+      const sources = value.split(",")
+      return SourceArraySchema.safeParse(sources).success
+    },
+    {
+      message: `Invalid source format. Must be a comma-separated list of valid sources of ${allLbaItemTypesOLD.join(",")}`,
+    }
+  )
   .optional()
   .openapi({
     param: {
-      description: 'comma separated list of job opportunities sources and trainings (possible values : "formations", "lba", "matcha", "offres")',
+      description: `comma separated list of job opportunities sources and trainings (possible values : ${allLbaItemTypesOLD.join(", ")})`,
     },
   })
 

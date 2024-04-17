@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Alert, AlertIcon, Box, Button, Flex, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
@@ -112,12 +113,12 @@ const CreationCompteForm = ({
                   description: (
                     <>
                       <Link
-                        aria-label="Contact de l'équipe La bonne alternance par email"
+                        aria-label="Contact de l'équipe La bonne alternance par email - nouvelle fenêtre"
                         isExternal
                         textDecoration="underline"
                         href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
                       >
-                        Contactez-nous
+                        Contactez-nous <ExternalLinkIcon mx="2px" />
                       </Link>{" "}
                       pour obtenir plus d'informations.
                     </>
@@ -187,7 +188,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
   useEffect(() => {
     if (isWidget) {
       setWidget({ isWidget: true, mobile: mobile ?? false })
-      setOrganisation(origin ?? "matcha")
+      setOrganisation(origin ?? "lba")
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])

@@ -1,91 +1,121 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
-import { defaultTo } from "lodash"
-import React, { useContext, useEffect, useState } from "react"
+import { assertUnreachable } from "@/../shared"
+import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
+import { useContext } from "react"
+import { useQuery } from "react-query"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import DemandeDeContact from "@/components/RDV/DemandeDeContact"
-import { focusWithin } from "@/theme/theme-lba-tools"
+import fetchFtJobDetails from "@/services/fetchFtJobDetails"
+import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
+import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import { isCfaEntreprise } from "../../services/cfaEntreprise"
-import { amongst } from "../../utils/arrayutils"
-import { filterLayers } from "../../utils/mapTools"
-import { SendPlausibleEvent } from "../../utils/plausible"
+import fetchTrainingDetails from "../../services/fetchTrainingDetails"
 
-import AideApprentissage from "./AideApprentissage"
-import CandidatureLba from "./CandidatureLba/CandidatureLba"
-import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
-import DidYouKnow from "./DidYouKnow"
-import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
-import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
+import { BuildSwipe, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getCurrentList from "./ItemDetailServices/getCurrentList"
-import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
-import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
 import getSoustitre from "./ItemDetailServices/getSoustitre"
 import getTags from "./ItemDetailServices/getTags"
-import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
-import LbbCompanyDetail from "./LbbCompanyDetail"
-import LocationDetail from "./LocationDetail"
-import MatchaDetail from "./MatchaDetail"
-import PeJobDetail from "./PeJobDetail"
-import TrainingDetail from "./TrainingDetail"
+import LoadedItemDetail from "./loadedItemDetail"
+
+const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem }) => {
+  switch (selectedItem?.ideaType) {
+    case LBA_ITEM_TYPE_OLD.FORMATION: {
+      const trainingWithDetails = await fetchTrainingDetails(selectedItem)
+      trainingWithDetails.detailsLoaded = true
+      const updatedTrainings = trainings.map((v) => {
+        if (v.id === trainingWithDetails.id) {
+          return trainingWithDetails
+        }
+        return v
+      })
+
+      setTrainingsAndSelectedItem(updatedTrainings, trainingWithDetails)
+      break
+    }
+
+    case LBA_ITEM_TYPE_OLD.MATCHA: {
+      const jobWithDetails = await fetchLbaJobDetails(selectedItem)
+      jobWithDetails.detailsLoaded = true
+      const updatedJobs = {
+        peJobs: jobs.peJobs,
+        lbaCompanies: jobs.lbaCompanies,
+        matchas: jobs.matchas.map((v) => {
+          if (v.id === jobWithDetails.id) {
+            return jobWithDetails
+          }
+          return v
+        }),
+      }
+
+      setJobsAndSelectedItem(updatedJobs, jobWithDetails)
+      break
+    }
+
+    case LBA_ITEM_TYPE_OLD.LBA: {
+      const companyWithDetails = await fetchLbaCompanyDetails(selectedItem)
+      companyWithDetails.detailsLoaded = true
+      const updatedJobs = {
+        peJobs: jobs.peJobs,
+        lbaCompanies: jobs.lbaCompanies.map((v) => {
+          if (v.id === companyWithDetails.id) {
+            return companyWithDetails
+          }
+          return v
+        }),
+        matchas: jobs.matchas,
+      }
+
+      setJobsAndSelectedItem(updatedJobs, companyWithDetails)
+      break
+    }
+
+    case LBA_ITEM_TYPE_OLD.PEJOB: {
+      const jobWithDetails = await fetchFtJobDetails(selectedItem)
+      jobWithDetails.detailsLoaded = true
+      const updatedJobs = {
+        peJobs: jobs.peJobs.map((v) => {
+          if (v.id === jobWithDetails.id) {
+            return jobWithDetails
+          }
+          return v
+        }),
+        lbaCompanies: jobs.lbaCompanies,
+        matchas: jobs.matchas,
+      }
+
+      setJobsAndSelectedItem(updatedJobs, jobWithDetails)
+      break
+    }
+
+    default: {
+      assertUnreachable("shouldNotHappen" as never)
+    }
+  }
+}
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
-  const kind = selectedItem?.ideaType
-
-  const { activeFilters } = useContext(DisplayContext)
-
-  const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
-  const isMandataire = selectedItem?.company?.mandataire
-
-  useEffect(() => {
-    try {
-      filterLayers(activeFilters)
-    } catch (err) {
-      //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
-    }
-    /* eslint react-hooks/exhaustive-deps: 0 */
-  }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
+  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
 
   const actualTitle = getActualTitle({ kind, selectedItem })
+  const { activeFilters } = useContext(DisplayContext)
 
-  const { trainings, jobs, extendedSearch } = useContext(SearchResultContext)
-  const hasAlsoJob = hasAlsoEmploi({ isCfa, company: selectedItem?.company, searchedMatchaJobs: jobs?.matchas })
+  const { trainings, setTrainingsAndSelectedItem, jobs, setJobsAndSelectedItem, extendedSearch } = useContext(SearchResultContext)
   const currentList = getCurrentList({ store: { trainings, jobs }, activeFilters, extendedSearch })
 
   const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem })
+  const kindColor = kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"
 
-  const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
-  const maxScroll = 100
-  const handleScroll = () => {
-    let currentScroll = document.querySelector("#itemDetailColumn").scrollTop
-    currentScroll += isCollapsedHeader ? 100 : -100
-    setIsCollapsedHeader(currentScroll > maxScroll)
-  }
+  useQuery(["itemDetail", selectedItem.id], () => getItemDetails({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem }), {
+    enabled: !!selectedItem && !selectedItem.detailsLoaded,
+  })
 
-  const postuleSurPoleEmploi = () => {
-    SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre PE", {
-      info_fiche: selectedItem.job.id,
-    })
-  }
-
-  const stickyHeaderProperties = isCollapsedHeader
-    ? {
-        position: "sticky",
-        zIndex: "1",
-        top: "0",
-        left: "0",
-        display: "flex",
-        width: "100%",
-      }
-    : {}
-
-  return (
+  return selectedItem?.detailsLoaded ? (
+    <LoadedItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} />
+  ) : (
     <Box
       as="section"
-      onScroll={handleScroll}
       display={selectedItem ? "block" : "none"}
       height="100%"
       id="itemDetailColumn"
@@ -95,7 +125,6 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       }}
       {...swipeHandlers}
     >
-      {/* @ts-expect-error: TODO */}
       <Box
         as="header"
         sx={{
@@ -103,30 +132,17 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
           padding: "10px 20px 0px 10px",
         }}
         background="white"
-        {...stickyHeaderProperties}
       >
-        <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
+        <Box width="100%" pl={["0", 4]} pb={2}>
           <Flex mb={2} justifyContent="flex-end">
-            {getTags({ kind, isCfa, isMandataire })}
+            {getTags({ kind, isCfa: false, isMandataire: false })}
             {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
 
-          {kind === "formation" && (
-            <Text as="p" textAlign="left" color="grey.600" mt={4} mb={3} fontWeight={700} fontSize="1rem">
-              <Text as="span">{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Text>
-              <Text as="span" fontWeight={400}>
-                &nbsp;propose cette formation
-              </Text>
-            </Text>
-          )}
-
-          {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
-          {!isCollapsedHeader && getJobSurtitre({ selectedItem, kind, isMandataire })}
-
           <Text
             as="h1"
-            fontSize={isCollapsedHeader ? "20px" : "28px"}
-            color={kind !== "formation" ? "pinksoft.600" : "greensoft.500"}
+            fontSize="28px"
+            color={kindColor}
             sx={{
               fontWeight: 700,
               marginBottom: "11px",
@@ -135,82 +151,18 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
               wordBreak: "break-word",
             }}
           >
-            {defaultTo(actualTitle, "")}
+            {actualTitle || ""}
           </Text>
 
-          {!isCollapsedHeader && getSoustitre({ selectedItem })}
-
-          {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
-            <Box my={4}>
-              <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={selectedItem.url} target="poleemploi" onClick={postuleSurPoleEmploi}>
-                Je postule sur Pôle emploi
-              </Link>
-            </Box>
-          )}
-
-          {isCandidatureLba(selectedItem) && (
-            <>
-              <Divider my={2} />
-              <CandidatureLba item={selectedItem} />
-            </>
-          )}
-
-          {kind === "formation" && buttonRdvShouldBeDisplayed(selectedItem) && (
-            <>
-              <Divider my={2} />
-              <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
-            </>
-          )}
+          {getSoustitre({ selectedItem })}
         </Box>
       </Box>
-
-      {kind === "peJob" ? <PeJobDetail job={selectedItem} /> : ""}
-      {kind === "matcha" ? <MatchaDetail job={selectedItem} /> : ""}
-      {amongst(kind, ["lbb", "lba"]) ? <LbbCompanyDetail lbb={selectedItem} /> : ""}
-
-      {kind === "formation" ? <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} /> : ""}
-
-      {amongst(kind, ["lbb", "lba"]) && (
-        <Box bg="#f5f5fe" border="1px solid #e3e3fd" mx={8} mb={8} px={6} py={4}>
-          <Box color="bluefrance.500" fontSize="22px" fontWeight={700}>
-            Besoin d&apos;aide ?
-          </Box>
-          <Box color="grey.700">Découvrez les modules de formation de La bonne alternance. Des modules de quelques minutes pour bien préparer vos candidatures.</Box>
-          <Box pl={6}>
-            <Box pt={4}>
-              &bull;
-              <Link variant="basicUnderlined" ml={4} isExternal href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e">
-                Chercher un employeur <ExternalLinkIcon mb="3px" mx="2px" />
-              </Link>
-            </Box>
-            <Box pt={4}>
-              &bull;
-              <Link variant="basicUnderlined" ml={4} isExternal href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac">
-                Préparer un entretien avec un employeur <ExternalLinkIcon mb="3px" mx="2px" />
-              </Link>
-            </Box>
-          </Box>
-        </Box>
-      )}
-
-      <LocationDetail item={selectedItem} isCfa={isCfa}></LocationDetail>
-
-      <AideApprentissage item={selectedItem}></AideApprentissage>
-
-      {kind === "peJob" && (
-        <>
-          <DidYouKnow />
-          {!buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
-            <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-          )}
-        </>
-      )}
-      {kind === "formation" && !buttonRdvShouldBeDisplayed(selectedItem) && (
-        <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-      )}
-      {(kind === "lbb" || kind === "lba") && !isCandidatureLba(selectedItem) && (
-        <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-      )}
+      <Box>
+        <Flex alignItems="center" m={4} color={kindColor}>
+          Chargement des informations en cours
+          <Spinner ml={3} />
+        </Flex>
+      </Box>
     </Box>
   )
 }

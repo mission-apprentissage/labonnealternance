@@ -7,9 +7,9 @@ const CandidatureLbaWorked = ({ email, company }) => {
   return (
     <Container data-testid="CandidatureSpontaneeWorked">
       <Flex direction="row" alignItems="center" my={12}>
-        <Image src="/images/paperplane2.svg" alt="" />
+        <Image src="/images/paperplane2.svg" aria-hidden={true} alt="" />
         <Box pl={4} ml={4}>
-          <Text as="h2" fontSize="20px" fontWeight={700}>
+          <Text data-testid="application-success" as="h2" fontSize="20px" fontWeight={700}>
             Votre candidature a bien été envoyée à{" "}
             <Text as="span" fontSize="22px">
               {company}

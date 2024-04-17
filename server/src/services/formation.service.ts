@@ -1,6 +1,7 @@
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError } from "../common/utils/errorManager"
@@ -41,6 +42,7 @@ export const getFormations = async ({
   diploma,
   limit = 10,
   options,
+  isMinimalData,
 }: {
   romes?: string[]
   romeDomain?: string
@@ -51,6 +53,7 @@ export const getFormations = async ({
   caller?: string
   api?: string
   options: "with_description"[]
+  isMinimalData: boolean
 }): Promise<IFormationCatalogue[]> => {
   const distance = radius || 30
 
@@ -85,7 +88,10 @@ export const getFormations = async ({
 
   const stages: any[] = []
 
-  if (options.indexOf("with_description") < 0) {
+  if (isMinimalData) {
+    stages.push({ $project: { objectif: 0, contenu: 0 } })
+    // TODO réduire encore
+  } else if (options.indexOf("with_description") < 0) {
     stages.push({ $project: { objectif: 0, contenu: 0 } })
   }
 
@@ -95,13 +101,12 @@ export const getFormations = async ({
     })
     stages.unshift({
       $geoNear: {
-        near: { type: "Point", coordinates: [longitude, latitude] },
+        near: { type: "Point", coordinates: [Number(longitude), Number(latitude)] },
         distanceField: "distance",
         maxDistance: distance * 1000,
         query,
       },
     })
-
     formations = await FormationCatalogue.aggregate(stages)
   } else {
     stages.unshift({
@@ -131,7 +136,7 @@ const getFormation = async ({ id }: { id: string }) => FormationCatalogue.findOn
  */
 const getOneFormationFromId = async ({ id }: { id: string }): Promise<ILbaItemFormation[]> => {
   const formation = await getFormation({ id })
-  return formation ? [transformFormationForIdea(formation)] : []
+  return formation ? [transformFormation(formation)] : []
 }
 
 /**
@@ -230,6 +235,7 @@ const getAtLeastSomeFormations = async ({
   maxOutLimitFormation,
   caller,
   options,
+  isMinimalData,
 }: {
   romes?: string[]
   romeDomain?: string
@@ -239,11 +245,11 @@ const getAtLeastSomeFormations = async ({
   maxOutLimitFormation: number
   caller?: string
   options: "with_description"[]
+  isMinimalData: boolean
 }): Promise<ILbaItemFormation[]> => {
   const currentRadius = radius
 
-  let rawFormations: IFormationCatalogue[]
-  rawFormations = await getFormations({
+  const parameters = {
     romes,
     romeDomain,
     coords,
@@ -252,25 +258,19 @@ const getAtLeastSomeFormations = async ({
     limit: formationResultLimit,
     caller,
     options,
-  })
+    isMinimalData,
+  }
+  let rawFormations: IFormationCatalogue[] = await getFormations(parameters)
 
   // si pas de résultat on étend le rayon de recherche et on réduit le nombre de résultats autorisés
   if (rawFormations instanceof Array && rawFormations.length === 0) {
-    rawFormations = await getFormations({
-      romes,
-      romeDomain,
-      coords,
-      radius: worldRadius,
-      diploma,
-      limit: maxOutLimitFormation, // limite réduite car extension au delà du rayon de recherche
-      caller,
-      options,
-    })
+    parameters.radius = worldRadius
+    parameters.limit = maxOutLimitFormation
+    rawFormations = await getFormations(parameters)
   }
 
   rawFormations = deduplicateFormations(rawFormations)
-  const formations = transformFormationsForIdea(rawFormations)
-
+  const formations = transformFormations(rawFormations, isMinimalData)
   sortFormations(formations)
   return formations
 }
@@ -307,12 +307,11 @@ export const deduplicateFormations = (formations: IFormationCatalogue[]): IForma
 /**
  * Retourne un ensemble de formations LbaItem à partir de formations issues de la mongo
  */
-const transformFormationsForIdea = (rawFormations: IFormationCatalogue[]): ILbaItemFormation[] => {
+const transformFormations = (rawFormations: IFormationCatalogue[], isMinimalData: boolean): ILbaItemFormation[] => {
   const formations: ILbaItemFormation[] = []
-
   if (rawFormations.length) {
     for (let i = 0; i < rawFormations.length; ++i) {
-      formations.push(transformFormationForIdea(rawFormations[i]))
+      formations.push(isMinimalData ? transformFormationWithMinimalData(rawFormations[i]) : transformFormation(rawFormations[i]))
     }
   }
 
@@ -322,14 +321,14 @@ const transformFormationsForIdea = (rawFormations: IFormationCatalogue[]): ILbaI
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
-const transformFormationForIdea = (rawFormation: IFormationCatalogue): ILbaItemFormation => {
+const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormation => {
   const geoSource = rawFormation.lieu_formation_geo_coordonnees
   const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
   const sessions = setSessions(rawFormation)
   const duration = getDurationFromSessions(sessions)
 
   const resultFormation: ILbaItemFormation = {
-    ideaType: "formation",
+    ideaType: LBA_ITEM_TYPE.FORMATION,
     title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
     longTitle: rawFormation.intitule_long ?? null,
     id: rawFormation.cle_ministere_educatif ?? null,
@@ -399,6 +398,39 @@ const transformFormationForIdea = (rawFormation: IFormationCatalogue): ILbaItemF
       description: rawFormation?.contenu?.trim() ?? null,
       sessions,
       duration,
+    },
+  }
+  return resultFormation
+}
+
+/**
+ * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
+ */
+const transformFormationWithMinimalData = (rawFormation: IFormationCatalogue): ILbaItemFormation => {
+  const geoSource = rawFormation.lieu_formation_geo_coordonnees
+  const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
+
+  const resultFormation: ILbaItemFormation = {
+    ideaType: LBA_ITEM_TYPE.FORMATION,
+    title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
+    id: rawFormation.cle_ministere_educatif ?? null,
+
+    place: {
+      distance: rawFormation.distance ? roundDistance(rawFormation.distance / 1000) : rawFormation.distance === 0 ? 0 : null,
+      fullAddress: getTrainingAddress(rawFormation), // adresse postale reconstruite à partir des éléments d'adresse fournis
+      latitude: latOpt ?? null,
+      longitude: longOpt ?? null,
+      city: rawFormation.localite ?? null,
+      zipCode: rawFormation.code_postal,
+      insee: rawFormation.code_commune_insee,
+    },
+
+    company: {
+      name: getSchoolName(rawFormation), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
+      siret: rawFormation.etablissement_formateur_siret,
+      headquarter: {
+        siret: rawFormation.etablissement_gestionnaire_siret ?? null,
+      },
     },
   }
   return resultFormation
@@ -493,6 +525,7 @@ export const getFormationsQuery = async ({
   options,
   referer,
   api = "formationV1",
+  isMinimalData,
 }: {
   romes?: string
   longitude?: number
@@ -504,6 +537,7 @@ export const getFormationsQuery = async ({
   options?: "with_description"
   referer?: string
   api?: string
+  isMinimalData: boolean
 }): Promise<IApiError | { results: ILbaItemFormation[] }> => {
   const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer })
 
@@ -521,6 +555,7 @@ export const getFormationsQuery = async ({
       romeDomain,
       caller,
       options: options === "with_description" ? ["with_description"] : [],
+      isMinimalData,
     })
 
     return { results: formations }
@@ -593,7 +628,7 @@ export const getFormationsParRegionQuery = async ({
       options: options === "with_description" ? ["with_description"] : [],
     })
 
-    const formations = transformFormationsForIdea(rawFormations)
+    const formations = transformFormations(rawFormations, false)
     sortFormations(formations)
 
     return { results: formations }

@@ -1,6 +1,6 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Divider, Flex, Grid, GridItem, Image, Link, ListItem, UnorderedList } from "@chakra-ui/react"
 import NextLink from "next/link"
-import React from "react"
 
 import { publicConfig } from "../config.public"
 
@@ -40,17 +40,41 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                   La bonne alternance est proposée par les services suivants :
                 </Box>
                 <Flex flexDirection={{ base: "column", lg: "row" }} mt="6">
-                  <Link href="https://pole-emploi.fr" aria-label="Accès au site de Pôle emploi" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
-                    pole-emploi.fr
+                  <Link
+                    href="https://www.francetravail.fr"
+                    aria-label="Accès au site de France Travail - nouvelle fenêtre"
+                    isExternal
+                    fontSize={14}
+                    fontWeight={700}
+                    color="grey.425"
+                    mr={4}
+                  >
+                    francetravail.fr <ExternalLinkIcon mx="2px" />
                   </Link>
-                  <Link href="https://gouvernement.fr" aria-label="Accès au site gouvernement.fr" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
-                    gouvernement.fr
+                  <Link
+                    href="https://gouvernement.fr"
+                    aria-label="Accès au site gouvernement.fr - nouvelle fenêtre"
+                    isExternal
+                    fontSize={14}
+                    fontWeight={700}
+                    color="grey.425"
+                    mr={4}
+                  >
+                    gouvernement.fr <ExternalLinkIcon mx="2px" />
                   </Link>
-                  <Link href="https://service-public.fr" aria-label="Accès au site service-public.fr" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
-                    service-public.fr
+                  <Link
+                    href="https://service-public.fr"
+                    aria-label="Accès au site service-public.fr - nouvelle fenêtre"
+                    isExternal
+                    fontSize={14}
+                    fontWeight={700}
+                    color="grey.425"
+                    mr={4}
+                  >
+                    service-public.fr <ExternalLinkIcon mx="2px" />
                   </Link>
-                  <Link href="https://data.gouv.fr" aria-label="Accès au site data.gouv" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
-                    data.gouv.fr
+                  <Link href="https://data.gouv.fr" aria-label="Accès au site data.gouv - nouvelle fenêtre" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
+                    data.gouv.fr <ExternalLinkIcon mx="2px" />
                   </Link>
                 </Flex>
               </Box>
@@ -91,7 +115,14 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                 </ListItem>
                 <ListItem {...basicLink}>
                   <NextLink legacyBehavior passHref href={`/ressources${ressources ? "#" + ressources : ""}`}>
-                    <Link aria-label="Accès à la page Contact">Ressources</Link>
+                    <Link aria-label="Accès à la page Ressources">Ressources</Link>
+                  </NextLink>
+                </ListItem>
+                <ListItem {...basicLink}>
+                  <NextLink legacyBehavior passHref href="https://mission-apprentissage.notion.site/Blog-f583f6fb051843bc8e3097b2e8bab9e3?pvs=25">
+                    <Link isExternal aria-label="Accès au blog de La bonne alternance">
+                      Blog
+                    </Link>
                   </NextLink>
                 </ListItem>
                 <ListItem {...basicLink}>
@@ -126,13 +157,12 @@ const Footer = ({ ressources = "" }: { ressources?: string }) => {
                 Sauf mention contraire, tous les contenus de ce site sont sous licence{" "}
                 <Link
                   href="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
-                  aria-label="Accès au site Etalab"
+                  aria-label="Accès au site Etalab - nouvelle fenêtre"
                   textDecoration="underline"
                   isExternal
                   mr={4}
                 >
-                  etalab-2.0
-                  <Image src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" display="inline-block" pl="1" />
+                  etalab-2.0 <ExternalLinkIcon mx="2px" />
                 </Link>
               </Box>
               <Box color="grey.425" fontSize={12} mt={6} pb={12}>

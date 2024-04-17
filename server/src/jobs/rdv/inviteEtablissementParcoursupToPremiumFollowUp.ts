@@ -53,8 +53,7 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
     const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
       etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
       lieu_formation_email: { $ne: null },
-      parcoursup_id: { $ne: null },
-      parcoursup_statut: "publié",
+      parcoursup_visible: true,
     }).lean()
 
     if (!hasOneAvailableFormation || !etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret) {
@@ -64,7 +63,7 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
     count++
 
     // Invite all etablissements only in production environment
-    await mailer.sendEmail({
+    const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite-followup.mjml.ejs"),
@@ -87,6 +86,7 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
       { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
         premium_follow_up_date: dayjs().toDate(),
+        to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
       }
     )
   }

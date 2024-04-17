@@ -1,4 +1,5 @@
 import { IApplication } from "shared"
+import { allLbaItemType } from "shared/constants/lbaitem"
 
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
@@ -83,7 +84,8 @@ export const applicationSchema = new Schema<IApplication>(
     job_origin: {
       type: String,
       default: null,
-      description: "Le type de société / offre au sens source d'info La bonne alternance. Ex : lba, lbb, matcha, pejob",
+      enum: allLbaItemType,
+      description: "Le type de société / offre au sens source d'info La bonne alternance",
     },
     job_title: {
       type: String,
@@ -110,6 +112,7 @@ export const applicationSchema = new Schema<IApplication>(
       type: String,
       default: null,
       description: "L'identification de la source d'émission de la candidature (pour widget et api)",
+      index: true,
     },
     created_at: {
       type: Date,
@@ -128,5 +131,11 @@ export const applicationSchema = new Schema<IApplication>(
 )
 
 applicationSchema.plugin(mongoosePagination)
+
+// Indexes to support checkUserApplicationCount
+applicationSchema.index({ applicant_email: 1, created_at: 1 })
+applicationSchema.index({ applicant_email: 1, company_siret: 1 })
+applicationSchema.index({ applicant_email: 1, job_id: 1 })
+applicationSchema.index({ caller: 1, company_siret: 1, created_at: 1 })
 
 export default model<IApplication, Pagination<IApplication>>("applications", applicationSchema)

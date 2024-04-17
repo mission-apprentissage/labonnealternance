@@ -24,7 +24,6 @@ export const ZLbaCompany = z
     phone: extensions.phone().nullable().describe("Numéro de téléphone de contact"),
     company_size: z.string().nullable().describe("Tranche effectif de l'entreprise"),
     website: z.string().nullable().describe("URL du site Internet"),
-    algorithm_origin: z.string().describe("Type de bonne boîte : lba | lbb"),
     opco: z.string().nullable().describe("L'OPCO de la société"),
     opco_short_name: z.string().nullable().describe("Nom court de l'opco"),
     opco_url: z.string().nullable().describe("L'URL spécifique liée à l'OPCO de la société"),

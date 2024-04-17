@@ -1,20 +1,26 @@
 import Boom from "boom"
 import Joi from "joi"
 import { EApplicantRole } from "shared/constants/rdva"
-import { zRoutes } from "shared/index"
+import { IEligibleTrainingsForAppointment, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { Appointment, EligibleTrainingsForAppointment, Etablissement, FormationCatalogue, ReferentielOnisep, User } from "../../common/model/index"
-import { isValidEmail } from "../../common/utils/isValidEmail"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { Appointment, EligibleTrainingsForAppointment, Etablissement, FormationCatalogue, User } from "../../common/model/index"
 import config from "../../config"
 import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
 import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import {
+  findEligibleTrainingByActionFormation,
+  findEligibleTrainingByMinisterialKey,
+  findEligibleTrainingByParcoursupId,
+  findEtablissement,
+  findOne,
+  findOpenAppointments,
+  getParameterByCleMinistereEducatif,
+} from "../../services/eligibleTrainingsForAppointment.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import * as users from "../../services/user.service"
 import { Server } from "../server"
@@ -34,56 +40,32 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { referrer } = req.body
-
       const referrerObj = getReferrerByKeyName(referrer)
+      let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null
 
-      let eligibleTrainingsForAppointment
       if ("idCleMinistereEducatif" in req.body) {
-        eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({ cle_ministere_educatif: req.body.idCleMinistereEducatif })
+        eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(req.body.idCleMinistereEducatif)
       } else if ("idParcoursup" in req.body) {
-        eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
-          parcoursup_id: req.body.idParcoursup,
-          cle_ministere_educatif: {
-            $ne: null,
-          },
-        })
+        eligibleTrainingsForAppointment = await findEligibleTrainingByParcoursupId(req.body.idParcoursup)
       } else if ("idActionFormation" in req.body) {
-        const referentielOnisepIdActionFormation = await ReferentielOnisep.findOne({
-          id_action_ideo2: req.body.idActionFormation,
-        })
-
-        if (!referentielOnisepIdActionFormation) {
-          throw Boom.notFound("Formation introuvable")
-        }
-
-        eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
-          cle_ministere_educatif: referentielOnisepIdActionFormation.cle_ministere_educatif,
-        })
+        eligibleTrainingsForAppointment = await findEligibleTrainingByActionFormation(req.body.idActionFormation)
       } else {
-        return res.status(400).send("Critère de recherche non conforme.")
+        throw Boom.badRequest("Critère de recherche non conforme.")
       }
 
       if (!eligibleTrainingsForAppointment) {
-        throw Boom.notFound("Formation introuvable")
+        throw Boom.badRequest("Formation introuvable")
       }
 
-      const isOpenForAppointments = await eligibleTrainingsForAppointmentService.findOne({
-        cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-        referrers: { $in: [referrerObj.name] },
-        lieu_formation_email: { $nin: [null, ""] },
-      })
+      const isOpenForAppointments = await findOpenAppointments(eligibleTrainingsForAppointment, referrerObj.name)
 
-      if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
+      if (!isOpenForAppointments) {
         return res.status(200).send({
           error: "Prise de rendez-vous non disponible.",
         })
       }
 
-      if (!isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
-        sentryCaptureException(`Formation "${eligibleTrainingsForAppointment.cle_ministere_educatif}" avec email de contact invalide.`)
-      }
-
-      const etablissement = await Etablissement.findOne({ formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret })
+      const etablissement = await findEtablissement(eligibleTrainingsForAppointment.etablissement_formateur_siret)
 
       if (!etablissement) {
         throw Boom.internal("Etablissement formateur non trouvé")
@@ -117,7 +99,7 @@ export default (server: Server) => {
 
       const referrerObj = getReferrerByKeyName(appointmentOrigin)
 
-      const eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
+      const eligibleTrainingsForAppointment = await findOne({
         cle_ministere_educatif: cleMinistereEducatif,
         referrers: { $in: [referrerObj.name] },
       })
@@ -145,7 +127,7 @@ export default (server: Server) => {
         })
 
         if (appointment) {
-          throw Boom.badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement est cours de traitement.`)
+          throw Boom.badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement en cours de traitement.`)
         }
       } else {
         user = await users.createUser({
@@ -208,7 +190,7 @@ export default (server: Server) => {
         throw Boom.notFound()
       }
 
-      const [etablissement, user] = await Promise.all([
+      const [formation, user] = await Promise.all([
         EligibleTrainingsForAppointment.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
@@ -226,7 +208,7 @@ export default (server: Server) => {
         }).lean(),
       ])
 
-      if (!etablissement) {
+      if (!formation) {
         throw Boom.internal("Etablissment not found")
       }
 
@@ -236,7 +218,7 @@ export default (server: Server) => {
 
       res.status(200).send({
         user,
-        etablissement,
+        formation,
       })
     }
   )
@@ -269,7 +251,7 @@ export default (server: Server) => {
         await Appointment.findByIdAndUpdate(appointmentId, { cfa_read_appointment_details_date: new Date() })
       }
 
-      const [etablissement, user] = await Promise.all([
+      const [formation, user] = await Promise.all([
         EligibleTrainingsForAppointment.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
@@ -290,10 +272,6 @@ export default (server: Server) => {
         }).lean(),
       ])
 
-      if (!etablissement) {
-        throw Boom.internal("Etablissment not found")
-      }
-
       if (!user) {
         throw Boom.internal("User not found")
       }
@@ -301,7 +279,7 @@ export default (server: Server) => {
       res.status(200).send({
         appointment,
         user,
-        etablissement,
+        formation,
       })
     }
   )
@@ -326,29 +304,29 @@ export default (server: Server) => {
 
       const { cle_ministere_educatif } = appointment
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
-        eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
+        getParameterByCleMinistereEducatif({
           cleMinistereEducatif: cle_ministere_educatif,
         }),
         users.getUserById(appointment.applicant_id.toString()),
       ])
 
-      if (!user || !eligibleTrainingsForAppointment) throw Boom.notFound()
+      if (!user) throw Boom.notFound()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
         const formationCatalogue = cle_ministere_educatif ? await FormationCatalogue.findOne({ cle_ministere_educatif }) : undefined
 
         await mailer.sendEmail({
           to: user.email,
-          subject: `[La bonne alternance] Le centre de formation vous répond`,
+          subject: `La bonne alternance - Le centre de formation vous répond`,
           template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
           data: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             prenom: sanitizeForEmail(user.firstname),
             nom: sanitizeForEmail(user.lastname),
             message: sanitizeForEmail(cfa_message_to_applicant),
-            nom_formation: eligibleTrainingsForAppointment.training_intitule_long,
-            nom_cfa: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
-            cfa_email: eligibleTrainingsForAppointment.lieu_formation_email,
+            nom_formation: eligibleTrainingsForAppointment?.training_intitule_long,
+            nom_cfa: eligibleTrainingsForAppointment?.etablissement_formateur_raison_sociale,
+            cfa_email: eligibleTrainingsForAppointment?.lieu_formation_email,
             cfa_phone: formationCatalogue?.num_tel,
           },
         })

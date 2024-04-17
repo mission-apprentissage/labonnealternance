@@ -24,7 +24,7 @@ const config = {
   },
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").required().asString(),
-  secretUpdateRomesMetiers: env.get("LBA_SECRET_UPDATE_ROMES_METIERS").required().asString(), //TODO: rename
+  lbaSecret: env.get("LBA_SECRET").required().asString(),
   allowedSources: env.get("LBA_ALLOWED_SOURCES").required().asString(),
   esdClientId: env.get("LBA_ESD_CLIENT_ID").required().asString(),
   esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").required().asString(),
@@ -72,9 +72,9 @@ const config = {
     queryUrl: env.get("LBA_DIAGORIENTE_QUERY_URL").required().asString(),
     realm: env.get("LBA_DIAGORIENTE_REALM").required().asString(),
   },
-  poleEmploiDepotOffres: {
-    login: env.get("LBA_POLE_EMPLOI_DEPOT_OFFRES_LOGIN").required().asString(),
-    password: env.get("LBA_POLE_EMPLOI_DEPOT_OFFRES_PASSWORD").required().asString(),
+  franceTravailDepotOffres: {
+    login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),
+    password: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_PASSWORD").required().asString(),
     nomFlux: "LABONATA",
   },
   bal: {
@@ -123,8 +123,8 @@ const config = {
   },
   affelnetPeriods: {
     start: {
-      startMonth: 3, // January = 0
-      startDay: 2,
+      startMonth: 2, // January = 0
+      startDay: 4,
     },
     end: {
       endMonth: 7,

@@ -1,7 +1,11 @@
+import Boom from "boom"
+import pkg from "mongodb"
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter } from "@/common/model"
+import { db } from "@/common/mongodb"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -12,9 +16,11 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getEtablissement } from "./etablissement.service"
-import { getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
+import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
+
+const { ObjectId } = pkg
 
 const JOB_SEARCH_LIMIT = 250
 
@@ -110,6 +116,7 @@ export const getLbaJobs = async ({
   opcoUrl,
   diploma,
   caller,
+  isMinimalData,
 }: {
   romes?: string
   radius?: number
@@ -120,6 +127,7 @@ export const getLbaJobs = async ({
   opcoUrl?: string
   diploma?: string
   caller?: string | null
+  isMinimalData: boolean
 }) => {
   if (radius === 0) {
     radius = 10
@@ -146,7 +154,7 @@ export const getLbaJobs = async ({
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
-    const matchas = transformLbaJobs({ jobs, applicationCountByJob })
+    const matchas = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
@@ -159,6 +167,7 @@ export const getLbaJobs = async ({
 
     return matchas
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from Matcha (${api})` })
   }
 }
@@ -166,21 +175,26 @@ export const getLbaJobs = async ({
 /**
  * Converti les offres issues de la mongo en objet de type ILbaItem
  */
-function transformLbaJobs({ jobs, applicationCountByJob }: { jobs: IRecruiter[]; applicationCountByJob: IApplicationCount[] }): {
+function transformLbaJobs({ jobs, applicationCountByJob, isMinimalData }: { jobs: IRecruiter[]; applicationCountByJob: IApplicationCount[]; isMinimalData: boolean }): {
   results: ILbaItemLbaJob[]
 } {
   return {
     results: jobs.flatMap((job) =>
-      transformLbaJob({
-        recruiter: job,
-        applicationCountByJob,
-      })
+      isMinimalData
+        ? transformLbaJobWithMinimalData({
+            recruiter: job,
+            applicationCountByJob,
+          })
+        : transformLbaJob({
+            recruiter: job,
+            applicationCountByJob,
+          })
     ),
   }
 }
 
 /**
- * Retourne une offre LBA identifiée par son id
+ * @description Retourne une offre LBA identifiée par son id
  */
 export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
@@ -203,7 +217,37 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
     return { matchas: job }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
+  }
+}
+
+/**
+ * @description Retourne une offre LBA identifiée par son id
+ */
+export const getLbaJobByIdV2 = async ({ id, caller }: { id: string; caller?: string }): Promise<{ job: ILbaItemLbaJob[] } | null> => {
+  try {
+    const rawJob = await getOffreAvecInfoMandataire(id)
+
+    if (!rawJob) {
+      throw Boom.badRequest()
+    }
+
+    const applicationCountByJob = await getApplicationByJobCount([id])
+
+    const job = transformLbaJob({
+      recruiter: rawJob.recruiter,
+      applicationCountByJob,
+    })
+
+    if (caller) {
+      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "job/offre_emploi_lba", response: "OK" })
+    }
+
+    return { job }
+  } catch (error) {
+    sentryCaptureException(error)
+    return null
   }
 }
 
@@ -229,7 +273,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
     return []
   }
 
-  return recruiter.jobs.map((offre, idx): ILbaItemLbaJob => {
+  return recruiter.jobs.map((offre): ILbaItemLbaJob => {
     const email = encryptMailWithIV({ value: recruiter.email })
     const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
     const romes = offre.rome_code.map((code) => ({ code, label: null }))
@@ -238,8 +282,9 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
     const longitude = recruiter?.geopoint?.coordinates[0] ?? 0
 
     const resultJob: ILbaItemLbaJob = {
-      ideaType: "matcha",
-      id: `${recruiter.establishment_id}-${idx}`,
+      ideaType: LBA_ITEM_TYPE_OLD.MATCHA,
+      // ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+      id: offre._id.toString(),
       title: offre.rome_appellation_label ?? offre.rome_label,
       contact: {
         ...email,
@@ -286,8 +331,52 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
         quantiteContrat: offre.job_count,
         elligibleHandicap: offre.is_disabled_elligible,
         status: recruiter.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
+        type: offre.job_type?.length ? offre.job_type : null,
       },
       romes,
+      applicationCount: applicationCountForCurrentJob?.count || 0,
+    }
+
+    return resultJob
+  })
+}
+
+/**
+ * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
+ */
+function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { recruiter: Partial<IRecruiter>; applicationCountByJob: IApplicationCount[] }): ILbaItemLbaJob[] {
+  if (!recruiter.jobs) {
+    return []
+  }
+
+  return recruiter.jobs.map((offre): ILbaItemLbaJob => {
+    const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
+
+    const latitude = recruiter?.geopoint?.coordinates[1] ?? 0
+    const longitude = recruiter?.geopoint?.coordinates[0] ?? 0
+
+    const resultJob: ILbaItemLbaJob = {
+      ideaType: LBA_ITEM_TYPE_OLD.MATCHA,
+      // ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+      id: offre._id.toString(),
+      title: offre.rome_appellation_label ?? offre.rome_label,
+      place: {
+        //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
+        distance: recruiter.distance ?? false ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
+        fullAddress: recruiter.is_delegated ? null : recruiter.address,
+        address: recruiter.is_delegated ? null : recruiter.address,
+        latitude,
+        longitude,
+        city: getCity(recruiter),
+      },
+      company: {
+        // si mandataire contient les données du CFA
+        siret: recruiter.establishment_siret,
+        name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
+      },
+      job: {
+        creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
+      },
       applicationCount: applicationCountForCurrentJob?.count || 0,
     }
 
@@ -325,31 +414,39 @@ function sortLbaJobs(jobs: { results: ILbaItemLbaJob[] }) {
 }
 
 /**
- * Incrémente le compteur de vue de la page de détail d'une offre LBA
- * @param {string} jobId
+ * @description Incrémente le compteur de vue de la page de détail d'une offre LBA
  */
 export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
-  await incrementLbaJobViewCount(jobId, {
-    stats_detail_view: 1,
-  })
-}
-
-/**
- * Incrémente le compteur de vue de la page de recherche d'une offre LBA
- */
-export const addOffreSearchView = async (jobId: IJob["_id"] | string) => {
   try {
-    await incrementLbaJobViewCount(jobId, {
-      stats_search_view: 1,
-    })
+    await db.collection("recruiters").updateOne(
+      { "jobs._id": jobId },
+      {
+        $inc: {
+          "jobs.$.stats_detail_view": 1,
+        },
+      }
+    )
   } catch (err) {
     sentryCaptureException(err)
   }
 }
 
 /**
- * Incrémente les compteurs de vue d'un ensemble d'offres lba
+ * @description Incrémente les compteurs de vue d'un ensemble d'offres lba
  */
 export const incrementLbaJobsViewCount = async (lbaJobs) => {
-  await Promise.all(lbaJobs.results.map((lbaJob) => lbaJob?.job?.id && addOffreSearchView(lbaJob.job.id)))
+  const ids = lbaJobs.results.map((job) => new ObjectId(job.id))
+  try {
+    await db.collection("recruiters").updateMany(
+      { "jobs._id": { $in: ids } },
+      {
+        $inc: {
+          "jobs.$[elem].stats_search_view": 1,
+        },
+      },
+      { arrayFilters: [{ "elem._id": { $in: ids } }] }
+    )
+  } catch (err) {
+    sentryCaptureException(err)
+  }
 }

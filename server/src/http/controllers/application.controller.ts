@@ -1,10 +1,11 @@
 import Boom from "boom"
 import mongoose from "mongoose"
+import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { zRoutes } from "shared/index"
 
 import { Application } from "../../common/model/index"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { sendMailToApplicant } from "../../services/application.service"
+import { sendApplication, sendMailToApplicant } from "../../services/application.service"
 import { Server } from "../server"
 
 const rateLimitConfig = {
@@ -15,6 +16,40 @@ const rateLimitConfig = {
 } as const
 
 export default function (server: Server) {
+  server.post(
+    "/v1/application",
+    {
+      schema: zRoutes.post["/v1/application"],
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: "5s",
+        },
+      },
+      bodyLimit: 5 * 1024 ** 2, // 5MB
+    },
+    async (req, res) => {
+      const { company_type } = req.body
+
+      const result = await sendApplication({
+        newApplication: { ...req.body, company_type: oldItemTypeToNewItemType(company_type) },
+        referer: req.headers.referer as string,
+      })
+
+      if ("error" in result) {
+        if (result.error === "error_sending_application") {
+          res.status(500)
+        } else {
+          res.status(400)
+        }
+      } else {
+        res.status(200)
+      }
+
+      return res.send(result)
+    }
+  )
+
   server.post(
     "/application/intentionComment/:id",
     {

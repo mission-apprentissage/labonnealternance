@@ -1,7 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZPointGeometry } from "./address.model"
-import { ZAppointment } from "./appointments.model"
 import { zObjectId } from "./common"
 
 // Define schemas for nested objects
@@ -92,7 +91,7 @@ const stringOrArraySchema = z.union([z.string(), z.array(z.string())])
 export const zFormationCatalogueSchema = z
   .object({
     _id: zObjectId,
-    cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
+    cle_ministere_educatif: z.string().nullish(),
     cfd: z.string(),
     cfd_specialite: z.string().nullish(),
     cfa_outdated: z.boolean().nullish(),
@@ -112,6 +111,7 @@ export const zFormationCatalogueSchema = z
     nom: z.string().nullish(),
     intitule_long: z.string().nullish(),
     intitule_court: z.string().nullish(),
+    intitule_rco: z.string().nullish(),
     diplome: z.string().nullish(),
     niveau: z.string().nullish(),
     onisep_url: z.string().nullish(),
@@ -135,6 +135,7 @@ export const zFormationCatalogueSchema = z
     parcoursup_reference: z.boolean().nullish(),
     parcoursup_a_charger: z.boolean().nullish(),
     parcoursup_id: z.string().nullish(),
+    parcoursup_visible: z.boolean().nullish(),
     affelnet_reference: z.boolean().nullish(),
     affelnet_a_charger: z.boolean().nullish(),
     affelnet_statut: z.string().nullish(),

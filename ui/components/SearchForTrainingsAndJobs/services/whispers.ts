@@ -1,7 +1,19 @@
 import { chunk, forEach, includes, reject } from "lodash"
 
 import { astuces } from "../../../config/astuces"
-import { randomWithin } from "../../../utils/arrayutils"
+
+const randomWithin = (collection, limitation = undefined) => {
+  let searchLimit = collection.length - 1
+
+  if (limitation !== undefined && limitation < collection.length - 1) {
+    searchLimit = limitation
+  }
+
+  const randomIndex = Math.floor(Math.random() * (searchLimit + 1))
+  return collection[randomIndex]
+}
+
+export { randomWithin }
 
 function anyMessageAmongst(messages, alreadyShownMessages = []) {
   if (alreadyShownMessages.length > 0 && alreadyShownMessages.length <= messages.length) {
@@ -76,7 +88,7 @@ function getHTMLLink(link) {
   return (
     link &&
     `<span style="margin-top: 6px;display: block;">
-                  <a href="${link}" target="_blank" rel="noopener noreferrer" style="display: flex;">
+                  <a href="${link}" target="_blank" rel="noopener noreferrer" style="display: flex;" title="en savoir plus - nouvelle fenêtre">
                     <span aria-label="Accéder au détail de l'astuce" style="color: #000091;">En savoir plus</span>
                     <img style="margin-left: 5px" src="/images/square_link_blue.svg" alt=""/>
                   </a>

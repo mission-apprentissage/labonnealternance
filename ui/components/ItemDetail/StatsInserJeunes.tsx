@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Link, Text } from "@chakra-ui/react"
 import React from "react"
 
@@ -54,8 +55,13 @@ const StatsInserJeunes = ({ stats }) => {
         </Flex>
         <Text mt={3} color="grey.425" fontSize="12px">
           *Données issues du{" "}
-          <Link href="https://documentation.exposition.inserjeunes.beta.gouv.fr/" textDecoration="underline" isExternal>
-            dispositif InserJeunes promotion {stats.millesime.replace("_", "/")}
+          <Link
+            href="https://documentation.exposition.inserjeunes.beta.gouv.fr/"
+            textDecoration="underline"
+            isExternal
+            aria-label="Site inserjeunes.beta.gouv.fr - nouvelle fenêtre"
+          >
+            dispositif InserJeunes promotion {stats.millesime.replace("_", "/")} <ExternalLinkIcon mx="2px" />
           </Link>
         </Text>
       </Box>

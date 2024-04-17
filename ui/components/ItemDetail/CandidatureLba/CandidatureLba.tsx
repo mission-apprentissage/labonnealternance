@@ -1,13 +1,14 @@
-import { CloseIcon } from "@chakra-ui/icons"
 import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useContext, useEffect, useState } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { JOB_STATUS } from "shared/models/job.model"
+
+import LBAModalCloseButton from "@/components/lbaModalCloseButton"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
-import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
 
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import CandidatureLbaModalBody from "./CandidatureLbaModalBody"
@@ -21,7 +22,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [sendingState, setSendingState] = useState("not_sent")
   const { formValues } = useContext(DisplayContext)
-  const kind = item?.ideaType || ""
+  const kind: LBA_ITEM_TYPE_OLD = item?.ideaType || ""
 
   const onModalClose = () => {
     setSendingState("not_sent")
@@ -34,7 +35,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
 
   const openApplicationForm = () => {
     onOpen()
-    SendPlausibleEvent(kind === "matcha" ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
+    SendPlausibleEvent(kind === LBA_ITEM_TYPE_OLD.MATCHA ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
       info_fiche: getItemId(item),
     })
   }
@@ -80,7 +81,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
             })}
           </Box>
         ) : (
-          (kind !== "matcha" || item.job.status === JOB_STATUS.ACTIVE) && (
+          (kind !== LBA_ITEM_TYPE_OLD.MATCHA || item.job.status === JOB_STATUS.ACTIVE) && (
             <>
               <Box my={4}>
                 <Button
@@ -99,40 +100,21 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
                   aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
                   data-testid="postuler-button"
                 >
-                  J&apos;envoie ma candidature{with_str(kind).amongst(["lbb", "lba"]) ? " spontanée" : ""}
+                  J&apos;envoie ma candidature{kind === LBA_ITEM_TYPE_OLD.LBA ? " spontanée" : ""}
                 </Button>
                 <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size="3xl">
                   <ModalOverlay />
                   <ModalContent>
                     {/* @ts-expect-error: Chakra error */}
                     <ModalHeader paddingTop="8px" paddingBottom="0" align="right">
-                      <Button
-                        fontSize="14px"
-                        color="bluefrance.500"
-                        fontWeight={400}
-                        background="none"
-                        alignItems="baseline"
-                        height="1.5rem"
-                        sx={{
-                          _hover: {
-                            background: "none",
-                            textDecoration: "none",
-                          },
-                          _active: {
-                            background: "none",
-                          },
-                        }}
-                        onClick={onModalClose}
-                      >
-                        Fermer <CloseIcon w={2} h={2} ml={2} />
-                      </Button>
+                      <LBAModalCloseButton onClose={onModalClose} />
                     </ModalHeader>
                     <form onSubmit={formik.handleSubmit}>
-                      {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
+                      {["not_sent", "currently_sending"].includes(sendingState) && (
                         <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
                       )}
-                      {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
-                      {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
+                      {["ok_sent"].includes(sendingState) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
+                      {!["not_sent", "ok_sent", "currently_sending"].includes(sendingState) && <CandidatureLbaFailed sendingState={sendingState} />}
                     </form>
                   </ModalContent>
                 </Modal>

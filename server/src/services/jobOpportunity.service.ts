@@ -1,11 +1,13 @@
+import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
+
 import { IApiError } from "../common/utils/errorManager"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 
+import { getSomeFtJobs } from "./ftjob.service"
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
 import { getSomeCompanies } from "./lbacompany.service"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPeJob } from "./lbaitem.shared.service.types"
+import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { getLbaJobs } from "./lbajob.service"
-import { getSomePeJobs } from "./pejob.service"
 import { jobsQueryValidator } from "./queryValidator.service"
 
 /**
@@ -25,6 +27,7 @@ export const getJobsFromApi = async ({
   opco,
   opcoUrl,
   api = "jobV1/jobs",
+  isMinimalData,
 }: {
   romes?: string
   referer?: string
@@ -34,21 +37,42 @@ export const getJobsFromApi = async ({
   radius?: number
   insee?: string
   sources?: string
+  // sources?: LBA_ITEM_TYPE
   diploma?: string
   opco?: string
   opcoUrl?: string
   api?: string
+  isMinimalData: boolean
 }): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   try {
-    const jobSources = !sources ? ["lba", "offres", "matcha"] : sources.split(",")
+    const convertedSource = sources
+      ?.split(",")
+      .map((source) => {
+        switch (source) {
+          case "matcha":
+            return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+          case "lba":
+          case "lbb":
+            return LBA_ITEM_TYPE.RECRUTEURS_LBA
+
+          case "offres":
+            return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
+
+          default:
+            return
+        }
+      })
+      .join(",")
+
+    const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
     const finalRadius = radius ?? 0
 
     const [peJobs, lbaCompanies, matchas] = await Promise.all([
-      jobSources.includes("offres")
-        ? getSomePeJobs({
+      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
+        ? getSomeFtJobs({
             romes: romes?.split(","),
             insee: insee,
             radius: finalRadius,
@@ -59,9 +83,10 @@ export const getJobsFromApi = async ({
             api,
             opco,
             opcoUrl,
+            isMinimalData,
           })
         : null,
-      jobSources.includes("lba")
+      jobSources.includes(LBA_ITEM_TYPE.RECRUTEURS_LBA)
         ? getSomeCompanies({
             romes,
             latitude,
@@ -72,9 +97,10 @@ export const getJobsFromApi = async ({
             api,
             opco,
             opcoUrl,
+            isMinimalData,
           })
         : null,
-      jobSources.includes("matcha")
+      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
         ? getLbaJobs({
             romes,
             latitude,
@@ -85,6 +111,7 @@ export const getJobsFromApi = async ({
             diploma,
             opco,
             opcoUrl,
+            isMinimalData,
           })
         : null,
     ])
@@ -106,7 +133,7 @@ export const getJobsQuery = async (
   query: TJobSearchQuery
 ): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemFtJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   const parameterControl = await jobsQueryValidator(query)
 

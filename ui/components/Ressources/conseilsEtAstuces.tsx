@@ -165,7 +165,7 @@ const ConseilsEtAstuces = () => {
               <ListItem mb={4}>
                 France Travail recense de nombreux évènements (conférences, salons, job dating, conférences en ligne…) pour vous aider dans vos recherches de contrat.{" "}
                 <Link
-                  href="https://mesevenementsemploi.pole-emploi.fr/mes-evenements-emploi/evenements"
+                  href="https://mesevenementsemploi.francetravail.fr/mes-evenements-emploi/evenements"
                   aria-label="Accéder au site des événement recencsé par France Travail"
                   isExternal
                   variant="basicUnderlinedBlue"
@@ -293,7 +293,7 @@ const ConseilsEtAstuces = () => {
               <ListItem mb={4}>
                 Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aide dès maintenant.{" "}
                 <Link
-                  href="https://mes-aides.pole-emploi.fr/transport-et-mobilite/financer-mon-permis"
+                  href="https://mes-aides.francetravail.fr/transport-et-mobilite/financer-mon-permis"
                   aria-label="Accéder au site mes aides de France travail"
                   isExternal
                   variant="basicUnderlinedBlue"

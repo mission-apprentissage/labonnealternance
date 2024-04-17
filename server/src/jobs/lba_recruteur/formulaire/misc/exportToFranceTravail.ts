@@ -9,22 +9,13 @@ import { JOB_STATUS } from "shared/models"
 
 import { db } from "@/common/mongodb"
 
-import { sendCsvToPE } from "../../../../common/apis/Pe"
+import { sendCsvToFranceTravail } from "../../../../common/apis/FranceTravail"
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
 import { getDepartmentByZipCode } from "../../../../common/territoires"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import dayjs from "../../../../services/dayjs.service"
-
-const stat = {
-  ok: 0,
-  ko: 0,
-  matchingAppellation: 0,
-  romeDetailVide: 0,
-  adresse: 0,
-  geoCoord: 0,
-}
 
 const regex = /^(.*) (\d{4,5}) (.*)$/
 const formatDate = (date) => dayjs(date).format("DD/MM/YYYY")
@@ -44,16 +35,7 @@ const formatToPe = async (offre) => {
 
   const ntcCle = offre.type === "Apprentissage" ? "E2" : "FS"
 
-  if (!appellation) {
-    stat.matchingAppellation++
-    return
-  }
-  if (!adresse) {
-    stat.adresse++
-    return
-  }
-  if (!latitude || !longitude) {
-    stat.geoCoord++
+  if (!appellation || !adresse || !latitude || !longitude) {
     return
   }
 
@@ -129,9 +111,9 @@ const formatToPe = async (offre) => {
     CPO_cle: null,
     COM_cle: adresse.code_insee_localite,
     COM_libelle: null,
-    DEP_cle: adresse.code_postal.slice(0, 2),
+    DEP_cle: adresse.code_postal ? adresse.code_postal.slice(0, 2) : "",
     DEP_libelle: null,
-    REG_cle: getDepartmentByZipCode(adresse.code_postal)?.region.code ?? "",
+    REG_cle: adresse.code_postal ? getDepartmentByZipCode(adresse.code_postal)?.region.code ?? "" : "",
     REG_libelle: null,
     Pay_cle: null,
     Pay_libelle: adresse.l7,
@@ -187,16 +169,22 @@ const formatToPe = async (offre) => {
 /**
  * @description Generate a CSV with eligible offers for Pole Emploi integration
  */
-export const exportPE = async (): Promise<void> => {
+export const exportToFranceTravail = async (): Promise<void> => {
   try {
-    const csvPath = new URL("./exportPE.csv", import.meta.url)
+    const csvPath = new URL("./exportFT.csv", import.meta.url)
     const buffer: any[] = []
     const threshold = dayjs().subtract(30, "days").toDate()
 
     // Retrieve only active offers
     const offres: any[] = await db
       .collection("jobs")
-      .find({ job_status: JOB_STATUS.ACTIVE, recruiterStatus: RECRUITER_STATUS.ACTIF, geo_coordinates: { $nin: ["NOT FOUND", null] }, job_update_date: { $gte: threshold } })
+      .find({
+        job_status: JOB_STATUS.ACTIVE,
+        recruiterStatus: RECRUITER_STATUS.ACTIF,
+        geo_coordinates: { $nin: ["NOT FOUND", null] },
+        job_update_date: { $gte: threshold },
+        address_detail: { $ne: null },
+      })
       .toArray()
 
     logger.info(`get info from ${offres.length} offers...`)
@@ -207,8 +195,6 @@ export const exportPE = async (): Promise<void> => {
         offre.job_type.map(async (type) => {
           if (offre.rome_detail && typeof offre.rome_detail !== "string") {
             buffer.push({ ...offre, type: type, cfa: user ? pick(user, ["address_detail", "establishment_raison_sociale"]) : null })
-          } else {
-            stat.ko++
           }
         })
       }
@@ -222,20 +208,16 @@ export const exportPE = async (): Promise<void> => {
       createWriteStream(csvPath)
     )
 
-    logger.info("Stats: ", stat)
-    logger.info("Send CSV...")
+    await sendCsvToFranceTravail(path.resolve(csvPath.pathname))
 
-    const response = await sendCsvToPE(path.resolve(csvPath.pathname))
-
-    logger.info(`CSV sent (${response})`)
     await notifyToSlack({
-      subject: "EXPORT PE OK",
-      message: `${buffer.length} offres transmises à Pôle emploi - reponse API PE : ${response}`,
+      subject: "EXPORT FRANCE TRAVAIL OK",
+      message: `${buffer.length} offres transmises à France Travail`,
     })
   } catch (err) {
     await notifyToSlack({
-      subject: "EXPORT PE KO",
-      message: `Echec de l'export des offres Pôle emploi. ${err}`,
+      subject: "EXPORT FRANCE TRAVAIL KO",
+      message: `Echec de l'export des offres France Travail. ${err}`,
     })
     throw err
   }

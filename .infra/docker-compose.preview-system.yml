@@ -43,13 +43,13 @@ services:
 
   mongodb:
     <<: *default
-    image: mongo:6.0.11
+    image: mongo:6.0.11 # locked by OVH production version
     hostname: mongodb
     container_name: lba_mongodb
     deploy:
       resources:
         limits:
-          memory: 2g
+          memory: 4g
     ports:
       - "127.0.0.1:27017:27017"
     command: ["-f", "/etc/mongod/mongod.conf"]
@@ -85,7 +85,7 @@ services:
 
   smtp:
     <<: *default
-    image: axllent/mailpit:v1.10.1
+    image: axllent/mailpit:v1.15
     container_name: lba_smtp
     ports:
       - 1025:1025
@@ -127,7 +127,7 @@ services:
 
   cadvisor:
     <<: *default
-    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
     hostname: "{{host_name}}"
     privileged: true
     devices:

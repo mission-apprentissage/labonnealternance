@@ -1,6 +1,7 @@
 import { Flex, Spinner } from "@chakra-ui/react"
 import axios from "axios"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { initPostulerParametersFromQuery } from "../../../services/config"
 import { companyApi, matchaApi } from "../../SearchForTrainingsAndJobs/services/utils"
@@ -22,7 +23,7 @@ const WidgetPostuler = () => {
     let item = null
 
     switch (parameters.type) {
-      case "matcha": {
+      case LBA_ITEM_TYPE_OLD.MATCHA: {
         const response = await axios.get(matchaApi + "/" + parameters.itemId)
         if (!response?.data?.message) {
           item = response.data.matchas[0]

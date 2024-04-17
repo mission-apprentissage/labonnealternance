@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Grid, GridItem, Box, Image, Link, Text, UnorderedList, ListItem } from "@chakra-ui/react"
 
 export const FormCreatePageFooter = () => {
@@ -17,12 +18,22 @@ export const FormCreatePageFooter = () => {
             <Box pl={{ base: 0, lg: 4 }} mt={{ base: 8, lg: 0 }} height="100%" display="flex" alignItems={{ base: "start", lg: "center" }}>
               <Box fontSize="12px" color="#161616" pl={{ base: 0, lg: 5 }}>
                 <Text as="strong">Le service de prise de rendez-vous</Text> est proposé par{" "}
-                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Accès au site labonnealternance" isExternal textDecoration="underline">
-                  La bonne alternance
+                <Link
+                  href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+                  aria-label="Accès au site labonnealternance - nouvelle fenêtre"
+                  isExternal
+                  textDecoration="underline"
+                >
+                  La bonne alternance <ExternalLinkIcon mx="2px" />
                 </Link>
                 . Il est développé par la{" "}
-                <Link href="https://mission-apprentissage.gitbook.io/general/" aria-label="Lien vers la mission interministérielle" isExternal textDecoration="underline">
-                  Mission interministérielle pour l'apprentissage
+                <Link
+                  href="https://mission-apprentissage.gitbook.io/general/"
+                  aria-label="Lien vers la mission interministérielle - nouvelle fenêtre"
+                  isExternal
+                  textDecoration="underline"
+                >
+                  Mission interministérielle pour l'apprentissage <ExternalLinkIcon mx="2px" />
                 </Link>
                 .
               </Box>
@@ -108,12 +119,11 @@ export const FormCreatePageFooter = () => {
                 Sauf mention contraire, tous les contenus de ce site sont sous licence{" "}
                 <Link
                   href="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
-                  aria-label="Accès au site Etalab"
+                  aria-label="Accès au site Etalab - nouvelle fenêtre"
                   textDecoration="underline"
                   isExternal
                 >
-                  etalab-2.0
-                  <Image src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" display="inline-block" pl="1" />
+                  etalab-2.0 <ExternalLinkIcon mx="2px" />
                 </Link>
               </Box>
             </GridItem>

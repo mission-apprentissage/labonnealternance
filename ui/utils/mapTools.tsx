@@ -2,14 +2,20 @@ import distance from "@turf/distance"
 import { round } from "lodash"
 import * as mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
-import React from "react"
 import { createRoot } from "react-dom/client"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { MapPopup } from "../components/SearchForTrainingsAndJobs/components"
 import { fetchAddresses } from "../services/baseAdresse"
 
 import { isArea } from "./isArea"
 import { getItemElement, scrollToElementInContainer } from "./tools"
+
+enum layerType {
+  PARTNER = "PARTNER",
+  INTERNAL = "INTERNAL",
+  TRAINING = "TRAINING",
+}
 
 let currentPopup = null
 // eslint-disable-next-line import/no-mutable-exports
@@ -19,6 +25,115 @@ let isMapInitialized = false
 
 const franceCenter = [2.2, 47]
 const zoomWholeFrance = 5
+
+const addLayers = ({ map, type, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem }) => {
+  let layerName = ""
+  switch (type) {
+    case layerType.INTERNAL: {
+      layerName = "job"
+      break
+    }
+    case layerType.PARTNER: {
+      layerName = "partnerJob"
+      break
+    }
+    case layerType.TRAINING: {
+      layerName = "training"
+      break
+    }
+    default:
+      break
+  }
+
+  const clusterCountParams = {
+    id: `${layerName}-points-cluster-count`,
+    source: `${layerName}-points`,
+    type: "symbol",
+    filter: ["has", "point_count"],
+    layout: {
+      "text-field": "{point_count_abbreviated}",
+      "text-font": ["Arial Unicode MS Bold"],
+      "text-size": 14,
+      "text-anchor": "top-left",
+      "text-allow-overlap": true,
+      "text-offset": [0.4, 0.2],
+    },
+    paint: {
+      "text-color": "#fff",
+      "text-halo-color": "#000",
+      "text-halo-width": 3,
+    },
+  }
+
+  map.addSource(`${layerName}-points`, {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: [],
+    },
+    cluster: true,
+    clusterMaxZoom: 14, // Max zoom to cluster points on
+    clusterRadius: 50,
+  })
+
+  // Ajout de la layer des emplois en premier pour que les points soient en dessous des formations
+  map.addLayer({
+    id: `${layerName}-points-layer`,
+    source: `${layerName}-points`,
+    type: "symbol",
+    layout: {
+      "icon-image": type === layerType.TRAINING ? "training" : "job", // cf. images chargées en amont
+      "icon-padding": 0,
+      "icon-allow-overlap": true,
+    },
+  })
+
+  // layer contenant les pastilles de compte des emplois
+  map.addLayer(clusterCountParams)
+
+  map.on("click", `${layerName}-points-layer`, function (e) {
+    e.originalEvent.STOP = "STOP" // un classique stopPropagation ne suffit pour empêcher d'ouvrir deux popups si des points de deux layers se superposent
+    e.originalEvent.STOP_SOURCE = layerName
+
+    const features = e.features
+    setTimeout(() => {
+      // setTimeout de 5 ms pour que l'event soit traité au niveau de la layer et que le flag stop puisse être posé
+      // afin d'éviter que plusiers popup n'apparaissent si le click a lieu sur plusieurs markers se chevauchant
+      if (e?.originalEvent) {
+        if (e.originalEvent.STOP_SOURCE === layerName) {
+          e.features = features // on réinsert les features de l'event qui sinon sont perdues en raison du setTimeout
+          onLayerClick(e, layerName, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem)
+        }
+      }
+    }, 5)
+  })
+
+  // ajout des layers et events liés à l'item sélectionné
+  map.addSource(`selected-${layerName}-point`, {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: [],
+    },
+  })
+
+  // Ajout de la layer item sélectionné
+  map.addLayer({
+    id: `selected-${layerName}-point-layer`,
+    source: `selected-${layerName}-point`,
+    type: "symbol",
+    layout: {
+      "icon-image": type === layerType.TRAINING ? "training-large" : "job-large", // cf. images chargées en amont
+      "icon-padding": 0,
+      "icon-allow-overlap": true,
+    },
+  })
+
+  map.on("click", `selected-${layerName}-point-layer`, function (e) {
+    e.originalEvent.STOP = "STOP" // un classique stopPropagation ne suffit pour empêcher d'ouvrir deux popups si des points de deux layers se superposent
+    e.originalEvent.STOP_SOURCE = `selected-${layerName}`
+  })
+}
 
 const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMoved, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem }) => {
   isMapInitialized = true
@@ -71,165 +186,14 @@ const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMo
       })
     }
 
-    const clusterCountParams = {
-      id: "job-points-cluster-count",
-      source: "job-points",
-      type: "symbol",
-      filter: ["has", "point_count"],
-      layout: {
-        "text-field": "{point_count_abbreviated}",
-        "text-font": ["Arial Unicode MS Bold"],
-        "text-size": 14,
-        "text-anchor": "top-left",
-        "text-allow-overlap": true,
-        "text-offset": [0.4, 0.2],
-      },
-      paint: {
-        "text-color": "#fff",
-        "text-halo-color": "#000",
-        "text-halo-width": 3,
-      },
-    }
-
     if (!map.getLayer("job-points-layer")) {
-      map.addSource("job-points", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [],
-        },
-        cluster: true,
-        clusterMaxZoom: 14, // Max zoom to cluster points on
-        clusterRadius: 50,
-      })
-
-      // Ajout de la layer des emplois en premier pour que les points soient en dessous des formations
-      map.addLayer({
-        id: "job-points-layer",
-        source: "job-points",
-        type: "symbol",
-        layout: {
-          "icon-image": "job", // cf. images chargées plus haut
-          "icon-padding": 0,
-          "icon-allow-overlap": true,
-        },
-      })
-
-      map.on("click", "job-points-layer", function (e) {
-        const features = e.features
-        setTimeout(() => {
-          // setTimeout de 5 ms pour que l'event soit traité au niveau de la layer training et que le flag stop puisse être posé
-          // en effet la layer job reçoit l'event en premier du fait de son positionnement dans la liste des layers de la map
-          if (e?.originalEvent) {
-            if (!e.originalEvent.STOP) {
-              e.features = features // on réinsert les features de l'event qui sinon sont perdues en raison du setTimeout
-              onLayerClick(e, "job", selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem)
-            }
-          }
-        }, 5)
-      })
-
-      // layer contenant les pastilles de compte des emplois
-      map.addLayer(clusterCountParams)
-
-      // ajout des layers et events liés à l'emploi sélectionné
-      map.addSource("selected-job-point", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [],
-        },
-      })
-
-      // Ajout de la layer emploi sélectionné
-      map.addLayer({
-        id: "selected-job-point-layer",
-        source: "selected-job-point",
-        type: "symbol",
-        layout: {
-          "icon-image": "job-large", // cf. images chargées plus haut
-          "icon-padding": 0,
-          "icon-allow-overlap": true,
-        },
-      })
-
-      map.on("click", "selected-job-point-layer", function (e) {
-        e.originalEvent.STOP = "STOP" // un classique stopPropagation ne suffit pour empêcher d'ouvrir deux popups si des points de deux layers se superposent
-        e.originalEvent.STOP_SOURCE = "selected-job"
-      })
+      addLayers({ map, type: layerType.INTERNAL, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem })
+      addLayers({ map, type: layerType.PARTNER, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem })
     }
 
     // ajout des layers et events liés aux formations
     if (!map.getLayer("training-points-layer")) {
-      map.addSource("training-points", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [],
-        },
-        cluster: true,
-        clusterMaxZoom: 14, // Max zoom to cluster points on
-        clusterRadius: 50,
-      })
-
-      // Ajout de la layer des formations
-      map.addLayer({
-        id: "training-points-layer",
-        source: "training-points",
-        type: "symbol",
-        layout: {
-          "icon-image": "training", // cf. images chargées plus haut
-          "icon-padding": 0,
-          "icon-allow-overlap": true,
-        },
-      })
-
-      clusterCountParams.id = "training-points-cluster-count"
-      clusterCountParams.source = "training-points"
-
-      map.addLayer(clusterCountParams)
-
-      map.on("click", "training-points-layer", function (e) {
-        e.originalEvent.STOP = "STOP" // un classique stopPropagation ne suffit pour empêcher d'ouvrir deux popups si des points de deux layers se superposent
-
-        const features = e.features
-        setTimeout(() => {
-          // setTimeout de 5 ms pour que l'event soit traité au niveau de la layer training et que le flag stop puisse être posé
-          // en effet la layer job reçoit l'event en premier du fait de son positionnement dans la liste des layers de la map
-          if (e?.originalEvent) {
-            if (!e.originalEvent.STOP_SOURCE) {
-              e.features = features // on réinsert les features de l'event qui sinon sont perdues en raison du setTimeout
-              onLayerClick(e, "training", selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem)
-            }
-          }
-        }, 5)
-      })
-
-      // ajout des layers et events liés à la formation sélectionnée
-      map.addSource("selected-training-point", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [],
-        },
-      })
-
-      // Ajout de la layer formation sélectionnée
-      map.addLayer({
-        id: "selected-training-point-layer",
-        source: "selected-training-point",
-        type: "symbol",
-        layout: {
-          "icon-image": "training-large", // cf. images chargées plus haut
-          "icon-padding": 0,
-          "icon-allow-overlap": true,
-        },
-      })
-
-      map.on("click", "selected-training-point-layer", function (e) {
-        e.originalEvent.STOP = "STOP" // un classique stopPropagation ne suffit pour empêcher d'ouvrir deux popups si des points de deux layers se superposent
-        e.originalEvent.STOP_SOURCE = "selected-training"
-      })
+      addLayers({ map, type: layerType.TRAINING, selectItemOnMap, unselectItem, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem })
     }
   })
 
@@ -345,11 +309,15 @@ const factorPlacesForMap = (list) => {
       if (!isEqualCoords(currentMarker.coords, coords)) {
         resultList.push(currentMarker)
         currentMarker = { coords, items: [list[i]] }
-      } else currentMarker.items.push(list[i])
+      } else {
+        currentMarker.items.push(list[i])
+      }
     }
   }
 
-  if (currentMarker) resultList.push(currentMarker)
+  if (currentMarker) {
+    resultList.push(currentMarker)
+  }
 
   return resultList
 }
@@ -359,21 +327,30 @@ const factorTrainingsForMap = (list) => {
   return factorPlacesForMap(list)
 }
 
-// rassemble les emplois ayant une même géoloc pour avoir une seule icône sur la map
-const factorJobsForMap = (lists) => {
+const factorPartnerJobsForMap = (lists) => {
+  return factorJobsForMap(lists, layerType.PARTNER)
+}
+
+const factorInternalJobsForMap = (lists) => {
+  return factorJobsForMap(lists, layerType.INTERNAL)
+}
+
+// rassemble les emplois internes ayant une même géoloc pour avoir une seule icône sur la map
+const factorJobsForMap = (lists, type) => {
   let sortedList = []
 
-  // concaténation des quatre sources d'emploi
-  if (lists.peJobs) {
-    sortedList = lists.peJobs
-  }
+  if (type === layerType.PARTNER) {
+    if (lists.peJobs) {
+      sortedList = lists.peJobs
+    }
+  } else {
+    if (lists.lbaCompanies) {
+      sortedList = sortedList.length ? sortedList.concat(lists.lbaCompanies) : lists.lbaCompanies
+    }
 
-  if (lists.lbaCompanies) {
-    sortedList = sortedList.length ? sortedList.concat(lists.lbaCompanies) : lists.lbaCompanies
-  }
-
-  if (lists.matchas) {
-    sortedList = sortedList.length ? sortedList.concat(lists.matchas) : lists.matchas
+    if (lists.matchas) {
+      sortedList = sortedList.length ? sortedList.concat(lists.matchas) : lists.matchas
+    }
   }
 
   // tri de la liste de tous les emplois selon les coordonnées geo (l'objectif est d'avoir les emplois au même lieu proches)
@@ -470,9 +447,9 @@ const filterLayers = (filters) => {
     let layersToHide = []
 
     if (filters.includes("jobs") || filters.includes("duo")) {
-      layersToShow = layersToShow.concat(["job-points-cluster-count", "job-points-layer"])
+      layersToShow = layersToShow.concat(["job-points-cluster-count", "job-points-layer", "partnerJob-points-cluster-count", "partnerJob-points-layer"])
     } else {
-      layersToHide = layersToHide.concat(["job-points-cluster-count", "job-points-layer"])
+      layersToHide = layersToHide.concat(["job-points-cluster-count", "job-points-layer", "partnerJob-points-cluster-count", "partnerJob-points-layer"])
     }
 
     if (filters.includes("trainings")) {
@@ -507,7 +484,7 @@ const resizeMap = () => {
   }
 }
 
-const setJobMarkers = async ({ jobList, searchCenter = null, hasTrainings = false, tryCount = 0 }) => {
+const setJobMarkers = async ({ jobList, type, searchCenter = null, hasTrainings = false, tryCount = 0 }) => {
   if (isMapInitialized) {
     await waitForMapReadiness()
 
@@ -523,7 +500,7 @@ const setJobMarkers = async ({ jobList, searchCenter = null, hasTrainings = fals
 
     const features = []
     jobList.map((job, idx) => {
-      job.ideaType = "job"
+      job.ideaType = job.ideaType === LBA_ITEM_TYPE_OLD.PEJOB ? "partnerJob" : "job"
 
       features.push({
         type: "Feature",
@@ -538,41 +515,36 @@ const setJobMarkers = async ({ jobList, searchCenter = null, hasTrainings = fals
       })
     })
 
-    map.getSource("job-points").setData({ type: "FeatureCollection", features })
+    map.getSource(type === layerType.INTERNAL ? "job-points" : "partnerJob-points").setData({ type: "FeatureCollection", features })
   } else {
-    if (tryCount < 5)
+    if (tryCount < 5) {
       setTimeout(() => {
-        setJobMarkers({ jobList, searchCenter, hasTrainings, tryCount: tryCount++ })
+        setJobMarkers({ jobList, type, searchCenter, hasTrainings, tryCount: tryCount++ })
       }, 100)
+    }
   }
 }
 
 const setSelectedMarker = async (item) => {
-  if (item) {
-    const marker = {
-      coords: getCoordinates(item),
-      items: [item],
-      ideaType: item.ideaType === "formation" ? "formation" : "job",
-    }
-    if (item.ideaType === "formation") {
-      setSelectedTrainingMarker(marker)
-      setSelectedJobMarker(marker)
-    } else {
-      setSelectedJobMarker(marker)
-      setSelectedTrainingMarker(null)
-    }
-  } else {
-    setSelectedJobMarker(null)
-    setSelectedTrainingMarker(null)
-  }
+  const marker: { coords: any; items: any[]; ideaType: string } | null = item
+    ? {
+        coords: getCoordinates(item),
+        items: [item],
+        ideaType: item.ideaType,
+      }
+    : null
+
+  setSelectedJobMarker(item && item.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION ? marker : null)
+  setSelectedTrainingMarker(item && item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? marker : null)
 }
 
-const setSelectedJobMarker = async (job) => {
-  updateSelectedMarkerCollection(job, "selected-job-point")
+const setSelectedJobMarker = async (marker) => {
+  updateSelectedMarkerCollection(marker && marker.ideaType === LBA_ITEM_TYPE_OLD.PEJOB ? marker : null, "selected-partnerJob-point")
+  updateSelectedMarkerCollection(marker && marker.ideaType !== LBA_ITEM_TYPE_OLD.PEJOB ? marker : null, "selected-job-point")
 }
 
-const setSelectedTrainingMarker = async (training) => {
-  updateSelectedMarkerCollection(training, "selected-training-point")
+const setSelectedTrainingMarker = async (marker) => {
+  updateSelectedMarkerCollection(marker, "selected-training-point")
 }
 
 const updateSelectedMarkerCollection = async (item, layer) => {
@@ -589,13 +561,12 @@ const updateSelectedMarkerCollection = async (item, layer) => {
         },
         properties: {
           id: 0,
-          ...(item.ideaType === "formation" ? { training: item } : { job: item }),
+          ...(item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? { training: item } : { job: item }),
         },
       })
     }
 
     const results = { type: "FeatureCollection", features }
-
     map.getSource(layer).setData(results)
   }
 }
@@ -617,7 +588,7 @@ const setTrainingMarkers = async ({ trainingList, options = undefined, tryCount 
       }
 
       trainingList.map((training, idx) => {
-        training.ideaType = "formation"
+        training.ideaType = LBA_ITEM_TYPE_OLD.FORMATION
         features.push({
           type: "Feature",
           geometry: {
@@ -646,7 +617,8 @@ const coordinatesOfFrance = [2.213749, 46.227638]
 const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
   setTimeout(() => {
     if (scopeContext.isJob) {
-      setJobMarkers({ jobList: factorJobsForMap(jobs), hasTrainings: trainings })
+      setJobMarkers({ jobList: factorInternalJobsForMap(jobs), type: layerType.INTERNAL, hasTrainings: trainings })
+      setJobMarkers({ jobList: factorPartnerJobsForMap(jobs), type: layerType.PARTNER, hasTrainings: trainings })
     }
     if (scopeContext.isTraining) {
       setTrainingMarkers({ trainingList: factorTrainingsForMap(trainings) })
@@ -659,7 +631,8 @@ export {
   closeMapPopups,
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
-  factorJobsForMap,
+  factorPartnerJobsForMap,
+  factorInternalJobsForMap,
   factorTrainingsForMap,
   filterLayers,
   flyToLocation,
@@ -676,4 +649,5 @@ export {
   setSelectedTrainingMarker,
   setTrainingMarkers,
   waitForMapReadiness,
+  layerType,
 }

@@ -1,6 +1,8 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Container, Flex, FormControl, FormErrorMessage, FormLabel, Input, Link, ModalBody, ModalFooter, Text } from "@chakra-ui/react"
 import emailMisspelled, { top100 } from "email-misspelled"
-import React, { useState } from "react"
+import { useState } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { testingParameters } from "../../../utils/testingParameters"
 
@@ -42,7 +44,7 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
     <>
       <PostulerBody fromWidget={fromWidget}>
         <Text as="h1" fontWeight={700} fontSize="24px" data-testid="CandidatureSpontaneeTitle">
-          {kind === "matcha" ? (
+          {kind === LBA_ITEM_TYPE_OLD.MATCHA ? (
             <>
               Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
             </>
@@ -140,14 +142,14 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
           </Text>
           <Text>
             En remplissant ce formulaire, vous acceptez les{" "}
-            <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank">
-              Conditions générales d&apos;utilisation
+            <Link href="/cgu" color="grey.800" textDecoration="underline" isExternal title="Conditions générales d'utilisation - nouvelle fenêtre">
+              Conditions générales d&apos;utilisation <ExternalLinkIcon mx="2px" />
             </Link>{" "}
             du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}.
             <br />
             Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
-            <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank">
-              Politique de confidentialité
+            <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" isExternal title="politique de confidentialité - nouvelle fenêtre">
+              Politique de confidentialité <ExternalLinkIcon mx="2px" />
             </Link>{" "}
             de La bonne alternance.
           </Text>

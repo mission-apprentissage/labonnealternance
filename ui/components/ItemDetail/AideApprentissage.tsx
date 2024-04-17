@@ -1,5 +1,6 @@
-import { Box, Image, Link, Text } from "@chakra-ui/react"
-import React from "react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Link, Text } from "@chakra-ui/react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 const AideApprentissage = ({ item }) => {
   const kind = item?.ideaType
@@ -7,7 +8,7 @@ const AideApprentissage = ({ item }) => {
   return (
     <Box pb="0px" mt={6} mb={4} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
       <Text as="h2" variant="itemDetailH2" mt={2}>
-        {kind === "formation" ? "Ai-je le droit à une aide ?" : "Simuler mes droits aux aides"}
+        {kind === LBA_ITEM_TYPE_OLD.FORMATION ? "Ai-je le droit à une aide ?" : "Simuler mes droits aux aides"}
       </Text>
 
       <Box color="grey.700" mt={6}>
@@ -16,9 +17,13 @@ const AideApprentissage = ({ item }) => {
 
       <Box color="grey.700" mt={6}>
         Accéder à{" "}
-        <Link variant="basicUnderlined" href="https://www.1jeune1solution.gouv.fr/mes-aides" aria-label="Accès à l'outil de simulation de 1jeune1solution" isExternal>
-          l’outil de simulation 1jeune1solution
-          <Image src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" display="inline-block" pl="1" />
+        <Link
+          variant="basicUnderlined"
+          href="https://www.1jeune1solution.gouv.fr/mes-aides"
+          aria-label="Accès à l'outil de simulation de 1jeune1solution - nouvelle fenêtre"
+          isExternal
+        >
+          l’outil de simulation 1jeune1solution <ExternalLinkIcon mx="2px" />
         </Link>
       </Box>
     </Box>

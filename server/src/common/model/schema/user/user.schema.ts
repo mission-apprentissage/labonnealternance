@@ -40,11 +40,6 @@ export const userSchema = new Schema<IUser>(
       default: Date.now(),
       description: "Date de dernière candidature",
     },
-    is_anonymized: {
-      type: Boolean,
-      default: false,
-      description: "Si l'enregistrement est anonymisé",
-    },
   },
   {
     versionKey: false,

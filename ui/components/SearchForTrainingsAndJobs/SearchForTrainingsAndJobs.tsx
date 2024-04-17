@@ -1,6 +1,7 @@
 import { Box, Flex } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
@@ -12,14 +13,12 @@ import {
   closeMapPopups,
   computeMissingPositionAndDistance,
   coordinatesOfFrance,
-  factorJobsForMap,
   factorTrainingsForMap,
   flyToLocation,
   flyToMarker,
   isMapInitialized,
   refreshLocationMarkers,
   resizeMap,
-  setJobMarkers,
   setSelectedMarker,
   setTrainingMarkers,
 } from "../../utils/mapTools"
@@ -30,13 +29,14 @@ import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
 
 import { ChoiceColumn, MapListSwitchButton } from "./components"
 import { loadItem } from "./services/loadItem"
-import { searchForJobsFunction } from "./services/searchForJobs"
+import { searchForJobsFunction, searchForPartnerJobsFunction } from "./services/searchForJobs"
 import { searchForTrainingsFunction } from "./services/searchForTrainings"
 
 const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)
 
-  const { hasSearch, trainings, jobs, setTrainings, setJobs, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } = useContext(SearchResultContext)
+  const { hasSearch, trainings, jobs, setTrainings, setJobs, setInternalJobs, setPartnerJobs, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } =
+    useContext(SearchResultContext)
 
   const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch, showCombinedJob } = useContext(ParameterContext)
 
@@ -48,8 +48,9 @@ const SearchForTrainingsAndJobs = () => {
   const [shouldShowWelcomeMessage, setShouldShowWelcomeMessage] = useState(hasSearch ? false : true)
 
   const [isJobSearchLoading, setIsJobSearchLoading] = useState(hasSearch ? false : true)
+  const [isPartnerJobSearchLoading, setIsPartnerJobSearchLoading] = useState(hasSearch ? false : true)
   const [jobSearchError, setJobSearchError] = useState("")
-  const [allJobSearchError, setAllJobSearchError] = useState(false)
+  const [partnerJobSearchError, setPartnerJobSearchError] = useState("")
   const [trainingSearchError, setTrainingSearchError] = useState("")
   const [isLoading, setIsLoading] = useState(hasSearch ? false : true)
 
@@ -128,7 +129,7 @@ const SearchForTrainingsAndJobs = () => {
       pushHistory({
         router,
         scopeContext,
-        item: { id: itemId, ideaType: type === "training" ? "formation" : type, directId: true },
+        item: { id: itemId, ideaType: type === "training" ? LBA_ITEM_TYPE_OLD.FORMATION : type, directId: true },
         page: "fiche",
         display: "list",
         searchParameters: formValues,
@@ -144,13 +145,13 @@ const SearchForTrainingsAndJobs = () => {
       case "training": {
         return trainings?.find((el) => el.id === itemId)
       }
-      case "peJob": {
+      case LBA_ITEM_TYPE_OLD.PEJOB: {
         return jobs?.peJobs?.find((el) => el.job.id === itemId)
       }
-      case "lba": {
+      case LBA_ITEM_TYPE_OLD.LBA: {
         return jobs?.lbaCompanies?.find((el) => el.company.siret === itemId)
       }
-      case "matcha": {
+      case LBA_ITEM_TYPE_OLD.MATCHA: {
         return jobs?.matchas?.find((el) => el.job.id === itemId)
       }
       default:
@@ -204,18 +205,17 @@ const SearchForTrainingsAndJobs = () => {
       setTrainings,
       setHasSearch,
       setIsFormVisible,
-      setTrainingMarkers,
       setSelectedItem,
       setCurrentPage,
       setTrainingSearchError,
-      factorTrainingsForMap,
       setIsTrainingSearchLoading,
       setIsJobSearchLoading,
-      computeMissingPositionAndDistance,
+      setIsPartnerJobSearchLoading,
       setJobSearchError,
+      setPartnerJobSearchError,
       setJobs,
-      setJobMarkers,
-      factorJobsForMap,
+      setInternalJobs,
+      setPartnerJobs,
     })
 
     setIsFormVisible(false)
@@ -246,18 +246,30 @@ const SearchForTrainingsAndJobs = () => {
       setIsJobSearchLoading,
       setHasSearch,
       setJobSearchError,
-      setAllJobSearchError,
-      computeMissingPositionAndDistance,
       widgetParameters,
-      setJobs,
-      setJobMarkers,
-      factorJobsForMap,
       scopeContext,
+      setInternalJobs,
       followUpItem,
       selectFollowUpItem,
       opcoFilter,
       opcoUrlFilter,
       showCombinedJob,
+    })
+
+    searchForPartnerJobsFunction({
+      values,
+      searchTimestamp,
+      setIsPartnerJobSearchLoading,
+      setHasSearch,
+      setPartnerJobSearchError,
+      computeMissingPositionAndDistance,
+      widgetParameters,
+      scopeContext,
+      setPartnerJobs,
+      followUpItem,
+      selectFollowUpItem,
+      opcoFilter,
+      opcoUrlFilter,
     })
   }
 
@@ -380,10 +392,12 @@ const SearchForTrainingsAndJobs = () => {
       <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} setIsLoading={setIsLoading} />
       <WidgetHeader
         handleSearchSubmit={handleSearchSubmit}
-        allJobSearchError={allJobSearchError}
         trainingSearchError={trainingSearchError}
+        jobSearchError={jobSearchError}
+        partnerJobSearchError={partnerJobSearchError}
         isTrainingSearchLoading={isTrainingSearchLoading}
         isJobSearchLoading={isJobSearchLoading}
+        isPartnerJobSearchLoading={isPartnerJobSearchLoading}
       />
       <Flex direction="row" overflow="hidden" height="100%">
         <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" flexDirection="column">
@@ -400,8 +414,9 @@ const SearchForTrainingsAndJobs = () => {
             trainingSearchError={trainingSearchError}
             searchForJobs={searchForJobs}
             isJobSearchLoading={isJobSearchLoading}
+            isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             jobSearchError={jobSearchError}
-            allJobSearchError={allJobSearchError}
+            partnerJobSearchError={partnerJobSearchError}
             isLoading={isLoading}
           />
         </Box>

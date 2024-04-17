@@ -1,13 +1,12 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
-import React from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { endsWithNumber } from "../../utils/strutils"
 import { getCompanyPathLink, getPathLink } from "../../utils/tools"
-import { string_wrapper as with_str } from "../../utils/wrapper_utils"
 
 const LocationDetail = ({ item, isCfa }) => {
-  const kind = item?.ideaType
+  const kind: LBA_ITEM_TYPE_OLD = item?.ideaType
 
   const getGoogleSearchParameters = () => {
     return encodeURIComponent(`${item.company.name} ${item.place.city || item.place.address}`)
@@ -27,11 +26,11 @@ const LocationDetail = ({ item, isCfa }) => {
     const oneKind = oneItem?.ideaType
     const isMandataire = item?.company?.mandataire
     let res = "Quelques informations sur l'entreprise"
-    if (oneKind === "formation") {
+    if (oneKind === LBA_ITEM_TYPE_OLD.FORMATION) {
       res = "Quelques informations sur le centre de formation"
-    } else if (oneKind === "matcha" && !isMandataire) {
+    } else if (oneKind === LBA_ITEM_TYPE_OLD.MATCHA && !isMandataire) {
       res = "Quelques informations sur l'établissement"
-    } else if (oneKind === "matcha" && isMandataire) {
+    } else if (oneKind === LBA_ITEM_TYPE_OLD.MATCHA && isMandataire) {
       res = "Contactez le CFA pour avoir plus d'informations"
     }
     return res
@@ -39,19 +38,19 @@ const LocationDetail = ({ item, isCfa }) => {
 
   const shouldDisplayEmail = (oneItem) => {
     let res = false
-    if (oneItem?.ideaType === "matcha") {
+    if (oneItem?.ideaType === LBA_ITEM_TYPE_OLD.MATCHA) {
       res = !!item?.company?.mandataire
     }
     if (res) {
       // au cas où : on n'affiche l'email que si il n'est pas chiffré
-      res = with_str("@").in(item?.contact?.email)
+      res = item?.contact?.email.indexOf("@") >= 0
     }
     return res
   }
 
   return (
     <>
-      {kind === "matcha" && item?.company?.mandataire && (
+      {kind === LBA_ITEM_TYPE_OLD.MATCHA && item?.company?.mandataire && (
         <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
           <Text as="h2" variant="itemDetailH2" mt={2}>
             {getTitle({})}
@@ -73,7 +72,7 @@ const LocationDetail = ({ item, isCfa }) => {
             <Box width="30px" minWidth="30px" pl="1px" mr={2}>
               <Image mt="2px" mr={2} src="/images/icons/small_map_point.svg" alt="" />
             </Box>
-            <Link isExternal variant="basicUnderlined" href={getCompanyPathLink(item)}>
+            <Link isExternal variant="basicUnderlined" href={getCompanyPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
               Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
             </Link>
           </Flex>
@@ -101,7 +100,7 @@ const LocationDetail = ({ item, isCfa }) => {
           <Box width="30px" minWidth="30px" pl="1px" mr={2}>
             <Image mt="2px" src="/images/icons/small_map_point.svg" alt="" />
           </Box>
-          <Link isExternal variant="basicUnderlined" href={getPathLink(item)}>
+          <Link isExternal variant="basicUnderlined" href={getPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
             Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
           </Link>
         </Flex>
@@ -113,7 +112,7 @@ const LocationDetail = ({ item, isCfa }) => {
             </Box>
             <Text as="span">
               En savoir plus sur
-              <Link ml="2px" isExternal variant="basicUnderlined" href={item?.company?.url}>
+              <Link ml="2px" isExternal variant="basicUnderlined" href={item?.company?.url} aria-label="Site de l'entreprise - nouvelle fenêtre">
                 {item?.company?.url} <ExternalLinkIcon mb="3px" ml="2px" />
               </Link>
             </Text>
@@ -125,8 +124,8 @@ const LocationDetail = ({ item, isCfa }) => {
             <Box width="30px" minWidth="30px" mr={2}>
               <Image mt="2px" src="/images/icons/small_email.svg" alt="" />
             </Box>
-            <Link ml="2px" isExternal variant="basicUnderlined" href={`mailto:${item.contact.email}`}>
-              {item.contact.email}
+            <Link ml="2px" isExternal variant="basicUnderlined" href={`mailto:${item.contact.email}`} aria-label="Contacter par email - nouvelle fenêtre">
+              {item.contact.email} <ExternalLinkIcon mx="2px" />
             </Link>
           </Flex>
         )}
@@ -136,8 +135,8 @@ const LocationDetail = ({ item, isCfa }) => {
             <Box width="30px" pl="2px" minWidth="30px" mr={2}>
               <Image mt="2px" src="/images/icons/small_phone.svg" alt="" />
             </Box>
-            <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${item.contact.phone}`}>
-              {item.contact.phone}
+            <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${item.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
+              {item.contact.phone} <ExternalLinkIcon mx="2px" />
             </Link>
           </Flex>
         )}
@@ -176,7 +175,7 @@ const LocationDetail = ({ item, isCfa }) => {
                 isExternal
                 variant="basicUnderlined"
                 href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
-                aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
+                aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA - nouvelle fenêtre"
               >
                 Préparez votre premier contact avec un CFA&nbsp;
                 <ExternalLinkIcon mb="3px" ml="2px" />
@@ -185,7 +184,7 @@ const LocationDetail = ({ item, isCfa }) => {
           </Box>
         )}
 
-        {(kind === "matcha" || kind === "lbb" || kind === "lba") && (
+        {[LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.LBA].includes(kind) && (
           <>
             <Flex mt={2} mb={4}>
               <Box width="30px" pl="2px" minWidth="30px" mr={2}>
@@ -193,7 +192,13 @@ const LocationDetail = ({ item, isCfa }) => {
               </Box>
               <Text as="span">
                 En savoir plus sur
-                <Link ml="2px" isExternal variant="basicUnderlined" href={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}>
+                <Link
+                  ml="2px"
+                  isExternal
+                  variant="basicUnderlined"
+                  href={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}
+                  aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre"
+                >
                   {item.company.name} <ExternalLinkIcon mb="3px" ml="2px" />
                 </Link>
               </Text>

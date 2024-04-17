@@ -1,3 +1,5 @@
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+
 export const getItemId = (item) => {
   return getItemIdAndType(item).itemId
 }
@@ -5,22 +7,8 @@ export const getItemId = (item) => {
 export * from "shared/validators/siretValidator"
 
 export const getItemIdAndType = (item) => {
-  let itemId = item.id
-  let type = "training"
-
-  if (item.ideaType !== "formation") {
-    type = item.ideaType
-  }
-
-  if (!item.directId) {
-    if (item.ideaType === "peJob") {
-      itemId = item.job.id
-    } else if (item.ideaType === "matcha") {
-      itemId = item.job.id
-    } else if (item.ideaType !== "formation") {
-      itemId = item?.company?.siret || "siret"
-    }
-  }
+  const itemId = item.id
+  const type = item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "training" : item.ideaType
 
   return { itemId, type }
 }

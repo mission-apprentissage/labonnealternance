@@ -1,4 +1,7 @@
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+
 // retourne les offres issues du dépôt d'offre simplifié (ex Matcha) triées par ordre croissant de distance au centre de recherche
+
 // suivi des offres pe triées par ordre croissant de distance au centre de recherche.
 export const mergeJobs = ({ jobs, activeFilters }) => {
   let mergedArray = []
@@ -49,7 +52,7 @@ const sortMergedSources = (mergedArray) => {
     const dA = a.place.distance
     const dB = b.place.distance
 
-    if (a.ideaType === "peJob" && isDepartmentJob(a)) {
+    if (a.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && isDepartmentJob(a)) {
       return 1
     }
     if (dA > dB) {

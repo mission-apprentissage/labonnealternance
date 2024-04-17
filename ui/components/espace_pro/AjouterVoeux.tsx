@@ -37,6 +37,7 @@ import * as Yup from "yup"
 import { useAuth } from "@/context/UserContext"
 
 import { AUTHTYPE } from "../../common/contants"
+import { debounce } from "../../common/utils/debounce"
 import { publicConfig } from "../../config.public"
 import { LogoContext } from "../../context/contextLogo"
 import { WidgetContext } from "../../context/contextWidget"
@@ -72,7 +73,7 @@ const AjouterVoeuxForm = (props) => {
   const {
     widget: { isWidget },
   } = useContext(WidgetContext)
-  const [inputJobItems, setInputJobItems] = useState([])
+
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
 
@@ -99,7 +100,7 @@ const AjouterVoeuxForm = (props) => {
         throw new Error(error)
       }
     }
-    return inputJobItems
+    return []
   }
 
   /**
@@ -196,7 +197,7 @@ const AjouterVoeuxForm = (props) => {
         rome_detail: props.rome_detail ?? {},
         is_disabled_elligible: props.is_disabled_elligible ?? false,
         job_count: props.job_count ?? 1,
-        job_duration: props.job_duration ?? 6,
+        job_duration: props.job_duration ?? 12,
         job_rythm: props.job_rythm ?? undefined,
         job_delegation_count: props.job_delegation_count ?? 0,
       }}
@@ -217,9 +218,7 @@ const AjouterVoeuxForm = (props) => {
             <FormControl isRequired>
               <FormLabel>Métier</FormLabel>
               <DropdownCombobox
-                handleSearch={handleJobSearch}
-                inputItems={inputJobItems}
-                setInputItems={setInputJobItems}
+                handleSearch={debounce(handleJobSearch, 300)}
                 saveSelectedItem={(values) => {
                   /**
                    * validator broken when using setFieldValue : https://github.com/formium/formik/issues/2266
@@ -244,7 +243,12 @@ const AjouterVoeuxForm = (props) => {
               <FormLabel>
                 <Flex alignItems="flex-end">
                   Type de contrat en alternance{" "}
-                  <Link href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704" isExternal ml={1}>
+                  <Link
+                    href="https://www.service-public.fr/professionnels-entreprises/vosdroits/F31704"
+                    isExternal
+                    ml={1}
+                    aria-label="Accès au contrat en alternance - nouvelle fenêtre"
+                  >
                     <Flex>
                       <Text fontSize="sm" color="grey.500">
                         en savoir plus
@@ -384,7 +388,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
           <Text fontSize="16px" fontWeight="700">
             Fiche métier : {libelle}
           </Text>
-          <Text fontSize="14px">La fiche métier se base sur la classification ROME de Pôle Emploi</Text>
+          <Text fontSize="14px">La fiche métier se base sur la classification ROME de France Travail</Text>
         </Box>
         <Flex alignItems="flex-start" mb={6}>
           <InfoCircle mr={2} mt={1} color="bluefrance.500" />
