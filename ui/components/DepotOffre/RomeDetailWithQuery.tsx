@@ -20,7 +20,12 @@ export const RomeDetailWithQuery = ({ rome, appellation }: { rome: string; appel
       <Heading fontSize="24px" mb={3}>
         {appellation}
       </Heading>
-      <Text fontSize="14px">La fiche métier n'a pas pu être trouvée</Text>
+      <Text fontSize="14px">La fiche métier n'a pas pu être trouvée, merci de le <Link aria-label="Envoi d'un email à l'équipe La bonne alternance"
+                href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Dépôt%20offre%20-%20ROME%20manquant"
+                variant="basicUnderlinedBlue"
+              >signaler à notre équipe support</Link> en précisant le métier cherché
+      
+      </Text>
     </Box>
   ) : (
     <RomeDetail {...({ appellation, ...data } as any)} />
