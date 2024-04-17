@@ -59,9 +59,6 @@ export const zApplicationRoutes = {
         access: null,
         resources: {},
       },
-      openapi: {
-        description: rateLimitDescription({ max: 1, timeWindow: "5s" }),
-      },
     },
     "/application/intentionComment/:id": {
       path: "/application/intentionComment/:id",
@@ -94,9 +91,6 @@ export const zApplicationRoutes = {
         auth: "access-token",
         access: null,
         resources: {},
-      },
-      openapi: {
-        description: rateLimitDescription({ max: 1, timeWindow: "5s" }),
       },
     },
   },
