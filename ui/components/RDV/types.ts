@@ -50,13 +50,13 @@ const reasons = [
     checked: false,
   },
   {
-    key: EReasonsKey.CONTENU,
-    title: "Contenu de la formation",
+    key: EReasonsKey.PLACE,
+    title: "Places disponibles",
     checked: false,
   },
   {
-    key: EReasonsKey.PORTE,
-    title: "Portes ouvertes",
+    key: EReasonsKey.ACCOMPAGNEMENT,
+    title: "Accompagnement dans la recherche d'entreprise",
     checked: false,
   },
   {
@@ -65,8 +65,8 @@ const reasons = [
     checked: false,
   },
   {
-    key: EReasonsKey.PLACE,
-    title: "Places disponibles",
+    key: EReasonsKey.CONTENU,
+    title: "Contenu de la formation",
     checked: false,
   },
   {
@@ -80,8 +80,8 @@ const reasons = [
     checked: false,
   },
   {
-    key: EReasonsKey.ACCOMPAGNEMENT,
-    title: "Accompagnement dans la recherche d'entreprise",
+    key: EReasonsKey.SUIVI,
+    title: "Suivi de ma candidature",
     checked: false,
   },
   {
@@ -90,8 +90,8 @@ const reasons = [
     checked: false,
   },
   {
-    key: EReasonsKey.SUIVI,
-    title: "Suivi de ma candidature",
+    key: EReasonsKey.PORTE,
+    title: "Portes ouvertes",
     checked: false,
   },
   {
