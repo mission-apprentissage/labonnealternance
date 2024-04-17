@@ -1,7 +1,7 @@
 import { captureException } from "@sentry/node"
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import jwt, { JwtPayload } from "jsonwebtoken"
+import { JwtPayload } from "jsonwebtoken"
 import { ICredential, assertUnreachable } from "shared"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUser2 } from "shared/models/user2.model"
@@ -16,7 +16,7 @@ import { updateLastConnectionDate } from "@/services/userRecruteur.service"
 
 import { controlUserState } from "../services/login.service"
 
-import { IAccessToken, parseAccessToken } from "./accessTokenService"
+import { IAccessToken, parseAccessToken, verifyJwtToken } from "./accessTokenService"
 
 export type AccessUser2 = UserWithType<"IUser2", IUser2>
 export type AccessUserCredential = UserWithType<"ICredential", ICredential>
@@ -59,7 +59,7 @@ async function authCookieSession(req: FastifyRequest): Promise<AccessUser2 | nul
       return null
     }
 
-    const { email } = jwt.verify(token, config.auth.user.jwtSecret) as JwtPayload
+    const { email } = verifyJwtToken(token) as JwtPayload
 
     const user = await getUser2ByEmail(email.toLowerCase())
     if (!user) {
