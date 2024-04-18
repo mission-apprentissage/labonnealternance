@@ -5,6 +5,7 @@ import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import {
   zCallerParam,
@@ -55,7 +56,7 @@ export const zV1JobsRoutes = {
       },
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Get existing establishment id from siret & email",
+        description: `Get existing establishment id from siret & email\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/bulk": {
@@ -121,7 +122,7 @@ export const zV1JobsRoutes = {
       },
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Get all jobs related to my organization",
+        description: `Get all jobs related to my organization\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/delegations/:jobId": {
@@ -157,7 +158,7 @@ export const zV1JobsRoutes = {
       },
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Get related training organization related to a job offer.",
+        description: `Get related training organization related to a job offer.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs": {
@@ -219,7 +220,7 @@ export const zV1JobsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Get job opportunities matching the query parameters",
+        description: `Get job opportunities matching the query parameters\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/min": {
@@ -281,7 +282,7 @@ export const zV1JobsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Get job opportunities matching the query parameters",
+        description: `Get job opportunities matching the query parameters\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/company/:siret": {
@@ -312,7 +313,7 @@ export const zV1JobsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Get one company identified by it's siret",
+        description: `Get one company identified by it's siret\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/matcha/:id": {
@@ -347,7 +348,7 @@ export const zV1JobsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Get one lba job identified by it's id",
+        description: `Get one lba job identified by it's id\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/job/:id": {
@@ -378,7 +379,7 @@ export const zV1JobsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Get one pe job identified by it's id",
+        description: `Get one pe job identified by it's id\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
   },
@@ -416,7 +417,7 @@ export const zV1JobsRoutes = {
       },
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Create an establishment entity",
+        description: `Create an establishment entity\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/:establishmentId": {
@@ -466,7 +467,7 @@ export const zV1JobsRoutes = {
       },
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Create a job offer inside an establishment entity.",
+        description: `Create a job offer inside an establishment entity.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/delegations/:jobId": {
@@ -518,7 +519,7 @@ export const zV1JobsRoutes = {
       },
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Update a job offer status to Provided",
+        description: `Update a job offer status to Provided\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/canceled/:jobId": {
@@ -541,7 +542,7 @@ export const zV1JobsRoutes = {
       },
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Update a job offer status to Canceled",
+        description: `Update a job offer status to Canceled\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/extend/:jobId": {
@@ -564,7 +565,7 @@ export const zV1JobsRoutes = {
       },
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Update a job expiration date by 30 days.",
+        description: `Update a job expiration date by 30 days.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/matcha/:id/stats/view-details": {
@@ -581,7 +582,7 @@ export const zV1JobsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Notifies that the detail of a matcha job has been viewed",
+        description: `Notifies that the detail of a matcha job has been viewed\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
   },
@@ -623,7 +624,7 @@ export const zV1JobsRoutes = {
       },
       openapi: {
         tags: ["V1 - Jobs"] as string[],
-        description: "Update a job offer specific fields inside an establishment entity.",
+        description: `Update a job offer specific fields inside an establishment entity.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
   },
