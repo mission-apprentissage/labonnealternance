@@ -65,7 +65,7 @@ export const ZJobFields = z
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
     stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
-    managed_by: zObjectId.describe("Id de l'utilisateur gérant l'offre"),
+    managed_by: zObjectId.nullish().describe("Id de l'utilisateur gérant l'offre"),
   })
   .strict()
   .openapi("JobWritable")
