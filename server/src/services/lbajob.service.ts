@@ -23,20 +23,27 @@ import { filterJobsByOpco } from "./opco.service"
 const { ObjectId } = pkg
 
 const JOB_SEARCH_LIMIT = 250
-
-const coordinatesOfFrance = [2.213749, 46.227638]
+const FRANCE_LATITUDE = 46.227638
+const FRANCE_LONGITUDE = 2.213749
 
 /**
- * @description get filtered jobs from mongo
- * @param {Object} payload
- * @param {number} payload.distance
- * @param {string} payload.lat
- * @param {string} payload.long
- * @param {string[]} payload.romes
- * @param {string} payload.niveau
- * @returns {Promise<IRecruiter[]>}
+ * @description get OFFRES_EMPLOI_LBA
  */
-export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance: number; lat: string; lon: string; romes: string[]; niveau: string }): Promise<IRecruiter[]> => {
+export const getJobs = async ({
+  distance,
+  lat,
+  lon,
+  romes,
+  niveau,
+  caller,
+}: {
+  distance: number
+  lat: number
+  lon: number
+  romes: string[]
+  niveau: string
+  caller?: string | null
+}): Promise<IRecruiter[]> => {
   const clauses: any[] = [{ "jobs.job_status": JOB_STATUS.ACTIVE }, { "jobs.rome_code": { $in: romes } }, { status: RECRUITER_STATUS.ACTIF }]
 
   if (niveau && niveau !== "Indifférent") {
@@ -50,6 +57,10 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
         },
       ],
     })
+  }
+
+  if (caller) {
+    clauses.push({ "jobs.is_multi_published": true })
   }
 
   const stages: any[] = [
@@ -104,7 +115,7 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
 }
 
 /**
- * Retourne les offres LBA correspondantes aux critères de recherche
+ * @description Retourne les OFFRES_EMPLOI_LBA correspondantes aux critères de recherche
  */
 export const getLbaJobs = async ({
   romes = "",
@@ -133,24 +144,18 @@ export const getLbaJobs = async ({
     radius = 10
   }
   try {
-    const hasLocation = Boolean(latitude)
-
-    const distance = hasLocation ? radius : 21000
-
-    const params: any = {
+    const params = {
+      caller,
       romes: romes?.split(","),
-      distance,
-      lat: hasLocation ? latitude : coordinatesOfFrance[1],
-      lon: hasLocation ? longitude : coordinatesOfFrance[0],
-    }
-
-    if (diploma) {
-      params.niveau = NIVEAUX_POUR_LBA[diploma]
+      distance: radius ?? 21000,
+      lat: latitude ?? FRANCE_LATITUDE,
+      lon: longitude ?? FRANCE_LONGITUDE,
+      niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
     }
 
     const jobs = await getJobs(params)
 
-    const ids: string[] = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
+    const ids = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
@@ -161,7 +166,7 @@ export const getLbaJobs = async ({
       matchas.results = await filterJobsByOpco({ opco, opcoUrl, jobs: matchas.results })
     }
 
-    if (!hasLocation && matchas.results) {
+    if (!latitude && matchas.results) {
       sortLbaJobs(matchas)
     }
 
