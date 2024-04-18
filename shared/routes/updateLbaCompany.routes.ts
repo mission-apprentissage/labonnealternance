@@ -1,5 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -20,6 +21,9 @@ export const zUpdateLbaCompanyRoutes = {
         "200": z.literal("OK"),
       },
       securityScheme: null,
+      openapi: {
+        description: `${rateLimitDescription({ max: 1, timeWindow: "20s" })}`,
+      },
     },
   },
 } as const satisfies IRoutesDef

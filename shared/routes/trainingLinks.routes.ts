@@ -1,4 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -43,6 +44,9 @@ export const zTrainingLinksRoutes = {
         ),
       },
       securityScheme: null,
+      openapi: {
+        description: `${rateLimitDescription({ max: 3, timeWindow: "1s" })}`,
+      },
     },
   },
 } as const satisfies IRoutesDef
