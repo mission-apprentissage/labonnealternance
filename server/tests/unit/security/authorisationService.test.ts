@@ -1,5 +1,4 @@
 import { FastifyRequest } from "fastify"
-import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
@@ -8,6 +7,7 @@ import { AccessPermission, AccessRessouces, Permission, UserWithType } from "sha
 import { describe, expect, it } from "vitest"
 
 import { Application, Recruiter, UserRecruteur } from "@/common/model"
+import { ObjectId } from "@/common/mongodb"
 import { IAccessToken, generateScope } from "@/security/accessTokenService"
 import { authorizationMiddleware } from "@/security/authorisationService"
 import { useMongo } from "@tests/utils/mongo.utils"
