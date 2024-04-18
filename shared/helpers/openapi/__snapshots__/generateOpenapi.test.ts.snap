@@ -685,6 +685,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "custom_job_title": {
+            "description": "Titre personnalisée de l'offre",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "delegations": {
             "description": "Liste des délégations",
             "items": {
@@ -704,11 +711,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "is_multi_published": {
+            "default": true,
             "description": "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
-            "type": [
-              "boolean",
-              "null",
-            ],
+            "type": "boolean",
           },
           "job_count": {
             "default": 1,
@@ -899,6 +904,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "rome_code",
           "job_status",
           "job_type",
+          "is_multi_published",
         ],
         "type": "object",
       },
@@ -8633,6 +8639,13 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
                       "null",
                     ],
                   },
+                  "custom_job_title": {
+                    "description": "Titre personnalisée de l'offre",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
                   "is_disabled_elligible": {
                     "default": false,
                     "description": "Poste ouvert aux personnes en situation de handicap",
@@ -8640,6 +8653,11 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
                       "boolean",
                       "null",
                     ],
+                  },
+                  "is_multi_published": {
+                    "default": true,
+                    "description": "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
+                    "type": "boolean",
                   },
                   "job_count": {
                     "default": 1,
@@ -8720,6 +8738,7 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
                 },
                 "required": [
                   "job_type",
+                  "is_multi_published",
                   "job_start_date",
                   "appellation_code",
                 ],
