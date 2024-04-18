@@ -42,7 +42,7 @@
         <mj-column>
           <mj-text font-weigth="700"> Merci de cliquer sur le lien ci-dessous pour confirmer votre adresse mail, nous nous chargeons de vérifier votre compte : </mj-text>
           <mj-button color="#ffffff" background-color="#000091" href="<%= data.confirmation_url %>"> Confirmer mon adresse mail </mj-button>
-          <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : <a href="<%= data.confirmation_url %></"><%= data.confirmation_url %></a></mj-text>
+          <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : <a href="<%= data.confirmation_url %>"><%= data.confirmation_url %></a></mj-text>
         </mj-column>
       </mj-section>
 
@@ -73,7 +73,7 @@
           <% if(!data.isUserAwaiting) { %>
             <mj-text font-weight="700">Afin de pouvoir diffuser votre offre et accéder à votre espace de gestion, merci de cliquer sur le lien ci-dessous pour valider votre adresse mail:</mj-text>
             <mj-button color="#ffffff" background-color="#000091" href="<%= data.confirmation_url %>"> Confirmer mon adresse mail </mj-button>
-            <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : <a href="<%= data.confirmation_url %></"><%= data.confirmation_url %></a></mj-text>
+            <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : <a href="<%= data.confirmation_url %>"><%= data.confirmation_url %></a></mj-text>
           <% } %>
           <mj-text>
             L'équipe La bonne alternance, <br />
