@@ -1,10 +1,10 @@
 import { assertUnreachable } from "@/../shared"
-import axios from "axios"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import fetchFtJobDetails from "@/services/fetchFtJobDetails"
 import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
+import fetchTrainingDetails from "@/services/fetchTrainingDetails"
 
 import {
   flyToMarker,
@@ -21,7 +21,7 @@ import { logError } from "../../../utils/tools"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
 import { searchForJobsFunction, searchForPartnerJobsFunction } from "./searchForJobs"
-import { notFoundErrorText, partialJobSearchErrorText, trainingApi, trainingErrorText } from "./utils"
+import { notFoundErrorText, partialJobSearchErrorText, trainingErrorText } from "./utils"
 
 export const loadItem = async ({
   item,
@@ -47,24 +47,16 @@ export const loadItem = async ({
     let itemMarker = null
 
     if (item.type === "training") {
-      const response = await axios.get(`${trainingApi}/${encodeURIComponent(item.itemId)}`)
-
-      if (response.data.result === "error") {
-        logError("Training Search Error", `${response.data.message}`)
-        setTrainingSearchError(trainingErrorText)
-      }
-
+      const training = await fetchTrainingDetails({ id: item.itemId })
       const searchTimestamp = new Date().getTime()
 
-      setTrainings(response.data.results)
-      storeTrainingsInSession({ trainings: response.data.results, searchTimestamp })
+      setTrainings([training])
+      storeTrainingsInSession({ trainings: [training], searchTimestamp })
 
-      if (response.data.results.length) {
-        setTrainingMarkers({ trainingList: factorTrainingsForMap(response.data.results) })
-      }
-      setSelectedItem(response.data.results[0])
-      setSelectedMarker(response.data.results[0])
-      itemMarker = response.data.results[0]
+      setTrainingMarkers({ trainingList: factorTrainingsForMap([training]) })
+      setSelectedItem(training)
+      setSelectedMarker(training)
+      itemMarker = training
 
       // lancement d'une recherche d'emploi autour de la formation chargée
       const values = {

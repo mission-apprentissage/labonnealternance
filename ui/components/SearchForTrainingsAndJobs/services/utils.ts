@@ -3,7 +3,6 @@ import { publicConfig } from "@/config.public"
 const { apiEndpoint } = publicConfig
 
 const trainingsApi = "/v1/formations/min"
-const trainingApi = `${apiEndpoint}/v1/formations/formation`
 const jobsApi = `${apiEndpoint}/v1/jobs`
 const minimalDataJobsApi = jobsApi + "/min"
 const offreApi = jobsApi + "/job"
@@ -64,7 +63,6 @@ export {
   offreApi,
   partialJobSearchErrorText,
   technicalErrorText,
-  trainingApi,
   trainingErrorText,
   trainingsApi,
 }
