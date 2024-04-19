@@ -3,11 +3,7 @@ import { publicConfig } from "@/config.public"
 const { apiEndpoint } = publicConfig
 
 const trainingsApi = "/v1/formations/min"
-const jobsApi = `${apiEndpoint}/v1/jobs`
-const minimalDataJobsApi = jobsApi + "/min"
-const offreApi = jobsApi + "/job"
-const matchaApi = jobsApi + "/matcha"
-const companyApi = jobsApi + "/company"
+const minimalDataJobsApi = `${apiEndpoint}/v1/jobs/min`
 
 const allJobSearchErrorText = "Problème momentané d'accès aux opportunités d'emploi"
 const partialJobSearchErrorText = "Problème momentané d'accès à certaines opportunités d'emploi"
@@ -51,16 +47,12 @@ const defaultFilters = ["jobs", "trainings", "duo"]
 
 export {
   allJobSearchErrorText,
-  companyApi,
   defaultFilters,
   getJobCount,
   getPartnerJobCount,
   getRomeFromParameters,
-  jobsApi,
   minimalDataJobsApi,
-  matchaApi,
   notFoundErrorText,
-  offreApi,
   partialJobSearchErrorText,
   technicalErrorText,
   trainingErrorText,
