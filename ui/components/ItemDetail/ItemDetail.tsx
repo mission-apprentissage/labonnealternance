@@ -26,7 +26,6 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
   switch (selectedItem?.ideaType) {
     case LBA_ITEM_TYPE_OLD.FORMATION: {
       const trainingWithDetails = await fetchTrainingDetails(selectedItem)
-      trainingWithDetails.detailsLoaded = true
       const updatedTrainings = trainings.map((v) => {
         if (v.id === trainingWithDetails.id) {
           return trainingWithDetails
@@ -40,7 +39,6 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
 
     case LBA_ITEM_TYPE_OLD.MATCHA: {
       const jobWithDetails = await fetchLbaJobDetails(selectedItem)
-      jobWithDetails.detailsLoaded = true
       const updatedJobs = {
         peJobs: jobs.peJobs,
         lbaCompanies: jobs.lbaCompanies,
@@ -58,7 +56,6 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
 
     case LBA_ITEM_TYPE_OLD.LBA: {
       const companyWithDetails = await fetchLbaCompanyDetails(selectedItem)
-      companyWithDetails.detailsLoaded = true
       const updatedJobs = {
         peJobs: jobs.peJobs,
         lbaCompanies: jobs.lbaCompanies.map((v) => {
