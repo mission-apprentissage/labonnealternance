@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { getLastStatusEvent, parseEnumOrError, ZGlobalAddress } from "shared"
+import { IRecruiter, IUser, ZGlobalAddress, getLastStatusEvent, parseEnumOrError } from "shared"
 import { AppointmentUserType } from "shared/constants/appointment.js"
 import { EApplicantRole } from "shared/constants/rdva.js"
 import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
@@ -34,10 +34,8 @@ const migrationRecruiters = async () => {
   logger.info(`Migration: lecture des recruiteurs...`)
   const stats = { success: 0, failure: 0, jobSuccess: 0 }
   const recruiterOrphans: string[] = []
-  let index = 0
 
-  for await (const recruiter of Recruiter.find({})) {
-    index++
+  await cursorForEach<IRecruiter>(Recruiter.find({}).cursor(), async (recruiter, index) => {
     index % 1000 === 0 && logger.info(`import du recruiteur n°${index}`)
     try {
       const { establishment_id, cfa_delegated_siret, jobs } = recruiter
@@ -75,7 +73,7 @@ const migrationRecruiters = async () => {
       logger.error(err)
       stats.failure++
     }
-  }
+  })
   logger.info(`recruiters orphelins :
   ${JSON.stringify(recruiterOrphans, null, 2)}
   `)
@@ -95,13 +93,8 @@ const migrationRecruiters = async () => {
 
 const migrationUserRecruteurs = async () => {
   logger.info(`Migration: lecture des user recruteurs...`)
-  const userRecruteurs: IUserRecruteur[] = await UserRecruteur.find({}).lean()
-  logger.info(`Migration: ${userRecruteurs.length} user recruteurs à mettre à jour`)
   const stats = { success: 0, failure: 0, entrepriseCreated: 0, cfaCreated: 0, userCreated: 0, adminAccess: 0, opcoAccess: 0 }
-  let index = 0
-
-  for await (const userRecruteur of UserRecruteur.find({})) {
-    index++
+  await cursorForEach<IUserRecruteur>(UserRecruteur.find({}).cursor(), async (userRecruteur, index) => {
     const {
       last_name,
       first_name,
@@ -272,7 +265,7 @@ const migrationUserRecruteurs = async () => {
       logger.error(err)
       stats.failure++
     }
-  }
+  })
   logger.info(`Migration: user candidats terminés`)
   const message = `${stats.success} user recruteurs repris avec succès.
   ${stats.failure} user recruteurs en erreur.
@@ -292,11 +285,8 @@ const migrationUserRecruteurs = async () => {
 const migrationCandidats = async (now: Date) => {
   logger.info(`Migration: lecture des user candidats...`)
   const stats = { success: 0, failure: 0, alreadyExist: 0 }
-  let index = 0
-
-  // l'utilisateur admin n'est pas repris
-  for await (const candidat of User.find({ role: EApplicantRole.CANDIDAT })) {
-    index++
+  await cursorForEach<IUser>(User.find({ role: EApplicantRole.CANDIDAT }).cursor(), async (candidat, index) => {
+    // l'utilisateur admin n'est pas repris
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { firstname, lastname, phone, email, role, type, last_action_date, is_anonymized, _id } = candidat
     index % 1000 === 0 && logger.info(`import du candidat n°${index}`)
@@ -339,7 +329,7 @@ const migrationCandidats = async (now: Date) => {
       logger.error(err)
       stats.failure++
     }
-  }
+  })
   logger.info(`Migration: user candidats terminés`)
   const message = `${stats.success} user candidats repris avec succès.
   ${stats.failure} user candidats en erreur.
@@ -441,5 +431,19 @@ const fixAddressDetail = (addressDetail: any) => {
 const checkAddressDetail = (address_detail: any) => {
   if (!ZGlobalAddress.safeParse(address_detail).success) {
     throw new Error(`address_detail not ok: ${JSON.stringify(address_detail, null, 2)}`)
+  }
+}
+
+const cursorForEach = async <T>(cursor: { next: () => Promise<T | null>; close: () => Promise<void> }, fct: (item: T, index: number) => Promise<void>) => {
+  try {
+    let item: T | null = await cursor.next()
+    let index = 0
+    while (item) {
+      await fct(item, index)
+      item = await cursor.next()
+      index++
+    }
+  } finally {
+    await cursor.close()
   }
 }
