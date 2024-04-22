@@ -14,7 +14,7 @@ import getApiClient from "./client"
 
 const FT_IO_API_ROME_V1_BASE_URL = "https://api.francetravail.io/partenaire/rome/v1"
 const FT_IO_API_OFFRES_BASE_URL = "https://api.francetravail.io/partenaire/offresdemploi/v2"
-const FT_AUTH_BASE_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2"
+const FT_AUTH_BASE_URL = "https://entreprise.francetravail.fr/connexion/oauth2"
 const FT_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
 
 // paramètres exclurant les offres LBA des résultats de l'api PE
