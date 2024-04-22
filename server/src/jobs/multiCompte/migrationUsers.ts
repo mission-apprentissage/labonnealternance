@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { getLastStatusEvent, IRecruiter, parseEnumOrError, ZGlobalAddress } from "shared"
+import { IRecruiter, IUser, ZGlobalAddress, getLastStatusEvent, parseEnumOrError } from "shared"
 import { AppointmentUserType } from "shared/constants/appointment.js"
 import { EApplicantRole } from "shared/constants/rdva.js"
 import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
@@ -17,7 +17,6 @@ import { Cfa } from "../../common/model/schema/multiCompte/cfa.schema.js"
 import { Entreprise } from "../../common/model/schema/multiCompte/entreprise.schema.js"
 import { RoleManagement } from "../../common/model/schema/multiCompte/roleManagement.schema.js"
 import { User2 } from "../../common/model/schema/multiCompte/user2.schema.js"
-import { asyncForEachGrouped } from "../../common/utils/asyncUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 export const migrationUsers = async () => {
@@ -31,16 +30,12 @@ export const migrationUsers = async () => {
   await migrationCandidats(now)
 }
 
-const parallelism = 20
-
 const migrationRecruiters = async () => {
   logger.info(`Migration: lecture des recruiteurs...`)
-  const recruiters: IRecruiter[] = await Recruiter.find({}).lean()
-  logger.info(`Migration: ${recruiters.length} recruiteurs à mettre à jour`)
   const stats = { success: 0, failure: 0, jobSuccess: 0 }
   const recruiterOrphans: string[] = []
 
-  await asyncForEachGrouped(recruiters, parallelism, async (recruiter, index) => {
+  await cursorForEach<IRecruiter>(Recruiter.find({}).cursor(), async (recruiter, index) => {
     index % 1000 === 0 && logger.info(`import du recruiteur n°${index}`)
     try {
       const { establishment_id, cfa_delegated_siret, jobs } = recruiter
@@ -98,11 +93,8 @@ const migrationRecruiters = async () => {
 
 const migrationUserRecruteurs = async () => {
   logger.info(`Migration: lecture des user recruteurs...`)
-  const userRecruteurs: IUserRecruteur[] = await UserRecruteur.find({}).lean()
-  logger.info(`Migration: ${userRecruteurs.length} user recruteurs à mettre à jour`)
   const stats = { success: 0, failure: 0, entrepriseCreated: 0, cfaCreated: 0, userCreated: 0, adminAccess: 0, opcoAccess: 0 }
-
-  await asyncForEachGrouped(userRecruteurs, parallelism, async (userRecruteur, index) => {
+  await cursorForEach<IUserRecruteur>(UserRecruteur.find({}).cursor(), async (userRecruteur, index) => {
     const {
       last_name,
       first_name,
@@ -292,13 +284,9 @@ const migrationUserRecruteurs = async () => {
 
 const migrationCandidats = async (now: Date) => {
   logger.info(`Migration: lecture des user candidats...`)
-
-  // l'utilisateur admin n'est pas repris
-  const candidats = await User.find({ role: EApplicantRole.CANDIDAT }).lean()
-  logger.info(`Migration: ${candidats.length} user candidats à mettre à jour`)
   const stats = { success: 0, failure: 0, alreadyExist: 0 }
-
-  await asyncForEachGrouped(candidats, parallelism, async (candidat, index) => {
+  await cursorForEach<IUser>(User.find({ role: EApplicantRole.CANDIDAT }).cursor(), async (candidat, index) => {
+    // l'utilisateur admin n'est pas repris
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { firstname, lastname, phone, email, role, type, last_action_date, is_anonymized, _id } = candidat
     index % 1000 === 0 && logger.info(`import du candidat n°${index}`)
@@ -443,5 +431,19 @@ const fixAddressDetail = (addressDetail: any) => {
 const checkAddressDetail = (address_detail: any) => {
   if (!ZGlobalAddress.safeParse(address_detail).success) {
     throw new Error(`address_detail not ok: ${JSON.stringify(address_detail, null, 2)}`)
+  }
+}
+
+const cursorForEach = async <T>(cursor: { next: () => Promise<T | null>; close: () => Promise<void> }, fct: (item: T, index: number) => Promise<void>) => {
+  try {
+    let item: T | null = await cursor.next()
+    let index = 0
+    while (item) {
+      await fct(item, index)
+      item = await cursor.next()
+      index++
+    }
+  } finally {
+    await cursor.close()
   }
 }
