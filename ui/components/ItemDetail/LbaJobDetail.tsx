@@ -52,7 +52,7 @@ const getDescriptionContext = (job: ILbaItemLbaJob) => {
   return RomeDescriptions(job)
 }
 
-const MatchaDetail = ({ job }) => {
+const LbaJobDetail = ({ job }) => {
   useEffect(() => {
     // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
     document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
@@ -155,4 +155,4 @@ const MatchaDetail = ({ job }) => {
   )
 }
 
-export default MatchaDetail
+export default LbaJobDetail
