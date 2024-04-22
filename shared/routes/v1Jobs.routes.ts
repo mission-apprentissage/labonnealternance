@@ -457,7 +457,7 @@ export const zV1JobsRoutes = {
             }
             return true
           },
-          { message: "job_description doit avoir un minimum de 30 characters" }
+          { message: "job_description doit avoir un minimum de 30 caractères" }
         )
         .refine(
           ({ job_employer_description }) => {
@@ -466,7 +466,7 @@ export const zV1JobsRoutes = {
             }
             return true
           },
-          { message: "job_employer_description doit avoir un minimum de 30 characters" }
+          { message: "job_employer_description doit avoir un minimum de 30 caractères" }
         ),
       response: {
         "201": ZRecruiter,
