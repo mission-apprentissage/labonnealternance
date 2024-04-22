@@ -4,14 +4,16 @@ export function debounce(callback, delay) {
   return (...args) => {
     return new Promise((resolve, reject) => {
       clearTimeout(timer)
-      timer = setTimeout(() => {
+      const localTimer = setTimeout(() => {
         try {
-          const output = callback(...args)
-          resolve(output)
+          callback(...args)
+            .then((output) => localTimer === timer && resolve(output))
+            .catch((err) => localTimer === timer && reject(err))
         } catch (err) {
           reject(err)
         }
       }, delay)
+      timer = localTimer
     })
   }
 }

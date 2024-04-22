@@ -29,7 +29,6 @@ import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpiratio
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
 import { exportToFranceTravail } from "./lba_recruteur/formulaire/misc/exportToFranceTravail"
-import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
 import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire/misc/sendDelegationEmailWithSecuredToken"
@@ -39,16 +38,13 @@ import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
-import { fillRecruiterRaisonSociale } from "./lba_recruteur/user/misc/fillRecruiterRaisonSociale"
-import { fixUserRecruiterCfaDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurCfaDataValidation"
-import { fixUserRecruiterDataValidation } from "./lba_recruteur/user/misc/fixUserRecruteurDataValidation"
-import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
 import buildSAVE from "./lbb/buildSAVE"
 import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { migrationUsers } from "./multiCompte/migrationUsers"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
@@ -82,14 +78,14 @@ export const CronsMap = {
     cron_string: "15 0 * * *",
     handler: () => addJob({ name: "formulaire:annulation", payload: {} }),
   },
-  "Send offer reminder email at J+7": {
-    cron_string: "20 0 * * *",
-    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "7" } }),
-  },
-  "Send offer reminder email at J+1": {
-    cron_string: "25 0 * * *",
-    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
-  },
+  // "Send offer reminder email at J+7": {
+  //   cron_string: "20 0 * * *",
+  //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "7" } }),
+  // },
+  // "Send offer reminder email at J+1": {
+  //   cron_string: "25 0 * * *",
+  //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
+  // },
   "Send reminder to OPCO about awaiting validation users": {
     cron_string: "30 0 * * 1,3,5",
     handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
@@ -252,8 +248,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return repiseGeocoordinates()
       case "recruiters:get-missing-address-detail":
         return updateAddressDetailOnRecruitersCollection()
-      case "migration:get-missing-geocoords": // Temporaire, doit tourner en recette et production
-        return recoverMissingGeocoordinates()
       case "import:rome":
         return importFicheMetierRomeV3()
       case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
@@ -303,8 +297,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return relanceOpco()
       case "pe:offre:export":
         return exportToFranceTravail()
-      case "user:validate":
-        return checkAwaitingCompaniesValidation()
       case "siret:inError:update":
         return updateSiretInfosInError()
       case "etablissement:formations:activate:opt-out":
@@ -359,8 +351,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "diplomes-metiers:update":
         return updateDiplomesMetiers()
-      case "recruiters:raison-sociale:fill":
-        return fillRecruiterRaisonSociale()
       case "recruiters:expiration-date:fix":
         return fixJobExpirationDate()
       case "recruiters:job-type:fix":
@@ -369,13 +359,12 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return fixApplications()
       case "recruiters:data-validation:fix":
         return fixRecruiterDataValidation()
-      case "user-recruters:data-validation:fix":
-        return fixUserRecruiterDataValidation()
-      case "user-recruters-cfa:data-validation:fix":
-        return fixUserRecruiterCfaDataValidation()
       case "referentiel-opco:constructys:import": {
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
+      }
+      case "migrate-multi-compte": {
+        return migrationUsers()
       }
       case "prdv:emails:resend": {
         const { fromDate } = job.payload

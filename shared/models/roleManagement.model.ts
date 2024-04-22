@@ -1,0 +1,50 @@
+import { Jsonify } from "type-fest"
+
+import { z } from "../helpers/zodWithOpenApi"
+
+import { zObjectId } from "./common"
+import { enumToZod } from "./enumToZod"
+import { ZValidationUtilisateur } from "./user2.model"
+
+export enum AccessEntityType {
+  USER = "USER",
+  ENTREPRISE = "ENTREPRISE",
+  CFA = "CFA",
+  OPCO = "OPCO",
+  ADMIN = "ADMIN",
+}
+
+export enum AccessStatus {
+  GRANTED = "GRANTED",
+  DENIED = "DENIED",
+  AWAITING_VALIDATION = "AWAITING_VALIDATION",
+}
+
+export const ZRoleManagementEvent = z
+  .object({
+    validation_type: ZValidationUtilisateur.describe("Indique si l'action est ordonnée par un utilisateur ou le serveur"),
+    status: enumToZod(AccessStatus).describe("Statut de l'accès"),
+    reason: z.string().describe("Raison du changement de statut"),
+    date: z.date().describe("Date de l'évènement"),
+    granted_by: z.string().nullish().describe("Utilisateur à l'origine du changement"),
+  })
+  .strict()
+
+export const ZAccessEntityType = enumToZod(AccessEntityType)
+
+export const ZRoleManagement = z
+  .object({
+    _id: zObjectId,
+    origin: z.string().describe("Origine de la creation"),
+    status: z.array(ZRoleManagementEvent).describe("Evénements liés au cycle de vie de l'accès"),
+    authorized_id: z.string().describe("ID de l'entité sur laquelle l'accès est exercé"),
+    authorized_type: ZAccessEntityType.describe("Type de l'entité sur laquelle l'accès est exercé"),
+    user_id: zObjectId.describe("ID de l'utilisateur ayant accès"),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+  })
+  .strict()
+
+export type IRoleManagement = z.output<typeof ZRoleManagement>
+export type IRoleManagementJson = Jsonify<z.input<typeof ZRoleManagement>>
+export type IRoleManagementEvent = z.output<typeof ZRoleManagementEvent>

@@ -1,6 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormation, ZLbaItemFormationResult, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob } from "../models/lbaItem.model"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import {
   zCallerParam,
@@ -64,7 +65,10 @@ export const zFormationsRoutesV2 = {
       openapi: {
         tags: ["V2 - Formations"] as string[],
         operationId: "getFormations",
-        description: "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
+        description: `Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique\n${rateLimitDescription({
+          max: 7,
+          timeWindow: "1s",
+        })}`,
       },
     },
     "/formations/min": {
@@ -110,7 +114,9 @@ export const zFormationsRoutesV2 = {
       openapi: {
         tags: ["V2 - Formations"] as string[],
         operationId: "getFormations",
-        description: "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Récupération des données minimales.",
+        description: `Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Récupération des données minimales.\n${rateLimitDescription(
+          { max: 7, timeWindow: "1s" }
+        )}`,
       },
     },
     "/formations/formation/:id": {
@@ -140,7 +146,7 @@ export const zFormationsRoutesV2 = {
       openapi: {
         tags: ["V2 - Formations"] as string[],
         operationId: "getFormation",
-        description: "Get one formation identified by it's clé ministère éducatif",
+        description: `Get one formation identified by it's clé ministère éducatif\n${rateLimitDescription({ max: 7, timeWindow: "1s" })}`,
       },
     },
     "/formationsParRegion": {
@@ -207,7 +213,9 @@ export const zFormationsRoutesV2 = {
       },
       openapi: {
         tags: ["V2 - Formations"] as string[],
-        description: "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
+        description: `Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers\n${rateLimitDescription(
+          { max: 7, timeWindow: "1s" }
+        )}`,
         operationId: "getFormations",
       },
     },
@@ -286,6 +294,7 @@ export const zFormationsRoutesV2 = {
       securityScheme: { auth: "api-key", access: null, resources: {} },
       openapi: {
         tags: ["V2 - Jobs et formations"] as string[],
+        description: `${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
   },

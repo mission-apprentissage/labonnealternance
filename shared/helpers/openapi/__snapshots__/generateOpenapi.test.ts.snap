@@ -848,6 +848,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "managed_by": {
+            "description": "Id de l'utilisateur gérant l'offre",
+          },
           "relance_mail_sent": {
             "description": "Statut de l'envoi du mail de relance avant expiration",
             "type": [
@@ -2836,6 +2839,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       "post": {
         "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
 L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.
+Limite : 5 appel(s) / 5 seconde(s)
 ",
         "requestBody": {
           "content": {
@@ -3449,7 +3453,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/formations": {
       "get": {
-        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
+        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique
+Limite : 7 appel(s) / 1 seconde(s)
+",
         "operationId": "getFormations",
         "parameters": [
           {
@@ -3635,7 +3641,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/formations/formation/{id}": {
       "get": {
-        "description": "Get one formation identified by it's clé ministère éducatif",
+        "description": "Get one formation identified by it's clé ministère éducatif
+Limite : 7 appel(s) / 1 seconde(s)
+",
         "operationId": "getFormation",
         "parameters": [
           {
@@ -3747,7 +3755,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/formations/min": {
       "get": {
-        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Récupération des données minimales.",
+        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Récupération des données minimales.
+Limite : 7 appel(s) / 1 seconde(s)
+",
         "operationId": "getFormations",
         "parameters": [
           {
@@ -3933,7 +3943,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/formationsParRegion": {
       "get": {
-        "description": "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
+        "description": "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers
+Limite : 7 appel(s) / 1 seconde(s)
+",
         "operationId": "getFormations",
         "parameters": [
           {
@@ -4099,7 +4111,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs": {
       "get": {
-        "description": "Get job opportunities matching the query parameters",
+        "description": "Get job opportunities matching the query parameters
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "getJobOpportunities",
         "parameters": [
           {
@@ -4386,7 +4400,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/bulk": {
       "get": {
-        "description": "Get all jobs related to my organization",
+        "description": "Get all jobs related to my organization
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "getJobs",
         "parameters": [
           {
@@ -4487,7 +4503,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/canceled/{jobId}": {
       "post": {
-        "description": "Update a job offer status to Canceled",
+        "description": "Update a job offer status to Canceled
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "setJobAsCanceled",
         "parameters": [
           {
@@ -4525,7 +4543,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/delegations/{jobId}": {
       "get": {
-        "description": "Get related training organization related to a job offer.",
+        "description": "Get related training organization related to a job offer.
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "getDelegation",
         "parameters": [
           {
@@ -4700,7 +4720,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/entreprise_lba/{siret}": {
       "get": {
-        "description": "Get one company identified by it's siret",
+        "description": "Get one company identified by it's siret
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "getCompany",
         "parameters": [
           {
@@ -4831,7 +4853,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/establishment": {
       "get": {
-        "description": "Get existing establishment id from siret & email",
+        "description": "Get existing establishment id from siret & email
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Le numéro de SIRET de l'établissement",
@@ -4897,7 +4921,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
         ],
       },
       "post": {
-        "description": "Create an establishment entity",
+        "description": "Create an establishment entity
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "createEstablishment",
         "requestBody": {
           "content": {
@@ -4987,7 +5013,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/extend/{jobId}": {
       "post": {
-        "description": "Update a job expiration date by 30 days.",
+        "description": "Update a job expiration date by 30 days.
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "extendJobExpiration",
         "parameters": [
           {
@@ -5025,7 +5053,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/matcha/{id}/stats/view-details": {
       "post": {
-        "description": "Notifies that the detail of a matcha job has been viewed",
+        "description": "Notifies that the detail of a matcha job has been viewed
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "statsViewLbaJob",
         "parameters": [
           {
@@ -5059,7 +5089,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/min": {
       "get": {
-        "description": "Get job opportunities matching the query parameters and returns minimal data",
+        "description": "Get job opportunities matching the query parameters and returns minimal data
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "getJobOpportunities",
         "parameters": [
           {
@@ -5342,7 +5374,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/provided/{jobId}": {
       "post": {
-        "description": "Update a job offer status to Provided",
+        "description": "Update a job offer status to Provided
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "setJobAsProvided",
         "parameters": [
           {
@@ -5380,7 +5414,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/{establishmentId}": {
       "post": {
-        "description": "Create a job offer inside an establishment entity.",
+        "description": "Create a job offer inside an establishment entity.
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "createJob",
         "parameters": [
           {
@@ -5553,7 +5589,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/{jobId}": {
       "patch": {
-        "description": "Update a job offer specific fields inside an establishment entity.",
+        "description": "Update a job offer specific fields inside an establishment entity.
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "updateJob",
         "parameters": [
           {
@@ -5717,7 +5755,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobs/{source}/{id}": {
       "get": {
-        "description": "Get one lba job identified by it's id",
+        "description": "Get one lba job identified by it's id
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "operationId": "getLbaJob",
         "parameters": [
           {
@@ -5811,6 +5851,8 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/jobsEtFormations": {
       "get": {
+        "description": "Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
@@ -6158,7 +6200,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/metiers": {
       "get": {
-        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
+        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance
+Limite : 20 appel(s) / 1 seconde(s)
+",
         "operationId": "getMetiers",
         "parameters": [
           {
@@ -6229,7 +6273,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/metiers/all": {
       "get": {
-        "description": "Retourne la liste de tous les métiers référencés sur LBA",
+        "description": "Retourne la liste de tous les métiers référencés sur LBA
+Limite : 20 appel(s) / 1 seconde(s)
+",
         "operationId": "getTousLesMetiers",
         "responses": {
           "200": {
@@ -6270,7 +6316,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/metiers/intitule": {
       "get": {
-        "description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+        "description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres
+Limite : 20 appel(s) / 1 seconde(s)
+",
         "operationId": "getCoupleAppellationRomeIntitule",
         "parameters": [
           {
@@ -6337,7 +6385,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/metiers/metiersParFormation/{cfd}": {
       "get": {
-        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
+        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée
+Limite : 20 appel(s) / 1 seconde(s)
+",
         "operationId": "getMetiersParCfd",
         "parameters": [
           {
@@ -6389,10 +6439,306 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
         ],
       },
     },
+    "/traininglinks": {
+      "post": {
+        "description": "Limite : 3 appel(s) / 1 seconde(s)
+",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "cfd": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                    "cle_ministere_educatif": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                    "code_insee": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                    "code_postal": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                    "id": {
+                      "type": "string",
+                    },
+                    "mef": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                    "rncp": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                    "uai_formateur": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                    "uai_formateur_responsable": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                    "uai_lieu_formation": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                  },
+                  "required": [
+                    "id",
+                  ],
+                  "type": "object",
+                },
+                "maxItems": 100,
+                "type": "array",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                      },
+                      "lien_lba": {
+                        "type": "string",
+                      },
+                      "lien_prdv": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "id",
+                      "lien_prdv",
+                      "lien_lba",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [],
+      },
+    },
+    "/unsubscribe": {
+      "post": {
+        "description": "Limite : 1 appel(s) / 5 seconde(s)
+",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "email": {
+                    "format": "email",
+                    "type": "string",
+                  },
+                  "reason": {
+                    "type": "string",
+                  },
+                  "sirets": {
+                    "items": {
+                      "description": "Le numéro de SIRET de l'établissement",
+                      "example": "78424186100011",
+                      "pattern": "^[0-9]{14}$",
+                      "type": "string",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "email",
+                  "reason",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "companies": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "address": {
+                            "type": "string",
+                          },
+                          "enseigne": {
+                            "type": "string",
+                          },
+                          "siret": {
+                            "description": "Le numéro de SIRET de l'établissement",
+                            "example": "78424186100011",
+                            "pattern": "^[0-9]{14}$",
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "enseigne",
+                          "siret",
+                          "address",
+                        ],
+                        "type": "object",
+                      },
+                      "type": [
+                        "array",
+                        "null",
+                      ],
+                    },
+                    "result": {
+                      "enum": [
+                        "OK",
+                        "NON_RECONNU",
+                        "ETABLISSEMENTS_MULTIPLES",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "result",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [],
+      },
+    },
+    "/updateLBB/updateContactInfo": {
+      "get": {
+        "description": "Limite : 1 appel(s) / 20 seconde(s)
+",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "secret",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+          {
+            "description": "Le numéro de SIRET de l'établissement",
+            "in": "query",
+            "name": "siret",
+            "required": true,
+            "schema": {
+              "description": "Le numéro de SIRET de l'établissement",
+              "example": "78424186100011",
+              "pattern": "^[0-9]{14}$",
+              "type": "string",
+            },
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "email",
+                  "type": "string",
+                },
+                {
+                  "enum": [
+                    "",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+          {
+            "in": "query",
+            "name": "phone",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "enum": [
+                    "",
+                  ],
+                  "type": "string",
+                },
+              ],
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "enum": [
+                    "OK",
+                  ],
+                  "type": "string",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [],
+      },
+    },
     "/v1/application": {
       "post": {
         "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.
 L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.
+Limite : 5 appel(s) / 5 seconde(s)
 ",
         "requestBody": {
           "content": {
@@ -6481,7 +6827,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/formations": {
       "get": {
-        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
+        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique
+Limite : 7 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
@@ -6662,7 +7010,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/formations/formation/{id}": {
       "get": {
-        "description": "Get one formation identified by it's clé ministère éducatif",
+        "description": "Get one formation identified by it's clé ministère éducatif
+Limite : 7 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "path",
@@ -6769,7 +7119,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/formations/min": {
       "get": {
-        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Retour de données minimales",
+        "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique. Retour de données minimales
+Limite : 7 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
@@ -6950,7 +7302,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/formationsParRegion": {
       "get": {
-        "description": "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
+        "description": "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné dans le cas d'une recherche France entière.</strong>",
@@ -7111,7 +7465,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs": {
       "get": {
-        "description": "Get job opportunities matching the query parameters",
+        "description": "Get job opportunities matching the query parameters
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
@@ -7393,7 +7749,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/bulk": {
       "get": {
-        "description": "Get all jobs related to my organization",
+        "description": "Get all jobs related to my organization
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "query mongodb query allowing specific filtering, JSON stringified",
@@ -7493,7 +7851,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/canceled/{jobId}": {
       "post": {
-        "description": "Update a job offer status to Canceled",
+        "description": "Update a job offer status to Canceled
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "path",
@@ -7530,7 +7890,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/company/{siret}": {
       "get": {
-        "description": "Get one company identified by it's siret",
+        "description": "Get one company identified by it's siret
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Le numéro de SIRET de l'établissement",
@@ -7656,7 +8018,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/delegations/{jobId}": {
       "get": {
-        "description": "Get related training organization related to a job offer.",
+        "description": "Get related training organization related to a job offer.
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "path",
@@ -7829,7 +8193,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/establishment": {
       "get": {
-        "description": "Get existing establishment id from siret & email",
+        "description": "Get existing establishment id from siret & email
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Le numéro de SIRET de l'établissement",
@@ -7895,7 +8261,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
         ],
       },
       "post": {
-        "description": "Create an establishment entity",
+        "description": "Create an establishment entity
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "requestBody": {
           "content": {
             "application/json": {
@@ -7984,7 +8352,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/extend/{jobId}": {
       "post": {
-        "description": "Update a job expiration date by 30 days.",
+        "description": "Update a job expiration date by 30 days.
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "path",
@@ -8021,7 +8391,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/job/{id}": {
       "get": {
-        "description": "Get one pe job identified by it's id",
+        "description": "Get one pe job identified by it's id
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "path",
@@ -8143,7 +8515,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/matcha/{id}": {
       "get": {
-        "description": "Get one lba job identified by it's id",
+        "description": "Get one lba job identified by it's id
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "the id the lba job looked for.",
@@ -8246,7 +8620,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/matcha/{id}/stats/view-details": {
       "post": {
-        "description": "Notifies that the detail of a matcha job has been viewed",
+        "description": "Notifies that the detail of a matcha job has been viewed
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "path",
@@ -8279,7 +8655,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/min": {
       "get": {
-        "description": "Get job opportunities matching the query parameters",
+        "description": "Get job opportunities matching the query parameters
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
@@ -8561,7 +8939,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/provided/{jobId}": {
       "post": {
-        "description": "Update a job offer status to Provided",
+        "description": "Update a job offer status to Provided
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "path",
@@ -8598,7 +8978,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/{establishmentId}": {
       "post": {
-        "description": "Create a job offer inside an establishment entity.",
+        "description": "Create a job offer inside an establishment entity.
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "path",
@@ -8770,7 +9152,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobs/{jobId}": {
       "patch": {
-        "description": "Update a job offer specific fields inside an establishment entity.",
+        "description": "Update a job offer specific fields inside an establishment entity.
+Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "path",
@@ -8933,6 +9317,8 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/jobsEtFormations": {
       "get": {
+        "description": "Limite : 5 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
@@ -9276,7 +9662,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/metiers": {
       "get": {
-        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
+        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance
+Limite : 20 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "Un terme libre de recherche de métier.",
@@ -9342,7 +9730,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/metiers/all": {
       "get": {
-        "description": "Retourne la liste de tous les métiers référencés sur LBA",
+        "description": "Retourne la liste de tous les métiers référencés sur LBA
+Limite : 20 appel(s) / 1 seconde(s)
+",
         "responses": {
           "200": {
             "content": {
@@ -9378,7 +9768,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/metiers/intitule": {
       "get": {
-        "description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+        "description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres
+Limite : 20 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "in": "query",
@@ -9440,7 +9832,9 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
     },
     "/v1/metiers/metiersParFormation/{cfd}": {
       "get": {
-        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
+        "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée
+Limite : 20 appel(s) / 1 seconde(s)
+",
         "parameters": [
           {
             "description": "L'identifiant CFD de la formation.",
@@ -9485,6 +9879,34 @@ L'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne 
         "tags": [
           "V1 - Metiers",
         ],
+      },
+    },
+    "/version": {
+      "get": {
+        "description": "Limite : 3 appel(s) / 1 seconde(s)
+",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "version": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "version",
+                  ],
+                  "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [],
       },
     },
   },

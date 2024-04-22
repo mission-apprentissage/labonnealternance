@@ -50,9 +50,13 @@ export const FlowCreationEntreprise = {
       jobCount?: number
       jobDurationInMonths: number
     }) {
+      const typedRomeLabel = romeLabel.substring(0, romeLabel.length - 10)
+      cy.intercept(`${Cypress.env("server")}/api/v1/metiers/intitule?label=${encodeURI(typedRomeLabel)}`).as("romeSearch")
+
       cy.get("[data-testid='offre-metier'] input").click()
-      cy.get("[data-testid='offre-metier'] input").type(romeLabel.substring(0, romeLabel.length - 10))
-      cy.get(`[data-testid='offre-metier'] #downshift-1-item-0 p:first-of-type`, { timeout: 10000 }).should("have.text", romeLabel)
+      cy.get("[data-testid='offre-metier'] input").type(typedRomeLabel)
+      cy.wait("@romeSearch")
+      // cy.get(`[data-testid='offre-metier'] #downshift-1-item-0 p:first-of-type`, { timeout: 10000 }).should("have.text", romeLabel)
       cy.get(`[data-testid='offre-metier'] [data-testid='${romeLabel}']`).click()
 
       cy.get("[data-testid='offre-job-type'] [data-testid='Apprentissage']").click()
@@ -84,6 +88,7 @@ export const FlowCreationEntreprise = {
   },
   delegationPage: {
     selectCFAs(cfas: string[]) {
+      cy.url().should("contain", Cypress.env("ui") + "/espace-pro/creation/mise-en-relation")
       ;[...new Array(10)].forEach((_, index) => {
         cy.get(`[data-testid='cfa-${index}'] input[type='checkbox']`).uncheck({ force: true })
       })

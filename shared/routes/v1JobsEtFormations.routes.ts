@@ -1,6 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob } from "../models/lbaItem.model"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import {
   zCallerParam,
@@ -95,6 +96,7 @@ export const zV1JobsEtFormationsRoutes = {
       securityScheme: null,
       openapi: {
         tags: ["V1 - Jobs et formations"] as string[],
+        description: `${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
   },
