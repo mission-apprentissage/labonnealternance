@@ -8,10 +8,10 @@ import { notifyLbaJobDetailView } from "../../services/notifyLbaJobDetailView"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
 
-import MatchaAcces from "./MatchaComponents/MatchaAcces"
-import MatchaCompetences from "./MatchaComponents/MatchaCompetences"
-import MatchaCustomDescription from "./MatchaComponents/MatchaCustomDescription"
-import MatchaDescription from "./MatchaComponents/MatchaDescription"
+import LbaJobAcces from "./LbaJobComponents/LbaJobAcces"
+import LbaJobCompetences from "./LbaJobComponents/LbaJobCompetences"
+import LbaJobCustomDescription from "./LbaJobComponents/LbaJobCustomDescription"
+import LbaJobDescription from "./LbaJobComponents/LbaJobDescription"
 
 const BADDESCRIPTION = 50
 
@@ -21,9 +21,9 @@ const getContractTypes = (contractTypes) => {
 
 const RomeDescriptions = (job) => (
   <>
-    <MatchaDescription job={job} />
-    <MatchaCompetences job={job} />
-    <MatchaAcces job={job} />
+    <LbaJobDescription job={job} />
+    <LbaJobCompetences job={job} />
+    <LbaJobAcces job={job} />
   </>
 )
 
@@ -31,20 +31,20 @@ const getDescriptionContext = (job: ILbaItemLbaJob) => {
   const { description, employeurDescription } = job.job
 
   if (description && description.length > BADDESCRIPTION && !employeurDescription) {
-    return <MatchaCustomDescription data={description} title="Description du Métier" />
+    return <LbaJobCustomDescription data={description} title="Description du Métier" />
   }
   if (description && description.length > BADDESCRIPTION && employeurDescription) {
     return (
       <>
-        <MatchaCustomDescription data={description} title="Description du Métier" />
-        <MatchaCustomDescription data={employeurDescription} title="Description de l'employeur" />
+        <LbaJobCustomDescription data={description} title="Description du Métier" />
+        <LbaJobCustomDescription data={employeurDescription} title="Description de l'employeur" />
       </>
     )
   }
   if ((!description || description.length < BADDESCRIPTION) && employeurDescription) {
     return (
       <>
-        <MatchaCustomDescription data={employeurDescription} title="Description de l'employeur" />
+        <LbaJobCustomDescription data={employeurDescription} title="Description de l'employeur" />
       </>
     )
   }

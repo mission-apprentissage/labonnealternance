@@ -2,31 +2,33 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 import React from "react"
 
-const MatchaDescription = ({ job }) => {
+const LbaJobCompetences = ({ job }) => {
   const getText = () => {
-    return (
+    const res = (
       <Box pl="12px" mt={4}>
-        {job?.job?.romeDetails?.definition.split("\\n").map((definition, i) => (
-          <Box key={i} mt={2}>
+        {job.job.romeDetails.competencesDeBase.map((competence) => (
+          <Box key={competence.code} mt={2}>
             &bull;
             <Text as="span" ml={3}>
-              {definition}
+              {competence.libelle}
             </Text>
           </Box>
         ))}
       </Box>
     )
+
+    return res
   }
 
   return (
-    job?.job?.romeDetails?.definition && (
+    job?.job?.romeDetails?.competencesDeBase?.length && (
       <Accordion allowToggle>
         <AccordionItem>
           {({ isExpanded }) => (
             <>
               <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
                 <Box as="span" flex="1" textAlign="left">
-                  Description du métier
+                  Quelles sont les compétences attendues ?
                 </Box>
                 {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
               </AccordionButton>
@@ -40,4 +42,4 @@ const MatchaDescription = ({ job }) => {
   )
 }
 
-export default MatchaDescription
+export default LbaJobCompetences

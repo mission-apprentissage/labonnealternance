@@ -2,7 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 import React from "react"
 
-const MatchaAcces = ({ job }) => {
+const LbaJobAcces = ({ job }) => {
   const acces = job?.job?.romeDetails?.acces ?? null
 
   if (!acces) return ""
@@ -31,4 +31,4 @@ const MatchaAcces = ({ job }) => {
   )
 }
 
-export default MatchaAcces
+export default LbaJobAcces
