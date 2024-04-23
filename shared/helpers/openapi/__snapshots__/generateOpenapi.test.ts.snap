@@ -733,7 +733,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_description": {
-            "description": "Description de l'offre d'alternance",
+            "description": "Description de l'offre d'alternance - minimum 30 charactères si rempli",
             "type": [
               "string",
               "null",
@@ -749,7 +749,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "job_employer_description": {
-            "description": "Description de l'employer proposant l'offre d'alternance",
+            "description": "Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli",
             "type": [
               "string",
               "null",
@@ -5469,7 +5469,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     ],
                   },
                   "job_description": {
-                    "description": "Description de l'offre d'alternance",
+                    "description": "Description de l'offre d'alternance - minimum 30 charactères si rempli",
                     "type": [
                       "string",
                       "null",
@@ -5485,7 +5485,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     ],
                   },
                   "job_employer_description": {
-                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "description": "Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli",
                     "type": [
                       "string",
                       "null",
@@ -5640,7 +5640,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     ],
                   },
                   "job_description": {
-                    "description": "Description de l'offre d'alternance",
+                    "description": "Description de l'offre d'alternance - minimum 30 charactères si rempli",
                     "type": [
                       "string",
                       "null",
@@ -5656,7 +5656,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     ],
                   },
                   "job_employer_description": {
-                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "description": "Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli",
                     "type": [
                       "string",
                       "null",
@@ -9032,7 +9032,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     ],
                   },
                   "job_description": {
-                    "description": "Description de l'offre d'alternance",
+                    "description": "Description de l'offre d'alternance - minimum 30 charactères si rempli",
                     "type": [
                       "string",
                       "null",
@@ -9048,7 +9048,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     ],
                   },
                   "job_employer_description": {
-                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "description": "Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli",
                     "type": [
                       "string",
                       "null",
@@ -9202,7 +9202,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     ],
                   },
                   "job_description": {
-                    "description": "Description de l'offre d'alternance",
+                    "description": "Description de l'offre d'alternance - minimum 30 charactères si rempli",
                     "type": [
                       "string",
                       "null",
@@ -9218,7 +9218,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                     ],
                   },
                   "job_employer_description": {
-                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "description": "Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli",
                     "type": [
                       "string",
                       "null",
