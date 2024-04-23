@@ -213,6 +213,9 @@ program
 
 // Temporaire, one shot à executer en recette et prod
 program.command("import:rome").description("import référentiel fiche metier rome v3").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import:rome"))
+
+program.command("import:rome:v4").description("import fiches métiers rome v4").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import:rome:v4"))
+
 // Temporaire, one shot à executer en recette et prod
 program
   .command("migration:remove-version-key-from-all-collections")

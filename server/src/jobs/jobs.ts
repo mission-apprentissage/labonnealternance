@@ -63,6 +63,7 @@ import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissemen
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
+import { importFichesMetiersRomeV4 } from "./seed/ficheMetierRomev4/ficheMetierRomev4"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
@@ -250,6 +251,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateAddressDetailOnRecruitersCollection()
       case "import:rome":
         return importFicheMetierRomeV3()
+      case "import:rome:v4":
+        return importFichesMetiersRomeV4()
       case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
         return removeVersionKeyFromAllCollections()
       case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
