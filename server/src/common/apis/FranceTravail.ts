@@ -46,8 +46,6 @@ const isTokenValid = (token: IFTAPIToken): any => token?.expire?.isAfter(dayjs()
 const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPIToken> => {
   const isValid = isTokenValid(token)
 
-  console.log({ token, isValid, tokenOffreFT })
-
   if (isValid) {
     return token
   }
@@ -57,8 +55,6 @@ const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPI
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 3000,
     })
-
-    console.log({ ft: response.data })
 
     return {
       ...response.data,
@@ -84,7 +80,7 @@ export const searchForFtJobs = async (params: {
   distance?: number
 }): Promise<FTResponse | null | ""> => {
   tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
-  console.log({ tokenOffreFT })
+
   try {
     const extendedParams = {
       ...params,
