@@ -16,7 +16,7 @@ const FT_IO_API_ROME_V1_BASE_URL = "https://api.pole-emploi.io/partenaire/rome/v
 const FT_IO_API_OFFRES_BASE_URL = "https://api.pole-emploi.io/partenaire/offresdemploi/v2"
 const FT_AUTH_BASE_URL = "https://entreprise.pole-emploi.fr/connexion/oauth2"
 const FT_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
-const FT_IO_API_ROME_V4_BASE_URL = "https://api.francetravail.io/partenaire/rome-fiches-metiers"
+const FT_IO_API_ROME_V4_BASE_URL = "https://api.francetravail.io/partenaire/rome-metiers"
 
 // paramètres exclurant les offres LBA des résultats de l'api PE
 const FT_LBA_PARTENAIRE = "LABONNEALTERNANCE"
@@ -35,7 +35,7 @@ const ROME_V4_ACCESS = querystring.stringify({
   grant_type: "client_credentials",
   client_id: config.esdClientId,
   client_secret: config.esdClientSecret,
-  scope: `application_${config.esdClientId} api_rome-fiches-metiersv1 nomenclatureRome`,
+  scope: `application_${config.esdClientId} api_rome-metiersv1 nomenclatureRome`,
 })
 
 const OFFRES_ACCESS = querystring.stringify({
@@ -218,7 +218,7 @@ export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IRomeV4D
   tokenRomeV4FT = await getFtAccessToken("ROMEV4", tokenRomeV4FT)
 
   try {
-    const { data } = await axiosClient.get<IRomeV4DetailsFromAPI>(`${FT_IO_API_ROME_V4_BASE_URL}/v1/fiches-rome/fiche-metier/${romeCode}`, {
+    const { data } = await axiosClient.get<IRomeV4DetailsFromAPI>(`${FT_IO_API_ROME_V4_BASE_URL}/v1/metiers/metier/${romeCode}`, {
       headers: {
         Authorization: `Bearer ${tokenRomeV4FT.access_token}`,
       },
@@ -234,7 +234,7 @@ export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IRomeV4D
 export const getRomeV4ListFromFT = async (): Promise<IRomeV4Short[] | null | undefined> => {
   tokenRomeV4FT = await getFtAccessToken("ROMEV4", tokenRomeV4FT)
   try {
-    const { data } = await axiosClient.get<IRomeV4Short[]>(`${FT_IO_API_ROME_V4_BASE_URL}/v1/fiches-rome/fiche-metier`, {
+    const { data } = await axiosClient.get<IRomeV4Short[]>(`${FT_IO_API_ROME_V4_BASE_URL}/v1/metiers/metier`, {
       headers: {
         Authorization: `Bearer ${tokenRomeV4FT.access_token}`,
       },
