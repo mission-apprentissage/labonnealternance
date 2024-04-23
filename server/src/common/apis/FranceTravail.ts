@@ -12,7 +12,6 @@ import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
 
-const FT_IO_API_ROME_V4_BASE_URL = "https://api.francetravail.io/partenaire/rome-metiers"
 const axiosClient = getApiClient({})
 
 const ROME_ACCESS = querystring.stringify({
@@ -210,7 +209,7 @@ export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IRomeV4D
   tokenRomeV4FT = await getFtAccessToken("ROMEV4", tokenRomeV4FT)
 
   try {
-    const { data } = await axiosClient.get<IRomeV4DetailsFromAPI>(`${FT_IO_API_ROME_V4_BASE_URL}/v1/metiers/metier/${romeCode}`, {
+    const { data } = await axiosClient.get<IRomeV4DetailsFromAPI>(`${config.franceTravailIO.baseUrl}/v1/metiers/metier/${romeCode}`, {
       headers: {
         Authorization: `Bearer ${tokenRomeV4FT.access_token}`,
       },
@@ -226,7 +225,7 @@ export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IRomeV4D
 export const getRomeV4ListFromFT = async (): Promise<IRomeV4Short[] | null | undefined> => {
   tokenRomeV4FT = await getFtAccessToken("ROMEV4", tokenRomeV4FT)
   try {
-    const { data } = await axiosClient.get<IRomeV4Short[]>(`${FT_IO_API_ROME_V4_BASE_URL}/v1/metiers/metier`, {
+    const { data } = await axiosClient.get<IRomeV4Short[]>(`${config.franceTravailIO.baseUrl}/v1/metiers/metier`, {
       headers: {
         Authorization: `Bearer ${tokenRomeV4FT.access_token}`,
       },
