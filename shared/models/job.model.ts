@@ -38,8 +38,8 @@ export const ZJobFields = z
       .nullish()
       .describe("Niveau de formation visé en fin de stage"),
     job_start_date: z.coerce.date().describe("Date de début de l'alternance"),
-    job_description: z.string().nullish().describe("Description de l'offre d'alternance"),
-    job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance"),
+    job_description: z.string().nullish().describe("Description de l'offre d'alternance - minimum 30 charactères si rempli"),
+    job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
     rome_detail: ZRomeDetail.nullish().describe("Détail du code ROME selon la nomenclature Pole emploi"),
     job_creation_date: z.date().nullish().describe("Date de creation de l'offre"),

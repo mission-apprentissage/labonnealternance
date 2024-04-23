@@ -355,12 +355,14 @@ program
   .command("etablissement:invite:premium:follow-up")
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .option("-q, --queued", "Run job asynchronously", false)
+  .option("-b, --bypassDate", "Run follow-up now without the 10 days waiting", false)
   .action(createJobAction("etablissement:invite:premium:follow-up"))
 
 program
   .command("etablissement:invite:premium:affelnet:follow-up")
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .option("-q, --queued", "Run job asynchronously", false)
+  .option("-b, --bypassDate", "Run follow-up now without the 10 days waiting", false)
   .action(createJobAction("etablissement:invite:premium:affelnet:follow-up"))
 
 program

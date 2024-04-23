@@ -167,7 +167,7 @@ describe.skip("jobV1", () => {
     )
   })
 
-  it("Vérifie que la route offre PE par id répond", async () => {
+  it("Vérifie que la route offre FT par id répond", async () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/V1/jobs/job/110MSJT" })
 
     expect(response.statusCode).toBe(200)

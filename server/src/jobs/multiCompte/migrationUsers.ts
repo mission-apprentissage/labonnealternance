@@ -429,6 +429,7 @@ const fixAddressDetail = (addressDetail: any) => {
 }
 
 const checkAddressDetail = (address_detail: any) => {
+  if (!address_detail) return
   if (!ZGlobalAddress.safeParse(address_detail).success) {
     throw new Error(`address_detail not ok: ${JSON.stringify(address_detail, null, 2)}`)
   }

@@ -310,10 +310,14 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return inviteEtablissementParcoursupToPremium()
       case "etablissement:invite:premium:affelnet":
         return inviteEtablissementAffelnetToPremium()
-      case "etablissement:invite:premium:follow-up":
-        return inviteEtablissementParcoursupToPremiumFollowUp()
-      case "etablissement:invite:premium:affelnet:follow-up":
-        return inviteEtablissementAffelnetToPremiumFollowUp()
+      case "etablissement:invite:premium:follow-up": {
+        const { bypassDate } = job.payload
+        return inviteEtablissementParcoursupToPremiumFollowUp(bypassDate)
+      }
+      case "etablissement:invite:premium:affelnet:follow-up": {
+        const { bypassDate } = job.payload
+        return inviteEtablissementAffelnetToPremiumFollowUp(bypassDate)
+      }
       case "premium:activated:reminder":
         return premiumActivatedReminder()
       case "premium:invite:one-shot":
