@@ -51,6 +51,12 @@ let tokenOffreFT: IFTAPIToken = {
   token_type: "",
   expires_in: 0,
 }
+let tokenRomeFT: IFTAPIToken = {
+  access_token: "",
+  scope: "",
+  token_type: "",
+  expires_in: 0,
+}
 let tokenRomeV4FT: IFTAPIToken = {
   access_token: "",
   scope: "",
@@ -173,12 +179,12 @@ export const getFtReferentiels = async (referentiel: string) => {
  * @returns
  */
 export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDetailsFromAPI | null | undefined> => {
-  tokenOffreFT = await getFtAccessToken("ROME", tokenOffreFT)
+  tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
 
   try {
     const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/metier/${romeCode}`, {
       headers: {
-        Authorization: `Bearer ${tokenOffreFT.access_token}`,
+        Authorization: `Bearer ${tokenRomeFT.access_token}`,
       },
     })
 
@@ -190,12 +196,12 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 }
 
 export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
-  tokenOffreFT = await getFtAccessToken("ROME", tokenOffreFT)
+  tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
 
   try {
     const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/appellation/${appellationCode}`, {
       headers: {
-        Authorization: `Bearer ${tokenOffreFT.access_token}`,
+        Authorization: `Bearer ${tokenRomeFT.access_token}`,
       },
     })
 
