@@ -34,6 +34,34 @@ export interface IRomeDetailsFromAPI {
   mobilitesEvolutionsAppellationsVersAppellations: any[]
 }
 
+export interface IRomeV4Short {
+  code: string
+  metier: { code: string; libelle: string }
+}
+
+interface IRomeV4Item {
+  code: string
+  libelle: string
+  type?: string
+}
+
+interface IRomeV4Competences {
+  competences: IRomeV4Item[]
+  enjeu: IRomeV4Item
+}
+interface IRomeV4Savoirs {
+  savoirs: IRomeV4Item[]
+  categorieSavoirs: IRomeV4Item
+}
+export interface IRomeV4DetailsFromAPI {
+  code: string
+  dateFin: string
+  obsolete: boolean
+  groupesCompetencesMobilisees: IRomeV4Competences[]
+  groupesSavoirs: IRomeV4Savoirs[]
+  metier: IRomeV4Item
+}
+
 export interface IAppelattionDetailsFromAPI {
   code: string
   libelle: string
