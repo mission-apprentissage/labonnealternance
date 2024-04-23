@@ -46,6 +46,8 @@ const isTokenValid = (token: IFTAPIToken): any => token?.expire?.isAfter(dayjs()
 const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPIToken> => {
   const isValid = isTokenValid(token)
 
+  console.log({ token, isValid, tokenOffreFT })
+
   if (isValid) {
     return token
   }
