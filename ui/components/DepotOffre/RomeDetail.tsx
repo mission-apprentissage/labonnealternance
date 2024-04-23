@@ -29,7 +29,7 @@ export const RomeDetail = ({ definition, competencesDeBase, libelle, appellation
               <h2>
                 <AccordionButton>
                   <Text fontWeight="700" flex="1" textAlign="left">
-                    Description du métier
+                    Descriptif du métier
                   </Text>
                   {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
                 </AccordionButton>

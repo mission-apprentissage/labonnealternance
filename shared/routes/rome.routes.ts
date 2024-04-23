@@ -1,6 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZMetiersEnrichis } from "../models"
 import { ZRomeDetail } from "../models/rome.model"
+// import { ZRomeV4Detail } from "../models/rome.model"
 
 import { IRoutesDef } from "./common.routes"
 

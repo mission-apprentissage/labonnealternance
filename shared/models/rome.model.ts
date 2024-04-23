@@ -131,3 +131,63 @@ export const ZRomeDetail = z
   .strict()
   .openapi("RomeDetail")
 //.deepPartial()
+
+const ZCompetenceV4 = z
+  .object({
+    type: z.string(),
+    code: z.string(),
+    libelle: z.string(),
+    codeOgr: z.string(),
+    riasecMajeur: z.string().optional(),
+    riasecMineur: z.string().optional(),
+  })
+  .strict()
+
+const ZRomeV4Item = z
+  .object({
+    code: z.string(),
+    libelle: z.string(),
+  })
+  .strict()
+
+export const ZRomeV4Detail = z
+  .object({
+    obsolete: z.boolean(),
+    code: z.string(),
+    libelle: z.string(),
+    definition: z.string(),
+    accesEmploi: z.string(),
+    riasecMajeur: z.string(),
+    riasecMineur: z.string(),
+    codeIsco: z.string().nullish(),
+    particulier: z.boolean(),
+    domaineProfessionnel: z
+      .object({
+        code: z.string(),
+        libelle: z.string(),
+        grandDomaine: ZRomeV4Item.strict(),
+      })
+      .strict(),
+    appellations: z.array(
+      z
+        .object({
+          code: z.string(),
+          libelle: z.string(),
+          libelleCourt: z.string(),
+          classification: z.string().optional(),
+          competencesCles: z.array(z.any()).optional(),
+        })
+        .strict()
+    ),
+    themes: z.array(ZRomeV4Item),
+    centesInterets: z.array(z.any()),
+    secteursActivites: z.array(z.object({ code: z.string(), libelle: z.string(), secteurActivite: z.any() }).strict()),
+    competencesMobilisees: z.array(ZCompetenceV4),
+    competencesMobiliseesPrincipales: z.array(ZCompetenceV4),
+    competencesMobiliseesEmergentes: z.array(ZCompetenceV4),
+    divisionsNaf: z.array(ZRomeV4Item),
+    formacodes: z.array(ZRomeV4Item),
+    contextesTravail: z.array(ZRomeV4Item),
+  })
+  .strict()
+  .openapi("RomeV4Detail")
