@@ -36,30 +36,58 @@ export interface IRomeDetailsFromAPI {
 
 export interface IRomeV4Short {
   code: string
-  metier: { code: string; libelle: string }
 }
 
 interface IRomeV4Item {
   code: string
   libelle: string
   type?: string
+  categorie?: string
 }
 
-interface IRomeV4Competences {
-  competences: IRomeV4Item[]
-  enjeu: IRomeV4Item
-}
-interface IRomeV4Savoirs {
-  savoirs: IRomeV4Item[]
-  categorieSavoirs: IRomeV4Item
-}
-export interface IRomeV4DetailsFromAPI {
+interface IRomeV4Competence {
+  type: string
   code: string
-  dateFin: string
+  libelle: string
+  codeOgr: string
+  riasecMajeur?: string
+  riasecMineur?: string
+}
+
+interface IRomeV4Appellation {
+  code: string
+  libelle: string
+  libelleCourt: string
+  classification?: string
+  competencesCles?: any[]
+}
+
+interface IRomeV4SecteurActivite {
+  code: string
+  libelle: string
+  secteurActivite: IRomeV4Item
+}
+
+export interface IRomeV4DetailsFromAPI {
   obsolete: boolean
-  groupesCompetencesMobilisees: IRomeV4Competences[]
-  groupesSavoirs: IRomeV4Savoirs[]
-  metier: IRomeV4Item
+  code: string
+  libelle: string
+  definition: string
+  accesEmploi: string
+  riasecMajeur: string
+  riasecMineur: string
+  codeIsco: string
+  domaineProfessionnel: DomaineProfessionnel
+  appellations: IRomeV4Appellation[]
+  themes: IRomeV4Item[]
+  centresInterets: any[]
+  secteursActivites: IRomeV4SecteurActivite[]
+  competencesMobilisees: IRomeV4Competence[]
+  competencesMobiliseesPrincipales: IRomeV4Competence[]
+  competencesMobiliseesEmergentes: IRomeV4Competence[]
+  divisionsNaf: IRomeV4Item[]
+  formacodes: IRomeV4Item[]
+  contextesTravail: IRomeV4Item[]
 }
 
 export interface IAppelattionDetailsFromAPI {
