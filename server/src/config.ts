@@ -77,6 +77,11 @@ const config = {
     password: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_PASSWORD").required().asString(),
     nomFlux: "LABONATA",
   },
+  franceTravailIO: {
+    baseUrl: "https://api.francetravail.io/partenaire",
+    authUrl: "https://entreprise.francetravail.fr/connexion/oauth2/access_token",
+    depotUrl: "https://portail-partenaire.pole-emploi.fr/partenaire/depotcurl",
+  },
   bal: {
     baseUrl: env.get("LBA_BAL_ENV_URL").required().asString(),
     apiKey: env.get("LBA_BAL_API_KEY").required().asString(),
