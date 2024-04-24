@@ -225,12 +225,11 @@ export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IRomeV4D
 export const getRomeV4ListFromFT = async (): Promise<IRomeV4Short[] | null | undefined> => {
   tokenRomeV4FT = await getFtAccessToken("ROMEV4", tokenRomeV4FT)
   try {
-    const { data } = await axiosClient.get<IRomeV4Short[]>(`${config.franceTravailIO.baseUrl}/v1/metiers/metier`, {
+    const { data } = await axiosClient.get<IRomeV4Short[]>(`${config.franceTravailIO.baseUrl}/rome-metiers/v1/metiers/metier?champs=code`, {
       headers: {
         Authorization: `Bearer ${tokenRomeV4FT.access_token}`,
       },
     })
-
     return data
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
