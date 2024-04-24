@@ -7,13 +7,32 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
 import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types"
-import { IRncpTCO } from "./queryValidator.service.types"
+import { CertificationAPIApprentissage } from "./queryValidator.service.types"
 
 const getRomesFromRncp = async (rncp: string): Promise<string | null | undefined> => {
   try {
-    const response = await axios.post<IRncpTCO>(`${config.tco.baseUrl}/api/v1/rncp`, { rncp })
-    const romes = response.data.result.romes.map(({ rome }) => rome).join(",")
-    return romes ?? null
+    let currentRncp = rncp
+    const isActive = false
+
+    while (!isActive) {
+      const { data } = await axios.get<CertificationAPIApprentissage[]>(`${config.apiApprentissage.baseUrl}/certification/v1?identifiant.rncp=${currentRncp}`, {
+        headers: { Authorization: `Bearer ${config.apiApprentissage.apiKey}` },
+      })
+
+      if (!data.length) return null
+
+      const { periode_validite, continuite, domaines } = data[0]
+
+      if (periode_validite.rncp.actif) {
+        const romesList = domaines.rome.rncp.map((x) => x.code)
+        return romesList.join(",")
+      } else {
+        const [latestRNCP] = continuite.rncp.filter((rncp) => rncp.courant === true)
+        if (!latestRNCP) return null
+
+        currentRncp = latestRNCP.code
+      }
+    }
   } catch (error) {
     sentryCaptureException(error)
   }

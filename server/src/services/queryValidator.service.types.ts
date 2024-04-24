@@ -1,112 +1,186 @@
-export interface IRncpTCO {
-  result: Result
-  messages: Messages
+export interface CertificationAPIApprentissage {
+  identifiant: Identifiant
+  intitule: Intitule
+  base_legale: BaseLegale
+  blocs_competences: BlocsCompetences
+  convention_collectives: ConventionCollectives
+  domaines: Domaines
+  periode_validite: PeriodeValidite
+  type: Type
+  continuite: Continuite
 }
 
-interface Result {
-  _id: string
-  cfds: string[]
-  code_rncp: string
-  intitule_diplome: string
-  date_fin_validite_enregistrement: string
-  active_inactive: string
-  etat_fiche_rncp: string
-  niveau_europe: string
-  code_type_certif: any
-  type_certif: any
-  ancienne_fiche: string[]
-  nouvelle_fiche: any
-  demande: number
-  certificateurs: Certificateur[]
-  nsf_code: string
-  nsf_libelle: string
-  romes: Rome[]
-  blocs_competences: BlocsCompetence[]
-  voix_acces: any
-  partenaires: Partenaire[]
-  type_enregistrement: string
-  si_jury_ca: string
-  eligible_apprentissage: boolean
-  created_at: string
-  last_update_at: string
-  __v: number
-  rncp_outdated: boolean
-  releated: Releated[]
+interface Identifiant {
+  cfd: string
+  rncp: string
+  rncp_anterieur_2019: boolean
 }
 
-interface Certificateur {
-  certificateur: string
-  siret_certificateur: string
-}
-
-interface Rome {
-  rome: string
-  libelle: string
-}
-
-interface BlocsCompetence {
-  numero_bloc: string
-  intitule: string
-  liste_competences: string
-  modalites_evaluation: string
-}
-
-interface Partenaire {
-  Nom_Partenaire: string
-  Siret_Partenaire: string
-  Habilitation_Partenaire: string
-}
-
-interface Releated {
+interface Intitule {
   cfd: Cfd
-  mefs: Mefs
+  niveau: Niveau
+  rncp: string
 }
 
 interface Cfd {
-  cfd: string
-  cfd_outdated: boolean
-  date_fermeture: number
-  date_ouverture: number
-  specialite: any
-  niveau: string
-  intitule_long: string
-  intitule_court: string
-  diplome: string
-  libelle_court: string
-  niveau_formation_diplome: string
+  long: string
+  court: string
 }
 
-interface Mefs {
-  mefs10: any[]
-  mefs8: any[]
-  mefs_aproximation: any[]
-  mefs11: any[]
-}
-
-interface Messages {
-  code_rncp: string
-  releated: Releated2[]
-}
-
-interface Releated2 {
+interface Niveau {
   cfd: Cfd2
-  mefs: Mefs2
+  rncp: Rncp
 }
 
 interface Cfd2 {
-  cfd: string
-  specialite: string
-  niveau: string
-  intitule_long: string
-  intitule_court: string
-  diplome: string
-  libelle_court: string
-  niveau_formation_diplome: string
+  europeen: string
+  formation_diplome: string
+  interministeriel: string
+  libelle: string
+  sigle: string
 }
 
-interface Mefs2 {
-  mefs10: string
-  mefs8: string
-  mefs_aproximation: string
-  mefs11: string
+interface Rncp {
+  europeen: string
+}
+
+interface BaseLegale {
+  cfd: Cfd3
+}
+
+interface Cfd3 {
+  creation: string
+  abrogation: string
+}
+
+interface BlocsCompetences {
+  rncp: Rncp2[]
+}
+
+interface Rncp2 {
+  code: string
+  intitule: string
+}
+
+interface ConventionCollectives {
+  rncp: Rncp3[]
+}
+
+interface Rncp3 {
+  numero: string
+  intitule: string
+}
+
+interface Domaines {
+  formacodes: Formacodes
+  nsf: Nsf
+  rome: Rome
+}
+
+interface Formacodes {
+  rncp: Rncp4[]
+}
+
+interface Rncp4 {
+  code: string
+  intitule: string
+}
+
+interface Nsf {
+  cfd: Cfd4
+  rncp: Rncp5[]
+}
+
+interface Cfd4 {
+  code: string
+  intitule: string
+}
+
+interface Rncp5 {
+  code: string
+  intitule: string
+}
+
+interface Rome {
+  rncp: Rncp6[]
+}
+
+interface Rncp6 {
+  code: string
+  intitule: string
+}
+
+interface PeriodeValidite {
+  debut: string
+  fin: string
+  cfd: Cfd5
+  rncp: Rncp7
+}
+
+interface Cfd5 {
+  ouverture: string
+  fermeture: string
+  premiere_session: number
+  derniere_session: number
+}
+
+interface Rncp7 {
+  actif: boolean
+  activation: string
+  debut_parcours: string
+  fin_enregistrement: string
+}
+
+interface Type {
+  nature: Nature
+  gestionnaire_diplome: string
+  enregistrement_rncp: string
+  voie_acces: VoieAcces
+  certificateurs_rncp: CertificateursRncp[]
+}
+
+interface Nature {
+  cfd: Cfd6
+}
+
+interface Cfd6 {
+  code: string
+  libelle: string
+}
+
+interface VoieAcces {
+  rncp: Rncp8
+}
+
+interface Rncp8 {
+  apprentissage: boolean
+  experience: boolean
+  candidature_individuelle: boolean
+  contrat_professionnalisation: boolean
+  formation_continue: boolean
+  formation_statut_eleve: boolean
+}
+
+interface CertificateursRncp {
+  siret: string
+  nom: string
+}
+
+interface Continuite {
+  cfd: Cfd7[]
+  rncp: Rncp9[]
+}
+
+interface Cfd7 {
+  ouverture: string
+  fermeture: string
+  code: string
+  courant: boolean
+}
+
+interface Rncp9 {
+  activation: string
+  fin_enregistrement: string
+  code: string
+  courant: boolean
 }
