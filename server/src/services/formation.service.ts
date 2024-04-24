@@ -180,7 +180,7 @@ const getRegionFormations = async ({
       $regex: new RegExp(`^${departement}`, "i"),
     }
   } else if (region) {
-    query.code_postal = getRegionQueryFragment(region)
+    query.code_postal = { $in: regionCodeToDepartmentList[region].map((departement) => new RegExp(`^${departement}`)) }
   }
 
   const now = new Date()
@@ -632,17 +632,6 @@ export const getFormationsParRegionQuery = async ({
     }
 
     return { error: "internal_error" }
-  }
-}
-
-/**
- * retourne le morceau de requête mongo correspondant à un filtrage sur une région donné
- * @param {string} region le code de la région
- * @returns {object}
- */
-const getRegionQueryFragment = (region: string): object => {
-  return {
-    $in: regionCodeToDepartmentList[region].map((departement) => new RegExp(`^${departement}`)),
   }
 }
 
