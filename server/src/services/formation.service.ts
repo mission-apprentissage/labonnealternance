@@ -564,20 +564,10 @@ export const getFormationsQuery = async ({
 /**
  * Retourne une formation identifiée par son id
  */
-export const getFormationQuery = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { results: ILbaItemFormation[] }> => {
-  try {
-    const formation = await getOneFormationFromId({ id })
-    return {
-      results: formation,
-    }
-  } catch (err) {
-    sentryCaptureException(err)
-
-    if (caller) {
-      trackApiCall({ caller, api_path: "formationV1/formation", response: "Error" })
-    }
-
-    return { error: "internal_error" }
+export const getFormationQuery = async ({ id }: { id: string }): Promise<{ results: ILbaItemFormation[] }> => {
+  const formation = await getOneFormationFromId({ id })
+  return {
+    results: formation,
   }
 }
 
