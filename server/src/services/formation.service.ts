@@ -34,7 +34,7 @@ const getDiplomaIndexName = (value) => {
 /**
  * Récupère les formations matchant les critères en paramètre depuis la mongo
  */
-export const getFormations = async ({
+const getFormations = async ({
   romes,
   romeDomain,
   coords,
