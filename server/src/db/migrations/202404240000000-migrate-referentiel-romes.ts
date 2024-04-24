@@ -14,8 +14,7 @@ export const up = async (db: Db) => {
     }
   )
 
-  // suppression collection fichemetierromev3
-  //await db.fichemetierromev3.drop()
+  await db.collection("fichemetierromev3").drop()
 
   logger.info("20240424000000-rome_details_from_rome_v4")
 }
