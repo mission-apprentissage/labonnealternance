@@ -80,4 +80,4 @@ const User2Schema = new Schema<IUser2>(
   }
 )
 
-export const User2 = buildMongooseModel(User2Schema, "user2")
+export const User2 = buildMongooseModel(User2Schema, "userswithaccount")
