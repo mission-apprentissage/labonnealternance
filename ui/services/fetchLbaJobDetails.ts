@@ -1,13 +1,20 @@
-import axios from "axios"
+import { ILbaItemLbaJob, zRoutes } from "shared"
+import { z } from "zod"
 
-import { matchaApi } from "@/components/SearchForTrainingsAndJobs/services/utils"
+import { apiGet } from "@/utils/api.utils"
 
-export default async function fetchLbaJobDetails(job) {
-  const res = null
-  if (!job) {
-    return res
+const zodSchema = zRoutes.get["/v1/jobs/matcha/:id"].response["200"]
+
+const fetchLbaJobDetails = async (job): Promise<ILbaItemLbaJob> => {
+  const response = await apiGet("/v1/jobs/matcha/:id", { params: { id: job.id }, querystring: {} })
+  const typedResponse = response as z.output<typeof zodSchema>
+  const [firstMatcha] = typedResponse?.matchas ?? []
+  if (firstMatcha) {
+    firstMatcha.detailsLoaded = true
+    return firstMatcha
+  } else {
+    throw new Error("unexpected_error")
   }
-  const lbaJobApi = `${matchaApi}/${encodeURIComponent(job.id)}`
-  const response = await axios.get(lbaJobApi)
-  return response.data.matchas[0]
 }
+
+export default fetchLbaJobDetails
