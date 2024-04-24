@@ -294,6 +294,7 @@ export const ZLbaItemFormation = z
       example: "5e8dfad720ff3b2161269d86",
       description: "L'identifiant de la formation dans le catalogue du Réseau des Carif-Oref.",
     }), // formation -> id
+    detailsLoaded: z.boolean().nullish(),
     idRco: z.string().nullish(), // formation -> id_formation
     idRcoFormation: z.string().nullish(), // formation -> id_rco_formation
 
@@ -374,7 +375,6 @@ export const ZLbaItemLbaJob = z
     contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),
     company: ZLbaItemCompany.nullable(),
-
     id: z.string().nullable().openapi({}), // matcha -> id_form
     diplomaLevel: z
       .string()
@@ -387,6 +387,7 @@ export const ZLbaItemLbaJob = z
     romes: z.array(ZLbaItemRome).nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
+    detailsLoaded: z.boolean().nullish(),
   })
   .strict()
   .openapi("LbaJob")
@@ -405,6 +406,7 @@ export const ZLbaItemLbaCompany = z
     url: z.string().nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
+    detailsLoaded: z.boolean().nullish(),
   })
   .strict()
   .openapi("LbaCompany")
@@ -424,6 +426,7 @@ export const ZLbaItemFtJob = z
     job: ZLbaItemJob.nullish(),
     romes: z.array(ZLbaItemRome).nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
+    detailsLoaded: z.boolean().nullish(),
   })
   .strict()
   .openapi("PeJob")
