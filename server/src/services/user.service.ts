@@ -1,3 +1,4 @@
+import Boom from "boom"
 import type { FilterQuery } from "mongoose"
 import { IUser } from "shared"
 import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
@@ -85,6 +86,9 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   const recruiterMap = new Map<string, (typeof recruiters)[0]>()
   recruiters.forEach((recruiter) => {
     recruiter.jobs.forEach((job) => {
+      if (!job.managed_by) {
+        throw Boom.internal(`inattendu: managed_by vide pour le job avec id=${job._id}`)
+      }
       recruiterMap.set(job.managed_by.toString(), recruiter)
     })
   })

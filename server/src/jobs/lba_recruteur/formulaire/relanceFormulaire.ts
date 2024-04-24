@@ -51,6 +51,9 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
     const { establishment_raison_sociale, is_delegated } = recruiter
     try {
       const { managed_by } = recruiter.jobs[0]
+      if (!managed_by) {
+        throw Boom.internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
+      }
       const contactUser = await User2.findOne({ _id: managed_by }).lean()
       if (!contactUser) {
         throw Boom.internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)

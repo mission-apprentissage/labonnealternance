@@ -1,6 +1,6 @@
 import Boom from "boom"
 import type { ObjectId } from "mongodb"
-import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS } from "shared/constants/recruteur"
 import { ComputedUserAccess, IUserRecruteurPublic } from "shared/models"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { parseEnum, parseEnumOrError } from "shared/utils"
@@ -8,7 +8,6 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { Cfa, Entreprise, RoleManagement, User2 } from "@/common/model"
 
-import { ADMIN, CFA, ENTREPRISE, OPCO } from "./constant.service"
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 
 export const modifyPermissionToUser = async (
