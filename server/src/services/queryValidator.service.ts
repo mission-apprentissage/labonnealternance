@@ -9,32 +9,32 @@ import config from "../config"
 import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types"
 import { CertificationAPIApprentissage } from "./queryValidator.service.types"
 
-const getRomesFromRncp = async (rncp: string): Promise<string | null | undefined> => {
+const getFirstCertificationFromAPIApprentissage = async (rncp: string): Promise<CertificationAPIApprentissage | null> => {
   try {
-    let currentRncp = rncp
-    const isActive = false
+    const { data } = await axios.get<CertificationAPIApprentissage[]>(`${config.apiApprentissage.baseUrl}/certification/v1?identifiant.rncp=${rncp}`, {
+      headers: { Authorization: `Bearer ${config.apiApprentissage.apiKey}` },
+    })
 
-    while (!isActive) {
-      const { data } = await axios.get<CertificationAPIApprentissage[]>(`${config.apiApprentissage.baseUrl}/certification/v1?identifiant.rncp=${currentRncp}`, {
-        headers: { Authorization: `Bearer ${config.apiApprentissage.apiKey}` },
-      })
+    if (!data.length) return null
 
-      if (!data.length) return null
+    return data[0]
+  } catch (error: any) {
+    sentryCaptureException(error, { responseData: error.response?.data })
+    return null
+  }
+}
 
-      const { periode_validite, continuite, domaines } = data[0]
+const getRomesFromRncp = async (rncp: string): Promise<string | null> => {
+  let certifications = await getFirstCertificationFromAPIApprentissage(rncp)
+  if (!certifications) return null
 
-      if (periode_validite.rncp.actif) {
-        const romesList = domaines.rome.rncp.map((x) => x.code)
-        return romesList.join(",")
-      } else {
-        const [latestRNCP] = continuite.rncp.filter((rncp) => rncp.courant === true)
-        if (!latestRNCP) return null
-
-        currentRncp = latestRNCP.code
-      }
-    }
-  } catch (error) {
-    sentryCaptureException(error)
+  if (certifications.periode_validite.rncp.actif) {
+    return certifications.domaines.rome.rncp.map((x) => x.code).join(",")
+  } else {
+    const [latestRNCP] = certifications.continuite.rncp.filter((rncp) => rncp.courant === true)
+    certifications = await getFirstCertificationFromAPIApprentissage(latestRNCP.code)
+    if (!certifications) return null
+    return certifications.domaines.rome.rncp.map((x) => x.code).join(",")
   }
 }
 
