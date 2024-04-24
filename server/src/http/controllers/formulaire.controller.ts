@@ -17,6 +17,7 @@ import {
   extendOffre,
   getFormulaire,
   getJob,
+  getJobWithRomeDetail,
   patchOffre,
   provideOffre,
   updateFormulaire,
@@ -182,10 +183,11 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/formulaire/offre/f/:jobId"])],
     },
     async (req, res) => {
-      const offre = await getJob(req.params.jobId.toString())
+      const offre = await getJobWithRomeDetail(req.params.jobId.toString())
       if (!offre) {
         throw Boom.badRequest("L'offre n'existe pas")
       }
+
       res.status(200).send(offre)
     }
   )

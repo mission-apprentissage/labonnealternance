@@ -1,7 +1,7 @@
 import Boom from "boom"
 import type { ObjectId as ObjectIdType } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
+import { IDelegation, IJob, IJobWithRomeDetails, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -510,6 +510,26 @@ export const getJob = async (id: string | ObjectIdType): Promise<IJob | null> =>
   const offre = await getOffre(id)
   if (!offre) return null
   return offre.jobs.find((job) => job._id.toString() === id.toString()) ?? null
+}
+
+/**
+ * @description Get job offer by its id.
+ */
+export const getJobWithRomeDetail = async (id: string | ObjectIdType): Promise<IJobWithRomeDetails | null> => {
+  const offre = await getOffre(id)
+  if (!offre) return null
+
+  const job = offre.jobs.find((job) => job._id.toString() === id.toString())
+  if (!job) return null
+
+  const referentielRome = await getRomeDetailsFromDB(job.rome_code[0])
+
+  if (!referentielRome) return null
+
+  return {
+    ...job,
+    rome_detail: referentielRome.fiche_metier,
+  }
 }
 
 /**
