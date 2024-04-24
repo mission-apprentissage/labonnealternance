@@ -125,7 +125,7 @@ export const getEntrepriseOpco = async (siret: string) => {
 
 export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
 
-export const getRomeDetail = (rome: string) => API.get(`/rome/detail/${rome}`)
+export const getRomeDetail = (rome: string) => apiGet("/rome/detail/:rome", { params: { rome } })
 export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) =>
   API.get(`/etablissement/cfas-proches?rome=${rome}&latitude=${latitude}&longitude=${longitude}`)
 

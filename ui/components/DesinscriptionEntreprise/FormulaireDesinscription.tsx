@@ -232,7 +232,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
               <Form>
                 <FormControl isInvalid={errors.email && touched && submitCount > 0}>
                   <FormLabel color={touched && submitCount > 0 && errors.email ? "red.500" : "gray.800"}>Email de l'établissement</FormLabel>
-                  <FormHelperText pb={2}>Indiquer l'email sur lequel sont actuellement reçues les candidatures</FormHelperText>
+                  <FormHelperText pb={2}>Indiquez l'email sur lequel sont actuellement reçues les candidatures</FormHelperText>
                   <Field name="email">
                     {({ field }) => {
                       return <Input placeholder="Adresse email de contact de la société..." {...field} />
@@ -251,7 +251,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
 
                 <FormControl mt={3} isInvalid={errors.reason && touched && submitCount > 0}>
                   <FormLabel color={touched && submitCount > 0 && errors.reason ? "red.500" : "gray.800"}>Motif</FormLabel>
-                  <FormHelperText pb={2}>Indiquer la raison pour laquelle vous ne souhaitez plus recevoir de candidature?</FormHelperText>
+                  <FormHelperText pb={2}>Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature</FormHelperText>
                   <Field name="reason">
                     {({ field }) => {
                       return (

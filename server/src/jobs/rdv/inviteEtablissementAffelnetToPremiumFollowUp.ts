@@ -19,10 +19,15 @@ interface IEtablissementsToInviteToPremium {
   count: number
 }
 
-export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
+export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: boolean = false) => {
   logger.info("Cron #inviteEtablissementAffelnetToPremiumFollowUp started.")
 
   let count = 0
+  let clause = [{ premium_affelnet_invitation_date: { $ne: null } }, { premium_affelnet_invitation_date: { $lte: dayjs().subtract(10, "days").toDate() } }]
+
+  if (bypassDate) {
+    clause = [{ premium_affelnet_invitation_date: { $ne: null } }]
+  }
 
   const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await Etablissement.aggregate([
     {
@@ -33,7 +38,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
         premium_affelnet_activation_date: null,
         premium_affelnet_refusal_date: null,
         premium_affelnet_follow_up_date: null,
-        $and: [{ premium_affelnet_invitation_date: { $ne: null } }, { premium_affelnet_invitation_date: { $lte: dayjs().subtract(10, "days").toDate() } }],
+        $and: clause,
       },
     },
     {

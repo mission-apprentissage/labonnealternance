@@ -307,7 +307,7 @@ export default (server: Server) => {
         getParameterByCleMinistereEducatif({
           cleMinistereEducatif: cle_ministere_educatif,
         }),
-        users.getUserById(appointment.applicant_id),
+        users.getUserById(appointment.applicant_id.toString()),
       ])
 
       if (!user) throw Boom.notFound()

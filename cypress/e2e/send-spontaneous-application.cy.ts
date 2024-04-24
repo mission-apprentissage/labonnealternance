@@ -14,6 +14,7 @@ describe("send-spontaneous-application", () => {
     const fakeMail = `${generateRandomString()}@beta.gouv.fr`
 
     cy.viewport(1254, 704)
+
     SearchForm.goToHome()
     SearchForm.fillSearch({
       metier: "Comptabilité, gestion de paie",

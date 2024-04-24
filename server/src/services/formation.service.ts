@@ -31,6 +31,32 @@ const getDiplomaIndexName = (value) => {
   return value ? diplomaMap[value[0]] : ""
 }
 
+const minimalDataMongoFields = {
+  cle_ministere_educatif: 1,
+  code_commune_insee: 1,
+  code_postal: 1,
+  etablissement_formateur_siret: 1,
+  etablissement_formateur_enseigne: 1,
+  etablissement_formateur_entreprise_raison_sociale: 1,
+  etablissement_formateur_adresse: 1,
+  etablissement_formateur_complement_adresse: 1,
+  etablissement_formateur_localite: 1,
+  etablissement_formateur_code_postal: 1,
+  etablissement_formateur_cedex: 1,
+  etablissement_gestionnaire_adresse: 1,
+  etablissement_gestionnaire_complement_adresse: 1,
+  etablissement_gestionnaire_localite: 1,
+  etablissement_gestionnaire_code_postal: 1,
+  etablissement_gestionnaire_cedex: 1,
+  etablissement_gestionnaire_entreprise_raison_sociale: 1,
+  etablissement_gestionnaire_siret: 1,
+  intitule_court: 1,
+  intitule_long: 1,
+  lieu_formation_adresse: 1,
+  lieu_formation_geo_coordonnees: 1,
+  localite: 1,
+}
+
 /**
  * Récupère les formations matchant les critères en paramètre depuis la mongo
  */
@@ -86,8 +112,9 @@ const getFormations = async ({
   const stages: any[] = []
 
   if (isMinimalData) {
-    stages.push({ $project: { objectif: 0, contenu: 0 } })
-    // TODO réduire encore
+    stages.push({
+      $project: minimalDataMongoFields,
+    })
   } else if (options.indexOf("with_description") < 0) {
     stages.push({ $project: { objectif: 0, contenu: 0 } })
   }

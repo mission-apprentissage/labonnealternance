@@ -38,8 +38,8 @@ export const ZJobFields = z
       .nullish()
       .describe("Niveau de formation visé en fin de stage"),
     job_start_date: z.coerce.date().describe("Date de début de l'alternance"),
-    job_description: z.string().nullish().describe("Description de l'offre d'alternance"),
-    job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance"),
+    job_description: z.string().nullish().describe("Description de l'offre d'alternance - minimum 30 charactères si rempli"),
+    job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
     rome_detail: ZRomeDetail.nullish().describe("Détail du code ROME selon la nomenclature Pole emploi"),
     job_creation_date: z.date().nullish().describe("Date de creation de l'offre"),
@@ -65,6 +65,7 @@ export const ZJobFields = z
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
     stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
+    managed_by: zObjectId.nullish().describe("Id de l'utilisateur gérant l'offre"),
   })
   .strict()
   .openapi("JobWritable")

@@ -1,12 +1,25 @@
-import { ObjectId } from "mongodb"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, IUserRecruteur, ZApplication, ZCredential, ZEmailBlacklist, ZRecruiter, ZUserRecruteur } from "shared/models"
+import {
+  IApplication,
+  ICredential,
+  IEmailBlacklist,
+  IJob,
+  IRecruiter,
+  IUserRecruteur,
+  JOB_STATUS,
+  ZApplication,
+  ZCredential,
+  ZEmailBlacklist,
+  ZRecruiter,
+  ZUserRecruteur,
+} from "shared/models"
 import { zObjectId } from "shared/models/common"
 import { ZodObject, ZodString } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
 import { Application, Credential, EmailBlacklist, Recruiter, UserRecruteur } from "@/common/model"
+import { ObjectId } from "@/common/mongodb"
 
 let seed = 0
 function getFixture() {
@@ -67,15 +80,49 @@ export async function createCredentialTest(data: Partial<ICredential>) {
   return u
 }
 
+export const jobFactory = (props: Partial<IJob> = {}) => {
+  const job: IJob = {
+    _id: new ObjectId(),
+    rome_label: "rome_label",
+    rome_appellation_label: "rome_appellation_label",
+    job_level_label: "job_level_label",
+    job_start_date: new Date(),
+    job_description: "job_description",
+    job_employer_description: "job_employer_description",
+    rome_code: ["rome_code"],
+    rome_detail: null,
+    job_creation_date: new Date(),
+    job_expiration_date: new Date(),
+    job_update_date: new Date(),
+    job_last_prolongation_date: new Date(),
+    job_prolongation_count: 0,
+    relance_mail_sent: false,
+    job_status: JOB_STATUS.ACTIVE,
+    job_status_comment: "job_status_comment",
+    job_type: ["Apprentissage"],
+    is_multi_published: false,
+    job_delegation_count: 0,
+    delegations: [],
+    is_disabled_elligible: false,
+    job_count: 1,
+    job_duration: 6,
+    job_rythm: "job_rythm",
+    custom_address: "custom_address",
+    custom_geo_coordinates: "custom_geo_coordinates",
+    stats_detail_view: 0,
+    stats_search_view: 0,
+    managed_by: new ObjectId(),
+    ...props,
+  }
+  return job
+}
+
 export async function createRecruteurTest(data: Partial<IRecruiter>, jobsData: Partial<IJob>[]) {
   const u = new Recruiter({
-    ...getFixture().fromSchema(ZRecruiter),
+    ...getFixture().fromSchema(ZRecruiter.omit({ jobs: true })),
     ...data,
     jobs: jobsData.map((d) => {
-      return {
-        ...getFixture().fromSchema(ZRecruiter),
-        ...d,
-      }
+      return jobFactory(d)
     }),
   })
   await u.save()
