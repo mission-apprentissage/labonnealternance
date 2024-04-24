@@ -62,8 +62,7 @@ import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
-import { importFichesMetiersRomeV4 } from "./seed/ficheMetierRomev4/ficheMetierRomev4"
+import { importFichesReferentielRome } from "./seed/ficheMetierRomev4/ficheMetierRomev4"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
@@ -250,9 +249,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "recruiters:get-missing-address-detail":
         return updateAddressDetailOnRecruitersCollection()
       case "import:rome":
-        return importFicheMetierRomeV3()
-      case "import:rome:v4":
-        return importFichesMetiersRomeV4()
+        return importFichesReferentielRome()
       case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
         return removeVersionKeyFromAllCollections()
       case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
