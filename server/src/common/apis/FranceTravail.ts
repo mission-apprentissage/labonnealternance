@@ -2,7 +2,7 @@ import { createReadStream } from "fs"
 import querystring from "querystring"
 
 import FormData from "form-data"
-import { IReferentielRome } from "shared/models"
+import { IFicheRome } from "shared/models"
 
 import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
@@ -206,11 +206,11 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
   }
 }
 
-export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IReferentielRome | null | undefined> => {
+export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IFicheRome | null | undefined> => {
   tokenRomeV4FT = await getFtAccessToken("ROMEV4", tokenRomeV4FT)
 
   try {
-    const { data } = await axiosClient.get<IReferentielRome>(`${config.franceTravailIO.baseUrl}/v1/metiers/metier/${romeCode}`, {
+    const { data } = await axiosClient.get<IFicheRome>(`${config.franceTravailIO.baseUrl}/rome-metiers/v1/metiers/metier/${romeCode}`, {
       headers: {
         Authorization: `Bearer ${tokenRomeV4FT.access_token}`,
       },

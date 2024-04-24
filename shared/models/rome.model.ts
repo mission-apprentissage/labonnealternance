@@ -160,7 +160,7 @@ const ZRomeV4Appellation = z
   })
   .strict()
 
-export const ZReferentielRome = z
+export const ZFicheRomeV4 = z
   .object({
     obsolete: z.boolean(),
     code: z.string(),
@@ -191,5 +191,14 @@ export const ZReferentielRome = z
   })
   .strict()
   .openapi("ReferentielRome")
+
+export type IFicheRome = z.output<typeof ZFicheRomeV4>
+
+export const ZReferentielRome = z
+  .object({
+    rome_code: z.string(),
+    fiche_metier: ZFicheRomeV4,
+  })
+  .strict()
 
 export type IReferentielRome = z.output<typeof ZReferentielRome>
