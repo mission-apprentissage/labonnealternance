@@ -150,7 +150,17 @@ const ZRomeV4Item = z
   })
   .strict()
 
-export const ZRomeV4Detail = z
+const ZRomeV4Appellation = z
+  .object({
+    code: z.string(),
+    libelle: z.string(),
+    libelleCourt: z.string(),
+    classification: z.string().optional(),
+    competenceCles: z.array(z.any()).optional(),
+  })
+  .strict()
+
+export const ZReferentielRome = z
   .object({
     obsolete: z.boolean(),
     code: z.string(),
@@ -168,19 +178,9 @@ export const ZRomeV4Detail = z
         grandDomaine: ZRomeV4Item.strict(),
       })
       .strict(),
-    appellations: z.array(
-      z
-        .object({
-          code: z.string(),
-          libelle: z.string(),
-          libelleCourt: z.string(),
-          classification: z.string().optional(),
-          competencesCles: z.array(z.any()).optional(),
-        })
-        .strict()
-    ),
+    appellations: z.array(ZRomeV4Appellation),
     themes: z.array(ZRomeV4Item),
-    centesInterets: z.array(z.any()),
+    centresInterets: z.array(z.any()),
     secteursActivites: z.array(z.object({ code: z.string(), libelle: z.string(), secteurActivite: z.any() }).strict()),
     competencesMobilisees: z.array(ZCompetenceV4),
     competencesMobiliseesPrincipales: z.array(ZCompetenceV4),
@@ -190,4 +190,6 @@ export const ZRomeV4Detail = z
     contextesTravail: z.array(ZRomeV4Item),
   })
   .strict()
-  .openapi("RomeV4Detail")
+  .openapi("ReferentielRome")
+
+export type IReferentielRome = z.output<typeof ZReferentielRome>

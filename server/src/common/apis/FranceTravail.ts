@@ -2,10 +2,11 @@ import { createReadStream } from "fs"
 import querystring from "querystring"
 
 import FormData from "form-data"
+import { IReferentielRome } from "shared/models"
 
 import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
-import { IAppelattionDetailsFromAPI, IFTAPIToken, IRomeDetailsFromAPI, IRomeV4DetailsFromAPI, IRomeV4Short } from "@/services/rome.service.types"
+import { IAppelattionDetailsFromAPI, IFTAPIToken, IRomeDetailsFromAPI, IRomeV4Short } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
 import { sentryCaptureException } from "../utils/sentryUtils"
@@ -205,11 +206,11 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
   }
 }
 
-export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IRomeV4DetailsFromAPI | null | undefined> => {
+export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IReferentielRome | null | undefined> => {
   tokenRomeV4FT = await getFtAccessToken("ROMEV4", tokenRomeV4FT)
 
   try {
-    const { data } = await axiosClient.get<IRomeV4DetailsFromAPI>(`${config.franceTravailIO.baseUrl}/v1/metiers/metier/${romeCode}`, {
+    const { data } = await axiosClient.get<IReferentielRome>(`${config.franceTravailIO.baseUrl}/v1/metiers/metier/${romeCode}`, {
       headers: {
         Authorization: `Bearer ${tokenRomeV4FT.access_token}`,
       },
