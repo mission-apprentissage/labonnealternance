@@ -65,7 +65,7 @@ const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
   }
 
   const postuleSurFranceTravail = () => {
-    SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre PE", {
+    SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre FT", {
       info_fiche: selectedItem.job.id,
     })
   }

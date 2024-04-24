@@ -481,6 +481,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       const { caller } = req.query
+
       const result = await getFtJobFromId({
         id,
         caller,

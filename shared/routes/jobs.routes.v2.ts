@@ -5,6 +5,7 @@ import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
+import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import {
   zCallerParam,
@@ -55,7 +56,7 @@ export const zJobsRoutesV2 = {
       },
       openapi: {
         tags: ["V2 - Jobs"] as string[],
-        description: "Get existing establishment id from siret & email",
+        description: `Get existing establishment id from siret & email\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs/bulk": {
@@ -120,7 +121,7 @@ export const zJobsRoutesV2 = {
       },
       openapi: {
         tags: ["V2 - Jobs"] as string[],
-        description: "Get all jobs related to my organization",
+        description: `Get all jobs related to my organization\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "getJobs",
       },
     },
@@ -158,7 +159,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs"] as string[],
         operationId: "getDelegation",
-        description: "Get related training organization related to a job offer.",
+        description: `Get related training organization related to a job offer.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs": {
@@ -225,7 +226,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs"] as string[],
         operationId: "getJobOpportunities",
-        description: "Get job opportunities matching the query parameters",
+        description: `Get job opportunities matching the query parameters\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs/min": {
@@ -291,7 +292,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs - Min"] as string[],
         operationId: "getJobOpportunities",
-        description: "Get job opportunities matching the query parameters and returns minimal data",
+        description: `Get job opportunities matching the query parameters and returns minimal data\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs/entreprise_lba/:siret": {
@@ -327,7 +328,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs"] as string[],
         operationId: "getCompany",
-        description: "Get one company identified by it's siret",
+        description: `Get one company identified by it's siret\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs/:source/:id": {
@@ -368,7 +369,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs"] as string[],
         operationId: "getLbaJob",
-        description: "Get one lba job identified by it's id",
+        description: `Get one lba job identified by it's id\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
   },
@@ -406,7 +407,7 @@ export const zJobsRoutesV2 = {
       },
       openapi: {
         tags: ["V2 - Jobs"] as string[],
-        description: "Create an establishment entity",
+        description: `Create an establishment entity\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "createEstablishment",
       },
     },
@@ -428,7 +429,7 @@ export const zJobsRoutesV2 = {
       })
         .extend({
           job_start_date: ZJobStartDateCreate(),
-          appellation_code: z.string().regex(/^[0-9]+$/, "appelation code must contains only numbers"),
+          appellation_code: z.string().regex(/^[0-9]+$/, "appelation code ne doit contenir que des chiffres"),
         })
         .strict()
         .refine(
@@ -438,7 +439,25 @@ export const zJobsRoutesV2 = {
             }
             return true
           },
-          { message: "custom_geo_coordinates must be filled if a custom_address is passed" }
+          { message: "custom_geo_coordinates est obligatoire si custom_address est passé en paramètre" }
+        )
+        .refine(
+          ({ job_description }) => {
+            if (job_description && job_description?.length < 30) {
+              return false
+            }
+            return true
+          },
+          { message: "job_description doit avoir un minimum de 30 caractères" }
+        )
+        .refine(
+          ({ job_employer_description }) => {
+            if (job_employer_description && job_employer_description?.length < 30) {
+              return false
+            }
+            return true
+          },
+          { message: "job_employer_description doit avoir un minimum de 30 caractères" }
         ),
       response: {
         "201": ZRecruiter,
@@ -457,7 +476,7 @@ export const zJobsRoutesV2 = {
       },
       openapi: {
         tags: ["V2 - Jobs"] as string[],
-        description: "Create a job offer inside an establishment entity.",
+        description: `Create a job offer inside an establishment entity.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "createJob",
       },
     },
@@ -511,7 +530,7 @@ export const zJobsRoutesV2 = {
       },
       openapi: {
         tags: ["V2 - Jobs"] as string[],
-        description: "Update a job offer status to Provided",
+        description: `Update a job offer status to Provided\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "setJobAsProvided",
       },
     },
@@ -536,7 +555,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs"] as string[],
         operationId: "setJobAsCanceled",
-        description: "Update a job offer status to Canceled",
+        description: `Update a job offer status to Canceled\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs/extend/:jobId": {
@@ -560,7 +579,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs"] as string[],
         operationId: "extendJobExpiration",
-        description: "Update a job expiration date by 30 days.",
+        description: `Update a job expiration date by 30 days.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs/matcha/:id/stats/view-details": {
@@ -578,7 +597,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs"] as string[],
         operationId: "statsViewLbaJob",
-        description: "Notifies that the detail of a matcha job has been viewed",
+        description: `Notifies that the detail of a matcha job has been viewed\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
   },
@@ -621,7 +640,7 @@ export const zJobsRoutesV2 = {
       openapi: {
         tags: ["V2 - Jobs"] as string[],
         operationId: "updateJob",
-        description: "Update a job offer specific fields inside an establishment entity.",
+        description: `Update a job offer specific fields inside an establishment entity.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
   },

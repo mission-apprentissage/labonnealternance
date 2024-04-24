@@ -78,14 +78,14 @@ export const CronsMap = {
     cron_string: "15 0 * * *",
     handler: () => addJob({ name: "formulaire:annulation", payload: {} }),
   },
-  "Send offer reminder email at J+7": {
-    cron_string: "20 0 * * *",
-    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "7" } }),
-  },
-  "Send offer reminder email at J+1": {
-    cron_string: "25 0 * * *",
-    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
-  },
+  // "Send offer reminder email at J+7": {
+  //   cron_string: "20 0 * * *",
+  //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "7" } }),
+  // },
+  // "Send offer reminder email at J+1": {
+  //   cron_string: "25 0 * * *",
+  //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
+  // },
   "Send reminder to OPCO about awaiting validation users": {
     cron_string: "30 0 * * 1,3,5",
     handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
@@ -307,10 +307,14 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return inviteEtablissementParcoursupToPremium()
       case "etablissement:invite:premium:affelnet":
         return inviteEtablissementAffelnetToPremium()
-      case "etablissement:invite:premium:follow-up":
-        return inviteEtablissementParcoursupToPremiumFollowUp()
-      case "etablissement:invite:premium:affelnet:follow-up":
-        return inviteEtablissementAffelnetToPremiumFollowUp()
+      case "etablissement:invite:premium:follow-up": {
+        const { bypassDate } = job.payload
+        return inviteEtablissementParcoursupToPremiumFollowUp(bypassDate)
+      }
+      case "etablissement:invite:premium:affelnet:follow-up": {
+        const { bypassDate } = job.payload
+        return inviteEtablissementAffelnetToPremiumFollowUp(bypassDate)
+      }
       case "premium:activated:reminder":
         return premiumActivatedReminder()
       case "premium:invite:one-shot":

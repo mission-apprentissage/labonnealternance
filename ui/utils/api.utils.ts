@@ -111,6 +111,10 @@ export class ApiError extends Error {
     return this.context
   }
 
+  isNotFoundError(): boolean {
+    return this.context.statusCode === 404
+  }
+
   static async build(path: string, requestHeaders: Headers, options: WithQueryStringAndPathParam, res: Response): Promise<ApiError> {
     let message = res.status === 0 ? "Network Error" : res.statusText
     let name = "Api Error"
