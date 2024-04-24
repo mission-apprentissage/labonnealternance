@@ -43,7 +43,8 @@ const updateEntreprisesInfosInError = async () => {
         await Recruiter.updateMany({ establishment_siret: siret }, entrepriseData)
         const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
         const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: updatedEntreprise._id.toString() }).lean()
-        const users = await User2.find({ _id: { $in: roles.map((role) => role.user_id) } }).lean()
+        const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
+        const users = await User2.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
         await Promise.all(
           users.map(async (user) => {
             const userAndOrganization: UserAndOrganization = { user, type: ENTREPRISE, organization: updatedEntreprise }
@@ -54,7 +55,7 @@ const updateEntreprisesInfosInError = async () => {
                 throw Boom.internal(`inattendu : recruiter non trouvé`, { email: user.email, siret })
               }
               await activateEntrepriseRecruiterForTheFirstTime(recruiter)
-              const role = roles.find((role) => role.user_id.toString() === user._id.toString())
+              const role = rolesToUpdate.find((role) => role.user_id.toString() === user._id.toString())
               const status = getLastStatusEvent(role?.status)?.status
               if (!status) {
                 throw Boom.internal("inattendu : status du role non trouvé")
