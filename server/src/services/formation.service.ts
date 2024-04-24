@@ -125,17 +125,10 @@ const getFormations = async ({
 }
 
 /**
- * Retourne une formation provenant de la collection des formationsCatalogues
- * @param {string} id l'identifiant de la formation
- * @returns {Promise<IApiError | IFormationCatalogue[]>}
- */
-const getFormation = async ({ id }: { id: string }) => FormationCatalogue.findOne({ cle_ministere_educatif: id })
-
-/**
  * Retourne une formation du catalogue transformée en LbaItem
  */
 const getOneFormationFromId = async ({ id }: { id: string }): Promise<ILbaItemFormation[]> => {
-  const formation = await getFormation({ id })
+  const formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id })
   return formation ? [transformFormation(formation)] : []
 }
 
