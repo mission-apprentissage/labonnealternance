@@ -233,10 +233,10 @@ const migrationUserRecruteurs = async () => {
         let cfa = await Cfa.findOne({ siret: newCfa.siret }).lean()
         if (cfa) {
           if (dayjs(cfa.updatedAt).isBefore(updatedAt)) {
-            await Entreprise.findOneAndUpdate({ _id: cfa._id }, { $set: { updatedAt } }, { timestamps: false })
+            await Cfa.findOneAndUpdate({ _id: cfa._id }, { $set: { updatedAt } }, { timestamps: false })
           }
           if (dayjs(cfa.createdAt).isAfter(createdAt)) {
-            await Entreprise.findOneAndUpdate({ _id: cfa._id }, { $set: { createdAt } }, { timestamps: false })
+            await Cfa.findOneAndUpdate({ _id: cfa._id }, { $set: { createdAt } }, { timestamps: false })
           }
         } else {
           cfa = await createWithTimestamps(Cfa, newCfa)
