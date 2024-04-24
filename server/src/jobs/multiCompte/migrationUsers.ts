@@ -310,7 +310,7 @@ function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["st
       [ETAT_UTILISATEUR.DESACTIVE]: AccessStatus.DENIED,
       [ETAT_UTILISATEUR.VALIDE]: AccessStatus.GRANTED,
       [ETAT_UTILISATEUR.ATTENTE]: AccessStatus.AWAITING_VALIDATION,
-      [ETAT_UTILISATEUR.ERROR]: null,
+      [ETAT_UTILISATEUR.ERROR]: AccessStatus.AWAITING_VALIDATION,
     }
     const accessStatus = status ? statusMapping[status] : null
     if (accessStatus && date) {
