@@ -19,7 +19,7 @@ import { UserAndOrganization, deactivateEntreprise, setEntrepriseInError } from 
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await Entreprise.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, EntrepriseStatus.ERROR] },
+    $expr: { $in: [{ $arrayElemAt: ["$status.status", -1] }, [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]] },
   }).lean()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des entreprises en erreur: ${entreprises.length} entreprises à mettre à jour...`)
