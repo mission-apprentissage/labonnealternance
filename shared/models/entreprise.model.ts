@@ -11,6 +11,7 @@ export enum EntrepriseStatus {
   ERROR = "ERROR",
   VALIDE = "VALIDE",
   DESACTIVE = "DESACTIVE",
+  A_METTRE_A_JOUR = "A_METTRE_A_JOUR",
 }
 
 export const ZEntrepriseStatusEvent = z
