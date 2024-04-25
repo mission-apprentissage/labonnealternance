@@ -276,10 +276,11 @@ export default (server: Server) => {
       const user = await User2.findOne({ _id: userId }).lean()
       if (!user) throw Boom.badRequest()
 
-      const mainRole = await RoleManagement.findOne({ user_id: userId }).lean()
-      if (!mainRole) {
-        throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
+      const roles = await RoleManagement.find({ user_id: userId }).lean()
+      if (roles.length !== 1) {
+        throw Boom.internal(`inattendu : attendu 1 role, ${roles.length} roles trouvés pour user id=${userId}`)
       }
+      const [mainRole] = roles
       const updatedRole = await modifyPermissionToUser(
         {
           user_id: userId,
