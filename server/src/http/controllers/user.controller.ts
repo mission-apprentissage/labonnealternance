@@ -9,6 +9,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
+import { validateUser2Email } from "@/services/user2.service"
 
 import { Cfa, Entreprise, RoleManagement, User2 } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
@@ -32,7 +33,6 @@ import {
   sendWelcomeEmailToUserRecruteur,
   updateUser2Fields,
   userAndRoleAndOrganizationToUserRecruteur,
-  validateUserEmail,
 } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
@@ -353,7 +353,7 @@ export default (server: Server) => {
       }
 
       // validate user email addresse
-      await validateUserEmail(user._id)
+      await validateUser2Email(user._id.toString())
       await sendWelcomeEmailToUserRecruteur(user)
       return res.status(200).send({})
     }

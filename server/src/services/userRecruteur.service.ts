@@ -7,7 +7,7 @@ import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS, VALIDATION_UTILI
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
+import { IUser2, UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId, ObjectIdType } from "@/common/mongodb"
@@ -294,17 +294,6 @@ export const updateUser2Fields = async (userId: ObjectIdType, fields: Partial<IU
   }
   await Recruiter.updateMany({ "jobs.managed_by": userId.toString() }, { $set: removeUndefinedFields({ first_name, last_name, phone, email: newEmail }) })
   return newUser
-}
-
-export const validateUserEmail = async (userId: ObjectIdType) => {
-  const event: IUserStatusEvent = {
-    date: new Date(),
-    status: UserEventType.VALIDATION_EMAIL,
-    validation_type: VALIDATION_UTILISATEUR.MANUAL,
-    granted_by: userId.toString(),
-    reason: "user validated its email",
-  }
-  await User2.updateOne({ _id: userId }, { $push: { status: event } })
 }
 
 export const removeUser = async (id: IUser2["_id"] | string) => {
