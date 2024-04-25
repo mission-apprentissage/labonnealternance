@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import { CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
 import { ComputedUserAccess, IApplication, IJob, IRecruiter } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
@@ -340,6 +340,9 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
 
   if (userType === "ICredential") {
     const { organisation } = userWithType.value
+    if (organisation.toLowerCase() === ADMIN.toLowerCase()) {
+      return
+    }
     const opco = parseEnum(OPCOS, organisation)
     const userAccess: ComputedUserAccess = {
       admin: false,

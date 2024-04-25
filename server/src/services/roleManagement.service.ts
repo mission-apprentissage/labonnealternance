@@ -41,16 +41,21 @@ export const modifyPermissionToUser = async (
 }
 
 export const getGrantedRoles = async (userId: string) => {
-  return RoleManagement.find({ user_id: userId, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
+  const roles = await RoleManagement.find({ user_id: userId }).lean()
+  return roles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
 }
 
 // TODO à supprimer lorsque les utilisateurs pourront avoir plusieurs types
 export const getMainRoleManagement = async (userId: string | ObjectId, includeUserAwaitingValidation: boolean = false): Promise<IRoleManagement | null> => {
-  let roles = await getGrantedRoles(userId.toString())
+  const validStatus = [AccessStatus.GRANTED]
   if (includeUserAwaitingValidation) {
-    const awaitingRoles = await RoleManagement.find({ user_id: userId, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.AWAITING_VALIDATION] } }).lean()
-    roles = roles.concat(awaitingRoles)
+    validStatus.push(AccessStatus.AWAITING_VALIDATION)
   }
+  const allRoles = await RoleManagement.find({ user_id: userId }).lean()
+  const roles = allRoles.filter((role) => {
+    const status = getLastStatusEvent(role.status)?.status
+    return status ? validStatus.includes(status) : false
+  })
   const adminRole = roles.find((role) => role.authorized_type === AccessEntityType.ADMIN)
   if (adminRole) return adminRole
   const opcoRole = roles.find((role) => role.authorized_type === AccessEntityType.OPCO)

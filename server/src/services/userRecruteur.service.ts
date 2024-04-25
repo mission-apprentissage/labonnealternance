@@ -412,10 +412,10 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
 }
 
 export const getAdminUsers = async () => {
-  const grantedRoles = await RoleManagement.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] },
+  const allRoles = await RoleManagement.find({
     authorized_type: AccessEntityType.ADMIN,
   }).lean()
+  const grantedRoles = allRoles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
   const userIds = grantedRoles.map((role) => role.user_id.toString())
   const users = await User2.find({ _id: { $in: userIds } }).lean()
   return users
