@@ -26,7 +26,7 @@ import { getFtJobFromId } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../services/lbacompany.service"
 import { addOffreDetailView, getLbaJobById, incrementLbaJobsViewCount } from "../../services/lbajob.service"
-import { getFicheMetierRomeV3FromDB } from "../../services/rome.service"
+import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
 const config = {
@@ -134,11 +134,11 @@ export default (server: Server) => {
         return res.status(400).send({ error: true, message: "Establishment does not exist" })
       }
 
-      const romeDetails = await getFicheMetierRomeV3FromDB({
+      const romeDetails = await getFicheMetierFromDB({
         query: {
           "fiche_metier.appellations.code": body.appellation_code,
         },
-      }) //  fiche_metier.appellations[].code === body.appellation_code
+      })
 
       if (!romeDetails) {
         return res.send({ error: true, message: "ROME Code details could not be retrieved" })
@@ -149,7 +149,7 @@ export default (server: Server) => {
       const job: Partial<IJob> = {
         rome_label: romeDetails.fiche_metier.libelle,
         rome_appellation_label: appellation.libelle,
-        rome_code: [romeDetails.code],
+        rome_code: [romeDetails.rome_code],
         job_level_label: body.job_level_label,
         job_start_date: new Date(body.job_start_date),
         job_description: body.job_description,
@@ -158,7 +158,6 @@ export default (server: Server) => {
         job_expiration_date: addExpirationPeriod(dayjs()).toDate(),
         job_status: JOB_STATUS.ACTIVE,
         job_type: body.job_type,
-        rome_detail: romeDetails.fiche_metier,
         is_disabled_elligible: body.is_disabled_elligible,
         job_count: body.job_count,
         job_duration: body.job_duration,
