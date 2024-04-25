@@ -3,6 +3,7 @@ import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
 
 import { User2 } from "@/common/model"
+import { ObjectId } from "@/common/mongodb"
 
 import { isUserEmailChecked } from "./userRecruteur.service"
 
@@ -16,6 +17,8 @@ export const createUser2IfNotExist = async (
 
   let user = await User2.findOne({ email: formatedEmail }).lean()
   if (!user) {
+    const id = new ObjectId()
+    grantedBy = grantedBy || id.toString()
     const status: IUserStatusEvent[] = []
     if (is_email_checked) {
       status.push({
@@ -33,7 +36,8 @@ export const createUser2IfNotExist = async (
       validation_type: VALIDATION_UTILISATEUR.MANUAL,
       granted_by: grantedBy,
     })
-    const userFields: Omit<IUser2, "_id" | "createdAt" | "updatedAt"> = {
+    const userFields: Omit<IUser2, "createdAt" | "updatedAt"> = {
+      _id: id,
       email: formatedEmail,
       first_name,
       last_name,
