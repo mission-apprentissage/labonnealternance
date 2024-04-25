@@ -16,7 +16,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getEtablissement } from "./etablissement.service"
-import { getOffreAvecInfoMandataire } from "./formulaire.service"
+import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
@@ -27,7 +27,7 @@ const JOB_SEARCH_LIMIT = 250
 const coordinatesOfFrance = [2.213749, 46.227638]
 
 /**
- * @description get filtered jobs from mongo
+ * @description get filtered jobs with rome_detail from mongo
  * @param {Object} payload
  * @param {number} payload.distance
  * @param {string} payload.lat
@@ -36,7 +36,21 @@ const coordinatesOfFrance = [2.213749, 46.227638]
  * @param {string} payload.niveau
  * @returns {Promise<IRecruiter[]>}
  */
-export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance: number; lat: string; lon: string; romes: string[]; niveau: string }): Promise<IRecruiter[]> => {
+export const getJobs = async ({
+  distance,
+  lat,
+  lon,
+  romes,
+  niveau,
+  isMinimalData,
+}: {
+  distance: number
+  lat: string
+  lon: string
+  romes: string[]
+  niveau: string
+  isMinimalData: boolean
+}): Promise<IRecruiter[]> => {
   const clauses: any[] = [{ "jobs.job_status": JOB_STATUS.ACTIVE }, { "jobs.rome_code": { $in: romes } }, { status: RECRUITER_STATUS.ACTIF }]
 
   if (niveau && niveau !== "Indifférent") {
@@ -69,7 +83,7 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
     },
   })
 
-  const jobs: IRecruiter[] = await Recruiter.aggregate(stages)
+  const jobs: IRecruiter[] = await Recruiter.aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
 
   const filteredJobs = await Promise.all(
     jobs.map(async (x) => {
@@ -142,6 +156,7 @@ export const getLbaJobs = async ({
       distance,
       lat: hasLocation ? latitude : coordinatesOfFrance[1],
       lon: hasLocation ? longitude : coordinatesOfFrance[0],
+      isMinimalData,
     }
 
     if (diploma) {
@@ -154,18 +169,18 @@ export const getLbaJobs = async ({
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
-    const matchas = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
+    const lbaJobs = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
-      matchas.results = await filterJobsByOpco({ opco, opcoUrl, jobs: matchas.results })
+      lbaJobs.results = await filterJobsByOpco({ opco, opcoUrl, jobs: lbaJobs.results })
     }
 
-    if (!hasLocation && matchas.results) {
-      sortLbaJobs(matchas)
+    if (!hasLocation && lbaJobs.results) {
+      sortLbaJobs(lbaJobs)
     }
 
-    return matchas
+    return lbaJobs
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from Matcha (${api})` })
