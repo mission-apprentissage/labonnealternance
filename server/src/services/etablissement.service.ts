@@ -6,6 +6,7 @@ import type { FilterQuery } from "mongoose"
 import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, ZAdresseV3, ZCfaReferentielData } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUser2 } from "shared/models/user2.model"
@@ -39,6 +40,7 @@ import {
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
+import { modifyPermissionToUser } from "./roleManagement.service"
 import {
   UserAndOrganization,
   autoValidateUser as authorizeUserOnEntreprise,
@@ -561,23 +563,24 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
   }
 }
 
-export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOrganization) => {
-  const validated = await isCompanyValid(userAndEntreprise)
+export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOrganization, origin: string) => {
+  const { isValid: validated, validator } = await isCompanyValid(userAndEntreprise)
+  const reason = `validation auto : ${validator}`
   if (validated) {
-    await authorizeUserOnEntreprise(userAndEntreprise)
+    await authorizeUserOnEntreprise(userAndEntreprise, origin, reason)
   } else {
-    await setUserHasToBeManuallyValidated(userAndEntreprise)
+    await setUserHasToBeManuallyValidated(userAndEntreprise, origin, reason)
   }
   return { validated }
 }
 
-export const isCompanyValid = async (props: UserAndOrganization): Promise<boolean> => {
+export const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: boolean; validator: string }> => {
   const {
     organization: { siret },
     user: { email },
   } = props
   if (!siret) {
-    return false
+    return { isValid: false, validator: "siret manquant" }
   }
 
   const siren = siret.slice(0, 9)
@@ -600,10 +603,10 @@ export const isCompanyValid = async (props: UserAndOrganization): Promise<boolea
   // Check BAL API for validation
   const isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
   if (isValid) {
-    return true
+    return { isValid: true, validator: "bonnes boites ou referentiel opco" }
   } else {
     const balControl = await validationOrganisation(siret, email)
-    return balControl.is_valid
+    return { isValid: balControl.is_valid, validator: "BAL" }
   }
 }
 
@@ -760,6 +763,7 @@ export const entrepriseOnboardingWorkflow = {
       isUserValidated?: boolean
     } = {}
   ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUser2; validated: boolean }> => {
+    origin = origin ?? ""
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
@@ -804,10 +808,22 @@ export const entrepriseOnboardingWorkflow = {
     } else {
       await setEntrepriseValid(creationResult.organization._id)
       if (isUserValidated) {
-        await authorizeUserOnEntreprise(creationResult)
+        await modifyPermissionToUser(
+          {
+            user_id: creationResult.user._id,
+            authorized_id: creationResult.organization._id.toString(),
+            authorized_type: creationResult.type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
+            origin,
+          },
+          {
+            validation_type: VALIDATION_UTILISATEUR.AUTO,
+            status: AccessStatus.GRANTED,
+            reason: "création par clef API",
+          }
+        )
         validated = true
       } else {
-        const result = await autoValidateUserRoleOnCompany(creationResult)
+        const result = await autoValidateUserRoleOnCompany(creationResult, origin)
         validated = result.validated
       }
     }

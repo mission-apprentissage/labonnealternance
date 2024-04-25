@@ -173,6 +173,7 @@ export default (server: Server) => {
         }
         case CFA: {
           const { email, establishment_siret } = req.body
+          const origin = req.body.origin ?? "formulaire public de création"
           const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
           const userRecruteurOpt = await getUserRecruteurByEmail(formatedEmail)
@@ -184,7 +185,7 @@ export default (server: Server) => {
           const { contacts } = siretInfos
 
           // Creation de l'utilisateur en base de données
-          const creationResult = await createOrganizationUser({ ...req.body, ...siretInfos, is_email_checked: false })
+          const creationResult = await createOrganizationUser({ ...req.body, ...siretInfos, is_email_checked: false, origin })
           const userCfa = creationResult.user
 
           const slackNotification = {
@@ -193,13 +194,13 @@ export default (server: Server) => {
           }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            await setUserHasToBeManuallyValidated(creationResult)
+            await setUserHasToBeManuallyValidated(creationResult, origin, "pas d'email de contact")
             await notifyToSlack(slackNotification)
             return res.status(200).send({ user: userCfa })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
-            await autoValidateUser(creationResult)
+            await autoValidateUser(creationResult, origin, "l'email correspond à un contact")
             await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
             return res.status(200).send({ user: userCfa })
@@ -209,14 +210,14 @@ export default (server: Server) => {
             const userEmailDomain = getEmailDomain(formatedEmail)
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              await autoValidateUser(creationResult)
+              await autoValidateUser(creationResult, origin, "le nom de domaine de l'email correspond à celui d'un contact")
               await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
               return res.status(200).send({ user: userCfa })
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          await setUserHasToBeManuallyValidated(creationResult)
+          await setUserHasToBeManuallyValidated(creationResult, origin, "pas de validation automatique possible")
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
           return res.status(200).send({ user: userCfa })

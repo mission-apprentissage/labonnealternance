@@ -357,28 +357,28 @@ export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reas
   )
 }
 
-const setAccessOfUserOnOrganization = async ({ user, organization, type }: UserAndOrganization, status: AccessStatus) => {
+const setAccessOfUserOnOrganization = async ({ user, organization, type }: UserAndOrganization, status: AccessStatus, origin: string, reason: string) => {
   await modifyPermissionToUser(
     {
       user_id: user._id,
       authorized_id: organization._id.toString(),
       authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
-      origin: "",
+      origin,
     },
     {
       validation_type: VALIDATION_UTILISATEUR.AUTO,
       status,
-      reason: "",
+      reason,
     }
   )
 }
 
-export const autoValidateUser = async (props: UserAndOrganization) => {
-  await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED)
+export const autoValidateUser = async (props: UserAndOrganization, origin: string, reason: string) => {
+  await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED, origin, reason)
 }
 
-export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization) => {
-  await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION)
+export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, origin: string, reason: string) => {
+  await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION, origin, reason)
 }
 
 export const deactivateEntreprise = async (entrepriseId: IEntreprise["_id"], reason: string) => {

@@ -48,7 +48,7 @@ const updateEntreprisesInfosInError = async () => {
         await Promise.all(
           users.map(async (user) => {
             const userAndOrganization: UserAndOrganization = { user, type: ENTREPRISE, organization: updatedEntreprise }
-            const result = await autoValidateUserRoleOnCompany(userAndOrganization)
+            const result = await autoValidateUserRoleOnCompany(userAndOrganization, "reprise des entreprises en erreur")
             if (result.validated) {
               const recruiter = recruiters.find((recruiter) => recruiter.email === user.email && recruiter.establishment_siret === siret)
               if (!recruiter) {
