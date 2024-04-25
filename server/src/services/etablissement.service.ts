@@ -565,7 +565,7 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
 
 export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOrganization, origin: string) => {
   const { isValid: validated, validator } = await isCompanyValid(userAndEntreprise)
-  const reason = `validation auto : ${validator}`
+  const reason = `demande de validation à : ${validator}`
   if (validated) {
     await authorizeUserOnEntreprise(userAndEntreprise, origin, reason)
   } else {
