@@ -1,4 +1,5 @@
 import Boom from "boom"
+import pkg from "mongodb"
 import type { ObjectId as ObjectIdType } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWithRomeDetails, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
@@ -18,17 +19,55 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
+const { ObjectId } = pkg
+
 export interface IOffreExtended extends IJob {
   candidatures: number
   pourvue: string
   supprimer: string
 }
 
+// étape d'aggragation mongo permettant de récupérer le rome_detail correspondant dans chaque job d'un recruiter
+export const romeDetailAggregateStages = [
+  {
+    $unwind: { path: "$jobs" },
+  },
+  {
+    $lookup: {
+      from: "referentielromes",
+      localField: "jobs.rome_code.0",
+      foreignField: "rome_code",
+      as: "referentielrome",
+    },
+  },
+  {
+    $unwind: { path: "$referentielrome" },
+  },
+  {
+    $set: { "jobs.rome_detail": "$referentielrome.fiche_metier" },
+  },
+  {
+    $group: {
+      _id: "$_id",
+      recruiters: {
+        $first: "$$ROOT",
+      },
+      jobs: { $push: "$jobs" },
+    },
+  },
+  {
+    $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
+  },
+  {
+    $project: { referentielrome: 0 },
+  },
+]
+
 /**
  * @description get formulaire by offer id
  */
 export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
-  const recruiterOpt = await getOffre(id)
+  const recruiterOpt = await getOffreWithRomeDetail(id)
   if (!recruiterOpt) {
     return null
   }
@@ -221,38 +260,7 @@ export const getFormulaireWithRomeDetail = async (query: FilterQuery<IRecruiter>
     {
       $match: query,
     },
-    {
-      $unwind: { path: "$jobs" },
-    },
-    {
-      $lookup: {
-        from: "referentielromes",
-        localField: "jobs.rome_code.0",
-        foreignField: "rome_code",
-        as: "referentielrome",
-      },
-    },
-    {
-      $unwind: { path: "$referentielrome" },
-    },
-    {
-      $set: { "jobs.rome_detail": "$referentielrome.fiche_metier" },
-    },
-    {
-      $group: {
-        _id: "$_id",
-        recruiters: {
-          $first: "$$ROOT",
-        },
-        jobs: { $push: "$jobs" },
-      },
-    },
-    {
-      $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
-    },
-    {
-      $project: { referentielrome: 0 },
-    },
+    ...romeDetailAggregateStages,
   ])
 
   return recruiter.length ? recruiter[0] : null
@@ -359,6 +367,19 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  */
 export async function getOffre(id: string | ObjectIdType) {
   return Recruiter.findOne({ "jobs._id": id }).lean()
+}
+
+export async function getOffreWithRomeDetail(id: string | ObjectIdType) {
+  console.log("id", id)
+
+  const recruiter: IRecruiter[] = await Recruiter.aggregate([
+    {
+      $match: { "jobs._id": new ObjectId(id) },
+    },
+    ...romeDetailAggregateStages,
+  ])
+
+  return recruiter.length ? recruiter[0] : null
 }
 
 /**
