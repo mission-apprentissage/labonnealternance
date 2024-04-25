@@ -17,22 +17,22 @@ interface Identifiant {
 }
 
 interface Intitule {
-  cfd: Cfd
+  cfd: IntituleCfd
   niveau: Niveau
   rncp: string
 }
 
-interface Cfd {
+interface IntituleCfd {
   long: string
   court: string
 }
 
 interface Niveau {
-  cfd: Cfd2
+  cfd: NiveauCfd
   rncp: Rncp
 }
 
-interface Cfd2 {
+interface NiveauCfd {
   europeen: string
   formation_diplome: string
   interministeriel: string
@@ -45,28 +45,28 @@ interface Rncp {
 }
 
 interface BaseLegale {
-  cfd: Cfd3
+  cfd: BaseLegaleCfd
 }
 
-interface Cfd3 {
+interface BaseLegaleCfd {
   creation: string
   abrogation: string
 }
 
 interface BlocsCompetences {
-  rncp: Rncp2[]
+  rncp: BlocCompetencesRncp[]
 }
 
-interface Rncp2 {
+interface BlocCompetencesRncp {
   code: string
   intitule: string
 }
 
 interface ConventionCollectives {
-  rncp: Rncp3[]
+  rncp: ConventionCollectivesRncp[]
 }
 
-interface Rncp3 {
+interface ConventionCollectivesRncp {
   numero: string
   intitule: string
 }
@@ -78,34 +78,34 @@ interface Domaines {
 }
 
 interface Formacodes {
-  rncp: Rncp4[]
+  rncp: FormacodesRncp[]
 }
 
-interface Rncp4 {
+interface FormacodesRncp {
   code: string
   intitule: string
 }
 
 interface Nsf {
-  cfd: Cfd4
-  rncp: Rncp5[]
+  cfd: NsfCfd
+  rncp: NsfRncp[]
 }
 
-interface Cfd4 {
+interface NsfCfd {
   code: string
   intitule: string
 }
 
-interface Rncp5 {
+interface NsfRncp {
   code: string
   intitule: string
 }
 
 interface Rome {
-  rncp: Rncp6[]
+  rncp: RomeRncp[]
 }
 
-interface Rncp6 {
+interface RomeRncp {
   code: string
   intitule: string
 }
@@ -113,18 +113,18 @@ interface Rncp6 {
 interface PeriodeValidite {
   debut: string
   fin: string
-  cfd: Cfd5
-  rncp: Rncp7
+  cfd: PeriodeValiditeCfd
+  rncp: PeriodeValiditeRncp
 }
 
-interface Cfd5 {
+interface PeriodeValiditeCfd {
   ouverture: string
   fermeture: string
   premiere_session: number
   derniere_session: number
 }
 
-interface Rncp7 {
+interface PeriodeValiditeRncp {
   actif: boolean
   activation: string
   debut_parcours: string
@@ -140,19 +140,19 @@ interface Type {
 }
 
 interface Nature {
-  cfd: Cfd6
+  cfd: NatureCfd
 }
 
-interface Cfd6 {
+interface NatureCfd {
   code: string
   libelle: string
 }
 
 interface VoieAcces {
-  rncp: Rncp8
+  rncp: VoieAccesRncp
 }
 
-interface Rncp8 {
+interface VoieAccesRncp {
   apprentissage: boolean
   experience: boolean
   candidature_individuelle: boolean
@@ -167,18 +167,18 @@ interface CertificateursRncp {
 }
 
 interface Continuite {
-  cfd: Cfd7[]
-  rncp: Rncp9[]
+  cfd: ContinuiteCfd[]
+  rncp: ContinuiteRncp[]
 }
 
-interface Cfd7 {
+interface ContinuiteCfd {
   ouverture: string
   fermeture: string
   code: string
   courant: boolean
 }
 
-interface Rncp9 {
+interface ContinuiteRncp {
   activation: string
   fin_enregistrement: string
   code: string
