@@ -3,11 +3,11 @@ import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } 
 import React from "react"
 
 const LbaJobAcces = ({ job }) => {
-  const acces = job?.job?.romeDetails?.acces ?? null
+  const accesEmploi = job?.job?.romeDetails?.accesEmploi ?? null
 
-  if (!acces) return ""
+  if (!accesEmploi) return ""
 
-  const accesFormatted = acces.split("\\n").join("<br><br>")
+  const accesFormatted = accesEmploi.split("\\n").join("<br><br>")
 
   return (
     <Accordion allowToggle>

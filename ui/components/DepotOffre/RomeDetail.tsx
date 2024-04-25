@@ -2,9 +2,9 @@ import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, H
 
 import { InfoCircle, Minus, Plus } from "@/theme/components/icons"
 
-export const RomeDetail = ({ definition, competencesDeBase, libelle, appellation, acces }) => {
+export const RomeDetail = ({ definition, competencesMobiliseesPrincipales, libelle, appellation, accesEmploi }) => {
   const definitionSplitted = definition.split("\\n")
-  const accesFormatted = acces.split("\\n").join("<br><br>")
+  const accesFormatted = accesEmploi.split("\\n").join("<br><br>")
 
   return (
     <Box border="1px solid #000091" p={5} mb={5}>
@@ -62,7 +62,7 @@ export const RomeDetail = ({ definition, competencesDeBase, libelle, appellation
               </h2>
               <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
                 <ul className="voeuxUl">
-                  {competencesDeBase.map((x) => (
+                  {competencesMobiliseesPrincipales.map((x) => (
                     <li className="voeuxUlLi" key={x.libelle}>
                       {x.libelle}
                     </li>
