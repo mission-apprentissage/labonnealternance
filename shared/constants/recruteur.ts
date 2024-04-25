@@ -30,6 +30,7 @@ export enum ETAT_UTILISATEUR {
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
 export const ADMIN = "ADMIN"
+export const OPCO = "OPCO"
 
 export const AUTHTYPE = {
   OPCO: "OPCO",

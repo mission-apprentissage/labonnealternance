@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { IRecruiter, ZGlobalAddress, getLastStatusEvent, parseEnumOrError } from "shared"
+import { getLastStatusEvent, IRecruiter, parseEnumOrError, ZGlobalAddress } from "shared"
 import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
 import { ICFA } from "shared/models/cfa.model.js"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model.js"

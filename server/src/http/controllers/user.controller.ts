@@ -1,28 +1,38 @@
 import Boom from "boom"
-import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { IJob, getUserStatus, zRoutes } from "shared/index"
+import { CFA, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { IJob, IRecruiter, getUserStatus, zRoutes } from "shared/index"
+import { ICFA } from "shared/models/cfa.model"
+import { IEntreprise } from "shared/models/entreprise.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
 
-import { Recruiter, UserRecruteur } from "../../common/model/index"
+import { Cfa, Entreprise, RoleManagement, User2 } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
-import { activateEntrepriseRecruiterForTheFirstTime, deleteFormulaire, getFormulaire, reactivateRecruiter } from "../../services/formulaire.service"
-import mailer, { sanitizeForEmail } from "../../services/mailer.service"
-import { getUserAndRecruitersDataForOpcoUser, getValidatorIdentityFromStatus } from "../../services/user.service"
 import {
-  createUser,
-  getActiveUsers,
+  activateEntrepriseRecruiterForTheFirstTime,
+  deleteFormulaire,
+  getFormulaireFromUserId,
+  getFormulaireFromUserIdOrError,
+  reactivateRecruiter,
+} from "../../services/formulaire.service"
+import mailer, { sanitizeForEmail } from "../../services/mailer.service"
+import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "../../services/user.service"
+import {
+  createAdminUser,
   getAdminUsers,
-  getAwaitingUsers,
-  getDisabledUsers,
-  getErrorUsers,
+  getUserRecruteurById,
+  getUsersForAdmin,
   removeUser,
   sendWelcomeEmailToUserRecruteur,
-  updateUser,
-  updateUserValidationHistory,
+  updateUser2Fields,
+  userAndRoleAndOrganizationToUserRecruteur,
+  validateUserEmail,
 } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
@@ -46,9 +56,8 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user"])],
     },
     async (req, res) => {
-      // TODO KEVIN: ADD PAGINATION
-      const [awaiting, active, disabled, error] = await Promise.all([getAwaitingUsers(), getActiveUsers(), getDisabledUsers(), getErrorUsers()])
-      return res.status(200).send({ awaiting, active, disabled, error })
+      const groupedUsers = await getUsersForAdmin()
+      return res.status(200).send(groupedUsers)
     }
   )
   server.get(
@@ -71,24 +80,10 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const userRecruteur = await UserRecruteur.findOne({ _id: userId }).lean()
-      let jobs: IJob[] = []
-
-      if (!userRecruteur) throw Boom.notFound(`user with id=${userId} not found`)
-
-      const { establishment_id } = userRecruteur
-      if (userRecruteur.type === ENTREPRISE) {
-        if (!establishment_id) {
-          throw Boom.internal("Unexpected: no establishment_id in userRecruteur of type ENTREPRISE", { userId: userRecruteur._id })
-        }
-        const recruiterOpt = await Recruiter.findOne({ establishment_id }).select({ jobs: 1, _id: 0 }).lean()
-        if (!recruiterOpt) {
-          throw Boom.internal("Get establishement from user failed to fetch", { userId: userRecruteur._id })
-        }
-        jobs = recruiterOpt.jobs
-      }
-
-      return res.status(200).send({ ...userRecruteur, jobs })
+      const user = await User2.findById(userId).lean()
+      if (!user) throw Boom.notFound(`user with id=${userId} not found`)
+      const role = await RoleManagement.findOne({ user_id: userId, authorized_type: AccessEntityType.ADMIN }).lean()
+      return res.status(200).send({ ...user, role: role ?? undefined })
     }
   )
 
@@ -99,41 +94,31 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/admin/users"])],
     },
     async (req, res) => {
-      const user = await createUser({
-        ...req.body,
-        is_email_checked: true,
-        status: [
-          {
-            status: ETAT_UTILISATEUR.ATTENTE,
-            validation_type: VALIDATION_UTILISATEUR.MANUAL,
-            user: getUserFromRequest(req, zRoutes.post["/admin/users"]).value._id.toString(),
-          },
-        ],
-      })
-      return res.status(200).send(user)
+      const { origin, ...userFields } = req.body
+      const user = await createAdminUser(userFields, "création par l'interface admin", origin ?? "")
+      return res.status(200).send({ _id: user._id })
     }
   )
 
   server.put(
-    "/admin/users/:userId",
+    "/admin/users/:userId/organization/:siret",
     {
-      schema: zRoutes.put["/admin/users/:userId"],
-      onRequest: [server.auth(zRoutes.put["/admin/users/:userId"])],
+      schema: zRoutes.put["/admin/users/:userId/organization/:siret"],
+      onRequest: [server.auth(zRoutes.put["/admin/users/:userId/organization/:siret"])],
     },
     async (req, res) => {
-      const { email, ...userPayload } = req.body
-      const { userId } = req.params
-      const formattedEmail = email?.toLocaleLowerCase()
-
-      const exist = await UserRecruteur.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
-
-      if (exist) {
+      const { userId, siret } = req.params
+      const { opco, ...userFields } = req.body
+      const result = await updateUser2Fields(userId, userFields)
+      if ("error" in result) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
-
-      const update = { email: formattedEmail, ...userPayload }
-
-      await updateUser({ _id: userId }, update)
+      if (opco) {
+        const entreprise = await Entreprise.findOneAndUpdate({ siret }, { opco }).lean()
+        if (!entreprise) {
+          throw Boom.badRequest(`pas d'entreprise ayant le siret ${siret}`)
+        }
+      }
       return res.status(200).send({ ok: true })
     }
   )
@@ -159,37 +144,64 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/user/:userId",
+    "/user/:userId/organization/:organizationId",
     {
-      schema: zRoutes.get["/user/:userId"],
-      onRequest: [server.auth(zRoutes.get["/user/:userId"])],
+      schema: zRoutes.get["/user/:userId/organization/:organizationId"],
+      onRequest: [server.auth(zRoutes.get["/user/:userId/organization/:organizationId"])],
     },
     async (req, res) => {
-      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
-      const loggedUser = getUserFromRequest(req, zRoutes.get["/user/:userId"]).value
+      const requestUser = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
+      if (!requestUser) throw Boom.badRequest()
+      const { userId } = req.params
+      const role = await RoleManagement.findOne({
+        user_id: userId,
+        // TODO à activer lorsque le frontend passe organizationId correctement
+        // authorized_id: organizationId,
+      }).lean()
+      if (!role) {
+        throw Boom.badRequest("role not found")
+      }
+      const user = await User2.findOne({ _id: userId }).lean()
+      if (!user) {
+        throw Boom.badRequest("user not found")
+      }
+      const type = roleToUserType(role)
+      if (!type) {
+        throw Boom.internal("user type not found")
+      }
+      let organization: ICFA | IEntreprise | null = null
+      if (type === CFA || type === ENTREPRISE) {
+        organization = await (type === CFA ? Cfa : Entreprise).findOne({ _id: role.authorized_id }).lean()
+        if (!organization) {
+          throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
+        }
+      }
 
       let jobs: IJob[] = []
+      let formulaire: IRecruiter | null = null
 
-      if (!user) throw Boom.badRequest()
-
-      if (user.type === ENTREPRISE) {
-        const response = await Recruiter.findOne({ establishment_id: user.establishment_id as string })
-          .select({ jobs: 1, _id: 0 })
-          .lean()
-        if (!response) {
-          throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
-        }
-        jobs = response.jobs
+      if (type === ENTREPRISE) {
+        formulaire = await getFormulaireFromUserId(userId)
+        jobs = formulaire?.jobs ?? []
       }
 
-      // remove status data if not authorized to see it, else get identity
-      if ([ENTREPRISE, CFA].includes(loggedUser.type)) {
-        user.status = []
-      } else {
-        user.status = await getValidatorIdentityFromStatus(user.status)
-      }
+      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
 
-      return res.status(200).send({ ...user, jobs })
+      const opcoOrAdminRole = await RoleManagement.findOne({
+        user_id: requestUser._id,
+        authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] },
+      }).lean()
+      if (opcoOrAdminRole && getLastStatusEvent(opcoOrAdminRole.status)?.status === AccessStatus.GRANTED) {
+        const userIds = userRecruteur.status.flatMap(({ user }) => (user ? [user] : []))
+        const users = await getUsersFromIds(userIds)
+        userRecruteur.status.forEach((event) => {
+          const user = users.find((user) => user._id.toString() === event.user)
+          if (!user) return
+          event.user = `${user.first_name} ${user.last_name}`
+        })
+      }
+      return res.status(200).send({ ...userRecruteur, jobs })
     }
   )
 
@@ -200,7 +212,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user/status/:userId"])],
     },
     async (req, res) => {
-      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      const user = await getUserRecruteurById(req.params.userId)
 
       if (!user) throw Boom.notFound("User not found")
       const status_current = getUserStatus(user.status)
@@ -217,7 +229,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user/status/:userId/by-token"])],
     },
     async (req, res) => {
-      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      const user = await getUserRecruteurById(req.params.userId)
 
       if (!user) throw Boom.notFound("User not found")
       const status_current = getUserStatus(user.status)
@@ -234,41 +246,61 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/user/:userId"])],
     },
     async (req, res) => {
-      const { email, ...userPayload } = req.body
       const { userId } = req.params
-
-      const formattedEmail = email?.toLocaleLowerCase()
-
-      const exist = await UserRecruteur.findOne({ email: formattedEmail, _id: { $ne: userId } }).lean()
-
-      if (exist) {
+      const result = await updateUser2Fields(userId, req.body)
+      if ("error" in result) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
-
-      const update = { email: formattedEmail, ...userPayload }
-
-      const user = await updateUser({ _id: userId }, update)
+      const user = await getUserRecruteurById(userId)
       return res.status(200).send(user)
     }
   )
 
   server.put(
-    "/user/:userId/history",
+    "/user/:userId/organization/:organizationId/permission",
     {
-      schema: zRoutes.put["/user/:userId/history"],
-      onRequest: [server.auth(zRoutes.put["/user/:userId/history"])],
+      schema: zRoutes.put["/user/:userId/organization/:organizationId/permission"],
+      onRequest: [server.auth(zRoutes.put["/user/:userId/organization/:organizationId/permission"])],
     },
     async (req, res) => {
-      const history = req.body
-      const validator = getUserFromRequest(req, zRoutes.put["/user/:userId/history"]).value
-      const user = await updateUserValidationHistory(req.params.userId, { ...history, user: validator._id.toString() })
-
+      const { reason, status, organizationType } = req.body
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { userId, organizationId } = req.params
+      const requestUser = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
+      if (!requestUser) throw Boom.badRequest()
+      const user = await User2.findOne({ _id: userId }).lean()
       if (!user) throw Boom.badRequest()
+
+      const mainRole = await RoleManagement.findOne({ user_id: userId }).lean()
+      if (!mainRole) {
+        throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
+      }
+      const updatedRole = await modifyPermissionToUser(
+        {
+          user_id: userId,
+          authorized_id: mainRole.authorized_id,
+          // WARNING : ce code est temporaire tant qu'on sait qu'un user n'a qu'au plus 1 role
+          // authorized_id: organizationId.toString(),
+          authorized_type: mainRole.authorized_type,
+          // authorized_type: organizationType,
+          origin: "action admin ou opco",
+        },
+        {
+          validation_type: VALIDATION_UTILISATEUR.MANUAL,
+          reason,
+          status,
+          granted_by: requestUser._id.toString(),
+        }
+      )
 
       const { email, last_name, first_name } = user
 
+      const newEvent = getLastStatusEvent(updatedRole.status)
+      if (!newEvent) {
+        throw Boom.internal("inattendu : aucun event sauvegardé")
+      }
       // if user is disabled, return the user data directly
-      if (history.status === ETAT_UTILISATEUR.DESACTIVE) {
+      if (newEvent.status === AccessStatus.DENIED) {
         // send email to user to notify him his account has been disabled
         await mailer.sendEmail({
           to: email,
@@ -281,38 +313,33 @@ export default (server: Server) => {
             },
             last_name: sanitizeForEmail(last_name),
             first_name: sanitizeForEmail(first_name),
-            reason: sanitizeForEmail(history.reason),
+            reason: sanitizeForEmail(newEvent.reason),
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
-        return res.status(200).send(user)
+        return res.status(200).send({})
       }
 
       /**
        * 20230831 kevin todo: share reason between front and back with shared folder
        */
-      // if user isn't part of the OPCO, just send the user straigth back
-      if (history.reason === "Ne relève pas des champs de compétences de mon OPCO") {
-        return res.status(200).send(user)
+      // if user isn't part of the OPCO, just send the user straight back
+      if (newEvent.reason === "Ne relève pas des champs de compétences de mon OPCO") {
+        return res.status(200).send({})
       }
 
-      if (user.type === ENTREPRISE) {
-        const { establishment_id } = user
-        if (!establishment_id) {
-          throw Boom.internal("unexpected: no establishment_id on userRecruteur of type ENTREPRISE", { userId: user._id })
-        }
+      if (organizationType === AccessEntityType.ENTREPRISE) {
         /**
          * if entreprise type of user is validated :
          * - activate offer
          * - update expiration date to one month later
          * - send email to delegation if available
          */
-        const userFormulaire = await getFormulaire({ establishment_id })
-
+        const userFormulaire = await getFormulaireFromUserIdOrError(user._id.toString())
         if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
           // le recruiter étant archivé on se contente de le rendre de nouveau Actif
-          await reactivateRecruiter(establishment_id)
-        } else {
+          await reactivateRecruiter(userFormulaire._id)
+        } else if (userFormulaire.status === RECRUITER_STATUS.ACTIF) {
           // le compte se trouve validé, on procède à l'activation de la première offre et à la notification aux CFAs
           if (userFormulaire?.jobs?.length) {
             await activateEntrepriseRecruiterForTheFirstTime(userFormulaire)
@@ -321,9 +348,9 @@ export default (server: Server) => {
       }
 
       // validate user email addresse
-      await updateUser({ _id: user._id }, { is_email_checked: true })
+      await validateUserEmail(user._id)
       await sendWelcomeEmailToUserRecruteur(user)
-      return res.status(200).send(user)
+      return res.status(200).send({})
     }
   )
 
