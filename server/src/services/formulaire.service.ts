@@ -99,7 +99,6 @@ export const createJob = async ({ job, establishment_id }: { job: IJobWritable; 
   const { job_start_date = creationDate } = job
   const updatedJob: Partial<IJob> = Object.assign(job, {
     job_start_date,
-    rome_detail: romeData.fiche_metier,
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
