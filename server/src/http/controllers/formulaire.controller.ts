@@ -123,6 +123,7 @@ export default (server: Server) => {
         origin: userRecruteurOpt.scope,
         opco,
         idcc,
+        managedBy: userRecruteurOpt._id.toString(),
       })
       if ("error" in response) {
         const { message } = response

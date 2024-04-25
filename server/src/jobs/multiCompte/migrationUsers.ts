@@ -48,6 +48,7 @@ const migrationRecruiters = async () => {
           throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_id=${establishment_id}`)
         }
       }
+      await Recruiter.findOneAndUpdate({ _id: recruiter._id }, { managed_by: userRecruiter._id })
       await Promise.all(
         jobs.map(async (job) => {
           await Recruiter.findOneAndUpdate(
