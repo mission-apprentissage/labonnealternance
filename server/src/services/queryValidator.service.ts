@@ -26,19 +26,19 @@ const getFirstCertificationFromAPIApprentissage = async (rncp: string): Promise<
 }
 
 const getRomesFromRncp = async (rncp: string): Promise<string | null> => {
-  let certifications = await getFirstCertificationFromAPIApprentissage(rncp)
-  if (!certifications) return null
+  let certification = await getFirstCertificationFromAPIApprentissage(rncp)
+  if (!certification) return null
 
-  if (certifications.periode_validite.rncp.actif) {
-    return certifications.domaines.rome.rncp.map((x) => x.code).join(",")
+  if (certification.periode_validite.rncp.actif) {
+    return certification.domaines.rome.rncp.map((x) => x.code).join(",")
   } else {
-    const latestRNCP = certifications.continuite.rncp.find((rncp) => rncp.courant === true)
+    const latestRNCP = certification.continuite.rncp.find((rncp) => rncp.courant === true)
     if (!latestRNCP) {
       throw Boom.internal(`le code RNCP ${rncp} n'a aucune continuité`)
     }
-    certifications = await getFirstCertificationFromAPIApprentissage(latestRNCP.code)
-    if (!certifications) return null
-    return certifications.domaines.rome.rncp.map((x) => x.code).join(",")
+    certification = await getFirstCertificationFromAPIApprentissage(latestRNCP.code)
+    if (!certification) return null
+    return certification.domaines.rome.rncp.map((x) => x.code).join(",")
   }
 }
 
