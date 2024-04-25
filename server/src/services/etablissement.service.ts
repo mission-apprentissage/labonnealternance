@@ -787,20 +787,21 @@ export const entrepriseOnboardingWorkflow = {
     }
     const contactInfos = { first_name, last_name, phone, opco, idcc, origin }
     const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
-    const formulaireInfo = await createFormulaire({
-      ...savedData,
-      status: RECRUITER_STATUS.ACTIF,
-      jobs: [],
-      cfa_delegated_siret,
-    })
-    const formulaireId = formulaireInfo.establishment_id
     const creationResult = await createOrganizationUser({
       ...savedData,
-      establishment_id: formulaireId,
       type: ENTREPRISE,
       is_email_checked: false,
       is_qualiopi: false,
     })
+    const formulaireInfo = await createFormulaire(
+      {
+        ...savedData,
+        status: RECRUITER_STATUS.ACTIF,
+        jobs: [],
+        cfa_delegated_siret,
+      },
+      creationResult.user._id.toString()
+    )
 
     let validated = false
     if (hasSiretError) {
@@ -840,6 +841,7 @@ export const entrepriseOnboardingWorkflow = {
     origin,
     opco,
     idcc,
+    managedBy,
   }: {
     siret: string
     last_name: string
@@ -850,6 +852,7 @@ export const entrepriseOnboardingWorkflow = {
     origin?: string | null
     opco?: string
     idcc?: string | null
+    managedBy: string
   }) => {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
@@ -870,16 +873,19 @@ export const entrepriseOnboardingWorkflow = {
     }
     const contactInfos = { first_name, last_name, phone, origin }
     const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
-    const formulaireInfo = await createFormulaire({
-      ...savedData,
-      status: siretCallInError ? RECRUITER_STATUS.EN_ATTENTE_VALIDATION : RECRUITER_STATUS.ACTIF,
-      jobs: [],
-      cfa_delegated_siret,
-      is_delegated: true,
-      origin,
-      opco,
-      idcc,
-    })
+    const formulaireInfo = await createFormulaire(
+      {
+        ...savedData,
+        status: siretCallInError ? RECRUITER_STATUS.EN_ATTENTE_VALIDATION : RECRUITER_STATUS.ACTIF,
+        jobs: [],
+        cfa_delegated_siret,
+        is_delegated: true,
+        origin,
+        opco,
+        idcc,
+      },
+      managedBy
+    )
     return formulaireInfo
   },
 }
