@@ -84,7 +84,7 @@ async function authApiKey(req: FastifyRequest): Promise<UserWithType<"ICredentia
     return null
   }
 
-  const user = await Credential.findOne({ api_key: token }).lean()
+  const user = await Credential.findOne({ api_key: token, actif: true }).lean()
 
   return user ? { type: "ICredential", value: user } : null
 }
