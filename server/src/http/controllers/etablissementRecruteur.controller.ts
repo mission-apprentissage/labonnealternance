@@ -11,13 +11,6 @@ import config from "@/config"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateDepotSimplifieToken } from "@/services/appLinks.service"
-import { getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
-
-import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
-import { CFA, ENTREPRISE } from "../../services/constant.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
@@ -26,7 +19,9 @@ import {
   getOrganismeDeFormationDataFromSiret,
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
-} from "../../services/etablissement.service"
+} from "@/services/etablissement.service"
+import { getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
 import {
   autoValidateUser,
   createOrganizationUser,
@@ -36,7 +31,12 @@ import {
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
   updateUser2Fields,
-} from "../../services/userRecruteur.service"
+} from "@/services/userRecruteur.service"
+
+import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
+import { CFA, ENTREPRISE } from "../../services/constant.service"
 import { Server } from "../server"
 
 export default (server: Server) => {

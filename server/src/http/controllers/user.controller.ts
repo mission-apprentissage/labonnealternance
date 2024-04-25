@@ -95,7 +95,12 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { origin, ...userFields } = req.body
-      const user = await createAdminUser(userFields, "création par l'interface admin", origin ?? "")
+      const userFromRequest = getUserFromRequest(req, zRoutes.post["/admin/users"]).value
+      const user = await createAdminUser(userFields, {
+        origin: origin ?? "",
+        reason: "création par l'interface admin",
+        grantedBy: userFromRequest._id.toString(),
+      })
       return res.status(200).send({ _id: user._id })
     }
   )
@@ -271,10 +276,11 @@ export default (server: Server) => {
       const user = await User2.findOne({ _id: userId }).lean()
       if (!user) throw Boom.badRequest()
 
-      const mainRole = await RoleManagement.findOne({ user_id: userId }).lean()
-      if (!mainRole) {
-        throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
+      const roles = await RoleManagement.find({ user_id: userId }).lean()
+      if (roles.length !== 1) {
+        throw Boom.internal(`inattendu : attendu 1 role, ${roles.length} roles trouvés pour user id=${userId}`)
       }
+      const [mainRole] = roles
       const updatedRole = await modifyPermissionToUser(
         {
           user_id: userId,
