@@ -90,7 +90,6 @@ export const jobFactory = (props: Partial<IJob> = {}) => {
     job_description: "job_description",
     job_employer_description: "job_employer_description",
     rome_code: ["rome_code"],
-    rome_detail: null,
     job_creation_date: new Date(),
     job_expiration_date: new Date(),
     job_update_date: new Date(),
