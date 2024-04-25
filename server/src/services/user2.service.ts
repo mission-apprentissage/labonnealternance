@@ -4,6 +4,8 @@ import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.mod
 
 import { User2 } from "@/common/model"
 
+import { isUserEmailChecked } from "./userRecruteur.service"
+
 export const createUser2IfNotExist = async (userProps: Omit<IUser2, "_id" | "createdAt" | "updatedAt" | "status">, is_email_checked: boolean): Promise<IUser2> => {
   const { first_name, last_name, last_action_date, origin, phone } = userProps
   const formatedEmail = userProps.email.toLocaleLowerCase()
@@ -14,14 +16,14 @@ export const createUser2IfNotExist = async (userProps: Omit<IUser2, "_id" | "cre
     if (is_email_checked) {
       status.push({
         date: new Date(),
-        reason: "creation",
+        reason: "validation de l'email à la création",
         status: UserEventType.VALIDATION_EMAIL,
         validation_type: VALIDATION_UTILISATEUR.MANUAL,
       })
     }
     status.push({
       date: new Date(),
-      reason: "creation",
+      reason: "creation de l'utilisateur",
       status: UserEventType.ACTIF,
       validation_type: VALIDATION_UTILISATEUR.MANUAL,
     })
@@ -40,12 +42,19 @@ export const createUser2IfNotExist = async (userProps: Omit<IUser2, "_id" | "cre
 }
 
 export const validateUser2Email = async (id: string): Promise<IUser2> => {
+  const userOpt = await User2.findOne({ _id: id }).lean()
+  if (!userOpt) {
+    throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
+  }
+  if (isUserEmailChecked(userOpt)) {
+    return userOpt
+  }
   const event: IUserStatusEvent = {
     date: new Date(),
     status: UserEventType.VALIDATION_EMAIL,
     validation_type: VALIDATION_UTILISATEUR.MANUAL,
     granted_by: id,
-    reason: "auto-validation",
+    reason: "validation de l'email par l'utilisateur",
   }
   const newUser = await User2.findOneAndUpdate({ _id: id }, { $push: { status: event } }, { new: true }).lean()
   if (!newUser) {
