@@ -109,7 +109,7 @@
 
     - name: Add cron to renew pole-emploi cert
       ansible.builtin.cron:
-        name: "renew-certificate"
+        name: "renew-certificate-pe"
         minute: "0"
         hour: "2"
         weekday: "1"
