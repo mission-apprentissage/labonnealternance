@@ -32,7 +32,7 @@ const getRomesFromRncp = async (rncp: string): Promise<string | null> => {
   if (certification.periode_validite.rncp.actif) {
     return certification.domaines.rome.rncp.map((x) => x.code).join(",")
   } else {
-    const latestRNCP = certification.continuite.rncp.find((rncp) => rncp.courant === true)
+    const latestRNCP = certification.continuite.rncp.find((rncp) => rncp.actif === true)
     if (!latestRNCP) {
       throw Boom.internal(`le code RNCP ${rncp} n'a aucune continuité`)
     }

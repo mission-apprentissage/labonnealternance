@@ -183,4 +183,5 @@ interface ContinuiteRncp {
   fin_enregistrement: string
   code: string
   courant: boolean
+  actif: boolean
 }
