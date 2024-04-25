@@ -153,6 +153,12 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
   return userAndRoleAndOrganizationToUserRecruteur(user, role, organisme, formulaire)
 }
 
+/**
+ * Crée l'utilisateur si il n'existe pas
+ * Crée l'organisation si elle n'existe pas
+ * Si statusEvent est passé, ajoute les droits de l'utilisateur sur l'organisation.
+ * Sinon, c'est de la responsabilité de l'appelant d'ajouter le status des droits ultérieurement.
+ */
 export const createOrganizationUser = async (
   userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status" | "scope">,
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
@@ -170,19 +176,17 @@ export const createOrganizationUser = async (
       is_email_checked
     )
     const organization = await createOrganizationIfNotExist(userRecruteurProps)
-    await modifyPermissionToUser(
-      {
-        user_id: user._id,
-        authorized_id: organization._id.toString(),
-        authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
-        origin: origin ?? "createUser",
-      },
-      statusEvent ?? {
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-        status: type === ENTREPRISE ? AccessStatus.AWAITING_VALIDATION : AccessStatus.GRANTED,
-        reason: "",
-      }
-    )
+    if (statusEvent) {
+      await modifyPermissionToUser(
+        {
+          user_id: user._id,
+          authorized_id: organization._id.toString(),
+          authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
+          origin: origin ?? "createUser",
+        },
+        statusEvent
+      )
+    }
     return { organization, user, type }
   } else {
     throw Boom.internal(`unsupported type ${type}`)
@@ -353,28 +357,28 @@ export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reas
   )
 }
 
-const setAccessOfUserOnOrganization = async ({ user, organization, type }: UserAndOrganization, status: AccessStatus) => {
+const setAccessOfUserOnOrganization = async ({ user, organization, type }: UserAndOrganization, status: AccessStatus, origin: string, reason: string) => {
   await modifyPermissionToUser(
     {
       user_id: user._id,
       authorized_id: organization._id.toString(),
       authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
-      origin: "",
+      origin,
     },
     {
       validation_type: VALIDATION_UTILISATEUR.AUTO,
       status,
-      reason: "",
+      reason,
     }
   )
 }
 
-export const autoValidateUser = async (props: UserAndOrganization) => {
-  await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED)
+export const autoValidateUser = async (props: UserAndOrganization, origin: string, reason: string) => {
+  await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED, origin, reason)
 }
 
-export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization) => {
-  await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION)
+export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, origin: string, reason: string) => {
+  await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION, origin, reason)
 }
 
 export const deactivateEntreprise = async (entrepriseId: IEntreprise["_id"], reason: string) => {
