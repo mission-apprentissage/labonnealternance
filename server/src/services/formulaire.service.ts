@@ -215,6 +215,50 @@ export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
  */
 export const getFormulaire = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter> => Recruiter.findOne(query).lean()
 
+export const getFormulaireWithRomeDetail = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter | null> => {
+  //const recruiter = Recruiter.findOne(query).lean()
+
+  const recruiter: IRecruiter[] = await Recruiter.aggregate([
+    {
+      $match: query,
+    },
+    {
+      $unwind: { path: "$jobs" },
+    },
+    {
+      $lookup: {
+        from: "referentielromes",
+        localField: "jobs.rome_code.0",
+        foreignField: "rome_code",
+        as: "referentielrome",
+      },
+    },
+    {
+      $unwind: { path: "$referentielrome" },
+    },
+    {
+      $set: { "jobs.rome_detail": "$referentielrome.fiche_metier" },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        recruiters: {
+          $first: "$$ROOT",
+        },
+        jobs: { $push: "$jobs" },
+      },
+    },
+    {
+      $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
+    },
+    {
+      $project: { referentielrome: 0 },
+    },
+  ])
+
+  return recruiter.length ? recruiter[0] : null
+}
+
 /**
  * @description Create new formulaire
  * @param {IRecruiter} payload

@@ -16,6 +16,7 @@ import {
   createJobDelegations,
   extendOffre,
   getFormulaire,
+  getFormulaireWithRomeDetail,
   getJob,
   getJobWithRomeDetail,
   patchOffre,
@@ -37,10 +38,13 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { establishment_id } = req.params
-      const recruiterOpt = await getFormulaire({ establishment_id })
+
+      const recruiterOpt = await getFormulaireWithRomeDetail({ establishment_id })
+
       if (!recruiterOpt) {
         throw Boom.notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
       }
+
       const jobsWithCandidatures = await Promise.all(
         recruiterOpt.jobs.map(async (job) => {
           const candidatures = await getApplicationsByJobId(job._id.toString())
