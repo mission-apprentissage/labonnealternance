@@ -153,6 +153,12 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
   return userAndRoleAndOrganizationToUserRecruteur(user, role, organisme, formulaire)
 }
 
+/**
+ * Crée l'utilisateur si il n'existe pas
+ * Crée l'organisation si elle n'existe pas
+ * Si statusEvent est passé, ajoute les droits de l'utilisateur sur l'organisation.
+ * Sinon, c'est de la responsabilité de l'appelant d'ajouter le status des droits ultérieurement.
+ */
 export const createOrganizationUser = async (
   userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status" | "scope">,
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
