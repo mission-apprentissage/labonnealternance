@@ -161,6 +161,7 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
  */
 export const createOrganizationUser = async (
   userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status" | "scope">,
+  grantedBy?: string,
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 ): Promise<UserAndOrganization> => {
   const { type, origin, first_name, last_name, last_connection, email, is_email_checked, phone } = userRecruteurProps
@@ -173,7 +174,8 @@ export const createOrganizationUser = async (
         phone: phone ?? "",
         last_action_date: last_connection,
       },
-      is_email_checked
+      is_email_checked,
+      grantedBy ?? ""
     )
     const organization = await createOrganizationIfNotExist(userRecruteurProps)
     if (statusEvent) {
@@ -193,13 +195,14 @@ export const createOrganizationUser = async (
   }
 }
 
-export const createOpcoUser = async (userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">, opco: OPCOS) => {
+export const createOpcoUser = async (userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">, opco: OPCOS, grantedBy: string) => {
   const user = await createUser2IfNotExist(
     {
       ...userProps,
       last_action_date: new Date(),
     },
-    false
+    false,
+    grantedBy
   )
   await modifyPermissionToUser(
     {
@@ -217,13 +220,17 @@ export const createOpcoUser = async (userProps: Pick<IUser2, "email" | "first_na
   return user
 }
 
-export const createAdminUser = async (userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">, reason: string = "", origin: string = "") => {
+export const createAdminUser = async (
+  userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">,
+  { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }
+) => {
   const user = await createUser2IfNotExist(
     {
       ...userProps,
       last_action_date: new Date(),
     },
-    false
+    false,
+    grantedBy
   )
   await modifyPermissionToUser(
     {
@@ -246,6 +253,7 @@ export const createAdminUser = async (userProps: Pick<IUser2, "email" | "first_n
  */
 export const createUser = async (
   userProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status">,
+  grantedBy: string,
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 ): Promise<IUser2> => {
   const { first_name, last_name, email, phone, type, opco } = userProps
@@ -257,13 +265,13 @@ export const createUser = async (
   }
 
   if (type === ENTREPRISE || type === CFA) {
-    const { user } = await createOrganizationUser(userProps, statusEvent)
+    const { user } = await createOrganizationUser(userProps, grantedBy, statusEvent)
     return user
   } else if (type === ADMIN) {
-    const user = await createAdminUser(userFields)
+    const user = await createAdminUser(userFields, { grantedBy })
     return user
   } else if (type === OPCO) {
-    const user = await createOpcoUser(userFields, parseEnumOrError(OPCOS, opco ?? null))
+    const user = await createOpcoUser(userFields, parseEnumOrError(OPCOS, opco ?? null), grantedBy)
     return user
   } else {
     assertUnreachable(type)

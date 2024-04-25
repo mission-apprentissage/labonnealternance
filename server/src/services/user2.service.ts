@@ -4,7 +4,11 @@ import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.mod
 
 import { User2 } from "@/common/model"
 
-export const createUser2IfNotExist = async (userProps: Omit<IUser2, "_id" | "createdAt" | "updatedAt" | "status">, is_email_checked: boolean): Promise<IUser2> => {
+export const createUser2IfNotExist = async (
+  userProps: Omit<IUser2, "_id" | "createdAt" | "updatedAt" | "status">,
+  is_email_checked: boolean,
+  grantedBy: string
+): Promise<IUser2> => {
   const { first_name, last_name, last_action_date, origin, phone } = userProps
   const formatedEmail = userProps.email.toLocaleLowerCase()
 
@@ -17,6 +21,7 @@ export const createUser2IfNotExist = async (userProps: Omit<IUser2, "_id" | "cre
         reason: "creation",
         status: UserEventType.VALIDATION_EMAIL,
         validation_type: VALIDATION_UTILISATEUR.MANUAL,
+        granted_by: grantedBy,
       })
     }
     status.push({
@@ -24,6 +29,7 @@ export const createUser2IfNotExist = async (userProps: Omit<IUser2, "_id" | "cre
       reason: "creation",
       status: UserEventType.ACTIF,
       validation_type: VALIDATION_UTILISATEUR.MANUAL,
+      granted_by: grantedBy,
     })
     const userFields: Omit<IUser2, "_id" | "createdAt" | "updatedAt"> = {
       email: formatedEmail,

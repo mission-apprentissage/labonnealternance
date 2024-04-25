@@ -39,6 +39,7 @@ export const createUserFromCLI = async (
       type: Type,
       is_email_checked: Email_valide,
     },
+    "CLI",
     {
       reason: "created from CLI",
       status: AccessStatus.GRANTED,
