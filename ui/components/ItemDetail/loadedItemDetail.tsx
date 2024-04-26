@@ -20,7 +20,6 @@ import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
-import getCurrentList from "./ItemDetailServices/getCurrentList"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
 import getSoustitre from "./ItemDetailServices/getSoustitre"
@@ -31,10 +30,11 @@ import LocationDetail from "./LocationDetail"
 import MatchaDetail from "./MatchaDetail"
 import TrainingDetail from "./TrainingDetail"
 
-const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
-  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
-
+const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
+  const { jobs, extendedSearch, selectedItem, trainings } = useContext(SearchResultContext)
   const { activeFilters } = useContext(DisplayContext)
+
+  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
 
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
@@ -50,11 +50,9 @@ const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
   const actualTitle = getActualTitle({ kind, selectedItem })
 
-  const { trainings, jobs, extendedSearch } = useContext(SearchResultContext)
   const hasAlsoJob = hasAlsoEmploi({ isCfa, company: selectedItem?.company, searchedMatchaJobs: jobs?.matchas })
-  const currentList = getCurrentList({ store: { trainings, jobs }, activeFilters, extendedSearch })
 
-  const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem })
+  const { swipeHandlers, goNext, goPrev } = BuildSwipe({ jobs, trainings, extendedSearch, activeFilters, handleSelectItem, selectedItem })
 
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const maxScroll = 100

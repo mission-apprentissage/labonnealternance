@@ -36,6 +36,8 @@ const ChoiceColumn = ({
   jobSearchError,
   partnerJobSearchError,
 }) => {
+  console.log("CHOICECOLUMN : ", searchRadius)
+
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
   const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
@@ -230,7 +232,7 @@ const ChoiceColumn = ({
   }
 
   const getSelectedItemDetail = () => {
-    return selectedItem ? <ItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} /> : <></>
+    return selectedItem ? <ItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} /> : <></>
   }
 
   const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"
