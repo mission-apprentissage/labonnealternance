@@ -13,7 +13,6 @@ import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMa
 import pushHistory from "../../../utils/pushHistory"
 import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
 import ItemDetail from "../../ItemDetail/ItemDetail"
-import LoadingScreen from "../../LoadingScreen"
 import { defaultFilters } from "../services/utils"
 import { insertWhisper } from "../services/whispers"
 
@@ -36,7 +35,6 @@ const ChoiceColumn = ({
   isFormVisible,
   jobSearchError,
   partnerJobSearchError,
-  isLoading,
 }) => {
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
@@ -239,16 +237,10 @@ const ChoiceColumn = ({
 
   return (
     <Box id="choiceColumn" flex="1" overflow="auto" background={columnBackgroundProperty} className="choiceCol">
-      {isLoading ? (
-        <LoadingScreen />
-      ) : (
-        <>
-          {getInitialDesktopText()}
-          {getSearchForm()}
-          {getResultLists()}
-          {getSelectedItemDetail()}
-        </>
-      )}
+      {getInitialDesktopText()}
+      {getSearchForm()}
+      {getResultLists()}
+      {getSelectedItemDetail()}
     </Box>
   )
 }
