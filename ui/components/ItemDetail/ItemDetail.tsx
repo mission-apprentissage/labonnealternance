@@ -43,6 +43,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
         lbaCompanies: jobs.lbaCompanies,
         matchas: jobs.matchas.map((v) => {
           if (v.id === jobWithDetails.id) {
+            jobWithDetails.place.distance = v.place.distance
             return jobWithDetails
           }
           return v
