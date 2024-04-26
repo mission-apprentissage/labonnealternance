@@ -36,8 +36,6 @@ const ChoiceColumn = ({
   jobSearchError,
   partnerJobSearchError,
 }) => {
-  console.log("CHOICECOLUMN : ", searchRadius)
-
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
   const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
