@@ -27,6 +27,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
       const trainingWithDetails = await fetchTrainingDetails(selectedItem)
       const updatedTrainings = trainings.map((v) => {
         if (v.id === trainingWithDetails.id) {
+          trainingWithDetails.place.distance = v.place.distance
           return trainingWithDetails
         }
         return v
@@ -60,6 +61,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
         peJobs: jobs.peJobs,
         lbaCompanies: jobs.lbaCompanies.map((v) => {
           if (v.id === companyWithDetails.id) {
+            companyWithDetails.place.distance = v.place.distance
             return companyWithDetails
           }
           return v
@@ -76,6 +78,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
       const updatedJobs = {
         peJobs: jobs.peJobs.map((v) => {
           if (v.id === jobWithDetails.id) {
+            jobWithDetails.place.distance = v.place.distance
             return jobWithDetails
           }
           return v

@@ -55,6 +55,7 @@ const minimalDataMongoFields = {
   lieu_formation_adresse: 1,
   lieu_formation_geo_coordonnees: 1,
   localite: 1,
+  distance: 1,
 }
 
 /**
