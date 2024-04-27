@@ -2,7 +2,9 @@ import { LBA_ITEM_TYPE, allLbaItemType } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "anonymizedapplications" as const
 
 export const ZAnonymizedApplication = z
   .object({
@@ -28,3 +30,9 @@ export const ZAnonymizedApplication = z
   .describe("Anonymized Application")
 
 export type IAnonymizedApplication = z.output<typeof ZAnonymizedApplication>
+
+export default {
+  zod: ZAnonymizedApplication,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

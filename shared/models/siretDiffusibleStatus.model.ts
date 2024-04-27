@@ -1,7 +1,9 @@
 import { EDiffusibleStatus } from "../constants/diffusibleStatus"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "siretdiffusiblestatuses" as const
 
 export const ZSiretDiffusibleStatus = z
   .object({
@@ -14,3 +16,9 @@ export const ZSiretDiffusibleStatus = z
   .strict()
 
 export type ISiretDiffusibleStatus = z.output<typeof ZSiretDiffusibleStatus>
+
+export default {
+  zod: ZSiretDiffusibleStatus,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

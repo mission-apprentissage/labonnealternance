@@ -3,7 +3,7 @@ import { Jsonify } from "type-fest"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress } from "./address.model"
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
 import { ZValidationUtilisateur } from "./user2.model"
 
@@ -26,6 +26,8 @@ export const ZEntrepriseStatusEvent = z
 
 export type IEntrepriseStatusEvent = z.output<typeof ZEntrepriseStatusEvent>
 
+const collectionName = "entreprises" as const
+
 export const ZEntreprise = z
   .object({
     _id: zObjectId,
@@ -46,3 +48,9 @@ export const ZEntreprise = z
 
 export type IEntreprise = z.output<typeof ZEntreprise>
 export type IEntrepriseJson = Jsonify<z.input<typeof ZEntreprise>>
+
+export default {
+  zod: ZEntreprise,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

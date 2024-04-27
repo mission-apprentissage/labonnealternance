@@ -3,8 +3,10 @@ import { Jsonify } from "type-fest"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 import { ZEtablissement } from "./etablissement.model"
+
+const collectionName = "eligible_trainings_for_appointments" as const
 
 export const ZEligibleTrainingsForAppointmentSchema = z
   .object({
@@ -40,3 +42,9 @@ export const ZEligibleTrainingsForAppointmentSchema = z
 
 export type IEligibleTrainingsForAppointment = z.output<typeof ZEligibleTrainingsForAppointmentSchema>
 export type IEligibleTrainingsForAppointmentJson = Jsonify<z.input<typeof ZEligibleTrainingsForAppointmentSchema>>
+
+export default {
+  zod: ZEligibleTrainingsForAppointmentSchema,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

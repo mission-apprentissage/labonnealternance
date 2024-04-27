@@ -1,7 +1,9 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "unsubscribedofs" as const
 
 export const ZUnsubscribeOF = z
   .object({
@@ -13,3 +15,9 @@ export const ZUnsubscribeOF = z
   .strict()
 
 export type IUnsubscribedOF = z.output<typeof ZUnsubscribeOF>
+
+export default {
+  zod: ZUnsubscribeOF,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

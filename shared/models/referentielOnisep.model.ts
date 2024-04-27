@@ -1,6 +1,8 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "referentieloniseps" as const
 
 export const ZReferentielOnisep = z
   .object({
@@ -12,3 +14,9 @@ export const ZReferentielOnisep = z
   .strict()
 
 export type IReferentielOnisep = z.output<typeof ZReferentielOnisep>
+
+export default {
+  zod: ZReferentielOnisep,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

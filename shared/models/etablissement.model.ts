@@ -3,7 +3,9 @@ import { Jsonify } from "type-fest"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "etablissements" as const
 
 export const ZEtablissement = z
   .object({
@@ -39,3 +41,9 @@ export const ZEtablissement = z
 
 export type IEtablissement = z.output<typeof ZEtablissement>
 export type IEtablissementJson = Jsonify<z.input<typeof ZEtablissement>>
+
+export default {
+  zod: ZEtablissement,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

@@ -1,6 +1,8 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "anonymized_users" as const
 
 export const zAnonymizedUser = z
   .object({
@@ -12,3 +14,9 @@ export const zAnonymizedUser = z
   .strict()
 
 export type IAnonymizedUser = z.output<typeof zAnonymizedUser>
+
+export default {
+  zod: zAnonymizedUser,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

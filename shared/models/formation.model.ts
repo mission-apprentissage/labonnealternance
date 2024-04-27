@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZPointGeometry } from "./address.model"
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 
 // Define schemas for nested objects
 const geoCoordSchema = z.string()
@@ -86,6 +86,8 @@ const etablissementReferenceSchema = z
 
 // Define a schema for a single string or an array of strings
 const stringOrArraySchema = z.union([z.string(), z.array(z.string())])
+
+const collectionName = "formationcatalogues" as const
 
 // Define the Zod schema for IFormationCatalogue
 export const zFormationCatalogueSchema = z
@@ -196,3 +198,9 @@ export const zFormationCatalogueSchema = z
 export const zFormationCatalogueSchemaNew = zFormationCatalogueSchema.omit({ _id: true })
 
 export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>
+
+export default {
+  zod: zFormationCatalogueSchema,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

@@ -6,7 +6,7 @@ import { RECRUITER_STATUS } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZPointGeometry } from "./address.model"
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 import { ZJob } from "./job.model"
 
 const allRecruiterStatus = Object.values(RECRUITER_STATUS)
@@ -46,6 +46,8 @@ export const ZRecruiterWritable = z
   .strict()
   .openapi("RecruiterWritable")
 
+const collectionName = "recruiters" as const
+
 export const ZRecruiter = ZRecruiterWritable.extend({
   _id: zObjectId,
   distance: z.number().nullish(),
@@ -79,3 +81,9 @@ export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
 }).strict()
 
 export type IAnonymizedRecruiter = z.output<typeof ZAnonymizedRecruiter>
+
+export default {
+  zod: ZRecruiter,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

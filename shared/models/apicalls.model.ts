@@ -1,6 +1,8 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "apicalls" as const
 
 export const ZApiCall = z
   .object({
@@ -19,3 +21,9 @@ export const ZApiCallNew = ZApiCall.omit({
   _id: true,
   created_at: true,
 })
+
+export default {
+  zod: ZApiCall,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

@@ -1,7 +1,9 @@
 import { EApplicantRole, EApplicantType } from "../constants/rdva"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "users" as const
 
 export const ZUser = z
   .object({
@@ -18,3 +20,9 @@ export const ZUser = z
   .strict()
 
 export type IUser = z.output<typeof ZUser>
+
+export default {
+  zod: ZUser,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

@@ -1,6 +1,8 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "geolocations" as const
 
 export const ZGeoLocation = z
   .object({
@@ -13,3 +15,9 @@ export const ZGeoLocation = z
   .strict()
 
 export const ZGeoLocationNew = ZGeoLocation.omit({ _id: true }).strict()
+
+export default {
+  zod: ZGeoLocation,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

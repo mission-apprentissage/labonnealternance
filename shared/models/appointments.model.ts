@@ -3,8 +3,10 @@ import { Jsonify } from "type-fest"
 import { AppointmentUserType } from "../constants/appointment"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
+
+const collectionName = "appointments" as const
 
 export const enum EReasonsKey {
   MODALITE = "modalite",
@@ -59,3 +61,9 @@ export type IAppointmentJson = Jsonify<z.input<typeof ZAppointment>>
 
 export type IMailing = z.output<typeof ZMailing>
 export type EReason = NonNullable<IAppointment["applicant_reasons"]>[0]
+
+export default {
+  zod: ZAppointment,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor

@@ -4,7 +4,9 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zCallerParam } from "../routes/_params"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "applications" as const
 
 export const ZApplication = z
   .object({
@@ -220,3 +222,9 @@ export type INewApplicationV2 = z.output<typeof ZNewApplicationV2>
 export type INewApplication = z.output<typeof ZUsedNewApplication>
 
 export type IApplication = z.output<typeof ZApplication>
+
+export default {
+  zod: ZApplication,
+  indexes: [],
+  collectionName,
+} as IModelDescriptor
