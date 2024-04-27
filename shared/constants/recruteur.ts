@@ -56,6 +56,7 @@ export enum OPCOS {
   MOBILITE = "Opco Mobilités",
   SANTE = "Opco Santé",
   UNIFORMATION = "Uniformation, l'Opco de la Cohésion sociale",
+  PASS = "pass",
 }
 
 export const NIVEAUX_POUR_LBA = {
