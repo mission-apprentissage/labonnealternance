@@ -46,6 +46,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
+    /* @ts-expect-error: à cracker */
   }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
 
   const actualTitle = getActualTitle({ kind, selectedItem })
