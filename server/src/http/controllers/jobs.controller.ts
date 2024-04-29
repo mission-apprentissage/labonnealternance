@@ -3,6 +3,7 @@ import { IJob, JOB_STATUS, zRoutes } from "shared"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
+import { getUser2ByEmail } from "@/services/user2.service"
 
 import { Recruiter } from "../../common/model/index"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
@@ -133,6 +134,10 @@ export default (server: Server) => {
       if (!establishmentExists) {
         return res.status(400).send({ error: true, message: "Establishment does not exist" })
       }
+      const user = await getUser2ByEmail(establishmentExists.email)
+      if (!user) {
+        return res.status(400).send({ error: true, message: "User does not exist" })
+      }
 
       const romeDetails = await getFicheMetierFromDB({
         query: {
@@ -164,6 +169,7 @@ export default (server: Server) => {
         job_rythm: body.job_rythm,
         custom_address: body.custom_address,
         custom_geo_coordinates: body.custom_geo_coordinates,
+        managed_by: user._id,
       }
 
       const updatedRecruiter = await createOffre(establishmentId, job)
@@ -349,7 +355,9 @@ export default (server: Server) => {
 
       if ("matchas" in result && result.matchas) {
         const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
+        if ("results" in matchas) {
+          await incrementLbaJobsViewCount(matchas.results.flatMap((job) => (job.job?.id ? [job.job.id] : [])))
+        }
       }
 
       return res.status(200).send(result)
@@ -372,7 +380,9 @@ export default (server: Server) => {
 
       if ("matchas" in result && result.matchas) {
         const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
+        if ("results" in matchas) {
+          await incrementLbaJobsViewCount(matchas.results.flatMap((job) => (job.job?.id ? [job.job.id] : [])))
+        }
       }
 
       return res.status(200).send(result)
@@ -470,6 +480,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       const { caller } = req.query
+
       const result = await getFtJobFromId({
         id,
         caller,

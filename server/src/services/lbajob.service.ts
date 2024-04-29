@@ -4,7 +4,7 @@ import { IJob, IRecruiter, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { Recruiter } from "@/common/model"
+import { Cfa, Recruiter } from "@/common/model"
 import { db } from "@/common/mongodb"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
@@ -13,9 +13,8 @@ import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
-import { IApplicationCount, getApplicationByJobCount } from "./application.service"
+import { IApplicationCount, getApplicationByJobCount, getUser2ManagingOffer } from "./application.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
-import { getEtablissement } from "./etablissement.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
@@ -83,34 +82,35 @@ export const getJobs = async ({
     },
   })
 
-  const jobs: IRecruiter[] = await Recruiter.aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
+  const recruiters: IRecruiter[] = await Recruiter.aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
 
   const filteredJobs = await Promise.all(
-    jobs.map(async (x) => {
+    recruiters.map(async (recruiter) => {
       const jobs: any[] = []
 
-      if (x.is_delegated) {
-        const cfa = await getEtablissement({ establishment_siret: x.cfa_delegated_siret })
+      if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
+        const cfa = await Cfa.findOne({ siret: recruiter.cfa_delegated_siret })
+        const cfaUser = await getUser2ManagingOffer(recruiter.jobs[0])
 
-        x.phone = cfa?.phone
-        x.email = cfa?.email || ""
-        x.last_name = cfa?.last_name
-        x.first_name = cfa?.first_name
-        x.establishment_raison_sociale = cfa?.establishment_raison_sociale
-        x.address = cfa?.address
+        recruiter.phone = cfaUser.phone
+        recruiter.email = cfaUser.email
+        recruiter.last_name = cfaUser.last_name
+        recruiter.first_name = cfaUser.first_name
+        recruiter.establishment_raison_sociale = cfa?.raison_sociale
+        recruiter.address = cfa?.address
       }
 
-      x.jobs.forEach((o) => {
-        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === JOB_STATUS.ACTIVE) {
-          o.rome_label = o.rome_appellation_label ?? o.rome_label
-          if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === o.job_level_label || niveau === o.job_level_label) {
-            jobs.push(o)
+      recruiter.jobs.forEach((job) => {
+        if (romes.some((item) => job.rome_code.includes(item)) && job.job_status === JOB_STATUS.ACTIVE) {
+          job.rome_label = job.rome_appellation_label ?? job.rome_label
+          if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === job.job_level_label || niveau === job.job_level_label) {
+            jobs.push(job)
           }
         }
       })
 
-      x.jobs = jobs
-      return x
+      recruiter.jobs = jobs
+      return recruiter
     })
   )
 
@@ -449,8 +449,8 @@ export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
 /**
  * @description Incrémente les compteurs de vue d'un ensemble d'offres lba
  */
-export const incrementLbaJobsViewCount = async (lbaJobs) => {
-  const ids = lbaJobs.results.map((job) => new ObjectId(job.id))
+export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
+  const ids = jobIds.map((id) => new ObjectId(id))
   try {
     await db.collection("recruiters").updateMany(
       { "jobs._id": { $in: ids } },

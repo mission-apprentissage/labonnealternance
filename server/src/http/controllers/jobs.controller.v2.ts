@@ -350,7 +350,9 @@ export default (server: Server) => {
 
       if ("matchas" in result && result.matchas) {
         const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
+        if ("results" in matchas) {
+          await incrementLbaJobsViewCount(matchas.results.flatMap((job) => (job.job?.id ? [job.job.id] : [])))
+        }
       }
 
       return res.status(200).send(result)
@@ -374,7 +376,9 @@ export default (server: Server) => {
 
       if ("matchas" in result && result.matchas) {
         const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
+        if ("results" in matchas) {
+          await incrementLbaJobsViewCount(matchas.results.flatMap((job) => (job.job?.id ? [job.job.id] : [])))
+        }
       }
 
       return res.status(200).send(result)
