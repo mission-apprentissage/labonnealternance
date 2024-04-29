@@ -114,7 +114,7 @@
         hour: "2"
         weekday: "1"
         job: "bash /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }} >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Alias' -v $?"
-      when: env_type != "preview"
+      when: env_type == "production"
 
     - name: "Setup de la Metabase"
       shell:
