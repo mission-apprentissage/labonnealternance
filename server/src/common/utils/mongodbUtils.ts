@@ -1,5 +1,5 @@
 import { captureException } from "@sentry/node"
-// import { Collection, CollectionInfo, MongoClient, MongoServerError } from "mongodb" // to uncomment when migrated to V6
+// import { Collection, CollectionInfo, MongoClient, MongoServerError } from "mongodb" // to uncomment when migrated to V7
 import { Collection, MongoClient } from "mongodb"
 import { CollectionName, IModelDescriptor } from "shared/models/common"
 import { IDocumentMap, modelDescriptors } from "shared/models/models"
