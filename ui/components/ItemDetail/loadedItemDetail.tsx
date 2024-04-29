@@ -63,9 +63,11 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
   }
 
   const postuleSurFranceTravail = () => {
-    SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre FT", {
-      info_fiche: selectedItem.job.id,
-    })
+    if (selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB) {
+      SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre FT", {
+        info_fiche: selectedItem.job.id,
+      })
+    }
   }
 
   const stickyHeaderProperties = isCollapsedHeader
@@ -137,7 +139,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
           {!isCollapsedHeader && getSoustitre({ selectedItem })}
 
-          {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && buttonJePostuleShouldBeDisplayed(selectedItem) && (
             <Box my={4}>
               <Link
                 data-tracking-id="postuler-offre-partenaire"
@@ -159,7 +161,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
             </>
           )}
 
-          {kind === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
               <Divider my={2} />
               <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
@@ -216,7 +218,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && (
         <>
           <DidYouKnow />
-          {!buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
+          {!buttonJePostuleShouldBeDisplayed(selectedItem) && (
             <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
           )}
         </>

@@ -361,6 +361,8 @@ export const ZLbaItemFormation = z
     romes: z.array(ZLbaItemRome).nullish(),
 
     training: ZLbaItemTraining.nullish(),
+
+    rdvContext: z.any().nullish(),
   })
   .strict()
   .openapi("Formation")

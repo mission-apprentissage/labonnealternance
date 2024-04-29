@@ -19,8 +19,8 @@ const navigationButtonProperties = {
   },
 }
 
-export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
-  return oneKind === LBA_ITEM_TYPE_OLD.PEJOB && oneItem?.url
+export const buttonJePostuleShouldBeDisplayed = (item) => {
+  return item.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && item?.url
 }
 
 /**
@@ -49,7 +49,6 @@ export const BuildSwipe = ({ jobs, trainings, extendedSearch, activeFilters, sel
     const currentIndex = currentList.findIndex((item) => selectedItem.id === item.id)
 
     const nextIndex = currentIndex == currentList.length - 1 ? 0 : currentIndex + 1
-
 
     handleSelectItem(currentList[nextIndex])
   }
