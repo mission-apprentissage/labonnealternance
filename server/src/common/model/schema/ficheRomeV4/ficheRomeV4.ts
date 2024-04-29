@@ -1,8 +1,8 @@
-import { IFicheRomeV4 } from "shared/models"
+import { IFicheMetierRomeV4 } from "shared/models"
 
 import { Schema, model } from "../../../mongodb"
 
-export const referentielRomeSchema = new Schema<IFicheRomeV4>(
+export const ficheMetierRomeV4Schema = new Schema<IFicheMetierRomeV4>(
   {
     rome_code: {
       type: String,
@@ -18,7 +18,7 @@ export const referentielRomeSchema = new Schema<IFicheRomeV4>(
   }
 )
 
-referentielRomeSchema.index({ rome_code: 1 })
-referentielRomeSchema.index({ "fiche_metier.appellations.code": 1 })
+ficheMetierRomeV4Schema.index({ rome_code: 1 })
+ficheMetierRomeV4Schema.index({ "fiche_metier.appellations.code": 1 })
 
-export default model<IFicheRomeV4>("referentielRomes", referentielRomeSchema)
+export default model<IFicheMetierRomeV4>("ficheMetierRomeV4", ficheMetierRomeV4Schema)

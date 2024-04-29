@@ -68,7 +68,7 @@ export const ZFicheRomeV4 = z
   })
   .strict()
 
-export type IFicheRomeV4 = z.output<typeof ZFicheRomeV4>
+export type IFicheMetierRomeV4 = z.output<typeof ZFicheRomeV4>
 
 const ZRome = z
   .object({
@@ -146,4 +146,5 @@ export const ZReferentielRome = z
   })
   .strict()
 
+export type IRomeMobilite = z.output<typeof ZRomeMobilite>
 export type IReferentielRome = z.output<typeof ZReferentielRome>
