@@ -50,7 +50,6 @@ export const BuildSwipe = ({ jobs, trainings, extendedSearch, activeFilters, sel
 
     const nextIndex = currentIndex == currentList.length - 1 ? 0 : currentIndex + 1
 
-    console.log("GONEXT ", currentIndex, nextIndex, currentList, selectedItem)
 
     handleSelectItem(currentList[nextIndex])
   }
