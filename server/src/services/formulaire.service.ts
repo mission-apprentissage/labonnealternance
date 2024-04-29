@@ -41,7 +41,7 @@ export const romeDetailAggregateStages = [
     $lookup: {
       from: "referentielromes",
       localField: "jobs.rome_code.0",
-      foreignField: "rome_code",
+      foreignField: "rome.code_rome",
       as: "referentielrome",
     },
   },
@@ -49,7 +49,7 @@ export const romeDetailAggregateStages = [
     $unwind: { path: "$referentielrome" },
   },
   {
-    $set: { "jobs.rome_detail": "$referentielrome.fiche_metier" },
+    $set: { "jobs.rome_detail": "$referentielrome" },
   },
   {
     $group: {
@@ -64,7 +64,7 @@ export const romeDetailAggregateStages = [
     $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
   },
   {
-    $project: { referentielrome: 0 },
+    $project: { referentielrome: 0, "jobs.rome_detail._id": 0 },
   },
 ]
 
@@ -77,7 +77,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Pro
   if (!recruiterOpt) {
     return null
   }
-  const job = recruiterOpt.jobs.find((x) => x._id.toString() === jobId.toString())
+  const job = recruiterOpt.jobs.find((x) => x._id.toString() === id.toString())
   if (!job) {
     return null
   }
@@ -87,7 +87,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Pro
     if (cfa_delegated_siret) {
       const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
       if (cfa) {
-        const cfaUser = await getUser2ManagingOffer(getJobFromRecruiter(recruiterOpt, jobId.toString()))
+        const cfaUser = await getUser2ManagingOffer(getJobFromRecruiter(recruiterOpt, id.toString()))
 
         recruiterOpt.phone = cfaUser.phone
         recruiterOpt.email = cfaUser.email
