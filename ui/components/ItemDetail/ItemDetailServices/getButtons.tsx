@@ -58,7 +58,6 @@ export const BuildSwipe = ({ jobs, trainings, extendedSearch, activeFilters, sel
     const currentIndex = currentList.findIndex((item) => selectedItem.id === item.id)
     const prevIndex = currentIndex == 0 ? currentList.length - 1 : currentIndex - 1
 
-    console.log("GOBACK ", currentIndex, prevIndex, currentList, selectedItem)
     handleSelectItem(currentList[prevIndex])
   }
   return {
