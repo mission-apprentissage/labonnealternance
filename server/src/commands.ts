@@ -213,12 +213,12 @@ program
 
 program
   .command("import:ficheromev4")
-  .description("import fiches métiers rome v4")
+  .description("import fiches métiers rome v4 (pas utilisé 29/04/2024)")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("import:ficheromev4"))
 program
   .command("import:referentielrome")
-  .description("import référentil rome v4")
+  .description("import référentiel rome v4 from XML")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("import:referentielrome"))
 

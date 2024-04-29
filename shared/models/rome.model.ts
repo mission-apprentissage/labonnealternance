@@ -102,9 +102,9 @@ const ZRomeSavoir = z
 
 const ZRomeCompetence = z
   .object({
-    savoir_faire: z.array(ZRomeSavoir),
-    savoir_etre_professionnel: z.array(ZRomeSavoir),
-    savoirs: z.array(ZRomeSavoir),
+    savoir_faire: z.array(ZRomeSavoir).nullish(),
+    savoir_etre_professionnel: z.array(ZRomeSavoir).nullish(),
+    savoirs: z.array(ZRomeSavoir).nullish(),
   })
   .strict()
 
@@ -129,7 +129,7 @@ const ZRomeMobiliteItem = z
 const ZRomeMobilite = z
   .object({
     proche: z.array(ZRomeMobiliteItem),
-    si_evolution: z.array(ZRomeMobiliteItem),
+    si_evolution: z.array(ZRomeMobiliteItem).nullish(),
   })
   .strict()
 
@@ -137,12 +137,12 @@ export const ZReferentielRome = z
   .object({
     numero: z.string(),
     rome: ZRome,
-    appellations: z.array(ZRomeAppellation),
+    appellations: z.array(ZRomeAppellation).nullish(),
     definition: z.string(),
     acces_metier: z.string(),
     competences: z.array(ZRomeCompetence),
-    contextes_travail: z.array(ZRomeContextesTravail),
-    mobilites: z.array(ZRomeMobilite),
+    contextes_travail: z.array(ZRomeContextesTravail).nullish(),
+    mobilites: z.array(ZRomeMobilite).nullish(),
   })
   .strict()
 

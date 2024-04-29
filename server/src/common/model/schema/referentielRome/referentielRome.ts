@@ -54,4 +54,4 @@ export const referentielRomeSchema = new Schema<IReferentielRome>(
 
 referentielRomeSchema.index({ "rome.rome_code": 1 })
 
-export default model<IReferentielRome>("referentielRome", referentielRomeSchema)
+export default model<IReferentielRome>("referentielRomes", referentielRomeSchema)
