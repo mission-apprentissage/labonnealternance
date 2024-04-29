@@ -908,9 +908,15 @@ export const sendUserConfirmationEmail = async (user: IUser2) => {
 }
 
 export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: IRecruiter, accessStatus: AccessStatus | null, entrepriseStatus: EntrepriseStatus | null) => {
-  if (entrepriseStatus !== EntrepriseStatus.VALIDE || isUserEmailChecked(user) || !accessStatus || accessStatus !== AccessStatus.GRANTED) {
+  if (
+    entrepriseStatus !== EntrepriseStatus.VALIDE ||
+    isUserEmailChecked(user) ||
+    !accessStatus ||
+    ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)
+  ) {
     return
   }
+  const isUserAwaiting = accessStatus === AccessStatus.AWAITING_VALIDATION
   const { jobs, is_delegated, email } = recruteur
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && is_delegated === false) {
@@ -934,6 +940,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: I
           job_level_label: offre.job_level_label,
           job_start_date: dayjs(offre.job_start_date).format("DD/MM/YY"),
         },
+        isUserAwaiting,
       },
     })
   } else {
