@@ -87,7 +87,7 @@ export default async function updateLbaCompanies({
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
-    console.log("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - UseSave : ", UseSave, " - ForceRecreate : ", ForceRecreate)
+    console.info("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - UseSave : ", UseSave, " - ForceRecreate : ", ForceRecreate)
 
     if (UseAlgoFile) {
       if (!ForceRecreate) {

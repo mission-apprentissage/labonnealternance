@@ -1,15 +1,15 @@
 import { Button, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from "@chakra-ui/react"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
-import useUserHistoryUpdate from "../../common/hooks/useUserHistoryUpdate"
+import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
+
 import { Close } from "../../theme/components/icons"
 
 export const ConfirmationActivationUtilsateur = (props) => {
   const { isOpen, onClose, establishment_raison_social, _id } = props
-  const updateUserHistory = useUserHistoryUpdate(_id, ETAT_UTILISATEUR.VALIDE)
+  const { activate } = useUserPermissionsActions(_id)
 
   const activateUser = async () => {
-    await updateUserHistory()
+    await activate()
     onClose()
   }
 

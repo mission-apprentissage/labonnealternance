@@ -30,6 +30,7 @@ export enum ETAT_UTILISATEUR {
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
 export const ADMIN = "ADMIN"
+export const OPCO = "OPCO"
 
 export const AUTHTYPE = {
   OPCO: "OPCO",
@@ -55,6 +56,7 @@ export enum OPCOS {
   MOBILITE = "Opco Mobilités",
   SANTE = "Opco Santé",
   UNIFORMATION = "Uniformation, l'Opco de la Cohésion sociale",
+  PASS = "pass",
 }
 
 export const NIVEAUX_POUR_LBA = {

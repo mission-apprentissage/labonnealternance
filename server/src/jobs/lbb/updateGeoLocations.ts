@@ -62,7 +62,7 @@ const saveGeoData = async (geoData) => {
       try {
         await geoLocation.save()
       } catch (err) {
-        console.log("error saving geoloc probably from duplicate restriction: ", geoLocation.address)
+        console.error("error saving geoloc probably from duplicate restriction: ", geoLocation.address)
       }
     }
   }

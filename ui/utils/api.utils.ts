@@ -211,7 +211,3 @@ export async function apiDelete<P extends keyof IDeleteRoutes, S extends IDelete
   }
   return res.json()
 }
-
-export function removeUndefinedFields<T extends Record<string, any>>(obj: T): T {
-  return Object.fromEntries(Object.entries(obj).filter(([_, value]) => value !== undefined)) as T
-}

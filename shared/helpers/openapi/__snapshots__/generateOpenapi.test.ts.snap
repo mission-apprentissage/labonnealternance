@@ -2158,6 +2158,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "managed_by": {
+            "description": "Id de l'utilisateur gestionnaire",
+          },
           "naf_code": {
             "description": "Code NAF de l'établissement",
             "type": [
