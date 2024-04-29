@@ -1,5 +1,6 @@
 import { captureException } from "@sentry/node"
-import { Collection, CollectionInfo, MongoClient, MongoServerError } from "mongodb"
+// import { Collection, CollectionInfo, MongoClient, MongoServerError } from "mongodb" // to uncomment when migrated to V6
+import { Collection, MongoClient } from "mongodb"
 import { CollectionName, IModelDescriptor } from "shared/models/common"
 import { IDocumentMap, modelDescriptors } from "shared/models/models"
 import { zodToMongoSchema } from "zod-mongodb-schema"
@@ -79,9 +80,12 @@ const createCollectionIfDoesNotExist = async (collectionName: CollectionName) =>
     try {
       await db.createCollection(collectionName)
     } catch (err) {
-      if ((err as MongoServerError).codeName !== "NamespaceExists") {
-        throw err
-      }
+      /**
+       * KBA : to uncomment when migrated to V7
+       */
+      // if ((err as MongoServerError).codeName !== "NamespaceExists") {
+      //   throw err
+      // }
     }
   }
 }
@@ -92,7 +96,12 @@ const createCollectionIfDoesNotExist = async (collectionName: CollectionName) =>
  * @param {*} collectionName
  * @returns
  */
-export const collectionExistInDb = (collectionsInDb: CollectionInfo[], collectionName: string) => collectionsInDb.map(({ name }: { name: string }) => name).includes(collectionName)
+
+/**
+ * KBA : to uncomment when migrated to V7
+ */
+// export const collectionExistInDb = (collectionsInDb: CollectionInfo[], collectionName: string) => collectionsInDb.map(({ name }: { name: string }) => name).includes(collectionName)
+export const collectionExistInDb = (collectionsInDb, collectionName: string) => collectionsInDb.map(({ name }: { name: string }) => name).includes(collectionName)
 
 /**
  * Config de la validation
@@ -118,7 +127,6 @@ export const configureDbSchemaValidation = async (modelDescriptors: IModelDescri
               ...convertedSchema,
             },
           },
-          ...(collectionName === "deca" ? { changeStreamPreAndPostImages: { enabled: true } } : {}),
         })
       } catch (error) {
         captureException(error)
