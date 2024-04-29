@@ -101,7 +101,7 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
   const { extendedSearch, jobs, selectedItem, setJobsAndSelectedItem, setTrainingsAndSelectedItem, trainings } = useContext(SearchResultContext)
   const { activeFilters } = useContext(DisplayContext)
 
-  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
+  const kind = selectedItem?.ideaType
 
   const actualTitle = getActualTitle({ kind, selectedItem })
 

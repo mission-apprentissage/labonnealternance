@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -272,8 +272,8 @@ export type ILbaItemTraining = z.output<typeof ZLbaItemTraining>
 
 export const ZLbaItemFormation = z
   .object({
-    ideaType: z.literal(LBA_ITEM_TYPE.FORMATION).openapi({
-      example: LBA_ITEM_TYPE.FORMATION,
+    ideaType: z.literal(LBA_ITEM_TYPE_OLD.FORMATION).openapi({
+      example: LBA_ITEM_TYPE_OLD.FORMATION,
       description: "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
     }),
     title: z.string().nullish().openapi({
@@ -415,7 +415,7 @@ export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
 
 export const ZLbaItemFtJob = z
   .object({
-    ideaType: z.literal("peJob"),
+    ideaType: z.literal(LBA_ITEM_TYPE_OLD.PEJOB),
     // ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES),
     id: z.string().nullable().openapi({}),
     title: z.string().nullish(), // pe -> intitule
