@@ -26,7 +26,7 @@ import {
 import { getFtJobFromId } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../services/lbacompany.service"
-import { addOffreDetailView, getLbaJobById, incrementLbaJobsViewCount } from "../../services/lbajob.service"
+import { addOffreDetailView, getLbaJobById } from "../../services/lbajob.service"
 import { getFicheMetierRomeV3FromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
@@ -353,14 +353,6 @@ export default (server: Server) => {
       if ("error" in result) {
         return res.status(500).send(result)
       }
-
-      if ("matchas" in result && result.matchas) {
-        const { matchas } = result
-        if ("results" in matchas) {
-          await incrementLbaJobsViewCount(matchas.results.flatMap((job) => (job.job?.id ? [job.job.id] : [])))
-        }
-      }
-
       return res.status(200).send(result)
     }
   )
@@ -378,14 +370,6 @@ export default (server: Server) => {
       if ("error" in result) {
         return res.status(500).send(result)
       }
-
-      if ("matchas" in result && result.matchas) {
-        const { matchas } = result
-        if ("results" in matchas) {
-          await incrementLbaJobsViewCount(matchas.results.flatMap((job) => (job.job?.id ? [job.job.id] : [])))
-        }
-      }
-
       return res.status(200).send(result)
     }
   )
