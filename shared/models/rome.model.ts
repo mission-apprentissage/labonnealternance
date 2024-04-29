@@ -61,10 +61,88 @@ export const ZRomeDetail = z
 
 export type IFicheRome = z.output<typeof ZRomeDetail>
 
-export const ZReferentielRome = z
+export const ZFicheRomeV4 = z
   .object({
     rome_code: z.string(),
     fiche_metier: ZRomeDetail,
+  })
+  .strict()
+
+export type IFicheRomeV4 = z.output<typeof ZFicheRomeV4>
+
+const ZRome = z
+  .object({
+    code_rome: z.string(),
+    intitule: z.string(),
+    code_ogr: z.string(),
+  })
+  .strict()
+
+const ZRomeAppellation = z
+  .object({
+    libelle: z.string(),
+    libelle_court: z.string(),
+    code_ogr: z.string(),
+  })
+  .strict()
+
+const ZRomeItem = z
+  .object({
+    libelle: z.string(),
+    code_ogr: z.string(),
+  })
+  .strict()
+
+const ZRomeSavoir = z
+  .object({
+    libelle: z.string(),
+    items: z.array(ZRomeItem),
+  })
+  .strict()
+
+const ZRomeCompetence = z
+  .object({
+    savoir_faire: z.array(ZRomeSavoir),
+    savoir_etre_professionnel: z.array(ZRomeSavoir),
+    savoirs: z.array(ZRomeSavoir),
+  })
+  .strict()
+
+const ZRomeContextesTravail = z
+  .object({
+    libelle: z.string(),
+    items: z.array(ZRomeItem),
+  })
+  .strict()
+
+const ZRomeMobiliteItem = z
+  .object({
+    appellation_source: z.string(),
+    code_ogr_appellation_source: z.string(),
+    rome_cible: z.string(),
+    code_org_rome_cible: z.string(),
+    appellation_cible: z.string(),
+    code_ogr_appellation_cible: z.string(),
+  })
+  .strict()
+
+const ZRomeMobilite = z
+  .object({
+    proche: z.array(ZRomeMobiliteItem),
+    si_evolution: z.array(ZRomeMobiliteItem),
+  })
+  .strict()
+
+export const ZReferentielRome = z
+  .object({
+    numero: z.string(),
+    rome: ZRome,
+    appellations: z.array(ZRomeAppellation),
+    definition: z.string(),
+    acces_metier: z.string(),
+    competences: z.array(ZRomeCompetence),
+    contextes_travail: z.array(ZRomeContextesTravail),
+    mobilites: z.array(ZRomeMobilite),
   })
   .strict()
 
