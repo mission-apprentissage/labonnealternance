@@ -20630,16 +20630,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.17.1":
-  version: 3.22.3
-  resolution: "zod-to-json-schema@npm:3.22.3"
-  peerDependencies:
-    zod: ^3.22.4
-  checksum: 2747a3d1514f579006939c0edd6a420acae65ad016df223b09c4a542cbc8c0ae61b4d7b391228a211cde973635ed49c47b1449791982f3b32d799319bb174f42
-  languageName: node
-  linkType: hard
-
-"zod-to-json-schema@npm:^3.21.4":
+"zod-to-json-schema@npm:^3.17.1, zod-to-json-schema@npm:^3.21.4":
   version: 3.23.0
   resolution: "zod-to-json-schema@npm:3.23.0"
   peerDependencies:
