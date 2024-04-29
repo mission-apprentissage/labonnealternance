@@ -192,10 +192,8 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
         setSubmitting(false)
       })
       .catch((error) => {
-        console.error(error)
         if (error instanceof ApiError) {
-          const payload: { error: string; statusCode: number; message: string } = error.context.errorData
-          setFieldError("email", payload.message)
+          setFieldError("email", error.message)
           setSubmitting(false)
         }
       })
