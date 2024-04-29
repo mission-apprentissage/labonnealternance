@@ -11,6 +11,7 @@ import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs
 import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
+import { recreateIndexes } from "./database/recreateIndexes"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
 import { fixRDVACollections } from "./database/temp/fixRDVACollections"
 import { validateModels } from "./database/validateModels"
@@ -224,6 +225,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "recreate:indexes":
+        return recreateIndexes()
       case "sync:etablissement:dates":
         return syncEtablissementDates()
       case "remove:duplicates:etablissements":
