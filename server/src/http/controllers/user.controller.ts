@@ -268,6 +268,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/user/:userId/organization/:organizationId/permission"])],
     },
     async (req, res) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { reason, status, organizationType } = req.body
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
@@ -334,7 +335,7 @@ export default (server: Server) => {
         return res.status(200).send({})
       }
 
-      if (organizationType === AccessEntityType.ENTREPRISE) {
+      if (mainRole.authorized_type === AccessEntityType.ENTREPRISE) {
         /**
          * if entreprise type of user is validated :
          * - activate offer
