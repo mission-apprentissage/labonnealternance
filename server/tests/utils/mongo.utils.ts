@@ -2,6 +2,11 @@ import mongoose from "mongoose"
 import { afterAll, beforeAll, beforeEach } from "vitest"
 
 import { connectToMongo } from "@/common/mongodb"
+/**
+ * To uncomment when migrating to mongodb V7
+ * import {connectToMongodb, configureDbSchemaValidation, createIndexes, closeMongodbConnection} from "@/common/utils/mongodbUtils"
+ * import { modelDescriptors } from "shared/models/models"
+ */
 import config from "@/config"
 
 import { createMongoDBIndexes } from "../../src/common/model"
@@ -11,10 +16,19 @@ export const startAndConnectMongodb = async () => {
 
   await connectToMongo(config.mongodb.uri.replace("VITEST_POOL_ID", workerId))
   await createMongoDBIndexes()
+  /**
+   * To uncomment when migrating to mongodb V7
+   * await connectToMongo(config.mongodb.uri.replace("VITEST_POOL_ID", workerId))
+   * await Promise.all([createIndexes(), configureDbSchemaValidation(modelDescriptors)]);
+   */
 }
 
 export const stopMongodb = async () => {
   try {
+    /**
+     * To uncomment when migrating to mongodb V7
+     * await closeMongodbConnection()
+     */
     await mongoose.disconnect()
   } catch (err) {
     // no-op
