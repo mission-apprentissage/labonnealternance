@@ -146,5 +146,6 @@ export const ZReferentielRome = z
   })
   .strict()
 
+export type IRome = z.output<typeof ZRome>
 export type IRomeMobilite = z.output<typeof ZRomeMobilite>
 export type IReferentielRome = z.output<typeof ZReferentielRome>

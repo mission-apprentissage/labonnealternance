@@ -14,17 +14,21 @@ const mobiliteSchema = new Schema<IRomeMobilite>(
   { _id: false, versionKey: false }
 )
 
+const codeRomeSchema = new Schema<string>(
+  { code_rome: { type: String, index: true }, intitule: { type: String }, code_ogr: { type: String } },
+  {
+    _id: false,
+    versionKey: false,
+  }
+)
+
 export const referentielRomeSchema = new Schema<IReferentielRome>(
   {
     numero: {
       type: String,
       description: "Numéro d'identification de la fiche emploi",
     },
-    rome: {
-      code_rome: String,
-      intitule: String,
-      code_ogr: String,
-    },
+    rome: codeRomeSchema,
     appellations: {
       type: Array,
       items: {
@@ -51,7 +55,5 @@ export const referentielRomeSchema = new Schema<IReferentielRome>(
   },
   { versionKey: false }
 )
-
-referentielRomeSchema.index({ "rome.rome_code": 1 })
 
 export default model<IReferentielRome>("referentielRomes", referentielRomeSchema)

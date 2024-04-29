@@ -10,8 +10,6 @@ import { ReferentielRome } from "../../../common/model/index.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 
 const formatRawData = ({ appellations, competences, contextes_travail, mobilites, numero, rome, definition, acces_metier }) => {
-  console.log("Appellations", appellations)
-
   return {
     numero,
     rome,
