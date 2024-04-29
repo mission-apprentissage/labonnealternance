@@ -43,12 +43,10 @@ export type CollectionName =
   | "referentielromes"
   | "referentielopcos"
   | "rolemanagements"
-  | "sessions"
   | "siretdiffusiblestatuses"
   | "unsubscribedbonnesboites"
   | "unsubscribedofs"
   | "userrecruteurs"
-  | "users"
   | "userswithaccounts"
 
 export interface IModelDescriptor {
