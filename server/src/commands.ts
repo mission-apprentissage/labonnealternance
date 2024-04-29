@@ -211,7 +211,16 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("recruiters:get-missing-address-detail"))
 
-program.command("import:rome").description("import fiches métiers rome v4").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import:rome"))
+program
+  .command("import:ficheromev4")
+  .description("import fiches métiers rome v4")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import:ficheromev4"))
+program
+  .command("import:referentielrome")
+  .description("import référentil rome v4")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import:referentielrome"))
 
 // Temporaire, one shot à executer en recette et prod
 program

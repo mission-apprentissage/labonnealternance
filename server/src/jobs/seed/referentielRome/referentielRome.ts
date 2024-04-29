@@ -4,7 +4,7 @@ import { ReferentielRome } from "@/common/model"
 import { logger } from "../../../common/logger"
 import { asyncForEach, delay } from "../../../common/utils/asyncUtils"
 
-export const importFichesRomeV4 = async () => {
+export const importReferentielRome = async () => {
   const romeList = await getRomeV4ListFromFT()
 
   if (romeList && romeList.length > 500) {
