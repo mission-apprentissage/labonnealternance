@@ -197,14 +197,14 @@ export default (server: Server) => {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
             await setUserHasToBeManuallyValidated(creationResult, origin, "pas d'email de contact")
             await notifyToSlack(slackNotification)
-            return res.status(200).send({ user: userCfa })
+            return res.status(200).send({ user: userCfa, validated: false })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
             await autoValidateUser(creationResult, origin, "l'email correspond à un contact")
             await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
-            return res.status(200).send({ user: userCfa })
+            return res.status(200).send({ user: userCfa, validated: true })
           }
           if (isEmailFromPrivateCompany(formatedEmail)) {
             const domains = getAllDomainsFromEmailList(contacts.map(({ email }) => email))
@@ -214,14 +214,14 @@ export default (server: Server) => {
               await autoValidateUser(creationResult, origin, "le nom de domaine de l'email correspond à celui d'un contact")
               await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
-              return res.status(200).send({ user: userCfa })
+              return res.status(200).send({ user: userCfa, validated: true })
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
           await setUserHasToBeManuallyValidated(creationResult, origin, "pas de validation automatique possible")
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
-          return res.status(200).send({ user: userCfa })
+          return res.status(200).send({ user: userCfa, validated: false })
         }
         default: {
           assertUnreachable(type)
