@@ -5,36 +5,27 @@ export const modelDescriptors: IModelDescriptor[] = [anonymizedApplicationModelD
 
 export type IDocumentMap = {
   anoymizedApplication: IAnonymizedApplication
-  users: { todo: "add_interface" }
-  jobs: { todo: "add_interface" }
-  organisations: { todo: "add_interface" }
-  persons: { todo: "add_interface" }
-  events: { todo: "add_interface" }
-  sessions: { todo: "add_interface" }
-  documents: { todo: "add_interface" }
-  documentContents: { todo: "add_interface" }
-  mailingLists: { todo: "add_interface" }
-  credentials: { todo: "add_interface" }
-  entreprises: { todo: "add_interface" }
-  cfas: { todo: "add_interface" }
-  emailblacklists: { todo: "add_interface" }
-  appointments: { todo: "add_interface" }
-  applications: { todo: "add_interface" }
-  etablissements: { todo: "add_interface" }
-  anonymizedapplications: { todo: "add_interface" }
   anonymized_users: { todo: "add_interface" }
+  anonymizedapplications: { todo: "add_interface" }
   anonymizedappointments: { todo: "add_interface" }
   anonymizedrecruiters: { todo: "add_interface" }
   anonymizedusers2s: { todo: "add_interface" }
   apicalls: { todo: "add_interface" }
+  appointments: { todo: "add_interface" }
+  applications: { todo: "add_interface" }
   bonnesboites: { todo: "add_interface" }
   bonnesboiteslegacies: { todo: "add_interface" }
+  cfas: { todo: "add_interface" }
   changelog: { todo: "add_interface" }
+  credentials: { todo: "add_interface" }
   customemailetfas: { todo: "add_interface" }
   diplomesmetiers: { todo: "add_interface" }
   domainesmetiers: { todo: "add_interface" }
   eligible_trainings_for_appointments: { todo: "add_interface" }
   eligible_trainings_for_appointments_histories: { todo: "add_interface" }
+  emailblacklists: { todo: "add_interface" }
+  entreprises: { todo: "add_interface" }
+  etablissements: { todo: "add_interface" }
   formationcatalogues: { todo: "add_interface" }
   geolocations: { todo: "add_interface" }
   internalJobs: { todo: "add_interface" }
@@ -42,12 +33,14 @@ export type IDocumentMap = {
   optouts: { todo: "add_interface" }
   recruiters: { todo: "add_interface" }
   referentieloniseps: { todo: "add_interface" }
-  referentielromes: { todo: "add_interface" }
   referentielopcos: { todo: "add_interface" }
+  referentielromes: { todo: "add_interface" }
   rolemanagements: { todo: "add_interface" }
+  sessions: { todo: "add_interface" }
   siretdiffusiblestatuses: { todo: "add_interface" }
   unsubscribedbonnesboites: { todo: "add_interface" }
   unsubscribedofs: { todo: "add_interface" }
   userrecruteurs: { todo: "add_interface" }
+  users: { todo: "add_interface" }
   userswithaccounts: { todo: "add_interface" }
 }
