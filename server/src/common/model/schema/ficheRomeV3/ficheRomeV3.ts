@@ -1,12 +1,12 @@
 import { IRomeDetailsFromAPI } from "../../../../services/rome.service.types"
 import { Schema, model } from "../../../mongodb"
 
-interface IFicheMeterRomeV3 {
+interface IFicheMetierRomeV3 {
   code: string
   fiche_metier: IRomeDetailsFromAPI
 }
 
-export const ficheMetierRomeV3Schema = new Schema<IFicheMeterRomeV3>({
+export const ficheMetierRomeV3Schema = new Schema<IFicheMetierRomeV3>({
   code: {
     type: String,
     description: "Code Rome",
@@ -20,4 +20,4 @@ export const ficheMetierRomeV3Schema = new Schema<IFicheMeterRomeV3>({
 ficheMetierRomeV3Schema.index({ code: 1 })
 ficheMetierRomeV3Schema.index({ "fiche_metier.appellations.code": 1 })
 
-export default model<IFicheMeterRomeV3>("ficheMetierRomeV3", ficheMetierRomeV3Schema)
+export default model<IFicheMetierRomeV3>("ficheMetierRomeV3", ficheMetierRomeV3Schema)
