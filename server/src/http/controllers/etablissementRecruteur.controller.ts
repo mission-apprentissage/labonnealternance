@@ -2,6 +2,7 @@ import Boom from "boom"
 import { assertUnreachable, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
@@ -20,7 +21,7 @@ import {
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
 } from "@/services/etablissement.service"
-import { getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
 import {
   autoValidateUser,
@@ -285,6 +286,9 @@ export default (server: Server) => {
       }
       if (!isUserEmailChecked(user)) {
         await validateUser2Email(user._id.toString())
+      }
+      const mainRole = await getMainRoleManagement(user._id, true)
+      if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {
         await sendWelcomeEmailToUserRecruteur(user)
       }
 
