@@ -9,43 +9,107 @@ import __dirname from "../../../common/dirname.js"
 import { ReferentielRome } from "../../../common/model/index.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 
-const formatRawData = ({ appellations, competences, contextes_travail, mobilites, numero, rome, definition, acces_metier }) => {
+const getContextesTravailItem = (contexteTravail: { libelle: string; items: { item: any | any[] } }) => {
+  const tempsItems = !(contexteTravail.items.item instanceof Array) ? [contexteTravail.items.item] : contexteTravail.items.item
+  return tempsItems.map((x) => x)
+}
+
+const getContextesTravail = (contextesTravail) => {
+  /*
+  {
+  type_contexte: [
+    {
+      libelle: 'Conditions de travail et risques professionnels',
+      items: [Object]
+    },
+    { libelle: 'Horaires et durée du travail', items: [Object] },
+    { libelle: 'Types de structures', items: [Object] }
+  ]
+}
+  */
+
+  if (!contextesTravail?.type_contexte) {
+    return null
+  }
+
+  const tempContextes = contextesTravail.type_contexte instanceof Array ? contextesTravail.type_contexte : [contextesTravail.type_contexte]
+
+  const tempContextesWithItems = tempContextes.map((contexte) => {
+    const items = getContextesTravailItem(contexte)
+    return {
+      libelle: contexte.libelle,
+      items,
+    }
+  })
+
+  return tempContextesWithItems
+}
+
+const getCompetences = (competences, rome) => {
+  //  else {
+  //   if (!(contextes_travail?.type_contexte instanceof Array)) {
+  //     console.log("pas array ", rome, contextes_travail.type_contexte)
+  //   }
+  // }
+
+  /**
+   
+    competences toujours là
+    savoirs, savoir_faire, savoir_etre_professionnel toujours là
+   
+   */
+
+  if (!competences?.savoirs) {
+    console.log("pas savoir faire ", rome.code_rome)
+  }
+
+  return {
+    savoir_faire: competences?.savoir_faire?.enjeux
+      ? competences.savoir_faire.enjeux.enjeu instanceof Array
+        ? competences.savoir_faire.enjeux.enjeu.map((x) => x)
+        : [competences.savoir_faire.enjeux.enjeu]
+      : null,
+    savoir_etre_professionnel: competences?.savoir_etre_professionnel?.enjeux
+      ? competences.savoir_etre_professionnel.enjeux?.enjeu?.items?.item instanceof Array
+        ? competences.savoir_etre_professionnel.enjeux.enjeu.items.item.map((x) => x)
+        : [competences.savoir_etre_professionnel.enjeux.enjeu.items.item]
+      : null,
+    savoirs: competences?.savoirs?.categories
+      ? competences.savoirs.categories?.categorie instanceof Array
+        ? competences.savoirs.categories.categorie.map((x) => x)
+        : [competences.savoirs.categories.categorie]
+      : null,
+  }
+}
+
+const formatRawData = ({
+  appellations,
+  competences,
+  contextes_travail,
+  mobilites,
+  numero,
+  rome,
+  definition,
+  acces_metier,
+}: {
+  numero: string
+  rome: string
+  definition: string
+  acces_metier: string
+  appellations?: any
+  competences?: any
+  contextes_travail?: any
+  mobilites?: any
+}) => {
   return {
     numero,
     rome,
     definition,
     acces_metier,
-    appellations: appellations ? (appellations.appellation instanceof Array ? appellations.appellation.map((x) => x) : appellations.appellation) : null,
-    competences: {
-      savoir_faire: competences?.savoir_faire?.enjeux
-        ? competences.savoir_faire.enjeux.enjeu instanceof Array
-          ? competences.savoir_faire.enjeux.enjeu.map((x) => x).type_contexte
-          : competences.savoir_faire.enjeux.enjeu
-        : null,
-      savoir_etre_professionnel: competences?.savoir_etre_professionnel?.enjeux
-        ? competences.savoir_etre_professionnel.enjeux?.enjeu?.items?.item instanceof Array
-          ? competences.savoir_etre_professionnel.enjeux.enjeu.items.item.map((x) => x)
-          : competences.savoir_etre_professionnel.enjeux.enjeu
-        : null,
-      savoirs: competences?.savoirs?.categories
-        ? competences.savoirs.categories?.categorie instanceof Array
-          ? competences.savoirs.categories.categorie.map((x) => x)
-          : competences.savoirs.categories.categorie
-        : null,
-    },
-    contextes_travail: contextes_travail?.type_contexte
-      ? contextes_travail.type_contexte instanceof Array
-        ? contextes_travail.type_contexte.map((x) => x)
-        : contextes_travail.type_contexte
-      : null,
-    mobilites: {
-      proche: mobilites?.proche && mobilites?.proche?.mobilite,
-      si_evolution: mobilites?.si_evolution
-        ? mobilites.si_evolution?.mobilite instanceof Array
-          ? mobilites.si_evolution.mobilite.map((x) => x)
-          : mobilites.si_evolution.mobilite
-        : null,
-    },
+    appellations: appellations.appellation instanceof Array ? appellations.appellation.map((x) => x) : [appellations.appellation],
+    mobilites: mobilites && mobilites?.mobilite ? (mobilites.mobilite instanceof Array ? mobilites.mobilite.map((x) => x) : [mobilites.mobilite]) : null,
+    contextes_travail: getContextesTravail(contextes_travail),
+    competences: getCompetences(competences, rome),
   }
 }
 
@@ -68,7 +132,7 @@ export const importReferentielRome = async () => {
     logger.info("Suppression du référentiel courant")
     await ReferentielRome.deleteMany({})
 
-    await asyncForEach(data.fiches_metier.fiche_metier, async (ficheMetier) => {
+    await asyncForEach(data.fiches_metier.fiche_metier, async (ficheMetier: any) => {
       const fiche = formatRawData(ficheMetier)
       await ReferentielRome.create(fiche)
     })
