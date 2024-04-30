@@ -1,18 +1,6 @@
-import { IReferentielRome, IRomeMobilite } from "shared/index"
+import { IReferentielRome } from "shared/index"
 
 import { model, Schema } from "../../../mongodb.js"
-
-const mobiliteSchema = new Schema<IRomeMobilite>(
-  {
-    appellation_source: String,
-    code_ogr_appellation_source: String,
-    rome_cible: String,
-    code_org_rome_cible: String,
-    appellation_cible: String,
-    code_ogr_appellation_cible: String,
-  },
-  { _id: false, versionKey: false }
-)
 
 const codeRomeSchema = new Schema<string>(
   { code_rome: { type: String, index: true }, intitule: { type: String }, code_ogr: { type: String } },
@@ -49,8 +37,7 @@ export const referentielRomeSchema = new Schema<IReferentielRome>(
       type: Array,
     },
     mobilites: {
-      proche: [mobiliteSchema],
-      si_evolution: [mobiliteSchema],
+      type: Array,
     },
   },
   { versionKey: false }
