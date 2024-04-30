@@ -76,7 +76,6 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
 }
 
 export const getUserRecruteurById = (id: string | ObjectIdType) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
-export const getUserRecruteurByEmail = (email: string) => getUserRecruteurByUser2Query({ email })
 
 export const userAndRoleAndOrganizationToUserRecruteur = (
   user: IUser2,
