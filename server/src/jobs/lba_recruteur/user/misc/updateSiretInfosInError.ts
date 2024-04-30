@@ -54,25 +54,23 @@ const updateEntreprisesInfosInError = async () => {
           const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: updatedEntreprise._id.toString() }).lean()
           const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
           const users = await User2.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
-          await Promise.all(
-            users.map(async (user) => {
-              const userAndOrganization: UserAndOrganization = { user, type: ENTREPRISE, organization: updatedEntreprise }
-              const result = await autoValidateUserRoleOnCompany(userAndOrganization, "reprise des entreprises en erreur")
-              if (result.validated) {
-                const recruiter = recruiters.find((recruiter) => recruiter.email === user.email && recruiter.establishment_siret === siret)
-                if (!recruiter) {
-                  throw Boom.internal(`inattendu : recruiter non trouvé`, { email: user.email, siret })
-                }
-                await activateEntrepriseRecruiterForTheFirstTime(recruiter)
-                const role = rolesToUpdate.find((role) => role.user_id.toString() === user._id.toString())
-                const status = getLastStatusEvent(role?.status)?.status
-                if (!status) {
-                  throw Boom.internal("inattendu : status du role non trouvé")
-                }
-                await sendEmailConfirmationEntreprise(user, recruiter, status, EntrepriseStatus.VALIDE)
+          await asyncForEach(users, async (user) => {
+            const userAndOrganization: UserAndOrganization = { user, type: ENTREPRISE, organization: updatedEntreprise }
+            const result = await autoValidateUserRoleOnCompany(userAndOrganization, "reprise des entreprises en erreur")
+            if (result.validated) {
+              const recruiter = recruiters.find((recruiter) => recruiter.email === user.email && recruiter.establishment_siret === siret)
+              if (!recruiter) {
+                throw Boom.internal(`inattendu : recruiter non trouvé`, { email: user.email, siret })
               }
-            })
-          )
+              await activateEntrepriseRecruiterForTheFirstTime(recruiter)
+              const role = rolesToUpdate.find((role) => role.user_id.toString() === user._id.toString())
+              const status = getLastStatusEvent(role?.status)?.status
+              if (!status) {
+                throw Boom.internal("inattendu : status du role non trouvé")
+              }
+              await sendEmailConfirmationEntreprise(user, recruiter, status, EntrepriseStatus.VALIDE)
+            }
+          })
         }
         stats.success++
       }
