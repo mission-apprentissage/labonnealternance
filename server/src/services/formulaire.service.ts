@@ -621,7 +621,7 @@ export const getJobWithRomeDetail = async (id: string | ObjectIdType): Promise<I
 
   return {
     ...job,
-    rome_detail: referentielRome.fiche_metier,
+    rome_detail: referentielRome,
   }
 }
 
