@@ -185,7 +185,7 @@ const AjouterVoeuxForm = (props) => {
         rome_label: props.rome_label ?? "",
         rome_appellation_label: props.rome_appellation_label ?? "",
         rome_code: props.rome_code ?? [],
-        job_level_label: props.job_level_label ?? "",
+        job_level_label: props.job_level_label ?? "Indifférent",
         job_start_date: props.job_start_date ? dayjs(props.job_start_date).format(DATE_FORMAT) : "",
         job_description: props.job_description ?? undefined,
         job_creation_date: props.job_creation_date ?? dayjs().format(DATE_FORMAT),
