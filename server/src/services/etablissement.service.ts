@@ -569,7 +569,7 @@ export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOr
   if (validated) {
     await authorizeUserOnEntreprise(userAndEntreprise, origin, reason)
   } else {
-    await setUserHasToBeManuallyValidated(userAndEntreprise, origin, reason)
+    await setUserHasToBeManuallyValidated(userAndEntreprise, origin)
   }
   return { validated }
 }

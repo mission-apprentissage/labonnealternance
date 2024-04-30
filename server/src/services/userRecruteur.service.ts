@@ -374,7 +374,7 @@ export const autoValidateUser = async (props: UserAndOrganization, origin: strin
   await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED, origin, reason)
 }
 
-export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, origin: string, reason: string) => {
+export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, origin: string, reason = "pas de validation automatique possible") => {
   await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION, origin, reason)
 }
 

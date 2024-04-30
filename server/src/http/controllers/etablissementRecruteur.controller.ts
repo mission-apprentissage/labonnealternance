@@ -193,7 +193,7 @@ export default (server: Server) => {
           }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            await setUserHasToBeManuallyValidated(creationResult, origin, "pas d'email de contact")
+            await setUserHasToBeManuallyValidated(creationResult, origin)
             await notifyToSlack(slackNotification)
             return res.status(200).send({ user: userCfa, validated: false })
           }
@@ -216,7 +216,7 @@ export default (server: Server) => {
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          await setUserHasToBeManuallyValidated(creationResult, origin, "pas de validation automatique possible")
+          await setUserHasToBeManuallyValidated(creationResult, origin)
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
           return res.status(200).send({ user: userCfa, validated: false })
