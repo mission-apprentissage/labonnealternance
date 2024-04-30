@@ -190,7 +190,7 @@ const migrationUserRecruteurs = async () => {
           }
         } else {
           if (getLastStatusEvent(newEntreprise.status)?.status !== EntrepriseStatus.ERROR) {
-            if (!newEntreprise.address || !newEntreprise.address_detail || !newEntreprise.enseigne || !newEntreprise.raison_sociale || !newEntreprise.geo_coordinates) {
+            if (!newEntreprise.address || !newEntreprise.address_detail || !newEntreprise.raison_sociale || !newEntreprise.geo_coordinates) {
               newEntreprise.status.push({
                 date: new Date(),
                 reason: "champ manquant",
