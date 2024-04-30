@@ -2,7 +2,6 @@ import { createWriteStream } from "fs"
 import path from "path"
 import { Readable } from "stream"
 
-import { pick } from "lodash-es"
 import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models"
@@ -11,7 +10,7 @@ import { db } from "@/common/mongodb"
 
 import { sendCsvToFranceTravail } from "../../../../common/apis/FranceTravail"
 import { logger } from "../../../../common/logger"
-import { UserRecruteur } from "../../../../common/model/index"
+import { Cfa } from "../../../../common/model/index"
 import { getDepartmentByZipCode } from "../../../../common/territoires"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
@@ -189,12 +188,13 @@ export const exportToFranceTravail = async (): Promise<void> => {
 
     logger.info(`get info from ${offres.length} offers...`)
     await asyncForEach(offres, async (offre) => {
-      const user = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
+      const cfa = offre.is_delegated ? await Cfa.findOne({ siret: offre.cfa_delegated_siret }) : null
 
       if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
         offre.job_type.map(async (type) => {
           if (offre.rome_detail && typeof offre.rome_detail !== "string") {
-            buffer.push({ ...offre, type: type, cfa: user ? pick(user, ["address_detail", "establishment_raison_sociale"]) : null })
+            const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
+            buffer.push({ ...offre, type, cfa: cfaFields })
           }
         })
       }

@@ -1,8 +1,4 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Button,
   Checkbox,
@@ -14,12 +10,10 @@ import {
   FormHelperText,
   FormLabel,
   Heading,
-  Image,
   Input,
   Link,
   Select,
   SimpleGrid,
-  Spinner,
   Stack,
   Text,
   Textarea,
@@ -34,16 +28,16 @@ import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recrute
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
 
+import { AUTHTYPE } from "@/common/contants"
+import { debounce } from "@/common/utils/debounce"
+import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
+import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
+import { publicConfig } from "@/config.public"
+import { LogoContext } from "@/context/contextLogo"
+import { WidgetContext } from "@/context/contextWidget"
 import { useAuth } from "@/context/UserContext"
-
-import { AUTHTYPE } from "../../common/contants"
-import { debounce } from "../../common/utils/debounce"
-import { publicConfig } from "../../config.public"
-import { LogoContext } from "../../context/contextLogo"
-import { WidgetContext } from "../../context/contextWidget"
-import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../../theme/components/icons"
-import { J1S, Parcoursup } from "../../theme/components/logos_pro"
-import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
+import { ArrowRightLine, ExternalLinkLine, Minus, Plus, Warning } from "@/theme/components/icons"
+import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
 
 import DropdownCombobox from "./DropdownCombobox"
 
@@ -194,7 +188,6 @@ const AjouterVoeuxForm = (props) => {
         job_type: props.job_type ?? ["Apprentissage"],
         is_multi_published: props.is_multi_published ?? undefined,
         delegations: props.delegations ?? undefined,
-        rome_detail: props.rome_detail ?? {},
         is_disabled_elligible: props.is_disabled_elligible ?? false,
         job_count: props.job_count ?? 1,
         job_duration: props.job_duration ?? 12,
@@ -229,9 +222,8 @@ const AjouterVoeuxForm = (props) => {
                     setFieldValue("rome_label", values.intitule)
                     setFieldValue("rome_appellation_label", values.appellation)
                     setFieldValue("rome_code", [values.codeRome])
+                    props.onSelectRome(values.codeRome, values.appellation)
                   }, 0)
-
-                  props.getRomeInformation(values.codeRome, values.appellation, formik)
                 }}
                 name="rome_label"
                 value={values.rome_appellation_label}
@@ -371,142 +363,19 @@ const AjouterVoeuxForm = (props) => {
   )
 }
 
-const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appellation, acces }) => {
-  if (definition) {
-    const definitionSplitted = definition.split("\\n")
-    const accesFormatted = acces.split("\\n").join("<br><br>")
-
-    return (
-      <Box border="1px solid #000091" p={5} mb={5}>
-        <Box mb={5}>
-          <Heading fontSize="24px" mb={3}>
-            {appellation}
-          </Heading>
-          <Text fontSize="16px" fontWeight="700">
-            Fiche métier : {libelle}
-          </Text>
-          <Text fontSize="14px">La fiche métier se base sur la classification ROME de France Travail</Text>
-        </Box>
-        <Flex alignItems="flex-start" mb={6}>
-          <InfoCircle mr={2} mt={1} color="bluefrance.500" />
-          <Text textAlign="justify">Voici la description visible par les candidats lors de la mise en ligne de l’offre d’emploi en alternance.</Text>
-        </Flex>
-
-        <Accordion defaultIndex={[0]} allowMultiple>
-          <AccordionItem key={0} id="metier">
-            {({ isExpanded }) => (
-              <>
-                <h2>
-                  <AccordionButton>
-                    <Text fontWeight="700" flex="1" textAlign="left">
-                      Description du métier
-                    </Text>
-                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4} ml={6} mr={3}>
-                  <ul className="voeuxUl">
-                    {definitionSplitted.map((x) => {
-                      return (
-                        <li className="voeuxUlLi" key={x}>
-                          {x}
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </AccordionPanel>
-              </>
-            )}
-          </AccordionItem>
-          <hr />
-          <AccordionItem key={1} id="competence">
-            {({ isExpanded }) => (
-              <>
-                <h2>
-                  <AccordionButton>
-                    <Text fontWeight="700" flex="1" textAlign="left">
-                      Quelles sont les compétences visées ?
-                    </Text>
-                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
-                  <ul className="voeuxUl">
-                    {competencesDeBase.map((x) => (
-                      <li className="voeuxUlLi" key={x.libelle}>
-                        {x.libelle}
-                      </li>
-                    ))}
-                  </ul>
-                </AccordionPanel>
-              </>
-            )}
-          </AccordionItem>
-          <hr />
-          <AccordionItem key={2} id="accessibilite">
-            {({ isExpanded }) => (
-              <>
-                <h2>
-                  <AccordionButton>
-                    <Text fontWeight="700" flex="1" textAlign="left">
-                      À qui ce métier est-il accessible ?
-                    </Text>
-                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel maxH="50%" pb={4}>
-                  <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
-                </AccordionPanel>
-              </>
-            )}
-          </AccordionItem>
-        </Accordion>
-      </Box>
-    )
-  } else {
-    return (
-      <Box border="1px solid #000091" p={5}>
-        <Heading fontSize="24px" mb={3}>
-          Dites-nous en plus sur votre besoin en recrutement
-        </Heading>
-        <Flex alignItems="flex-start" mb={6} justify="flex-start">
-          <InfoCircle mr={2} mt={1} color="bluefrance.500" />
-          <Text textAlign="justify">Cela permettra à votre offre d'être visible des candidats intéressés.</Text>
-        </Flex>
-        <Box ml={5}>
-          <Text>Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants : </Text>
-          <Stack direction={["column", "row"]} spacing={2} align="center" justify="center" mt={3}>
-            <Image src="/images/logo_LBA.svg" alt="" minWidth="150px" width="150px" />
-            <J1S w="100px" h="100px" />
-            <Parcoursup w="220px" h="100px" />
-          </Stack>
-        </Box>
-      </Box>
-    )
-  }
-}
-
 export const PageAjouterVoeux = (props) => {
-  const [romeInformation, setRomeInformation] = useState({})
-  const [loading, setLoading] = useState(false)
+  const { rome_appellation_label, rome_code } = props
+  const rome = rome_code?.at(0)
+  const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: any }>(
+    rome_appellation_label && rome ? { rome, appellation: rome_appellation_label } : null
+  )
   const { widget } = useContext(WidgetContext)
 
   const router = useRouter()
   const { establishment_id } = router.query
 
-  const getRomeInformation = (rome: string, appellation, formik) => {
-    getRomeDetail(rome)
-      .then((result) => {
-        setLoading(true)
-        formik.setFieldValue("rome_detail", result.data)
-        setRomeInformation({ appellation, ...result.data })
-      })
-      .catch((error) => console.error(error))
-      .finally(() => {
-        setTimeout(() => {
-          setLoading(false)
-        }, 700)
-      })
+  const onSelectRome = (rome: string, appellation: any) => {
+    setRomeAndAppellation({ rome, appellation })
   }
 
   if (!establishment_id) return <></>
@@ -524,19 +393,10 @@ export const PageAjouterVoeux = (props) => {
           Merci de renseigner les champs ci-dessous pour créer votre offre
         </Text>
         <Box>
-          <AjouterVoeuxForm {...props} getRomeInformation={getRomeInformation} />
+          <AjouterVoeuxForm {...props} onSelectRome={onSelectRome} />
         </Box>
       </Box>
-      <Box>
-        {loading ? (
-          <Flex h="100%" justify="center" align="center" direction="column">
-            <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
-            <Text>Recherche en cours...</Text>
-          </Flex>
-        ) : (
-          <RomeInformationDetail {...(romeInformation as any)} />
-        )}
-      </Box>
+      <Box>{romeAndAppellation ? <RomeDetailWithQuery appellation={romeAndAppellation.appellation} rome={romeAndAppellation.rome} /> : <InfosDiffusionOffre />}</Box>
     </SimpleGrid>
   )
 }

@@ -1,5 +1,3 @@
-import { Role } from "shared/security/permissions"
-
 import { ResourceIds } from "@/security/authorisationService"
 
 interface IAccessLog {
@@ -10,7 +8,6 @@ interface IAccessLog {
   user_type: string | null
   auth_type: string
   path: string
-  role: Role | null
   parameters: { [key: string]: string } | null
   http_method: string
   resources: ResourceIds | null

@@ -153,6 +153,10 @@ export const jobsSchema = new Schema<IJob>(
       type: Number,
       description: "Nombre de vues sur une page de recherche",
     },
+    managed_by: {
+      type: String,
+      description: "Id de l'utilisateur gérant l'offre",
+    },
   },
   {
     versionKey: false,

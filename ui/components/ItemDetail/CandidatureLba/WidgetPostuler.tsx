@@ -1,10 +1,12 @@
+import { assertUnreachable } from "@/../shared"
 import { Flex, Spinner } from "@chakra-ui/react"
-import axios from "axios"
 import { useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
+import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
+
 import { initPostulerParametersFromQuery } from "../../../services/config"
-import { companyApi, matchaApi } from "../../SearchForTrainingsAndJobs/services/utils"
 
 import WidgetCandidatureLba from "./WidgetCandidatureLba"
 import WidgetPostulerError from "./WidgetPostulerError"
@@ -24,21 +26,15 @@ const WidgetPostuler = () => {
 
     switch (parameters.type) {
       case LBA_ITEM_TYPE_OLD.MATCHA: {
-        const response = await axios.get(matchaApi + "/" + parameters.itemId)
-        if (!response?.data?.message) {
-          item = response.data.matchas[0]
-        }
-
+        item = await fetchLbaJobDetails({ id: parameters.itemId })
         break
       }
-
+      case LBA_ITEM_TYPE_OLD.LBA: {
+        item = await fetchLbaCompanyDetails({ id: parameters.itemId })
+        break
+      }
       default: {
-        const response = await axios.get(`${companyApi}/${parameters.itemId}?type=${parameters.type}`)
-        if (!response?.data?.message) {
-          const companies = response.data.lbaCompanies
-          item = companies[0]
-        }
-
+        assertUnreachable("shouldNotHappen" as never)
         break
       }
     }

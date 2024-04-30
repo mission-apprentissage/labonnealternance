@@ -1,18 +1,17 @@
 import Boom from "boom"
-import { IUserRecruteur, toPublicUser, zRoutes } from "shared"
+import { assertUnreachable, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { AccessStatus } from "shared/models/roleManagement.model"
+import { UserEventType } from "shared/models/user2.model"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Recruiter, UserRecruteur } from "@/common/model"
+import { Cfa, Recruiter } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
+import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateDepotSimplifieToken } from "@/services/appLinks.service"
-
-import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
-import { CFA, ENTREPRISE } from "../../services/constant.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
@@ -21,18 +20,24 @@ import {
   getOrganismeDeFormationDataFromSiret,
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
-  validateEtablissementEmail,
-} from "../../services/etablissement.service"
+} from "@/services/etablissement.service"
+import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
 import {
   autoValidateUser,
-  createUser,
-  getUser,
-  getUserStatus,
+  createOrganizationUser,
+  getUserRecruteurByEmail,
+  isUserEmailChecked,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
-  updateUser,
-} from "../../services/userRecruteur.service"
+  updateUser2Fields,
+} from "@/services/userRecruteur.service"
+
+import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
+import { CFA, ENTREPRISE } from "../../services/constant.service"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -72,7 +77,7 @@ export default (server: Server) => {
         throw Boom.badRequest(cfaVerification.message)
       }
 
-      const result = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+      const result = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
 
       if ("error" in result) {
         throw Boom.badRequest(result.message, result)
@@ -125,18 +130,18 @@ export default (server: Server) => {
    * Retourne les entreprises gérées par un CFA
    */
   server.get(
-    "/etablissement/cfa/:userRecruteurId/entreprises",
+    "/etablissement/cfa/:cfaId/entreprises",
     {
-      schema: zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"],
-      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"])],
+      schema: zRoutes.get["/etablissement/cfa/:cfaId/entreprises"],
+      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:cfaId/entreprises"])],
     },
     async (req, res) => {
-      const { userRecruteurId } = req.params
-      const cfa = await UserRecruteur.findOne({ _id: userRecruteurId }).lean()
+      const { cfaId } = req.params
+      const cfa = await Cfa.findOne({ _id: cfaId }).lean()
       if (!cfa) {
-        throw Boom.notFound(`Aucun CFA ayant pour id ${userRecruteurId.toString()}`)
+        throw Boom.notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
       }
-      const cfa_delegated_siret = cfa.establishment_siret
+      const cfa_delegated_siret = cfa.siret
       if (!cfa_delegated_siret) {
         throw Boom.internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
       }
@@ -154,7 +159,8 @@ export default (server: Server) => {
       schema: zRoutes.post["/etablissement/creation"],
     },
     async (req, res) => {
-      switch (req.body.type) {
+      const { type } = req.body
+      switch (type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
           const cfa_delegated_siret = req.body.cfa_delegated_siret ?? undefined
@@ -163,14 +169,15 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
             else throw Boom.badRequest(result.message, result)
           }
-          const token = generateDepotSimplifieToken(result.user)
-          return res.status(200).send({ ...result, token })
+          const token = generateDepotSimplifieToken(user2ToUserForToken(result.user), result.formulaire.establishment_id)
+          return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
           const { email, establishment_siret } = req.body
+          const origin = req.body.origin ?? "formulaire public de création"
           const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
-          const userRecruteurOpt = await getUser({ email: formatedEmail })
+          const userRecruteurOpt = await getUserRecruteurByEmail(formatedEmail)
           if (userRecruteurOpt) {
             throw Boom.forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }
@@ -179,44 +186,45 @@ export default (server: Server) => {
           const { contacts } = siretInfos
 
           // Creation de l'utilisateur en base de données
-          let newCfa: IUserRecruteur = await createUser({ ...req.body, ...siretInfos, is_email_checked: false })
+          const creationResult = await createOrganizationUser({ ...req.body, ...siretInfos, is_email_checked: false, origin })
+          const userCfa = creationResult.user
 
           const slackNotification = {
             subject: "RECRUTEUR",
-            message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${newCfa._id}`,
+            message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
+            await setUserHasToBeManuallyValidated(creationResult, origin, "pas d'email de contact")
             await notifyToSlack(slackNotification)
-            return res.status(200).send({ user: newCfa })
+            return res.status(200).send({ user: userCfa, validated: false })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
-            newCfa = await autoValidateUser(newCfa._id)
-            await sendUserConfirmationEmail(newCfa)
+            await autoValidateUser(creationResult, origin, "l'email correspond à un contact")
+            await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
-            return res.status(200).send({ user: newCfa })
+            return res.status(200).send({ user: userCfa, validated: true })
           }
           if (isEmailFromPrivateCompany(formatedEmail)) {
             const domains = getAllDomainsFromEmailList(contacts.map(({ email }) => email))
             const userEmailDomain = getEmailDomain(formatedEmail)
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              newCfa = await autoValidateUser(newCfa._id)
-              await sendUserConfirmationEmail(newCfa)
+              await autoValidateUser(creationResult, origin, "le nom de domaine de l'email correspond à celui d'un contact")
+              await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
-              return res.status(200).send({ user: newCfa })
+              return res.status(200).send({ user: userCfa, validated: true })
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
+          await setUserHasToBeManuallyValidated(creationResult, origin, "pas de validation automatique possible")
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
-          return res.status(200).send({ user: newCfa })
+          return res.status(200).send({ user: userCfa, validated: false })
         }
         default: {
-          throw Boom.badRequest("unsupported type")
+          assertUnreachable(type)
         }
       }
     }
@@ -250,11 +258,10 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { _id, ...rest } = req.body
-      const exists = await UserRecruteur.findOne({ email: req.body.email?.toLocaleLowerCase(), _id: { $ne: _id } })
-      if (exists) {
+      const result = await updateUser2Fields(req.params.id, rest)
+      if ("error" in result) {
         throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
       }
-      await updateUser({ _id: req.params.id }, rest)
       return res.status(200).send({ ok: true })
     }
   )
@@ -266,30 +273,28 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissement/validation"])],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
+      const userFromRequest = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
+      const email = userFromRequest.identity.email.toLocaleLowerCase()
 
-      // Validate email
-      const userRecruteur = await validateEtablissementEmail(user.identity.email.toLocaleLowerCase())
-
-      if (!userRecruteur) {
+      const user = await getUser2ByEmail(email)
+      if (!user) {
         throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
-
-      const isUserAwaiting = getUserStatus(userRecruteur.status) === ETAT_UTILISATEUR.ATTENTE
-
-      if (!isUserAwaiting) {
-        await sendWelcomeEmailToUserRecruteur(userRecruteur)
+      const userStatus = getLastStatusEvent(user.status)?.status
+      if (userStatus === UserEventType.DESACTIVE) {
+        throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
+      }
+      if (!isUserEmailChecked(user)) {
+        await validateUser2Email(user._id.toString())
+      }
+      const mainRole = await getMainRoleManagement(user._id, true)
+      if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {
+        await sendWelcomeEmailToUserRecruteur(user)
       }
 
-      const connectedUser = await updateLastConnectionDate(userRecruteur.email)
-
-      if (!connectedUser) {
-        throw Boom.forbidden()
-      }
-
-      await startSession(userRecruteur.email, res)
-
-      return res.status(200).send(toPublicUser(connectedUser))
+      await updateLastConnectionDate(email)
+      await startSession(email, res)
+      return res.status(200).send(toPublicUser(user, await getPublicUserRecruteurPropsOrError(user._id, true)))
     }
   )
 }

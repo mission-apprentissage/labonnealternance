@@ -9,7 +9,7 @@ import { SearchResultContext } from "../../../context/SearchResultContextProvide
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
-import { allJobSearchErrorText, getJobCount, partialJobSearchErrorText } from "../services/utils"
+import { allJobSearchErrorText, getJobCount } from "../services/utils"
 
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
@@ -237,7 +237,7 @@ const ResultLists = ({
       <>
         {trainingSearchError && <ErrorMessage message={trainingSearchError} />}
         {jobSearchError && partnerJobSearchError && <ErrorMessage message={allJobSearchErrorText} />}
-        {(jobSearchError ^ partnerJobSearchError) === 1 && <ErrorMessage message={partialJobSearchErrorText} />}
+        {((jobSearchError && !partnerJobSearchError) || (!jobSearchError && partnerJobSearchError)) && <ErrorMessage message={jobSearchError || partnerJobSearchError} />}
       </>
     )
   }

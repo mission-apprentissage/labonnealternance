@@ -95,7 +95,7 @@ function FinComponent(props: ComponentProps) {
   }
 
   const resendMail = () => {
-    sendValidationLink(userId.toString())
+    sendValidationLink(userId.toString(), token)
       .then(() => {
         toast({
           title: "Email envoyé.",
