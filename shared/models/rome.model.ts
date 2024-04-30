@@ -123,21 +123,11 @@ const ZRomeContextesTravail = z
   })
   .strict()
 
-const ZRomeMobiliteItem = z
-  .object({
-    appellation_source: z.string(),
-    code_ogr_appellation_source: z.string(),
-    rome_cible: z.string(),
-    code_org_rome_cible: z.string(),
-    appellation_cible: z.string(),
-    code_ogr_appellation_cible: z.string(),
-  })
-  .strict()
-
 const ZRomeMobilite = z
   .object({
-    proche: z.array(ZRomeMobiliteItem),
-    si_evolution: z.array(ZRomeMobiliteItem).nullish(),
+    rome_cible: z.string(),
+    code_org_rome_cible: z.string(),
+    order_mobilite: z.string(),
   })
   .strict()
 
@@ -150,7 +140,7 @@ export const ZReferentielRome = z
     acces_metier: z.string(),
     competences: ZRomeCompetence,
     contextes_travail: z.array(ZRomeContextesTravail).nullish(),
-    mobilites: ZRomeMobilite.nullish(),
+    mobilites: z.array(ZRomeMobilite).nullish(),
   })
   .strict()
 
