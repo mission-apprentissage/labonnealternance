@@ -94,7 +94,8 @@ export const updateEntrepriseAdmin = async (userId: string, user: any, siret = "
  * Auth API
  */
 export const sendMagiclink = async (email) => await API.post(`/login/magiclink`, email)
-export const sendValidationLink = async (userId: string) => await apiPost("/login/:userId/resend-confirmation-email", { params: { userId } })
+export const sendValidationLink = async (userId: string, token: string) =>
+  await apiPost("/login/:userId/resend-confirmation-email", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
 
 /**
  * Etablissement API

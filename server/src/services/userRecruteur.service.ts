@@ -99,9 +99,10 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
     }),
   ]
   if (organisme && "status" in organisme) {
-    organisme.status
-      .flatMap((event) => (event.status === EntrepriseStatus.ERROR ? [entrepriseStatusEventToUserRecruteurStatusEvent(event, ETAT_UTILISATEUR.ERROR)] : []))
-      .forEach((event) => oldStatus.push(event))
+    const lastStatusEvent = getLastStatusEvent(organisme.status)
+    if (lastStatusEvent?.status === EntrepriseStatus.ERROR) {
+      oldStatus.push(entrepriseStatusEventToUserRecruteurStatusEvent(lastStatusEvent, ETAT_UTILISATEUR.ERROR))
+    }
   }
 
   const roleType = role.authorized_type === AccessEntityType.OPCO ? OPCO : role.authorized_type === AccessEntityType.ADMIN ? ADMIN : null

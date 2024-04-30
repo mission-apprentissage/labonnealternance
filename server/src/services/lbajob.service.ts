@@ -77,7 +77,6 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
       if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
         const cfa = await Cfa.findOne({ siret: recruiter.cfa_delegated_siret })
         const cfaUser = await getUser2ManagingOffer(recruiter.jobs[0])
-
         recruiter.phone = cfaUser.phone
         recruiter.email = cfaUser.email
         recruiter.last_name = cfaUser.last_name
@@ -373,6 +372,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
         // si mandataire contient les données du CFA
         siret: recruiter.establishment_siret,
         name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
+        mandataire: recruiter.is_delegated,
       },
       job: {
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
