@@ -16,7 +16,7 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
 - filename: .infra/.env_server
-  checksum: ea90495a7b8a9ba9a34adc380228d4ad6f0336d1685488aaacd228bf3bd11e18
+  checksum: 114465db37369d7d08a354b8361384eaedf66acd2ba3219403bea34c63ed49e3
 - filename: .infra/env.ini
   checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
@@ -28,11 +28,11 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 094824c6c1f794ece05abf61220465e1327f71d932e6eeabfbaf6f2094e5d538
+  checksum: 5114a300586f173af59c1c06e3120f5708b09886ac83660c359755ca1b4f06ff
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: a5416822ec3c607557a69a8f20014de9fc40d8a871884bb79cc3906078c4ef15
+  checksum: 69332e43a85e702b93d00e62edf109c3b22189660de33e50e766ba15ea58f8b8
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts

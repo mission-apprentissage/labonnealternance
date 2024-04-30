@@ -116,6 +116,10 @@ const config = {
   tco: {
     baseUrl: "https://tables-correspondances.apprentissage.beta.gouv.fr",
   },
+  apiApprentissage: {
+    baseUrl: "https://api.apprentissage.beta.gouv.fr/api",
+    apiKey: env.get("LBA_API_APPRENTISSAGE_KEY").required().asString(),
+  },
   parcoursupPeriods: {
     start: {
       startMonth: 0, // January = 0

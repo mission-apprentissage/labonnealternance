@@ -370,6 +370,13 @@ export function generateOffreToken(user: IUser2, offre: IJob) {
           querystring: undefined,
         },
       }),
+      generateScope({
+        schema: zRoutes.post["/login/:userId/resend-confirmation-email"],
+        options: {
+          params: { userId: user._id.toString() },
+          querystring: undefined,
+        },
+      }),
     ],
     {
       expiresIn: "2h",
