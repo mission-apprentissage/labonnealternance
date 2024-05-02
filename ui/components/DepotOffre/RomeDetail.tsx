@@ -77,6 +77,42 @@ export const RomeDetail = ({ definition, competences, libelle, appellation, acce
             <hr />
           </>
         )}
+        {competences?.savoir_faire && (
+          <>
+            <AccordionItem key={1} id="competences">
+              {({ isExpanded }) => (
+                <>
+                  <h2>
+                    <AccordionButton>
+                      <Text fontWeight="700" flex="1" textAlign="left">
+                        Compétences qui seront acquises durant l’alternance
+                      </Text>
+                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
+                    <ul className="voeuxUl">
+                      {competences.savoir_faire.map((categorieSavoirFaire) => (
+                        <li className="voeuxUlLi" key={categorieSavoirFaire.libelle}>
+                          {categorieSavoirFaire.libelle}
+                          {categorieSavoirFaire.items?.length && (
+                            <ul className="voeuxUlLi">
+                              {categorieSavoirFaire.items.map((savoirFaire, idx) => (
+                                <li key={idx}>{savoirFaire.libelle}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionPanel>
+                </>
+              )}
+            </AccordionItem>
+            <hr />
+          </>
+        )}
+
         <AccordionItem key={2} id="accessibilite">
           {({ isExpanded }) => (
             <>
