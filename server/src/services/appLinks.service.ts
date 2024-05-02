@@ -320,7 +320,7 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
   )
 }
 
-export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establishment_id: string) {
+export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establishment_id: string, siret: string) {
   return generateAccessToken(
     user,
     [
@@ -342,6 +342,38 @@ export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establis
         schema: zRoutes.get["/user/status/:userId/by-token"],
         options: {
           params: { userId: user._id.toString() },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.delete["/user/organization/:siret"],
+        options: {
+          params: { siret },
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "2h",
+    }
+  )
+}
+
+export function generateCfaCreationToken(user: IUser2ForAccessToken, siret: string) {
+  return generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.get["/user/status/:userId/by-token"],
+        options: {
+          params: { userId: user._id.toString() },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.delete["/user/organization/:siret"],
+        options: {
+          params: { siret },
           querystring: undefined,
         },
       }),
