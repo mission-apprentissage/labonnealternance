@@ -2,7 +2,13 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 import React from "react"
 
+import LbaJobCustomDescription from "./LbaJobCustomDescription"
+
+const BADDESCRIPTION = 50
+
 const LbaJobDescription = ({ job }) => {
+  const { description, employeurDescription } = job.job
+
   const getText = () => {
     return (
       <Box pl="12px" mt={4}>
@@ -18,9 +24,24 @@ const LbaJobDescription = ({ job }) => {
     )
   }
 
+  if (description && description.length > BADDESCRIPTION && !employeurDescription) {
+    return <LbaJobCustomDescription data={description} title="Description du Métier" />
+  }
+  if (description && description.length > BADDESCRIPTION && employeurDescription) {
+    return (
+      <>
+        <LbaJobCustomDescription data={description} title="Description du Métier" />
+        <LbaJobCustomDescription data={employeurDescription} title="Description de l'employeur" />
+      </>
+    )
+  }
+  if ((!description || description.length < BADDESCRIPTION) && employeurDescription) {
+    return <LbaJobCustomDescription data={employeurDescription} title="Description de l'employeur" />
+  }
+
   return (
     job?.job?.romeDetails?.definition && (
-      <Accordion allowToggle>
+      <Accordion allowToggle defaultIndex={0}>
         <AccordionItem>
           {({ isExpanded }) => (
             <>

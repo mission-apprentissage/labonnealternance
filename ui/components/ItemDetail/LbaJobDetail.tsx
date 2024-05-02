@@ -9,10 +9,8 @@ import { formatDate } from "../../utils/strutils"
 
 import LbaJobAcces from "./LbaJobComponents/LbaJobAcces"
 import LbaJobCompetences from "./LbaJobComponents/LbaJobCompetences"
-import LbaJobCustomDescription from "./LbaJobComponents/LbaJobCustomDescription"
 import LbaJobDescription from "./LbaJobComponents/LbaJobDescription"
-
-const BADDESCRIPTION = 50
+import LbaJobQualites from "./LbaJobComponents/LbaJobQualites"
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -20,34 +18,12 @@ const getContractTypes = (contractTypes) => {
 
 const RomeDescriptions = (job) => (
   <>
-    <LbaJobDescription job={job} />
     <LbaJobCompetences job={job} />
     <LbaJobAcces job={job} />
   </>
 )
 
 const getDescriptionContext = (job: ILbaItemLbaJob) => {
-  const { description, employeurDescription } = job.job
-
-  if (description && description.length > BADDESCRIPTION && !employeurDescription) {
-    return <LbaJobCustomDescription data={description} title="Description du Métier" />
-  }
-  if (description && description.length > BADDESCRIPTION && employeurDescription) {
-    return (
-      <>
-        <LbaJobCustomDescription data={description} title="Description du Métier" />
-        <LbaJobCustomDescription data={employeurDescription} title="Description de l'employeur" />
-      </>
-    )
-  }
-  if ((!description || description.length < BADDESCRIPTION) && employeurDescription) {
-    return (
-      <>
-        <LbaJobCustomDescription data={employeurDescription} title="Description de l'employeur" />
-      </>
-    )
-  }
-
   return RomeDescriptions(job)
 }
 
@@ -126,6 +102,9 @@ const LbaJobDetail = ({ job }) => {
             pour une entreprise partenaire du centre de formation.
           </Text>
         )}
+
+        <LbaJobDescription job={job} />
+        <LbaJobQualites job={job} />
       </Box>
       <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur ${job.title}`}</Text>
