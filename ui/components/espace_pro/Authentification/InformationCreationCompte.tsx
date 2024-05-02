@@ -203,7 +203,7 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
 
   return (
     <AnimationContainer>
-      <ConfirmationCreationCompte {...popupData} {...validationPopup} isWidget={isWidget} />
+      <ConfirmationCreationCompte {...popupData} {...validationPopup} isWidget={isWidget} siret={establishment_siret} />
       <AuthentificationLayout>
         <Formulaire submitForm={submitForm} />
       </AuthentificationLayout>

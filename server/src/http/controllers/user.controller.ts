@@ -9,9 +9,9 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
-import { validateUser2Email } from "@/services/user2.service"
+import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
 
-import { Cfa, Entreprise, RoleManagement, User2 } from "../../common/model/index"
+import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
@@ -375,6 +375,32 @@ export default (server: Server) => {
         await deleteFormulaire(recruiterId)
       }
       await stopSession(req, res)
+      return res.status(200).send({})
+    }
+  )
+
+  server.delete(
+    "/user/organization/:siret",
+    {
+      schema: zRoutes.delete["/user/organization/:siret"],
+      onRequest: [server.auth(zRoutes.delete["/user/organization/:siret"])],
+    },
+    async (req, res) => {
+      const requestingUser = getUserFromRequest(req, zRoutes.delete["/user/organization/:siret"]).value
+      const userOpt = await getUser2ByEmail(requestingUser.identity.email)
+      if (!userOpt) {
+        throw Boom.notFound("user not found")
+      }
+      const { siret } = req.params
+      const entrepriseOpt = await Entreprise.findOne({ siret }).lean()
+      if (entrepriseOpt) {
+        await RoleManagement.deleteOne({ user_id: userOpt._id, authorized_id: entrepriseOpt._id.toString(), authorized_type: AccessEntityType.ENTREPRISE })
+      }
+      const cfaOpt = await Cfa.findOne({ siret }).lean()
+      if (cfaOpt) {
+        await RoleManagement.deleteOne({ user_id: userOpt._id, authorized_id: cfaOpt._id.toString(), authorized_type: AccessEntityType.CFA })
+      }
+      await Recruiter.deleteOne({ establishment_siret: siret, managed_by: userOpt._id.toString() })
       return res.status(200).send({})
     }
   )
