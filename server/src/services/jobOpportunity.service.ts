@@ -6,10 +6,8 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { getSomeFtJobs } from "./ftjob.service"
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
 import { getSomeCompanies } from "./lbacompany.service"
-
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
+import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { getLbaJobs, incrementLbaJobsViewCount } from "./lbajob.service"
-
 import { jobsQueryValidator } from "./queryValidator.service"
 
 /**
