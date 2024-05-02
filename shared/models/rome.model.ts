@@ -104,7 +104,7 @@ const ZRomeSavoir = z
 const ZRomeCategorieSavoir = z
   .object({
     libelle: z.string(),
-    items: z.object({ item: z.array(ZRomeSavoir) }).strict(),
+    items: z.array(ZRomeSavoir),
   })
   .strict()
 
@@ -119,7 +119,7 @@ const ZRomeCompetence = z
 const ZRomeContextesTravail = z
   .object({
     libelle: z.string(),
-    items: z.object({ item: z.array(ZRomeItem) }).strict(),
+    items: z.array(ZRomeItem),
   })
   .strict()
 
@@ -127,7 +127,7 @@ const ZRomeMobilite = z
   .object({
     rome_cible: z.string(),
     code_org_rome_cible: z.string(),
-    order_mobilite: z.string(),
+    ordre_mobilite: z.string(),
   })
   .strict()
 
