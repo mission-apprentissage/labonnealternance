@@ -283,16 +283,14 @@ export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
 export const getFormulaire = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter> => Recruiter.findOne(query).lean()
 
 export const getFormulaireWithRomeDetail = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter | null> => {
-  //const recruiter = Recruiter.findOne(query).lean()
-
-  const recruiter: IRecruiter[] = await Recruiter.aggregate([
+  const recruiterWithRomeDetail: IRecruiter[] = await Recruiter.aggregate([
     {
       $match: query,
     },
     ...romeDetailAggregateStages,
   ])
 
-  return recruiter.length ? recruiter[0] : null
+  return recruiterWithRomeDetail.length ? recruiterWithRomeDetail[0] : await getFormulaire(query)
 }
 
 /**
