@@ -12,6 +12,11 @@ const LbaJobCompetences = ({ job }) => {
             <Text as="span" ml={3}>
               {competence.libelle}
             </Text>
+            {competence.items.map((item, idx) => (
+              <Box key={idx} pl={6}>
+                <Text as="span">- {item.libelle}</Text>
+              </Box>
+            ))}
           </Box>
         ))}
       </Box>
