@@ -2,9 +2,9 @@ import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, H
 
 import { InfoCircle, Minus, Plus } from "@/theme/components/icons"
 
-export const RomeDetail = ({ definition, competencesMobiliseesPrincipales, libelle, appellation, accesEmploi }) => {
+export const RomeDetail = ({ definition, competences, libelle, appellation, acces_metier }) => {
   const definitionSplitted = definition.split("\\n")
-  const accesFormatted = accesEmploi.split("\\n").join("<br><br>")
+  const accesFormatted = acces_metier.split("\\n").join("<br><br>")
 
   return (
     <Box border="1px solid #000091" p={5} mb={5}>
@@ -49,30 +49,34 @@ export const RomeDetail = ({ definition, competencesMobiliseesPrincipales, libel
           )}
         </AccordionItem>
         <hr />
-        <AccordionItem key={1} id="competence">
-          {({ isExpanded }) => (
-            <>
-              <h2>
-                <AccordionButton>
-                  <Text fontWeight="700" flex="1" textAlign="left">
-                    Quelles sont les compétences visées ?
-                  </Text>
-                  {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                </AccordionButton>
-              </h2>
-              <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
-                <ul className="voeuxUl">
-                  {competencesMobiliseesPrincipales.map((x) => (
-                    <li className="voeuxUlLi" key={x.libelle}>
-                      {x.libelle}
-                    </li>
-                  ))}
-                </ul>
-              </AccordionPanel>
-            </>
-          )}
-        </AccordionItem>
-        <hr />
+        {competences?.savoir_etre_professionnel && (
+          <>
+            <AccordionItem key={1} id="qualites">
+              {({ isExpanded }) => (
+                <>
+                  <h2>
+                    <AccordionButton>
+                      <Text fontWeight="700" flex="1" textAlign="left">
+                        Qualités souhaitées pour ce métier
+                      </Text>
+                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
+                    <ul className="voeuxUl">
+                      {competences.savoir_etre_professionnel.map((x) => (
+                        <li className="voeuxUlLi" key={x.libelle}>
+                          {x.libelle}
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionPanel>
+                </>
+              )}
+            </AccordionItem>
+            <hr />
+          </>
+        )}
         <AccordionItem key={2} id="accessibilite">
           {({ isExpanded }) => (
             <>
