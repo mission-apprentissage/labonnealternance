@@ -1,31 +1,18 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZLbacError } from "../models"
-import { ZNewApplicationV2 } from "../models/applications.model"
+import { ZNewApplicationV2NEW } from "../models/applications.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
 
-import { IRoutesDef, ZResError } from "./common.routes"
+import { IRoutesDef } from "./common.routes"
 
 export const zApplicationRoutesV2 = {
   post: {
     "/application": {
       path: "/application",
       method: "post",
-      body: ZNewApplicationV2,
+      body: ZNewApplicationV2NEW,
       response: {
-        "200": z
-          .object({
-            result: z.literal("ok").openapi({
-              description: "Indique le succès ou l'échec de l'opération",
-              example: "ok",
-            }),
-            message: z.literal("messages sent"),
-          })
-          .strict(),
-        "400": z.union([ZResError, ZLbacError]).openapi({
-          description: "Bad Request",
-        }),
-        "500": z.union([ZResError, ZLbacError]).openapi({
-          description: "Internal Server Error",
+        "200": z.literal("OK").openapi({
+          description: "Indique le succès ou l'échec de l'opération",
         }),
       },
       securityScheme: { auth: "api-key", access: null, resources: {} },
