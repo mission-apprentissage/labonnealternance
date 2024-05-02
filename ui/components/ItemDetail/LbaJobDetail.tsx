@@ -1,5 +1,4 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { Box, Flex, Image, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { ILbaItemLbaJob } from "shared"
 
@@ -79,16 +78,26 @@ const LbaJobDetail = ({ job }) => {
           <Box>
             <strong>Début du contrat le : </strong> {jobStartDate}
           </Box>
+          {job?.job?.dureeContrat && (
+            <Box my={2}>
+              <strong>Durée du contrat : </strong> {job?.job?.dureeContrat} mois
+            </Box>
+          )}
           <Box my={2}>
             <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.contractType)}
           </Box>
-          <Box>
+          {job?.job?.quantiteContrat > 1 && (
+            <Box my={2}>
+              <strong>Nombre de postes disponibles: </strong> {job?.job?.quantiteContrat}
+            </Box>
+          )}
+          <Flex direction="row" wrap="wrap">
             <strong>Niveau visé en fin d&apos;études :</strong>{" "}
             {job?.diplomaLevel ? (
               <Flex direction="row" wrap="wrap">
                 {job?.diplomaLevel.split(", ").map(function (d, idx) {
                   return (
-                    <Text as="span" key={idx} fontSize="14px" textAlign="center" color="bluefrance.500" background="#e3e3fd" py={1} px={4} borderRadius="40px" ml={2} mt={1}>
+                    <Text as="span" key={idx} fontSize="14px" textAlign="center" color="bluefrance.500" background="#e3e3fd" py={1} px={4} borderRadius="40px" ml={2} mb={1}>
                       {d}
                     </Text>
                   )
@@ -97,10 +106,10 @@ const LbaJobDetail = ({ job }) => {
             ) : (
               "non défini"
             )}
-          </Box>
+          </Flex>
 
           {job?.job?.elligibleHandicap && (
-            <Flex mt={4} p={2} background="white" justifyContent="center" fontSize="12px" alignItems="center" direction="row">
+            <Flex mt={2} p={2} background="white" justifyContent="center" fontSize="12px" alignItems="center" direction="row">
               <Box width="30px" minWidth="30px" mr={2}>
                 <Image mt="2px" src="/images/info.svg" alt="" />
               </Box>
@@ -108,7 +117,7 @@ const LbaJobDetail = ({ job }) => {
             </Flex>
           )}
         </Box>
-        {job?.company?.mandataire ? (
+        {job?.company?.mandataire && (
           <Text>
             Offre publiée par{" "}
             <Text as="span" color="pinksoft.600" fontWeight={700}>
@@ -116,33 +125,6 @@ const LbaJobDetail = ({ job }) => {
             </Text>{" "}
             pour une entreprise partenaire du centre de formation.
           </Text>
-        ) : (
-          <>
-            <Text>
-              <Text as="span" color="pinksoft.600" fontWeight={700}>
-                {job.company.name}
-              </Text>{" "}
-              nous a récemment fait parvenir un besoin de recrutement :{" "}
-              <Text as="span" color="pinksoft.600" fontWeight={700}>
-                {job.title}
-              </Text>
-              . Cela signifie que l&apos;établissement est activement à la recherche d&apos;un.e candidat.e.
-            </Text>
-            <Text>Vous avez donc tout intérêt à le contacter rapidement, avant que l&apos;offre ne soit pourvue !</Text>
-            <Box mb="0">
-              Trouver et convaincre une entreprise de vous embaucher ?
-              <br />
-              <Link
-                isExternal
-                variant="basicUnderlined"
-                href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
-                aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA - nouvelle fenêtre"
-              >
-                On vous donne des conseils ici pour vous aider !
-                <ExternalLinkIcon mb="3px" ml="2px" />
-              </Link>
-            </Box>
-          </>
         )}
       </Box>
       <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
