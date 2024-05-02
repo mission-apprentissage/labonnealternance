@@ -3,7 +3,7 @@ import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } 
 import React from "react"
 
 const LbaJobAcces = ({ job }) => {
-  const accesEmploi = job?.job?.romeDetails?.accesEmploi ?? null
+  const accesEmploi = job?.job?.romeDetails?.acces_metier ?? null
 
   if (!accesEmploi) return ""
 
