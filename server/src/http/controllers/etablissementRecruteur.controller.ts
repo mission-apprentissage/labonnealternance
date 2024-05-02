@@ -11,7 +11,7 @@ import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { generateDepotSimplifieToken } from "@/services/appLinks.service"
+import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
@@ -168,7 +168,7 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
             else throw Boom.badRequest(result.message, result)
           }
-          const token = generateDepotSimplifieToken(user2ToUserForToken(result.user), result.formulaire.establishment_id)
+          const token = generateDepotSimplifieToken(user2ToUserForToken(result.user), result.formulaire.establishment_id, siret)
           return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
@@ -191,18 +191,19 @@ export default (server: Server) => {
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
+          const token = generateCfaCreationToken(user2ToUserForToken(userCfa), establishment_siret)
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
             await setUserHasToBeManuallyValidated(creationResult, origin)
             await notifyToSlack(slackNotification)
-            return res.status(200).send({ user: userCfa, validated: false })
+            return res.status(200).send({ user: userCfa, validated: false, token })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
             await autoValidateUser(creationResult, origin, "l'email correspond à un contact")
             await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
-            return res.status(200).send({ user: userCfa, validated: true })
+            return res.status(200).send({ user: userCfa, validated: true, token })
           }
           if (isEmailFromPrivateCompany(formatedEmail)) {
             const domains = getAllDomainsFromEmailList(contacts.map(({ email }) => email))
@@ -212,14 +213,14 @@ export default (server: Server) => {
               await autoValidateUser(creationResult, origin, "le nom de domaine de l'email correspond à celui d'un contact")
               await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
-              return res.status(200).send({ user: userCfa, validated: true })
+              return res.status(200).send({ user: userCfa, validated: true, token })
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
           await setUserHasToBeManuallyValidated(creationResult, origin)
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
-          return res.status(200).send({ user: userCfa, validated: false })
+          return res.status(200).send({ user: userCfa, validated: false, token })
         }
         default: {
           assertUnreachable(type)

@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 import { getLastStatusEvent, IRecruiter, parseEnumOrError, ZGlobalAddress } from "shared"
-import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
+import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
 import { ICFA } from "shared/models/cfa.model.js"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
@@ -39,13 +39,16 @@ const migrationRecruiters = async () => {
       if (cfa_delegated_siret) {
         userRecruiter = await UserRecruteur.findOne({ establishment_siret: cfa_delegated_siret }).lean()
         if (!userRecruiter) {
-          throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_siret=${cfa_delegated_siret}`)
+          recruiterOrphans.push(recruiter._id.toString())
+          await Recruiter.updateOne({ _id: recruiter._id }, { $set: { status: RECRUITER_STATUS.ARCHIVE } })
+          return
         }
       } else {
         userRecruiter = await UserRecruteur.findOne({ establishment_id }).lean()
         if (!userRecruiter) {
-          recruiterOrphans.push(establishment_id)
-          throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_id=${establishment_id}`)
+          recruiterOrphans.push(recruiter._id.toString())
+          await Recruiter.updateOne({ _id: recruiter._id }, { $set: { status: RECRUITER_STATUS.ARCHIVE } })
+          return
         }
       }
       await Recruiter.findOneAndUpdate({ _id: recruiter._id }, { managed_by: userRecruiter._id })
