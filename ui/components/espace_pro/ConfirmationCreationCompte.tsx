@@ -1,6 +1,8 @@
 import { Box, Button, Center, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext } from "react"
+import { IRecruiterJson } from "shared"
+import { IUser2Json } from "shared/models/user2.model"
 
 import { AUTHTYPE } from "../../common/contants"
 import { redirect } from "../../common/utils/router"
@@ -8,17 +10,25 @@ import { WidgetContext } from "../../context/contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
 import { deleteCfa, deleteEntreprise } from "../../utils/api"
 
-export const ConfirmationCreationCompte = (props) => {
-  const { isOpen, onClose, user, formulaire, isWidget, token } = props
+export const ConfirmationCreationCompte = (props: {
+  isOpen: boolean
+  onClose: () => void
+  user: IUser2Json
+  formulaire: IRecruiterJson
+  isWidget: boolean
+  type: "ENTREPRISE" | "CFA"
+  token?: string
+}) => {
+  const { isOpen, onClose, user, formulaire, isWidget, token, type } = props
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
 
   const validateAccountCreation = () => {
-    switch (user.type) {
+    switch (type) {
       case AUTHTYPE.ENTREPRISE:
         router.push({
           pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
-          query: { establishment_id: formulaire.establishment_id, email: user.email, type: user.type, userId: user._id, displayBanner: true, token },
+          query: { establishment_id: formulaire.establishment_id, email: user.email, type, userId: user._id.toString(), displayBanner: true, token },
         })
         break
       case AUTHTYPE.CFA:
@@ -32,8 +42,8 @@ export const ConfirmationCreationCompte = (props) => {
   }
 
   const deleteAccount = async () => {
-    if (user.type === AUTHTYPE.ENTREPRISE) {
-      await deleteEntreprise(user._id, formulaire._id)
+    if (type === AUTHTYPE.ENTREPRISE) {
+      await deleteEntreprise(user._id.toString(), formulaire._id.toString())
     } else {
       await deleteCfa(user._id)
     }

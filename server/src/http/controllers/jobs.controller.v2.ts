@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { IJob, ILbaItemLbaJob, ILbaItemFtJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { IJob, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -26,7 +26,7 @@ import {
 import { getFtJobFromIdV2 } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../services/lbacompany.service"
-import { addOffreDetailView, getLbaJobByIdV2, incrementLbaJobsViewCount } from "../../services/lbajob.service"
+import { addOffreDetailView, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getFicheMetierRomeV3FromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
@@ -348,12 +348,6 @@ export default (server: Server) => {
       if ("error" in result) {
         return res.status(500).send(result)
       }
-
-      if ("matchas" in result && result.matchas) {
-        const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
-      }
-
       return res.status(200).send(result)
     }
   )
@@ -372,12 +366,6 @@ export default (server: Server) => {
       if ("error" in result) {
         return res.status(500).send(result)
       }
-
-      if ("matchas" in result && result.matchas) {
-        const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
-      }
-
       return res.status(200).send(result)
     }
   )

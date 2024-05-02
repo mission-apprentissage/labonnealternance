@@ -1,13 +1,21 @@
-import axios from "axios"
+import { ILbaItemFtJob, zRoutes } from "@/../shared"
+import { z } from "zod"
 
-import { offreApi } from "@/components/SearchForTrainingsAndJobs/services/utils"
+import { apiGet } from "@/utils/api.utils"
 
-export default async function fetchFtJobDetails(job) {
-  const res = null
-  if (!job) {
-    return res
+const zodSchema = zRoutes.get["/v1/jobs/job/:id"].response["200"]
+
+const fetchFtJobDetails = async (job: { id: string }): Promise<ILbaItemFtJob> => {
+  const response = await apiGet("/v1/jobs/job/:id", { params: { id: job.id }, querystring: {} })
+
+  const typedResponse = response as z.output<typeof zodSchema>
+  const [firstFtJob] = typedResponse?.peJobs ?? []
+  if (firstFtJob) {
+    firstFtJob.detailsLoaded = true
+    return firstFtJob
+  } else {
+    throw new Error("unexpected_error")
   }
-  const ftJobApi = `${offreApi}/${encodeURIComponent(job.id)}`
-  const response = await axios.get(ftJobApi)
-  return response.data.peJobs[0]
 }
+
+export default fetchFtJobDetails

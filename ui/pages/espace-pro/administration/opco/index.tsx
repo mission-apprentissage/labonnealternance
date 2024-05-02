@@ -73,10 +73,10 @@ function AdministrationOpco() {
           row: { id },
         },
       }) => {
-        const { establishment_raison_sociale, establishment_siret, _id } = data[id]
+        const { establishment_raison_sociale, establishment_siret, _id, organizationId } = data[id]
         return (
           <Flex direction="column">
-            <Link fontWeight="700" href={`/espace-pro/administration/opco/entreprise/${_id}`}>
+            <Link fontWeight="700" href={`/espace-pro/administration/opco/entreprise/${_id}/entreprise/${organizationId}`}>
               {establishment_raison_sociale}
             </Link>
             <Text color="#666666" fontSize="14px">
@@ -162,7 +162,7 @@ function AdministrationOpco() {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link href={`/espace-pro/administration/opco/entreprise/${row._id}`}>Voir les informations</Link>
+                      <Link href={`/espace-pro/administration/opco/entreprise/${row._id}/entreprise/${row.organizationId}`}>Voir les informations</Link>
                     </MenuItem>
                     <MenuItem>
                       <Link href={`/espace-pro/administration/opco/entreprise/${row.establishment_siret}/${row.establishment_id}`}>Voir les offres</Link>

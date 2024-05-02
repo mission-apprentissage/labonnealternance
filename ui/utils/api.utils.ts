@@ -111,6 +111,10 @@ export class ApiError extends Error {
     return this.context
   }
 
+  isNotFoundError(): boolean {
+    return this.context.statusCode === 404
+  }
+
   static async build(path: string, requestHeaders: Headers, options: WithQueryStringAndPathParam, res: Response): Promise<ApiError> {
     let message = res.status === 0 ? "Network Error" : res.statusText
     let name = "Api Error"
@@ -206,8 +210,4 @@ export async function apiDelete<P extends keyof IDeleteRoutes, S extends IDelete
     throw await ApiError.build(path, headers, options, res)
   }
   return res.json()
-}
-
-export function removeUndefinedFields<T extends Record<string, any>>(obj: T): T {
-  return Object.fromEntries(Object.entries(obj).filter(([_, value]) => value !== undefined)) as T
 }

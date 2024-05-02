@@ -19,10 +19,15 @@ interface IEtablissementsToInviteToPremium {
   count: number
 }
 
-export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
+export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate: boolean = false) => {
   logger.info("Cron #inviteEtablissementParcoursupToPremiumFollowUp started.")
 
   let count = 0
+  let clause = [{ premium_invitation_date: { $ne: null } }, { premium_invitation_date: { $lte: dayjs().subtract(10, "days").toDate() } }]
+
+  if (bypassDate) {
+    clause = [{ premium_invitation_date: { $ne: null } }]
+  }
 
   const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await Etablissement.aggregate([
     {
@@ -33,7 +38,7 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async () => {
         premium_activation_date: null,
         premium_refusal_date: null,
         premium_follow_up_date: null,
-        $and: [{ premium_invitation_date: { $ne: null } }, { premium_invitation_date: { $lte: dayjs().subtract(10, "days").toDate() } }],
+        $and: clause,
       },
     },
     {
