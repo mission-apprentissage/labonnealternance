@@ -11,6 +11,7 @@ import LbaJobAcces from "./LbaJobComponents/LbaJobAcces"
 import LbaJobCompetences from "./LbaJobComponents/LbaJobCompetences"
 import LbaJobDescription from "./LbaJobComponents/LbaJobDescription"
 import LbaJobQualites from "./LbaJobComponents/LbaJobQualites"
+import LbaJobTechniques from "./LbaJobComponents/LbaJobTechniques"
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -19,6 +20,7 @@ const getContractTypes = (contractTypes) => {
 const RomeDescriptions = (job) => (
   <>
     <LbaJobCompetences job={job} />
+    <LbaJobTechniques job={job} />
     <LbaJobAcces job={job} />
   </>
 )
@@ -107,7 +109,7 @@ const LbaJobDetail = ({ job }) => {
         <LbaJobQualites job={job} />
       </Box>
       <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
-        <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur ${job.title}`}</Text>
+        <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
         <Box data-testid="lbb-component">
           <Box mb={4}>{getDescriptionContext(job)}</Box>
         </Box>

@@ -2,11 +2,11 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 import React from "react"
 
-const LbaJobCompetences = ({ job }) => {
+const LbaJobTechniques = ({ job }) => {
   const getText = () => {
     const res = (
       <Box pl="12px" mt={4}>
-        {job.job.romeDetails.competences.savoir_faire.map((competence) => (
+        {job.job.romeDetails.competences.savoirs.map((competence) => (
           <Box key={competence.code} mt={2}>
             &bull;
             <Text as="span" ml={3}>
@@ -21,14 +21,14 @@ const LbaJobCompetences = ({ job }) => {
   }
 
   return (
-    job?.job?.romeDetails?.competences?.savoir_faire?.length && (
+    job?.job?.romeDetails?.competences?.savoirs?.length && (
       <Accordion allowToggle>
         <AccordionItem>
           {({ isExpanded }) => (
             <>
               <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
                 <Box as="span" flex="1" textAlign="left">
-                  Compétences qui seront acquises durant l’alternance
+                  Domaines et techniques de travail
                 </Box>
                 {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
               </AccordionButton>
@@ -42,4 +42,4 @@ const LbaJobCompetences = ({ job }) => {
   )
 }
 
-export default LbaJobCompetences
+export default LbaJobTechniques

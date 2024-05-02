@@ -5,7 +5,7 @@ import React from "react"
 const LbaJobAcces = ({ job }) => {
   const accesEmploi = job?.job?.romeDetails?.acces_metier ?? null
 
-  if (!accesEmploi) return ""
+  if (!accesEmploi) return <></>
 
   const accesFormatted = accesEmploi.split("\\n").join("<br><br>")
 
