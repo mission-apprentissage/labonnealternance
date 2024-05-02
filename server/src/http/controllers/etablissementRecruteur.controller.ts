@@ -22,11 +22,10 @@ import {
   validateCreationEntrepriseFromCfa,
 } from "@/services/etablissement.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
+import { emailHasActiveRole, getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
 import {
   autoValidateUser,
   createOrganizationUser,
-  getUserRecruteurByEmail,
   isUserEmailChecked,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
@@ -177,8 +176,7 @@ export default (server: Server) => {
           const origin = req.body.origin ?? "formulaire public de création"
           const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
-          const userRecruteurOpt = await getUserRecruteurByEmail(formatedEmail)
-          if (userRecruteurOpt) {
+          if (await emailHasActiveRole(formatedEmail)) {
             throw Boom.forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }
 
@@ -195,7 +193,7 @@ export default (server: Server) => {
           }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            await setUserHasToBeManuallyValidated(creationResult, origin, "pas d'email de contact")
+            await setUserHasToBeManuallyValidated(creationResult, origin)
             await notifyToSlack(slackNotification)
             return res.status(200).send({ user: userCfa, validated: false })
           }
@@ -218,7 +216,7 @@ export default (server: Server) => {
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          await setUserHasToBeManuallyValidated(creationResult, origin, "pas de validation automatique possible")
+          await setUserHasToBeManuallyValidated(creationResult, origin)
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
           return res.status(200).send({ user: userCfa, validated: false })
