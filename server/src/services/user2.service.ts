@@ -1,8 +1,10 @@
 import Boom from "boom"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { AccessStatus } from "shared/models/roleManagement.model"
 import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
+import { getLastStatusEvent } from "shared/utils"
 
-import { User2 } from "@/common/model"
+import { RoleManagement, User2 } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 
 import { isUserEmailChecked } from "./userRecruteur.service"
@@ -74,3 +76,15 @@ export const validateUser2Email = async (id: string): Promise<IUser2> => {
 }
 
 export const getUser2ByEmail = async (email: string): Promise<IUser2 | null> => User2.findOne({ email: email.toLocaleLowerCase() }).lean()
+
+export const emailHasActiveRole = async (email: string) => {
+  const userOpt = await getUser2ByEmail(email)
+  if (!userOpt) return
+  const roles = await RoleManagement.find({ user_id: userOpt._id }).lean()
+  const activeStatus = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]
+  const activeRoles = roles.filter((role) => {
+    const roleStatus = getLastStatusEvent(role.status)?.status
+    return roleStatus ? activeStatus.includes(roleStatus) : false
+  })
+  return Boolean(activeRoles.length)
+}
