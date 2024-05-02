@@ -41,11 +41,11 @@ import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
+import { emailHasActiveRole } from "./user2.service"
 import {
   UserAndOrganization,
   autoValidateUser as authorizeUserOnEntreprise,
   createOrganizationUser,
-  getUserRecruteurByEmail,
   isUserEmailChecked,
   setEntrepriseInError,
   setEntrepriseValid,
@@ -565,11 +565,11 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
 
 export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOrganization, origin: string) => {
   const { isValid: validated, validator } = await isCompanyValid(userAndEntreprise)
-  const reason = `demande de validation à : ${validator}`
+  const reason = `validaton par : ${validator}`
   if (validated) {
     await authorizeUserOnEntreprise(userAndEntreprise, origin, reason)
   } else {
-    await setUserHasToBeManuallyValidated(userAndEntreprise, origin, reason)
+    await setUserHasToBeManuallyValidated(userAndEntreprise, origin)
   }
   return { validated }
 }
@@ -700,26 +700,25 @@ export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: strin
 const isCfaCreationValid = async (siret: string): Promise<boolean> => {
   const cfa = await Cfa.findOne({ siret }).lean()
   if (!cfa) return true
-  const role = await RoleManagement.findOne({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
-  if (!role) return true
-  if (getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED) {
-    return false
-  }
-  return true
+  const roles = await RoleManagement.find({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
+  const managingAccess = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]
+  const managingRoles = roles.filter((role) => {
+    const roleStatus = getLastStatusEvent(role.status)?.status
+    return roleStatus ? managingAccess.includes(roleStatus) : false
+  })
+  return managingRoles.length ? false : true
 }
 
-export const getOrganismeDeFormationDataFromSiret = async (siret: string, shouldValidate = true) => {
-  if (shouldValidate) {
-    const isValid = await isCfaCreationValid(siret)
-    if (!isValid) {
-      throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
-    }
+export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
+  const isValid = await isCfaCreationValid(siret)
+  if (!isValid) {
+    throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
   }
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
     throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: BusinessErrorCodes.UNKNOWN })
   }
-  if (shouldValidate && referentiel.etat_administratif === "fermé") {
+  if (referentiel.etat_administratif === "fermé") {
     throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: BusinessErrorCodes.CLOSED })
   }
   if (!referentiel.adresse) {
@@ -728,7 +727,7 @@ export const getOrganismeDeFormationDataFromSiret = async (siret: string, should
     })
   }
   const formattedReferentiel = formatReferentielData(referentiel)
-  if (shouldValidate && !formattedReferentiel.is_qualiopi) {
+  if (!formattedReferentiel.is_qualiopi) {
     throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: BusinessErrorCodes.NOT_QUALIOPI, ...formattedReferentiel })
   }
   return formattedReferentiel
@@ -767,8 +766,7 @@ export const entrepriseOnboardingWorkflow = {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
-    const userRecruteurOpt = await getUserRecruteurByEmail(formatedEmail)
-    if (userRecruteurOpt) {
+    if (await emailHasActiveRole(formatedEmail)) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
     let entrepriseData: Partial<EntrepriseData>

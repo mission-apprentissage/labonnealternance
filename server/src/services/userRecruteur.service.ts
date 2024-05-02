@@ -76,7 +76,6 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
 }
 
 export const getUserRecruteurById = (id: string | ObjectIdType) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
-export const getUserRecruteurByEmail = (email: string) => getUserRecruteurByUser2Query({ email })
 
 export const userAndRoleAndOrganizationToUserRecruteur = (
   user: IUser2,
@@ -99,9 +98,10 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
     }),
   ]
   if (organisme && "status" in organisme) {
-    organisme.status
-      .flatMap((event) => (event.status === EntrepriseStatus.ERROR ? [entrepriseStatusEventToUserRecruteurStatusEvent(event, ETAT_UTILISATEUR.ERROR)] : []))
-      .forEach((event) => oldStatus.push(event))
+    const lastStatusEvent = getLastStatusEvent(organisme.status)
+    if (lastStatusEvent?.status === EntrepriseStatus.ERROR) {
+      oldStatus.push(entrepriseStatusEventToUserRecruteurStatusEvent(lastStatusEvent, ETAT_UTILISATEUR.ERROR))
+    }
   }
 
   const roleType = role.authorized_type === AccessEntityType.OPCO ? OPCO : role.authorized_type === AccessEntityType.ADMIN ? ADMIN : null
@@ -374,7 +374,7 @@ export const autoValidateUser = async (props: UserAndOrganization, origin: strin
   await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED, origin, reason)
 }
 
-export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, origin: string, reason: string) => {
+export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, origin: string, reason = "pas de validation automatique possible") => {
   await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION, origin, reason)
 }
 
