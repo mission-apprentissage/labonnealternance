@@ -9,8 +9,8 @@ import __dirname from "../../../common/dirname.js"
 import { ReferentielRome } from "../../../common/model/index.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 
-const getContextesTravailItem = (contexteTravail: { libelle: string; items: { item: any | any[] } }) => {
-  const tempsItems = !(contexteTravail.items.item instanceof Array) ? [contexteTravail.items.item] : contexteTravail.items.item
+const getGenericItem = (genericItem: { libelle: string; items: { item: any | any[] } }) => {
+  const tempsItems = !(genericItem.items.item instanceof Array) ? [genericItem.items.item] : genericItem.items.item
   return tempsItems.map((x) => x)
 }
 
@@ -35,7 +35,7 @@ const getContextesTravail = (contextesTravail) => {
   const tempContextes = contextesTravail.type_contexte instanceof Array ? contextesTravail.type_contexte : [contextesTravail.type_contexte]
 
   const tempContextesWithItems = tempContextes.map((contexte) => {
-    const items = getContextesTravailItem(contexte)
+    const items = getGenericItem(contexte)
     return {
       libelle: contexte.libelle,
       items,
@@ -45,40 +45,34 @@ const getContextesTravail = (contextesTravail) => {
   return tempContextesWithItems
 }
 
-const getCompetences = (competences, rome) => {
-  //  else {
-  //   if (!(contextes_travail?.type_contexte instanceof Array)) {
-  //     console.log("pas array ", rome, contextes_travail.type_contexte)
-  //   }
-  // }
-
-  /**
-   
-    competences toujours là
-    savoirs, savoir_faire, savoir_etre_professionnel toujours là
-   
-   */
-
-  if (!competences?.savoirs) {
-    console.log("pas savoir faire ", rome.code_rome)
+const getSavoirs = (savoirs) => {
+  if (!(savoirs instanceof Array)) {
+    return [{ libelle: savoirs.libelle, items: getGenericItem(savoirs) }]
   }
 
+  const listeSavoirs = savoirs.map((savoir) => {
+    const items = getGenericItem(savoir)
+    return {
+      libelle: savoir.libelle,
+      items,
+    }
+  })
+  return listeSavoirs
+}
+
+const getSavoirEtre = (savoirEtre) => {
+  if (!savoirEtre?.enjeux) {
+    return null
+  }
+
+  return getGenericItem(savoirEtre.enjeux.enjeu)
+}
+
+const getCompetences = (competences) => {
   return {
-    savoir_faire: competences?.savoir_faire?.enjeux
-      ? competences.savoir_faire.enjeux.enjeu instanceof Array
-        ? competences.savoir_faire.enjeux.enjeu.map((x) => x)
-        : [competences.savoir_faire.enjeux.enjeu]
-      : null,
-    savoir_etre_professionnel: competences?.savoir_etre_professionnel?.enjeux
-      ? competences.savoir_etre_professionnel.enjeux?.enjeu?.items?.item instanceof Array
-        ? competences.savoir_etre_professionnel.enjeux.enjeu.items.item.map((x) => x)
-        : [competences.savoir_etre_professionnel.enjeux.enjeu.items.item]
-      : null,
-    savoirs: competences?.savoirs?.categories
-      ? competences.savoirs.categories?.categorie instanceof Array
-        ? competences.savoirs.categories.categorie.map((x) => x)
-        : [competences.savoirs.categories.categorie]
-      : null,
+    savoir_faire: getSavoirs(competences.savoir_faire.enjeux.enjeu),
+    savoir_etre_professionnel: getSavoirEtre(competences.savoir_etre_professionnel),
+    savoirs: getSavoirs(competences.savoirs.categories.categorie),
   }
 }
 
@@ -109,7 +103,7 @@ const formatRawData = ({
     appellations: appellations.appellation instanceof Array ? appellations.appellation.map((x) => x) : [appellations.appellation],
     mobilites: mobilites && mobilites?.mobilite ? (mobilites.mobilite instanceof Array ? mobilites.mobilite.map((x) => x) : [mobilites.mobilite]) : null,
     contextes_travail: getContextesTravail(contextes_travail),
-    competences: getCompetences(competences, rome),
+    competences: getCompetences(competences),
   }
 }
 
