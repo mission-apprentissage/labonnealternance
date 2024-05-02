@@ -1,3 +1,5 @@
+import { isEmailBurner } from "burner-email-providers"
+
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem"
 import { removeUrlsFromText } from "../helpers/common"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
@@ -198,6 +200,28 @@ export const ZNewApplicationV2 = ZApplication.extend({
   })
   .openapi("ApplicationUi")
 
+export const ZNewApplicationV2NEW = ZApplication.pick({ applicant_first_name: true, applicant_last_name: true, applicant_email: true, applicant_phone: true, company_siret: true })
+  .extend({
+    message: ZApplication.shape.applicant_message_to_company.optional(),
+    applicant_file_name: ZApplication.shape.applicant_attachment_name,
+    applicant_file_content: z.string().max(4215276).openapi({
+      description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+      example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
+    }),
+    caller: zCallerParam, // comes from credentials, to add in service/route
+    job_id: ZApplication.shape.job_id.optional(),
+  })
+  .refine(
+    ({ applicant_email }) => {
+      if (isEmailBurner(applicant_email)) {
+        return false
+      }
+      return true
+    },
+    { message: "L'email est invalide." }
+  )
+  .openapi("V2 - Application")
+
 export const ZUsedNewApplicationV2 = ZNewApplication.pick({
   caller: true,
   applicant_email: true,
@@ -214,6 +238,8 @@ export const ZUsedNewApplicationV2 = ZNewApplication.pick({
   secret: true,
   company_email: true,
 })
+
+export type INewApplicationV2NEW = z.output<typeof ZNewApplicationV2NEW>
 
 export type INewApplicationV2 = z.output<typeof ZNewApplicationV2>
 
