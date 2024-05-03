@@ -315,7 +315,6 @@ export const sendApplicationV2 = async ({
 
     await application.save()
   } catch (err) {
-    logger.error("Error sending application", err)
     sentryCaptureException(err)
     if (caller) {
       manageApiError({
