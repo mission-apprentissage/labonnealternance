@@ -692,6 +692,13 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "custom_job_title": {
+            "description": "Titre personnalisée de l'offre",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "delegations": {
             "description": "Liste des délégations",
             "items": {
@@ -711,11 +718,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "is_multi_published": {
+            "default": true,
             "description": "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
-            "type": [
-              "boolean",
-              "null",
-            ],
+            "type": "boolean",
           },
           "job_count": {
             "default": 1,
@@ -909,6 +914,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "rome_code",
           "job_status",
           "job_type",
+          "is_multi_published",
         ],
         "type": "object",
       },
@@ -5480,6 +5486,13 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "null",
                     ],
                   },
+                  "custom_job_title": {
+                    "description": "Titre personnalisée de l'offre",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
                   "is_disabled_elligible": {
                     "default": false,
                     "description": "Poste ouvert aux personnes en situation de handicap",
@@ -5487,6 +5500,11 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "boolean",
                       "null",
                     ],
+                  },
+                  "is_multi_published": {
+                    "default": true,
+                    "description": "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
+                    "type": "boolean",
                   },
                   "job_count": {
                     "default": 1,
@@ -5567,6 +5585,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
+                  "is_multi_published",
                   "job_start_date",
                   "appellation_code",
                 ],
@@ -9043,6 +9062,13 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "null",
                     ],
                   },
+                  "custom_job_title": {
+                    "description": "Titre personnalisée de l'offre",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
                   "is_disabled_elligible": {
                     "default": false,
                     "description": "Poste ouvert aux personnes en situation de handicap",
@@ -9050,6 +9076,11 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "boolean",
                       "null",
                     ],
+                  },
+                  "is_multi_published": {
+                    "default": true,
+                    "description": "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
+                    "type": "boolean",
                   },
                   "job_count": {
                     "default": 1,
@@ -9130,6 +9161,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
+                  "is_multi_published",
                   "job_start_date",
                   "appellation_code",
                 ],

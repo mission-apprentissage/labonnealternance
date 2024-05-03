@@ -235,6 +235,21 @@ const obfuscateUser = async () => {
   logger.info(`obfuscating users done`)
 }
 
+const obfuscateUsersWithAccounts = async () => {
+  logger.info(`obfuscating userswithaccounts`)
+  const users: AsyncIterable<IUser> = await db.collection("userswithaccounts").find({})
+  for await (const user of users) {
+    const email = getFakeEmail()
+    const replacement = {
+      $set: { email, phone: "0601010106", last_name: "nom_famille", first_name: "prenom" },
+      $push: { status: { granted_by: "server", date: new Date(), reason: "ofuscation", status: "DESACTIVE", validation_type: "AUTOMATIQUE" } },
+    }
+    await db.collection("userswithaccounts").findOneAndUpdate({ _id: user._id }, replacement)
+  }
+
+  logger.info(`obfuscating users done`)
+}
+
 export async function obfuscateCollections(): Promise<void> {
   if (config.env === "production") {
     // prévention :)
@@ -254,5 +269,6 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateFormations()
   await obfuscateRecruiter()
   await obfuscateUser()
+  await obfuscateUsersWithAccounts()
   await Optout.deleteMany({})
 }
