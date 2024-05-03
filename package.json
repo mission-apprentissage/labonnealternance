@@ -42,6 +42,7 @@
     "postinstall": "husky install",
     "talisman:add-exception": "yarn node-talisman --githook pre-commit -i",
     "test": "vitest",
+    "test:openapi": "vitest helpers/openapi/generateOpenapi.test.ts",
     "test:ci": "yarn test --run",
     "test:ci:coverage": "yarn test:ci --coverage.include='ui' --coverage.include='server/src' --coverage.include='shared' --coverage.provider='v8' --coverage.enabled --coverage.all --coverage.exclude='**/tests' --coverage.exclude='**/.next'",
     "test:watch": "vitest --watch",

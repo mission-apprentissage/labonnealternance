@@ -22,8 +22,8 @@ import { filterJobsByOpco } from "./opco.service"
 const { ObjectId } = pkg
 
 const JOB_SEARCH_LIMIT = 250
-
-const coordinatesOfFrance = [2.213749, 46.227638]
+const FRANCE_LATITUDE = 46.227638
+const FRANCE_LONGITUDE = 2.213749
 
 /**
  * @description get filtered jobs with rome_detail from mongo
@@ -34,6 +34,7 @@ const coordinatesOfFrance = [2.213749, 46.227638]
  * @param {string[]} payload.romes
  * @param {string} payload.niveau
  * @returns {Promise<IRecruiter[]>}
+ * @description get OFFRES_EMPLOI_LBA
  */
 export const getJobs = async ({
   distance,
@@ -41,6 +42,7 @@ export const getJobs = async ({
   lon,
   romes,
   niveau,
+  caller,
   isMinimalData,
 }: {
   distance: number
@@ -48,6 +50,7 @@ export const getJobs = async ({
   lon: string
   romes: string[]
   niveau: string
+  caller?: string | null
   isMinimalData: boolean
 }): Promise<IRecruiter[]> => {
   const clauses: any[] = [{ "jobs.job_status": JOB_STATUS.ACTIVE }, { "jobs.rome_code": { $in: romes } }, { status: RECRUITER_STATUS.ACTIF }]
@@ -63,6 +66,10 @@ export const getJobs = async ({
         },
       ],
     })
+  }
+
+  if (caller) {
+    clauses.push({ "jobs.is_multi_published": true })
   }
 
   const stages: any[] = [
@@ -117,7 +124,7 @@ export const getJobs = async ({
 }
 
 /**
- * Retourne les offres LBA correspondantes aux critères de recherche
+ * @description Retourne les OFFRES_EMPLOI_LBA correspondantes aux critères de recherche
  */
 export const getLbaJobs = async ({
   romes = "",
@@ -147,24 +154,22 @@ export const getLbaJobs = async ({
   }
   try {
     const hasLocation = Boolean(latitude)
-
+    
     const distance = hasLocation ? radius : 21000
-
-    const params: any = {
+    
+    const params = {
+      caller,
       romes: romes?.split(","),
       distance,
-      lat: hasLocation ? latitude : coordinatesOfFrance[1],
-      lon: hasLocation ? longitude : coordinatesOfFrance[0],
+      lat: hasLocation ? latitude : FRANCE_LATITUDE,
+      lon: hasLocation ? longitude : FRANCE_LONGITUDE,
+      niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
       isMinimalData,
-    }
-
-    if (diploma) {
-      params.niveau = NIVEAUX_POUR_LBA[diploma]
     }
 
     const jobs = await getJobs(params)
 
-    const ids: string[] = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
+    const ids = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
