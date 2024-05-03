@@ -313,7 +313,7 @@ export const sendApplicationV2 = async ({
       throw Boom.internal("Email entreprise destinataire rejeté.")
     }
 
-    // await application.save()
+    await application.save()
   } catch (err) {
     logger.error("Error sending application", err)
     sentryCaptureException(err)
