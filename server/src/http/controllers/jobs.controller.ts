@@ -149,12 +149,12 @@ export default (server: Server) => {
         return res.send({ error: true, message: "ROME Code details could not be retrieved" })
       }
 
-      const appellation = romeDetails.fiche_metier.appellations.find(({ code }) => code === body.appellation_code) as Appellation
+      const appellation = romeDetails?.appellations ? (romeDetails.appellations.find(({ code_ogr }) => code_ogr === body.appellation_code) as Appellation) : null
 
       const job: Partial<IJob> = {
-        rome_label: romeDetails.fiche_metier.libelle,
-        rome_appellation_label: appellation.libelle,
-        rome_code: [romeDetails.rome_code],
+        rome_label: romeDetails.rome.intitule,
+        rome_appellation_label: appellation && appellation.libelle,
+        rome_code: [romeDetails.rome.code_rome],
         job_level_label: body.job_level_label,
         job_start_date: new Date(body.job_start_date),
         job_description: body.job_description,

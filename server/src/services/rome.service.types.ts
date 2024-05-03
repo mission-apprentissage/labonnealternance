@@ -99,10 +99,9 @@ export interface AppellationEsco {
 }
 
 export interface Appellation {
-  code: string
+  code_ogr: string
   libelle: string
-  libelleCourt: string
-  particulier: boolean
+  libelle_court: string
 }
 
 export interface Theme {
