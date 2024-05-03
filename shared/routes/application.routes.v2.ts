@@ -65,12 +65,6 @@ export const zApplicationRoutesV2 = {
         }),
       },
       securityScheme: null,
-      openapi: {
-        tags: ["V2 - Applications"] as string[],
-        description: `Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.\n${rateLimitDescription(
-          { max: 5, timeWindow: "5s" }
-        )}`,
-      },
     },
   },
 } as const satisfies IRoutesDef
