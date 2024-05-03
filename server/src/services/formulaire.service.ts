@@ -2,7 +2,7 @@ import Boom from "boom"
 import pkg from "mongodb"
 import type { ObjectId as ObjectIdType } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IDelegation, IJob, IJobWithRomeDetails, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
+import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -606,7 +606,7 @@ export const getJob = async (id: string | ObjectIdType): Promise<IJob | null> =>
 /**
  * @description Get job offer by its id.
  */
-export const getJobWithRomeDetail = async (id: string | ObjectIdType): Promise<IJobWithRomeDetails | null> => {
+export const getJobWithRomeDetail = async (id: string | ObjectIdType): Promise<IJobWithRomeDetail | null> => {
   const offre = await getOffre(id)
   if (!offre) return null
 

@@ -77,6 +77,12 @@ export const ZJob = ZJobFields.extend({
   .strict()
   .openapi("Job")
 
+export const ZJobWithRomeDetail = ZJob.extend({
+  rome_detail: ZReferentielRome.nullish(),
+})
+  .strict()
+  .openapi("JobWithRomeDetail")
+
 export const ZJobStartDateCreate = (now: dayjs.Dayjs = dayjs.tz()) =>
   // Le changement de jour se fait à minuit (heure de Paris)
   ZJobFields.shape.job_start_date.refine((date) => dayjs.tz(date).isSameOrAfter(dayjs.tz(now).startOf("days")), {
@@ -106,6 +112,7 @@ export type IDelegation = z.output<typeof ZDelegation>
 
 export type IJob = z.output<typeof ZJob>
 export type IJobWritable = z.output<typeof ZJobWrite>
+export type IJobWithRomeDetail = z.output<typeof ZJobWithRomeDetail>
 export type IJobJson = Jsonify<z.input<typeof ZJob>>
 
 export const ZNewDelegations = z
