@@ -232,8 +232,6 @@ export const sendApplicationV2 = async ({
 }): Promise<void> => {
   let LbaJob: ILbaJob = { type: null as any, job: null as any, recruiter: null }
 
-  console.log({ burner: isEmailBurner(newApplication.applicant_email) })
-
   if (isEmailBurner(newApplication.applicant_email)) {
     throw Boom.badRequest(BusinessErrorCodes.BURNER)
   }
