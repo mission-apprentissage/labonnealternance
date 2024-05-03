@@ -233,6 +233,10 @@ export const sendApplicationV2 = async ({
   try {
     let LbaJob: ILbaJob = { type: null as any, job: null as any, recruiter: null }
 
+    if (isEmailBurner(newApplication.applicant_email)) {
+      throw Boom.badRequest("l'email est invalide.")
+    }
+
     if ("company_siret" in newApplication) {
       const LbaRecruteur = await LbaCompany.findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } }).lean() // email can be null in collection
       if (!LbaRecruteur) {

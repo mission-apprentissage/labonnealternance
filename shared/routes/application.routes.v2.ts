@@ -1,5 +1,3 @@
-import { isEmailBurner } from "burner-email-providers"
-
 import { z } from "../helpers/zodWithOpenApi"
 import { ZApplication } from "../models/applications.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
@@ -21,15 +19,6 @@ const ZNewApplicationV2NEWCompanySiret = ZApplication.pick({
       example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
     }),
   })
-  .refine(
-    ({ applicant_email }) => {
-      if (isEmailBurner(applicant_email)) {
-        return false
-      }
-      return true
-    },
-    { message: "L'email est invalide." }
-  )
   .openapi("V2 - Application")
 
 const ZNewApplicationV2NEWJobId = ZApplication.pick({ applicant_first_name: true, applicant_last_name: true, applicant_email: true, applicant_phone: true })
@@ -42,15 +31,6 @@ const ZNewApplicationV2NEWJobId = ZApplication.pick({ applicant_first_name: true
     }),
     job_id: z.string(),
   })
-  .refine(
-    ({ applicant_email }) => {
-      if (isEmailBurner(applicant_email)) {
-        return false
-      }
-      return true
-    },
-    { message: "L'email est invalide." }
-  )
   .openapi("V2 - Application")
 
 export type INewApplicationV2NEWCompanySiret = z.output<typeof ZNewApplicationV2NEWCompanySiret>
@@ -68,6 +48,23 @@ export const zApplicationRoutesV2 = {
         }),
       },
       securityScheme: { auth: "api-key", access: null, resources: {} },
+      openapi: {
+        tags: ["V2 - Applications"] as string[],
+        description: `Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.\n${rateLimitDescription(
+          { max: 5, timeWindow: "5s" }
+        )}`,
+      },
+    },
+    "/_private/application": {
+      path: "/_private/application",
+      method: "post",
+      body: z.union([ZNewApplicationV2NEWCompanySiret, ZNewApplicationV2NEWJobId]),
+      response: {
+        "200": z.literal("OK").openapi({
+          description: "Indique le succès ou l'échec de l'opération",
+        }),
+      },
+      securityScheme: null,
       openapi: {
         tags: ["V2 - Applications"] as string[],
         description: `Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.\n${rateLimitDescription(
