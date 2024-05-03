@@ -2,13 +2,14 @@ import Boom from "boom"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
-import { IApplication, IJob, ILbaCompany, INewApplicationV2, INewApplicationV2NEW, IRecruiter, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
+import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { IUser2 } from "shared/models/user2.model"
+import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { UserForAccessToken, user2ToUserForToken } from "@/security/accessTokenService"
@@ -222,27 +223,30 @@ export const sendApplication = async ({
 /**
  * Send an application email to a company and a confirmation email to the applicant
  */
-export const sendApplicationV2 = async ({ newApplication, caller }: { newApplication: INewApplicationV2NEW; caller?: string }): Promise<void> => {
+export const sendApplicationV2 = async ({
+  newApplication,
+  caller,
+}: {
+  newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId
+  caller?: string
+}): Promise<void> => {
   try {
     let LbaJob: ILbaJob = { type: null as any, job: null as any, recruiter: null }
 
-    if (newApplication.company_siret) {
+    if ("company_siret" in newApplication) {
       const LbaRecruteur = await LbaCompany.findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } }).lean() // email can be null in collection
       if (!LbaRecruteur) {
         throw Boom.badRequest("Aucune offre correspondante trouvée.")
       }
       LbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: LbaRecruteur, recruiter: null }
     }
-    if (newApplication.job_id) {
+
+    if ("job_id" in newApplication) {
       const recruiter = await getOffreAvecInfoMandataire(newApplication.job_id)
       if (!recruiter) {
         throw Boom.badRequest("Aucune offre correspondante trouvée.")
       }
       LbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job: recruiter?.job, recruiter: recruiter?.recruiter }
-    }
-
-    if (!LbaJob.job) {
-      throw Boom.badRequest("Aucune offre correspondante trouvée.")
     }
 
     const { type, job, recruiter } = LbaJob
@@ -259,7 +263,7 @@ export const sendApplicationV2 = async ({ newApplication, caller }: { newApplica
       throw Boom.internal("Aucun email trouver pour l'offre trouvé.")
     }
 
-    const application = newApplicationToApplicationDocumentV2(newApplication, LbaJob, recruteurEmail)
+    const application = newApplicationToApplicationDocumentV2(newApplication, LbaJob, recruteurEmail, caller)
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, LbaJob)
     const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
 
@@ -308,11 +312,11 @@ export const sendApplicationV2 = async ({ newApplication, caller }: { newApplica
   } catch (err) {
     logger.error("Error sending application", err)
     sentryCaptureException(err)
-    if (newApplication?.caller) {
+    if (caller) {
       manageApiError({
         error: err,
         api_path: "applicationV1",
-        caller: newApplication.caller,
+        caller: caller,
         errorTitle: "error_sending_application",
       })
     }
@@ -484,7 +488,12 @@ const newApplicationToApplicationDocument = (newApplication: INewApplicationV2, 
 /**
  * @description Initialize application object from query parameters
  */
-const newApplicationToApplicationDocumentV2 = (newApplication: INewApplicationV2NEW, offreOrCompany: ILbaJob, recruteurEmail: string) => {
+const newApplicationToApplicationDocumentV2 = (
+  newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId,
+  offreOrCompany: ILbaJob,
+  recruteurEmail: string,
+  caller?: string
+) => {
   const res = new Application({
     ...offreOrCompanyToCompanyFields(offreOrCompany),
     applicant_first_name: newApplication.applicant_first_name,
@@ -493,7 +502,7 @@ const newApplicationToApplicationDocumentV2 = (newApplication: INewApplicationV2
     applicant_email: newApplication.applicant_email.toLowerCase(),
     applicant_message_to_company: prepareMessageForMail(newApplication.message),
     applicant_phone: newApplication.applicant_phone,
-    caller: newApplication.caller,
+    caller: caller,
     company_email: recruteurEmail.toLowerCase(),
   })
   ZApplication.parse(res.toObject())

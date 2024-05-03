@@ -1,15 +1,67 @@
+import { isEmailBurner } from "burner-email-providers"
+
 import { z } from "../helpers/zodWithOpenApi"
-import { ZNewApplicationV2NEW } from "../models/applications.model"
+import { ZApplication } from "../models/applications.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { IRoutesDef } from "./common.routes"
+
+const ZNewApplicationV2NEWCompanySiret = ZApplication.pick({
+  applicant_first_name: true,
+  applicant_last_name: true,
+  applicant_email: true,
+  applicant_phone: true,
+  company_siret: true,
+})
+  .extend({
+    message: ZApplication.shape.applicant_message_to_company.optional(),
+    applicant_file_name: ZApplication.shape.applicant_attachment_name,
+    applicant_file_content: z.string().max(4215276).openapi({
+      description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+      example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
+    }),
+  })
+  .refine(
+    ({ applicant_email }) => {
+      if (isEmailBurner(applicant_email)) {
+        return false
+      }
+      return true
+    },
+    { message: "L'email est invalide." }
+  )
+  .openapi("V2 - Application")
+
+const ZNewApplicationV2NEWJobId = ZApplication.pick({ applicant_first_name: true, applicant_last_name: true, applicant_email: true, applicant_phone: true })
+  .extend({
+    message: ZApplication.shape.applicant_message_to_company.optional(),
+    applicant_file_name: ZApplication.shape.applicant_attachment_name,
+    applicant_file_content: z.string().max(4215276).openapi({
+      description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+      example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
+    }),
+    job_id: z.string(),
+  })
+  .refine(
+    ({ applicant_email }) => {
+      if (isEmailBurner(applicant_email)) {
+        return false
+      }
+      return true
+    },
+    { message: "L'email est invalide." }
+  )
+  .openapi("V2 - Application")
+
+export type INewApplicationV2NEWCompanySiret = z.output<typeof ZNewApplicationV2NEWCompanySiret>
+export type INewApplicationV2NEWJobId = z.output<typeof ZNewApplicationV2NEWJobId>
 
 export const zApplicationRoutesV2 = {
   post: {
     "/application": {
       path: "/application",
       method: "post",
-      body: ZNewApplicationV2NEW,
+      body: z.union([ZNewApplicationV2NEWCompanySiret, ZNewApplicationV2NEWJobId]),
       response: {
         "200": z.literal("OK").openapi({
           description: "Indique le succès ou l'échec de l'opération",
