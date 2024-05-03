@@ -3,7 +3,7 @@ import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import type { EnforceDocument } from "mongoose"
 import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
-import { ApplicantIntention, ApplicationErrorReasons } from "shared/constants/application"
+import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -235,13 +235,13 @@ export const sendApplicationV2 = async ({
   console.log({ burner: isEmailBurner(newApplication.applicant_email) })
 
   if (isEmailBurner(newApplication.applicant_email)) {
-    throw Boom.badRequest(ApplicationErrorReasons.BURNER)
+    throw Boom.badRequest(BusinessErrorCodes.BURNER)
   }
 
   if ("company_siret" in newApplication) {
     const LbaRecruteur = await LbaCompany.findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } }).lean() // email can be null in collection
     if (!LbaRecruteur) {
-      throw Boom.badRequest(ApplicationErrorReasons.NOTFOUND)
+      throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
     }
     LbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: LbaRecruteur, recruiter: null }
   }
@@ -249,7 +249,7 @@ export const sendApplicationV2 = async ({
   if ("job_id" in newApplication) {
     const recruiter = await getOffreAvecInfoMandataire(newApplication.job_id)
     if (!recruiter) {
-      throw Boom.badRequest(ApplicationErrorReasons.NOTFOUND)
+      throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
     }
     LbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job: recruiter?.job, recruiter: recruiter?.recruiter }
   }
@@ -259,13 +259,13 @@ export const sendApplicationV2 = async ({
   await checkUserApplicationCountV2(newApplication.applicant_email.toLowerCase(), LbaJob, caller)
 
   if (await scan(newApplication.applicant_file_content)) {
-    throw Boom.badRequest(ApplicationErrorReasons.ATTACHMENT)
+    throw Boom.badRequest(BusinessErrorCodes.ATTACHMENT)
   }
 
   const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.email)?.toLowerCase()
   if (!recruteurEmail) {
     sentryCaptureException(`Aucun email trouver pour l'offre trouvé. ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
-    throw Boom.internal(ApplicationErrorReasons.INTERNAL_EMAIL)
+    throw Boom.internal(BusinessErrorCodes.INTERNAL_EMAIL)
   }
   try {
     const application = newApplicationToApplicationDocumentV2(newApplication, LbaJob, recruteurEmail, caller)
