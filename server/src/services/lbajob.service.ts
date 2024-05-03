@@ -29,8 +29,8 @@ const FRANCE_LONGITUDE = 2.213749
  * @description get filtered jobs with rome_detail from mongo
  * @param {Object} payload
  * @param {number} payload.distance
- * @param {string} payload.lat
- * @param {string} payload.long
+ * @param {number} payload.lat
+ * @param {number} payload.long
  * @param {string[]} payload.romes
  * @param {string} payload.niveau
  * @returns {Promise<IRecruiter[]>}
@@ -46,8 +46,8 @@ export const getJobs = async ({
   isMinimalData,
 }: {
   distance: number
-  lat: string
-  lon: string
+  lat: number | undefined
+  lon: number | undefined
   romes: string[]
   niveau: string
   caller?: string | null
@@ -154,9 +154,9 @@ export const getLbaJobs = async ({
   }
   try {
     const hasLocation = Boolean(latitude)
-    
+
     const distance = hasLocation ? radius : 21000
-    
+
     const params = {
       caller,
       romes: romes?.split(","),
