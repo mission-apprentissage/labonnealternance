@@ -9,6 +9,7 @@ export const etablissementSchema = new Schema<IEtablissement>(
       type: String,
       default: null,
       description: "Siret formateur",
+      index: true,
     },
     gestionnaire_siret: {
       type: String,
