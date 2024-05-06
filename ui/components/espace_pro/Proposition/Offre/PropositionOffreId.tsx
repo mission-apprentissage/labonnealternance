@@ -1,11 +1,13 @@
-import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
+import { /*Accordion, AccordionButton, AccordionItem, AccordionPanel,*/ Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
+
+import { RomeDetail } from "@/components/DepotOffre/RomeDetail"
 
 import { LoadingEmptySpace } from "../.."
 import { dayjs } from "../../../../common/dayjs"
 import { publicConfig } from "../../../../config.public"
-import { Copy, InfoCircle, Minus, Plus } from "../../../../theme/components/icons"
+import { Copy /*, InfoCircle, Minus, Plus*/ } from "../../../../theme/components/icons"
 import { getDelegationDetails, patchOffreDelegation } from "../../../../utils/api"
 
 export default function PropositionOffreId() {
@@ -38,6 +40,8 @@ export default function PropositionOffreId() {
     const fetchData = async () => {
       const data: any = await getDelegationDetails(idFormulaire, token)
       const job = data.jobs.find((job) => job._id === jobId)
+
+      console.log("DATA ", data)
 
       if (siretFormateur) {
         await patchOffreDelegation(job._id, null, { params: { siret_formateur: siretFormateur } })
@@ -72,7 +76,7 @@ export default function PropositionOffreId() {
           Copier l'url
         </Button>
       </Box>
-      <SimpleGrid columns={2} spacing={10} mt={10}>
+      <SimpleGrid columns={2} spacing={10} mt={10} mb={10}>
         <Box>
           <Heading fontSize="24px" mb={10}>
             Offre d’alternance
@@ -166,56 +170,7 @@ export default function PropositionOffreId() {
           </Stack>
         </Box>
       </SimpleGrid>
-      <SimpleGrid columns={2} spacing={10} mt={10}>
-        <Box>
-          <Heading fontSize="24px" mb={10}>
-            {job.rome_detail.libelle}
-          </Heading>
-          <Flex alignItems="flex-start">
-            <InfoCircle mr={2} mt={2} color="bluefrance.500" />
-            <Text>Voici la description visible par les candidats lors de la mise en ligne de l’offre d’emploi en alternance.</Text>
-          </Flex>
-          <Accordion defaultIndex={[0]} mt={4}>
-            <AccordionItem key={0}>
-              {({ isExpanded }) => (
-                <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        Descriptif du métier
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4} ml={6} mr={3}>
-                    {job.rome_detail.definition.split("\\n").map((line, key) => (
-                      <Text key={key}>{line}</Text>
-                    ))}
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-            <hr />
-            <AccordionItem key={1}>
-              {({ isExpanded }) => (
-                <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        Quelles sont les compétences visées ?
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
-                    <ul className="voeuxUl">{job?.rome_detail?.competencesDeBase.map((competance, index) => <li key={index}>{competance.libelle}</li>)}</ul>
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-          </Accordion>
-        </Box>
-      </SimpleGrid>
+      {job.rome_detail && <RomeDetail {...job.rome_detail} />}
     </Container>
   )
 }
