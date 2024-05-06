@@ -389,7 +389,12 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
     throw Boom.internal(`inattendu : pas de role pour user id=${user._id}`)
   }
   const isCfa = role.authorized_type === AccessEntityType.CFA
-  const organization = await (isCfa ? Cfa : Entreprise).findOne({ _id: role.authorized_id }).lean()
+  let organization
+  if (isCfa) {
+    organization = await Cfa.findOne({ _id: role.authorized_id }).lean()
+  } else {
+    organization = await Entreprise.findOne({ _id: role.authorized_id }).lean()
+  }
   if (!organization) {
     throw Boom.internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }

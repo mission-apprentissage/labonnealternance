@@ -198,7 +198,7 @@ const getCompanies = async ({
 
     let companies: ILbaCompany[] = []
 
-    if (latitude) {
+    if (latitude && longitude) {
       companies = await LbaCompany.aggregate([
         {
           $geoNear: {

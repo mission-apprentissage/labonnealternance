@@ -1,7 +1,6 @@
 import Boom from "boom"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
-import type { EnforceDocument } from "mongoose"
 import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -587,7 +586,7 @@ export const sendNotificationForApplicationHardbounce = async ({ application }: 
 /**
  * sends email notification to applicant if it's application hardbounced
  */
-const notifyHardbounceToApplicant = async ({ application }: { application: EnforceDocument<IApplication, any> }): Promise<void> => {
+const notifyHardbounceToApplicant = async ({ application }: { application: IApplication | any }): Promise<void> => {
   await mailer.sendEmail({
     to: application.applicant_email,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
@@ -599,7 +598,7 @@ const notifyHardbounceToApplicant = async ({ application }: { application: Enfor
 /**
  * sends email notification to applicant if it's application hardbounced
  */
-const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: EnforceDocument<IApplication, any> }): Promise<void> => {
+const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: IApplication | any }): Promise<void> => {
   await mailer.sendEmail({
     to: config.transactionalEmail,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
