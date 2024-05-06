@@ -604,6 +604,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               },
             ],
           },
+          "rdvContext": {},
           "rncpCode": {
             "description": "Le code RNCP.",
             "example": "RNCP31899",

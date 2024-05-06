@@ -1,8 +1,6 @@
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 
-export default function getCurrentList({ store, activeFilters, extendedSearch }) {
-  const { jobs, trainings = [] } = store
-
+export default function getCurrentList({ jobs, trainings = [], extendedSearch, activeFilters }) {
   const trainingsArray = activeFilters.includes("trainings") ? trainings : []
   let jobList = []
   let companyList = []
