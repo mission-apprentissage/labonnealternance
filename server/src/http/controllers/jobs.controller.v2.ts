@@ -136,7 +136,7 @@ export default (server: Server) => {
 
       const romeDetails = await getFicheMetierFromDB({
         query: {
-          "fiche_metier.appellations.code": body.appellation_code,
+          "appellations.code_ogr": body.appellation_code,
         },
       })
 
