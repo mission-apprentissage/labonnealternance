@@ -45,7 +45,7 @@ const formatToPe = async (offre) => {
     Par_nom: "LABONNEALTERNANCE",
     Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${offre.jobId}`,
     Code_rome: offre.rome_code[0],
-    Code_OGR: appellation.code,
+    Code_OGR: appellation.code_ogr,
     Libelle_metier_OGR: appellation.libelle,
     Description: offre.rome_detail.definition,
     Off_experience_duree_min: null,
