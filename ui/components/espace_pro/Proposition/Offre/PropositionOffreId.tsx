@@ -41,8 +41,6 @@ export default function PropositionOffreId() {
       const data: any = await getDelegationDetails(idFormulaire, token)
       const job = data.jobs.find((job) => job._id === jobId)
 
-      console.log("DATA ", data)
-
       if (siretFormateur) {
         await patchOffreDelegation(job._id, null, { params: { siret_formateur: siretFormateur } })
       }
