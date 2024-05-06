@@ -1,5 +1,5 @@
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
-import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
+import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 import React from "react"
 
 const LbaJobCompetences = ({ job }) => {
@@ -27,22 +27,20 @@ const LbaJobCompetences = ({ job }) => {
 
   return (
     job?.job?.romeDetails?.competences?.savoir_faire?.length && (
-      <Accordion allowToggle>
-        <AccordionItem>
-          {({ isExpanded }) => (
-            <>
-              <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
-                <Box as="span" flex="1" textAlign="left">
-                  Compétences qui seront acquises durant l’alternance
-                </Box>
-                {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
-              </AccordionButton>
+      <AccordionItem>
+        {({ isExpanded }) => (
+          <>
+            <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
+              <Box as="span" flex="1" textAlign="left">
+                Compétences qui seront acquises durant l’alternance
+              </Box>
+              {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
+            </AccordionButton>
 
-              <AccordionPanel pb={4}>{getText()}</AccordionPanel>
-            </>
-          )}
-        </AccordionItem>
-      </Accordion>
+            <AccordionPanel pb={4}>{getText()}</AccordionPanel>
+          </>
+        )}
+      </AccordionItem>
     )
   )
 }

@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react"
+import { Accordion, Box, Flex, Image, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { ILbaItemLbaJob } from "shared"
 
@@ -18,11 +18,11 @@ const getContractTypes = (contractTypes) => {
 }
 
 const RomeDescriptions = (job) => (
-  <>
+  <Accordion allowToggle>
     <LbaJobCompetences job={job} />
     <LbaJobTechniques job={job} />
     <LbaJobAcces job={job} />
-  </>
+  </Accordion>
 )
 
 const getDescriptionContext = (job: ILbaItemLbaJob) => {
