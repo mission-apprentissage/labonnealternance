@@ -105,8 +105,10 @@ const LbaJobDetail = ({ job }) => {
           </Text>
         )}
 
-        <LbaJobDescription job={job} />
-        <LbaJobQualites job={job} />
+        <Accordion allowToggle defaultIndex={0}>
+          <LbaJobDescription job={job} />
+          <LbaJobQualites job={job} />
+        </Accordion>
       </Box>
       <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
