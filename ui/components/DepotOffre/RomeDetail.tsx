@@ -82,29 +82,31 @@ export const RomeDetail = ({ definition, competences, libelle, appellation, acce
             <AccordionItem key={1} id="competences">
               {({ isExpanded }) => (
                 <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        Compétences qui seront acquises durant l’alternance
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
-                    <ul className="voeuxUl">
-                      {competences.savoir_faire.map((categorieSavoirFaire) => (
-                        <li className="voeuxUlLi" key={categorieSavoirFaire.libelle}>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      Compétences qui seront acquises durant l’alternance
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                  <AccordionPanel maxH="50%" pb={4} ml={1} mr={3}>
+                    {competences.savoir_faire.map((categorieSavoirFaire) => (
+                      <>
+                        <Text fontWeight={700} key={categorieSavoirFaire.libelle}>
                           {categorieSavoirFaire.libelle}
+                        </Text>
+                        <Box pl={12} pt={3} mb={4}>
                           {categorieSavoirFaire.items?.length && (
-                            <ul className="voeuxUlLi">
+                            <ul className="voeuxUl">
                               {categorieSavoirFaire.items.map((savoirFaire, idx) => (
-                                <li key={idx}>{savoirFaire.libelle}</li>
+                                <Box as="li" mb={1} key={idx}>
+                                  {savoirFaire.libelle}
+                                </Box>
                               ))}
                             </ul>
                           )}
-                        </li>
-                      ))}
-                    </ul>
+                        </Box>
+                      </>
+                    ))}
                   </AccordionPanel>
                 </>
               )}
@@ -117,29 +119,31 @@ export const RomeDetail = ({ definition, competences, libelle, appellation, acce
             <AccordionItem key={1} id="techniques">
               {({ isExpanded }) => (
                 <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        Domaines et techniques de travail
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
-                    <ul className="voeuxUl">
-                      {competences.savoirs.map((categorieSavoir) => (
-                        <li className="voeuxUlLi" key={categorieSavoir.libelle}>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      Domaines et techniques de travail
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                  <AccordionPanel maxH="50%" pb={4} ml={1} mr={3}>
+                    {competences.savoirs.map((categorieSavoir) => (
+                      <>
+                        <Text fontWeight={700} key={categorieSavoir.libelle}>
                           {categorieSavoir.libelle}
+                        </Text>
+                        <Box pl={12} pt={3} mb={4}>
                           {categorieSavoir.items?.length && (
-                            <ul className="voeuxUlLi">
+                            <ul className="voeuxUl">
                               {categorieSavoir.items.map((savoir, idx) => (
-                                <li key={idx}>{savoir.libelle}</li>
+                                <Box as="li" mb={1} key={idx}>
+                                  {savoir.libelle}
+                                </Box>
                               ))}
                             </ul>
                           )}
-                        </li>
-                      ))}
-                    </ul>
+                        </Box>
+                      </>
+                    ))}
                   </AccordionPanel>
                 </>
               )}
