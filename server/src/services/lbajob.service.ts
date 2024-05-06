@@ -143,12 +143,16 @@ export const getLbaJobs = async ({
     radius = 10
   }
   try {
+    const hasLocation = Boolean(latitude)
+
+    const distance = hasLocation ? radius : 21000
+
     const params = {
       caller,
       romes: romes?.split(","),
-      distance: radius ?? 21000,
-      lat: latitude ?? FRANCE_LATITUDE,
-      lon: longitude ?? FRANCE_LONGITUDE,
+      distance,
+      lat: hasLocation ? (latitude as number) : FRANCE_LATITUDE,
+      lon: hasLocation ? (longitude as number) : FRANCE_LONGITUDE,
       niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
     }
 
