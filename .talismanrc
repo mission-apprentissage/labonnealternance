@@ -16,23 +16,23 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
 - filename: .infra/.env_server
-  checksum: 6558cb49387af378d27ce4f16134137df3506e001b388bf04f2153a3d74b71a5
+  checksum: ea90495a7b8a9ba9a34adc380228d4ad6f0336d1685488aaacd228bf3bd11e18
 - filename: .infra/env.ini
   checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
   checksum: 718bee5f44edc101636be8f11173ede5b728f2858abc3c26466ff9435f0d11de
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: f3da269202d63aa1ad66b8eaa148076cf0135eec6b7fabe2394fcc3eabb466d2
+  checksum: 3e5b05d2e2ab460b2940e0e0aa25fa007bd584fd1bd39b4dd052b2a14fb0a01b
 - filename: .infra/files/scripts/seed.sh
   checksum: ddafc86248e8fd5f7c24ca5a62be703083f7704395f17fb7b43bc8e44227d561
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 55b3dba68f43aeb480505c508a3a95baeb027f6699421f8642624d16ea88890c
+  checksum: 094824c6c1f794ece05abf61220465e1327f71d932e6eeabfbaf6f2094e5d538
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: a5416822ec3c607557a69a8f20014de9fc40d8a871884bb79cc3906078c4ef15
+  checksum: 69332e43a85e702b93d00e62edf109c3b22189660de33e50e766ba15ea58f8b8
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
   checksum: b6762a7cb5df9bbee1f0ce893827f0991ad01514f7122a848b3b5d49b620f238
 - filename: server/src/config.ts
@@ -54,7 +54,7 @@ fileignoreconfig:
 - filename: server/src/security/accessTokenService.ts
   checksum: 2183e326a88ae3c10193a7033ab5fd421ce576cd1e234c323df247da335f74d7
 - filename: server/src/services/application.service.ts
-  checksum: d3ae58c0b6a9d42164b69dff4573734a6d854282974c4a10d065f2c2443f144a
+  checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 52bfe91cc0cd07121cad6dc9490a7345dbbbeb285f11fc844a8dd8eb74fe310f
 - filename: server/src/services/userRecruteur.service.ts
@@ -121,6 +121,8 @@ fileignoreconfig:
   checksum: a50177afa593bae5707bdba29ef27b8f2ed0bc58487491bfff580e7e1f422243
 - filename: ui/components/espace_pro/Admin/utilisateurs/infoDetails/InfoDetails.tsx
   checksum: be2ad6ca5c2bd36d26cd7aebb33ab876bd32662be3735fee3b167325c284ccff
+- filename: ui/components/footer.tsx
+  checksum: d82b5a7d6905070fb32383864566fc16eae4797ca18f82782fb32c95a0d50369
 - filename: ui/pages/accessibilite.tsx
   checksum: d6a7c57500f9de5e47e305f89435b21d717f505acac7b45656931f7ecdd0fcca
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.tsx

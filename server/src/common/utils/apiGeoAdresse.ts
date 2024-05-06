@@ -67,7 +67,7 @@ class ApiGeoAdresse {
       response = await getHttpClient().get<IGeoAddress>(query)
 
       if (response?.data?.status === 429) {
-        console.log("429 ", new Date(), query)
+        console.warn("429 ", new Date(), query)
         trys++
         await new Promise((resolve) => setTimeout(resolve, 1000))
       } else {

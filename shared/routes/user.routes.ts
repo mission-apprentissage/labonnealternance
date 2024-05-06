@@ -1,7 +1,11 @@
+import { OPCOS } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob, ZRecruiter } from "../models"
+import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
-import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin, ZUserRecruteurWritable, ZUserStatusValidation } from "../models/usersRecruteur.model"
+import { enumToZod } from "../models/enumToZod"
+import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model"
+import { ZUser2 } from "../models/user2.model"
+import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -19,6 +23,7 @@ const ZUserForOpco = ZUserRecruteur.pick({
 }).extend({
   jobs_count: z.number(),
   origin: z.string(),
+  organizationId: zObjectId,
 })
 
 export type IUserForOpco = z.output<typeof ZUserForOpco>
@@ -30,7 +35,7 @@ export const zUserRecruteurRoutes = {
       path: "/user/opco",
       querystring: z
         .object({
-          opco: z.string(),
+          opco: enumToZod(OPCOS),
         })
         .strict(),
       response: {
@@ -46,7 +51,6 @@ export const zUserRecruteurRoutes = {
         auth: "cookie-session",
         access: { every: ["user:manage", "recruiter:manage"] },
         resources: {
-          user: [{ opco: { type: "query", key: "opco" } }],
           recruiter: [{ opco: { type: "query", key: "opco" } }],
         },
       },
@@ -78,7 +82,7 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z
           .object({
-            users: z.array(ZUserRecruteur),
+            users: z.array(ZUser2),
           })
           .strict(),
       },
@@ -97,8 +101,8 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "200": ZUserRecruteur.extend({
-          jobs: ZRecruiter.shape.jobs,
+        "200": ZUser2.extend({
+          role: ZRoleManagement.optional(),
         }),
       },
       securityScheme: {
@@ -107,13 +111,14 @@ export const zUserRecruteurRoutes = {
         resources: {},
       },
     },
-    "/user/:userId": {
+    "/user/:userId/organization/:organizationId": {
       method: "get",
-      path: "/user/:userId",
+      path: "/user/:userId/organization/:organizationId",
       // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
       params: z
         .object({
           userId: z.string(),
+          organizationId: z.string(),
         })
         .strict(),
       response: {
@@ -128,6 +133,7 @@ export const zUserRecruteurRoutes = {
               _id: { type: "params", key: "userId" },
             },
           ],
+          entreprise: [{ _id: { type: "params", key: "organizationId" } }],
         },
       },
     },
@@ -182,13 +188,15 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      body: ZUserRecruteurWritable.omit({
-        is_email_checked: true,
-        is_qualiopi: true,
-        status: true,
+      body: ZUser2.pick({
+        first_name: true,
+        last_name: true,
+        email: true,
+        phone: true,
+        origin: true,
       }),
       response: {
-        "200": ZUserRecruteur,
+        "200": z.object({ _id: zObjectId }).strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -202,7 +210,7 @@ export const zUserRecruteurRoutes = {
       method: "put",
       path: "/user/:userId",
       params: z.object({ userId: zObjectId }).strict(),
-      body: ZUserRecruteurWritable.pick({
+      body: ZUser2.pick({
         last_name: true,
         first_name: true,
         phone: true,
@@ -220,32 +228,43 @@ export const zUserRecruteurRoutes = {
         },
       },
     },
-    "/admin/users/:userId": {
+    "/admin/users/:userId/organization/:siret": {
       method: "put",
-      path: "/admin/users/:userId",
-      params: z.object({ userId: zObjectId }).strict(),
-      body: ZUserRecruteurWritable.partial(),
+      path: "/admin/users/:userId/organization/:siret",
+      params: z.object({ userId: zObjectId, siret: z.string() }).strict(),
+      body: ZUser2.omit({
+        status: true,
+        _id: true,
+      })
+        .extend({
+          opco: ZUserRecruteur.shape.opco,
+        })
+        .partial(),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
         "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
       },
       securityScheme: {
         auth: "cookie-session",
-        access: "admin",
-        resources: {},
+        access: "user:manage",
+        resources: {
+          user: [{ _id: { type: "params", key: "userId" } }],
+          entreprise: [{ siret: { type: "params", key: "siret" } }],
+        },
       },
     },
-    "/user/:userId/history": {
+    "/user/:userId/organization/:organizationId/permission": {
       method: "put",
-      path: "/user/:userId/history",
-      params: z.object({ userId: zObjectId }).strict(),
-      body: ZUserStatusValidation.pick({
-        validation_type: true,
+      path: "/user/:userId/organization/:organizationId/permission",
+      params: z.object({ userId: zObjectId, organizationId: zObjectId }).strict(),
+      body: ZRoleManagementEvent.pick({
         status: true,
         reason: true,
+      }).extend({
+        organizationType: z.enum([AccessEntityType.ENTREPRISE, AccessEntityType.CFA]),
       }),
       response: {
-        "200": ZUserRecruteur,
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -284,6 +303,23 @@ export const zUserRecruteurRoutes = {
             },
           ],
         },
+      },
+    },
+    "/user/organization/:siret": {
+      method: "delete",
+      path: "/user/organization/:siret",
+      params: z
+        .object({
+          siret: z.string(),
+        })
+        .strict(),
+      response: {
+        "200": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
       },
     },
     "/admin/users/:userId": {

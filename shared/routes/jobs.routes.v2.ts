@@ -426,10 +426,12 @@ export const zJobsRoutesV2 = {
         is_disabled_elligible: true,
         custom_address: true,
         custom_geo_coordinates: true,
+        is_multi_published: true,
+        custom_job_title: true,
       })
         .extend({
           job_start_date: ZJobStartDateCreate(),
-          appellation_code: z.string().regex(/^[0-9]+$/, "appelation code must contains only numbers"),
+          appellation_code: z.string().regex(/^[0-9]+$/, "appelation code ne doit contenir que des chiffres"),
         })
         .strict()
         .refine(
@@ -439,7 +441,25 @@ export const zJobsRoutesV2 = {
             }
             return true
           },
-          { message: "custom_geo_coordinates must be filled if a custom_address is passed" }
+          { message: "custom_geo_coordinates est obligatoire si custom_address est passé en paramètre" }
+        )
+        .refine(
+          ({ job_description }) => {
+            if (job_description && job_description?.length < 30) {
+              return false
+            }
+            return true
+          },
+          { message: "job_description doit avoir un minimum de 30 caractères" }
+        )
+        .refine(
+          ({ job_employer_description }) => {
+            if (job_employer_description && job_employer_description?.length < 30) {
+              return false
+            }
+            return true
+          },
+          { message: "job_employer_description doit avoir un minimum de 30 caractères" }
         ),
       response: {
         "201": ZRecruiter,

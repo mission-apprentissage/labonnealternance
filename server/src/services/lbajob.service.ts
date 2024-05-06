@@ -4,7 +4,7 @@ import { IJob, IRecruiter, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { Recruiter } from "@/common/model"
+import { Cfa, Recruiter } from "@/common/model"
 import { db } from "@/common/mongodb"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
@@ -13,9 +13,8 @@ import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
-import { IApplicationCount, getApplicationByJobCount } from "./application.service"
+import { IApplicationCount, getApplicationByJobCount, getUser2ManagingOffer } from "./application.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
-import { getEtablissement } from "./etablissement.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
@@ -23,20 +22,27 @@ import { filterJobsByOpco } from "./opco.service"
 const { ObjectId } = pkg
 
 const JOB_SEARCH_LIMIT = 250
-
-const coordinatesOfFrance = [2.213749, 46.227638]
+const FRANCE_LATITUDE = 46.227638
+const FRANCE_LONGITUDE = 2.213749
 
 /**
- * @description get filtered jobs from mongo
- * @param {Object} payload
- * @param {number} payload.distance
- * @param {string} payload.lat
- * @param {string} payload.long
- * @param {string[]} payload.romes
- * @param {string} payload.niveau
- * @returns {Promise<IRecruiter[]>}
+ * @description get OFFRES_EMPLOI_LBA
  */
-export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance: number; lat: string; lon: string; romes: string[]; niveau: string }): Promise<IRecruiter[]> => {
+export const getJobs = async ({
+  distance,
+  lat,
+  lon,
+  romes,
+  niveau,
+  caller,
+}: {
+  distance: number
+  lat: number
+  lon: number
+  romes: string[]
+  niveau: string
+  caller?: string | null
+}): Promise<IRecruiter[]> => {
   const clauses: any[] = [{ "jobs.job_status": JOB_STATUS.ACTIVE }, { "jobs.rome_code": { $in: romes } }, { status: RECRUITER_STATUS.ACTIF }]
 
   if (niveau && niveau !== "Indifférent") {
@@ -50,6 +56,10 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
         },
       ],
     })
+  }
+
+  if (caller) {
+    clauses.push({ "jobs.is_multi_published": true })
   }
 
   const stages: any[] = [
@@ -69,34 +79,34 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
     },
   })
 
-  const jobs: IRecruiter[] = await Recruiter.aggregate(stages)
+  const recruiters: IRecruiter[] = await Recruiter.aggregate(stages)
 
   const filteredJobs = await Promise.all(
-    jobs.map(async (x) => {
+    recruiters.map(async (recruiter) => {
       const jobs: any[] = []
 
-      if (x.is_delegated) {
-        const cfa = await getEtablissement({ establishment_siret: x.cfa_delegated_siret })
-
-        x.phone = cfa?.phone
-        x.email = cfa?.email || ""
-        x.last_name = cfa?.last_name
-        x.first_name = cfa?.first_name
-        x.establishment_raison_sociale = cfa?.establishment_raison_sociale
-        x.address = cfa?.address
+      if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
+        const cfa = await Cfa.findOne({ siret: recruiter.cfa_delegated_siret })
+        const cfaUser = await getUser2ManagingOffer(recruiter.jobs[0])
+        recruiter.phone = cfaUser.phone
+        recruiter.email = cfaUser.email
+        recruiter.last_name = cfaUser.last_name
+        recruiter.first_name = cfaUser.first_name
+        recruiter.establishment_raison_sociale = cfa?.raison_sociale
+        recruiter.address = cfa?.address
       }
 
-      x.jobs.forEach((o) => {
-        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === JOB_STATUS.ACTIVE) {
-          o.rome_label = o.rome_appellation_label ?? o.rome_label
-          if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === o.job_level_label || niveau === o.job_level_label) {
-            jobs.push(o)
+      recruiter.jobs.forEach((job) => {
+        if (romes.some((item) => job.rome_code.includes(item)) && job.job_status === JOB_STATUS.ACTIVE) {
+          job.rome_label = job.rome_appellation_label ?? job.rome_label
+          if (!niveau || NIVEAUX_POUR_LBA["INDIFFERENT"] === job.job_level_label || niveau === job.job_level_label) {
+            jobs.push(job)
           }
         }
       })
 
-      x.jobs = jobs
-      return x
+      recruiter.jobs = jobs
+      return recruiter
     })
   )
 
@@ -104,7 +114,7 @@ export const getJobs = async ({ distance, lat, lon, romes, niveau }: { distance:
 }
 
 /**
- * Retourne les offres LBA correspondantes aux critères de recherche
+ * @description Retourne les OFFRES_EMPLOI_LBA correspondantes aux critères de recherche
  */
 export const getLbaJobs = async ({
   romes = "",
@@ -133,24 +143,18 @@ export const getLbaJobs = async ({
     radius = 10
   }
   try {
-    const hasLocation = Boolean(latitude)
-
-    const distance = hasLocation ? radius : 21000
-
-    const params: any = {
+    const params = {
+      caller,
       romes: romes?.split(","),
-      distance,
-      lat: hasLocation ? latitude : coordinatesOfFrance[1],
-      lon: hasLocation ? longitude : coordinatesOfFrance[0],
-    }
-
-    if (diploma) {
-      params.niveau = NIVEAUX_POUR_LBA[diploma]
+      distance: radius ?? 21000,
+      lat: latitude ?? FRANCE_LATITUDE,
+      lon: longitude ?? FRANCE_LONGITUDE,
+      niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
     }
 
     const jobs = await getJobs(params)
 
-    const ids: string[] = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
+    const ids = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
@@ -161,7 +165,7 @@ export const getLbaJobs = async ({
       matchas.results = await filterJobsByOpco({ opco, opcoUrl, jobs: matchas.results })
     }
 
-    if (!hasLocation && matchas.results) {
+    if (!latitude && matchas.results) {
       sortLbaJobs(matchas)
     }
 
@@ -373,6 +377,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
         // si mandataire contient les données du CFA
         siret: recruiter.establishment_siret,
         name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
+        mandataire: recruiter.is_delegated,
       },
       job: {
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
@@ -434,8 +439,8 @@ export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
 /**
  * @description Incrémente les compteurs de vue d'un ensemble d'offres lba
  */
-export const incrementLbaJobsViewCount = async (lbaJobs) => {
-  const ids = lbaJobs.results.map((job) => new ObjectId(job.id))
+export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
+  const ids = jobIds.map((id) => new ObjectId(id))
   try {
     await db.collection("recruiters").updateMany(
       { "jobs._id": { $in: ids } },

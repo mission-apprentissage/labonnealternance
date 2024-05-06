@@ -38,8 +38,8 @@ export const ZJobFields = z
       .nullish()
       .describe("Niveau de formation visé en fin de stage"),
     job_start_date: z.coerce.date().describe("Date de début de l'alternance"),
-    job_description: z.string().nullish().describe("Description de l'offre d'alternance"),
-    job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance"),
+    job_description: z.string().nullish().describe("Description de l'offre d'alternance - minimum 30 charactères si rempli"),
+    job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
     rome_detail: ZRomeDetail.nullish().describe("Détail du code ROME selon la nomenclature Pole emploi"),
     job_creation_date: z.date().nullish().describe("Date de creation de l'offre"),
@@ -51,7 +51,7 @@ export const ZJobFields = z
     job_status: z.enum([allJobStatus[0], ...allJobStatus.slice(1)]).describe("Statut de l'offre"),
     job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
     job_type: ZJobType,
-    is_multi_published: z.boolean().nullish().describe("Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance"),
+    is_multi_published: z.boolean().default(true).describe("Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance"),
     job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
     delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
     is_disabled_elligible: z.boolean().nullish().default(false).describe("Poste ouvert aux personnes en situation de handicap"),
@@ -63,8 +63,10 @@ export const ZJobFields = z
       .describe("Répartition de la présence de l'alternant en formation/entreprise"),
     custom_address: z.string().nullish().describe("Adresse personnalisée de l'entreprise"),
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
+    custom_job_title: z.string().nullish().describe("Titre personnalisée de l'offre"),
     stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
+    managed_by: zObjectId.nullish().describe("Id de l'utilisateur gérant l'offre"),
   })
   .strict()
   .openapi("JobWritable")

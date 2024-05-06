@@ -1,5 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZUserRecruteurPublic } from "../models"
+import { ZComputedUserAccess, ZUserRecruteurPublic } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
@@ -18,11 +18,9 @@ export const zLoginRoutes = {
         "200": z.object({}).strict(),
       },
       securityScheme: {
-        auth: "cookie-session",
-        access: "user:manage",
-        resources: {
-          user: [{ _id: { key: "userId", type: "params" } }],
-        },
+        auth: "access-token",
+        access: null,
+        resources: {},
       },
     },
     "/login/magiclink": {
@@ -62,6 +60,18 @@ export const zLoginRoutes = {
         auth: "cookie-session",
         access: null,
         skipLogAccess: true,
+        resources: {},
+      },
+    },
+    "/auth/access": {
+      method: "get",
+      path: "/auth/access",
+      response: {
+        "200": ZComputedUserAccess,
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: null,
         resources: {},
       },
     },

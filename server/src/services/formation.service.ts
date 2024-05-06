@@ -1,7 +1,7 @@
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError } from "../common/utils/errorManager"
@@ -31,10 +31,37 @@ const getDiplomaIndexName = (value) => {
   return value ? diplomaMap[value[0]] : ""
 }
 
+const minimalDataMongoFields = {
+  cle_ministere_educatif: 1,
+  code_commune_insee: 1,
+  code_postal: 1,
+  etablissement_formateur_siret: 1,
+  etablissement_formateur_enseigne: 1,
+  etablissement_formateur_entreprise_raison_sociale: 1,
+  etablissement_formateur_adresse: 1,
+  etablissement_formateur_complement_adresse: 1,
+  etablissement_formateur_localite: 1,
+  etablissement_formateur_code_postal: 1,
+  etablissement_formateur_cedex: 1,
+  etablissement_gestionnaire_adresse: 1,
+  etablissement_gestionnaire_complement_adresse: 1,
+  etablissement_gestionnaire_localite: 1,
+  etablissement_gestionnaire_code_postal: 1,
+  etablissement_gestionnaire_cedex: 1,
+  etablissement_gestionnaire_entreprise_raison_sociale: 1,
+  etablissement_gestionnaire_siret: 1,
+  intitule_court: 1,
+  intitule_long: 1,
+  lieu_formation_adresse: 1,
+  lieu_formation_geo_coordonnees: 1,
+  localite: 1,
+  distance: 1,
+}
+
 /**
  * Récupère les formations matchant les critères en paramètre depuis la mongo
  */
-export const getFormations = async ({
+const getFormations = async ({
   romes,
   romeDomain,
   coords,
@@ -62,10 +89,6 @@ export const getFormations = async ({
 
   const now = new Date()
 
-  // tags contient les années de démarrage des sessions. règle métier : année en cours, année à venir et année passée OU année + 2 selon qu'on
-  // est en septembre ou plus tôt dans l'année
-  const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
-
   const query: any = {}
 
   if (romes) {
@@ -78,23 +101,26 @@ export const getFormations = async ({
     }
   }
 
+  // tags contient les années de démarrage des sessions. règle métier : année en cours, année à venir et année passée OU année + 2 selon qu'on
+  // est en septembre ou plus tôt dans l'année
+  const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
   query.tags = { $in: tags.map((tag) => tag.toString()) }
 
   if (diploma) {
     query.niveau = getDiplomaIndexName(diploma)
   }
 
-  let formations: any[] = []
-
   const stages: any[] = []
 
   if (isMinimalData) {
-    stages.push({ $project: { objectif: 0, contenu: 0 } })
-    // TODO réduire encore
+    stages.push({
+      $project: minimalDataMongoFields,
+    })
   } else if (options.indexOf("with_description") < 0) {
     stages.push({ $project: { objectif: 0, contenu: 0 } })
   }
 
+  let formations: any[] = []
   if (coords) {
     stages.push({
       $limit: limit,
@@ -122,21 +148,6 @@ export const getFormations = async ({
   }
 
   return formations
-}
-
-/**
- * Retourne une formation provenant de la collection des formationsCatalogues
- * @param {string} id l'identifiant de la formation
- * @returns {Promise<IApiError | IFormationCatalogue[]>}
- */
-const getFormation = async ({ id }: { id: string }) => FormationCatalogue.findOne({ cle_ministere_educatif: id })
-
-/**
- * Retourne une formation du catalogue transformée en LbaItem
- */
-const getOneFormationFromId = async ({ id }: { id: string }): Promise<ILbaItemFormation[]> => {
-  const formation = await getFormation({ id })
-  return formation ? [transformFormation(formation)] : []
 }
 
 /**
@@ -187,7 +198,7 @@ const getRegionFormations = async ({
       $regex: new RegExp(`^${departement}`, "i"),
     }
   } else if (region) {
-    query.code_postal = getRegionQueryFragment(region)
+    query.code_postal = { $in: regionCodeToDepartmentList[region].map((departement) => new RegExp(`^${departement}`)) }
   }
 
   const now = new Date()
@@ -197,8 +208,6 @@ const getRegionFormations = async ({
   if (diploma) {
     query.niveau = getDiplomaIndexName(diploma)
   }
-
-  let formations: any[] = []
 
   const stages: any[] = []
 
@@ -215,8 +224,7 @@ const getRegionFormations = async ({
     },
   })
 
-  formations = await FormationCatalogue.aggregate(stages)
-
+  const formations: any[] = await FormationCatalogue.aggregate(stages)
   if (formations.length === 0 && !caller) {
     await notifyToSlack({ subject: "FORMATION", message: `Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.` })
   }
@@ -310,8 +318,9 @@ export const deduplicateFormations = (formations: IFormationCatalogue[]): IForma
 const transformFormations = (rawFormations: IFormationCatalogue[], isMinimalData: boolean): ILbaItemFormation[] => {
   const formations: ILbaItemFormation[] = []
   if (rawFormations.length) {
+    const transformFct = isMinimalData ? transformFormationWithMinimalData : transformFormation
     for (let i = 0; i < rawFormations.length; ++i) {
-      formations.push(isMinimalData ? transformFormationWithMinimalData(rawFormations[i]) : transformFormation(rawFormations[i]))
+      formations.push(transformFct(rawFormations[i]))
     }
   }
 
@@ -328,7 +337,7 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
   const duration = getDurationFromSessions(sessions)
 
   const resultFormation: ILbaItemFormation = {
-    ideaType: LBA_ITEM_TYPE.FORMATION,
+    ideaType: LBA_ITEM_TYPE_OLD.FORMATION,
     title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
     longTitle: rawFormation.intitule_long ?? null,
     id: rawFormation.cle_ministere_educatif ?? null,
@@ -411,7 +420,7 @@ const transformFormationWithMinimalData = (rawFormation: IFormationCatalogue): I
   const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
 
   const resultFormation: ILbaItemFormation = {
-    ideaType: LBA_ITEM_TYPE.FORMATION,
+    ideaType: LBA_ITEM_TYPE_OLD.FORMATION,
     title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
     id: rawFormation.cle_ministere_educatif ?? null,
 
@@ -571,21 +580,10 @@ export const getFormationsQuery = async ({
 /**
  * Retourne une formation identifiée par son id
  */
-export const getFormationQuery = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { results: ILbaItemFormation[] }> => {
-  try {
-    const formation = await getOneFormationFromId({ id })
-    return {
-      results: formation,
-    }
-  } catch (err) {
-    sentryCaptureException(err)
-
-    if (caller) {
-      trackApiCall({ caller, api_path: "formationV1/formation", response: "Error" })
-    }
-
-    return { error: "internal_error" }
-  }
+export const getFormationQuery = async ({ id }: { id: string }): Promise<{ results: ILbaItemFormation[] }> => {
+  const formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id })
+  const formations = formation ? [transformFormation(formation)] : []
+  return { results: formations }
 }
 
 /**
@@ -639,17 +637,6 @@ export const getFormationsParRegionQuery = async ({
     }
 
     return { error: "internal_error" }
-  }
-}
-
-/**
- * retourne le morceau de requête mongo correspondant à un filtrage sur une région donné
- * @param {string} region le code de la région
- * @returns {object}
- */
-const getRegionQueryFragment = (region: string): object => {
-  return {
-    $in: regionCodeToDepartmentList[region].map((departement) => new RegExp(`^${departement}`)),
   }
 }
 

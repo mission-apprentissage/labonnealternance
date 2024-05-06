@@ -4,7 +4,8 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZPointGeometry, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZCfaReferentielData, ZUserRecruteur, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
+import { ZUser2 } from "../models/user2.model"
+import { ZCfaReferentielData, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -104,10 +105,10 @@ export const zRecruiterRoutes = {
       },
       securityScheme: null,
     },
-    "/etablissement/cfa/:userRecruteurId/entreprises": {
+    "/etablissement/cfa/:cfaId/entreprises": {
       method: "get",
-      path: "/etablissement/cfa/:userRecruteurId/entreprises",
-      params: z.object({ userRecruteurId: zObjectId }).strict(),
+      path: "/etablissement/cfa/:cfaId/entreprises",
+      params: z.object({ cfaId: zObjectId }).strict(),
       response: {
         "200": z.array(ZRecruiter),
       },
@@ -115,7 +116,7 @@ export const zRecruiterRoutes = {
         auth: "cookie-session",
         access: "user:manage",
         resources: {
-          user: [{ _id: { type: "params", key: "userRecruteurId" } }],
+          user: [{ _id: { type: "params", key: "cfaId" } }],
         },
       },
     },
@@ -165,8 +166,9 @@ export const zRecruiterRoutes = {
         "200": z
           .object({
             formulaire: ZRecruiter.optional(),
-            user: ZUserRecruteur,
-            token: z.string().optional(),
+            user: ZUser2,
+            token: z.string(),
+            validated: z.boolean(),
           })
           .strict(),
       },

@@ -85,8 +85,8 @@ export const jobsSchema = new Schema<IJob>(
     },
     is_multi_published: {
       type: Boolean,
-      default: null,
-      description: "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
+      default: true,
+      description: "Definit si l'offre doit être diffusée sur d'autres jobboard que La bonne alternance",
     },
     job_delegation_count: {
       type: Number,
@@ -145,6 +145,11 @@ export const jobsSchema = new Schema<IJob>(
       default: null,
       description: "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
     },
+    custom_job_title: {
+      type: String,
+      default: null,
+      description: "Titre personnalisée de l'offre",
+    },
     stats_detail_view: {
       type: Number,
       description: "Nombre de vues de la page de détail",
@@ -152,6 +157,10 @@ export const jobsSchema = new Schema<IJob>(
     stats_search_view: {
       type: Number,
       description: "Nombre de vues sur une page de recherche",
+    },
+    managed_by: {
+      type: String,
+      description: "Id de l'utilisateur gérant l'offre",
     },
   },
   {

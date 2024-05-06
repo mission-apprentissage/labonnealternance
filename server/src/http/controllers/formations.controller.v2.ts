@@ -92,20 +92,8 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       const { caller } = req.query
-      const result = await getFormationQuery({
-        id,
-        caller,
-      })
-
-      if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else if (result.error === "not_found") {
-          res.status(404)
-        } else {
-          res.status(500)
-        }
-      } else {
+      try {
+        const result = await getFormationQuery({ id })
         if (caller) {
           trackApiCall({
             caller,
@@ -115,9 +103,13 @@ export default (server: Server) => {
             response: "OK",
           })
         }
+        return res.send(result)
+      } catch (err) {
+        if (caller) {
+          trackApiCall({ caller, api_path: "formationV1/formation", response: "Error" })
+        }
+        throw err
       }
-
-      return res.send(result)
     }
   )
   server.get(

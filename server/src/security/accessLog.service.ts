@@ -25,13 +25,12 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
     user_type: null,
     created_at: new Date(),
     parameters: req.params as { [key: string]: string },
-    role: req?.authorizationContext?.role || null,
     resources: req?.authorizationContext?.resources,
   }
 
   if (authorized && req.user) {
     switch (req.user.type) {
-      case "IUserRecruteur": {
+      case "IUser2": {
         acl.user_type = req.user.type
         acl.user_id = req.user.value._id.toString()
         acl.user_email = req.user.value.email
