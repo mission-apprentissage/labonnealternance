@@ -7,6 +7,12 @@
   tasks:
     - include_tasks: ./tasks/files_copy.yml
 
+    - name: Création du docker-compose.yml {{env_type}}
+      shell:
+        chdir: /opt/app
+        cmd: 'sudo docker compose $(for file in $(ls docker-compose.*.yml); do echo -n "-f $file "; done) config -o  docker-compose.yml'
+      register: docker_deploy_output
+
     - name: Récupération des images docker
       shell:
         chdir: /opt/app
