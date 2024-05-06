@@ -31,7 +31,9 @@ export default function ExportButtonNew({ data, datasetName = "export" }) {
 
   const format = buffer
     .flat()
-    .map((x) => _.omit(x, ["_id", "status", "__v", "type", "scope", "is_email_checked", "establishment_id", "job_detail", "is_qualiopi", "address_detail", "delegations"]))
+    .map((x) =>
+      _.omit(x, ["_id", "status", "__v", "type", "scope", "is_email_checked", "establishment_id", "job_detail", "is_qualiopi", "address_detail", "delegations", "rome_detail"])
+    )
     .map((x) => {
       return {
         ...x,
