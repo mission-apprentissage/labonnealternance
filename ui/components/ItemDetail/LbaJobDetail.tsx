@@ -1,4 +1,4 @@
-import { Accordion, Box, Flex, Image, Text } from "@chakra-ui/react"
+import { Accordion, Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { ILbaItemLbaJob } from "shared"
 
@@ -89,7 +89,7 @@ const LbaJobDetail = ({ job }) => {
           {job?.job?.elligibleHandicap && (
             <Flex mt={2} p={2} background="white" justifyContent="center" fontSize="12px" alignItems="center" direction="row">
               <Box width="30px" minWidth="30px" mr={2}>
-                <Image mt="2px" src="/images/info.svg" alt="" />
+                <Image mt="2px" src="/images/info.svg" alt="" aria-hidden={true} />
               </Box>
               <Box>À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap.</Box>
             </Flex>
@@ -113,13 +113,18 @@ const LbaJobDetail = ({ job }) => {
 
       <Flex padding="16px 24px" mx={["0", "30px"]}>
         <Box mt={2} width="30px" minWidth="30px" mr={2}>
-          <Image mt="2px" src="/images/whisper.svg" alt="" />
+          <Image mt="2px" src="/images/whisper.svg" alt="" aria-hidden={true} />
         </Box>
         <Box>
           <Text as="div" fontWeight={700} fontSize="20px" color="#3a3a3a">
             Psst !
           </Text>
-          <Box color="grey.700">Pour convaincre l’entreprise de vous embaucher, on vous donne des conseils ici pour vous aider !</Box>
+          <Box color="grey.700">
+            Pour convaincre l’entreprise de vous embaucher,{" "}
+            <Link isExternal textDecoration="underline" href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e">
+              on vous donne des conseils ici pour vous aider !
+            </Link>
+          </Box>
         </Box>
       </Flex>
 
