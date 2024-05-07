@@ -110,7 +110,20 @@ const LbaJobDetail = ({ job }) => {
           <LbaJobQualites job={job} />
         </Accordion>
       </Box>
-      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
+
+      <Flex padding="16px 24px" mx={["0", "30px"]}>
+        <Box mt={2} width="30px" minWidth="30px" mr={2}>
+          <Image mt="2px" src="/images/whisper.svg" alt="" />
+        </Box>
+        <Box>
+          <Text as="div" fontWeight={700} fontSize="20px" color="#3a3a3a">
+            Psst !
+          </Text>
+          <Box color="grey.700">Pour convaincre l’entreprise de vous embaucher, on vous donne des conseils ici pour vous aider !</Box>
+        </Box>
+      </Flex>
+
+      <Box pb="0px" position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
         <Box data-testid="lbb-component">
           <Box mb={4}>{getDescriptionContext(job)}</Box>
