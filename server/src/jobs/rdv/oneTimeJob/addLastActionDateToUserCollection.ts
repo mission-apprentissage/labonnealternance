@@ -17,7 +17,7 @@ export const addLastActionDateToUserCollection = async () => {
     }
   )
 
-  return result.upserted
+  return result.upsertedCount
 }
 
 runScript(async () => await addLastActionDateToUserCollection())

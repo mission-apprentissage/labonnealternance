@@ -1,23 +1,21 @@
 import { IUnsubscribedLbaCompany } from "shared"
 
 import { model, Schema } from "../../../mongodb"
-import { lbaCompanySchema } from "../lbaCompany/lbaCompany.schema"
 
-const { siret, raison_sociale, enseigne, naf_code, naf_label, rome_codes, insee_city_code, zip_code, city, company_size, created_at, last_update_at } = lbaCompanySchema.obj
 const unsubscribedLbaCompanySchema = new Schema<IUnsubscribedLbaCompany>(
   {
-    siret,
-    raison_sociale,
-    enseigne,
-    naf_code,
-    naf_label,
-    rome_codes,
-    insee_city_code,
-    zip_code,
-    city,
-    company_size,
-    created_at,
-    last_update_at,
+    siret: String,
+    raison_sociale: String,
+    enseigne: String,
+    naf_code: String,
+    naf_label: String,
+    rome_codes: [String],
+    insee_city_code: String,
+    zip_code: String,
+    city: String,
+    company_size: String,
+    created_at: Date,
+    last_update_at: Date,
     unsubscribe_date: {
       type: Date,
       default: Date.now,

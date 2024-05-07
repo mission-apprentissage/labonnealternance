@@ -75,9 +75,9 @@ export default function (server: Server) {
 
           await unsubscribedLbaCompany.save()
 
-          const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret })
+          const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret }).lean()
           if (lbaCompanyToUnsubscribe) {
-            await lbaCompanyToUnsubscribe.remove()
+            await LbaCompany.deleteOne({ _id: lbaCompanyToUnsubscribe._id })
           }
 
           if (reason === "OPPOSITION") {

@@ -1,7 +1,7 @@
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
 
-import { ObjectId, Schema } from "../../../mongodb.js"
+import { Schema } from "../../../mongodb.js"
 
 import { buildMongooseModel } from "./buildMongooseModel.js"
 

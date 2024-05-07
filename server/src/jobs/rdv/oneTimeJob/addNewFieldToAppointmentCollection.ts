@@ -11,7 +11,7 @@ export const addNewFieldToAppointmentCollection = async () => {
     }
   )
 
-  return result.upserted
+  return result.upsertedCount
 }
 
 runScript(async () => await addNewFieldToAppointmentCollection())

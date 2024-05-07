@@ -34,7 +34,7 @@ export const ZMailing = z
 export const ZAppointment = z
   .object({
     _id: zObjectId,
-    applicant_id: zObjectId,
+    applicant_id: z.string(),
     cfa_intention_to_applicant: z.string().nullish(),
     cfa_message_to_applicant_date: z.date().nullish(),
     cfa_message_to_applicant: z.string().nullish(),

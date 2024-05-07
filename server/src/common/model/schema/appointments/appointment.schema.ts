@@ -1,8 +1,36 @@
-import { IAppointment } from "shared"
+import { IAppointment, IMailing } from "shared"
 import { AppointmentUserType } from "shared/constants/appointment"
 
 import { model, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
+
+const mailSchema = new Schema<IMailing>({
+  campaign: {
+    type: String,
+    default: null,
+    description: "Identifiant de campagne",
+  },
+  message_id: {
+    type: String,
+    default: null,
+    description: "Identifiant Brevo",
+  },
+  status: {
+    type: String,
+    default: null,
+    description: "Code erreur Brevo",
+  },
+  webhook_status_at: {
+    type: Date,
+    default: null,
+    description: "Date fournie par les webhooks Brevo lors de la réception d'un event",
+  },
+  email_sent_at: {
+    type: Date,
+    default: null,
+    description: "Date de création de la collection",
+  },
+})
 
 export const appointmentSchema = new Schema<IAppointment>(
   {
@@ -58,80 +86,8 @@ export const appointmentSchema = new Schema<IAppointment>(
       default: null,
       description: "Date à laquelle le CFA à consulté la page contenant les informations du rendez et du candidat",
     },
-    to_applicant_mails: {
-      type: "array",
-      description: "Liste des évènements MAIL récupéré par le serveur",
-      required: false,
-      default: [],
-      items: {
-        type: "object",
-        required: false,
-        properties: {
-          campaign: {
-            type: "string",
-            default: null,
-            description: "Identifiant de campagne",
-          },
-          message_id: {
-            type: "string",
-            default: null,
-            description: "Identifiant Brevo",
-          },
-          status: {
-            type: "string",
-            default: null,
-            description: "Code erreur Brevo",
-          },
-          webhook_status_at: {
-            type: Date,
-            default: null,
-            description: "Date fournie par les webhooks Brevo lors de la réception d'un event",
-          },
-          email_sent_at: {
-            type: Date,
-            default: null,
-            description: "Date de création de la collection",
-          },
-        },
-      },
-    },
-    to_cfa_mails: {
-      type: "array",
-      description: "Liste des évènements MAIL récupéré par le serveur",
-      required: false,
-      default: [],
-      items: {
-        type: "object",
-        required: false,
-        properties: {
-          campaign: {
-            type: "string",
-            default: null,
-            description: "Identifiant de campagne",
-          },
-          message_id: {
-            type: "string",
-            default: null,
-            description: "Identifiant Brevo",
-          },
-          status: {
-            type: "string",
-            default: null,
-            description: "Code erreur Brevo",
-          },
-          webhook_status_at: {
-            type: Date,
-            default: null,
-            description: "Date fournie par les webhooks Brevo lors de la réception d'un event",
-          },
-          email_sent_at: {
-            type: Date,
-            default: null,
-            description: "Date de création de la collection",
-          },
-        },
-      },
-    },
+    to_applicant_mails: [{ type: mailSchema, default: {} }],
+    to_cfa_mails: [{ type: mailSchema, default: {} }],
     cle_ministere_educatif: {
       type: String,
       default: null,

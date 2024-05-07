@@ -2,6 +2,7 @@ import dayjs from "dayjs"
 
 import { logger } from "../../common/logger"
 import { Recruiter, User2 } from "../../common/model/index"
+import { db } from "../../common/mongodb"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymize = async () => {
@@ -10,7 +11,7 @@ const anonymize = async () => {
   const usersToAnonymize = await User2.find(user2Query).lean()
   const userIds = usersToAnonymize.map(({ _id }) => _id.toString())
   const recruiterQuery = { "jobs.managed_by": { $in: userIds } }
-  await User2.aggregate([
+  await db.collection("userswithaccounts").aggregate([
     {
       $match: user2Query,
     },
@@ -22,7 +23,7 @@ const anonymize = async () => {
       },
     },
     {
-      $merge: "anonymizeduser2s",
+      $merge: "anonymizeduserswithaccounts",
     },
   ])
   await Recruiter.aggregate([
@@ -52,6 +53,7 @@ const anonymize = async () => {
       },
     },
     {
+      // @ts-ignore
       $merge: "anonymizedrecruiteurs",
     },
   ])

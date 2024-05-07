@@ -48,3 +48,4 @@ export const ZLbaLegacyCompany = ZLbaCompany.pick({
 }).strict()
 
 export type ILbaCompany = z.output<typeof ZLbaCompany>
+export type ILbaLegacyCompany = z.output<typeof ZLbaLegacyCompany>

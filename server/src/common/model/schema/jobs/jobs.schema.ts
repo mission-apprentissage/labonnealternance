@@ -77,12 +77,14 @@ export const jobsSchema = new Schema<IJob>(
       type: String,
       description: "Raison de la suppression de l'offre",
     },
-    job_type: {
-      type: [String],
-      default: TRAINING_CONTRACT_TYPE.APPRENTISSAGE,
-      enum: Object.values(TRAINING_CONTRACT_TYPE),
-      description: "Type de contrat",
-    },
+    job_type: [
+      {
+        type: String,
+        default: TRAINING_CONTRACT_TYPE.APPRENTISSAGE,
+        enum: Object.values(TRAINING_CONTRACT_TYPE),
+        description: "Type de contrat",
+      },
+    ],
     is_multi_published: {
       type: Boolean,
       default: true,

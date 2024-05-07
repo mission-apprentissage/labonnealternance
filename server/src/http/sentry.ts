@@ -1,3 +1,9 @@
+/**
+ * KBA : to be updated when switching to mongoDB
+ * url : https://github.com/mission-apprentissage/api-apprentissage/blob/105fdf0aadadf1fc5bf2d8184a8825a64204fd17/server/src/services/sentry/sentry.ts
+ */
+
+// @ts-nocheck
 import fastifySentryPlugin from "@immobiliarelabs/fastify-sentry"
 import { ExtraErrorData } from "@sentry/integrations"
 import * as Sentry from "@sentry/node"

@@ -1,4 +1,4 @@
-import type { ObjectId, MatchKeysAndValues, FilterQuery, FindOneOptions } from "mongodb"
+import type { Filter, FindOptions, MatchKeysAndValues, ObjectId } from "mongodb"
 
 import { IInternalJobs, IInternalJobsCron, IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { db } from "@/common/mongodb"
@@ -53,11 +53,11 @@ export const createJobCronTask = async ({ name, scheduled_for }: CreateJobCronTa
   return { ...job, _id }
 }
 
-export const findJob = async (filter: FilterQuery<IInternalJobs>, options?: FindOneOptions<IInternalJobs>): Promise<IInternalJobs | null> => {
+export const findJob = async (filter: Filter<IInternalJobs>, options?: FindOptions<IInternalJobs>): Promise<IInternalJobs | null> => {
   return await db.collection("internalJobs").findOne(filter, options)
 }
 
-export const findJobs = async <T extends IInternalJobs>(filter: FilterQuery<T>, options?: FindOneOptions<T>): Promise<T[]> => {
+export const findJobs = async <T extends IInternalJobs>(filter: Filter<T>, options?: FindOptions<T>): Promise<T[]> => {
   return await db.collection("internalJobs").find(filter, options).toArray()
 }
 

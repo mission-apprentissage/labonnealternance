@@ -391,7 +391,7 @@ export function generateOffreToken(user: IUser2, offre: IJob) {
       generateScope({
         schema: zRoutes.post["/formulaire/offre/:jobId/delegation/by-token"],
         options: {
-          params: { jobId: offre._id },
+          params: { jobId: offre._id.toString() },
           querystring: undefined,
         },
       }),

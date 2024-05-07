@@ -10,7 +10,6 @@ export const up = async (db: Db) => {
       $unset: { username: "" },
     },
     {
-      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
       bypassDocumentValidation: true,
     }
   )

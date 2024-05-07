@@ -1,5 +1,5 @@
-import type { CreateIndexesOptions, IndexSpecification } from "mongodb"
-import { ZodType } from "zod"
+import { CreateIndexesOptions, IndexSpecification, ObjectId } from "mongodb"
+import { ZodType, z } from "zod"
 
 export type CollectionName = "users" | "jobs" | "organisations" | "persons" | "events" | "sessions" | "documents" | "documentContents" | "mailingLists"
 
@@ -9,4 +9,10 @@ export interface IModelDescriptor {
   collectionName: CollectionName
 }
 
-export { zObjectId } from "zod-mongodb-schema"
+export const zObjectId = z
+  .custom<ObjectId | string>((v: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return ObjectId.isValid(v as any)
+  })
+  .transform((v: any) => new ObjectId(v))
+  .describe("Identifiant unique")

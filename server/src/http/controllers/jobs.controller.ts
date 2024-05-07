@@ -64,7 +64,6 @@ export default (server: Server) => {
       schema: zRoutes.get["/v1/jobs/bulk"],
       config,
       onRequest: server.auth(zRoutes.get["/v1/jobs/bulk"]),
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { query, select, page, limit } = req.query
