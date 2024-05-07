@@ -2,6 +2,8 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 import React from "react"
 
+import { scrollToNestedElement } from "@/utils/tools"
+
 import LbaJobCustomDescription from "./LbaJobCustomDescription"
 
 const BADDESCRIPTION = 50
@@ -23,6 +25,11 @@ const LbaJobDescription = ({ job }) => {
       </Box>
     )
   }
+  const onClick = (e) => {
+    setTimeout(() => {
+      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
+    }, 200)
+  }
 
   if (description && description.length > BADDESCRIPTION && !employeurDescription) {
     return <LbaJobCustomDescription data={description} title="Description du Métier" />
@@ -41,7 +48,7 @@ const LbaJobDescription = ({ job }) => {
 
   return (
     job?.job?.romeDetails?.definition && (
-      <AccordionItem>
+      <AccordionItem onClick={onClick}>
         {({ isExpanded }) => (
           <>
             <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
