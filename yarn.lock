@@ -6216,10 +6216,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clamscan@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "clamscan@npm:2.1.2"
-  checksum: 1e823cdabc4b373a10ca7aa892f881ad8bb219e04f49eaa0892fab8eaed8acb7428d66e0328b31f19f451c66db0a49da1afcaf811ac1b9af76d310ec1850cf5a
+"clamscan@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "clamscan@npm:2.2.1"
+  checksum: 40aaac9daf6bb028896ca638ae8b5f452c10cf18eedd535653b1f6a547253964ed3f23d49c6b11bebeb4be77f90f21acac5aa02befc7bc97ecfcf934f3121679
   languageName: node
   linkType: hard
 
@@ -17744,7 +17744,7 @@ __metadata:
     bunyan-slack: ^0.0.10
     burner-email-providers: ^1.0.67
     chalk: ^4.1.2
-    clamscan: ^2.1.2
+    clamscan: ^2.2.1
     commander: ^9.5.0
     company-email-validator: ^1.1.0
     convert-csv-to-json: ^0.0.15
