@@ -41,7 +41,7 @@
     "bunyan-slack": "^0.0.10",
     "burner-email-providers": "^1.0.67",
     "chalk": "^4.1.2",
-    "clamscan": "^2.1.2",
+    "clamscan": "^2.2.1",
     "commander": "^9.5.0",
     "company-email-validator": "^1.1.0",
     "convert-csv-to-json": "^0.0.15",

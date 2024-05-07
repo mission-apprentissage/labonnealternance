@@ -161,8 +161,8 @@ export const getLbaJobs = async ({
       caller,
       romes: romes?.split(","),
       distance,
-      lat: hasLocation ? latitude : FRANCE_LATITUDE,
-      lon: hasLocation ? longitude : FRANCE_LONGITUDE,
+      lat: hasLocation ? (latitude as number) : FRANCE_LATITUDE,
+      lon: hasLocation ? (longitude as number) : FRANCE_LONGITUDE,
       niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
       isMinimalData,
     }

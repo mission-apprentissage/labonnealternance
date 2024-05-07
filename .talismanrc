@@ -28,7 +28,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 5114a300586f173af59c1c06e3120f5708b09886ac83660c359755ca1b4f06ff
+  checksum: 6926cc583e24275ba52513ce9fd2559316f6bc75d5e869f9ed0e8c10d6b9f617
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
