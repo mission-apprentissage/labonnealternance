@@ -131,7 +131,7 @@ services:
 
   clamav:
     <<: *default
-    image: clamav/clamav:1.0.5
+    image: clamav/clamav:stable
     deploy:
       <<: *deploy-default
       resources:
