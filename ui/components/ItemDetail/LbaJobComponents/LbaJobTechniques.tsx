@@ -5,16 +5,15 @@ import React from "react"
 const LbaJobTechniques = ({ job }) => {
   const getText = () => {
     const res = (
-      <Box pl="12px" mt={4}>
+      <Box pl="12px">
         {job.job.romeDetails.competences.savoirs.map((competence) => (
-          <Box key={competence.code} mt={2}>
-            &bull;
-            <Text as="span" ml={3}>
+          <Box key={competence.code} mb={2}>
+            <Text as="span" ml={3} fontWeight={700}>
               {competence.libelle}
             </Text>
             {competence.items.map((item, idx) => (
               <Box key={idx} pl={6}>
-                <Text as="span">- {item.libelle}</Text>
+                <Text as="span">&bull; {item.libelle}</Text>
               </Box>
             ))}
           </Box>
