@@ -157,17 +157,19 @@ export const createOrganizationUser = async (
       grantedBy ?? ""
     )
     const organization = await createOrganizationIfNotExist(userRecruteurProps)
-    if (statusEvent) {
-      await modifyPermissionToUser(
-        {
-          user_id: user._id,
-          authorized_id: organization._id.toString(),
-          authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
-          origin: origin ?? "createUser",
-        },
-        statusEvent
-      )
-    }
+    await modifyPermissionToUser(
+      {
+        user_id: user._id,
+        authorized_id: organization._id.toString(),
+        authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
+        origin: origin ?? "création de compte",
+      },
+      statusEvent ?? {
+        reason: "création de compte",
+        status: AccessStatus.AWAITING_VALIDATION,
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+      }
+    )
     return { organization, user, type }
   } else {
     throw Boom.internal(`unsupported type ${type}`)
