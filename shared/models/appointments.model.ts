@@ -18,6 +18,7 @@ export const enum EReasonsKey {
   LIEU = "lieu",
   SUIVI = "suivi",
   AUTRE = "autre",
+  DEBOUCHE = "debouche",
 }
 
 export const ZMailing = z
