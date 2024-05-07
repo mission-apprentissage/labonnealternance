@@ -186,6 +186,7 @@ export default (server: Server) => {
           // Creation de l'utilisateur en base de données
           const creationResult = await createOrganizationUser({ ...req.body, ...siretInfos, is_email_checked: false, origin })
           const userCfa = creationResult.user
+          const cfa = creationResult.organization
 
           const slackNotification = {
             subject: "RECRUTEUR",
@@ -201,7 +202,7 @@ export default (server: Server) => {
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
             await autoValidateUser(creationResult, origin, "l'email correspond à un contact")
-            await sendUserConfirmationEmail(userCfa)
+            await sendUserConfirmationEmail(userCfa, cfa)
             // Keep the same structure as ENTREPRISE
             return res.status(200).send({ user: userCfa, validated: true, token })
           }
@@ -211,7 +212,7 @@ export default (server: Server) => {
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
               await autoValidateUser(creationResult, origin, "le nom de domaine de l'email correspond à celui d'un contact")
-              await sendUserConfirmationEmail(userCfa)
+              await sendUserConfirmationEmail(userCfa, cfa)
               // Keep the same structure as ENTREPRISE
               return res.status(200).send({ user: userCfa, validated: true, token })
             }

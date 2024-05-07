@@ -148,7 +148,7 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
     }
     const role = await RoleManagement.findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() }).lean()
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
-    await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
+    await sendEmailConfirmationEntreprise(user, organization as IEntreprise, updatedFormulaire, roleStatus, entrepriseStatus)
     return updatedFormulaire
   }
 
