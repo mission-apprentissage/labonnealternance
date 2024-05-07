@@ -14,8 +14,9 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
   const router = useRouter()
 
   const [etablissements, setEtablissements] = useState(null)
-  const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+
+  const isSubmitButtonEnabled = (etablissements ?? []).find((item) => item.checked)
 
   const { job: jobString, email, geo_coordinates, fromDashboard, userId, establishment_id, token } = router.query
   const job = JSON.parse((jobString as string) ?? "{}")
@@ -27,8 +28,6 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
    */
   const checkEtablissement = (etablissement) => {
     const etablissementUpdated = etablissements.map((item) => (etablissement._id === item._id ? { ...item, checked: !etablissement.checked } : item))
-
-    setIsSubmitButtonEnabled(!!etablissementUpdated.find((item) => item.checked))
     setEtablissements(etablissementUpdated)
   }
 
@@ -77,16 +76,15 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
     if (geo_coordinates) {
       const [latitude, longitude] = (geo_coordinates as string).split(",")
 
-      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude) }).then(({ data }) => {
+      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude) }).then((data) => {
         const etablissementUpdated = data.slice(0, 10).map((data, index) => ({
           ...data,
           checked: index < 3,
         }))
         setEtablissements(etablissementUpdated)
-        setIsSubmitButtonEnabled(!!etablissementUpdated.find((item) => item.checked === true))
       })
     }
-  }, [])
+  }, [geo_coordinates])
 
   if (!job && !email && !geo_coordinates && !fromDashboard && !userId) return <></>
 
