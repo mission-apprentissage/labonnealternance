@@ -167,7 +167,7 @@ const AjouterVoeuxForm = (props) => {
       return
     }
     const [latitude, longitude] = geo_coordinates.split(",").map((str) => parseFloat(str))
-    const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
+    const data = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
 
@@ -218,7 +218,8 @@ const AjouterVoeuxForm = (props) => {
                    * work around until v3 : setTimeout
                    */
                   setTimeout(async () => {
-                    await checkIfThereAreProposal(values.codeRome)
+                    // ne pas ajouter de await puisque l'appel peut être lent et n'est pas primordial
+                    checkIfThereAreProposal(values.codeRome)
                     setFieldValue("rome_label", values.intitule)
                     setFieldValue("rome_appellation_label", values.appellation)
                     setFieldValue("rome_code", [values.codeRome])
