@@ -75,6 +75,11 @@ const reasons = [
     checked: false,
   },
   {
+    key: EReasonsKey.DEBOUCHE,
+    title: "Devenir des élèves en sortie de formation",
+    checked: false,
+  },
+  {
     key: EReasonsKey.PLUS,
     title: "En savoir plus sur l'alternance",
     checked: false,
