@@ -16,7 +16,6 @@ import ErrorMessage from "../ErrorMessage"
 
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, getNavigationButtons } from "./ItemDetailServices/getButtons"
-import getCurrentList from "./ItemDetailServices/getCurrentList"
 import getSoustitre from "./ItemDetailServices/getSoustitre"
 import getTags from "./ItemDetailServices/getTags"
 import LoadedItemDetail from "./loadedItemDetail"
@@ -28,6 +27,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
       const trainingWithDetails = await fetchTrainingDetails(selectedItem)
       const updatedTrainings = trainings.map((v) => {
         if (v.id === trainingWithDetails.id) {
+          trainingWithDetails.place.distance = v.place.distance
           return trainingWithDetails
         }
         return v
@@ -44,6 +44,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
         lbaCompanies: jobs.lbaCompanies,
         matchas: jobs.matchas.map((v) => {
           if (v.id === jobWithDetails.id) {
+            jobWithDetails.place.distance = v.place.distance
             return jobWithDetails
           }
           return v
@@ -60,6 +61,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
         peJobs: jobs.peJobs,
         lbaCompanies: jobs.lbaCompanies.map((v) => {
           if (v.id === companyWithDetails.id) {
+            companyWithDetails.place.distance = v.place.distance
             return companyWithDetails
           }
           return v
@@ -76,6 +78,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
       const updatedJobs = {
         peJobs: jobs.peJobs.map((v) => {
           if (v.id === jobWithDetails.id) {
+            jobWithDetails.place.distance = v.place.distance
             return jobWithDetails
           }
           return v
@@ -94,18 +97,17 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
   }
 }
 
-const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
-  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
+const ItemDetail = ({ handleClose, handleSelectItem }) => {
+  const { extendedSearch, jobs, selectedItem, setJobsAndSelectedItem, setTrainingsAndSelectedItem, trainings } = useContext(SearchResultContext)
+  const { activeFilters } = useContext(DisplayContext)
+
+  const kind = selectedItem?.ideaType
 
   const actualTitle = getActualTitle({ kind, selectedItem })
-  const { activeFilters } = useContext(DisplayContext)
 
   const [hasError, setHasError] = useState<"not_found" | "unexpected" | "">("")
 
-  const { trainings, setTrainingsAndSelectedItem, jobs, setJobsAndSelectedItem, extendedSearch } = useContext(SearchResultContext)
-  const currentList = getCurrentList({ store: { trainings, jobs }, activeFilters, extendedSearch })
-
-  const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem })
+  const { swipeHandlers, goNext, goPrev } = BuildSwipe({ jobs, trainings, extendedSearch, activeFilters, selectedItem, handleSelectItem })
   const kindColor = kind !== LBA_ITEM_TYPE_OLD.FORMATION ? "pinksoft.600" : "greensoft.500"
 
   useQuery(["itemDetail", selectedItem.id], () => getItemDetails({ selectedItem, trainings, jobs, setTrainingsAndSelectedItem, setJobsAndSelectedItem, setHasError }), {
@@ -114,7 +116,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
   })
 
   return selectedItem?.detailsLoaded ? (
-    <LoadedItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} />
+    <LoadedItemDetail handleClose={handleClose} handleSelectItem={handleSelectItem} />
   ) : (
     <Box
       as="section"

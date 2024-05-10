@@ -29,7 +29,7 @@
 
 ## Fiche Produit
 
-Consultez la [Fiche Produit](https://beta.gouv.fr/startups/lba-apprentissage.html) pour plus d'informations sur le projet.
+Consultez la [Fiche Produit](https://beta.gouv.fr/startups/la-bonne-alternance.html) pour plus d'informations sur le projet.
 
 ## Installation
 

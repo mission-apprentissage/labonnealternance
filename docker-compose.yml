@@ -21,7 +21,7 @@ services:
       start_period: 10s
 
   clamav:
-    image: clamav/clamav:latest
+    image: clamav/clamav:stable
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "/usr/local/bin/clamdcheck.sh"]

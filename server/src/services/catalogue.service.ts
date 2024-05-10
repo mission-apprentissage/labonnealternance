@@ -178,7 +178,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
   )
 
   const etablissementsToRetrieve = new Set()
-  formations.map((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))
+  formations.forEach((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))
 
   const { etablissements } = await getCatalogueEtablissements(
     {
@@ -205,8 +205,8 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
     ]
   })
   etablissementsRefined = sortBy(etablissementsRefined, "distance_en_km")
-  const unsubscribedEtablissements = await UnsubscribeOF.find({ catalogue_id: { $in: etablissementsRefined.map((_) => _._id) } })
-  const unsubscribedIds = unsubscribedEtablissements.map((_) => _.catalogue_id)
+  const unsubscribedEtablissements = await UnsubscribeOF.find({ catalogue_id: { $in: etablissementsRefined.map((etablissement) => etablissement._id) } })
+  const unsubscribedIds = unsubscribedEtablissements.map((unsubscribeOF) => unsubscribeOF.catalogue_id)
   etablissementsRefined = etablissementsRefined.filter((etablissement) => !unsubscribedIds.includes(etablissement._id))
   return etablissementsRefined
 }

@@ -163,13 +163,6 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   // get related trainings from catalogue
   const formations = await getTrainingsFromParameters(wish)
 
-  if (!formations || !formations.length) {
-    const romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
-    return buildEmploiUrl({ params: { ...(romes.length ? { romes: romes } : {}), ...utmData } })
-  }
-
-  let [formation] = formations
-
   const postCode = wish.code_insee || wish.code_postal
   let wLat, wLon
   if (postCode) {
@@ -178,6 +171,13 @@ const getLBALink = async (wish: IWish): Promise<string> => {
       ;[wLon, wLat] = responseApiAdresse.features[0].geometry.coordinates
     }
   }
+
+  if (!formations || !formations.length) {
+    const romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+    return buildEmploiUrl({ params: { ...(romes.length ? { romes: romes } : {}), lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
+  }
+
+  let [formation] = formations
 
   if (formations.length > 1 && wLat && wLon) {
     let distance = 999999999
