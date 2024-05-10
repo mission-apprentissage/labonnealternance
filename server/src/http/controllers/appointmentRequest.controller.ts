@@ -18,7 +18,6 @@ import {
   findEligibleTrainingByParcoursupId,
   findEtablissement,
   findOne,
-  // findOpenAppointments,
   getParameterByCleMinistereEducatif,
   isOpenForAppointments,
 } from "../../services/eligibleTrainingsForAppointment.service"
