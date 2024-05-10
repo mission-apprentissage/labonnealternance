@@ -75,6 +75,7 @@ export const nonPersonalInfosUserRecruteurSchema = new Schema({
   establishment_siret: {
     type: String,
     description: "Siret de l'établissement",
+    index: true,
   },
   address_detail: {
     type: Object,
@@ -107,6 +108,7 @@ export const nonPersonalInfosUserRecruteurSchema = new Schema({
   establishment_id: {
     type: String,
     description: "Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique",
+    index: true,
   },
   last_connection: {
     type: Date,
