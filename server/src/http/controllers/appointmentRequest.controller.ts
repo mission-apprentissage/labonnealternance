@@ -114,16 +114,6 @@ export default (server: Server) => {
         throw Boom.internal("Le lieu de formation n'a aucun email")
       }
 
-      // let user = await users.getUserByMail(email)
-
-      // // Updates firstname and last name if the user already exists
-      // if (user) {
-      //   user = await users.update(user._id, { firstname, lastname, phone, type, last_action_date: dayjs().format() })
-
-      //   if (!user) {
-      //     return
-      //   }
-
       const { user, isNew } = await users.createOrUpdateUserByEmail(
         email,
         // Updates firstname and last name if the user already exists
@@ -144,17 +134,7 @@ export default (server: Server) => {
           throw Boom.badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement en cours de traitement.`)
         }
       }
-      // else {
-      //   user = await users.createUser({
-      //     firstname,
-      //     lastname,
-      //     phone,
-      //     email,
-      //     type,
-      //     role: EApplicantRole.CANDIDAT,
-      //     last_action_date: dayjs().toDate(),
-      //   })
-      // }
+
       if (!eligibleTrainingsForAppointment.lieu_formation_email) {
         throw Boom.internal("Le lieu de formation n'a aucun email")
       }
