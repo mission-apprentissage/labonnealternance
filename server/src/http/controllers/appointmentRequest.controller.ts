@@ -57,9 +57,6 @@ export default (server: Server) => {
         throw Boom.badRequest("Formation introuvable")
       }
 
-      // const isOpenForAppointments = await findOpenAppointments(eligibleTrainingsForAppointment, referrerObj.name)
-
-      // if (!isOpenForAppointments) {
       if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerObj.name)) {
         return res.status(200).send({
           error: "Prise de rendez-vous non disponible.",
