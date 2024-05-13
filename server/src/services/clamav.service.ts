@@ -2,8 +2,6 @@ import { Readable } from "stream"
 
 import NodeClam from "clamscan"
 
-import { startSentryPerfRecording } from "@/common/utils/sentryUtils"
-
 import { logger } from "../common/logger"
 import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
@@ -57,7 +55,7 @@ class ClamAVService {
   }
 
   public async isInfected(file: string): Promise<boolean | null> {
-    const onFinish = startSentryPerfRecording("clamav", "scan")
+    // const onFinish = startSentryPerfRecording("clamav", "scan")
     const clamav = await this.getClamAV()
     const decodedAscii = Readable.from(Buffer.from(file.substring(file.indexOf(";base64,") + 8), "base64").toString("ascii"))
     const rs = Readable.from(decodedAscii)
@@ -71,9 +69,10 @@ class ClamAVService {
     } catch (error) {
       console.error("Error scanning file for viruses:", error)
       return null
-    } finally {
-      onFinish()
     }
+    // finally {
+    //   onFinish()
+    // }
   }
 }
 
