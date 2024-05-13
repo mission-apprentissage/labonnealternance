@@ -6,6 +6,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getUser2ManagingOffer } from "@/services/application.service"
+import { upsertOrganization } from "@/services/organization.service"
 
 import { logger } from "../../../../common/logger"
 import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../../../../common/model/index"
@@ -15,7 +16,7 @@ import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { ENTREPRISE } from "../../../../services/constant.service"
 import { EntrepriseData, autoValidateUserRoleOnCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
 import { activateEntrepriseRecruiterForTheFirstTime, archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
-import { UserAndOrganization, deactivateEntreprise, setEntrepriseInError } from "../../../../services/userRecruteur.service"
+import { UserAndOrganization, deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "../../../../services/userRecruteur.service"
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await Entreprise.find({
@@ -35,11 +36,8 @@ const updateEntreprisesInfosInError = async () => {
         await deactivateEntreprise(_id, siretResponse.message)
         stats.deactivated++
       } else {
-        const entrepriseData: Partial<EntrepriseData> = siretResponse
-        const updatedEntreprise = await Entreprise.findOneAndUpdate({ _id }, entrepriseData, { new: true }).lean()
-        if (!updatedEntreprise) {
-          throw Boom.internal(`could not find and update entreprise with id=${_id}`)
-        }
+        const updatedEntreprise = await upsertOrganization(siretResponse, "script de reprise de données entreprise", ENTREPRISE)
+        await setEntrepriseValid(updatedEntreprise._id)
         const entrepriseEvent: IEntrepriseStatusEvent = {
           date: new Date(),
           reason: "reprise des données des entreprises en erreur / MAJ",
@@ -48,7 +46,7 @@ const updateEntreprisesInfosInError = async () => {
           granted_by: "",
         }
         await Entreprise.updateOne({ _id }, { $push: { status: entrepriseEvent } })
-        await Recruiter.updateMany({ establishment_siret: siret }, entrepriseData)
+        await Recruiter.updateMany({ establishment_siret: siret }, siretResponse)
         if (getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.ERROR) {
           const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
           const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: updatedEntreprise._id.toString() }).lean()

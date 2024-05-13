@@ -21,6 +21,7 @@ import {
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
 } from "@/services/etablissement.service"
+import { upsertOrganization } from "@/services/organization.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import { emailHasActiveRole, getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
 import {
@@ -28,6 +29,7 @@ import {
   createOrganizationUser,
   isUserEmailChecked,
   sendWelcomeEmailToUserRecruteur,
+  setEntrepriseValid,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
   updateUser2Fields,
@@ -81,6 +83,8 @@ export default (server: Server) => {
       if ("error" in result) {
         throw Boom.badRequest(result.message, result)
       } else {
+        const organization = await upsertOrganization(result, "formulaire de création d'entreprise", ENTREPRISE)
+        await setEntrepriseValid(organization._id)
         return res.status(200).send(result)
       }
     }

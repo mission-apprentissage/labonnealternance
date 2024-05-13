@@ -20,7 +20,7 @@ import config from "../config"
 import { createAuthMagicLink } from "./appLinks.service"
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
-import { createOrganizationIfNotExist } from "./organization.service"
+import { upsertOrganization } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist } from "./user2.service"
 
@@ -155,16 +155,17 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
 
 /**
  * Crée l'utilisateur si il n'existe pas
- * Crée l'organisation si elle n'existe pas
+ * Mets à jour l'organisation
  * Si statusEvent est passé, ajoute les droits de l'utilisateur sur l'organisation.
- * Sinon, c'est de la responsabilité de l'appelant d'ajouter le status des droits ultérieurement.
+ * Sinon, c'est les droits sont mis en attente de validation
  */
 export const createOrganizationUser = async (
   userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status" | "scope">,
   grantedBy?: string,
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 ): Promise<UserAndOrganization> => {
-  const { type, origin, first_name, last_name, last_connection, email, is_email_checked, phone } = userRecruteurProps
+  const { type, origin, first_name, last_name, last_connection, email, is_email_checked, phone, establishment_siret, geo_coordinates, address, address_detail, idcc, opco } =
+    userRecruteurProps
   if (type === ENTREPRISE || type === CFA) {
     const user = await createUser2IfNotExist(
       {
@@ -177,7 +178,24 @@ export const createOrganizationUser = async (
       is_email_checked,
       grantedBy ?? ""
     )
-    const organization = await createOrganizationIfNotExist(userRecruteurProps)
+    if (!establishment_siret) {
+      throw new Error("inattendu: establishment_siret vide")
+    }
+    if (!geo_coordinates) {
+      throw new Error("inattendu: geo_coordinates vide")
+    }
+    const organization = await upsertOrganization(
+      {
+        establishment_siret,
+        geo_coordinates,
+        address,
+        address_detail,
+        opco: opco ?? undefined,
+        idcc: idcc ?? undefined,
+      },
+      origin ?? "",
+      type
+    )
     await modifyPermissionToUser(
       {
         user_id: user._id,
