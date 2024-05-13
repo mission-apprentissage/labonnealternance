@@ -137,6 +137,7 @@ services:
       resources:
         limits:
           memory: 4g
+      replicas: 2
     healthcheck:
       test: ["CMD", "/usr/local/bin/clamdcheck.sh"]
       interval: 60s

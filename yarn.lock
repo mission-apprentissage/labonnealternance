@@ -3961,6 +3961,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/clamscan@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "@types/clamscan@npm:2.0.8"
+  dependencies:
+    "@types/node": "*"
+  checksum: 7c96c890d82bd2efb8633b02092bf8de8e0df53ad9a1df99e15553d310fcfc7c65e403f1cf0a6cec63cb1d26f80f6102aa294c2fcd3d57f16be2637a3bd106ce
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*":
   version: 3.4.38
   resolution: "@types/connect@npm:3.4.38"
@@ -13812,6 +13821,7 @@ __metadata:
     "@semantic-release/changelog": ^6.0.2
     "@semantic-release/exec": ^6.0.3
     "@semantic-release/git": ^10.0.1
+    "@types/clamscan": ^2.0.8
     "@types/node": 20.7.1
     "@typescript-eslint/eslint-plugin": ^6.7.2
     "@typescript-eslint/parser": ^6.7.2
