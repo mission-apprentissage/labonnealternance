@@ -1,98 +1,82 @@
 import { Readable } from "stream"
 
 import NodeClam from "clamscan"
-import tcpPortUsed from "tcp-port-used"
-
-import { startSentryPerfRecording } from "@/common/utils/sentryUtils"
 
 import { logger } from "../common/logger"
 import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
 
-let scanner
+class ClamAVService {
+  private static instance: ClamAVService | null = null
+  private clamav: Promise<NodeClam> | null = null
 
-const setScanner = async () => {
-  scanner = await initScanner()
-  logger.info("Clamav scanner initialized")
-}
+  private constructor() {
+    this.clamav = this.initClamAV()
+  }
 
-/**
- * @description Initialize clamav scanner.
- * @returns {Promise<unknown>}
- */
-const initScanner = (): Promise<unknown> => {
-  const port = 3310
-  const host = config.env === "local" ? "localhost" : "clamav"
-
-  return new Promise((resolve, reject) => {
-    const onFinish = startSentryPerfRecording("clamav", "init")
-
-    tcpPortUsed
-      .waitUntilUsedOnHost(port, host, 500, 30000)
-      .then(() => {
-        const params = {
-          //debugMode: config.env === "local" ? true : false, // This will put some debug info in your js console
-          clamdscan: {
-            host,
-            port,
-            bypassTest: false,
-          },
-        }
-
-        const clamscan = new NodeClam().init(params)
-        resolve(clamscan)
-      })
-      .catch(reject)
-      .finally(onFinish)
-  })
-}
-
-/**
- * @description Scan a "string".
- * @param {string} fileContent
- * @returns {Promise<boolean>}
- */
-const scanString = async (fileContent: string): Promise<boolean> => {
-  const onFinish = startSentryPerfRecording("clamav", "scan")
-
-  try {
-    // le fichier est encodé en base 64 à la suite d'un en-tête.
-    const decodedAscii = Readable.from(Buffer.from(fileContent.substring(fileContent.indexOf(";base64,") + 8), "base64").toString("ascii"))
-    const rs = Readable.from(decodedAscii)
-
-    const { isInfected, viruses } = await scanner.scanStream(rs)
-
-    if (isInfected) {
-      logger.error(`Virus detected ${viruses.toString()}`)
-      await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
+  public static getInstance(): ClamAVService {
+    if (!ClamAVService.instance) {
+      ClamAVService.instance = new ClamAVService()
     }
+    return ClamAVService.instance
+  }
 
-    return isInfected
-  } finally {
-    onFinish()
+  private async initClamAV(): Promise<NodeClam> {
+    return new Promise((resolve, reject) => {
+      const clamav = new NodeClam()
+      clamav
+        .init({
+          clamdscan: {
+            host: config.env === "local" ? "localhost" : "clamav",
+            port: 3310,
+          },
+        })
+        .then(() => resolve(clamav))
+        .catch(reject)
+    })
+  }
+
+  private async getClamAV(): Promise<NodeClam> {
+    if (!this.clamav) {
+      throw new Error("ClamAV is not initialized")
+    }
+    return this.clamav
+  }
+
+  public async getVersions(): Promise<string[] | null> {
+    try {
+      const clamav = await this.getClamAV()
+      const versions = await clamav.getVersion()
+      return versions
+    } catch (error) {
+      console.error("Error getting ClamAV versions:", error)
+      return null
+    }
+  }
+
+  public async isInfected(file: string): Promise<boolean | null> {
+    // const onFinish = startSentryPerfRecording("clamav", "scan")
+    const clamav = await this.getClamAV()
+    const decodedAscii = Readable.from(Buffer.from(file.substring(file.indexOf(";base64,") + 8), "base64").toString("ascii"))
+    const rs = Readable.from(decodedAscii)
+    try {
+      const { isInfected, viruses } = await clamav.scanStream<{ isInfected: boolean; file: string; viruses: string[] }>(rs)
+      if (isInfected) {
+        logger.error(`Virus detected ${viruses.toString()}`)
+        await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
+      }
+      return isInfected
+    } catch (error) {
+      console.error("Error scanning file for viruses:", error)
+      return null
+    }
+    // finally {
+    //   onFinish()
+    // }
   }
 }
 
-/**
- * @description Scan a file.
- * @param {string} fileContent
- * @returns {Promise<boolean>}
- */
-const scan = async (fileContent: string): Promise<boolean> => {
-  if (scanner) {
-    return scanString(fileContent)
-  }
-
-  try {
-    logger.info("Initalizing Clamav")
-    await setScanner()
-
-    return scanString(fileContent)
-  } catch (err) {
-    logger.error("Error initializing Clamav " + err)
-
-    return false
-  }
+// Factory function to get the singleton instance
+export function getClamAVServiceInstance(): ClamAVService {
+  return ClamAVService.getInstance()
 }
-
-export { scan }
