@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { CFA, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { IJob, IRecruiter, getUserStatus, parseEnum, zRoutes } from "shared/index"
+import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -49,7 +49,7 @@ export default (server: Server) => {
       if (!opcoRole) {
         throw Boom.forbidden("pas de role opco")
       }
-      const opco = parseEnum(OPCOS, opcoRole.authorized_id)
+      const opco = parseEnumOrError(OPCOS, opcoRole.authorized_id)
       return res.status(200).send(await getUserAndRecruitersDataForOpcoUser(opco))
     }
   )
