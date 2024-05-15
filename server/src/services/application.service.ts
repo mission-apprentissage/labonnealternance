@@ -82,13 +82,17 @@ export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boo
  */
 export const addEmailToBlacklist = async (email: string, blacklistingOrigin: string): Promise<void> => {
   try {
-    await new EmailBlacklist({
-      email,
-      blacklisting_origin: blacklistingOrigin,
-    }).save()
+    await EmailBlacklist.findOneAndUpdate(
+      { email },
+      {
+        email,
+        blacklisting_origin: blacklistingOrigin,
+      },
+      { upsert: true }
+    )
   } catch (err) {
     // catching unique address error
-    logger.error(`Failed to save email to blacklist (${email}). Reason : ${err}`)
+    logger.error(`Failed to save email to blacklist. Reason : ${err}`)
   }
 }
 
