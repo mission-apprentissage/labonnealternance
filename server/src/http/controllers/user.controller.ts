@@ -1,6 +1,6 @@
 import Boom from "boom"
-import { CFA, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { IJob, IRecruiter, getUserStatus, zRoutes } from "shared/index"
+import { CFA, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -44,7 +44,12 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user/opco"])],
     },
     async (req, res) => {
-      const { opco } = req.query
+      const userFromRequest = getUserFromRequest(req, zRoutes.get["/user/opco"]).value
+      const opcoRole = await RoleManagement.findOne({ authorized_type: AccessEntityType.OPCO, user_id: userFromRequest._id.toString() }).lean()
+      if (!opcoRole) {
+        throw Boom.forbidden("pas de role opco")
+      }
+      const opco = parseEnumOrError(OPCOS, opcoRole.authorized_id)
       return res.status(200).send(await getUserAndRecruitersDataForOpcoUser(opco))
     }
   )
