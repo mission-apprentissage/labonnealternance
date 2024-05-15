@@ -2,7 +2,8 @@ import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
 import { IEmailBlacklist, IUser, IUserRecruteur } from "shared"
-import { AUTHTYPE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { AUTHTYPE, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { UserEventType } from "shared/models/user2.model"
 
 import { logger } from "@/common/logger"
 import {
@@ -18,6 +19,7 @@ import {
   LbaCompany,
   Optout,
   Recruiter,
+  RoleManagement,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 import { db } from "@/common/mongodb"
@@ -133,24 +135,14 @@ const obfuscateFormations = async () => {
 const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
 const keepSpecificUser = async (email: string, type: string) => {
-  const user: IUserRecruteur = await db.collection("userrecruteurs").findOne({ type })
-  await db.collection("userrecruteurs").findOneAndUpdate(
-    { _id: user._id },
-    {
-      $set: {
-        email,
-        status: [
-          {
-            user: "SERVEUR",
-            validation_type: VALIDATION_UTILISATEUR.AUTO,
-            status: ETAT_UTILISATEUR.VALIDE,
-            reason: "Anonymisation des données",
-            date: new Date(),
-          },
-        ],
-      },
-    }
-  )
+  const role = await RoleManagement.findOne({ authorized_type: type }).lean()
+  const replacement = {
+    $set: { email },
+    $push: { status: { granted_by: "server", date: new Date(), reason: "obfuscation", status: UserEventType.ACTIF, validation_type: VALIDATION_UTILISATEUR.AUTO } },
+  }
+  if (role) {
+    await db.collection("userswithaccounts").findOneAndUpdate({ _id: role.user_id }, replacement)
+  }
 }
 
 const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
@@ -242,7 +234,6 @@ const obfuscateUsersWithAccounts = async () => {
     const email = getFakeEmail()
     const replacement = {
       $set: { email, phone: "0601010106", last_name: "nom_famille", first_name: "prenom" },
-      $push: { status: { granted_by: "server", date: new Date(), reason: "ofuscation", status: "DESACTIVE", validation_type: "AUTOMATIQUE" } },
     }
     await db.collection("userswithaccounts").findOneAndUpdate({ _id: user._id }, replacement)
   }
