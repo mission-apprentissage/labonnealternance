@@ -21,7 +21,7 @@ import config from "../config"
 
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import { BrevoEventStatus } from "./brevo.service"
-import { getClamAVServiceInstance } from "./clamav.service"
+import { isInfected } from "./clamav.service"
 import { getJobFromRecruiter, getOffreAvecInfoMandataire } from "./formulaire.service"
 import { buildLbaCompanyAddress } from "./lbacompany.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
@@ -424,7 +424,7 @@ export const validateJob = async (application: INewApplicationV2): Promise<Offre
  * @description checks if attachment is corrupted
  */
 const scanFileContent = async (applicant_file_content: string): Promise<string> => {
-  return (await getClamAVServiceInstance().isInfected(applicant_file_content)) ? "pièce jointe invalide" : "ok"
+  return (await isInfected(applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
 /**

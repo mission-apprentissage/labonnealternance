@@ -15,7 +15,7 @@ let watcher: NodeJS.Timeout | null = null
 async function createClamav() {
   return await new NodeClam().init({
     clamdscan: {
-      host: "localhost",
+      host: config.env === "local" ? "localhost" : "clamav",
       port: 3310,
     },
   })
@@ -26,6 +26,7 @@ async function getClamav(): Promise<NodeClam> {
     const retry = (error) => {
       const err = Boom.internal("Error initializing ClamAV")
       err.cause = error
+      logger.error(err)
       sentryCaptureException(err)
       return createClamav()
     }
@@ -35,6 +36,7 @@ async function getClamav(): Promise<NodeClam> {
         instance.getVersion().catch((error) => {
           const err = Boom.internal("Error with ClamAV health check")
           err.cause = error
+          logger.error(err)
           sentryCaptureException(err)
           handleClamavError()
         })
@@ -63,6 +65,7 @@ export async function getVersion(): Promise<string> {
   } catch (error) {
     handleClamavError()
     const err = Boom.internal("Error getting ClamAV versions")
+    logger.error(err)
     err.cause = error
     throw err
   }
@@ -91,81 +94,4 @@ export async function isInfected(file: string): Promise<boolean> {
   } finally {
     onFinish()
   }
-}
-class ClamAVService {
-  private static instance: ClamAVService | null = null
-  private clamav: Promise<NodeClam> | null = null
-
-  private constructor() {
-    this.clamav = this.initClamAV()
-  }
-
-  public static getInstance(): ClamAVService {
-    if (!ClamAVService.instance) {
-      ClamAVService.instance = new ClamAVService()
-    }
-    return ClamAVService.instance
-  }
-
-  private async initClamAV(): Promise<NodeClam> {
-    return new Promise((resolve, reject) => {
-      const clamav = new NodeClam()
-      clamav
-        .init({
-          clamdscan: {
-            host: config.env === "local" ? "localhost" : "clamav",
-            port: 3310,
-            bypassTest: true,
-          },
-        })
-        .then(() => resolve(clamav))
-        .catch(reject)
-    })
-  }
-
-  private async getClamAV(): Promise<NodeClam> {
-    if (!this.clamav) {
-      throw new Error("ClamAV is not initialized")
-    }
-    return this.clamav
-  }
-
-  public async getVersions(): Promise<string> {
-    try {
-      const clamav = await this.getClamAV()
-      const versions = await clamav.getVersion()
-      return versions
-    } catch (error) {
-      const err = Boom.internal("Error getting ClamAV versions")
-      err.cause = error
-      throw err
-    }
-  }
-
-  public async isInfected(file: string): Promise<boolean> {
-    // const onFinish = startSentryPerfRecording("clamav", "scan")
-    const clamav = await this.getClamAV()
-    const decodedAscii = Readable.from(Buffer.from(file.substring(file.indexOf(";base64,") + 8), "base64").toString("ascii"))
-    const rs = Readable.from(decodedAscii)
-    try {
-      const { isInfected, viruses } = await clamav.scanStream(rs)
-      if (isInfected === null) {
-        throw Boom.internal("Unable to scan file for viruses", { viruses })
-      }
-      if (isInfected) {
-        logger.error(`Virus detected ${viruses.toString()}`)
-        await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
-      }
-      return isInfected
-    } catch (error) {
-      const err = Boom.internal("Error scanning file for viruses")
-      err.cause = error
-      throw err
-    }
-  }
-}
-
-// Factory function to get the singleton instance
-export function getClamAVServiceInstance(): ClamAVService {
-  return ClamAVService.getInstance()
 }
