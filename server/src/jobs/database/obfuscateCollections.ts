@@ -3,6 +3,7 @@ import { randomUUID } from "crypto"
 import { Model } from "mongoose"
 import { IEmailBlacklist, IUser, IUserRecruteur } from "shared"
 import { AUTHTYPE, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { AccessEntityType } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/user2.model"
 
 import { logger } from "@/common/logger"
@@ -134,7 +135,7 @@ const obfuscateFormations = async () => {
 
 const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
-const keepSpecificUser = async (email: string, type: string) => {
+const keepSpecificUser = async (email: string, type: AccessEntityType) => {
   const role = await RoleManagement.findOne({ authorized_type: type }).lean()
   const replacement = {
     $set: { email },
@@ -175,18 +176,6 @@ const obfuscateRecruiter = async () => {
       }
     }
   }
-
-  // restoring one admin
-  await keepSpecificUser(ADMIN_EMAIL, AUTHTYPE.ADMIN)
-
-  // restoring one CFA user
-  await keepSpecificUser("cfa@beta.gouv.fr", AUTHTYPE.CFA)
-
-  // restoring one ENTREPRISE user
-  await keepSpecificUser("entreprise@beta.gouv.fr", AUTHTYPE.ENTREPRISE)
-
-  // restoring one OPCO user
-  await keepSpecificUser("opco@beta.gouv.fr", AUTHTYPE.OPCO)
 
   const remainingUsers: AsyncIterable<IUserRecruteur> = db.collection("recruiters").find({ first_name: { $ne: "prenom" } })
   for await (const user of remainingUsers) {
@@ -238,7 +227,19 @@ const obfuscateUsersWithAccounts = async () => {
     await db.collection("userswithaccounts").findOneAndUpdate({ _id: user._id }, replacement)
   }
 
-  logger.info(`obfuscating users done`)
+  logger.info(`obfuscating userswithaccounts done`)
+
+  // restoring one admin
+  await keepSpecificUser(ADMIN_EMAIL, AccessEntityType.ADMIN)
+
+  // restoring one CFA user
+  await keepSpecificUser("cfa@beta.gouv.fr", AccessEntityType.CFA)
+
+  // restoring one ENTREPRISE user
+  await keepSpecificUser("entreprise@beta.gouv.fr", AccessEntityType.ENTREPRISE)
+
+  // restoring one OPCO user
+  await keepSpecificUser("opco@beta.gouv.fr", AccessEntityType.OPCO)
 }
 
 export async function obfuscateCollections(): Promise<void> {
