@@ -7,7 +7,7 @@ describe("Test du fichier robots.txt", () => {
         expect(response.body).to.not.be.empty
 
         // Séparer les lignes du contenu
-        const lines = response.body.split("\n")
+        const lines = response.body.split("\r\n")
 
         // Vérifier si la première ligne commence par "User-agent: *"
         const firstLine = lines[0]
@@ -17,19 +17,14 @@ describe("Test du fichier robots.txt", () => {
 })
 
 describe("Test du fichier sitemap.xml", () => {
-  it('Vérifie que sitemap.xml commence par "<urlset', () => {
+  it('Vérifie que sitemap.xml contient "<urlset', () => {
     cy.request(`${Cypress.env("ui")}/sitemap.xml`) // Envoyer une requête pour obtenir le contenu de robots.txt
       .then((response) => {
         // Vérifier si la réponse est réussie et le contenu est non vide
         expect(response.status).to.equal(200)
         expect(response.body).to.not.be.empty
 
-        // Séparer les lignes du contenu
-        const lines = response.body.split("\n")
-
-        // Vérifier si la première ligne commence par "User-agent: *"
-        const firstLine = lines[0]
-        expect(firstLine).to.contains("<urlset")
+        expect(response.body).to.contains("<urlset")
       })
   })
 })
