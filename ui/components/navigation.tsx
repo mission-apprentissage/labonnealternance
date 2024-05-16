@@ -4,6 +4,8 @@ import NextLink from "next/link"
 
 import { LbaNew } from "../theme/components/logos"
 
+import InfoBanner from "./InfoBanner/InfoBanner"
+
 const Pipe = () => (
   <Box display={["none", "none", "none", "block"]} borderRight="1px solid" borderColor="grey.300" my="6" marginTop="10px !important;" marginBottom="10px !important;"></Box>
 )
@@ -22,6 +24,7 @@ const Navigation = ({ currentPage = undefined }) => {
       }
       as="header"
     >
+      <InfoBanner color="red" temp="TRALALA" />
       <Container variant="responsiveContainer">
         <Flex py={2} direction={["column", "column", "column", "row"]} justify="space-between">
           <Flex alignItems="center" wrap="wrap">
