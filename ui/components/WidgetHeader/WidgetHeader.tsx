@@ -34,7 +34,7 @@ const WidgetHeader = ({
     <Box zIndex={9} display={formDisplayValue} boxShadow={isHome ? "none" : "0 0 12px 2px rgb(0 0 0 / 21%)"} padding="8px">
       {!isHome && (
         <Box>
-          <InfoBanner color="orange" temp="TRALALA 2" />
+          <InfoBanner />
         </Box>
       )}
       <Box margin="auto" maxWidth="1310px">

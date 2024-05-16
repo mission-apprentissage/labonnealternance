@@ -68,19 +68,7 @@ const getCloseButton = (setIsClosedState, color: string) => {
   )
 }
 
-const InfoBanner = ({
-  temp,
-  color,
-  showInfo = true,
-  showAlert = true,
-  showOK = true,
-}: {
-  temp: string
-  color: string
-  showInfo?: boolean
-  showAlert?: boolean
-  showOK?: boolean
-}) => {
+const InfoBanner = ({ showInfo = false, showAlert = false, showOK = false }: { showInfo?: boolean; showAlert?: boolean; showOK?: boolean }) => {
   const [isEnvClosed, setIsEnvClosed] = useState(false)
   const [isAlertClosed, setIsAlertClosed] = useState(false)
   const [isInfoClosed, setIsInfoClosed] = useState(false)
@@ -91,17 +79,16 @@ const InfoBanner = ({
   return (
     <>
       {!isEnvClosed && env !== "production" && (
-        <Box backgroundColor={color} p={2}>
+        <Box backgroundColor="#FFE9E6" p={2} mb={1}>
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#B34000">
             <WarningIcon mr={4} mt={1} />
-            <Box>{temp}</Box>
             <Box flexGrow={1}>{envBannerText}</Box>
             {getCloseButton(setIsEnvClosed, "#B34000")}
           </Flex>
         </Box>
       )}
       {!isAlertClosed && showAlert && (
-        <Box backgroundColor="#FFE9E6" p={2}>
+        <Box backgroundColor="#FFE9E6" p={2} mb={1}>
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#B34000">
             <WarningIcon mr={4} mt={1} />
             <Box flexGrow={1}>{redBannerText}</Box>
@@ -110,7 +97,7 @@ const InfoBanner = ({
         </Box>
       )}
       {!isOKClosed && showOK && (
-        <Box backgroundColor="#B8FEC9" p={2}>
+        <Box backgroundColor="#B8FEC9" p={2} mb={1}>
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#18753C">
             <CheckCircleIcon mr={4} mt={1} />
             <Box flexGrow={1}>{greenBannerText}</Box>
@@ -119,7 +106,7 @@ const InfoBanner = ({
         </Box>
       )}
       {!isInfoClosed && showInfo && (
-        <Box backgroundColor="#E8EDFF" p={2}>
+        <Box backgroundColor="#E8EDFF" p={2} mb={1}>
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#0063CB">
             <InfoIcon mr={4} mt={1} />
             <Box flexGrow={1}>{blueBannerText}</Box>

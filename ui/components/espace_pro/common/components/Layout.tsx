@@ -15,7 +15,7 @@ import NavigationMenu from "./NavigationMenu"
 const Layout = ({ children }) => {
   return (
     <Container maxW="full">
-      <InfoBanner color="blue" temp="TRALALA 3" />
+      <InfoBanner />
       <Header />
       <NavigationMenu />
       <Box minH={"60vh"}>{children}</Box>

@@ -24,7 +24,7 @@ const Navigation = ({ currentPage = undefined }) => {
       }
       as="header"
     >
-      <InfoBanner color="red" temp="TRALALA" />
+      <InfoBanner />
       <Container variant="responsiveContainer">
         <Flex py={2} direction={["column", "column", "column", "row"]} justify="space-between">
           <Flex alignItems="center" wrap="wrap">
