@@ -3,9 +3,9 @@ import Axios from "axios"
 import { IJobWritable, INewDelegations, IRoutes, parseEnumOrError, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { OPCOS } from "shared/constants/recruteur"
+import { IEntrepriseJson } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUser2 } from "shared/models/user2.model"
-import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
 import { publicConfig } from "../config.public"
 
@@ -104,10 +104,14 @@ export const getCfaInformation = async (siret: string) => apiGet("/etablissement
 
 export const getEntrepriseInformation = async (
   siret: string,
-  options: { cfa_delegated_siret?: string } = {}
-): Promise<{ statusCode: 200; data: IEntrepriseInformations; error: false } | { statusCode: number; message: string; data?: { errorCode?: BusinessErrorCodes }; error: true }> => {
+  { cfa_delegated_siret, skipUpdate }: { cfa_delegated_siret?: string; skipUpdate?: boolean } = {}
+): Promise<{ statusCode: 200; data: IEntrepriseJson; error: false } | { statusCode: number; message: string; data?: { errorCode?: BusinessErrorCodes }; error: true }> => {
   try {
-    const data = await apiGet("/etablissement/entreprise/:siret", { params: { siret }, querystring: removeUndefinedFields(options) }, { timeout: 7000 })
+    const data = await apiGet(
+      "/etablissement/entreprise/:siret",
+      { params: { siret }, querystring: removeUndefinedFields({ cfa_delegated_siret, skipUpdate: skipUpdate ? "true" : "false" }) },
+      { timeout: 7000 }
+    )
     return { statusCode: 200, data, error: false }
   } catch (error: unknown) {
     captureException(error)

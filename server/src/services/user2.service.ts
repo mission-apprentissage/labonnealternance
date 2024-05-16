@@ -18,38 +18,39 @@ export const createUser2IfNotExist = async (
   const formatedEmail = userProps.email.toLocaleLowerCase()
 
   let user = await User2.findOne({ email: formatedEmail }).lean()
-  if (!user) {
-    const id = new ObjectId()
-    grantedBy = grantedBy || id.toString()
-    const status: IUserStatusEvent[] = []
-    if (is_email_checked) {
-      status.push({
-        date: new Date(),
-        reason: "validation de l'email à la création",
-        status: UserEventType.VALIDATION_EMAIL,
-        validation_type: VALIDATION_UTILISATEUR.MANUAL,
-        granted_by: grantedBy,
-      })
-    }
+  if (user) {
+    return user
+  }
+  const id = new ObjectId()
+  grantedBy = grantedBy || id.toString()
+  const status: IUserStatusEvent[] = []
+  if (is_email_checked) {
     status.push({
       date: new Date(),
-      reason: "creation de l'utilisateur",
-      status: UserEventType.ACTIF,
+      reason: "validation de l'email à la création",
+      status: UserEventType.VALIDATION_EMAIL,
       validation_type: VALIDATION_UTILISATEUR.MANUAL,
       granted_by: grantedBy,
     })
-    const userFields: Omit<IUser2, "createdAt" | "updatedAt"> = {
-      _id: id,
-      email: formatedEmail,
-      first_name,
-      last_name,
-      phone: phone ?? "",
-      last_action_date: last_action_date ?? new Date(),
-      origin,
-      status,
-    }
-    user = (await User2.create(userFields)).toObject()
   }
+  status.push({
+    date: new Date(),
+    reason: "creation de l'utilisateur",
+    status: UserEventType.ACTIF,
+    validation_type: VALIDATION_UTILISATEUR.MANUAL,
+    granted_by: grantedBy,
+  })
+  const userFields: Omit<IUser2, "createdAt" | "updatedAt"> = {
+    _id: id,
+    email: formatedEmail,
+    first_name,
+    last_name,
+    phone: phone ?? "",
+    last_action_date: last_action_date ?? new Date(),
+    origin,
+    status,
+  }
+  user = (await User2.create(userFields)).toObject()
   return user
 }
 
@@ -79,7 +80,7 @@ export const getUser2ByEmail = async (email: string): Promise<IUser2 | null> => 
 
 export const emailHasActiveRole = async (email: string) => {
   const userOpt = await getUser2ByEmail(email)
-  if (!userOpt) return
+  if (!userOpt) return false
   const roles = await RoleManagement.find({ user_id: userOpt._id }).lean()
   const activeStatus = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]
   const activeRoles = roles.filter((role) => {

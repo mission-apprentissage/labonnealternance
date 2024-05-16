@@ -6,12 +6,13 @@ import { AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Recruiter } from "@/common/model"
+import { Cfa, Entreprise, Recruiter } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
+import { upsertCfa } from "@/services/cfa.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
@@ -21,7 +22,7 @@ import {
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
 } from "@/services/etablissement.service"
-import { upsertOrganization } from "@/services/organization.service"
+import { Organization, UserAndOrganization, upsertEntrepriseData } from "@/services/organization.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import { emailHasActiveRole, getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
 import {
@@ -29,7 +30,6 @@ import {
   createOrganizationUser,
   isUserEmailChecked,
   sendWelcomeEmailToUserRecruteur,
-  setEntrepriseValid,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
   updateUser2Fields,
@@ -69,6 +69,7 @@ export default (server: Server) => {
     async (req, res) => {
       const siret: string | undefined = req.params.siret
       const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
+      const skipUpdate: boolean = req.query.skipUpdate === "true"
       if (!siret) {
         throw Boom.badRequest("Le numéro siret est obligatoire.")
       }
@@ -78,14 +79,19 @@ export default (server: Server) => {
         throw Boom.badRequest(cfaVerification.message)
       }
 
-      const result = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
+      if (skipUpdate) {
+        const entrepriseOpt = await Entreprise.findOne({ siret }).lean()
+        if (entrepriseOpt) {
+          return res.status(200).send(entrepriseOpt)
+        }
+      }
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
+      const entreprise = await upsertEntrepriseData(siret, "création de compte entreprise", siretResponse)
 
-      if ("error" in result) {
-        throw Boom.badRequest(result.message, result)
+      if ("error" in siretResponse) {
+        throw Boom.badRequest(siretResponse.message, siretResponse)
       } else {
-        const organization = await upsertOrganization(result, "formulaire de création d'entreprise", ENTREPRISE)
-        await setEntrepriseValid(organization._id)
-        return res.status(200).send(result)
+        return res.status(200).send(entreprise)
       }
     }
   )
@@ -176,7 +182,7 @@ export default (server: Server) => {
           return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
-          const { email, establishment_siret } = req.body
+          const { email, establishment_siret, first_name, last_name, phone } = req.body
           const origin = req.body.origin ?? "formulaire public de création"
           const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
@@ -184,27 +190,48 @@ export default (server: Server) => {
             throw Boom.forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }
 
-          const siretInfos = await getOrganismeDeFormationDataFromSiret(establishment_siret)
-          const { contacts } = siretInfos
+          const { contacts, establishment_raison_sociale, geo_coordinates, address, address_detail } = await getOrganismeDeFormationDataFromSiret(establishment_siret)
 
           // Creation de l'utilisateur en base de données
-          const creationResult = await createOrganizationUser({ ...req.body, ...siretInfos, is_email_checked: false, origin })
-          const userCfa = creationResult.user
+          const cfa = await upsertCfa(
+            establishment_siret,
+            {
+              address,
+              address_detail,
+              enseigne: null,
+              geo_coordinates,
+              raison_sociale: establishment_raison_sociale,
+            },
+            origin
+          )
+          const organization: Organization = { type: CFA, cfa }
+          const userCfa = await createOrganizationUser({
+            userFields: {
+              first_name,
+              last_name,
+              phone,
+              email: formatedEmail,
+              origin,
+            },
+            is_email_checked: false,
+            organization: { type: CFA, cfa },
+          })
 
           const slackNotification = {
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
           const token = generateCfaCreationToken(user2ToUserForToken(userCfa), establishment_siret)
+          const userAndOrganization: UserAndOrganization = { user: userCfa, organization }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            await setUserHasToBeManuallyValidated(creationResult, origin)
+            await setUserHasToBeManuallyValidated(userAndOrganization, origin)
             await notifyToSlack(slackNotification)
             return res.status(200).send({ user: userCfa, validated: false, token })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
-            await autoValidateUser(creationResult, origin, "l'email correspond à un contact")
+            await autoValidateUser(userAndOrganization, origin, "l'email correspond à un contact")
             await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
             return res.status(200).send({ user: userCfa, validated: true, token })
@@ -214,14 +241,14 @@ export default (server: Server) => {
             const userEmailDomain = getEmailDomain(formatedEmail)
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              await autoValidateUser(creationResult, origin, "le nom de domaine de l'email correspond à celui d'un contact")
+              await autoValidateUser(userAndOrganization, origin, "le nom de domaine de l'email correspond à celui d'un contact")
               await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
               return res.status(200).send({ user: userCfa, validated: true, token })
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          await setUserHasToBeManuallyValidated(creationResult, origin)
+          await setUserHasToBeManuallyValidated(userAndOrganization, origin)
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
           return res.status(200).send({ user: userCfa, validated: false, token })

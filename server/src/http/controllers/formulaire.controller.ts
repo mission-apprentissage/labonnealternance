@@ -120,7 +120,7 @@ export default (server: Server) => {
         phone,
         siret: establishment_siret,
         cfa_delegated_siret: userRecruteurOpt.establishment_siret,
-        origin: userRecruteurOpt.scope,
+        origin: userRecruteurOpt.scope ?? "",
         opco,
         idcc,
         managedBy: userRecruteurOpt._id.toString(),

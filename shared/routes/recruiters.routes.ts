@@ -4,6 +4,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZPointGeometry, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
+import { ZEntreprise } from "../models/entreprise.model"
 import { ZUser2 } from "../models/user2.model"
 import { ZCfaReferentielData, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 
@@ -73,10 +74,11 @@ export const zRecruiterRoutes = {
       querystring: z
         .object({
           cfa_delegated_siret: z.string().optional(),
+          skipUpdate: z.string().optional(),
         })
         .strict(),
       response: {
-        "200": ZEntrepriseInformations,
+        "200": ZEntreprise,
       },
       securityScheme: null,
     },

@@ -7,7 +7,7 @@ import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCo
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { EntrepriseStatus } from "shared/models/entreprise.model"
+import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUser2 } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -17,7 +17,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, User2 } from "../common/model/index"
+import { Cfa, Entreprise, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, User2 } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -40,17 +40,10 @@ import {
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
+import { UserAndOrganization, updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { emailHasActiveRole } from "./user2.service"
-import {
-  UserAndOrganization,
-  autoValidateUser as authorizeUserOnEntreprise,
-  createOrganizationUser,
-  isUserEmailChecked,
-  setEntrepriseInError,
-  setEntrepriseValid,
-  setUserHasToBeManuallyValidated,
-} from "./userRecruteur.service"
+import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, isUserEmailChecked, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -576,9 +569,10 @@ export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOr
 
 export const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: boolean; validator: string }> => {
   const {
-    organization: { siret },
+    organization,
     user: { email },
   } = props
+  const siret = organization.type === CFA ? organization.cfa.siret : organization.entreprise.siret
   if (!siret) {
     return { isValid: false, validator: "siret manquant" }
   }
@@ -639,14 +633,21 @@ export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc?:
   const opcoFromDB = await getOpcoBySirenFromDB(siren)
   if (opcoFromDB) {
     return opcoFromDB
-  } else {
-    const result = await getOpcoDataRaw(siret)
-    if (result) {
-      const { opco, idcc } = result
-      await saveOpco({ opco, idcc, siren })
-    }
-    return result
   }
+  const entreprise = await Entreprise.findOne({ siret }).lean()
+  if (entreprise) {
+    const { opco, idcc } = entreprise
+    if (opco) {
+      return { opco, idcc }
+    }
+  }
+
+  const result = await getOpcoDataRaw(siret)
+  if (result) {
+    const { opco, idcc } = result
+    await saveOpco({ opco, idcc, siren })
+  }
+  return result
 }
 
 export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
@@ -741,10 +742,10 @@ export const entrepriseOnboardingWorkflow = {
       last_name,
       phone,
       siret,
-      cfa_delegated_siret,
       origin,
       opco,
       idcc,
+      cfa_delegated_siret,
     }: {
       siret: string
       last_name: string
@@ -762,72 +763,79 @@ export const entrepriseOnboardingWorkflow = {
       isUserValidated?: boolean
     } = {}
   ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUser2; validated: boolean }> => {
+    console.log({ cfa_delegated_siret })
     origin = origin ?? ""
-    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
+    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret })
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
     if (await emailHasActiveRole(formatedEmail)) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
-    let entrepriseData: Partial<EntrepriseData>
-    let hasSiretError = false
+    let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
     try {
-      const siretResponse = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
+      siretResponse = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
       if ("error" in siretResponse) {
         return siretResponse
-      } else {
-        entrepriseData = siretResponse
       }
-    } catch (err) {
-      hasSiretError = true
-      entrepriseData = { establishment_siret: siret }
+    } catch (err: any) {
+      siretResponse = {
+        error: true,
+        message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}`,
+      }
       sentryCaptureException(err)
     }
-    const contactInfos = { first_name, last_name, phone, opco, idcc, origin }
-    const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
-    const creationResult = await createOrganizationUser({
-      ...savedData,
-      type: ENTREPRISE,
-      is_email_checked: false,
-      is_qualiopi: false,
-    })
-    const formulaireInfo = await createFormulaire(
-      {
-        ...savedData,
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [],
-        cfa_delegated_siret,
-      },
-      creationResult.user._id.toString()
-    )
+    const entreprise = await upsertEntrepriseData(siret, origin, siretResponse)
+    await updateEntrepriseOpco(siret, { opco, idcc })
 
     let validated = false
-    if (hasSiretError) {
-      await setEntrepriseInError(creationResult.organization._id, "Erreur lors de l'appel à l'API SIRET")
+    const managingUser = await createOrganizationUser({
+      userFields: {
+        first_name,
+        last_name,
+        phone: phone ?? "",
+        origin,
+        email: formatedEmail,
+      },
+      is_email_checked: false,
+      organization: { type: ENTREPRISE, entreprise },
+    })
+    if (isUserValidated) {
+      await modifyPermissionToUser(
+        {
+          user_id: managingUser._id,
+          authorized_id: entreprise._id.toString(),
+          authorized_type: AccessEntityType.ENTREPRISE,
+          origin,
+        },
+        {
+          validation_type: VALIDATION_UTILISATEUR.AUTO,
+          status: AccessStatus.GRANTED,
+          reason: "création par clef API",
+        }
+      )
+      validated = true
     } else {
-      await setEntrepriseValid(creationResult.organization._id)
-      if (isUserValidated) {
-        await modifyPermissionToUser(
-          {
-            user_id: creationResult.user._id,
-            authorized_id: creationResult.organization._id.toString(),
-            authorized_type: creationResult.type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
-            origin,
-          },
-          {
-            validation_type: VALIDATION_UTILISATEUR.AUTO,
-            status: AccessStatus.GRANTED,
-            reason: "création par clef API",
-          }
-        )
-        validated = true
-      } else {
-        const result = await autoValidateUserRoleOnCompany(creationResult, origin)
-        validated = result.validated
-      }
+      const result = await autoValidateUserRoleOnCompany({ user: managingUser, organization: { type: ENTREPRISE, entreprise } }, origin)
+      validated = result.validated
     }
 
-    return { formulaire: formulaireInfo, user: creationResult.user, validated }
+    const formulaire = await createFormulaire(
+      {
+        ...entrepriseToRecruiter(entreprise),
+        first_name,
+        last_name,
+        phone,
+        opco,
+        idcc,
+        origin,
+        email: formatedEmail,
+        status: RECRUITER_STATUS.ACTIF,
+        jobs: [],
+      },
+      managingUser._id.toString()
+    )
+
+    return { formulaire, user: managingUser, validated }
   },
   createFromCFA: async ({
     email,
@@ -847,34 +855,39 @@ export const entrepriseOnboardingWorkflow = {
     phone: string
     email: string
     cfa_delegated_siret: string
-    origin?: string | null
     opco?: string
     idcc?: string | null
     managedBy: string
+    origin: string
   }) => {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
-    let entrepriseData: Partial<EntrepriseData>
-    let siretCallInError = false
+    let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
     try {
-      const siretResponse = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
+      siretResponse = await getEntrepriseDataFromSiret({ siret, type: CFA })
       if ("error" in siretResponse) {
         return siretResponse
-      } else {
-        entrepriseData = siretResponse
       }
-    } catch (err) {
-      siretCallInError = true
-      entrepriseData = { establishment_siret: siret }
+    } catch (err: any) {
+      siretResponse = {
+        error: true,
+        message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}`,
+      }
       sentryCaptureException(err)
     }
-    const contactInfos = { first_name, last_name, phone, origin }
-    const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
+    const entreprise = await upsertEntrepriseData(siret, origin, siretResponse)
+    if (opco) {
+      await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
+    }
     const formulaireInfo = await createFormulaire(
       {
-        ...savedData,
-        status: siretCallInError ? RECRUITER_STATUS.EN_ATTENTE_VALIDATION : RECRUITER_STATUS.ACTIF,
+        ...entrepriseToRecruiter(entreprise),
+        first_name,
+        last_name,
+        phone,
+        email: formatedEmail,
+        status: "error" in siretResponse ? RECRUITER_STATUS.EN_ATTENTE_VALIDATION : RECRUITER_STATUS.ACTIF,
         jobs: [],
         cfa_delegated_siret,
         is_delegated: true,
@@ -886,6 +899,20 @@ export const entrepriseOnboardingWorkflow = {
     )
     return formulaireInfo
   },
+}
+
+const entrepriseToRecruiter = ({ siret, address, address_detail, enseigne, geo_coordinates, idcc, opco, raison_sociale }: IEntreprise): Partial<IRecruiter> => {
+  const formulaire: Partial<IRecruiter> = {
+    establishment_siret: siret,
+    address,
+    address_detail,
+    establishment_enseigne: enseigne,
+    geo_coordinates,
+    idcc,
+    opco,
+    establishment_raison_sociale: raison_sociale,
+  }
+  return formulaire
 }
 
 export const sendUserConfirmationEmail = async (user: IUser2) => {

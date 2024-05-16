@@ -18,13 +18,12 @@ import { BandeauProps } from "../Bandeau"
 import { Section } from "../common/components/Section"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
 import { AnimationContainer, AuthentificationLayout, Bandeau, CustomInput, InformationLegaleEntreprise } from "../index"
-import { InformationLegaleEntrepriseProps } from "../InformationLegaleEntreprise"
 
 type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
 
 const CreationCompteForm = ({
   type,
-  setQualiopi,
+  onSiretChange,
   setBandeau,
   origin,
   isWidget,
@@ -32,7 +31,7 @@ const CreationCompteForm = ({
   type: EntrepriseOrCfaType
   isWidget: boolean
   origin: string
-  setQualiopi: (props: InformationLegaleEntrepriseProps) => void
+  onSiretChange: (siret: string) => void
   setBandeau: (props: BandeauProps) => void
 }) => {
   const router = useRouter()
@@ -43,6 +42,7 @@ const CreationCompteForm = ({
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
     setBandeau(null)
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
+    onSiretChange(formattedSiret)
     // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
       Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
@@ -61,7 +61,7 @@ const CreationCompteForm = ({
           setSubmitting(true)
           router.push({
             pathname: nextUri,
-            query: { informationSiret: JSON.stringify({ ...entrepriseData.data, ...opcoInfos }), type, origin },
+            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }), type, origin },
           })
         }
       })
@@ -78,12 +78,11 @@ const CreationCompteForm = ({
           if (error instanceof ApiError) {
             const { statusCode, errorData } = error.context
             if (statusCode >= 400 && statusCode < 500) {
-              const { reason, data } = errorData
+              const { reason } = errorData
               if (reason === BusinessErrorCodes.ALREADY_EXISTS) {
                 setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
               } else if (reason === BusinessErrorCodes.NOT_QUALIOPI) {
                 setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
-                setQualiopi(data)
                 setBandeau({
                   type: "error",
                   header: "Votre centre de formation n’est pas certifié Qualiopi.",
@@ -180,7 +179,7 @@ const CreationCompteForm = ({
 export default function CreationCompte({ type, isWidget = false, origin = "lba" }: { type: EntrepriseOrCfaType; isWidget?: boolean; origin?: string }) {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
-  const [qualiopi, setQualiopi] = useState<InformationLegaleEntrepriseProps>(null)
+  const [siret, setSiret] = useState<string>(null)
   const [bandeau, setBandeau] = useState<BandeauProps>(null)
   const router = useRouter()
   const mobile = router.query.mobile === "true" ? true : false
@@ -208,11 +207,11 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
               Nous avons besoin du numéro SIRET de votre {type === AUTHTYPE.ENTREPRISE ? "entreprise" : "organisme de formation"} afin de vous identifier.
             </Text>
-            <CreationCompteForm type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} origin={origin} isWidget={isWidget} />
+            <CreationCompteForm type={type} onSiretChange={setSiret} setBandeau={setBandeau} origin={origin} isWidget={isWidget} />
           </Box>
           <Box mt={[4, 4, 4, 0]}>
-            {qualiopi ? (
-              <InformationLegaleEntreprise {...qualiopi} />
+            {siret ? (
+              <InformationLegaleEntreprise siret={siret} type={type} />
             ) : (
               <Section>
                 <InformationsSiret type={type} />

@@ -3,6 +3,7 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { IRecruiterJson, assertUnreachable } from "shared"
+import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { IUser2Json } from "shared/models/user2.model"
 import * as Yup from "yup"
 
@@ -24,9 +25,10 @@ const Formulaire = ({ submitForm }) => {
   const { type, informationSiret: informationSiretString, origin }: { type: string; informationSiret: string; origin: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
 
-  const { email = "", opco = "" } = informationSiret ?? {}
+  const { email = "", opco = "", establishment_siret = "" } = informationSiret ?? {}
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
-  const informationEntreprise = { ...informationSiret, type }
+
+  console.log({ informationSiret, establishment_siret, type })
 
   return (
     <Formik
@@ -107,7 +109,7 @@ const Formulaire = ({ submitForm }) => {
               }
               right={
                 <>
-                  <InformationLegaleEntreprise {...informationEntreprise} />
+                  <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} />
                   {informationOpco && <InformationOpco disabled={!shouldSelectOpco} informationOpco={informationOpco} resetOpcoChoice={() => setFieldValue("opco", "")} />}
                 </>
               }

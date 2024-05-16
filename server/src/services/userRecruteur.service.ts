@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
-import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, parseEnumOrError, removeUndefinedFields } from "shared"
+import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ICFA } from "shared/models/cfa.model"
@@ -20,7 +20,7 @@ import config from "../config"
 import { createAuthMagicLink } from "./appLinks.service"
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
-import { upsertOrganization } from "./organization.service"
+import { Organization, UserAndOrganization } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist } from "./user2.service"
 
@@ -159,60 +159,37 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promis
  * Si statusEvent est passé, ajoute les droits de l'utilisateur sur l'organisation.
  * Sinon, c'est les droits sont mis en attente de validation
  */
-export const createOrganizationUser = async (
-  userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status" | "scope">,
-  grantedBy?: string,
+export const createOrganizationUser = async ({
+  userFields,
+  is_email_checked,
+  organization,
+  grantedBy,
+  statusEvent,
+}: {
+  userFields: Omit<IUser2, "_id" | "createdAt" | "updatedAt" | "status">
+  is_email_checked: boolean
+  organization: Organization
+  grantedBy?: string
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
-): Promise<UserAndOrganization> => {
-  const { type, origin, first_name, last_name, last_connection, email, is_email_checked, phone, establishment_siret, geo_coordinates, address, address_detail, idcc, opco } =
-    userRecruteurProps
-  if (type === ENTREPRISE || type === CFA) {
-    const user = await createUser2IfNotExist(
-      {
-        email,
-        first_name,
-        last_name,
-        phone: phone ?? "",
-        last_action_date: last_connection,
-      },
-      is_email_checked,
-      grantedBy ?? ""
-    )
-    if (!establishment_siret) {
-      throw new Error("inattendu: establishment_siret vide")
+}): Promise<IUser2> => {
+  const user = await createUser2IfNotExist(userFields, is_email_checked, grantedBy ?? "")
+  const org = organization.type === CFA ? organization.cfa : organization.entreprise
+  const orgId = org._id
+  const { type } = organization
+  await modifyPermissionToUser(
+    {
+      user_id: user._id,
+      authorized_id: orgId.toString(),
+      authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
+      origin: userFields.origin ?? "création de compte",
+    },
+    statusEvent ?? {
+      reason: "création de compte",
+      status: AccessStatus.AWAITING_VALIDATION,
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
     }
-    if (!geo_coordinates) {
-      throw new Error("inattendu: geo_coordinates vide")
-    }
-    const organization = await upsertOrganization(
-      {
-        establishment_siret,
-        geo_coordinates,
-        address,
-        address_detail,
-        opco: opco ?? undefined,
-        idcc: idcc ?? undefined,
-      },
-      origin ?? "",
-      type
-    )
-    await modifyPermissionToUser(
-      {
-        user_id: user._id,
-        authorized_id: organization._id.toString(),
-        authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
-        origin: origin ?? "création de compte",
-      },
-      statusEvent ?? {
-        reason: "création de compte",
-        status: AccessStatus.AWAITING_VALIDATION,
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-      }
-    )
-    return { organization, user, type }
-  } else {
-    throw Boom.internal(`unsupported type ${type}`)
-  }
+  )
+  return user
 }
 
 export const createOpcoUser = async (userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">, opco: OPCOS, grantedBy: string) => {
@@ -268,36 +245,6 @@ export const createAdminUser = async (
   return user
 }
 
-/**
- * @description création d'un nouveau user recruteur. Le champ status peut être passé ou, s'il n'est pas passé, être sauvé ultérieurement
- */
-export const createUser = async (
-  userProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status">,
-  grantedBy: string,
-  statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
-): Promise<IUser2> => {
-  const { first_name, last_name, email, phone, type, opco } = userProps
-  const userFields = {
-    first_name,
-    last_name,
-    email,
-    phone: phone ?? "",
-  }
-
-  if (type === ENTREPRISE || type === CFA) {
-    const { user } = await createOrganizationUser(userProps, grantedBy, statusEvent)
-    return user
-  } else if (type === ADMIN) {
-    const user = await createAdminUser(userFields, { grantedBy })
-    return user
-  } else if (type === OPCO) {
-    const user = await createOpcoUser(userFields, parseEnumOrError(OPCOS, opco ?? null), grantedBy)
-    return user
-  } else {
-    assertUnreachable(type)
-  }
-}
-
 export const updateUser2Fields = async (userId: ObjectIdType, fields: Partial<IUser2>): Promise<IUser2 | { error: BusinessErrorCodes }> => {
   const { email, first_name, last_name, phone } = fields
   const newEmail = email?.toLocaleLowerCase()
@@ -347,10 +294,6 @@ export const setEntrepriseValid = async (entrepriseId: IEntreprise["_id"]) => {
   return setEntrepriseStatus(entrepriseId, "", EntrepriseStatus.VALIDE)
 }
 
-export const setEntrepriseInError = async (entrepriseId: IEntreprise["_id"], reason: string) => {
-  return setEntrepriseStatus(entrepriseId, reason, EntrepriseStatus.ERROR)
-}
-
 export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reason: string, status: EntrepriseStatus) => {
   const entreprise = await Entreprise.findOne({ _id: entrepriseId })
   if (!entreprise) {
@@ -374,11 +317,13 @@ export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reas
   )
 }
 
-const setAccessOfUserOnOrganization = async ({ user, organization, type }: UserAndOrganization, status: AccessStatus, origin: string, reason: string) => {
+const setAccessOfUserOnOrganization = async ({ user, organization }: UserAndOrganization, status: AccessStatus, origin: string, reason: string) => {
+  const { type } = organization
+  const orgId = type === CFA ? organization.cfa._id : organization.entreprise._id
   await modifyPermissionToUser(
     {
       user_id: user._id,
-      authorized_id: organization._id.toString(),
+      authorized_id: orgId.toString(),
       authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
       origin,
     },
@@ -536,5 +481,3 @@ export const getUsersForAdmin = async () => {
 }
 
 export const isUserEmailChecked = (user: IUser2): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)
-
-export type UserAndOrganization = { user: IUser2; organization: IEntreprise | ICFA; type: "ENTREPRISE" | "CFA" }
