@@ -4,6 +4,8 @@ import emailMisspelled, { top100 } from "email-misspelled"
 import { useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import InfoBanner from "@/components/InfoBanner/InfoBanner"
+
 import { testingParameters } from "../../../utils/testingParameters"
 
 import CandidatureLbaFileDropzone from "./CandidatureLbaFileDropzone"
@@ -154,6 +156,8 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
             de La bonne alternance.
           </Text>
         </Box>
+
+        <InfoBanner showInfo={false} showAlert={false} showOK={false} />
       </PostulerBody>
       <PostulerFooter fromWidget={fromWidget}>
         <CandidatureLbaSubmit item={item} sendingState={sendingState} />
