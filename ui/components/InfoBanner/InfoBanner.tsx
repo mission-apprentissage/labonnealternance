@@ -45,7 +45,7 @@ const envBannerText = (
   </Text>
 )
 
-const getCloseButton = (setIsClosedState) => {
+const getCloseButton = (setIsClosedState, color: string) => {
   return (
     <Button
       fontWeight={700}
@@ -63,7 +63,7 @@ const getCloseButton = (setIsClosedState) => {
       }}
       onClick={() => setIsClosedState(true)}
     >
-      <CloseIcon w={2} h={2} mt={2} ml={2} />
+      <CloseIcon color={color} w={2} h={2} mt={2} ml={2} />
     </Button>
   )
 }
@@ -96,7 +96,7 @@ const InfoBanner = ({
             <WarningIcon mr={4} mt={1} />
             <Box>{temp}</Box>
             <Box flexGrow={1}>{envBannerText}</Box>
-            {getCloseButton(setIsEnvClosed)}
+            {getCloseButton(setIsEnvClosed, "#B34000")}
           </Flex>
         </Box>
       )}
@@ -105,7 +105,7 @@ const InfoBanner = ({
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#B34000">
             <WarningIcon mr={4} mt={1} />
             <Box flexGrow={1}>{redBannerText}</Box>
-            {getCloseButton(setIsAlertClosed)}
+            {getCloseButton(setIsAlertClosed, "#B34000")}
           </Flex>
         </Box>
       )}
@@ -114,7 +114,7 @@ const InfoBanner = ({
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#18753C">
             <CheckCircleIcon mr={4} mt={1} />
             <Box flexGrow={1}>{greenBannerText}</Box>
-            {getCloseButton(setIsOKClosed)}
+            {getCloseButton(setIsOKClosed, "#18753C")}
           </Flex>
         </Box>
       )}
@@ -123,7 +123,7 @@ const InfoBanner = ({
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#0063CB">
             <InfoIcon mr={4} mt={1} />
             <Box flexGrow={1}>{blueBannerText}</Box>
-            {getCloseButton(setIsInfoClosed)}
+            {getCloseButton(setIsInfoClosed, "#0063CB")}
           </Flex>
         </Box>
       )}
