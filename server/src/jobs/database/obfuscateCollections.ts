@@ -152,15 +152,17 @@ const keepSpecificUser = async (email: string, type: AccessEntityType) => {
     await db.collection("userswithaccounts").findOneAndUpdate({ _id: role.user_id }, replacement)
 
     if (getLastStatusEvent(role.status)?.status !== AccessStatus.GRANTED) {
-      RoleManagement.findOneAndUpdate(
+      await RoleManagement.findOneAndUpdate(
         { _id: role._id },
         {
           $push: {
-            granted_by: "server",
-            date: new Date(),
-            reason: "Obfuscation",
-            validation_type: VALIDATION_UTILISATEUR.AUTO,
-            status: AccessStatus.GRANTED,
+            status: {
+              granted_by: "server",
+              date: new Date(),
+              reason: "Obfuscation",
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
+              status: AccessStatus.GRANTED,
+            },
           },
         }
       )
