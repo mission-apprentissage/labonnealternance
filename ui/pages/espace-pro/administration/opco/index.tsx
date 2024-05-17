@@ -27,7 +27,6 @@ import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
-import { useAuth } from "@/context/UserContext"
 
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
@@ -42,7 +41,6 @@ function AdministrationOpco() {
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
   const router = useRouter()
-  const { user } = useAuth()
   const toast = useToast()
 
   useEffect(() => {
@@ -58,7 +56,7 @@ function AdministrationOpco() {
     }
   }, [])
 
-  const { data, isLoading } = useQuery("user-list-opco", () => getOpcoUsers(user.scope))
+  const { data, isLoading } = useQuery("user-list-opco", () => getOpcoUsers())
 
   const columns = [
     {
