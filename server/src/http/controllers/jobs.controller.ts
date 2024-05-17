@@ -327,9 +327,9 @@ export default (server: Server) => {
         throw Boom.badRequest("Job does not exists")
       }
 
-      // if (addExpirationPeriod(dayjs()).isSame(dayjs(job.job_expiration_date), "day")) {
-      //   throw Boom.badRequest("Job is already extended up to a month")
-      // }
+      if (addExpirationPeriod(dayjs()).isSame(dayjs(job.job_expiration_date), "day")) {
+        throw Boom.badRequest("Job is already extended up to a month")
+      }
 
       if (job.job_status !== ACTIVE) {
         throw Boom.badRequest("Job cannot be extended as it is not active")
