@@ -170,6 +170,7 @@ export default (server: Server) => {
         job_rythm: body.job_rythm,
         custom_address: body.custom_address,
         custom_geo_coordinates: body.custom_geo_coordinates,
+        custom_job_title: body.custom_job_title,
         managed_by: user._id,
       }
 
@@ -326,9 +327,9 @@ export default (server: Server) => {
         throw Boom.badRequest("Job does not exists")
       }
 
-      if (addExpirationPeriod(dayjs()).isSame(dayjs(job.job_expiration_date), "day")) {
-        throw Boom.badRequest("Job is already extended up to a month")
-      }
+      // if (addExpirationPeriod(dayjs()).isSame(dayjs(job.job_expiration_date), "day")) {
+      //   throw Boom.badRequest("Job is already extended up to a month")
+      // }
 
       if (job.job_status !== ACTIVE) {
         throw Boom.badRequest("Job cannot be extended as it is not active")
