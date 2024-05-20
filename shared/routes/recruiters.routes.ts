@@ -43,7 +43,7 @@ export const zRecruiterRoutes = {
         .strict(),
       response: {
         // TODO ANY TO BE FIXED
-        "2xx": z.any(),
+        "200": z.array(z.any()),
         // "2xx": zEtablissementCatalogue
         //   .pick({
         //     _id: true,

@@ -1,8 +1,6 @@
-import { OPCOS } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
-import { enumToZod } from "../models/enumToZod"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model"
 import { ZUser2 } from "../models/user2.model"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model"
@@ -33,11 +31,6 @@ export const zUserRecruteurRoutes = {
     "/user/opco": {
       method: "get",
       path: "/user/opco",
-      querystring: z
-        .object({
-          opco: enumToZod(OPCOS),
-        })
-        .strict(),
       response: {
         "200": z
           .object({
@@ -50,9 +43,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: { every: ["user:manage", "recruiter:manage"] },
-        resources: {
-          recruiter: [{ opco: { type: "query", key: "opco" } }],
-        },
+        resources: {},
       },
     },
     "/user": {
