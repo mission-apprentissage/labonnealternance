@@ -1,9 +1,9 @@
 import { randomUUID } from "crypto"
 
 import { Model } from "mongoose"
-import { IEmailBlacklist, IUser, IUserRecruteur } from "shared"
+import { getLastStatusEvent, IEmailBlacklist, IUser, IUserRecruteur } from "shared"
 import { AUTHTYPE, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { AccessEntityType } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/user2.model"
 
 import { logger } from "@/common/logger"
@@ -139,10 +139,34 @@ const keepSpecificUser = async (email: string, type: AccessEntityType) => {
   const role = await RoleManagement.findOne({ authorized_type: type }).lean()
   const replacement = {
     $set: { email },
-    $push: { status: { granted_by: "server", date: new Date(), reason: "obfuscation", status: UserEventType.ACTIF, validation_type: VALIDATION_UTILISATEUR.AUTO } },
+    $push: {
+      status: {
+        $each: [
+          { granted_by: "server", date: new Date(), reason: "obfuscation", status: UserEventType.VALIDATION_EMAIL, validation_type: VALIDATION_UTILISATEUR.AUTO },
+          { granted_by: "server", date: new Date(), reason: "obfuscation", status: UserEventType.ACTIF, validation_type: VALIDATION_UTILISATEUR.AUTO },
+        ],
+      },
+    },
   }
   if (role) {
     await db.collection("userswithaccounts").findOneAndUpdate({ _id: role.user_id }, replacement)
+
+    if (getLastStatusEvent(role.status)?.status !== AccessStatus.GRANTED) {
+      await RoleManagement.findOneAndUpdate(
+        { _id: role._id },
+        {
+          $push: {
+            status: {
+              granted_by: "server",
+              date: new Date(),
+              reason: "Obfuscation",
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
+              status: AccessStatus.GRANTED,
+            },
+          },
+        }
+      )
+    }
   }
 }
 
