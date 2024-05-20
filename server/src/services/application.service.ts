@@ -260,7 +260,7 @@ export const sendApplicationV2 = async ({
 
   await checkUserApplicationCountV2(newApplication.applicant_email.toLowerCase(), LbaJob, caller)
 
-  if (await scan(newApplication.applicant_file_content)) {
+  if (await isInfected(newApplication.applicant_file_content)) {
     throw Boom.badRequest(BusinessErrorCodes.ATTACHMENT)
   }
 
