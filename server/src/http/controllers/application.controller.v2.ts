@@ -28,7 +28,7 @@ export default function (server: Server) {
     "/_private/application",
     {
       schema: zRoutes.post["/_private/application"],
-      // onRequest: server.auth(zRoutes.post["/application"]),
+      onRequest: server.auth(zRoutes.post["/_private/application"]),
       config: {
         rateLimit: {
           max: 5,

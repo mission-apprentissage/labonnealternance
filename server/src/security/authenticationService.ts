@@ -112,7 +112,9 @@ async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyReques
     return null
   }
   const parsedToken = await parseAccessToken(token, schema, req.params as PathParam, req.query as QueryString)
-  await updateLastConnectionDate(parsedToken.identity.email)
+  if (parsedToken.identity.type !== "application") {
+    await updateLastConnectionDate(parsedToken.identity.email)
+  }
   return { type: "IAccessToken", value: parsedToken }
 }
 

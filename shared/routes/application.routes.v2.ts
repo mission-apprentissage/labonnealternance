@@ -64,7 +64,11 @@ export const zApplicationRoutesV2 = {
           description: "Indique le succès ou l'échec de l'opération",
         }),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
     },
   },
 } as const satisfies IRoutesDef

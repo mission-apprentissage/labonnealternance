@@ -3,7 +3,15 @@ import { IUser2 } from "shared/models/user2.model"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
-import { IUser2ForAccessToken, UserForAccessToken, generateAccessToken, generateScope, user2ToUserForToken } from "@/security/accessTokenService"
+import {
+  IApplicationTForUserToken,
+  IUser2ForAccessToken,
+  UserForAccessToken,
+  applicationToUserForToken,
+  generateAccessToken,
+  generateScope,
+  user2ToUserForToken,
+} from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: UserForAccessToken) {
   return generateAccessToken(user, [
@@ -414,4 +422,16 @@ export function generateOffreToken(user: IUser2, offre: IJob) {
       expiresIn: "2h",
     }
   )
+}
+
+export function generateApplicationToken({ company_siret, jobId }: IApplicationTForUserToken) {
+  return generateAccessToken(applicationToUserForToken({ company_siret, jobId }), [
+    generateScope({
+      schema: zRoutes.post["/_private/application"],
+      options: {
+        params: undefined,
+        querystring: undefined,
+      },
+    }),
+  ])
 }
