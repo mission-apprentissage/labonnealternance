@@ -84,14 +84,14 @@ export type UserForAccessToken = IUserRecruteur | IAccessToken["identity"]
 
 export const user2ToUserForToken = (user: IUser2): IUser2ForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
 
-export type IApplicationForAccessToken = { type: "application"; company_siret: string } | { type: "application"; jobId: string }
+export type IApplicationForAccessToken = { type: "application"; company_siret: string; email: "" } | { type: "application"; jobId: string; email: "" }
 export type IApplicationTForUserToken = { company_siret?: string; jobId?: string }
 
 export const applicationToUserForToken = ({ company_siret, jobId }: IApplicationTForUserToken): IApplicationForAccessToken => {
   if (company_siret) {
-    return { type: "application", company_siret }
+    return { type: "application", company_siret, email: "" }
   } else {
-    return { type: "application", jobId: jobId as string }
+    return { type: "application", jobId: jobId as string, email: "" }
   }
 }
 
