@@ -70,9 +70,9 @@ const getCloseButton = (setBannerContext: any, isClosedStateName: string, color:
 }
 
 const InfoBanner = ({
-  showInfo = true,
-  showAlert = true,
-  showOK = true,
+  showInfo = false,
+  showAlert = false,
+  showOK = false,
   forceEnvBanner = false,
 }: {
   showInfo?: boolean
