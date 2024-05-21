@@ -7,6 +7,8 @@ import { Address } from "nodemailer/lib/mailer"
 import SMTPTransport from "nodemailer/lib/smtp-transport"
 import nodemailerHtmlToText from "nodemailer-html-to-text"
 
+import { startSentryPerfRecording } from "@/common/utils/sentryUtils"
+
 import config from "../config"
 
 const htmlToText = nodemailerHtmlToText.htmlToText
@@ -41,10 +43,15 @@ const createTransporter = (): Transporter => {
 const createMailer = () => {
   const transporter = createTransporter()
   const renderEmail = async (template: string, data: Data = {}): Promise<string> => {
-    const buffer = await renderFile(template, { data })
-    const { html } = mjml(buffer.toString(), { minify: true })
+    const onFinally = startSentryPerfRecording("mailer", "renderEmail")
+    try {
+      const buffer = await renderFile(template, { data })
+      const { html } = mjml(buffer.toString(), { minify: true })
 
-    return html
+      return html
+    } finally {
+      onFinally()
+    }
   }
 
   return {
@@ -69,15 +76,20 @@ const createMailer = () => {
       cc?: string
       attachments?: object[]
     }): Promise<{ messageId: string; accepted?: string[] }> => {
-      return transporter.sendMail({
-        from,
-        to,
-        cc,
-        subject,
-        html: await renderEmail(template, data),
-        list: {},
-        attachments,
-      })
+      const html = await renderEmail(template, data)
+      const onFinally = startSentryPerfRecording("mailer", "sendEmail")
+
+      return transporter
+        .sendMail({
+          from,
+          to,
+          cc,
+          subject,
+          html,
+          list: {},
+          attachments,
+        })
+        .finally(onFinally)
     },
   }
 }
