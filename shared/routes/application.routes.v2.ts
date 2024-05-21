@@ -29,7 +29,10 @@ const ZNewApplicationV2NEWJobId = ZApplication.pick({ applicant_first_name: true
       description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
       example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
     }),
-    job_id: z.string(),
+    job_id: z.string().openapi({
+      description: "Identifiant unique de l'offre LBA",
+      example: "id_mongoDB",
+    }),
   })
   .openapi("V2 - Application")
 

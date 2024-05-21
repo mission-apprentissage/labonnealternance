@@ -3002,6 +3002,8 @@ Limite : 5 appel(s) / 5 seconde(s)
                             "type": "string",
                           },
                           "job_id": {
+                            "description": "Identifiant unique de l'offre LBA",
+                            "example": "id_mongoDB",
                             "type": "string",
                           },
                           "message": {
