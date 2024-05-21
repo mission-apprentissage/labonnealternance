@@ -73,19 +73,12 @@ export const zApplicationRoutes = {
         })
         .strict(),
       response: {
-        "200": z.union([
-          z
-            .object({
-              result: z.literal("ok"),
-              message: z.literal("comment registered"),
-            })
-            .strict(),
-          z
-            .object({
-              error: z.literal("error_saving_comment"),
-            })
-            .strict(),
-        ]),
+        "200": z
+          .object({
+            result: z.literal("ok"),
+            message: z.literal("comment registered"),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "access-token",
