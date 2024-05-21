@@ -281,6 +281,12 @@ export const saveOpcoUserTest = async () => {
       {
         date: new Date(),
         reason: "test",
+        status: UserEventType.VALIDATION_EMAIL,
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+      },
+      {
+        date: new Date(),
+        reason: "test",
         status: UserEventType.ACTIF,
         validation_type: VALIDATION_UTILISATEUR.AUTO,
       },
