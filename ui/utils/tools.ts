@@ -6,7 +6,9 @@ import { rawPostalAddress } from "./addressUtils"
 const getPathLink = (anyItem) => {
   let res = ""
   if (anyItem?.place) {
-    res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.place.fullAddress))}/@${anyItem.place.latitude},${anyItem.place.longitude},14z/`
+    res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.place.fullAddress || anyItem.place.city))}/@${anyItem.place.latitude},${
+      anyItem.place.longitude
+    },14z/`
   }
   return res
 }
