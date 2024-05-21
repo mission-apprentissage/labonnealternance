@@ -1,8 +1,7 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes, parseEnumOrError, removeUndefinedFields } from "shared"
+import { IJobWritable, INewDelegations, IRoutes, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { OPCOS } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUser2 } from "shared/models/user2.model"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
@@ -132,8 +131,9 @@ export const getEntrepriseOpco = async (siret: string) => {
 export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
 
 export const getRomeDetail = (rome: string) => apiGet("/rome/detail/:rome", { params: { rome } })
-export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) =>
-  API.get(`/etablissement/cfas-proches?rome=${rome}&latitude=${latitude}&longitude=${longitude}`)
+export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) => {
+  return apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude } })
+}
 
 export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: any, token: string) =>
   apiPost("/etablissement/:establishment_siret/proposition/unsubscribe", {
@@ -147,4 +147,4 @@ export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: a
  * Administration OPCO
  */
 
-export const getOpcoUsers = (opco: string) => apiGet("/user/opco", { querystring: { opco: parseEnumOrError(OPCOS, opco) } })
+export const getOpcoUsers = () => apiGet("/user/opco", {})

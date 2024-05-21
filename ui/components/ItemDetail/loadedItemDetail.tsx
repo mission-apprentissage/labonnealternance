@@ -25,9 +25,9 @@ import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
 import getSoustitre from "./ItemDetailServices/getSoustitre"
 import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
+import LbaJobDetail from "./LbaJobDetail"
 import LbbCompanyDetail from "./LbbCompanyDetail"
 import LocationDetail from "./LocationDetail"
-import MatchaDetail from "./MatchaDetail"
 import TrainingDetail from "./TrainingDetail"
 
 const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
@@ -172,7 +172,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       </Box>
 
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <MatchaDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <LbbCompanyDetail lbb={selectedItem} />}
 
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
