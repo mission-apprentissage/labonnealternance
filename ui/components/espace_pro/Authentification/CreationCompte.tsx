@@ -23,7 +23,7 @@ type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
 
 const CreationCompteForm = ({
   type,
-  onSiretChange,
+  setQualiopiSiret,
   setBandeau,
   origin,
   isWidget,
@@ -31,7 +31,7 @@ const CreationCompteForm = ({
   type: EntrepriseOrCfaType
   isWidget: boolean
   origin: string
-  onSiretChange: (siret: string) => void
+  setQualiopiSiret: (siret: string) => void
   setBandeau: (props: BandeauProps) => void
 }) => {
   const router = useRouter()
@@ -42,7 +42,6 @@ const CreationCompteForm = ({
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
     setBandeau(null)
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
-    onSiretChange(formattedSiret)
     // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
       Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
@@ -83,6 +82,7 @@ const CreationCompteForm = ({
                 setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
               } else if (reason === BusinessErrorCodes.NOT_QUALIOPI) {
                 setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
+                setQualiopiSiret(formattedSiret)
                 setBandeau({
                   type: "error",
                   header: "Votre centre de formation n’est pas certifié Qualiopi.",
@@ -207,7 +207,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
               Nous avons besoin du numéro SIRET de votre {type === AUTHTYPE.ENTREPRISE ? "entreprise" : "organisme de formation"} afin de vous identifier.
             </Text>
-            <CreationCompteForm type={type} onSiretChange={setSiret} setBandeau={setBandeau} origin={origin} isWidget={isWidget} />
+            <CreationCompteForm type={type} setQualiopiSiret={setSiret} setBandeau={setBandeau} origin={origin} isWidget={isWidget} />
           </Box>
           <Box mt={[4, 4, 4, 0]}>
             {siret ? (
