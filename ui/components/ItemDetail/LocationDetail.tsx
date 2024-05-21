@@ -36,18 +36,6 @@ const LocationDetail = ({ item, isCfa }) => {
     return res
   }
 
-  const shouldDisplayEmail = (oneItem) => {
-    let res = false
-    if (oneItem?.ideaType === LBA_ITEM_TYPE_OLD.MATCHA) {
-      res = !!item?.company?.mandataire
-    }
-    if (res) {
-      // au cas où : on n'affiche l'email que si il n'est pas chiffré
-      res = item?.contact?.email.indexOf("@") >= 0
-    }
-    return res
-  }
-
   return (
     <>
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && item?.company?.mandataire && (
@@ -119,21 +107,10 @@ const LocationDetail = ({ item, isCfa }) => {
           </Flex>
         )}
 
-        {shouldDisplayEmail(item) && (
-          <Flex alignItems="center" mt={2} direction="row">
-            <Box width="30px" minWidth="30px" mr={2}>
-              <Image mt="2px" src="/images/icons/small_email.svg" alt="" />
-            </Box>
-            <Link ml="2px" isExternal variant="basicUnderlined" href={`mailto:${item.contact.email}`} aria-label="Contacter par email - nouvelle fenêtre">
-              {item.contact.email} <ExternalLinkIcon mx="2px" />
-            </Link>
-          </Flex>
-        )}
-
         {item?.contact?.phone && (
           <Flex mt={2} mb={4}>
-            <Box width="30px" pl="2px" minWidth="30px" mr={2}>
-              <Image mt="2px" src="/images/icons/small_phone.svg" alt="" />
+            <Box fontWeight={700} pl="2px" mr={2}>
+              Téléphone :
             </Box>
             <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${item.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
               {item.contact.phone} <ExternalLinkIcon mx="2px" />
@@ -186,6 +163,10 @@ const LocationDetail = ({ item, isCfa }) => {
 
         {[LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.LBA].includes(kind) && (
           <>
+            <Text fontStyle="italic" color="grey.425">
+              Renseignez-vous sur l’entreprise, ses activités et ses valeurs pour préparer votre candidature. Vous pouvez rechercher leur site internet et leur présence sur les
+              réseaux sociaux.
+            </Text>
             <Flex mt={2} mb={4}>
               <Box width="30px" pl="2px" minWidth="30px" mr={2}>
                 <Image mt="2px" src="/images/info.svg" alt="A noter" />
