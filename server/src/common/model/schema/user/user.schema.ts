@@ -24,6 +24,7 @@ export const userSchema = new Schema<IUser>(
       type: String,
       default: null,
       description: "L'email du candidat",
+      index: true,
     },
     type: {
       type: String,

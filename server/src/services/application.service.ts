@@ -21,7 +21,7 @@ import config from "../config"
 
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import { BrevoEventStatus } from "./brevo.service"
-import { scan } from "./clamav.service"
+import { isInfected } from "./clamav.service"
 import { getJobFromRecruiter, getOffreAvecInfoMandataire } from "./formulaire.service"
 import { buildLbaCompanyAddress } from "./lbacompany.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
@@ -82,13 +82,17 @@ export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boo
  */
 export const addEmailToBlacklist = async (email: string, blacklistingOrigin: string): Promise<void> => {
   try {
-    await new EmailBlacklist({
-      email,
-      blacklisting_origin: blacklistingOrigin,
-    }).save()
+    await EmailBlacklist.findOneAndUpdate(
+      { email },
+      {
+        email,
+        blacklisting_origin: blacklistingOrigin,
+      },
+      { upsert: true }
+    )
   } catch (err) {
     // catching unique address error
-    logger.error(`Failed to save email to blacklist (${email}). Reason : ${err}`)
+    logger.error(`Failed to save email to blacklist. Reason : ${err}`)
   }
 }
 
@@ -424,7 +428,7 @@ export const validateJob = async (application: INewApplicationV2): Promise<Offre
  * @description checks if attachment is corrupted
  */
 const scanFileContent = async (applicant_file_content: string): Promise<string> => {
-  return (await scan(applicant_file_content)) ? "pièce jointe invalide" : "ok"
+  return (await isInfected(applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
 /**
