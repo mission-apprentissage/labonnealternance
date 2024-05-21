@@ -113,8 +113,8 @@ const LocationDetail = ({ item, isCfa }) => {
 
         {item?.contact?.phone && (
           <Flex mt={2} mb={4}>
-            <Box width="30px" pl="2px" minWidth="30px" mr={2}>
-              <Image mt="2px" src="/images/icons/small_phone.svg" alt="" />
+            <Box fontWeight={700} pl="2px" mr={2}>
+              Téléphone :
             </Box>
             <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${item.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
               {item.contact.phone} <ExternalLinkIcon mx="2px" />
@@ -167,6 +167,10 @@ const LocationDetail = ({ item, isCfa }) => {
 
         {[LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.LBA].includes(kind) && (
           <>
+            <Text fontStyle="italic" color="grey.425">
+              Renseignez-vous sur l’entreprise, ses activités et ses valeurs pour préparer votre candidature. Vous pouvez rechercher leur site internet et leur présence sur les
+              réseaux sociaux.
+            </Text>
             <Flex mt={2} mb={4}>
               <Box width="30px" pl="2px" minWidth="30px" mr={2}>
                 <Image mt="2px" src="/images/info.svg" alt="A noter" />

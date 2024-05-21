@@ -51,11 +51,29 @@ const scrollToTop = (elementId) => {
 }
 
 const scrollToElementInContainer = ({ containerId, el, yOffsett = 250 }) => {
+  console.log("EL : ", el, document.getElementById(containerId), el.offsetTop)
+
   el &&
     document.getElementById(containerId).scrollTo({
       top: el.offsetTop - yOffsett,
       left: 0,
     })
+}
+
+const scrollToNestedElement = ({ containerId, nestedElement, yOffsett = 100 }) => {
+  const ancestorElement = document.getElementById(containerId)
+
+  let distanceFromAncestorTop = 0
+  let currentElement = nestedElement
+
+  while (currentElement !== ancestorElement && currentElement !== null) {
+    distanceFromAncestorTop += currentElement.offsetTop
+    currentElement = currentElement.offsetParent
+  }
+  ancestorElement.scrollTo({
+    top: distanceFromAncestorTop - yOffsett,
+    behavior: "smooth",
+  })
 }
 
 const getItemElement = (item) => {
@@ -102,4 +120,4 @@ const logError = (title, error = undefined) => {
   console.error(`Error ${title} sent to Sentry`)
 }
 
-export { getCompanyPathLink, getItemElement, getPathLink, getValueFromPath, logError, scrollToElementInContainer, scrollToTop }
+export { getCompanyPathLink, getItemElement, getPathLink, getValueFromPath, logError, scrollToElementInContainer, scrollToTop, scrollToNestedElement }

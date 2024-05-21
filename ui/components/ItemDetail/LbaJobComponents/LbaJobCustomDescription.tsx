@@ -2,7 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box } from "@chakra-ui/react"
 import DOMPurify from "isomorphic-dompurify"
 
-const MatchaCustomDescription = ({ data, title }: { data: string; title: string }) => {
+const LbaJobCustomDescription = ({ data, title }: { data: string; title: string }) => {
   const sanitizedData = () => ({
     __html: DOMPurify.sanitize(data),
   })
@@ -30,4 +30,4 @@ const MatchaCustomDescription = ({ data, title }: { data: string; title: string 
   )
 }
 
-export default MatchaCustomDescription
+export default LbaJobCustomDescription

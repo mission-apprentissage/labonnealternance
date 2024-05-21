@@ -32,7 +32,7 @@ export default function (server: Server) {
       if (!romeData) {
         throw Boom.notFound(`rome ${rome} not found`)
       }
-      return res.status(200).send(romeData.fiche_metier)
+      return res.status(200).send(romeData)
     }
   )
 }
