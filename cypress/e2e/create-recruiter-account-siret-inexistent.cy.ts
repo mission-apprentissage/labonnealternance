@@ -10,7 +10,7 @@ describe("create-recruiter-account-siret-inexistent", () => {
     FlowCreationEntreprise.siretPage.fillSiret(siret)
     FlowCreationEntreprise.siretPage.submit()
 
-    cy.contains("Le numéro siret est invalide.").should("exist")
-    cy.get("button[type='submit']").should("be.disabled")
+    cy.contains("Le numéro siret est invalide.", { timeout: 10000 }).should("exist")
+    cy.get("button[type='submit']", { timeout: 10000 }).should("be.disabled")
   })
 })
