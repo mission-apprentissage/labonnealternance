@@ -39,7 +39,7 @@ const envBannerText = (
     <Text as="span" fontWeight={700}>
       Vous êtes ici sur un site de test !
     </Text>{" "}
-    Vos candidatures ne seront pas transmises aux recruteurs ni aux centres de formation . Pour accéder au site La bonne alternance, veuillez utiliser cette URL :{" "}
+    Vos candidatures ne seront pas transmises aux recruteurs ni aux centres de formation. Pour accéder au site La bonne alternance, veuillez cliquer sur ce lien :{" "}
     <Link href="https://labonnealternance.apprentissage.beta.gouv.fr" textDecoration="underline">
       La bonne alternance - Trouvez votre alternance
     </Link>
