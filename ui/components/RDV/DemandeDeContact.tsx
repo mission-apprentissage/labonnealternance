@@ -328,7 +328,7 @@ const DemandeDeContact = (props: Props) => {
           <Text color="redmarianne">{error}</Text>
         </Box>
       )}
-      <InfoBanner showInfo={false} showAlert={false} showOK={false} />
+      <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
       <Box mb={8} textAlign="right" mr={4}>
         <Button
           data-tracking-id="prendre-rdv-cfa"

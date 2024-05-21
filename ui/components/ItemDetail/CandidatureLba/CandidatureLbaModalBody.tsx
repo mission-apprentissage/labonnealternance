@@ -157,7 +157,7 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
           </Text>
         </Box>
 
-        <InfoBanner showInfo={false} showAlert={false} showOK={false} />
+        <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
       </PostulerBody>
       <PostulerFooter fromWidget={fromWidget}>
         <CandidatureLbaSubmit item={item} sendingState={sendingState} />

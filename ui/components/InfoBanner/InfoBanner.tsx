@@ -1,8 +1,9 @@
 import { WarningIcon, CheckCircleIcon, InfoIcon, CloseIcon } from "@chakra-ui/icons"
 import { Box, Button, Flex, Link, Text } from "@chakra-ui/react"
-import React, { useState } from "react"
+import React, { useContext } from "react"
 
 import { publicConfig } from "@/config.public"
+import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const blueBannerText = (
   <Text>
@@ -45,7 +46,7 @@ const envBannerText = (
   </Text>
 )
 
-const getCloseButton = (setIsClosedState, color: string) => {
+const getCloseButton = (setBannerContext: any, isClosedStateName: string, color: string) => {
   return (
     <Button
       fontWeight={700}
@@ -61,29 +62,43 @@ const getCloseButton = (setIsClosedState, color: string) => {
           background: "none",
         },
       }}
-      onClick={() => setIsClosedState(true)}
+      onClick={() => setBannerContext(isClosedStateName, true)}
     >
       <CloseIcon color={color} w={2} h={2} mt={2} ml={2} />
     </Button>
   )
 }
 
-const InfoBanner = ({ showInfo = false, showAlert = false, showOK = false }: { showInfo?: boolean; showAlert?: boolean; showOK?: boolean }) => {
-  const [isEnvClosed, setIsEnvClosed] = useState(false)
-  const [isAlertClosed, setIsAlertClosed] = useState(false)
-  const [isInfoClosed, setIsInfoClosed] = useState(false)
-  const [isOKClosed, setIsOKClosed] = useState(false)
+const InfoBanner = ({
+  showInfo = true,
+  showAlert = true,
+  showOK = true,
+  forceEnvBanner = false,
+}: {
+  showInfo?: boolean
+  showAlert?: boolean
+  showOK?: boolean
+  forceEnvBanner?: boolean
+}) => {
+  const { bannerStates, setBannerStates } = useContext(DisplayContext)
+  const { isEnvClosed, isAlertClosed, isOKClosed, isInfoClosed } = bannerStates
+
+  const setBannerContext = (banner: string, isClosed: boolean) => {
+    const newBannerStates = { ...bannerStates }
+    newBannerStates[banner] = isClosed
+    setBannerStates(newBannerStates)
+  }
 
   const { env } = publicConfig
 
   return (
     <>
-      {!isEnvClosed && env !== "production" && (
+      {env !== "production" && (forceEnvBanner || !isEnvClosed) && (
         <Box backgroundColor="#FFE9E6" p={2} mb={1}>
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#B34000">
             <WarningIcon mr={4} mt={1} />
             <Box flexGrow={1}>{envBannerText}</Box>
-            {getCloseButton(setIsEnvClosed, "#B34000")}
+            {!forceEnvBanner && getCloseButton(setBannerContext, "isEnvClosed", "#B34000")}
           </Flex>
         </Box>
       )}
@@ -92,7 +107,7 @@ const InfoBanner = ({ showInfo = false, showAlert = false, showOK = false }: { s
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#B34000">
             <WarningIcon mr={4} mt={1} />
             <Box flexGrow={1}>{redBannerText}</Box>
-            {getCloseButton(setIsAlertClosed, "#B34000")}
+            {getCloseButton(setBannerContext, "isAlertClosed", "#B34000")}
           </Flex>
         </Box>
       )}
@@ -101,7 +116,7 @@ const InfoBanner = ({ showInfo = false, showAlert = false, showOK = false }: { s
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#18753C">
             <CheckCircleIcon mr={4} mt={1} />
             <Box flexGrow={1}>{greenBannerText}</Box>
-            {getCloseButton(setIsOKClosed, "#18753C")}
+            {getCloseButton(setBannerContext, "isOKClosed", "#18753C")}
           </Flex>
         </Box>
       )}
@@ -110,7 +125,7 @@ const InfoBanner = ({ showInfo = false, showAlert = false, showOK = false }: { s
           <Flex alignItems="center-start" maxWidth="1310px" margin="auto" color="#0063CB">
             <InfoIcon mr={4} mt={1} />
             <Box flexGrow={1}>{blueBannerText}</Box>
-            {getCloseButton(setIsInfoClosed, "#0063CB")}
+            {getCloseButton(setBannerContext, "isInfoClosed", "#0063CB")}
           </Flex>
         </Box>
       )}
