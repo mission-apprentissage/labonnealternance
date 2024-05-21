@@ -68,16 +68,16 @@ const LocationDetail = ({ item, isCfa }) => {
           </Box>
           {item?.place?.distance !== null && <Box fontSize="14px" color="grey.600">{`${item?.place?.distance} km(s) du lieu de recherche`}</Box>}
 
-          {getCompanyPathLink(item) && (
-            <Flex mt={4} alignItems="center" direction="row">
-              <Box width="30px" minWidth="30px" pl="1px" mr={2}>
-                <Image mt="2px" mr={2} src="/images/icons/small_map_point.svg" alt="" />
-              </Box>
-              <Link isExternal variant="basicUnderlined" href={getCompanyPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
-                Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
-              </Link>
-            </Flex>
-          )}
+          {/*getCompanyPathLink(item) && (*/}
+          <Flex mt={4} alignItems="center" direction="row">
+            <Box width="30px" minWidth="30px" pl="1px" mr={2}>
+              <Image mt="2px" mr={2} src="/images/icons/small_map_point.svg" alt="" />
+            </Box>
+            <Link isExternal variant="basicUnderlined" href={getCompanyPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
+              Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
+            </Link>
+          </Flex>
+          {/*)}*/}
         </Box>
       )}
 
