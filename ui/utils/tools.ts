@@ -8,7 +8,7 @@ const getPathLink = (anyItem) => {
   if (anyItem?.place) {
     res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.place.fullAddress || anyItem.place.city))}/@${anyItem.place.latitude},${
       anyItem.place.longitude
-    },14z/`
+    },12z/`
   }
   return res
 }
