@@ -61,6 +61,7 @@ const User2Schema = new Schema<IUser2>(
       default: null,
       description: "L'email",
       index: true,
+      unique: true,
     },
     phone: {
       type: String,
