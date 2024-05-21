@@ -34,6 +34,10 @@ export interface IRomeDetailsFromAPI {
   mobilitesEvolutionsAppellationsVersAppellations: any[]
 }
 
+export interface IRomeV4Short {
+  code: string
+}
+
 export interface IAppelattionDetailsFromAPI {
   code: string
   libelle: string
@@ -95,10 +99,9 @@ export interface AppellationEsco {
 }
 
 export interface Appellation {
-  code: string
+  code_ogr: string
   libelle: string
-  libelleCourt: string
-  particulier: boolean
+  libelle_court: string
 }
 
 export interface Theme {

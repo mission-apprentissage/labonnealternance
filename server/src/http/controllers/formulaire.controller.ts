@@ -17,8 +17,9 @@ import {
   createJob,
   createJobDelegations,
   extendOffre,
-  getFormulaire,
+  getFormulaireWithRomeDetail,
   getJob,
+  getJobWithRomeDetail,
   patchOffre,
   provideOffre,
   updateFormulaire,
@@ -37,10 +38,13 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { establishment_id } = req.params
-      const recruiterOpt = await getFormulaire({ establishment_id })
+
+      const recruiterOpt = await getFormulaireWithRomeDetail({ establishment_id })
+
       if (!recruiterOpt) {
         throw Boom.notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
       }
+
       const jobsWithCandidatures = await Promise.all(
         recruiterOpt.jobs.map(async (job) => {
           const candidatures = await getApplicationsByJobId(job._id.toString())
@@ -59,7 +63,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { establishment_id } = req.params
-      const recruiterOpt = await getFormulaire({ establishment_id })
+      const recruiterOpt = await getFormulaireWithRomeDetail({ establishment_id })
       if (!recruiterOpt) {
         throw Boom.notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
       }
@@ -84,7 +88,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/formulaire/delegation/:establishment_id"])],
     },
     async (req, res) => {
-      const result = await getFormulaire({ establishment_id: req.params.establishment_id })
+      const result = await getFormulaireWithRomeDetail({ establishment_id: req.params.establishment_id })
 
       if (!result) {
         throw Boom.badRequest()
@@ -184,10 +188,11 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/formulaire/offre/f/:jobId"])],
     },
     async (req, res) => {
-      const offre = await getJob(req.params.jobId.toString())
+      const offre = await getJobWithRomeDetail(req.params.jobId.toString())
       if (!offre) {
         throw Boom.badRequest("L'offre n'existe pas")
       }
+
       res.status(200).send(offre)
     }
   )

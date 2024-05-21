@@ -1,7 +1,8 @@
 import Boom from "boom"
+import pkg from "mongodb"
 import type { ObjectId as ObjectIdType } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
+import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -23,21 +24,60 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 
+const { ObjectId } = pkg
+
 export interface IOffreExtended extends IJob {
   candidatures: number
   pourvue: string
   supprimer: string
 }
 
+// étape d'aggragation mongo permettant de récupérer le rome_detail correspondant dans chaque job d'un recruiter
+export const romeDetailAggregateStages = [
+  {
+    $unwind: { path: "$jobs" },
+  },
+  {
+    $lookup: {
+      from: "referentielromes",
+      localField: "jobs.rome_code.0",
+      foreignField: "rome.code_rome",
+      as: "referentielrome",
+    },
+  },
+  {
+    $unwind: { path: "$referentielrome" },
+  },
+  {
+    $set: { "jobs.rome_detail": "$referentielrome" },
+  },
+  {
+    $group: {
+      _id: "$_id",
+      recruiters: {
+        $first: "$$ROOT",
+      },
+      jobs: { $push: "$jobs" },
+    },
+  },
+  {
+    $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
+  },
+  {
+    $project: { referentielrome: 0, "jobs.rome_detail._id": 0 },
+  },
+]
+
 /**
  * @description get formulaire by offer id
  */
-export const getOffreAvecInfoMandataire = async (jobId: string | ObjectIdType): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
-  const recruiterOpt = await getOffre(jobId)
+export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
+  const recruiterOpt = await getOffreWithRomeDetail(id)
+
   if (!recruiterOpt) {
     return null
   }
-  const job = recruiterOpt.jobs.find((x) => x._id.toString() === jobId.toString())
+  const job = recruiterOpt.jobs.find((x) => x._id.toString() === id.toString())
   if (!job) {
     return null
   }
@@ -47,7 +87,7 @@ export const getOffreAvecInfoMandataire = async (jobId: string | ObjectIdType): 
     if (cfa_delegated_siret) {
       const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
       if (cfa) {
-        const cfaUser = await getUser2ManagingOffer(getJobFromRecruiter(recruiterOpt, jobId.toString()))
+        const cfaUser = await getUser2ManagingOffer(getJobFromRecruiter(recruiterOpt, id.toString()))
 
         recruiterOpt.phone = cfaUser.phone
         recruiterOpt.email = cfaUser.email
@@ -128,7 +168,6 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
   const updatedJob: Partial<IJob> = Object.assign(job, {
     job_status: newJobStatus,
     job_start_date,
-    rome_detail: romeData.fiche_metier,
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
@@ -243,6 +282,17 @@ export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
  */
 export const getFormulaire = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter> => Recruiter.findOne(query).lean()
 
+export const getFormulaireWithRomeDetail = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter | null> => {
+  const recruiterWithRomeDetail: IRecruiter[] = await Recruiter.aggregate([
+    {
+      $match: query,
+    },
+    ...romeDetailAggregateStages,
+  ])
+
+  return recruiterWithRomeDetail.length ? recruiterWithRomeDetail[0] : await getFormulaire(query)
+}
+
 /**
  * @description Create new formulaire
  * @param {IRecruiter} payload
@@ -344,6 +394,19 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  */
 export async function getOffre(id: string | ObjectIdType) {
   return Recruiter.findOne({ "jobs._id": id }).lean()
+}
+
+export async function getOffreWithRomeDetail(id: string | ObjectIdType) {
+  console.log("id", id)
+
+  const recruiter: IRecruiter[] = await Recruiter.aggregate([
+    {
+      $match: { "jobs._id": new ObjectId(id) },
+    },
+    ...romeDetailAggregateStages,
+  ])
+
+  return recruiter.length ? recruiter[0] : null
 }
 
 /**
@@ -538,6 +601,26 @@ export const getJob = async (id: string | ObjectIdType): Promise<IJob | null> =>
   const offre = await getOffre(id)
   if (!offre) return null
   return offre.jobs.find((job) => job._id.toString() === id.toString()) ?? null
+}
+
+/**
+ * @description Get job offer by its id.
+ */
+export const getJobWithRomeDetail = async (id: string | ObjectIdType): Promise<IJobWithRomeDetail | null> => {
+  const offre = await getOffre(id)
+  if (!offre) return null
+
+  const job = offre.jobs.find((job) => job._id.toString() === id.toString())
+  if (!job) return null
+
+  const referentielRome = await getRomeDetailsFromDB(job.rome_code[0])
+
+  if (!referentielRome) return null
+
+  return {
+    ...job,
+    rome_detail: referentielRome,
+  }
 }
 
 /**

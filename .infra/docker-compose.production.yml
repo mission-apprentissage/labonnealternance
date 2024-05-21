@@ -94,7 +94,7 @@ services:
 
   metabase:
     <<: *default
-    image: metabase/metabase:v0.49.5
+    image: metabase/metabase:v0.49.10
     deploy:
       <<: *deploy-default
       resources:
@@ -137,6 +137,7 @@ services:
       resources:
         limits:
           memory: 4g
+      replicas: 2
     healthcheck:
       test: ["CMD", "/usr/local/bin/clamdcheck.sh"]
       interval: 60s

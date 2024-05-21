@@ -1,14 +1,14 @@
-import { Alert, AlertIcon, Box, Button, Container, Flex, Icon, Image, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Spacer, Text } from "@chakra-ui/react"
+import { Box, Button, Container, Flex, Icon, Image, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Spacer, Text } from "@chakra-ui/react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { useContext } from "react"
 import { RiAccountCircleLine } from "react-icons/ri"
 
+import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { useAuth } from "@/context/UserContext"
 import { apiGet } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
-import { publicConfig } from "../../../config.public"
 import { LogoContext } from "../../../context/contextLogo"
 import { LockFill } from "../../../theme/components/icons"
 import { LbaNew } from "../../../theme/components/logos_pro"
@@ -28,12 +28,7 @@ const Header = () => {
 
   return (
     <Box>
-      {publicConfig.env !== "production" && (
-        <Alert status="info" variant="top-accent" justifyContent="center">
-          <AlertIcon />
-          {`Environnement ${publicConfig.env}`}
-        </Alert>
-      )}
+      <InfoBanner />
       <Container maxW="full" px={[0, 4]} py={4} borderBottom={"1px solid"} borderColor="grey.400">
         <Container maxW="container.xl">
           <Flex alignItems="center" px={[0, 4]}>
