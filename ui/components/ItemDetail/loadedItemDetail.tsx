@@ -11,6 +11,7 @@ import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
 import { filterLayers } from "../../utils/mapTools"
 import { SendPlausibleEvent } from "../../utils/plausible"
+import InfoBanner from "../InfoBanner/InfoBanner"
 
 import AideApprentissage from "./AideApprentissage"
 import CandidatureLba from "./CandidatureLba/CandidatureLba"
@@ -95,6 +96,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       }}
       {...swipeHandlers}
     >
+      <InfoBanner />
       {/* @ts-expect-error: TODO */}
       <Box
         as="header"
