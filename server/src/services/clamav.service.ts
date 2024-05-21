@@ -1,82 +1,97 @@
 import { Readable } from "stream"
 
+import Boom from "boom"
 import NodeClam from "clamscan"
+
+import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils/sentryUtils"
 
 import { logger } from "../common/logger"
 import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
 
-class ClamAVService {
-  private static instance: ClamAVService | null = null
-  private clamav: Promise<NodeClam> | null = null
+let clamavCache: Promise<NodeClam> | null = null
+let watcher: NodeJS.Timeout | null = null
 
-  private constructor() {
-    this.clamav = this.initClamAV()
-  }
+async function createClamav() {
+  return await new NodeClam().init({
+    clamdscan: {
+      host: config.env === "local" ? "localhost" : "clamav",
+      port: 3310,
+    },
+  })
+}
 
-  public static getInstance(): ClamAVService {
-    if (!ClamAVService.instance) {
-      ClamAVService.instance = new ClamAVService()
+async function getClamav(): Promise<NodeClam> {
+  if (clamavCache === null) {
+    const retry = (error) => {
+      const err = Boom.internal("Error initializing ClamAV")
+      err.cause = error
+      logger.error(err)
+      sentryCaptureException(err)
+      return createClamav()
     }
-    return ClamAVService.instance
-  }
 
-  private async initClamAV(): Promise<NodeClam> {
-    return new Promise((resolve, reject) => {
-      const clamav = new NodeClam()
-      clamav
-        .init({
-          clamdscan: {
-            host: config.env === "local" ? "localhost" : "clamav",
-            port: 3310,
-          },
+    const watch = (instance: NodeClam) => {
+      watcher = setInterval(() => {
+        instance.getVersion().catch((error) => {
+          const err = Boom.internal("Error with ClamAV health check")
+          err.cause = error
+          logger.error(err)
+          sentryCaptureException(err)
+          handleClamavError()
         })
-        .then(() => resolve(clamav))
-        .catch(reject)
-    })
+      }, 120_000)
+      watcher.unref()
+
+      return instance
+    }
+
+    clamavCache = createClamav().catch(retry).catch(retry).then(watch)
   }
 
-  private async getClamAV(): Promise<NodeClam> {
-    if (!this.clamav) {
-      throw new Error("ClamAV is not initialized")
-    }
-    return this.clamav
-  }
+  return clamavCache
+}
 
-  public async getVersions(): Promise<string[] | null> {
-    try {
-      const clamav = await this.getClamAV()
-      const versions = await clamav.getVersion()
-      return versions
-    } catch (error) {
-      console.error("Error getting ClamAV versions:", error)
-      return null
-    }
-  }
+function handleClamavError() {
+  clamavCache = null
+  if (watcher) clearInterval(watcher)
+}
 
-  public async isInfected(file: string): Promise<boolean | null> {
-    // const onFinish = startSentryPerfRecording("clamav", "scan")
-    const clamav = await this.getClamAV()
-    const decodedAscii = Readable.from(Buffer.from(file.substring(file.indexOf(";base64,") + 8), "base64").toString("ascii"))
-    const rs = Readable.from(decodedAscii)
-    try {
-      const { isInfected, viruses } = await clamav.scanStream<{ isInfected: boolean; file: string; viruses: string[] }>(rs)
-      if (isInfected) {
-        logger.error(`Virus detected ${viruses.toString()}`)
-        await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
-      }
-      return isInfected
-    } catch (error) {
-      console.error("Error scanning file for viruses:", error)
-      return null
-    }
-    // finally {
-    //   onFinish()
-    // }
+export async function getVersion(): Promise<string> {
+  try {
+    const clamav = await getClamav()
+    const versions = await clamav.getVersion()
+    return versions
+  } catch (error) {
+    handleClamavError()
+    const err = Boom.internal("Error getting ClamAV versions")
+    logger.error(err)
+    err.cause = error
+    throw err
   }
 }
 
-// Factory function to get the singleton instance
-export function getClamAVServiceInstance(): ClamAVService {
-  return ClamAVService.getInstance()
+export async function isInfected(file: string): Promise<boolean> {
+  const onFinish = startSentryPerfRecording("clamav", "scan")
+  const clamav = await getClamav()
+  const decodedAscii = Readable.from(Buffer.from(file.substring(file.indexOf(";base64,") + 8), "base64").toString("ascii"))
+  const rs = Readable.from(decodedAscii)
+  try {
+    const { isInfected, viruses } = await clamav.scanStream(rs)
+    if (isInfected === null) {
+      throw Boom.internal("Unable to scan file for viruses", { viruses })
+    }
+    if (isInfected) {
+      logger.error(`Virus detected ${viruses.toString()}`)
+      await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
+    }
+    return isInfected
+  } catch (error) {
+    handleClamavError()
+    const err = Boom.internal("Error scanning file for viruses")
+    err.cause = error
+    throw err
+  } finally {
+    onFinish()
+  }
 }
