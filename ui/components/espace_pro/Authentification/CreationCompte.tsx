@@ -66,11 +66,11 @@ const CreationCompteForm = ({
       })
     } else {
       getCfaInformation(formattedSiret)
-        .then((data) => {
+        .then(() => {
           setSubmitting(false)
           router.push({
             pathname: nextUri,
-            query: { informationSiret: JSON.stringify(data), type, origin },
+            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret }), type, origin },
           })
         })
         .catch((error) => {

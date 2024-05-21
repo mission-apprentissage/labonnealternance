@@ -745,14 +745,12 @@ export const entrepriseOnboardingWorkflow = {
       origin,
       opco,
       idcc,
-      cfa_delegated_siret,
     }: {
       siret: string
       last_name: string
       first_name: string
       phone?: string
       email: string
-      cfa_delegated_siret?: string
       origin?: string | null
       opco: string
       idcc?: string
@@ -763,7 +761,6 @@ export const entrepriseOnboardingWorkflow = {
       isUserValidated?: boolean
     } = {}
   ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUser2; validated: boolean }> => {
-    console.log({ cfa_delegated_siret })
     origin = origin ?? ""
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret })
     if (cfaErrorOpt) return cfaErrorOpt

@@ -28,8 +28,6 @@ const Formulaire = ({ submitForm }) => {
   const { email = "", opco = "", establishment_siret = "" } = informationSiret ?? {}
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
-  console.log({ informationSiret, establishment_siret, type })
-
   return (
     <Formik
       validateOnMount={true}

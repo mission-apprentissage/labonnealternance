@@ -103,7 +103,7 @@ export const zRecruiterRoutes = {
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "2xx": ZCfaReferentielData,
+        "200": ZCfaReferentielData,
       },
       securityScheme: null,
     },
@@ -150,9 +150,6 @@ export const zRecruiterRoutes = {
             idcc: z.string().optional(),
           })
           .strict()
-          .extend({
-            cfa_delegated_siret: ZRecruiter.shape.cfa_delegated_siret,
-          })
           .extend(
             ZUserRecruteurWritable.pick({
               last_name: true,

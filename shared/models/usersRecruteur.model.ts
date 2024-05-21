@@ -98,6 +98,7 @@ export const ZCfaReferentielData = z
   .strict()
 
 export type ICfaReferentielData = z.output<typeof ZCfaReferentielData>
+export type ICfaReferentielDataJson = Jsonify<z.input<typeof ZCfaReferentielData>>
 
 export type IUserStatusValidation = z.output<typeof ZUserStatusValidation>
 export type IUserStatusValidationJson = Jsonify<z.input<typeof ZUserStatusValidation>>

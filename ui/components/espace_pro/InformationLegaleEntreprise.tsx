@@ -1,12 +1,12 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
 import { useQuery } from "react-query"
-import { parseEnum } from "shared"
+import { parseEnum, ICfaReferentielDataJson } from "shared"
 import { CFA, ENTREPRISE, OPCO, OPCOS } from "shared/constants/recruteur"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
 
 import { useAuth } from "@/context/UserContext"
-import { getEntrepriseInformation } from "@/utils/api"
+import { getEntrepriseInformation, getCfaInformation } from "@/utils/api"
 
 import { InfoCircle } from "../../theme/components/icons"
 
@@ -17,13 +17,15 @@ export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA
 
 export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEntrepriseProps) => {
   const { user } = useAuth()
-  const { data } = useQuery(["get-entreprise", siret], () => getEntrepriseInformation(siret, { skipUpdate: true }), { enabled: Boolean(siret) })
+  const entrepriseQuery = useQuery(["get-entreprise", siret], () => getEntrepriseInformation(siret, { skipUpdate: true }), { enabled: Boolean(siret && type === ENTREPRISE) })
+  const cfaQuery = useQuery(["get-cfa-infos", siret], () => getCfaInformation(siret), { enabled: Boolean(siret && type === CFA) })
+  const { data } = type === ENTREPRISE ? entrepriseQuery : cfaQuery
 
   if (!data) return null
-  if (data.error === true) return null
+  if ("error" in data && data.error === true) return null
 
-  const organization = data?.data
-  const raisonSociale = organization?.raison_sociale
+  const organization = "data" in data ? ({ entreprise: data.data, type: ENTREPRISE, opco: opco ?? parseEnum(OPCOS, data.data.opco) } as const) : ({ type: CFA, cfa: data } as const)
+  const raisonSociale = organization.type === ENTREPRISE ? organization.entreprise.raison_sociale : organization.cfa.establishment_raison_sociale
 
   return (
     <Box border="1px solid #000091" p={5}>
@@ -45,13 +47,21 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
           </Box>
         </Flex>
       )}
-      <EntrepriseInfoFields entreprise={organization} type={type} opco={opco ?? parseEnum(OPCOS, organization.opco)} />
+      <OrganizationInfoFields organization={organization} />
     </Box>
   )
 }
 
-const EntrepriseInfoFields = ({ entreprise, type, opco }: { entreprise: IEntrepriseJson; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS }) => {
-  const { address, enseigne: establishment_enseigne, raison_sociale: establishment_raison_sociale, siret: establishment_siret } = entreprise
+const OrganizationInfoFields = ({
+  organization,
+}: {
+  organization: { entreprise: IEntrepriseJson; type: typeof ENTREPRISE; opco?: OPCOS } | { cfa: ICfaReferentielDataJson; type: typeof CFA }
+}) => {
+  const { type } = organization
+  const { address } = type === ENTREPRISE ? organization.entreprise : organization.cfa
+  const establishment_enseigne = type === ENTREPRISE ? organization.entreprise.enseigne : null
+  const establishment_raison_sociale = type === ENTREPRISE ? organization.entreprise.raison_sociale : organization.cfa.establishment_raison_sociale
+  const establishment_siret = type === ENTREPRISE ? organization.entreprise.siret : organization.cfa.establishment_siret
   const RAISON_SOCIALE =
     establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : establishment_raison_sociale ?? ""
   const firstLineAddress = address
@@ -102,14 +112,14 @@ const EntrepriseInfoFields = ({ entreprise, type, opco }: { entreprise: IEntrepr
       {type === ENTREPRISE && (
         <FieldWithValue
           title="Opco de référence"
-          value={opco}
+          value={organization.opco}
           tooltip='La donnée "Opco" provient de CFADOCK puis est déduite du SIRET. Si cette information est erronée, merci de nous contacter.'
         />
       )}
       {type === CFA && (
         <FieldWithValue
           title="Qualiopi"
-          value={"OUI"}
+          value={organization.cfa.is_qualiopi ? "OUI" : "NON"}
           tooltip="La donnée 'Qualiopi' provient du Référentiel de l'ONISEP puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
         />
       )}

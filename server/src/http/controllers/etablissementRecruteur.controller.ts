@@ -172,8 +172,7 @@ export default (server: Server) => {
       switch (type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
-          const cfa_delegated_siret = req.body.cfa_delegated_siret ?? undefined
-          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret, cfa_delegated_siret })
+          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret })
           if ("error" in result) {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
             else throw Boom.badRequest(result.message, result)
@@ -192,7 +191,6 @@ export default (server: Server) => {
 
           const { contacts, establishment_raison_sociale, geo_coordinates, address, address_detail } = await getOrganismeDeFormationDataFromSiret(establishment_siret)
 
-          // Creation de l'utilisateur en base de données
           const cfa = await upsertCfa(
             establishment_siret,
             {

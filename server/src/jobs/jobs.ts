@@ -393,7 +393,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "migrations:status": {
         const pendingMigrations = await statusMigration()
-        console.log(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
+        console.info(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
         return
       }
       case "migrations:create":
