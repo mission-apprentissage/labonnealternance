@@ -36,18 +36,6 @@ const LocationDetail = ({ item, isCfa }) => {
     return res
   }
 
-  const shouldDisplayEmail = (oneItem) => {
-    let res = false
-    if (oneItem?.ideaType === LBA_ITEM_TYPE_OLD.MATCHA) {
-      res = !!oneItem?.company?.mandataire
-    }
-    if (res) {
-      // au cas où : on n'affiche l'email que si il n'est pas chiffré
-      res = oneItem?.contact?.email.indexOf("@") >= 0
-    }
-    return res
-  }
-
   const companyPathLink = getCompanyPathLink(item)
 
   return (
@@ -120,17 +108,6 @@ const LocationDetail = ({ item, isCfa }) => {
                 {item?.company?.url} <ExternalLinkIcon mb="3px" ml="2px" />
               </Link>
             </Text>
-          </Flex>
-        )}
-
-        {shouldDisplayEmail(item) && (
-          <Flex alignItems="center" mt={2} direction="row">
-            <Box width="30px" minWidth="30px" mr={2}>
-              <Image mt="2px" src="/images/icons/small_email.svg" alt="" />
-            </Box>
-            <Link ml="2px" isExternal variant="basicUnderlined" href={`mailto:${item.contact.email}`} aria-label="Contacter par email - nouvelle fenêtre">
-              {item.contact.email} <ExternalLinkIcon mx="2px" />
-            </Link>
           </Flex>
         )}
 
