@@ -24,7 +24,7 @@ const LocationDetail = ({ item, isCfa }) => {
 
   const getTitle = (oneItem) => {
     const oneKind = oneItem?.ideaType
-    const isMandataire = item?.company?.mandataire
+    const isMandataire = oneItem?.company?.mandataire
     let res = "Quelques informations sur l'entreprise"
     if (oneKind === LBA_ITEM_TYPE_OLD.FORMATION) {
       res = "Quelques informations sur le centre de formation"
@@ -39,14 +39,16 @@ const LocationDetail = ({ item, isCfa }) => {
   const shouldDisplayEmail = (oneItem) => {
     let res = false
     if (oneItem?.ideaType === LBA_ITEM_TYPE_OLD.MATCHA) {
-      res = !!item?.company?.mandataire
+      res = !!oneItem?.company?.mandataire
     }
     if (res) {
       // au cas où : on n'affiche l'email que si il n'est pas chiffré
-      res = item?.contact?.email.indexOf("@") >= 0
+      res = oneItem?.contact?.email.indexOf("@") >= 0
     }
     return res
   }
+
+  const companyPathLink = getCompanyPathLink(item)
 
   return (
     <>
@@ -68,12 +70,12 @@ const LocationDetail = ({ item, isCfa }) => {
           </Box>
           {item?.place?.distance !== null && <Box fontSize="14px" color="grey.600">{`${item?.place?.distance} km(s) du lieu de recherche`}</Box>}
 
-          {getCompanyPathLink(item) && (
+          {companyPathLink && (
             <Flex mt={4} alignItems="center" direction="row">
               <Box width="30px" minWidth="30px" pl="1px" mr={2}>
                 <Image mt="2px" mr={2} src="/images/icons/small_map_point.svg" alt="" />
               </Box>
-              <Link isExternal variant="basicUnderlined" href={getCompanyPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
+              <Link isExternal variant="basicUnderlined" href={companyPathLink} aria-label="Localisation sur google maps - nouvelle fenêtre">
                 Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
               </Link>
             </Flex>
