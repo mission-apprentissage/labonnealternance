@@ -75,7 +75,7 @@ export type IContextDisplay = {
   setShouldMapBeVisible: (b: boolean) => void
   activeFilters: string[]
   setActiveFilters: (b: string[]) => void
-  bannerStates: { isEnvClosed: boolean; isOkClosed: boolean; isInfoClosed: boolean; isAlertClosed: boolean }
+  bannerStates: { isEnvClosed: boolean; isOKClosed: boolean; isInfoClosed: boolean; isAlertClosed: boolean }
   setBannerStates: (o: { isEnvClosed: boolean; isOKClosed: boolean; isInfoClosed: boolean; isAlertClosed: boolean }) => void
 }
 // @ts-expect-error: TODO
