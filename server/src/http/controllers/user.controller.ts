@@ -9,7 +9,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
-import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
+import { activateUser, getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
@@ -356,6 +356,10 @@ export default (server: Server) => {
             await activateEntrepriseRecruiterForTheFirstTime(userFormulaire)
           }
         }
+      }
+
+      if (newEvent.status === AccessStatus.GRANTED) {
+        await activateUser(user, requestUser._id.toString())
       }
 
       // validate user email addresse
