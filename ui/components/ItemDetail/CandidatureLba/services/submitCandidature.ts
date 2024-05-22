@@ -1,7 +1,6 @@
-import axios from "axios"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { apiEndpoint } from "../../../../config/config"
+import { apiPost } from "../../../../utils/api.utils"
 
 export default async function submitCandidature({
   formValues,
@@ -13,8 +12,6 @@ export default async function submitCandidature({
   LbaJob?: any // TODO
 }) {
   setSendingState("currently_sending")
-
-  const candidatureApi = apiEndpoint + "/v2/_private/application"
 
   const payload = {
     applicant_first_name: formValues.firstName,
@@ -29,11 +26,11 @@ export default async function submitCandidature({
   }
 
   try {
-    await axios.post(candidatureApi, payload, { headers: { Authorization: `Bearer ${LbaJob.token}` } })
+    await apiPost("/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {}, "V2")
     setSendingState("ok_sent")
     return true
   } catch (error) {
-    setSendingState(error.response?.data?.message)
+    setSendingState(error?.message)
     return false
   }
 }
