@@ -1,6 +1,6 @@
 import { referrers } from "../constants/referers"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment, ZEtablissement, ZUser } from "../models"
+import { EREASONS, ZAppointment, ZEtablissement, ZUser } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
@@ -251,7 +251,7 @@ export const zAppointmentsRoute = {
       })
         .extend({
           applicantMessageToCfa: z.string().nullable(),
-          applicantReasons: z.array(z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"])),
+          applicantReasons: z.array(z.enum([EREASONS[0], ...EREASONS.slice(1)])),
           cleMinistereEducatif: z.string(),
           appointmentOrigin: z.string(),
         })
