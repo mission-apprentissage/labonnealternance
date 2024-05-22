@@ -39,7 +39,7 @@ export default function (server: Server) {
     },
     async (req, res) => {
       await sendApplicationV2({ newApplication: req.body })
-      return res.send("OK")
+      return res.status(200).send({})
     }
   )
 }

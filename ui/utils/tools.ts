@@ -53,8 +53,6 @@ const scrollToTop = (elementId) => {
 }
 
 const scrollToElementInContainer = ({ containerId, el, yOffsett = 250 }) => {
-  console.log("EL : ", el, document.getElementById(containerId), el.offsetTop)
-
   el &&
     document.getElementById(containerId).scrollTo({
       top: el.offsetTop - yOffsett,
@@ -122,4 +120,4 @@ const logError = (title, error = undefined) => {
   console.error(`Error ${title} sent to Sentry`)
 }
 
-export { getCompanyPathLink, getItemElement, getPathLink, getValueFromPath, logError, scrollToElementInContainer, scrollToTop, scrollToNestedElement }
+export { getCompanyPathLink, getItemElement, getPathLink, getValueFromPath, logError, scrollToElementInContainer, scrollToNestedElement, scrollToTop }
