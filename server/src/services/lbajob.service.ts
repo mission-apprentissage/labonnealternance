@@ -5,7 +5,7 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Cfa, Recruiter } from "@/common/model"
-import { db } from "@/common/mongodb"
+import { ObjectIdType, db } from "@/common/mongodb"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -216,7 +216,7 @@ function transformLbaJobs({ jobs, applicationCountByJob, isMinimalData }: { jobs
 /**
  * @description Retourne une offre LBA identifiée par son id
  */
-export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
+export const getLbaJobById = async ({ id, caller }: { id: ObjectIdType; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 
@@ -224,7 +224,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
       return { error: "not_found" }
     }
 
-    const applicationCountByJob = await getApplicationByJobCount([id])
+    const applicationCountByJob = await getApplicationByJobCount([id.toString()])
 
     const job = transformLbaJob({
       recruiter: rawJob.recruiter,
