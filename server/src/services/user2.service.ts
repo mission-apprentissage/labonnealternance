@@ -74,7 +74,7 @@ export const validateUser2Email = async (id: string): Promise<IUser2> => {
 }
 
 export const activateUser = async (user: IUser2, granted_by: string): Promise<IUser2> => {
-  if (!isUserDesactive(user)) {
+  if (!isUserDisabled(user)) {
     return user
   }
   const event: IUserStatusEvent = {
@@ -108,5 +108,5 @@ export const emailHasActiveRole = async (email: string) => {
 export const isUserEmailChecked = (user: IUser2): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)
 
 const activationStatus = [UserEventType.ACTIF, UserEventType.DESACTIVE]
-export const isUserDesactive = (user: IUser2): boolean =>
+export const isUserDisabled = (user: IUser2): boolean =>
   getLastStatusEvent(user.status.filter((event) => activationStatus.includes(event.status)))?.status === UserEventType.DESACTIVE

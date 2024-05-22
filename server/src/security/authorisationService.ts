@@ -13,7 +13,7 @@ import { Primitive } from "type-fest"
 import { Application, Cfa, Entreprise, Recruiter, User2 } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
-import { getUser2ByEmail, isUserDesactive, isUserEmailChecked } from "@/services/user2.service"
+import { getUser2ByEmail, isUserDisabled, isUserEmailChecked } from "@/services/user2.service"
 
 import { getUserFromRequest } from "./authenticationService"
 
@@ -315,7 +315,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     if (!isUserEmailChecked(user)) {
       throw Boom.forbidden("l'email doit être validé")
     }
-    if (isUserDesactive(user)) {
+    if (isUserDisabled(user)) {
       throw Boom.forbidden("user désactivé")
     }
     const { _id } = user

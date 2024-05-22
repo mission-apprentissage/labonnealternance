@@ -21,7 +21,7 @@ import {
   validateCreationEntrepriseFromCfa,
 } from "@/services/etablissement.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { emailHasActiveRole, getUser2ByEmail, isUserDesactive, isUserEmailChecked, validateUser2Email } from "@/services/user2.service"
+import { emailHasActiveRole, getUser2ByEmail, isUserDisabled, isUserEmailChecked, validateUser2Email } from "@/services/user2.service"
 import {
   autoValidateUser,
   createOrganizationUser,
@@ -277,7 +277,7 @@ export default (server: Server) => {
       if (!user) {
         throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
-      if (isUserDesactive(user)) {
+      if (isUserDisabled(user)) {
         throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
