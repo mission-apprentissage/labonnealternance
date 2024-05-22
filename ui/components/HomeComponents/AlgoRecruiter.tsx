@@ -29,8 +29,8 @@ const AlgoRecruiter = ({ withLinks }) => {
                 <strong>Celles ayant émis un besoin en recrutement </strong>sur notre plateforme ainsi que sur France Travail et ses sites partenaires
               </ListItem>
               <ListItem mb="3">
-                <strong>Celles n&apos;ayant pas diffusé d&apos;offres, mais ayant été identifiées comme &quot;à fort potentiel d&apos;embauche en alternance&quot;</strong> grâce à 
-                l'analyse de diverses données publiques (données de recrutement, données financières, etc.). La bonne alternance identifie ainsi chaque mois une liste restreinte 
+                <strong>Celles n&apos;ayant pas diffusé d&apos;offres, mais ayant été identifiées comme &quot;à fort potentiel d&apos;embauche en alternance&quot;</strong> grâce à
+                l'analyse de diverses données publiques (données de recrutement, données financières, etc.). La bonne alternance identifie ainsi chaque mois une liste restreinte
                 d'entreprises à fort potentiel d'embauche en alternance pour faciliter les démarches de candidatures spontanées de ses utilisateurs.
               </ListItem>
             </UnorderedList>

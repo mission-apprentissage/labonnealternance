@@ -30,10 +30,9 @@ const AlgoHome = () => {
             </ListItem>
             <ListItem>
               <Text as="p" fontSize="18px" mb="5">
-                <strong>Les candidatures spontanées</strong> : correspondant au marché caché de l&apos;emploi. Grâce à l'analyse de diverses données publiques (données de recrutement, données financières, etc.), 
-                La bonne alternance identifie chaque mois une liste restreinte d'entreprises à fort potentiel d'embauche en alternance, afin de faciliter les démarches de candidatures spontanées de ses utilisateurs.
-                Elles sont identifiées grâce au tag{" "}
-                <TagCandidatureSpontanee />
+                <strong>Les candidatures spontanées</strong> : correspondant au marché caché de l&apos;emploi. Grâce à l'analyse de diverses données publiques (données de
+                recrutement, données financières, etc.), La bonne alternance identifie chaque mois une liste restreinte d'entreprises à fort potentiel d'embauche en alternance,
+                afin de faciliter les démarches de candidatures spontanées de ses utilisateurs. Elles sont identifiées grâce au tag <TagCandidatureSpontanee />
               </Text>
             </ListItem>
           </UnorderedList>
