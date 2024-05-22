@@ -138,6 +138,7 @@ export const getFtJob = async (id: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    return null
   }
 }
 
