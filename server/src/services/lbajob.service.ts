@@ -14,6 +14,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { IApplicationCount, getApplicationByJobCount, getUser2ManagingOffer } from "./application.service"
+import { generateApplicationToken } from "./appLinks.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
@@ -354,6 +355,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       },
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,
+      token: generateApplicationToken({ jobId: offre._id.toString() }),
     }
 
     return resultJob
@@ -398,6 +400,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
       },
       applicationCount: applicationCountForCurrentJob?.count || 0,
+      token: generateApplicationToken({ jobId: offre._id.toString() }),
     }
 
     return resultJob
