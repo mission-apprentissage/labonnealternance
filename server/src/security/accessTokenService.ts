@@ -207,7 +207,11 @@ export const verifyJwtToken = (jwtToken: string) => {
     })
     const token = data.payload as IAccessToken<any>
     return token
-  } catch (err) {
+  } catch (err: any) {
+    const errorStr = err + ""
+    if (errorStr === "TokenExpiredError: jwt expired") {
+      throw Boom.forbidden("JWT expired")
+    }
     console.warn("invalid jwt token", jwtToken, err)
     throw Boom.forbidden()
   }
