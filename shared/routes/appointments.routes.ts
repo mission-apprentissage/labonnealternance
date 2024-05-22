@@ -251,7 +251,7 @@ export const zAppointmentsRoute = {
       })
         .extend({
           applicantMessageToCfa: z.string().nullable(),
-          applicantReasons: z.array(z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"])),
+          applicantReasons: z.array(z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre", "debouche"])),
           cleMinistereEducatif: z.string(),
           appointmentOrigin: z.string(),
         })
