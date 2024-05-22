@@ -2,35 +2,34 @@ import { createReadStream } from "fs"
 import querystring from "querystring"
 
 import FormData from "form-data"
+import { IFicheRome } from "shared/models"
 
 import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
-import { IAppelattionDetailsFromAPI, IFTAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
+import { IAppelattionDetailsFromAPI, IFTAPIToken, IRomeDetailsFromAPI, IRomeV4Short } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
 import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
 
-const FT_IO_API_ROME_V1_BASE_URL = "https://api.francetravail.io/partenaire/rome/v1"
-const FT_IO_API_OFFRES_BASE_URL = "https://api.francetravail.io/partenaire/offresdemploi/v2"
-const FT_AUTH_BASE_URL = "https://entreprise.francetravail.fr/connexion/oauth2"
-const FT_PORTAIL_BASE_URL = "https://portail-partenaire.pole-emploi.fr/partenaire"
-
-// paramètres exclurant les offres LBA des résultats de l'api PE
-const FT_LBA_PARTENAIRE = "LABONNEALTERNANCE"
-const FT_PARTENAIRE_MODE = "EXCLU"
-
 const axiosClient = getApiClient({})
 
-const ROME_ACESS = querystring.stringify({
+const ROME_ACCESS = querystring.stringify({
   grant_type: "client_credentials",
   client_id: config.esdClientId,
   client_secret: config.esdClientSecret,
   scope: `application_${config.esdClientId} api_romev1 nomenclatureRome`,
 })
 
-const OFFRES_ACESS = querystring.stringify({
+const ROME_V4_ACCESS = querystring.stringify({
+  grant_type: "client_credentials",
+  client_id: config.esdClientId,
+  client_secret: config.esdClientSecret,
+  scope: `application_${config.esdClientId} api_rome-metiersv1 nomenclatureRome`,
+})
+
+const OFFRES_ACCESS = querystring.stringify({
   grant_type: "client_credentials",
   client_id: config.esdClientId,
   client_secret: config.esdClientSecret,
@@ -49,10 +48,16 @@ let tokenRomeFT: IFTAPIToken = {
   token_type: "",
   expires_in: 0,
 }
+let tokenRomeV4FT: IFTAPIToken = {
+  access_token: "",
+  scope: "",
+  token_type: "",
+  expires_in: 0,
+}
 
 const isTokenValid = (token: IFTAPIToken): any => token?.expire?.isAfter(dayjs())
 
-const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPIToken> => {
+const getFtAccessToken = async (access: "OFFRE" | "ROME" | "ROMEV4", token): Promise<IFTAPIToken> => {
   const isValid = isTokenValid(token)
 
   if (isValid) {
@@ -60,7 +65,8 @@ const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPI
   }
 
   try {
-    const response = await axiosClient.post(`${FT_AUTH_BASE_URL}/access_token?realm=%2Fpartenaire`, access === "OFFRE" ? OFFRES_ACESS : ROME_ACESS, {
+    const tokenParams = access === "OFFRE" ? OFFRES_ACCESS : access === "ROME" ? ROME_ACCESS : ROME_V4_ACCESS
+    const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=%2Fpartenaire`, tokenParams, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 3000,
     })
@@ -89,13 +95,15 @@ export const searchForFtJobs = async (params: {
   distance?: number
 }): Promise<FTResponse | null | ""> => {
   tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
+
   try {
     const extendedParams = {
       ...params,
-      partenaires: FT_LBA_PARTENAIRE,
-      modeSelectionPartenaires: FT_PARTENAIRE_MODE,
+      // paramètres exclurant les offres LBA des résultats de l'api PE
+      partenaires: "LABONNEALTERNANCE",
+      modeSelectionPartenaires: "EXCLU",
     }
-    const { data } = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/offres/search`, {
+    const { data } = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/search`, {
       params: extendedParams,
       headers: {
         "Content-Type": "application/json",
@@ -118,7 +126,7 @@ export const searchForFtJobs = async (params: {
 export const getFtJob = async (id: string) => {
   tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
   try {
-    const result = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/offres/${id}`, {
+    const result = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/${id}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -143,7 +151,7 @@ export const getFtReferentiels = async (referentiel: string) => {
   try {
     tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
 
-    const data = await axiosClient.get(`${FT_IO_API_OFFRES_BASE_URL}/referentiel/${referentiel}`, {
+    const data = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/referentiel/${referentiel}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -166,7 +174,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
   tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
 
   try {
-    const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/metier/${romeCode}`, {
+    const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${config.franceTravailIO.baseUrl}/rome/v1/metier/${romeCode}`, {
       headers: {
         Authorization: `Bearer ${tokenRomeFT.access_token}`,
       },
@@ -183,7 +191,7 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
   tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
 
   try {
-    const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${FT_IO_API_ROME_V1_BASE_URL}/appellation/${appellationCode}`, {
+    const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${config.franceTravailIO.baseUrl}/rome/v1/appellation/${appellationCode}`, {
       headers: {
         Authorization: `Bearer ${tokenRomeFT.access_token}`,
       },
@@ -195,6 +203,38 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
     if (error.response.status === 404) {
       return null
     }
+  }
+}
+
+export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IFicheRome | null | undefined> => {
+  tokenRomeV4FT = await getFtAccessToken("ROMEV4", tokenRomeV4FT)
+
+  try {
+    const { data } = await axiosClient.get<IFicheRome>(`${config.franceTravailIO.baseUrl}/rome-metiers/v1/metiers/metier/${romeCode}`, {
+      headers: {
+        Authorization: `Bearer ${tokenRomeV4FT.access_token}`,
+      },
+    })
+
+    return data
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    return null
+  }
+}
+
+export const getRomeV4ListFromFT = async (): Promise<IRomeV4Short[] | null | undefined> => {
+  tokenRomeV4FT = await getFtAccessToken("ROMEV4", tokenRomeV4FT)
+  try {
+    const { data } = await axiosClient.get<IRomeV4Short[]>(`${config.franceTravailIO.baseUrl}/rome-metiers/v1/metiers/metier?champs=code`, {
+      headers: {
+        Authorization: `Bearer ${tokenRomeV4FT.access_token}`,
+      },
+    })
+    return data
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    return null
   }
 }
 
@@ -210,7 +250,7 @@ export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => 
   form.append("periodeRef", "")
 
   try {
-    const { data } = await axiosClient.post(`${FT_PORTAIL_BASE_URL}/depotcurl`, form, {
+    const { data } = await axiosClient.post(config.franceTravailIO.depotUrl, form, {
       headers: {
         ...form.getHeaders(),
       },

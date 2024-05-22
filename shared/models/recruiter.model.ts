@@ -41,6 +41,7 @@ export const ZRecruiterWritable = z
     naf_label: z.string().nullish().describe("Libellé NAF de l'établissement"),
     establishment_size: z.string().nullish().describe("Tranche d'effectif salariale de l'établissement"),
     establishment_creation_date: z.date().nullish().describe("Date de creation de l'établissement"),
+    managed_by: zObjectId.nullish().describe("Id de l'utilisateur gestionnaire"),
   })
   .strict()
   .openapi("RecruiterWritable")

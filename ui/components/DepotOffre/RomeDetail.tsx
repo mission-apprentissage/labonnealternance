@@ -2,9 +2,9 @@ import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, H
 
 import { InfoCircle, Minus, Plus } from "@/theme/components/icons"
 
-export const RomeDetail = ({ definition, competencesDeBase, libelle, appellation, acces }) => {
+export const RomeDetail = ({ definition, competences, libelle, appellation, acces_metier }) => {
   const definitionSplitted = definition.split("\\n")
-  const accesFormatted = acces.split("\\n").join("<br><br>")
+  const accesFormatted = acces_metier.split("\\n").join("<br><br>")
 
   return (
     <Box border="1px solid #000091" p={5} mb={5}>
@@ -29,7 +29,7 @@ export const RomeDetail = ({ definition, competencesDeBase, libelle, appellation
               <h2>
                 <AccordionButton>
                   <Text fontWeight="700" flex="1" textAlign="left">
-                    Description du métier
+                    Descriptif du métier
                   </Text>
                   {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
                 </AccordionButton>
@@ -49,30 +49,109 @@ export const RomeDetail = ({ definition, competencesDeBase, libelle, appellation
           )}
         </AccordionItem>
         <hr />
-        <AccordionItem key={1} id="competence">
-          {({ isExpanded }) => (
-            <>
-              <h2>
-                <AccordionButton>
-                  <Text fontWeight="700" flex="1" textAlign="left">
-                    Quelles sont les compétences visées ?
-                  </Text>
-                  {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                </AccordionButton>
-              </h2>
-              <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
-                <ul className="voeuxUl">
-                  {competencesDeBase.map((x) => (
-                    <li className="voeuxUlLi" key={x.libelle}>
-                      {x.libelle}
-                    </li>
-                  ))}
-                </ul>
-              </AccordionPanel>
-            </>
-          )}
-        </AccordionItem>
-        <hr />
+        {competences?.savoir_etre_professionnel && (
+          <>
+            <AccordionItem key={1} id="qualites">
+              {({ isExpanded }) => (
+                <>
+                  <h2>
+                    <AccordionButton>
+                      <Text fontWeight="700" flex="1" textAlign="left">
+                        Qualités souhaitées pour ce métier
+                      </Text>
+                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
+                    <ul className="voeuxUl">
+                      {competences.savoir_etre_professionnel.map((x) => (
+                        <li className="voeuxUlLi" key={x.libelle}>
+                          {x.libelle}
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionPanel>
+                </>
+              )}
+            </AccordionItem>
+            <hr />
+          </>
+        )}
+        {competences?.savoir_faire && (
+          <>
+            <AccordionItem key={1} id="competences">
+              {({ isExpanded }) => (
+                <>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      Compétences qui seront acquises durant l’alternance
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                  <AccordionPanel maxH="50%" pb={4} ml={1} mr={3}>
+                    {competences.savoir_faire.map((categorieSavoirFaire) => (
+                      <>
+                        <Text fontWeight={700} key={categorieSavoirFaire.libelle}>
+                          {categorieSavoirFaire.libelle}
+                        </Text>
+                        <Box pl={12} pt={3} mb={4}>
+                          {categorieSavoirFaire.items?.length && (
+                            <ul className="voeuxUl">
+                              {categorieSavoirFaire.items.map((savoirFaire, idx) => (
+                                <Box as="li" mb={1} key={idx}>
+                                  {savoirFaire.libelle}
+                                </Box>
+                              ))}
+                            </ul>
+                          )}
+                        </Box>
+                      </>
+                    ))}
+                  </AccordionPanel>
+                </>
+              )}
+            </AccordionItem>
+            <hr />
+          </>
+        )}
+        {competences?.savoir_faire && (
+          <>
+            <AccordionItem key={1} id="techniques">
+              {({ isExpanded }) => (
+                <>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      Domaines et techniques de travail
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                  <AccordionPanel maxH="50%" pb={4} ml={1} mr={3}>
+                    {competences.savoirs.map((categorieSavoir) => (
+                      <>
+                        <Text fontWeight={700} key={categorieSavoir.libelle}>
+                          {categorieSavoir.libelle}
+                        </Text>
+                        <Box pl={12} pt={3} mb={4}>
+                          {categorieSavoir.items?.length && (
+                            <ul className="voeuxUl">
+                              {categorieSavoir.items.map((savoir, idx) => (
+                                <Box as="li" mb={1} key={idx}>
+                                  {savoir.libelle}
+                                </Box>
+                              ))}
+                            </ul>
+                          )}
+                        </Box>
+                      </>
+                    ))}
+                  </AccordionPanel>
+                </>
+              )}
+            </AccordionItem>
+            <hr />
+          </>
+        )}
+
         <AccordionItem key={2} id="accessibilite">
           {({ isExpanded }) => (
             <>

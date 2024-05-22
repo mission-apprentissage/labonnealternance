@@ -8,29 +8,9 @@ export enum RECRUITER_STATUS {
   EN_ATTENTE_VALIDATION = "En attente de validation",
 }
 
-export const KEY_GENERATOR_PARAMS = ({ length, symbols, numbers }) => {
-  return {
-    length: length ?? 50,
-    strict: true,
-    numbers: numbers ?? true,
-    symbols: symbols ?? true,
-    lowercase: true,
-    uppercase: false,
-    excludeSimilarCharacters: true,
-    exclude: '!"_%£$€*¨^=+~ß(){}[]§;,./:`@#&|<>?"',
-  }
-}
-export const ENTREPRISE_DELEGATION = "ENTREPRISE_DELEGATION"
-
 export const ADMIN = "ADMIN"
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
-export const OPCO = "OPCO"
-export const REGEX = {
-  SIRET: /^([0-9]{9}|[0-9]{14})$/,
-  GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,
-  TELEPHONE: /^[0-9]{10}$/,
-}
 
 export const NIVEAUX_POUR_LBA = {
   INDIFFERENT: "Indifférent",
@@ -56,13 +36,3 @@ export enum UNSUBSCRIBE_EMAIL_ERRORS {
   ETABLISSEMENTS_MULTIPLES = "ETABLISSEMENTS_MULTIPLES",
   WRONG_PARAMETERS = "WRONG_PARAMETERS",
 }
-
-export const ROLES = {
-  candidat: "candidat",
-  cfa: "cfa",
-  administrator: "administrator",
-}
-
-export type IRoles = typeof ROLES
-
-export type IRole = IRoles[keyof IRoles]

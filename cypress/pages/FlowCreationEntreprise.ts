@@ -57,7 +57,7 @@ export const FlowCreationEntreprise = {
       cy.get("[data-testid='offre-metier'] input").type(typedRomeLabel)
       cy.wait("@romeSearch")
       // cy.get(`[data-testid='offre-metier'] #downshift-1-item-0 p:first-of-type`, { timeout: 10000 }).should("have.text", romeLabel)
-      cy.get(`[data-testid='offre-metier'] [data-testid='${romeLabel}']`).click()
+      cy.get(`[data-testid='offre-metier'] [data-testid='${romeLabel}']`, { timeout: 20000 }).click({ timeout: 20000 })
 
       cy.get("[data-testid='offre-job-type'] [data-testid='Apprentissage']").click()
       if (Apprentissage) {

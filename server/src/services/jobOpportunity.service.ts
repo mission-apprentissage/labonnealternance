@@ -6,12 +6,12 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { getSomeFtJobs } from "./ftjob.service"
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
 import { getSomeCompanies } from "./lbacompany.service"
-import { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
-import { getLbaJobs } from "./lbajob.service"
+import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "./lbaitem.shared.service.types"
+import { getLbaJobs, incrementLbaJobsViewCount } from "./lbajob.service"
 import { jobsQueryValidator } from "./queryValidator.service"
 
 /**
- * Retourn la compilation d'opportunités d'emploi au format unifié
+ * @description Retourn la compilation d'opportunités d'emploi au format unifié
  * chaque type d'opportunités d'emploi peut être émis en succès même si d'autres groupes sont en erreur
  */
 export const getJobsFromApi = async ({
@@ -159,6 +159,7 @@ export const getJobsQuery = async (
 
   if ("matchas" in result && result.matchas && "results" in result.matchas) {
     job_count += result.matchas.results.length
+    await incrementLbaJobsViewCount(result.matchas.results.flatMap((job) => (job?.id ? [job.id] : [])))
   }
 
   if (query.caller) {

@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { IJob, ILbaItemLbaJob, ILbaItemFtJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { IJob, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -26,8 +26,8 @@ import {
 import { getFtJobFromIdV2 } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../services/lbacompany.service"
-import { addOffreDetailView, getLbaJobByIdV2, incrementLbaJobsViewCount } from "../../services/lbajob.service"
-import { getFicheMetierRomeV3FromDB } from "../../services/rome.service"
+import { addOffreDetailView, getLbaJobByIdV2 } from "../../services/lbajob.service"
+import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
 const config = {
@@ -134,22 +134,22 @@ export default (server: Server) => {
         return res.status(400).send({ error: true, message: "Establishment does not exist" })
       }
 
-      const romeDetails = await getFicheMetierRomeV3FromDB({
+      const romeDetails = await getFicheMetierFromDB({
         query: {
-          "fiche_metier.appellations.code": body.appellation_code,
+          "appellations.code_ogr": body.appellation_code,
         },
-      }) //  fiche_metier.appellations[].code === body.appellation_code
+      })
 
       if (!romeDetails) {
         return res.send({ error: true, message: "ROME Code details could not be retrieved" })
       }
 
-      const appellation = romeDetails.fiche_metier.appellations.find(({ code }) => code === body.appellation_code) as Appellation
+      const appellation = romeDetails?.appellations ? (romeDetails.appellations.find(({ code_ogr }) => code_ogr === body.appellation_code) as Appellation) : null
 
       const job: Partial<IJob> = {
-        rome_label: romeDetails.fiche_metier.libelle,
-        rome_appellation_label: appellation.libelle,
-        rome_code: [romeDetails.code],
+        rome_label: romeDetails.rome.intitule,
+        rome_appellation_label: appellation && appellation.libelle,
+        rome_code: [romeDetails.rome.code_rome],
         job_level_label: body.job_level_label,
         job_start_date: new Date(body.job_start_date),
         job_description: body.job_description,
@@ -158,7 +158,6 @@ export default (server: Server) => {
         job_expiration_date: addExpirationPeriod(dayjs()).toDate(),
         job_status: JOB_STATUS.ACTIVE,
         job_type: body.job_type,
-        rome_detail: romeDetails.fiche_metier,
         is_disabled_elligible: body.is_disabled_elligible,
         job_count: body.job_count,
         job_duration: body.job_duration,
@@ -348,12 +347,6 @@ export default (server: Server) => {
       if ("error" in result) {
         return res.status(500).send(result)
       }
-
-      if ("matchas" in result && result.matchas) {
-        const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
-      }
-
       return res.status(200).send(result)
     }
   )
@@ -372,12 +365,6 @@ export default (server: Server) => {
       if ("error" in result) {
         return res.status(500).send(result)
       }
-
-      if ("matchas" in result && result.matchas) {
-        const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
-      }
-
       return res.status(200).send(result)
     }
   )

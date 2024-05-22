@@ -17,7 +17,7 @@ import Layout from "../../components/espace_pro/Layout"
 import ModificationCompteEmail from "../../components/espace_pro/ModificationCompteEmail"
 import { authProvider, withAuth } from "../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
-import { getUser, updateEntreprise } from "../../utils/api"
+import { getUser } from "../../utils/api"
 
 function Compte() {
   const client = useQueryClient()
@@ -43,36 +43,16 @@ function Compte() {
   }
 
   const { data, isLoading } = useQuery("user", () => getUser(user._id.toString()))
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const userMutation = useMutation(({ userId, establishment_id, values, email, setFieldError }: any) => updateEntreprise(userId, establishment_id, values), {
-    onSuccess: (_, variables) => {
-      client.invalidateQueries("user")
-      toast({
-        title: "Mise à jour enregistrée avec succès",
-        position: "top-right",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-      })
-
-      if (variables.email !== variables.values.email) {
-        ModificationEmailPopup.onOpen()
-      }
-    },
-    onError: (_, variables) => {
-      variables.setFieldError("email", "L'adresse mail est déjà associée à un compte La bonne alternance.")
-    },
-  })
-
-  const partenaireMutation = useMutation(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ({ userId, values, email, setFieldError }: any) =>
-      apiPut("/etablissement/:id", {
+  const userMutation = useMutation(
+    ({ values }: { values: any; isChangingEmail: boolean; setFieldError: any }) => {
+      const userId = user._id.toString()
+      return apiPut("/etablissement/:id", {
         params: {
           id: userId,
         },
-        body: { ...values, _id: user._id.toString() },
-      }),
+        body: { ...values, _id: userId },
+      })
+    },
     {
       onSuccess: (_, variables) => {
         client.invalidateQueries("user")
@@ -84,12 +64,12 @@ function Compte() {
           isClosable: true,
         })
 
-        if (variables.email !== variables.values.email) {
+        if (variables.isChangingEmail) {
           ModificationEmailPopup.onOpen()
         }
       },
-      onError: (error: any, variables) => {
-        variables.setFieldError("email", error.message)
+      onError: (_, variables) => {
+        variables.setFieldError("email", "L'adresse mail est déjà associée à un compte La bonne alternance.")
       },
     }
   )
@@ -137,11 +117,8 @@ function Compte() {
             })}
             onSubmit={async (values, { setSubmitting, setFieldError }) => {
               setSubmitting(true)
-              if (user.type === AUTHTYPE.ENTREPRISE) {
-                userMutation.mutate({ userId: data._id, establishment_id: user.establishment_id, values, email: data.email, setFieldError })
-              } else {
-                partenaireMutation.mutate({ userId: data._id, values, email: data.email, setFieldError })
-              }
+              const isChangingEmail = data.email !== values.email
+              userMutation.mutate({ values, isChangingEmail, setFieldError })
               setSubmitting(false)
             }}
           >

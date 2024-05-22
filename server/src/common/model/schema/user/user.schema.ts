@@ -24,6 +24,7 @@ export const userSchema = new Schema<IUser>(
       type: String,
       default: null,
       description: "L'email du candidat",
+      index: true,
     },
     type: {
       type: String,
@@ -33,7 +34,7 @@ export const userSchema = new Schema<IUser>(
     role: {
       type: String,
       default: null,
-      description: "candidat | cfa | administrator",
+      description: "candidat | administrator",
     },
     last_action_date: {
       type: Date,
