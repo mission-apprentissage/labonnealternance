@@ -6,11 +6,9 @@ import { rawPostalAddress } from "./addressUtils"
 const getPathLink = (anyItem) => {
   let res = ""
   if (anyItem?.place) {
-    res = `https://www.google.fr/maps/dir//
-            ${encodeURIComponent(rawPostalAddress(anyItem.place.fullAddress))}/@
-            ${anyItem.place.latitude},
-            ${anyItem.place.longitude},
-            14z/`
+    res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.place.fullAddress || anyItem.place.city))}/@${anyItem.place.latitude},${
+      anyItem.place.longitude
+    },12z/`
   }
   return res
 }
@@ -19,7 +17,10 @@ const getCompanyPathLink = (anyItem) => {
   let res = ""
   if (anyItem?.company?.place?.city) {
     res = `https://www.google.fr/maps/dir//${encodeURIComponent(anyItem.company.place.city)}`
+  } else if (anyItem?.company?.place?.fullAddress) {
+    res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.company.place.fullAddress))}`
   }
+
   return res
 }
 
