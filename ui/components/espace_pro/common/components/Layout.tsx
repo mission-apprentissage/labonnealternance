@@ -1,6 +1,8 @@
 import { Box, Container } from "@chakra-ui/react"
 import React from "react"
 
+import InfoBanner from "@/components/InfoBanner/InfoBanner"
+
 import Footer from "./Footer"
 import Header from "./Header"
 import NavigationMenu from "./NavigationMenu"
@@ -13,6 +15,7 @@ import NavigationMenu from "./NavigationMenu"
 const Layout = ({ children }) => {
   return (
     <Container maxW="full">
+      <InfoBanner />
       <Header />
       <NavigationMenu />
       <Box minH={"60vh"}>{children}</Box>

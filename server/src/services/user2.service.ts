@@ -7,8 +7,6 @@ import { getLastStatusEvent } from "shared/utils"
 import { RoleManagement, User2 } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 
-import { isUserEmailChecked } from "./userRecruteur.service"
-
 export const createUser2IfNotExist = async (
   userProps: Omit<IUser2, "_id" | "createdAt" | "updatedAt" | "status">,
   is_email_checked: boolean,
@@ -75,6 +73,24 @@ export const validateUser2Email = async (id: string): Promise<IUser2> => {
   return newUser
 }
 
+export const activateUser = async (user: IUser2, granted_by: string): Promise<IUser2> => {
+  if (!isUserDisabled(user)) {
+    return user
+  }
+  const event: IUserStatusEvent = {
+    date: new Date(),
+    status: UserEventType.ACTIF,
+    validation_type: VALIDATION_UTILISATEUR.MANUAL,
+    granted_by,
+    reason: "",
+  }
+  const newUser = await User2.findOneAndUpdate({ _id: user._id }, { $push: { status: event } }, { new: true }).lean()
+  if (!newUser) {
+    throw Boom.internal(`utilisateur avec id=${user._id} non trouvé`)
+  }
+  return newUser
+}
+
 export const getUser2ByEmail = async (email: string): Promise<IUser2 | null> => User2.findOne({ email: email.toLocaleLowerCase() }).lean()
 
 export const emailHasActiveRole = async (email: string) => {
@@ -88,3 +104,9 @@ export const emailHasActiveRole = async (email: string) => {
   })
   return Boolean(activeRoles.length)
 }
+
+export const isUserEmailChecked = (user: IUser2): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)
+
+const activationStatus = [UserEventType.ACTIF, UserEventType.DESACTIVE]
+export const isUserDisabled = (user: IUser2): boolean =>
+  getLastStatusEvent(user.status.filter((event) => activationStatus.includes(event.status)))?.status === UserEventType.DESACTIVE

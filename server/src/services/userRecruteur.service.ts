@@ -7,7 +7,7 @@ import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS, VALIDATION_UTILI
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { IUser2, UserEventType } from "shared/models/user2.model"
+import { IUser2 } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId, ObjectIdType } from "@/common/mongodb"
@@ -22,7 +22,7 @@ import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { createOrganizationIfNotExist } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
-import { createUser2IfNotExist } from "./user2.service"
+import { createUser2IfNotExist, isUserEmailChecked } from "./user2.service"
 
 /**
  * @description generate an API key
@@ -516,7 +516,5 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
 export const getUsersForAdmin = async () => {
   return getUserRecruteursForManagement({ activeRoleLimit: 40 })
 }
-
-export const isUserEmailChecked = (user: IUser2): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)
 
 export type UserAndOrganization = { user: IUser2; organization: IEntreprise | ICFA; type: "ENTREPRISE" | "CFA" }
