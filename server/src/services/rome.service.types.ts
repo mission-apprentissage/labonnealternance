@@ -1,12 +1,11 @@
-import { TDayjs } from "./dayjs.service"
+import { z } from "zod"
 
-export interface IFTAPIToken {
-  access_token: string
-  scope: string
-  token_type: string
-  expires_in: number
-  expire?: TDayjs
-}
+export const ZFTApiToken = z.object({
+  access_token: z.string(),
+  expires_in: z.number(),
+})
+
+export type IFTAPIToken = z.output<typeof ZFTApiToken>
 
 export interface IRomeDetailsFromAPI {
   code: string
