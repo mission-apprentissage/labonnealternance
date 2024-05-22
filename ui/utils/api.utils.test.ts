@@ -180,10 +180,14 @@ describe("generateQueryString", () => {
 describe("generateUrl", () => {
   it("should generate correct url", () => {
     expect(
-      generateUrl("/courses/:id", {
-        params: { id: "routing" },
-        querystring: { a: "hello", b: "world" },
-      })
+      generateUrl(
+        "/courses/:id",
+        {
+          params: { id: "routing" },
+          querystring: { a: "hello", b: "world" },
+        },
+        "V1"
+      )
     ).toBe("http://localhost:5000/api/courses/routing?a=hello&b=world")
   })
 })
