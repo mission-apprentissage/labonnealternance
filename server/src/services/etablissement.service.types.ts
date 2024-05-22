@@ -135,7 +135,7 @@ interface IReferentielRaw {
   adresse: IAdresseCFA
   nature: string
   numero_declaration_activite: string
-  qualiopi: boolean
+  qualiopi?: boolean
   uai: string
 }
 
