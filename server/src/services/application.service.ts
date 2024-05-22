@@ -9,6 +9,7 @@ import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shar
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { IUser2 } from "shared/models/user2.model"
+import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { UserForAccessToken, user2ToUserForToken } from "@/security/accessTokenService"
@@ -55,7 +56,7 @@ const images: object = {
   },
 }
 
-type OffreOrLbbCompany = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; company: ILbaCompany } | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; offre: IJob; recruiter: IRecruiter }
+type ILbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; recruiter: null } | { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA; job: IJob; recruiter: IRecruiter }
 
 /**
  * @description Get applications by job id
@@ -111,6 +112,7 @@ export const removeEmailFromLbaCompanies = async (email: string) => {
 
 /**
  * Send an application email to a company and a confirmation email to the applicant
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
  */
 export const sendApplication = async ({
   newApplication,
@@ -143,7 +145,7 @@ export const sendApplication = async ({
       }
 
       const { type } = offreOrError
-      const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? offreOrError.recruiter.email : offreOrError.company.email)?.toLowerCase()
+      const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? offreOrError.recruiter.email : offreOrError.job.email)?.toLowerCase()
       if (!recruteurEmail) {
         return { error: "email du recruteur manquant" }
       }
@@ -223,18 +225,123 @@ export const sendApplication = async ({
 }
 
 /**
+ * Send an application email to a company and a confirmation email to the applicant
+ */
+export const sendApplicationV2 = async ({
+  newApplication,
+  caller,
+}: {
+  newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId
+  caller?: string
+}): Promise<void> => {
+  let LbaJob: ILbaJob = { type: null as any, job: null as any, recruiter: null }
+
+  if (isEmailBurner(newApplication.applicant_email)) {
+    throw Boom.badRequest(BusinessErrorCodes.BURNER)
+  }
+
+  if ("company_siret" in newApplication) {
+    const LbaRecruteur = await LbaCompany.findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } }).lean() // email can be null in collection
+    if (!LbaRecruteur) {
+      throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
+    }
+    LbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: LbaRecruteur, recruiter: null }
+  }
+
+  if ("job_id" in newApplication) {
+    const recruiter = await getOffreAvecInfoMandataire(newApplication.job_id)
+    if (!recruiter) {
+      throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
+    }
+    LbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job: recruiter?.job, recruiter: recruiter?.recruiter }
+  }
+
+  const { type, job, recruiter } = LbaJob
+
+  await checkUserApplicationCountV2(newApplication.applicant_email.toLowerCase(), LbaJob, caller)
+
+  if (await isInfected(newApplication.applicant_file_content)) {
+    throw Boom.badRequest(BusinessErrorCodes.ATTACHMENT)
+  }
+
+  const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.email)?.toLowerCase()
+  if (!recruteurEmail) {
+    sentryCaptureException(`Aucun email trouver pour l'offre trouvé. ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
+    throw Boom.internal(BusinessErrorCodes.INTERNAL_EMAIL)
+  }
+  try {
+    const application = newApplicationToApplicationDocumentV2(newApplication, LbaJob, recruteurEmail, caller)
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, LbaJob)
+    const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
+
+    const [emailCompany, emailCandidat] = await Promise.all([
+      mailer.sendEmail({
+        to: application.company_email,
+        subject: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? `Candidature spontanée en alternance ${application.company_name}` : `Candidature en alternance - ${application.job_title}`,
+        template: getEmailTemplate("mail-candidature"),
+        data: {
+          ...sanitizeApplicationForEmail(application.toObject()),
+          ...images,
+          ...recruiterEmailUrls,
+          urlOfDetail,
+          urlOfDetailNoUtm,
+        },
+        attachments: [
+          {
+            filename: application.applicant_attachment_name,
+            path: newApplication.applicant_file_content,
+          },
+        ],
+      }),
+      mailer.sendEmail({
+        to: application.applicant_email,
+        subject: `Votre candidature chez ${application.company_name}`,
+        template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-matcha" : "mail-candidat"),
+        data: { ...sanitizeApplicationForEmail(application.toObject()), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
+        attachments: [
+          {
+            filename: application.applicant_attachment_name,
+            path: newApplication.applicant_file_content,
+          },
+        ],
+      }),
+    ])
+
+    application.to_applicant_message_id = emailCandidat.messageId
+    if (emailCompany?.accepted?.length) {
+      application.to_company_message_id = emailCompany.messageId
+    } else {
+      logger.info(`Application email rejected. applicant_email=${application.applicant_email} company_email=${application.company_email}`)
+      throw Boom.internal("Email entreprise destinataire rejeté.")
+    }
+
+    await application.save()
+  } catch (err) {
+    sentryCaptureException(err)
+    if (caller) {
+      manageApiError({
+        error: err,
+        api_path: "applicationV1",
+        caller: caller,
+        errorTitle: "error_sending_application",
+      })
+    }
+  }
+}
+
+/**
  * Build url to access item detail on LBA ui
  */
-const buildUrlsOfDetail = (publicUrl: string, offreOrCompany: OffreOrLbbCompany) => {
+const buildUrlsOfDetail = (publicUrl: string, offreOrCompany: ILbaJob) => {
   const { type } = offreOrCompany
   const urlSearchParams = new URLSearchParams()
   urlSearchParams.append("display", "list")
   urlSearchParams.append("page", "fiche")
   urlSearchParams.append("type", newItemTypeToOldItemType(type))
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    urlSearchParams.append("itemId", offreOrCompany.offre._id.toString())
+    urlSearchParams.append("itemId", offreOrCompany.job._id.toString())
   } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    urlSearchParams.append("itemId", offreOrCompany.company.siret)
+    urlSearchParams.append("itemId", offreOrCompany.job.siret)
   }
   const paramsWithoutUtm = urlSearchParams.toString()
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
@@ -327,30 +434,30 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   return urls
 }
 
-const offreOrCompanyToCompanyFields = (offreOrCompany: OffreOrLbbCompany): Partial<IApplication> => {
-  const { type } = offreOrCompany
+const offreOrCompanyToCompanyFields = (LbaJob: ILbaJob): Partial<IApplication> => {
+  const { type } = LbaJob
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    const { company } = offreOrCompany
-    const { siret, enseigne, naf_label } = company
+    const { job } = LbaJob
+    const { siret, enseigne, naf_label } = job
     const application: Partial<IApplication> = {
       company_siret: siret,
       company_name: enseigne,
       company_naf: naf_label,
       job_title: enseigne,
-      company_address: buildLbaCompanyAddress(company),
+      company_address: buildLbaCompanyAddress(job),
     }
     return application
   } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    const { offre, recruiter } = offreOrCompany
+    const { job, recruiter } = LbaJob
     const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label } = recruiter
-    const { rome_appellation_label, rome_label } = offre
+    const { rome_appellation_label, rome_label } = job
     const application: Partial<IApplication> = {
       company_siret: establishment_siret,
       company_name: establishment_enseigne || establishment_raison_sociale || "Enseigne inconnue",
       company_naf: naf_label ?? undefined,
       job_title: rome_appellation_label ?? rome_label ?? undefined,
       company_address: is_delegated ? null : address,
-      job_id: offre._id.toString(),
+      job_id: job._id.toString(),
     }
     return application
   } else {
@@ -373,12 +480,37 @@ const cleanApplicantFields = (newApplication: INewApplicationV2): Partial<IAppli
 /**
  * @description Initialize application object from query parameters
  */
-const newApplicationToApplicationDocument = (newApplication: INewApplicationV2, offreOrCompany: OffreOrLbbCompany, recruteurEmail: string) => {
+const newApplicationToApplicationDocument = (newApplication: INewApplicationV2, offreOrCompany: ILbaJob, recruteurEmail: string) => {
   const res = new Application({
     ...offreOrCompanyToCompanyFields(offreOrCompany),
     ...cleanApplicantFields(newApplication),
     company_email: recruteurEmail.toLowerCase(),
     job_origin: newApplication.company_type,
+  })
+  ZApplication.parse(res.toObject())
+  return res
+}
+
+/**
+ * @description Initialize application object from query parameters
+ */
+const newApplicationToApplicationDocumentV2 = (
+  newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId,
+  LbaJob: ILbaJob,
+  recruteurEmail: string,
+  caller?: string
+) => {
+  const res = new Application({
+    ...offreOrCompanyToCompanyFields(LbaJob),
+    applicant_first_name: newApplication.applicant_first_name,
+    applicant_last_name: newApplication.applicant_last_name,
+    applicant_attachment_name: newApplication.applicant_file_name,
+    applicant_email: newApplication.applicant_email.toLowerCase(),
+    applicant_message_to_company: prepareMessageForMail(newApplication.message),
+    applicant_phone: newApplication.applicant_phone,
+    caller: caller,
+    company_email: recruteurEmail.toLowerCase(),
+    job_origin: LbaJob.type,
   })
   ZApplication.parse(res.toObject())
   return res
@@ -393,8 +525,9 @@ export const getEmailTemplate = (type = "mail-candidat"): string => {
 
 /**
  * @description checks if job applied to is valid
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
  */
-export const validateJob = async (application: INewApplicationV2): Promise<OffreOrLbbCompany | { error: string }> => {
+export const validateJob = async (application: INewApplicationV2): Promise<ILbaJob | { error: string }> => {
   const { company_type, job_id, company_siret } = application
 
   if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
@@ -409,7 +542,7 @@ export const validateJob = async (application: INewApplicationV2): Promise<Offre
     if (recruiter.status !== RECRUITER_STATUS.ACTIF || job.job_status !== JOB_STATUS.ACTIVE) {
       return { error: "offre expirée" }
     }
-    return { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, offre: job, recruiter }
+    return { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job, recruiter }
   } else if (company_type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     if (!company_siret) {
       return { error: "company_siret manquant" }
@@ -418,7 +551,7 @@ export const validateJob = async (application: INewApplicationV2): Promise<Offre
     if (!lbaCompany) {
       return { error: "société manquante" }
     }
-    return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, company: lbaCompany }
+    return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: lbaCompany, recruiter: null }
   } else {
     assertUnreachable(company_type as never)
   }
@@ -426,6 +559,7 @@ export const validateJob = async (application: INewApplicationV2): Promise<Offre
 
 /**
  * @description checks if attachment is corrupted
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
  */
 const scanFileContent = async (applicant_file_content: string): Promise<string> => {
   return (await isInfected(applicant_file_content)) ? "pièce jointe invalide" : "ok"
@@ -433,6 +567,7 @@ const scanFileContent = async (applicant_file_content: string): Promise<string> 
 
 /**
  * checks if email is not disposable
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
  */
 export const validatePermanentEmail = (email: string): string => {
   if (isEmailBurner(email)) {
@@ -443,8 +578,9 @@ export const validatePermanentEmail = (email: string): string => {
 
 /**
  * @description checks if email's owner has not sent more than allowed count of applications per day
+ * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
  */
-const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany: OffreOrLbbCompany, caller: string | null | undefined): Promise<string> => {
+const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany: ILbaJob, caller: string | null | undefined): Promise<string> => {
   const start = new Date()
   start.setHours(0, 0, 0, 0)
 
@@ -468,7 +604,7 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
     }
     appCount = await Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
-      company_siret: offreOrCompany.company.siret,
+      company_siret: offreOrCompany.job.siret,
     })
     if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
@@ -479,7 +615,7 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
     }
     appCount = await Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
-      job_id: offreOrCompany.offre._id.toString(),
+      job_id: offreOrCompany.job._id.toString(),
     })
     if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
@@ -491,7 +627,7 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
   if (caller) {
     appCount = await Application.countDocuments({
       caller: caller.toLowerCase(),
-      company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.company.siret : offreOrCompany.recruiter.establishment_siret,
+      company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.job.siret : offreOrCompany.recruiter.establishment_siret,
       created_at: { $gte: start, $lt: end },
     })
     if (appCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
@@ -500,6 +636,64 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
   }
 
   return "ok"
+}
+
+/**
+ * @description checks if email's owner has not sent more than allowed count of applications per day
+ */
+const checkUserApplicationCountV2 = async (applicantEmail: string, LbaJob: ILbaJob, caller?: string): Promise<void> => {
+  const start = new Date()
+  start.setHours(0, 0, 0, 0)
+
+  const end = new Date()
+  end.setHours(23, 59, 59, 999)
+
+  const { type, job, recruiter } = LbaJob
+
+  let appCount = await Application.countDocuments({
+    applicant_email: applicantEmail.toLowerCase(),
+    created_at: { $gte: start, $lt: end },
+  })
+
+  if (appCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
+    throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY)
+  }
+
+  switch (type) {
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
+      appCount = await Application.countDocuments({
+        applicant_email: applicantEmail.toLowerCase(),
+        company_siret: job.siret,
+      })
+      if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
+        throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER)
+      }
+      break
+
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
+      appCount = await Application.countDocuments({
+        applicant_email: applicantEmail.toLowerCase(),
+        job_id: job._id.toString(),
+      })
+      if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
+        throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER)
+      }
+      break
+
+    default:
+      assertUnreachable(type as never)
+  }
+
+  if (caller) {
+    appCount = await Application.countDocuments({
+      caller: caller.toLowerCase(),
+      company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.siret : recruiter.establishment_siret,
+      created_at: { $gte: start, $lt: end },
+    })
+    if (appCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
+      throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET)
+    }
+  }
 }
 
 interface IApplicationFeedback {

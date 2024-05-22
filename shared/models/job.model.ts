@@ -5,7 +5,7 @@ import dayjs from "../helpers/dayjs"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
-import { ZRomeDetail } from "./rome.model"
+import { ZReferentielRome } from "./rome.model"
 
 export enum JOB_STATUS {
   ACTIVE = "Active",
@@ -41,7 +41,7 @@ export const ZJobFields = z
     job_description: z.string().nullish().describe("Description de l'offre d'alternance - minimum 30 charactères si rempli"),
     job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
-    rome_detail: ZRomeDetail.nullish().describe("Détail du code ROME selon la nomenclature Pole emploi"),
+    rome_detail: ZReferentielRome.nullish().describe("Détail du code ROME selon la nomenclature Pole emploi"),
     job_creation_date: z.date().nullish().describe("Date de creation de l'offre"),
     job_expiration_date: z.date().nullish().describe("Date d'expiration de l'offre"),
     job_update_date: z.date().nullish().describe("Date de dernière mise à jour de l'offre"),
@@ -77,6 +77,12 @@ export const ZJob = ZJobFields.extend({
   .strict()
   .openapi("Job")
 
+export const ZJobWithRomeDetail = ZJob.extend({
+  rome_detail: ZReferentielRome.nullish(),
+})
+  .strict()
+  .openapi("JobWithRomeDetail")
+
 export const ZJobStartDateCreate = (now: dayjs.Dayjs = dayjs.tz()) =>
   // Le changement de jour se fait à minuit (heure de Paris)
   ZJobFields.shape.job_start_date.refine((date) => dayjs.tz(date).isSameOrAfter(dayjs.tz(now).startOf("days")), {
@@ -106,6 +112,7 @@ export type IDelegation = z.output<typeof ZDelegation>
 
 export type IJob = z.output<typeof ZJob>
 export type IJobWritable = z.output<typeof ZJobWrite>
+export type IJobWithRomeDetail = z.output<typeof ZJobWithRomeDetail>
 export type IJobJson = Jsonify<z.input<typeof ZJob>>
 
 export const ZNewDelegations = z

@@ -14,8 +14,9 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { IApplicationCount, getApplicationByJobCount, getUser2ManagingOffer } from "./application.service"
+import { generateApplicationToken } from "./appLinks.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
-import { getOffreAvecInfoMandataire } from "./formulaire.service"
+import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
@@ -26,6 +27,14 @@ const FRANCE_LATITUDE = 46.227638
 const FRANCE_LONGITUDE = 2.213749
 
 /**
+ * @description get filtered jobs with rome_detail from mongo
+ * @param {Object} payload
+ * @param {number} payload.distance
+ * @param {number} payload.lat
+ * @param {number} payload.long
+ * @param {string[]} payload.romes
+ * @param {string} payload.niveau
+ * @returns {Promise<IRecruiter[]>}
  * @description get OFFRES_EMPLOI_LBA
  */
 export const getJobs = async ({
@@ -35,13 +44,15 @@ export const getJobs = async ({
   romes,
   niveau,
   caller,
+  isMinimalData,
 }: {
   distance: number
-  lat: number
-  lon: number
+  lat: number | undefined
+  lon: number | undefined
   romes: string[]
   niveau: string
   caller?: string | null
+  isMinimalData: boolean
 }): Promise<IRecruiter[]> => {
   const clauses: any[] = [{ "jobs.job_status": JOB_STATUS.ACTIVE }, { "jobs.rome_code": { $in: romes } }, { status: RECRUITER_STATUS.ACTIF }]
 
@@ -79,7 +90,7 @@ export const getJobs = async ({
     },
   })
 
-  const recruiters: IRecruiter[] = await Recruiter.aggregate(stages)
+  const recruiters: IRecruiter[] = await Recruiter.aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
 
   const filteredJobs = await Promise.all(
     recruiters.map(async (recruiter) => {
@@ -154,6 +165,7 @@ export const getLbaJobs = async ({
       lat: hasLocation ? (latitude as number) : FRANCE_LATITUDE,
       lon: hasLocation ? (longitude as number) : FRANCE_LONGITUDE,
       niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
+      isMinimalData,
     }
 
     const jobs = await getJobs(params)
@@ -162,18 +174,18 @@ export const getLbaJobs = async ({
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
-    const matchas = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
+    const lbaJobs = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
-      matchas.results = await filterJobsByOpco({ opco, opcoUrl, jobs: matchas.results })
+      lbaJobs.results = await filterJobsByOpco({ opco, opcoUrl, jobs: lbaJobs.results })
     }
 
-    if (!latitude && matchas.results) {
-      sortLbaJobs(matchas)
+    if (!hasLocation && lbaJobs.results) {
+      sortLbaJobs(lbaJobs)
     }
 
-    return matchas
+    return lbaJobs
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from Matcha (${api})` })
@@ -343,6 +355,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       },
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,
+      token: generateApplicationToken({ jobId: offre._id.toString() }),
     }
 
     return resultJob
@@ -387,6 +400,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
       },
       applicationCount: applicationCountForCurrentJob?.count || 0,
+      token: generateApplicationToken({ jobId: offre._id.toString() }),
     }
 
     return resultJob

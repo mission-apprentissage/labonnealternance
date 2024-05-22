@@ -5,7 +5,7 @@ import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { IUser2, ZUser2 } from "shared/models/user2.model"
+import { IUser2, UserEventType, ZUser2 } from "shared/models/user2.model"
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
@@ -124,7 +124,6 @@ export const jobFactory = (props: Partial<IJob> = {}) => {
     job_description: "job_description",
     job_employer_description: "job_employer_description",
     rome_code: ["rome_code"],
-    rome_detail: null,
     job_creation_date: new Date(),
     job_expiration_date: new Date(),
     job_update_date: new Date(),
@@ -276,7 +275,22 @@ export const saveCfaUserTest = async (userProps: Partial<IUser2> = {}) => {
 }
 
 export const saveOpcoUserTest = async () => {
-  const user = await saveUser2()
+  const user = await saveUser2({
+    status: [
+      {
+        date: new Date(),
+        reason: "test",
+        status: UserEventType.VALIDATION_EMAIL,
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+      },
+      {
+        date: new Date(),
+        reason: "test",
+        status: UserEventType.ACTIF,
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+      },
+    ],
+  })
   const role = await saveRoleManagement({
     user_id: user._id,
     authorized_id: OPCOS.AKTO,

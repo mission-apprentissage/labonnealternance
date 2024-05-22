@@ -41,12 +41,11 @@ import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
-import { emailHasActiveRole } from "./user2.service"
+import { emailHasActiveRole, isUserEmailChecked } from "./user2.service"
 import {
   UserAndOrganization,
   autoValidateUser as authorizeUserOnEntreprise,
   createOrganizationUser,
-  isUserEmailChecked,
   setEntrepriseInError,
   setEntrepriseValid,
   setUserHasToBeManuallyValidated,

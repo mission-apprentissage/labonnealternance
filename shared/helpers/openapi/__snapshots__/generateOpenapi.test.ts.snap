@@ -885,7 +885,262 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "array",
           },
           "rome_detail": {
-            "$ref": "#/components/schemas/RomeDetail",
+            "additionalProperties": false,
+            "description": "Détail du code ROME selon la nomenclature Pole emploi",
+            "properties": {
+              "acces_metier": {
+                "type": "string",
+              },
+              "appellations": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "code_ogr": {
+                      "type": "string",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                    "libelle_court": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "libelle_court",
+                    "code_ogr",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "competences": {
+                "additionalProperties": false,
+                "properties": {
+                  "savoir_etre_professionnel": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "code_ogr": {
+                          "type": "string",
+                        },
+                        "coeur_metier": {
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "libelle": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "libelle",
+                        "code_ogr",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                  "savoir_faire": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "items": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "code_ogr": {
+                                "type": "string",
+                              },
+                              "coeur_metier": {
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "libelle": {
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "libelle",
+                              "code_ogr",
+                            ],
+                            "type": "object",
+                          },
+                          "type": "array",
+                        },
+                        "libelle": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "libelle",
+                        "items",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                  "savoirs": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "items": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "code_ogr": {
+                                "type": "string",
+                              },
+                              "coeur_metier": {
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "libelle": {
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "libelle",
+                              "code_ogr",
+                            ],
+                            "type": "object",
+                          },
+                          "type": "array",
+                        },
+                        "libelle": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "libelle",
+                        "items",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                },
+                "type": "object",
+              },
+              "contextes_travail": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "code_ogr": {
+                            "type": "string",
+                          },
+                          "libelle": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "libelle",
+                          "code_ogr",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "items",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "definition": {
+                "type": "string",
+              },
+              "mobilites": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "code_org_rome_cible": {
+                      "type": "string",
+                    },
+                    "ordre_mobilite": {
+                      "type": "string",
+                    },
+                    "rome_cible": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "rome_cible",
+                    "code_org_rome_cible",
+                    "ordre_mobilite",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "numero": {
+                "type": "string",
+              },
+              "rome": {
+                "additionalProperties": false,
+                "properties": {
+                  "code_ogr": {
+                    "type": "string",
+                  },
+                  "code_rome": {
+                    "type": "string",
+                  },
+                  "intitule": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "code_rome",
+                  "intitule",
+                  "code_ogr",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [
+              "numero",
+              "rome",
+              "definition",
+              "acces_metier",
+              "competences",
+            ],
+            "type": [
+              "object",
+              "null",
+            ],
           },
           "rome_label": {
             "description": "Libellé du métier concerné",
@@ -1150,6 +1405,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "$ref": "#/components/schemas/Place",
           },
           "title": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "token": {
             "type": [
               "string",
               "null",
@@ -1428,6 +1689,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "token": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
         },
         "required": [
           "ideaType",
@@ -1536,7 +1803,261 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             ],
           },
           "romeDetails": {
-            "$ref": "#/components/schemas/RomeDetail",
+            "additionalProperties": false,
+            "properties": {
+              "acces_metier": {
+                "type": "string",
+              },
+              "appellations": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "code_ogr": {
+                      "type": "string",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                    "libelle_court": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "libelle_court",
+                    "code_ogr",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "competences": {
+                "additionalProperties": false,
+                "properties": {
+                  "savoir_etre_professionnel": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "code_ogr": {
+                          "type": "string",
+                        },
+                        "coeur_metier": {
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "libelle": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "libelle",
+                        "code_ogr",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                  "savoir_faire": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "items": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "code_ogr": {
+                                "type": "string",
+                              },
+                              "coeur_metier": {
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "libelle": {
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "libelle",
+                              "code_ogr",
+                            ],
+                            "type": "object",
+                          },
+                          "type": "array",
+                        },
+                        "libelle": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "libelle",
+                        "items",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                  "savoirs": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "items": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "code_ogr": {
+                                "type": "string",
+                              },
+                              "coeur_metier": {
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "libelle": {
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "libelle",
+                              "code_ogr",
+                            ],
+                            "type": "object",
+                          },
+                          "type": "array",
+                        },
+                        "libelle": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "libelle",
+                        "items",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                },
+                "type": "object",
+              },
+              "contextes_travail": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "code_ogr": {
+                            "type": "string",
+                          },
+                          "libelle": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "libelle",
+                          "code_ogr",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "items",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "definition": {
+                "type": "string",
+              },
+              "mobilites": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "code_org_rome_cible": {
+                      "type": "string",
+                    },
+                    "ordre_mobilite": {
+                      "type": "string",
+                    },
+                    "rome_cible": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "rome_cible",
+                    "code_org_rome_cible",
+                    "ordre_mobilite",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "numero": {
+                "type": "string",
+              },
+              "rome": {
+                "additionalProperties": false,
+                "properties": {
+                  "code_ogr": {
+                    "type": "string",
+                  },
+                  "code_rome": {
+                    "type": "string",
+                  },
+                  "intitule": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "code_rome",
+                  "intitule",
+                  "code_ogr",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [
+              "numero",
+              "rome",
+              "definition",
+              "acces_metier",
+              "competences",
+            ],
+            "type": [
+              "object",
+              "null",
+            ],
           },
           "rythmeAlternance": {
             "type": [
@@ -2249,508 +2770,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
         "type": "object",
       },
-      "RomeDetail": {
-        "additionalProperties": false,
-        "description": "Détail du code ROME selon la nomenclature Pole emploi",
-        "properties": {
-          "acces": {
-            "type": "string",
-          },
-          "appellations": {
-            "items": {
-              "additionalProperties": false,
-              "properties": {
-                "code": {
-                  "type": "string",
-                },
-                "libelle": {
-                  "type": "string",
-                },
-                "libelleCourt": {
-                  "type": "string",
-                },
-                "particulier": {
-                  "type": "boolean",
-                },
-              },
-              "required": [
-                "code",
-                "libelle",
-                "libelleCourt",
-                "particulier",
-              ],
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "code": {
-            "type": "string",
-          },
-          "codeIsco": {
-            "type": [
-              "string",
-              "null",
-            ],
-          },
-          "competencesDeBase": {
-            "items": {
-              "additionalProperties": false,
-              "properties": {
-                "code": {
-                  "type": "string",
-                },
-                "competenceCle": {
-                  "type": [
-                    "boolean",
-                    "null",
-                  ],
-                },
-                "frequence": {
-                  "type": [
-                    "number",
-                    "null",
-                  ],
-                },
-                "libelle": {
-                  "type": "string",
-                },
-                "noeudCompetence": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                    },
-                    "libelle": {
-                      "type": "string",
-                    },
-                    "racineCompetence": {
-                      "additionalProperties": false,
-                      "properties": {
-                        "code": {
-                          "type": "string",
-                        },
-                        "libelle": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "code",
-                        "libelle",
-                      ],
-                      "type": "object",
-                    },
-                  },
-                  "required": [
-                    "code",
-                    "libelle",
-                    "racineCompetence",
-                  ],
-                  "type": "object",
-                },
-                "riasecMajeur": {
-                  "type": [
-                    "string",
-                    "null",
-                  ],
-                },
-                "riasecMineur": {
-                  "type": [
-                    "string",
-                    "null",
-                  ],
-                },
-                "typeCompetence": {
-                  "type": "string",
-                },
-              },
-              "required": [
-                "code",
-                "libelle",
-                "noeudCompetence",
-                "typeCompetence",
-              ],
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "condition": {
-            "type": "string",
-          },
-          "definition": {
-            "type": "string",
-          },
-          "domaineProfessionnel": {
-            "additionalProperties": false,
-            "properties": {
-              "code": {
-                "type": "string",
-              },
-              "grandDomaine": {
-                "additionalProperties": false,
-                "properties": {
-                  "code": {
-                    "type": "string",
-                  },
-                  "libelle": {
-                    "type": "string",
-                  },
-                },
-                "required": [
-                  "code",
-                  "libelle",
-                ],
-                "type": "object",
-              },
-              "libelle": {
-                "type": "string",
-              },
-            },
-            "required": [
-              "code",
-              "libelle",
-              "grandDomaine",
-            ],
-            "type": "object",
-          },
-          "environnementsTravail": {
-            "items": {},
-            "type": "array",
-          },
-          "groupesCompetencesSpecifiques": {
-            "items": {},
-            "type": "array",
-          },
-          "libelle": {
-            "type": "string",
-          },
-          "mobilitesEvolutionsAppellationsVersAppellations": {
-            "items": {},
-            "type": "array",
-          },
-          "mobilitesEvolutionsAppellationsVersMetiers": {
-            "items": {
-              "additionalProperties": false,
-              "properties": {
-                "appellationOrigine": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                    },
-                    "libelle": {
-                      "type": "string",
-                    },
-                    "libelleCourt": {
-                      "type": "string",
-                    },
-                    "metier": {
-                      "additionalProperties": false,
-                      "properties": {
-                        "code": {
-                          "type": "string",
-                        },
-                        "libelle": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "code",
-                        "libelle",
-                      ],
-                      "type": "object",
-                    },
-                  },
-                  "required": [
-                    "code",
-                    "libelle",
-                    "libelleCourt",
-                    "metier",
-                  ],
-                  "type": "object",
-                },
-                "metierCible": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                    },
-                    "libelle": {
-                      "type": "string",
-                    },
-                  },
-                  "required": [
-                    "code",
-                    "libelle",
-                  ],
-                  "type": "object",
-                },
-              },
-              "required": [
-                "metierCible",
-                "appellationOrigine",
-              ],
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "mobilitesEvolutionsVersAppellations": {
-            "items": {
-              "additionalProperties": false,
-              "properties": {
-                "appellationCible": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                    },
-                    "libelle": {
-                      "type": "string",
-                    },
-                    "libelleCourt": {
-                      "type": "string",
-                    },
-                    "metier": {
-                      "additionalProperties": false,
-                      "properties": {
-                        "code": {
-                          "type": "string",
-                        },
-                        "libelle": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "code",
-                        "libelle",
-                      ],
-                      "type": "object",
-                    },
-                  },
-                  "required": [
-                    "code",
-                    "libelle",
-                    "libelleCourt",
-                    "metier",
-                  ],
-                  "type": "object",
-                },
-              },
-              "required": [
-                "appellationCible",
-              ],
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "mobilitesEvolutionsVersMetiers": {
-            "items": {
-              "additionalProperties": false,
-              "properties": {
-                "metierCible": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                    },
-                    "libelle": {
-                      "type": "string",
-                    },
-                  },
-                  "required": [
-                    "code",
-                    "libelle",
-                  ],
-                  "type": "object",
-                },
-              },
-              "required": [
-                "metierCible",
-              ],
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "mobilitesProchesAppellationsVersAppellations": {
-            "items": {
-              "additionalProperties": false,
-              "properties": {
-                "appellationCible": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                    },
-                    "libelle": {
-                      "type": "string",
-                    },
-                    "libelleCourt": {
-                      "type": "string",
-                    },
-                    "metier": {
-                      "additionalProperties": false,
-                      "properties": {
-                        "code": {
-                          "type": "string",
-                        },
-                        "libelle": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "code",
-                        "libelle",
-                      ],
-                      "type": "object",
-                    },
-                  },
-                  "required": [
-                    "code",
-                    "libelle",
-                    "libelleCourt",
-                    "metier",
-                  ],
-                  "type": "object",
-                },
-                "appellationOrigine": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                    },
-                    "libelle": {
-                      "type": "string",
-                    },
-                    "libelleCourt": {
-                      "type": "string",
-                    },
-                    "metier": {
-                      "additionalProperties": false,
-                      "properties": {
-                        "code": {
-                          "type": "string",
-                        },
-                        "libelle": {
-                          "type": "string",
-                        },
-                      },
-                      "required": [
-                        "code",
-                        "libelle",
-                      ],
-                      "type": "object",
-                    },
-                  },
-                  "required": [
-                    "code",
-                    "libelle",
-                    "libelleCourt",
-                    "metier",
-                  ],
-                  "type": "object",
-                },
-              },
-              "required": [
-                "appellationOrigine",
-                "appellationCible",
-              ],
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "mobilitesProchesAppellationsVersMetiers": {
-            "items": {},
-            "type": "array",
-          },
-          "mobilitesProchesVersAppellations": {
-            "items": {},
-            "type": "array",
-          },
-          "mobilitesProchesVersMetiers": {
-            "items": {
-              "additionalProperties": false,
-              "properties": {
-                "metierCible": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                    },
-                    "libelle": {
-                      "type": "string",
-                    },
-                  },
-                  "required": [
-                    "code",
-                    "libelle",
-                  ],
-                  "type": "object",
-                },
-              },
-              "required": [
-                "metierCible",
-              ],
-              "type": "object",
-            },
-            "type": "array",
-          },
-          "particulier": {
-            "type": "boolean",
-          },
-          "riasecMajeur": {
-            "type": "string",
-          },
-          "riasecMineur": {
-            "type": "string",
-          },
-          "themes": {
-            "items": {
-              "additionalProperties": false,
-              "properties": {
-                "code": {
-                  "type": "string",
-                },
-                "libelle": {
-                  "type": "string",
-                },
-              },
-              "required": [
-                "code",
-                "libelle",
-              ],
-              "type": "object",
-            },
-            "type": "array",
-          },
-        },
-        "required": [
-          "code",
-          "libelle",
-          "definition",
-          "acces",
-          "condition",
-          "riasecMajeur",
-          "riasecMineur",
-          "particulier",
-          "domaineProfessionnel",
-          "appellations",
-          "competencesDeBase",
-          "groupesCompetencesSpecifiques",
-          "environnementsTravail",
-          "themes",
-          "mobilitesProchesVersMetiers",
-          "mobilitesEvolutionsVersMetiers",
-          "mobilitesProchesVersAppellations",
-          "mobilitesEvolutionsVersAppellations",
-          "mobilitesProchesAppellationsVersMetiers",
-          "mobilitesEvolutionsAppellationsVersMetiers",
-          "mobilitesProchesAppellationsVersAppellations",
-          "mobilitesEvolutionsAppellationsVersAppellations",
-        ],
-        "type": [
-          "object",
-          "null",
-        ],
-      },
       "RomeWithLabel": {
         "additionalProperties": false,
         "properties": {
@@ -2829,6 +2848,70 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "null",
         ],
       },
+      "V2 - Application": {
+        "additionalProperties": false,
+        "properties": {
+          "applicant_email": {
+            "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
+            "example": "john.smith@mail.com",
+            "format": "email",
+            "type": "string",
+          },
+          "applicant_file_content": {
+            "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+            "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
+            "maxLength": 4215276,
+            "type": "string",
+          },
+          "applicant_file_name": {
+            "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
+            "example": "cv.pdf",
+            "pattern": "((.*?))(\\.)+(docx|pdf)$",
+            "type": "string",
+          },
+          "applicant_first_name": {
+            "description": "Le prénom du candidat.",
+            "example": "Jean",
+            "maxLength": 50,
+            "type": "string",
+          },
+          "applicant_last_name": {
+            "description": "Le nom du candidat.",
+            "example": "Dupont",
+            "maxLength": 50,
+            "type": "string",
+          },
+          "applicant_phone": {
+            "description": "Le numéro de téléphone du candidat.",
+            "example": "0101010101",
+            "type": "string",
+          },
+          "company_siret": {
+            "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
+            "example": "00004993900000",
+            "pattern": "^[0-9]{14}$",
+            "type": "string",
+          },
+          "message": {
+            "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
+            "example": "Madame, monsieur...",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "applicant_first_name",
+          "applicant_last_name",
+          "applicant_email",
+          "applicant_phone",
+          "company_siret",
+          "applicant_file_name",
+          "applicant_file_content",
+        ],
+        "type": "object",
+      },
       "ZLbarError": {
         "additionalProperties": false,
         "properties": {
@@ -2879,145 +2962,77 @@ Limite : 5 appel(s) / 5 seconde(s)
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
+                "anyOf": [
                   {
-                    "$ref": "#/components/schemas/ApplicationUi",
+                    "$ref": "#/components/schemas/V2 - Application",
                   },
                   {
-                    "properties": {
-                      "applicant_email": {
-                        "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
-                        "example": "john.smith@mail.com",
-                        "format": "email",
-                        "type": "string",
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/V2 - Application",
                       },
-                      "applicant_file_content": {
-                        "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
-                        "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
-                        "maxLength": 4215276,
-                        "type": "string",
-                      },
-                      "applicant_file_name": {
-                        "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
-                        "example": "cv.pdf",
-                        "pattern": "((.*?))(\\.)+(docx|pdf)$",
-                        "type": "string",
-                      },
-                      "applicant_first_name": {
-                        "description": "Le prénom du candidat.",
-                        "example": "Jean",
-                        "maxLength": 50,
-                        "type": "string",
-                      },
-                      "applicant_last_name": {
-                        "description": "Le nom du candidat.",
-                        "example": "Dupont",
-                        "maxLength": 50,
-                        "type": "string",
-                      },
-                      "applicant_phone": {
-                        "description": "Le numéro de téléphone du candidat.",
-                        "example": "0101010101",
-                        "type": "string",
-                      },
-                      "caller": {
-                        "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-                        "example": "contact@domaine nom_de_societe",
-                        "type": [
-                          "string",
-                          "null",
+                      {
+                        "properties": {
+                          "applicant_email": {
+                            "description": "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
+                            "example": "john.smith@mail.com",
+                            "format": "email",
+                            "type": "string",
+                          },
+                          "applicant_file_content": {
+                            "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+                            "example": "data:application/pdf;base64,JVBERi0xLjQKJ...",
+                            "maxLength": 4215276,
+                            "type": "string",
+                          },
+                          "applicant_file_name": {
+                            "description": "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
+                            "example": "cv.pdf",
+                            "pattern": "((.*?))(\\.)+(docx|pdf)$",
+                            "type": "string",
+                          },
+                          "applicant_first_name": {
+                            "description": "Le prénom du candidat.",
+                            "example": "Jean",
+                            "maxLength": 50,
+                            "type": "string",
+                          },
+                          "applicant_last_name": {
+                            "description": "Le nom du candidat.",
+                            "example": "Dupont",
+                            "maxLength": 50,
+                            "type": "string",
+                          },
+                          "applicant_phone": {
+                            "description": "Le numéro de téléphone du candidat.",
+                            "example": "0101010101",
+                            "type": "string",
+                          },
+                          "job_id": {
+                            "description": "Identifiant unique de l'offre LBA",
+                            "example": "id_mongoDB",
+                            "type": "string",
+                          },
+                          "message": {
+                            "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
+                            "example": "Madame, monsieur...",
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                        },
+                        "required": [
+                          "applicant_first_name",
+                          "applicant_last_name",
+                          "applicant_email",
+                          "applicant_phone",
+                          "applicant_file_name",
+                          "applicant_file_content",
+                          "job_id",
                         ],
                       },
-                      "company_address": {
-                        "description": "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
-                        "example": "38 RUE DES HAMECONS, 75021 PARIS-21",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                      "company_email": {
-                        "description": "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
-                        "example": "fake@dummy.com",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                      "company_naf": {
-                        "description": "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
-                        "example": "Boulangerie et boulangerie-pâtisserie",
-                        "type": "string",
-                      },
-                      "company_name": {
-                        "description": "Le nom de la société. Fourni par La bonne alternance. ",
-                        "example": "Au bon pain d'antan",
-                        "type": "string",
-                      },
-                      "company_siret": {
-                        "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
-                        "example": "00004993900000",
-                        "pattern": "^[0-9]{14}$",
-                        "type": "string",
-                      },
-                      "company_type": {
-                        "description": "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-                        "enum": [
-                          "formation",
-                          "recruteurs_lba",
-                          "offres_emploi_lba",
-                          "offres_emploi_partenaires",
-                        ],
-                        "example": "recruteurs_lba",
-                        "type": "string",
-                      },
-                      "crypted_company_email": {
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                      "iv": {
-                        "description": "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
-                        "example": "...59c24c059b...",
-                        "type": "string",
-                      },
-                      "job_id": {
-                        "description": "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est offres_emploi_lba . La valeur est fournie par La bonne alternance. ",
-                        "example": "...59c24c059b...",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                      "job_title": {
-                        "description": "Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est offres_emploi_lba . La valeur est fournie par La bonne alternance. ",
-                        "example": "Téléconseil, vente à distance",
-                        "type": "string",
-                      },
-                      "message": {
-                        "description": "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
-                        "example": "Madame, monsieur...",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                      "searched_for_job_label": {
-                        "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
-                        "example": "Vente de fleurs, végétaux",
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                      "secret": {
-                        "type": [
-                          "string",
-                          "null",
-                        ],
-                      },
-                    },
+                    ],
                   },
                 ],
               },
@@ -3030,68 +3045,15 @@ Limite : 5 appel(s) / 5 seconde(s)
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "properties": {
-                    "message": {
-                      "enum": [
-                        "messages sent",
-                      ],
-                      "type": "string",
-                    },
-                    "result": {
-                      "description": "Indique le succès ou l'échec de l'opération",
-                      "enum": [
-                        "ok",
-                      ],
-                      "example": "ok",
-                      "type": "string",
-                    },
-                  },
-                  "required": [
-                    "result",
-                    "message",
+                  "description": "Indique le succès ou l'échec de l'opération",
+                  "enum": [
+                    "OK",
                   ],
-                  "type": "object",
+                  "type": "string",
                 },
               },
             },
-            "description": "",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Bad Request",
-                },
-              },
-            },
-            "description": "Bad Request",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Internal Server Error",
-                },
-              },
-            },
-            "description": "Internal Server Error",
+            "description": "Indique le succès ou l'échec de l'opération",
           },
         },
         "security": [

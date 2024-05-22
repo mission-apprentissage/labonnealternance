@@ -38,7 +38,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
             <>
               <Text as="span">{companyName}</Text>
               <Text as="span" fontWeight={400}>
-                &nbsp;propose actuellement cette offre
+                &nbsp;recherche un.e alternant.e pour le poste suivant :
               </Text>
             </>
           ) : (
