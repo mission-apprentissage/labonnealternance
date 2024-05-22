@@ -8532,9 +8532,9 @@ Limite : 5 appel(s) / 1 seconde(s)
             "description": "the id the lba job looked for.",
             "in": "path",
             "name": "id",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "string",
+              "description": "Identifiant unique",
             },
           },
           {
