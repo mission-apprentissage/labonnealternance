@@ -63,7 +63,7 @@ export const zApplicationRoutesV2 = {
       method: "post",
       body: z.union([ZNewApplicationV2NEWCompanySiret, ZNewApplicationV2NEWJobId]),
       response: {
-        "200": z.literal("OK"),
+        "200": z.object({}),
       },
       securityScheme: {
         auth: "access-token",
