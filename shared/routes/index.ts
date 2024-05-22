@@ -50,7 +50,6 @@ const zRoutesGetP3 = {
   ...zFormationRoute.get,
   ...zOptoutRoutes.get,
   ...zFormationsRoutesV2.get,
-  ...zJobsRoutesV2.get,
 } as const
 
 const zRoutesGetP4 = {
@@ -66,6 +65,7 @@ const zRoutesGetP5 = {
   ...zV1JobsEtFormationsRoutes.get,
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
+  ...zJobsRoutesV2.get,
 }
 
 const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 & typeof zRoutesGetP5 = {
@@ -185,3 +185,5 @@ export type IRequestFetchOptions = {
 export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never | EmptyObject> extends EmptyObject
   ? EmptyObject
   : ConditionalExcept<IRequestRaw<S>, never | EmptyObject>
+
+export type IApiVersion = "V1" | "V2"
