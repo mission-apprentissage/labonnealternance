@@ -3,7 +3,6 @@ import { assertUnreachable, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
-import { UserEventType } from "shared/models/user2.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { Cfa, Entreprise, Recruiter } from "@/common/model"
@@ -24,11 +23,10 @@ import {
 } from "@/services/etablissement.service"
 import { Organization, UserAndOrganization, upsertEntrepriseData } from "@/services/organization.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { emailHasActiveRole, getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
+import { emailHasActiveRole, getUser2ByEmail, isUserDisabled, isUserEmailChecked, validateUser2Email } from "@/services/user2.service"
 import {
   autoValidateUser,
   createOrganizationUser,
-  isUserEmailChecked,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
@@ -308,8 +306,7 @@ export default (server: Server) => {
       if (!user) {
         throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
-      const userStatus = getLastStatusEvent(user.status)?.status
-      if (userStatus === UserEventType.DESACTIVE) {
+      if (isUserDisabled(user)) {
         throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
