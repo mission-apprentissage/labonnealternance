@@ -2,8 +2,8 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormL
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
-import { IRecruiterJson, assertUnreachable } from "shared"
-import { CFA, ENTREPRISE } from "shared/constants/recruteur"
+import { IRecruiterJson, assertUnreachable, parseEnum } from "shared"
+import { CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
 import { IUser2Json } from "shared/models/user2.model"
 import * as Yup from "yup"
 
@@ -25,7 +25,8 @@ const Formulaire = ({ submitForm }) => {
   const { type, informationSiret: informationSiretString, origin }: { type: string; informationSiret: string; origin: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
 
-  const { email = "", opco = "", establishment_siret = "" } = informationSiret ?? {}
+  const { email = "", establishment_siret = "" } = informationSiret ?? {}
+  const opco = parseEnum(OPCOS, informationSiret.opco)
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
   return (

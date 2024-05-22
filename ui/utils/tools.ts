@@ -53,8 +53,6 @@ const scrollToTop = (elementId) => {
 }
 
 const scrollToElementInContainer = ({ containerId, el, yOffsett = 250 }) => {
-  console.log("EL : ", el, document.getElementById(containerId), el.offsetTop)
-
   el &&
     document.getElementById(containerId).scrollTo({
       top: el.offsetTop - yOffsett,

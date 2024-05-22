@@ -27,8 +27,6 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
   const cfa = type === CFA && "establishment_siret" in data && data
   const raisonSociale = entreprise?.raison_sociale ?? cfa?.establishment_raison_sociale
 
-  console.log({ entreprise, data })
-
   return (
     <Box border="1px solid #000091" p={5}>
       <Heading mb={3} fontSize="2xl">

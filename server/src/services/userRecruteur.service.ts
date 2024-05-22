@@ -31,9 +31,9 @@ import { createUser2IfNotExist } from "./user2.service"
 export const createApiKey = (): string => `mna-${randomUUID()}`
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
-  const { date, reason, validation_type, granted_by } = entrepriseStatusEvent
+  const { reason, validation_type, granted_by } = entrepriseStatusEvent
   return {
-    date,
+    date: new Date(),
     user: granted_by ?? "",
     validation_type,
     reason,
