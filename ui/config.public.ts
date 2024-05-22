@@ -10,6 +10,7 @@ export interface PublicConfig {
   }
   inserJeuneApiUrl: string
   apiEndpoint: string
+  apiEndpointV2: string
   version: string
   plausibleDomain: string
 }
@@ -31,6 +32,7 @@ function getProductionPublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
+    apiEndpointV2: `https://${host}/api/v2`,
     version: getVersion(),
     plausibleDomain: "labonnealternance.apprentissage.beta.gouv.fr",
   }
@@ -51,6 +53,7 @@ function getRecettePublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
+    apiEndpointV2: `https://${host}/api/v2`,
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
   }
@@ -71,6 +74,7 @@ function getPentestPublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition-pentest.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
+    apiEndpointV2: `https://${host}/api/v2`,
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
   }
@@ -98,6 +102,7 @@ function getPreviewPublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
+    apiEndpointV2: `https://${host}/api/v2`,
     version,
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
   }
@@ -112,6 +117,7 @@ function getLocalPublicConfig(): PublicConfig {
     host,
     baseUrl: `http://${host}:3000`,
     apiEndpoint: `http://${host}:${process.env.NEXT_PUBLIC_API_PORT ?? 5000}/api`,
+    apiEndpointV2: `http://${host}:${process.env.NEXT_PUBLIC_API_PORT ?? 5000}/api/v2`,
     matomo: {
       url: "https://stats.beta.gouv.fr",
       siteId: "",

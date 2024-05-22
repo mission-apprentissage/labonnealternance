@@ -1,12 +1,11 @@
 import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { JOB_STATUS } from "shared/models/job.model"
 
 import LBAModalCloseButton from "@/components/lbaModalCloseButton"
 
-import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 
@@ -21,7 +20,6 @@ import useLocalStorage from "./services/useLocalStorage"
 const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [sendingState, setSendingState] = useState("not_sent")
-  const { formValues } = useContext(DisplayContext)
   const kind: LBA_ITEM_TYPE_OLD = item?.ideaType || ""
 
   const onModalClose = () => {
@@ -60,8 +58,8 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
   const formik = useFormik({
     initialValues: getInitialSchemaValues(),
     validationSchema: getValidationSchema(),
-    onSubmit: async (applicantValues) => {
-      const success = await submitCandidature({ applicantValues, setSendingState, item, jobLabel: formValues?.job?.label })
+    onSubmit: async (formValues) => {
+      const success = await submitCandidature({ formValues, setSendingState, LbaJob: item })
       if (success) {
         setApplied(Date.now().toString())
       }

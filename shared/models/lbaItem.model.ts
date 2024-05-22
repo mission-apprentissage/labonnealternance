@@ -390,6 +390,7 @@ export const ZLbaItemLbaJob = z
     nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
     detailsLoaded: z.boolean().nullish(),
+    token: z.string().nullish(), // KBA 2024_05_20 : for API V2 only, remove nullish when fully migrated
   })
   .strict()
   .openapi("LbaJob")
@@ -409,6 +410,7 @@ export const ZLbaItemLbaCompany = z
     nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
     detailsLoaded: z.boolean().nullish(),
+    token: z.string().nullish(), // KBA 2024_05_20 : for API V2 only, remove nullish when fully migrated
   })
   .strict()
   .openapi("LbaCompany")

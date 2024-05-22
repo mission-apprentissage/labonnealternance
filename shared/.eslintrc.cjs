@@ -7,7 +7,6 @@ module.exports = {
   plugins: ["zod"],
   rules: {
     "zod/prefer-enum": "error",
-    "zod/require-strict": "error",
     "import/no-extraneous-dependencies": 0,
   },
   parserOptions: {

@@ -15,7 +15,7 @@ const defaultErrorData: DataDisplayForError = {
 }
 
 const sendingStateValues = {
-  "email temporaire non autorisé": {
+  [BusinessErrorCodes.BURNER]: {
     title: "Les adresses emails temporaires ne sont pas acceptées",
     text: (
       <>
