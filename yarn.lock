@@ -13845,6 +13845,7 @@ __metadata:
     semantic-release: ^21.1.1
     semantic-release-slack-bot: ^4.0.2
     ts-node: ^10.9.1
+    type-fest: ^4.18.2
     typescript: ^5.2.2
     vite-tsconfig-paths: ^4.2.1
     vitest: ^1.4.0
@@ -19312,6 +19313,13 @@ __metadata:
   version: 3.13.1
   resolution: "type-fest@npm:3.13.1"
   checksum: c06b0901d54391dc46de3802375f5579868949d71f93b425ce564e19a428a0d411ae8d8cb0e300d330071d86152c3ea86e744c3f2860a42a79585b6ec2fdae8e
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.18.2":
+  version: 4.18.2
+  resolution: "type-fest@npm:4.18.2"
+  checksum: 2e9272b2b97b2f4ea2bbffda43cfce9ca89c474ad7c9565e39b80fee2ce609ea60385faffbbef98994b38feb3fa5fa38feb33acf175f4f85ee21d1773e87bf44
   languageName: node
   linkType: hard
 
