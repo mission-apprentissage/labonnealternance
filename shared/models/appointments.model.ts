@@ -18,7 +18,10 @@ export const enum EReasonsKey {
   LIEU = "lieu",
   SUIVI = "suivi",
   AUTRE = "autre",
+  DEBOUCHE = "debouche",
 }
+
+export const EREASONS = Object.values(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre", "debouche"])
 
 export const ZMailing = z
   .object({
@@ -39,7 +42,7 @@ export const ZAppointment = z
     cfa_message_to_applicant_date: z.date().nullish(),
     cfa_message_to_applicant: z.string().nullish(),
     applicant_message_to_cfa: z.string().nullish(),
-    applicant_reasons: z.array(z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"])).nullish(),
+    applicant_reasons: z.array(z.enum([EREASONS[0], ...EREASONS.slice(1)])).nullish(),
     cfa_gestionnaire_siret: z.string().nullish(),
     cfa_formateur_siret: z.string().nullish(),
     appointment_origin: z.string(),
