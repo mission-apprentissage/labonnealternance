@@ -1,9 +1,9 @@
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZJobType } from "./job.model"
-import { ZRomeDetail } from "./rome.model"
+import { ZReferentielRome } from "./rome.model"
 
 const ZLbaItemPlace = z
   .object({
@@ -234,7 +234,7 @@ const ZLbaItemJob = z
     contractDescription: z.string().nullish(), // pe -> typeContratLibelle
     duration: z.string().nullish(), // pe -> dureeTravailLibelle
     jobStartDate: z.date().nullish(), // matcha -> offres.date_debut_apprentissage
-    romeDetails: ZRomeDetail.nullish(), // matcha -> offres.rome_detail -> détail du code ROME
+    romeDetails: ZReferentielRome.nullish(), // matcha -> offres.rome_detail -> détail du code ROME
     rythmeAlternance: z.string().nullish(), // matcha -> offres.rythme_alternance
     elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
     dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat
@@ -272,8 +272,8 @@ export type ILbaItemTraining = z.output<typeof ZLbaItemTraining>
 
 export const ZLbaItemFormation = z
   .object({
-    ideaType: z.literal(LBA_ITEM_TYPE.FORMATION).openapi({
-      example: LBA_ITEM_TYPE.FORMATION,
+    ideaType: z.literal(LBA_ITEM_TYPE_OLD.FORMATION).openapi({
+      example: LBA_ITEM_TYPE_OLD.FORMATION,
       description: "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
     }),
     title: z.string().nullish().openapi({
@@ -294,6 +294,7 @@ export const ZLbaItemFormation = z
       example: "5e8dfad720ff3b2161269d86",
       description: "L'identifiant de la formation dans le catalogue du Réseau des Carif-Oref.",
     }), // formation -> id
+    detailsLoaded: z.boolean().nullish(),
     idRco: z.string().nullish(), // formation -> id_formation
     idRcoFormation: z.string().nullish(), // formation -> id_rco_formation
 
@@ -360,6 +361,8 @@ export const ZLbaItemFormation = z
     romes: z.array(ZLbaItemRome).nullish(),
 
     training: ZLbaItemTraining.nullish(),
+
+    rdvContext: z.any().nullish(),
   })
   .strict()
   .openapi("Formation")
@@ -374,7 +377,6 @@ export const ZLbaItemLbaJob = z
     contact: ZLbaItemContact.nullish(),
     place: ZLbaItemPlace.nullable(),
     company: ZLbaItemCompany.nullable(),
-
     id: z.string().nullable().openapi({}), // matcha -> id_form
     diplomaLevel: z
       .string()
@@ -387,6 +389,7 @@ export const ZLbaItemLbaJob = z
     romes: z.array(ZLbaItemRome).nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
+    detailsLoaded: z.boolean().nullish(),
   })
   .strict()
   .openapi("LbaJob")
@@ -405,6 +408,7 @@ export const ZLbaItemLbaCompany = z
     url: z.string().nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
+    detailsLoaded: z.boolean().nullish(),
   })
   .strict()
   .openapi("LbaCompany")
@@ -413,7 +417,7 @@ export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
 
 export const ZLbaItemFtJob = z
   .object({
-    ideaType: z.literal("peJob"),
+    ideaType: z.literal(LBA_ITEM_TYPE_OLD.PEJOB),
     // ideaType: z.literal(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES),
     id: z.string().nullable().openapi({}),
     title: z.string().nullish(), // pe -> intitule
@@ -424,6 +428,7 @@ export const ZLbaItemFtJob = z
     job: ZLbaItemJob.nullish(),
     romes: z.array(ZLbaItemRome).nullish(),
     nafs: z.array(ZLbaItemNaf).nullish(),
+    detailsLoaded: z.boolean().nullish(),
   })
   .strict()
   .openapi("PeJob")

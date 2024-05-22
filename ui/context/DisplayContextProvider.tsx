@@ -20,6 +20,12 @@ const initialState = {
   isFormVisible: true,
   shouldMapBeVisible: false,
   activeFilters: defaultFilters,
+  bannerStates: {
+    isEnvClosed: false,
+    isAlertClosed: false,
+    isInfoClosed: false,
+    isOKClosed: false,
+  },
 }
 
 const actions = {
@@ -28,6 +34,7 @@ const actions = {
   SET_IS_FORM_VISIBLE: "SET_IS_FORM_VISIBLE",
   SET_SHOULD_MAP_BE_VISIBLE: "SET_SHOULD_MAP_BE_VISIBLE",
   SET_ACTIVE_FILTERS: "SET_ACTIVE_FILTERS",
+  SET_BANNER_STATES: "SET_BANNER_STATES",
 }
 
 const reducer = (state, action) => {
@@ -49,6 +56,9 @@ const reducer = (state, action) => {
     case actions.SET_ACTIVE_FILTERS: {
       return { ...state_copy, activeFilters: action.activeFilters }
     }
+    case actions.SET_BANNER_STATES: {
+      return { ...state_copy, bannerStates: action.bannerStates }
+    }
     default:
       return state
   }
@@ -65,6 +75,8 @@ export type IContextDisplay = {
   setShouldMapBeVisible: (b: boolean) => void
   activeFilters: string[]
   setActiveFilters: (b: string[]) => void
+  bannerStates: { isEnvClosed: boolean; isOKClosed: boolean; isInfoClosed: boolean; isAlertClosed: boolean }
+  setBannerStates: (o: { isEnvClosed: boolean; isOKClosed: boolean; isInfoClosed: boolean; isAlertClosed: boolean }) => void
 }
 // @ts-expect-error: TODO
 export const DisplayContext = createContext<IContextDisplay>()
@@ -88,6 +100,9 @@ const DisplayContextProvider = ({ children }) => {
     },
     setShouldMapBeVisible: (shouldMapBeVisible = false) => {
       dispatch({ type: actions.SET_SHOULD_MAP_BE_VISIBLE, shouldMapBeVisible })
+    },
+    setBannerStates: (bannerStates) => {
+      dispatch({ type: actions.SET_BANNER_STATES, bannerStates })
     },
   }
 

@@ -16,7 +16,7 @@ const FTJobDetail = ({ job }) => {
   }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
 
   useEffect(() => {
-    SendPlausibleEvent("Affichage - Fiche entreprise Offre PE", {
+    SendPlausibleEvent("Affichage - Fiche entreprise Offre FT", {
       info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
   }, [job?.job?.id])

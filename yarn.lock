@@ -3961,6 +3961,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/clamscan@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "@types/clamscan@npm:2.0.8"
+  dependencies:
+    "@types/node": "*"
+  checksum: 7c96c890d82bd2efb8633b02092bf8de8e0df53ad9a1df99e15553d310fcfc7c65e403f1cf0a6cec63cb1d26f80f6102aa294c2fcd3d57f16be2637a3bd106ce
+  languageName: node
+  linkType: hard
+
 "@types/connect@npm:*":
   version: 3.4.38
   resolution: "@types/connect@npm:3.4.38"
@@ -6216,10 +6225,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clamscan@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "clamscan@npm:2.1.2"
-  checksum: 1e823cdabc4b373a10ca7aa892f881ad8bb219e04f49eaa0892fab8eaed8acb7428d66e0328b31f19f451c66db0a49da1afcaf811ac1b9af76d310ec1850cf5a
+"clamscan@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "clamscan@npm:2.2.1"
+  checksum: 40aaac9daf6bb028896ca638ae8b5f452c10cf18eedd535653b1f6a547253964ed3f23d49c6b11bebeb4be77f90f21acac5aa02befc7bc97ecfcf934f3121679
   languageName: node
   linkType: hard
 
@@ -7143,18 +7152,6 @@ __metadata:
     supports-color:
       optional: true
   checksum: 3dbad3f94ea64f34431a9cbf0bafb61853eda57bff2880036153438f50fb5a84f27683ba0d8e5426bf41a8c6ff03879488120cf5b3a761e77953169c0600a708
-  languageName: node
-  linkType: hard
-
-"debug@npm:4.3.1":
-  version: 4.3.1
-  resolution: "debug@npm:4.3.1"
-  dependencies:
-    ms: 2.1.2
-  peerDependenciesMeta:
-    supports-color:
-      optional: true
-  checksum: 2c3352e37d5c46b0d203317cd45ea0e26b2c99f2d9dfec8b128e6ceba90dfb65425f5331bf3020fe9929d7da8c16758e737f4f3bfc0fce6b8b3d503bae03298b
   languageName: node
   linkType: hard
 
@@ -11280,13 +11277,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-url@npm:^1.2.4":
-  version: 1.2.4
-  resolution: "is-url@npm:1.2.4"
-  checksum: 100e74b3b1feab87a43ef7653736e88d997eb7bd32e71fd3ebc413e58c1cbe56269699c776aaea84244b0567f2a7d68dfaa512a062293ed2f9fdecb394148432
-  languageName: node
-  linkType: hard
-
 "is-weakmap@npm:^2.0.1":
   version: 2.0.1
   resolution: "is-weakmap@npm:2.0.1"
@@ -11310,17 +11300,6 @@ __metadata:
     call-bind: ^1.0.2
     get-intrinsic: ^1.1.1
   checksum: 5d8698d1fa599a0635d7ca85be9c26d547b317ed8fd83fc75f03efbe75d50001b5eececb1e9971de85fcde84f69ae6f8346bc92d20d55d46201d328e4c74a367
-  languageName: node
-  linkType: hard
-
-"is2@npm:^2.0.6":
-  version: 2.0.9
-  resolution: "is2@npm:2.0.9"
-  dependencies:
-    deep-is: ^0.1.3
-    ip-regex: ^4.1.0
-    is-url: ^1.2.4
-  checksum: be778a3bd0770799bd6d9b79916d2467a150a111088858dc00f6ea5a52b0e12d3a0a5cfd350d990bdb562552388be406707ee91ac6d40b96371c3a97aca1e579
   languageName: node
   linkType: hard
 
@@ -13842,6 +13821,7 @@ __metadata:
     "@semantic-release/changelog": ^6.0.2
     "@semantic-release/exec": ^6.0.3
     "@semantic-release/git": ^10.0.1
+    "@types/clamscan": ^2.0.8
     "@types/node": 20.7.1
     "@typescript-eslint/eslint-plugin": ^6.7.2
     "@typescript-eslint/parser": ^6.7.2
@@ -17744,7 +17724,7 @@ __metadata:
     bunyan-slack: ^0.0.10
     burner-email-providers: ^1.0.67
     chalk: ^4.1.2
-    clamscan: ^2.1.2
+    clamscan: ^2.2.1
     commander: ^9.5.0
     company-email-validator: ^1.1.0
     convert-csv-to-json: ^0.0.15
@@ -17791,7 +17771,6 @@ __metadata:
     sib-api-v3-sdk: ^8.5.0
     stream-json: ^1.8.0
     supertest: ^6.3.3
-    tcp-port-used: ^1.0.2
     tsup: ^7.2.0
     type-fest: ^4.3.3
     typescript: ^5.2.2
@@ -18753,16 +18732,6 @@ __metadata:
     mkdirp: ^1.0.3
     yallist: ^4.0.0
   checksum: db4d9fe74a2082c3a5016630092c54c8375ff3b280186938cfd104f2e089c4fd9bad58688ef6be9cf186a889671bf355c7cda38f09bbf60604b281715ca57f5c
-  languageName: node
-  linkType: hard
-
-"tcp-port-used@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "tcp-port-used@npm:1.0.2"
-  dependencies:
-    debug: 4.3.1
-    is2: ^2.0.6
-  checksum: ea1bd3f7789a79bb228382e7314167357cd2a2dc3e17521393739075b85e3df0009c53aab4aaa9d180a59791ab152fe87079adaf05242c411b1778a41e543863
   languageName: node
   linkType: hard
 

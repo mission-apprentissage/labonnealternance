@@ -70,12 +70,15 @@ export type AccessRessouces = {
   application?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
-  user?: ReadonlyArray<
+  user?: ReadonlyArray<{
+    _id: AccessResourcePath
+  }>
+  entreprise?: ReadonlyArray<
     | {
         _id: AccessResourcePath
       }
     | {
-        opco: AccessResourcePath
+        siret: AccessResourcePath
       }
   >
 }

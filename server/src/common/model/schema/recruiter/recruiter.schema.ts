@@ -29,6 +29,11 @@ const personalInfosRecruiterSchema = new Schema({
     description: "Email du contact",
     require: true,
   },
+  managed_by: {
+    type: String,
+    default: null,
+    description: "Id de l'utilisateur gestionnaire",
+  },
 })
 
 export const nonPersonalInfosRecruiterSchema = new Schema({

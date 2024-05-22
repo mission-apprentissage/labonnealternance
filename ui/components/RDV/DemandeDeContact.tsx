@@ -40,6 +40,7 @@ import { BarberGuy } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
+import InfoBanner from "../InfoBanner/InfoBanner"
 import LBAModalCloseButton from "../lbaModalCloseButton"
 
 type Props = {
@@ -327,6 +328,7 @@ const DemandeDeContact = (props: Props) => {
           <Text color="redmarianne">{error}</Text>
         </Box>
       )}
+      <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
       <Box mb={8} textAlign="right" mr={4}>
         <Button
           data-tracking-id="prendre-rdv-cfa"

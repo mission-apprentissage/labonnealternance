@@ -1,7 +1,8 @@
 import { Box, Button, Image } from "@chakra-ui/react"
-import { findIndex } from "lodash"
 import { useSwipeable } from "react-swipeable"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+
+import getCurrentList from "./getCurrentList"
 
 const navigationButtonProperties = {
   background: "white",
@@ -18,8 +19,8 @@ const navigationButtonProperties = {
   },
 }
 
-export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
-  return oneKind === LBA_ITEM_TYPE_OLD.PEJOB && oneItem?.url
+export const buttonJePostuleShouldBeDisplayed = (item) => {
+  return item.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && item?.url
 }
 
 /**
@@ -27,10 +28,11 @@ export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
  */
 export const buttonRdvShouldBeDisplayed = (item) => !!item?.rdvContext?.form_url
 
-export const BuildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
+export const BuildSwipe = ({ jobs, trainings, extendedSearch, activeFilters, selectedItem, handleSelectItem }) => {
   // See https://www.npmjs.com/package/react-swipeable
   const swipeHandlers = useSwipeable({
     onSwiped: (event_data) => {
+      const currentList = getCurrentList({ jobs, trainings, extendedSearch, activeFilters })
       if (event_data.dir === "Right") {
         if (currentList.length > 1) {
           goPrev()
@@ -43,13 +45,18 @@ export const BuildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
     },
   })
   const goNext = () => {
-    const currentIndex = findIndex(currentList, selectedItem)
+    const currentList = getCurrentList({ jobs, trainings, extendedSearch, activeFilters })
+    const currentIndex = currentList.findIndex((item) => selectedItem.id === item.id)
+
     const nextIndex = currentIndex == currentList.length - 1 ? 0 : currentIndex + 1
+
     handleSelectItem(currentList[nextIndex])
   }
   const goPrev = () => {
-    const currentIndex = findIndex(currentList, selectedItem)
+    const currentList = getCurrentList({ jobs, trainings, extendedSearch, activeFilters })
+    const currentIndex = currentList.findIndex((item) => selectedItem.id === item.id)
     const prevIndex = currentIndex == 0 ? currentList.length - 1 : currentIndex - 1
+
     handleSelectItem(currentList[prevIndex])
   }
   return {

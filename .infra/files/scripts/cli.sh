@@ -2,4 +2,4 @@
 set -euo pipefail
 #Needs to be run as sudo
 
-docker compose run --rm --no-deps server yarn cli "$@"
+/opt/app/tools/docker-compose.sh run --rm --no-deps server yarn cli "$@"

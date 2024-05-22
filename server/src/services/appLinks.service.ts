@@ -1,10 +1,11 @@
-import { IJob, IUserRecruteur } from "shared/models"
+import { IJob } from "shared/models"
+import { IUser2 } from "shared/models/user2.model"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
-import { UserForAccessToken, generateAccessToken, generateScope } from "@/security/accessTokenService"
+import { IUser2ForAccessToken, UserForAccessToken, generateAccessToken, generateScope, user2ToUserForToken } from "@/security/accessTokenService"
 
-export function createAuthMagicLinkToken(user: IUserRecruteur) {
+export function createAuthMagicLinkToken(user: UserForAccessToken) {
   return generateAccessToken(user, [
     generateScope({
       schema: zRoutes.post["/login/verification"],
@@ -16,13 +17,13 @@ export function createAuthMagicLinkToken(user: IUserRecruteur) {
   ])
 }
 
-export function createAuthMagicLink(user: IUserRecruteur) {
+export function createAuthMagicLink(user: UserForAccessToken) {
   const token = createAuthMagicLinkToken(user)
 
   return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
 }
 
-export function createValidationMagicLink(user: IUserRecruteur) {
+export function createValidationMagicLink(user: IUser2ForAccessToken) {
   const token = generateAccessToken(
     user,
     [
@@ -80,7 +81,7 @@ export function createCfaUnsubscribeToken(email: string, siret: string) {
   )
 }
 
-export function createCancelJobLink(user: IUserRecruteur, jobId: string, utmData: string | undefined = undefined) {
+export function createCancelJobLink(user: UserForAccessToken, jobId: string, utmData: string | undefined = undefined) {
   const token = generateAccessToken(
     user,
     [
@@ -102,7 +103,7 @@ export function createCancelJobLink(user: IUserRecruteur, jobId: string, utmData
   return `${config.publicUrl}/espace-pro/offre/${jobId}/cancel?${utmData ? utmData : ""}&token=${token}`
 }
 
-export function createProvidedJobLink(user: IUserRecruteur, jobId: string, utmData: string | undefined = undefined) {
+export function createProvidedJobLink(user: UserForAccessToken, jobId: string, utmData: string | undefined = undefined) {
   const token = generateAccessToken(
     user,
     [
@@ -319,11 +320,7 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
   )
 }
 
-export function generateDepotSimplifieToken(user: IUserRecruteur) {
-  if (!user.establishment_id) {
-    throw new Error("unexpected")
-  }
-  const establishment_id = user.establishment_id
+export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establishment_id: string, siret: string) {
   return generateAccessToken(
     user,
     [
@@ -348,6 +345,13 @@ export function generateDepotSimplifieToken(user: IUserRecruteur) {
           querystring: undefined,
         },
       }),
+      generateScope({
+        schema: zRoutes.delete["/user/organization/:siret"],
+        options: {
+          params: { siret },
+          querystring: undefined,
+        },
+      }),
     ],
     {
       expiresIn: "2h",
@@ -355,9 +359,34 @@ export function generateDepotSimplifieToken(user: IUserRecruteur) {
   )
 }
 
-export function generateOffreToken(user: IUserRecruteur, offre: IJob) {
+export function generateCfaCreationToken(user: IUser2ForAccessToken, siret: string) {
   return generateAccessToken(
     user,
+    [
+      generateScope({
+        schema: zRoutes.get["/user/status/:userId/by-token"],
+        options: {
+          params: { userId: user._id.toString() },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.delete["/user/organization/:siret"],
+        options: {
+          params: { siret },
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "2h",
+    }
+  )
+}
+
+export function generateOffreToken(user: IUser2, offre: IJob) {
+  return generateAccessToken(
+    user2ToUserForToken(user),
     [
       generateScope({
         schema: zRoutes.post["/formulaire/offre/:jobId/delegation/by-token"],
@@ -368,6 +397,13 @@ export function generateOffreToken(user: IUserRecruteur, offre: IJob) {
       }),
       generateScope({
         schema: zRoutes.get["/user/status/:userId/by-token"],
+        options: {
+          params: { userId: user._id.toString() },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.post["/login/:userId/resend-confirmation-email"],
         options: {
           params: { userId: user._id.toString() },
           querystring: undefined,

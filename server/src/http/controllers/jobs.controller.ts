@@ -3,6 +3,7 @@ import { IJob, JOB_STATUS, zRoutes } from "shared"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
+import { getUser2ByEmail } from "@/services/user2.service"
 
 import { Recruiter } from "../../common/model/index"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
@@ -25,8 +26,8 @@ import {
 import { getFtJobFromId } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../services/lbacompany.service"
-import { addOffreDetailView, getLbaJobById, incrementLbaJobsViewCount } from "../../services/lbajob.service"
-import { getFicheMetierRomeV3FromDB } from "../../services/rome.service"
+import { addOffreDetailView, getLbaJobById } from "../../services/lbajob.service"
+import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
 const config = {
@@ -133,23 +134,27 @@ export default (server: Server) => {
       if (!establishmentExists) {
         return res.status(400).send({ error: true, message: "Establishment does not exist" })
       }
+      const user = await getUser2ByEmail(establishmentExists.email)
+      if (!user) {
+        return res.status(400).send({ error: true, message: "User does not exist" })
+      }
 
-      const romeDetails = await getFicheMetierRomeV3FromDB({
+      const romeDetails = await getFicheMetierFromDB({
         query: {
-          "fiche_metier.appellations.code": body.appellation_code,
+          "appellations.code_ogr": body.appellation_code,
         },
-      }) //  fiche_metier.appellations[].code === body.appellation_code
+      })
 
       if (!romeDetails) {
         return res.send({ error: true, message: "ROME Code details could not be retrieved" })
       }
 
-      const appellation = romeDetails.fiche_metier.appellations.find(({ code }) => code === body.appellation_code) as Appellation
+      const appellation = romeDetails?.appellations ? (romeDetails.appellations.find(({ code_ogr }) => code_ogr === body.appellation_code) as Appellation) : null
 
       const job: Partial<IJob> = {
-        rome_label: romeDetails.fiche_metier.libelle,
-        rome_appellation_label: appellation.libelle,
-        rome_code: [romeDetails.code],
+        rome_label: romeDetails.rome.intitule,
+        rome_appellation_label: appellation && appellation.libelle,
+        rome_code: [romeDetails.rome.code_rome],
         job_level_label: body.job_level_label,
         job_start_date: new Date(body.job_start_date),
         job_description: body.job_description,
@@ -158,13 +163,15 @@ export default (server: Server) => {
         job_expiration_date: addExpirationPeriod(dayjs()).toDate(),
         job_status: JOB_STATUS.ACTIVE,
         job_type: body.job_type,
-        rome_detail: romeDetails.fiche_metier,
         is_disabled_elligible: body.is_disabled_elligible,
         job_count: body.job_count,
         job_duration: body.job_duration,
         job_rythm: body.job_rythm,
         custom_address: body.custom_address,
         custom_geo_coordinates: body.custom_geo_coordinates,
+        custom_job_title: body.custom_job_title,
+        is_multi_published: body.is_multi_published,
+        managed_by: user._id,
       }
 
       const updatedRecruiter = await createOffre(establishmentId, job)
@@ -347,12 +354,6 @@ export default (server: Server) => {
       if ("error" in result) {
         return res.status(500).send(result)
       }
-
-      if ("matchas" in result && result.matchas) {
-        const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
-      }
-
       return res.status(200).send(result)
     }
   )
@@ -370,12 +371,6 @@ export default (server: Server) => {
       if ("error" in result) {
         return res.status(500).send(result)
       }
-
-      if ("matchas" in result && result.matchas) {
-        const { matchas } = result
-        await incrementLbaJobsViewCount(matchas)
-      }
-
       return res.status(200).send(result)
     }
   )
@@ -471,6 +466,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       const { caller } = req.query
+
       const result = await getFtJobFromId({
         id,
         caller,
