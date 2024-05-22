@@ -78,6 +78,7 @@ const getFtAccessToken = async (access: "OFFRE" | "ROME" | "ROMEV4"): Promise<FT
     tokens[access] = newTokenObject
     return newTokenObject
   } catch (error: any) {
+    tokens[access] = null
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     return error.response?.data
   }
