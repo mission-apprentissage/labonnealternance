@@ -519,7 +519,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
 
   const referentielData = {
     establishment_state: d.etat_administratif,
-    is_qualiopi: d.qualiopi,
+    is_qualiopi: Boolean(d.qualiopi),
     establishment_siret: d.siret,
     establishment_raison_sociale: d.raison_sociale,
     contacts: d.contacts,
