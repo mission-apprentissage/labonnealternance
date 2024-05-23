@@ -11,8 +11,8 @@ import { Role, UserWithType } from "shared/security/permissions"
 import { Credential } from "@/common/model"
 import config from "@/config"
 import { getSession } from "@/services/sessions.service"
-import { getUserWithAccountByEmail } from "@/services/user2.service"
 import { updateLastConnectionDate } from "@/services/userRecruteur.service"
+import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
 import { controlUserState } from "../services/login.service"
 

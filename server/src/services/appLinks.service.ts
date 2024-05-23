@@ -10,7 +10,7 @@ import {
   applicationToUserForToken,
   generateAccessToken,
   generateScope,
-  user2ToUserForToken,
+  userWithAccountToUserForToken,
 } from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: UserForAccessToken) {
@@ -394,7 +394,7 @@ export function generateCfaCreationToken(user: IUserWithAccountForAccessToken, s
 
 export function generateOffreToken(user: IUserWithAccount, offre: IJob) {
   return generateAccessToken(
-    user2ToUserForToken(user),
+    userWithAccountToUserForToken(user),
     [
       generateScope({
         schema: zRoutes.post["/formulaire/offre/:jobId/delegation/by-token"],

@@ -8,7 +8,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { Cfa, Recruiter } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import {
@@ -22,13 +22,6 @@ import {
 } from "@/services/etablissement.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import {
-  emailHasActiveRole,
-  getUserWithAccountByEmail,
-  isUserDisabled,
-  isUserEmailChecked,
-  validateUserWithAccountEmail as validateUserWithAccountEmail,
-} from "@/services/user2.service"
-import {
   autoValidateUser,
   createOrganizationUser,
   sendWelcomeEmailToUserRecruteur,
@@ -36,6 +29,7 @@ import {
   updateLastConnectionDate,
   updateUserWithAccountFields,
 } from "@/services/userRecruteur.service"
+import { emailHasActiveRole, getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -172,7 +166,7 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
             else throw Boom.badRequest(result.message, result)
           }
-          const token = generateDepotSimplifieToken(user2ToUserForToken(result.user), result.formulaire.establishment_id, siret)
+          const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id, siret)
           return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
@@ -195,7 +189,7 @@ export default (server: Server) => {
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
-          const token = generateCfaCreationToken(user2ToUserForToken(userCfa), establishment_siret)
+          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa), establishment_siret)
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
             await setUserHasToBeManuallyValidated(creationResult, origin)

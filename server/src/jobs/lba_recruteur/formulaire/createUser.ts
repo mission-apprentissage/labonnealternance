@@ -2,7 +2,7 @@ import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IUserRecruteur } from "shared/models"
 import { AccessStatus } from "shared/models/roleManagement.model"
 
-import { emailHasActiveRole } from "@/services/user2.service"
+import { emailHasActiveRole } from "@/services/userWithAccount.service"
 
 import { logger } from "../../../common/logger"
 import { createUser } from "../../../services/userRecruteur.service"

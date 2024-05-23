@@ -12,7 +12,7 @@ import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { UserForAccessToken, user2ToUserForToken } from "@/security/accessTokenService"
+import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
 import { Application, EmailBlacklist, LbaCompany, Recruiter, UserWithAccount } from "../common/model"
@@ -364,7 +364,7 @@ const buildUserForToken = (application: IApplication, user?: IUserWithAccount): 
     if (!user) {
       throw Boom.internal("un user recruteur était attendu")
     }
-    return user2ToUserForToken(user)
+    return userWithAccountToUserForToken(user)
   } else {
     throw Boom.internal(`job_origin=${job_origin} non supporté`)
   }

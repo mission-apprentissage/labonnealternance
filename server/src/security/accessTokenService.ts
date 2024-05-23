@@ -82,7 +82,7 @@ export type IUserWithAccountForAccessToken = { type: "IUser2"; email: string; _i
 
 export type UserForAccessToken = IUserRecruteur | IAccessToken["identity"]
 
-export const user2ToUserForToken = (user: IUserWithAccount): IUserWithAccountForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
+export const userWithAccountToUserForToken = (user: IUserWithAccount): IUserWithAccountForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
 
 export type IApplicationForAccessToken = { type: "application"; company_siret: string; email: "" } | { type: "application"; jobId: string; email: "" }
 export type IApplicationTForUserToken = { company_siret?: string; jobId?: string }

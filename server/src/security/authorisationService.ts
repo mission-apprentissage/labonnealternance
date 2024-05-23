@@ -13,7 +13,7 @@ import { Primitive } from "type-fest"
 import { Application, Cfa, Entreprise, Recruiter, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
-import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/user2.service"
+import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
 
 import { getUserFromRequest } from "./authenticationService"
 

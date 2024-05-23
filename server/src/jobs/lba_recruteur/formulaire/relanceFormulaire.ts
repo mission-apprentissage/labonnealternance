@@ -4,7 +4,7 @@ import { JOB_STATUS } from "shared/models"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../../../common/logger"
 import { Recruiter, UserWithAccount } from "../../../common/model/index"
@@ -77,8 +77,8 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
             job_type: job.job_type,
             job_level_label: job.job_level_label,
             job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
-            supprimer: createCancelJobLink(user2ToUserForToken(contactUser), job._id.toString()),
-            pourvue: createProvidedJobLink(user2ToUserForToken(contactUser), job._id.toString()),
+            supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
+            pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
           })),
           threshold,
           url: `${config.publicUrl}/espace-pro/authentification`,

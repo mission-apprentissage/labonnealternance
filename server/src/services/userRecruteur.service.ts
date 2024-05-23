@@ -12,7 +12,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId, ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../common/model/index"
 import config from "../config"
@@ -22,7 +22,7 @@ import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { createOrganizationIfNotExist } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
-import { createUser2IfNotExist, isUserEmailChecked } from "./user2.service"
+import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
 
 /**
  * @description generate an API key
@@ -409,7 +409,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
       first_name: sanitizeForEmail(first_name),
       email: sanitizeForEmail(email),
       is_delegated: isCfa,
-      url: createAuthMagicLink(user2ToUserForToken(user)),
+      url: createAuthMagicLink(userWithAccountToUserForToken(user)),
     },
   })
 }

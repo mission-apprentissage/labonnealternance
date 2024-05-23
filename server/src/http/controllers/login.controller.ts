@@ -4,11 +4,11 @@ import { toPublicUser, zRoutes } from "shared/index"
 
 import { UserWithAccount } from "@/common/model"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
 import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/user2.service"
+import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/userWithAccount.service"
 
 import { startSession, stopSession } from "../../common/utils/session.service"
 import config from "../../config"
@@ -80,7 +80,7 @@ export default (server: Server) => {
           },
           last_name: sanitizeForEmail(removeUrlsFromText(last_name)),
           first_name: sanitizeForEmail(removeUrlsFromText(first_name)),
-          connexion_url: createAuthMagicLink(user2ToUserForToken(user)),
+          connexion_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
         },
       })
       return res.status(200).send({})

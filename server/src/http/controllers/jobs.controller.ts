@@ -3,7 +3,7 @@ import { IJob, JOB_STATUS, zRoutes } from "shared"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
-import { getUserWithAccountByEmail } from "@/services/user2.service"
+import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
 import { Recruiter } from "../../common/model/index"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"

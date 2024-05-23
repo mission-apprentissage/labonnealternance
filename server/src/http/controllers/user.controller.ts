@@ -9,7 +9,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
-import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/user2.service"
+import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"

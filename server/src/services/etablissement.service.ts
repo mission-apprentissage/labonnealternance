@@ -15,7 +15,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
@@ -41,7 +41,6 @@ import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
-import { emailHasActiveRole, isUserEmailChecked } from "./user2.service"
 import {
   UserAndOrganization,
   autoValidateUser as authorizeUserOnEntreprise,
@@ -50,6 +49,7 @@ import {
   setEntrepriseValid,
   setUserHasToBeManuallyValidated,
 } from "./userRecruteur.service"
+import { emailHasActiveRole, isUserEmailChecked } from "./userWithAccount.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -888,7 +888,7 @@ export const entrepriseOnboardingWorkflow = {
 }
 
 export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
-  const url = createValidationMagicLink(user2ToUserForToken(user))
+  const url = createValidationMagicLink(userWithAccountToUserForToken(user))
   await mailer.sendEmail({
     to: user.email,
     subject: "Confirmez votre adresse mail",
@@ -923,7 +923,7 @@ export const sendEmailConfirmationEntreprise = async (
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && is_delegated === false) {
     // Get user account validation link
-    const url = createValidationMagicLink(user2ToUserForToken(user))
+    const url = createValidationMagicLink(userWithAccountToUserForToken(user))
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",

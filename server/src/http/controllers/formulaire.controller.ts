@@ -3,8 +3,8 @@ import { zRoutes } from "shared/index"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
-import { getUserWithAccountByEmail } from "@/services/user2.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
+import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
 import { getApplicationsByJobId } from "../../services/application.service"
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"

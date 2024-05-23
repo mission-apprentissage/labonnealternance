@@ -13,7 +13,7 @@ import {
   generateAccessToken,
   generateScope,
   parseAccessToken,
-  user2ToUserForToken,
+  userWithAccountToUserForToken,
 } from "../../../src/security/accessTokenService"
 import { useMongo } from "../../utils/mongo.utils"
 
@@ -40,10 +40,10 @@ describe("accessTokenService", () => {
   }
 
   const mockData = async () => {
-    userACTIVE = user2ToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.GRANTED))
-    userPENDING = user2ToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.AWAITING_VALIDATION))
-    userDISABLED = user2ToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.DENIED))
-    userERROR = user2ToUserForToken(
+    userACTIVE = userWithAccountToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.GRANTED))
+    userPENDING = userWithAccountToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.AWAITING_VALIDATION))
+    userDISABLED = userWithAccountToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.DENIED))
+    userERROR = userWithAccountToUserForToken(
       (
         await saveEntrepriseUserTest(
           {},
