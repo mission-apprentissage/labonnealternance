@@ -83,11 +83,14 @@ export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boo
  */
 export const addEmailToBlacklist = async (email: string, blacklistingOrigin: string): Promise<void> => {
   try {
+    z.string().email().parse(email)
+
     await EmailBlacklist.findOneAndUpdate(
       { email },
       {
         email,
         blacklisting_origin: blacklistingOrigin,
+        $setOnInsert: { created_at: new Date() },
       },
       { upsert: true }
     )
