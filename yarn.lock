@@ -13845,6 +13845,7 @@ __metadata:
     semantic-release: ^21.1.1
     semantic-release-slack-bot: ^4.0.2
     ts-node: ^10.9.1
+    type-fest: ^4.18.2
     typescript: ^5.2.2
     vite-tsconfig-paths: ^4.2.1
     vitest: ^1.4.0
@@ -17772,7 +17773,7 @@ __metadata:
     stream-json: ^1.8.0
     supertest: ^6.3.3
     tsup: ^7.2.0
-    type-fest: ^4.3.3
+    type-fest: ^4.18.2
     typescript: ^5.2.2
     xlsx: ^0.18.5
     xml2js: ^0.6.2
@@ -17854,7 +17855,7 @@ __metadata:
     lodash-es: ^4.17.21
     luhn: ^2.4.1
     mongodb: ^3.7.4
-    type-fest: ^4.3.1
+    type-fest: ^4.18.2
     typescript: ^5.2.2
     zod: 3.21.4
   languageName: unknown
@@ -19315,10 +19316,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.2.0, type-fest@npm:^4.3.1, type-fest@npm:^4.3.3, type-fest@npm:^4.6.0":
-  version: 4.9.0
-  resolution: "type-fest@npm:4.9.0"
-  checksum: 73383de23237b399a70397a53101152548846d919aebcc7d8733000c6c354dc2632fe37c4a70b8571b79fdbfa099e2d8304c5ac56b3254780acff93e4c7a797f
+"type-fest@npm:^4.18.2, type-fest@npm:^4.2.0":
+  version: 4.18.2
+  resolution: "type-fest@npm:4.18.2"
+  checksum: 2e9272b2b97b2f4ea2bbffda43cfce9ca89c474ad7c9565e39b80fee2ce609ea60385faffbbef98994b38feb3fa5fa38feb33acf175f4f85ee21d1773e87bf44
   languageName: node
   linkType: hard
 
@@ -19486,7 +19487,7 @@ __metadata:
     react-swipeable: ^6.2.2
     react-table: ^7.8.0
     shared: "workspace:*"
-    type-fest: ^4.6.0
+    type-fest: ^4.18.2
     typescript: ^5.2.2
     yup: ^0.32.11
     zod: 3.21.4
