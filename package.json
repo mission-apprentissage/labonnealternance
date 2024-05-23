@@ -61,7 +61,8 @@
     "e2e:specific": "cypress run --spec=./cypress/e2e/create-cfa-account-autovalidated.cy.ts"
   },
   "dependencies": {
-    "husky": "^8.0.3"
+    "husky": "^8.0.3",
+    "type-fest": "^4.18.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",

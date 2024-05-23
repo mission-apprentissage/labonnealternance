@@ -200,7 +200,7 @@ export const findByIdAndDelete = async (id): Promise<IEtablissement | null> => E
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc: string } | undefined> => {
+export const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
   try {
     const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     if (!data) {
@@ -209,7 +209,7 @@ export const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string;
     const { searchStatus, opcoName, idcc } = data
     switch (searchStatus) {
       case "OK": {
-        return { opco: opcoName, idcc: idcc.toString() }
+        return { opco: opcoName, idcc: idcc?.toString() }
       }
       case "MULTIPLE_OPCO": {
         return { opco: "Opco multiple", idcc: "Opco multiple, IDCC non défini" }
@@ -519,7 +519,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
 
   const referentielData = {
     establishment_state: d.etat_administratif,
-    is_qualiopi: d.qualiopi,
+    is_qualiopi: Boolean(d.qualiopi),
     establishment_siret: d.siret,
     establishment_raison_sociale: d.raison_sociale,
     contacts: d.contacts,
@@ -611,7 +611,7 @@ export const isCompanyValid = async (props: UserAndOrganization): Promise<{ isVa
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes): IBusinessError => ({ error: true, message, errorCode })
 
-const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc: string } | undefined> => {
+const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
   const idccResult = await getIdcc(siret)
   if (!idccResult) return undefined
   const convention = idccResult.conventions?.at(0)
@@ -619,7 +619,7 @@ const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; 
     const { num } = convention
     const opcoByIdccResult = await getOpcoByIdcc(num)
     if (opcoByIdccResult) {
-      return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc.toString() }
+      return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc?.toString() }
     }
   }
 }
