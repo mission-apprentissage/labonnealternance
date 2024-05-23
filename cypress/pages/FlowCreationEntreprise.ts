@@ -13,6 +13,7 @@ export const FlowCreationEntreprise = {
   },
   personalInfosPage: {
     fillForm({ email, firstName, lastName, phone }: { firstName: string; lastName: string; email: string; phone: string }) {
+      cy.contains("Informations légales", { timeout: 10000 }).should("exist")
       cy.get("input[name='last_name']").click()
       cy.get("input[name='last_name']").type(lastName)
       cy.get("input[name='first_name']").click()

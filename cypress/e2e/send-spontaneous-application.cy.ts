@@ -1,9 +1,13 @@
+import { slowCypressDown } from "cypress-slow-down"
+
 import { smtpClient } from "../api/smtpClient"
 import { FlowItemList } from "../pages/FlowItemList"
 import { FlowSendApplication } from "../pages/FlowSendApplication"
 import { SearchForm } from "../pages/SearchForm"
 import { containsText } from "../utils/containText"
 import { generateRandomString } from "../utils/generateRandomString"
+
+slowCypressDown(300)
 
 describe("send-spontaneous-application", () => {
   it("tests send-spontaneous-application", () => {
