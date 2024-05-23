@@ -11,7 +11,6 @@ import {
   ZEmailBlacklist,
   ZEtablissement,
   ZGeoLocation,
-  ZJob,
   ZLbaCompany,
   ZLbaLegacyCompany,
   ZOptout,
@@ -46,7 +45,6 @@ import {
   Etablissement,
   FormationCatalogue,
   GeoLocation,
-  Job,
   LbaCompany,
   LbaCompanyLegacy,
   Optout,
@@ -117,7 +115,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(FormationCatalogue, zFormationCatalogueSchema)
   await validateModel(GeoLocation, ZGeoLocation)
   // //  await validateModel(InternalJobs, ZInternalJobs)
-  await validateModel(Job, ZJob)
   await validateModel(LbaCompany, ZLbaCompany)
   await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   //  await validateModel(Opco, ZOpco)
