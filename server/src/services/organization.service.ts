@@ -70,9 +70,9 @@ export const upsertEntrepriseData = async (siret: string, origin: string, siretR
       const userAndOrganization: UserAndOrganization = { user, organization: { entreprise: savedEntreprise, type: ENTREPRISE } }
       const result = await autoValidateUserRoleOnCompany(userAndOrganization, origin)
       if (result.validated) {
-        const recruiter = recruiters.find((recruiter) => recruiter.email === user.email && recruiter.establishment_siret === siret)
+        const recruiter = recruiters.find((recruiter) => recruiter.managed_by?.toString() === user._id.toString())
         if (!recruiter) {
-          throw Boom.internal(`inattendu : recruiter non trouvé`, { email: user.email, siret })
+          return
         }
         await activateEntrepriseRecruiterForTheFirstTime(recruiter)
         const role = rolesToUpdate.find((role) => role.user_id.toString() === user._id.toString())
