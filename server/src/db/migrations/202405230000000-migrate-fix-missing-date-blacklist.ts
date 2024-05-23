@@ -8,7 +8,7 @@ export const up = async (db: Db) => {
   await db.collection("emailblacklists").deleteMany({ email: { $not: emailRegexp } })
 
   // restauration du champ created_at pour les entrées qui en sont dépourvues
-  const DATE = dayjs().toDate()
+  const DATE = new Date()
   await db.collection("emailblacklists").updateMany(
     { created_at: { $exists: false } },
     {
