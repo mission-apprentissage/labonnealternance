@@ -8,14 +8,14 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/user2.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { UserForAccessToken, user2ToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
-import { Application, EmailBlacklist, LbaCompany, Recruiter, User2 } from "../common/model"
+import { Application, EmailBlacklist, LbaCompany, Recruiter, UserWithAccount } from "../common/model"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -356,7 +356,7 @@ const buildUrlsOfDetail = (publicUrl: string, offreOrCompany: ILbaJob) => {
   }
 }
 
-const buildUserForToken = (application: IApplication, user?: IUser2): UserForAccessToken => {
+const buildUserForToken = (application: IApplication, user?: IUserWithAccount): UserForAccessToken => {
   const { job_origin, company_siret, company_email } = application
   if (job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return { type: "lba-company", siret: company_siret, email: company_email }
@@ -385,10 +385,10 @@ const buildReplyLink = (application: IApplication, intention: ApplicantIntention
   return `${config.publicUrl}/formulaire-intention?${searchParams.toString()}`
 }
 
-export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id">): Promise<IUser2> => {
+export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id">): Promise<IUserWithAccount> => {
   const { managed_by } = job
   if (managed_by) {
-    const user = await User2.findOne({ _id: managed_by }).lean()
+    const user = await UserWithAccount.findOne({ _id: managed_by }).lean()
     if (!user) {
       throw new Error(`could not find offer manager with id=${managed_by}`)
     }
@@ -405,7 +405,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
 
   // get the related recruiters to fetch it's establishment_id
-  let user: IUser2 | undefined
+  let user: IUserWithAccount | undefined
   if (application.job_id) {
     const recruiter = await Recruiter.findOne({ "jobs._id": application.job_id }).lean()
     if (recruiter) {

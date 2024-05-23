@@ -3,7 +3,7 @@ import Axios from "axios"
 import { IJobWritable, INewDelegations, IRoutes, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/user2.model"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
 import { publicConfig } from "../config.public"
@@ -74,7 +74,7 @@ export const updateUserValidationHistory = ({
   organizationType: typeof AccessEntityType.ENTREPRISE | typeof AccessEntityType.CFA
 }) => apiPut("/user/:userId/organization/:organizationId/permission", { params: { userId, organizationId }, body: { organizationType, status, reason } }).catch(errorHandler)
 export const cancelAccountCreation = (siret: string, token: string) => apiDelete("/user/organization/:siret", { params: { siret }, headers: { authorization: `Bearer ${token}` } })
-export const createAdminUser = (user: IUser2) => apiPost("/admin/users", { body: user })
+export const createAdminUser = (user: IUserWithAccount) => apiPost("/admin/users", { body: user })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**

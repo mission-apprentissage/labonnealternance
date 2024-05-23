@@ -1,5 +1,5 @@
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
-import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
+import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
 
 import { Schema } from "../../../mongodb.js"
 
@@ -36,7 +36,7 @@ const userStatusEventSchema = new Schema<IUserStatusEvent>(
   { _id: false }
 )
 
-const User2Schema = new Schema<IUser2>(
+const UserWithAccountSchema = new Schema<IUserWithAccount>(
   {
     origin: {
       type: String,
@@ -81,4 +81,4 @@ const User2Schema = new Schema<IUser2>(
   }
 )
 
-export const User2 = buildMongooseModel(User2Schema, "userswithaccount")
+export const UserWithAccount = buildMongooseModel(UserWithAccountSchema, "userswithaccount")

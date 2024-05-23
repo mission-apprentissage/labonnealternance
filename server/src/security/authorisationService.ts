@@ -10,10 +10,10 @@ import { AccessPermission, AccessResourcePath } from "shared/security/permission
 import { assertUnreachable, parseEnum } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { Application, Cfa, Entreprise, Recruiter, User2 } from "@/common/model"
+import { Application, Cfa, Entreprise, Recruiter, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
-import { getUser2ByEmail, isUserDisabled, isUserEmailChecked } from "@/services/user2.service"
+import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/user2.service"
 
 import { getUserFromRequest } from "./authenticationService"
 
@@ -146,7 +146,7 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
     await Promise.all(
       schema.securityScheme.resources.user.map(async (userDef) => {
         if ("_id" in userDef) {
-          const userOpt = await User2.findOne({ _id: getAccessResourcePathValue(userDef._id, req) }).lean()
+          const userOpt = await UserWithAccount.findOne({ _id: getAccessResourcePathValue(userDef._id, req) }).lean()
           return userOpt ? { _id: userOpt._id.toString() } : null
         }
         assertUnreachable(userDef)
@@ -180,7 +180,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
           return { application }
         }
         const jobResource = await jobToJobResource(job, recruiter)
-        const user = await getUser2ByEmail(application.applicant_email)
+        const user = await getUserWithAccountByEmail(application.applicant_email)
         return { application, jobResource, applicantId: user?._id.toString() }
       }
 

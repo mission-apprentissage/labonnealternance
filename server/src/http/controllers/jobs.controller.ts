@@ -3,7 +3,7 @@ import { IJob, JOB_STATUS, zRoutes } from "shared"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
-import { getUser2ByEmail } from "@/services/user2.service"
+import { getUserWithAccountByEmail } from "@/services/user2.service"
 
 import { Recruiter } from "../../common/model/index"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
@@ -134,7 +134,7 @@ export default (server: Server) => {
       if (!establishmentExists) {
         return res.status(400).send({ error: true, message: "Establishment does not exist" })
       }
-      const user = await getUser2ByEmail(establishmentExists.email)
+      const user = await getUserWithAccountByEmail(establishmentExists.email)
       if (!user) {
         return res.status(400).send({ error: true, message: "User does not exist" })
       }

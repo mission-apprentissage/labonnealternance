@@ -7,7 +7,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { user2ToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../../../common/logger"
-import { Recruiter, User2 } from "../../../common/model/index"
+import { Recruiter, UserWithAccount } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"
@@ -54,7 +54,7 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
       if (!managed_by) {
         throw Boom.internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
       }
-      const contactUser = await User2.findOne({ _id: managed_by }).lean()
+      const contactUser = await UserWithAccount.findOne({ _id: managed_by }).lean()
       if (!contactUser) {
         throw Boom.internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
       }

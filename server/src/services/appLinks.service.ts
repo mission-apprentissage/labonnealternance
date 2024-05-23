@@ -1,11 +1,11 @@
 import { IJob } from "shared/models"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/user2.model"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
 import {
   IApplicationTForUserToken,
-  IUser2ForAccessToken,
+  IUserWithAccountForAccessToken,
   UserForAccessToken,
   applicationToUserForToken,
   generateAccessToken,
@@ -31,7 +31,7 @@ export function createAuthMagicLink(user: UserForAccessToken) {
   return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
 }
 
-export function createValidationMagicLink(user: IUser2ForAccessToken) {
+export function createValidationMagicLink(user: IUserWithAccountForAccessToken) {
   const token = generateAccessToken(
     user,
     [
@@ -328,7 +328,7 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
   )
 }
 
-export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establishment_id: string, siret: string) {
+export function generateDepotSimplifieToken(user: IUserWithAccountForAccessToken, establishment_id: string, siret: string) {
   return generateAccessToken(
     user,
     [
@@ -367,7 +367,7 @@ export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establis
   )
 }
 
-export function generateCfaCreationToken(user: IUser2ForAccessToken, siret: string) {
+export function generateCfaCreationToken(user: IUserWithAccountForAccessToken, siret: string) {
   return generateAccessToken(
     user,
     [
@@ -392,7 +392,7 @@ export function generateCfaCreationToken(user: IUser2ForAccessToken, siret: stri
   )
 }
 
-export function generateOffreToken(user: IUser2, offre: IJob) {
+export function generateOffreToken(user: IUserWithAccount, offre: IJob) {
   return generateAccessToken(
     user2ToUserForToken(user),
     [

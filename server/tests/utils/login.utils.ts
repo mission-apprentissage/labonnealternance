@@ -1,4 +1,4 @@
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/user2.model"
 
 import { Server } from "@/http/server"
 import { user2ToUserForToken } from "@/security/accessTokenService"
@@ -8,7 +8,7 @@ import { saveAdminUserTest, saveCfaUserTest } from "./user.utils"
 
 export const createAndLogUser = async (httpClient: () => Server, username: string, { type }: { type: "CFA" | "ADMIN" }) => {
   const email = `${username.toLowerCase()}@mail.com`
-  let user: IUser2
+  let user: IUserWithAccount
   if (type === "ADMIN") {
     const result = await saveAdminUserTest({ email })
     user = result.user

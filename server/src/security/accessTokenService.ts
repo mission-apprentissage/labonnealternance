@@ -2,13 +2,13 @@ import Boom from "boom"
 import jwt from "jsonwebtoken"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/user2.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { assertUnreachable } from "shared/utils"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, z } from "zod"
 
-import { User2 } from "@/common/model"
+import { UserWithAccount } from "@/common/model"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
@@ -74,15 +74,15 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
     | { type: "lba-company"; siret: string; email: string }
     | { type: "candidat"; email: string }
     | IApplicationForAccessToken
-    | IUser2ForAccessToken
+    | IUserWithAccountForAccessToken
   scopes: ReadonlyArray<IScope<Schema>>
 }
 
-export type IUser2ForAccessToken = { type: "IUser2"; email: string; _id: string }
+export type IUserWithAccountForAccessToken = { type: "IUser2"; email: string; _id: string }
 
 export type UserForAccessToken = IUserRecruteur | IAccessToken["identity"]
 
-export const user2ToUserForToken = (user: IUser2): IUser2ForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
+export const user2ToUserForToken = (user: IUserWithAccount): IUserWithAccountForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
 
 export type IApplicationForAccessToken = { type: "application"; company_siret: string; email: "" } | { type: "application"; jobId: string; email: "" }
 export type IApplicationTForUserToken = { company_siret?: string; jobId?: string }
@@ -225,7 +225,7 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
 ): Promise<IAccessToken<Schema>> {
   const token = verifyJwtToken(jwtToken) as IAccessToken<Schema>
   if (token.identity.type === "IUserRecruteur") {
-    const user = await User2.findOne({ _id: token.identity._id }).lean()
+    const user = await UserWithAccount.findOne({ _id: token.identity._id }).lean()
 
     if (!user) throw Boom.forbidden()
 

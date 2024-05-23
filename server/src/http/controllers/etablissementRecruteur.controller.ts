@@ -21,14 +21,20 @@ import {
   validateCreationEntrepriseFromCfa,
 } from "@/services/etablissement.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { emailHasActiveRole, getUser2ByEmail, isUserDisabled, isUserEmailChecked, validateUser2Email } from "@/services/user2.service"
+import {
+  emailHasActiveRole,
+  getUserWithAccountByEmail,
+  isUserDisabled,
+  isUserEmailChecked,
+  validateUserWithAccountEmail as validateUserWithAccountEmail,
+} from "@/services/user2.service"
 import {
   autoValidateUser,
   createOrganizationUser,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
-  updateUser2Fields,
+  updateUserWithAccountFields,
 } from "@/services/userRecruteur.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
@@ -255,7 +261,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { _id, ...rest } = req.body
-      const result = await updateUser2Fields(req.params.id, rest)
+      const result = await updateUserWithAccountFields(req.params.id, rest)
       if ("error" in result) {
         throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
       }
@@ -273,7 +279,7 @@ export default (server: Server) => {
       const userFromRequest = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
       const email = userFromRequest.identity.email.toLocaleLowerCase()
 
-      const user = await getUser2ByEmail(email)
+      const user = await getUserWithAccountByEmail(email)
       if (!user) {
         throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
@@ -281,7 +287,7 @@ export default (server: Server) => {
         throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
-        await validateUser2Email(user._id.toString())
+        await validateUserWithAccountEmail(user._id.toString())
       }
       const mainRole = await getMainRoleManagement(user._id, true)
       if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {

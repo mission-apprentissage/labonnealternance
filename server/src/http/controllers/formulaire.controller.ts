@@ -3,7 +3,7 @@ import { zRoutes } from "shared/index"
 
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
-import { getUser2ByEmail } from "@/services/user2.service"
+import { getUserWithAccountByEmail } from "@/services/user2.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
 
 import { getApplicationsByJobId } from "../../services/application.service"
@@ -265,7 +265,7 @@ export default (server: Server) => {
       const { establishment_id } = req.params
       const tokenUser = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/offre/by-token"]).value
       const { email } = tokenUser.identity
-      const user = await getUser2ByEmail(email)
+      const user = await getUserWithAccountByEmail(email)
       if (!user) {
         throw Boom.internal(`inattendu : impossible de récupérer l'utilisateur de type token ayant pour email=${email}`)
       }

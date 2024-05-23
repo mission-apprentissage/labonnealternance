@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest"
 import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.utils"
 
 import {
-  IUser2ForAccessToken,
+  IUserWithAccountForAccessToken as IUserWithAccountForAccessToken,
   SchemaWithSecurity,
   UserForAccessToken,
   generateAccessToken,
@@ -18,10 +18,10 @@ import {
 import { useMongo } from "../../utils/mongo.utils"
 
 describe("accessTokenService", () => {
-  let userACTIVE: IUser2ForAccessToken
-  let userPENDING: IUser2ForAccessToken
-  let userDISABLED: IUser2ForAccessToken
-  let userERROR: IUser2ForAccessToken
+  let userACTIVE: IUserWithAccountForAccessToken
+  let userPENDING: IUserWithAccountForAccessToken
+  let userDISABLED: IUserWithAccountForAccessToken
+  let userERROR: IUserWithAccountForAccessToken
   let userCFA
   let userLbaCompany
 

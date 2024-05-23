@@ -2,7 +2,7 @@ import { Box, Button, FormControl, FormLabel, HStack, Input, VStack, useToast } 
 import { FormikProvider, useFormik } from "formik"
 import { getLastStatusEvent } from "shared"
 import { AccessStatus, IRoleManagementEvent, IRoleManagementJson } from "shared/models/roleManagement.model"
-import { IUser2Json } from "shared/models/user2.model"
+import { IUserWithAccountJson } from "shared/models/user2.model"
 import * as Yup from "yup"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
@@ -18,7 +18,7 @@ export const AdminUserForm = ({
   onDelete,
   onUpdate,
 }: {
-  user?: IUser2Json
+  user?: IUserWithAccountJson
   role?: IRoleManagementJson
   onCreate?: (result: void, error?: any) => void
   onDelete?: () => void

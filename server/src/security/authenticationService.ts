@@ -4,21 +4,21 @@ import { FastifyRequest } from "fastify"
 import { JwtPayload } from "jsonwebtoken"
 import { ICredential, assertUnreachable } from "shared"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/user2.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { Role, UserWithType } from "shared/security/permissions"
 
 import { Credential } from "@/common/model"
 import config from "@/config"
 import { getSession } from "@/services/sessions.service"
-import { getUser2ByEmail } from "@/services/user2.service"
+import { getUserWithAccountByEmail } from "@/services/user2.service"
 import { updateLastConnectionDate } from "@/services/userRecruteur.service"
 
 import { controlUserState } from "../services/login.service"
 
 import { IAccessToken, parseAccessToken, verifyJwtToken } from "./accessTokenService"
 
-export type AccessUser2 = UserWithType<"IUser2", IUser2>
+export type AccessUser2 = UserWithType<"IUser2", IUserWithAccount>
 export type AccessUserCredential = UserWithType<"ICredential", ICredential>
 export type AccessUserToken = UserWithType<"IAccessToken", IAccessToken>
 export type IUserWithType = AccessUser2 | AccessUserCredential | AccessUserToken
@@ -61,7 +61,7 @@ async function authCookieSession(req: FastifyRequest): Promise<AccessUser2 | nul
 
     const { email } = verifyJwtToken(token) as JwtPayload
 
-    const user = await getUser2ByEmail(email.toLowerCase())
+    const user = await getUserWithAccountByEmail(email.toLowerCase())
     if (!user) {
       return null
     }

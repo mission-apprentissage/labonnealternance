@@ -4,7 +4,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { Entreprise, RoleManagement, User2 } from "../../../common/model/index"
+import { Entreprise, RoleManagement, UserWithAccount } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import config from "../../../config"
 import mailer from "../../../services/mailer.service"
@@ -42,7 +42,7 @@ export const relanceOpco = async () => {
     Object.entries(opcoCounts).map(async ([opco, count]) => {
       // Get related user to send the email
       const roles = await RoleManagement.find({ authorized_type: AccessEntityType.OPCO, authorized_id: opco }).lean()
-      const users = await User2.find({ _id: { $in: roles.map((role) => role.user_id) } })
+      const users = await UserWithAccount.find({ _id: { $in: roles.map((role) => role.user_id) } })
 
       await asyncForEach(users, async (user) => {
         await mailer.sendEmail({
