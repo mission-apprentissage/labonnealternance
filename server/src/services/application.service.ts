@@ -8,7 +8,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
-import { IUserWithAccount } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"

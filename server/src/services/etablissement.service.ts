@@ -9,7 +9,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"

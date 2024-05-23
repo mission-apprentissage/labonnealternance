@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Modal, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useQuery } from "react-query"
-import { IUserWithAccount } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 
 import { sortReactTableString } from "@/common/utils/dateUtils"
 import Link from "@/components/Link"

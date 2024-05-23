@@ -6,7 +6,7 @@ import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserR
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"

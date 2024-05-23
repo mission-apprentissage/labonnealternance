@@ -26,7 +26,7 @@ import {
 import { zCFA } from "shared/models/cfa.model"
 import { ZEntreprise } from "shared/models/entreprise.model"
 import { ZRoleManagement } from "shared/models/roleManagement.model"
-import { ZUserWithAccount } from "shared/models/user2.model"
+import { ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"

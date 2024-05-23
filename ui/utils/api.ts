@@ -3,7 +3,7 @@ import Axios from "axios"
 import { IJobWritable, INewDelegations, IRoutes, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
 import { publicConfig } from "../config.public"

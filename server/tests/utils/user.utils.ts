@@ -5,7 +5,7 @@ import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/user2.model"
+import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 

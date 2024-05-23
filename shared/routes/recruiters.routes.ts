@@ -4,8 +4,8 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZPointGeometry, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserWithAccount } from "../models/user2.model"
 import { ZCfaReferentielData, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
+import { ZUserWithAccount } from "../models/userWithAccount.model"
 
 import { IRoutesDef } from "./common.routes"
 

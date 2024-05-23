@@ -3,7 +3,7 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { IRecruiterJson, assertUnreachable } from "shared"
-import { IUserWithAccountJson } from "shared/models/user2.model"
+import { IUserWithAccountJson } from "shared/models/userWithAccount.model"
 import * as Yup from "yup"
 
 import { ApiError } from "@/utils/api.utils"

@@ -1,5 +1,5 @@
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
-import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
+import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/userWithAccount.model.js"
 
 import { Schema } from "../../../mongodb.js"
 

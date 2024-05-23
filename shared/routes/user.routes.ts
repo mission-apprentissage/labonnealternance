@@ -2,8 +2,8 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model"
-import { ZUserWithAccount } from "../models/user2.model"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model"
+import { ZUserWithAccount } from "../models/userWithAccount.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 

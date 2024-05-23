@@ -8,7 +8,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZGlobalAddress, ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
-import { IUserWithAccount, ZValidationUtilisateur } from "./user2.model"
+import { IUserWithAccount, ZValidationUtilisateur } from "./userWithAccount.model"
 
 export const ZEtatUtilisateur = enumToZod(ETAT_UTILISATEUR).describe("Statut de l'utilisateur")
 

@@ -4,7 +4,7 @@ import { FastifyRequest } from "fastify"
 import { JwtPayload } from "jsonwebtoken"
 import { ICredential, assertUnreachable } from "shared"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
-import { IUserWithAccount } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { Role, UserWithType } from "shared/security/permissions"
 

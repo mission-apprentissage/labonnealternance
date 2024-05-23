@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify"
-import { IUserWithAccount } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessRessouces } from "shared/security/permissions"
 import { describe, expect, it } from "vitest"

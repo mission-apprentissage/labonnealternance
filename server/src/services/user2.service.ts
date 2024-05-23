@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
+import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils"
 
 import { RoleManagement, UserWithAccount } from "@/common/model"

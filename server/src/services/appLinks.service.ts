@@ -1,5 +1,5 @@
 import { IJob } from "shared/models"
-import { IUserWithAccount } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"

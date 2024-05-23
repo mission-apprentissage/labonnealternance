@@ -4,8 +4,8 @@ import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, RECRUITER_STATUS, VALIDATION_UTILI
 import { ICFA } from "shared/models/cfa.model.js"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
-import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
+import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/userWithAccount.model.js"
 
 import { ObjectId } from "@/common/mongodb.js"
 
@@ -14,7 +14,7 @@ import { Recruiter, UserRecruteur } from "../../common/model/index.js"
 import { Cfa } from "../../common/model/schema/multiCompte/cfa.schema.js"
 import { Entreprise } from "../../common/model/schema/multiCompte/entreprise.schema.js"
 import { RoleManagement } from "../../common/model/schema/multiCompte/roleManagement.schema.js"
-import { UserWithAccount } from "../../common/model/schema/multiCompte/user2.schema.js"
+import { UserWithAccount } from "../../common/model/schema/multiCompte/userWithAccount.schema.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 export const migrationUsers = async () => {

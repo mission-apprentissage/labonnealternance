@@ -2,7 +2,7 @@ import { Box, Button, Center, Heading, Modal, ModalBody, ModalContent, ModalFoot
 import { useRouter } from "next/router"
 import { useContext } from "react"
 import { IRecruiterJson } from "shared"
-import { IUserWithAccountJson } from "shared/models/user2.model"
+import { IUserWithAccountJson } from "shared/models/userWithAccount.model"
 
 import { AUTHTYPE } from "../../common/contants"
 import { redirect } from "../../common/utils/router"
