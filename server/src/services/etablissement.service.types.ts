@@ -342,7 +342,7 @@ export interface ICFADock {
   filterNAFCode: string
   filterNAFType: string
   filters: IFilters
-  idcc: number
+  idcc: number | null
   opcoName: string
   opcoSiren: string
   searchStatus: string
