@@ -65,6 +65,7 @@ export const applicationSchema = new Schema<IApplication>(
       type: String,
       default: null,
       description: "L'adresse email de destination de la candidature",
+      index: true,
     },
     company_name: {
       type: String,
@@ -102,11 +103,13 @@ export const applicationSchema = new Schema<IApplication>(
       type: String,
       default: null,
       description: "Identifiant chez le transporteur du mail envoyé au candidat",
+      index: true,
     },
     to_company_message_id: {
       type: String,
       default: null,
       description: "Identifiant chez le transporteur du mail envoyé à l'entreprise",
+      index: true,
     },
     caller: {
       type: String,

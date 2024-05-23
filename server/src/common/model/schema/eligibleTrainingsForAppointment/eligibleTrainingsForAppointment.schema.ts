@@ -39,6 +39,7 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
       type: [String],
       default: [],
       description: "Liste des sites autorisés",
+      index: true,
     },
     rco_formation_id: {
       type: String,

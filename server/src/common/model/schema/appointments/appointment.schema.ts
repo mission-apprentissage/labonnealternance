@@ -10,6 +10,7 @@ export const appointmentSchema = new Schema<IAppointment>(
       type: String,
       require: true,
       description: "Id candidat",
+      index: true,
     },
     cfa_intention_to_applicant: {
       type: String,
@@ -136,6 +137,7 @@ export const appointmentSchema = new Schema<IAppointment>(
       type: String,
       default: null,
       description: "Identifiant unique d'une formation",
+      index: true,
     },
     created_at: {
       type: Date,
