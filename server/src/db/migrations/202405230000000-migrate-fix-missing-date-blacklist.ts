@@ -20,5 +20,16 @@ export const up = async (db: Db) => {
     }
   )
 
+  await db.collection("applications").updateMany(
+    { applicant_email: { $not: emailRegexp } },
+    {
+      $set: { applicant_email: "faux_email@faux-domaine.fr" },
+    },
+    {
+      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
+      bypassDocumentValidation: true,
+    }
+  )
+
   logger.info("20240523000000-correction-modeles-lba-2222")
 }
