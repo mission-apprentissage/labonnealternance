@@ -25,7 +25,7 @@ describe("send-job-application", () => {
     SearchForm.goToHome()
     SearchForm.fillSearch({
       metier: "Exploitation agricole",
-      location: "Roubaix 59100",
+      location: "Roubaix",
       distance: 60,
     })
     SearchForm.submit()
