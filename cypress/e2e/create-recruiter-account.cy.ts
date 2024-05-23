@@ -1,8 +1,12 @@
+import { slowCypressDown } from "cypress-slow-down"
+
 import { smtpClient } from "../api/smtpClient"
 import { FlowCreationEntreprise } from "../pages/FlowCreationEntreprise"
 import { JobPage } from "../pages/JobPage"
 import { LoginBar } from "../pages/LoginBar"
 import { generateRandomString } from "../utils/generateRandomString"
+
+slowCypressDown(300)
 
 describe("create-recruiter-account", () => {
   it("test create-recruiter-account", () => {

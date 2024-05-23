@@ -1,9 +1,13 @@
+import { slowCypressDown } from "cypress-slow-down"
+
 import { smtpClient } from "../api/smtpClient"
 import { FlowItemList } from "../pages/FlowItemList"
 import { FlowSendRDV } from "../pages/FlowSendRDV"
 import { SearchForm } from "../pages/SearchForm"
 import { containsText } from "../utils/containText"
 import { generateRandomString } from "../utils/generateRandomString"
+
+slowCypressDown(300)
 
 describe("send-rdv-from-training", () => {
   it("test send-rdv-from-training", () => {

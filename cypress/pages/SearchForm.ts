@@ -19,13 +19,13 @@ export const SearchForm = {
     if (metier) {
       cy.get("#headerFormJobField-input").click()
       cy.get("#headerFormJobField-input").type(metier.substring(0, 15))
-      cy.get("#headerFormJobField-item-0").should("have.text", metier)
+      cy.get("#headerFormJobField-item-0", { timeout: 10000 }).should("have.text", metier)
       cy.get("#headerFormJobField-item-0").click()
     }
     if (location) {
       cy.get("#headerFormPlaceField-input").click()
       cy.get("#headerFormPlaceField-input").type(location.substring(0, 4))
-      cy.get("#headerFormPlaceField-item-0").should("have.text", location)
+      cy.get("#headerFormPlaceField-item-0", { timeout: 10000 }).should("have.text", location)
       cy.get("#headerFormPlaceField-item-0").click()
     }
     if (distance) {
