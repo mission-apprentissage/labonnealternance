@@ -10,6 +10,7 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { IUser2 } from "shared/models/user2.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
+import { z } from "zod"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { UserForAccessToken, user2ToUserForToken } from "@/security/accessTokenService"
@@ -83,11 +84,14 @@ export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boo
  */
 export const addEmailToBlacklist = async (email: string, blacklistingOrigin: string): Promise<void> => {
   try {
+    z.string().email().parse(email)
+
     await EmailBlacklist.findOneAndUpdate(
       { email },
       {
         email,
         blacklisting_origin: blacklistingOrigin,
+        $setOnInsert: { created_at: new Date() },
       },
       { upsert: true }
     )
