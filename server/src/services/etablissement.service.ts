@@ -372,7 +372,6 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
     const { data } = await getHttpClient().get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
     return data
   } catch (error: any) {
-    sentryCaptureException(error)
     if (error?.response?.status === 404) {
       return null
     } else {
