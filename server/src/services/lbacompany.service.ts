@@ -11,6 +11,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { getApplicationByCompanyCount, IApplicationCount } from "./application.service"
+import { generateApplicationToken } from "./appLinks.service"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
@@ -76,6 +77,7 @@ const transformCompany = ({
     ],
     applicationCount: applicationCount?.count || 0,
     url: null,
+    token: generateApplicationToken({ company_siret: company.siret }),
   }
 
   return resultCompany
@@ -112,6 +114,7 @@ const transformCompanyWithMinimalData = ({ company, applicationCountByCompany }:
       },
     ],
     applicationCount: applicationCount?.count || 0,
+    token: generateApplicationToken({ company_siret: company.siret }),
   }
 
   return resultCompany

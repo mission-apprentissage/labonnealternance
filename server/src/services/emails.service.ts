@@ -41,5 +41,5 @@ export const processHardBounceWebhookEvent = async (payload) => {
 }
 
 export const processBlacklistedEmail = async (email: string, origin: string) => {
-  await Promise.all([addEmailToBlacklist(email, origin), await removeEmailFromLbaCompanies(email), await disableEligibleTraininForAppointmentWithEmail(email)])
+  await Promise.all([addEmailToBlacklist(email, origin), removeEmailFromLbaCompanies(email), disableEligibleTraininForAppointmentWithEmail(email)])
 }

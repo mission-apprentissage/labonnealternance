@@ -73,6 +73,7 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
       }
     | { type: "lba-company"; siret: string; email: string }
     | { type: "candidat"; email: string }
+    | IApplicationForAccessToken
     | IUser2ForAccessToken
   scopes: ReadonlyArray<IScope<Schema>>
 }
@@ -82,6 +83,17 @@ export type IUser2ForAccessToken = { type: "IUser2"; email: string; _id: string 
 export type UserForAccessToken = IUserRecruteur | IAccessToken["identity"]
 
 export const user2ToUserForToken = (user: IUser2): IUser2ForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
+
+export type IApplicationForAccessToken = { type: "application"; company_siret: string; email: "" } | { type: "application"; jobId: string; email: "" }
+export type IApplicationTForUserToken = { company_siret?: string; jobId?: string }
+
+export const applicationToUserForToken = ({ company_siret, jobId }: IApplicationTForUserToken): IApplicationForAccessToken => {
+  if (company_siret) {
+    return { type: "application", company_siret, email: "" }
+  } else {
+    return { type: "application", jobId: jobId as string, email: "" }
+  }
+}
 
 export function generateAccessToken(user: UserForAccessToken, scopes: ReadonlyArray<NewIScope<SchemaWithSecurity>>, options: { expiresIn?: string } = {}): string {
   const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUser2", _id: user._id.toString(), email: user.email.toLowerCase() } : user
@@ -195,7 +207,11 @@ export const verifyJwtToken = (jwtToken: string) => {
     })
     const token = data.payload as IAccessToken<any>
     return token
-  } catch (err) {
+  } catch (err: any) {
+    const errorStr = err + ""
+    if (errorStr === "TokenExpiredError: jwt expired") {
+      throw Boom.forbidden("JWT expired")
+    }
     console.warn("invalid jwt token", jwtToken, err)
     throw Boom.forbidden()
   }

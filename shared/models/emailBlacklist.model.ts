@@ -7,7 +7,7 @@ import { zObjectId } from "./common"
 export const ZEmailBlacklist = z
   .object({
     _id: zObjectId,
-    email: z.string(),
+    email: z.string().email(),
     blacklisting_origin: z.string(),
     created_at: z.coerce.date(),
   })

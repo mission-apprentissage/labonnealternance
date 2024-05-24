@@ -8,14 +8,14 @@ import { user2ToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
 import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { getUser2ByEmail } from "@/services/user2.service"
+import { getUser2ByEmail, isUserEmailChecked } from "@/services/user2.service"
 
 import { startSession, stopSession } from "../../common/utils/session.service"
 import config from "../../config"
 import { sendUserConfirmationEmail } from "../../services/etablissement.service"
 import { controlUserState } from "../../services/login.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
-import { isUserEmailChecked, updateLastConnectionDate } from "../../services/userRecruteur.service"
+import { updateLastConnectionDate } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
 export default (server: Server) => {

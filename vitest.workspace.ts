@@ -8,7 +8,7 @@ export default defineWorkspace([
     test: {
       name: "server",
       root: "./server",
-      include: ["./tests/**/*.test.ts"],
+      include: ["./tests/**/*.test.ts", "**/*.test.ts"],
       setupFiles: ["./tests/utils/setup.ts"],
       globalSetup: ["./server/tests/utils/globalSetup.ts"],
       // Isolate doesn't work with Mongoose
