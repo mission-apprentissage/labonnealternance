@@ -128,21 +128,15 @@ export const searchForFtJobs = async (params: {
  */
 export const getFtJob = async (id: string) => {
   const { token } = await getFtAccessToken("OFFRE")
-  try {
-    const result = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
+  const result = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
 
-    return result
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    return null
-  }
+  return result
 }
 
 /**
