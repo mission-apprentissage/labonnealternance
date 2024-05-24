@@ -339,15 +339,11 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
   try {
     const job = await getFtJob(id)
 
-    if (!job) {
+    if (job.status === 204 || job.data === "") {
       throw Boom.notFound()
     }
-
-    if (job.status === 204 || job.status === 400 || job.data === "") {
-      if (caller) {
-        trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
-      }
-      throw Boom.notFound()
+    if (job.status === 400) {
+      throw Boom.badRequest()
     }
 
     const ftJob = transformFtJob({ job: job.data })
@@ -361,8 +357,10 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
     }
 
     return { peJobs: [ftJob] }
-  } catch (error) {
-    sentryCaptureException(error)
+  } catch (error: any) {
+    if (!error.isBoom) {
+      sentryCaptureException(error)
+    }
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
   }
 }
@@ -373,14 +371,10 @@ export const getFtJobFromIdV2 = async ({ id, caller }: { id: string; caller: str
   try {
     const job = await getFtJob(id)
 
-    if (!job) {
-      throw Boom.badRequest()
+    if (job.status === 204 || job.data === "") {
+      throw Boom.notFound()
     }
-
-    if (job.status === 204 || job.status === 400 || job.data === "") {
-      if (caller) {
-        trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
-      }
+    if (job.status === 400) {
       throw Boom.badRequest()
     }
 
@@ -395,8 +389,10 @@ export const getFtJobFromIdV2 = async ({ id, caller }: { id: string; caller: str
     }
 
     return { job: ftJob }
-  } catch (error) {
-    sentryCaptureException(error)
-    return null
+  } catch (error: any) {
+    if (!error.isBoom) {
+      sentryCaptureException(error)
+    }
+    return null // @KB il faut qu'on revoie ça
   }
 }
