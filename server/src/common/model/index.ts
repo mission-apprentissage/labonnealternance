@@ -53,7 +53,7 @@ export async function createMongoDBIndexes() {
     mongooseInstance.modelNames().map(async (name) => {
       const model = mongooseInstance.model(name)
       return model.createIndexes({ background: true }).catch(async (e) => {
-        if (e.codeName === "IndexOptionsConflict") {
+        if (e.codeName === "IndexOptionsConflict" || e.codeName === "IndexKeySpecsConflict") {
           const err = new Error(`Conflict in indexes for ${name}`, { cause: e })
           logger.error(err)
           captureException(err)
