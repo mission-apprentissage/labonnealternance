@@ -3,10 +3,10 @@ import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils"
 
-import { Entreprise, Recruiter, RoleManagement, User2 } from "@/common/model"
+import { Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 
 import { CFA, ENTREPRISE } from "./constant.service"
@@ -15,7 +15,7 @@ import { activateEntrepriseRecruiterForTheFirstTime } from "./formulaire.service
 import { setEntrepriseValid } from "./userRecruteur.service"
 
 export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } | { cfa: ICFA; type: typeof CFA }
-export type UserAndOrganization = { user: IUser2; organization: Organization }
+export type UserAndOrganization = { user: IUserWithAccount; organization: Organization }
 
 export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco: string; idcc?: string }) => {
   const entreprise = await Entreprise.findOne({ siret }).lean()
@@ -65,7 +65,7 @@ export const upsertEntrepriseData = async (siret: string, origin: string, siretR
     const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
     const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: savedEntreprise._id.toString() }).lean()
     const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
-    const users = await User2.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
+    const users = await UserWithAccount.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
     await asyncForEach(users, async (user) => {
       const userAndOrganization: UserAndOrganization = { user, organization: { entreprise: savedEntreprise, type: ENTREPRISE } }
       const result = await autoValidateUserRoleOnCompany(userAndOrganization, origin)
