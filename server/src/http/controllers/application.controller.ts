@@ -4,7 +4,6 @@ import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { zRoutes } from "shared/index"
 
 import { Application } from "../../common/model/index"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { sendApplication, sendMailToApplicant } from "../../services/application.service"
 import { Server } from "../server"
 
@@ -61,26 +60,24 @@ export default function (server: Server) {
       const { id } = req.params
       const { company_recruitment_intention, company_feedback, email, phone } = req.body
 
-      try {
-        const application = await Application.findOneAndUpdate(
-          { _id: new mongoose.Types.ObjectId(id) },
-          { company_recruitment_intention, company_feedback, company_feedback_date: new Date() }
-        )
-        if (!application) throw new Error("application not found")
+      const application = await Application.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(id) },
+        { company_recruitment_intention, company_feedback, company_feedback_date: new Date() }
+      )
 
-        await sendMailToApplicant({
-          application,
-          email,
-          phone,
-          company_recruitment_intention,
-          company_feedback,
-        })
-
-        return res.status(200).send({ result: "ok", message: "comment registered" })
-      } catch (err) {
-        sentryCaptureException(err)
-        throw Boom.badRequest("error_saving_comment")
+      if (!application) {
+        throw Boom.notFound()
       }
+
+      await sendMailToApplicant({
+        application,
+        email,
+        phone,
+        company_recruitment_intention,
+        company_feedback,
+      })
+
+      return res.status(200).send({ result: "ok", message: "comment registered" })
     }
   )
 
