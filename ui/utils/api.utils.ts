@@ -125,6 +125,7 @@ export class ApiError extends Error {
       try {
         if (res.headers.get("Content-Type")?.startsWith("application/json")) {
           const data: IResErrorJson = await res.json()
+          console.log("getting json error", data)
           name = data.error
           message = data.message
           errorData = data.data

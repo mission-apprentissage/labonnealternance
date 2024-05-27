@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
@@ -9,7 +10,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
-import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
+import { activateUser, createSuperUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
@@ -25,7 +26,6 @@ import {
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "../../services/user.service"
 import {
-  createAdminUser,
   getAdminUsers,
   getUserRecruteurById,
   getUsersForAdmin,
@@ -99,12 +99,11 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/admin/users"])],
     },
     async (req, res) => {
-      const { origin, ...userFields } = req.body
+      const userFields = req.body
       const userFromRequest = getUserFromRequest(req, zRoutes.post["/admin/users"]).value
-      const user = await createAdminUser(userFields, {
-        origin: origin ?? "",
-        reason: "création par l'interface admin",
+      const user = await createSuperUser(userFields, {
         grantedBy: userFromRequest._id.toString(),
+        origin: "création par l'interface admin",
       })
       return res.status(200).send({ _id: user._id })
     }
@@ -121,7 +120,7 @@ export default (server: Server) => {
       const { opco, ...userFields } = req.body
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
-        return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
+        throw Boom.badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
       }
       if (opco) {
         const entreprise = await Entreprise.findOneAndUpdate({ siret }, { opco }).lean()

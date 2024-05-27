@@ -244,24 +244,6 @@ program
 
 /********************/
 
-//yarn cli create-user --first_name a --last_name b --email ab@fr.fr --scope beta --establishment_raison_sociale beta --type ADMIN
-program
-  .command("create-user")
-  .description("Permet de créer un accès utilisateur à l'espace partenaire")
-  .requiredOption("--first_name <string>", "prenom de l'utilisateur")
-  .requiredOption("--last_name <string>", "nom de l'utilisateur")
-  .requiredOption("--email <string>", "email de l'utilisateur")
-  .requiredOption("--scope <string>", "scope")
-  .requiredOption("--establishment_raison_sociale <string>", " raison sociale de l'établissement")
-  .option("--establishment_siret <string>", "siret de l'établissement")
-  .option("--phone <string>", "telephone de l'utilisateur")
-  .option("--address <string>", "adresse de l'utilisateur")
-  .option("-a, --admin", "utilisateur administrateur", false)
-  .requiredOption("-t ,--type <string>", "type d'utilisateur")
-  .requiredOption("-e, --email_valide", "email valide", true)
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("user:create"))
-
 program
   .command("create-api-user")
   .description("Permet de créer un utilisateur ayant accès à l'API")

@@ -1,12 +1,11 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes, removeUndefinedFields } from "shared"
+import { IJobWritable, INewDelegations, INewSuperUser, IRoutes, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
 
-import { publicConfig } from "../config.public"
+import { publicConfig } from "@/config.public"
 
 import { ApiError, apiDelete, apiGet, apiPost, apiPut } from "./api.utils"
 
@@ -74,7 +73,7 @@ export const updateUserValidationHistory = ({
   organizationType: typeof AccessEntityType.ENTREPRISE | typeof AccessEntityType.CFA
 }) => apiPut("/user/:userId/organization/:organizationId/permission", { params: { userId, organizationId }, body: { organizationType, status, reason } }).catch(errorHandler)
 export const cancelAccountCreation = (siret: string, token: string) => apiDelete("/user/organization/:siret", { params: { siret }, headers: { authorization: `Bearer ${token}` } })
-export const createAdminUser = (user: IUserWithAccount) => apiPost("/admin/users", { body: user })
+export const createSuperUser = (user: INewSuperUser) => apiPost("/admin/users", { body: user })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**

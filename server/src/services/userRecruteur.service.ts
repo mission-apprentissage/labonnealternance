@@ -7,7 +7,7 @@ import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS, VALIDATION_UTILI
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
+import { IUserWithAccount, IUserWithAccountFields, UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId, ObjectIdType } from "@/common/mongodb"
@@ -192,11 +192,16 @@ export const createOrganizationUser = async ({
   return user
 }
 
-export const createOpcoUser = async (userProps: Pick<IUserWithAccount, "email" | "first_name" | "last_name" | "phone">, opco: OPCOS, grantedBy: string) => {
+export const createOpcoUser = async (
+  userProps: IUserWithAccountFields,
+  opco: OPCOS,
+  { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }
+) => {
   const user = await createUser2IfNotExist(
     {
       ...userProps,
       last_action_date: new Date(),
+      origin,
     },
     false,
     grantedBy
@@ -206,25 +211,23 @@ export const createOpcoUser = async (userProps: Pick<IUserWithAccount, "email" |
       user_id: user._id,
       authorized_id: opco,
       authorized_type: AccessEntityType.OPCO,
-      origin: "",
+      origin,
     },
     {
       validation_type: VALIDATION_UTILISATEUR.AUTO,
       status: AccessStatus.GRANTED,
-      reason: "",
+      reason,
     }
   )
   return user
 }
 
-export const createAdminUser = async (
-  userProps: Pick<IUserWithAccount, "email" | "first_name" | "last_name" | "phone">,
-  { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }
-) => {
+export const createAdminUser = async (userProps: IUserWithAccountFields, { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }) => {
   const user = await createUser2IfNotExist(
     {
       ...userProps,
       last_action_date: new Date(),
+      origin,
     },
     false,
     grantedBy
@@ -245,7 +248,7 @@ export const createAdminUser = async (
   return user
 }
 
-export const updateUserWithAccountFields = async (userId: ObjectIdType, fields: Partial<IUserWithAccount>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
+export const updateUserWithAccountFields = async (userId: ObjectIdType, fields: Partial<IUserWithAccountFields>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
   const { email, first_name, last_name, phone } = fields
   const newEmail = email?.toLocaleLowerCase()
 

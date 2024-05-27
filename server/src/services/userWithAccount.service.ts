@@ -1,11 +1,14 @@
 import Boom from "boom"
+import { INewSuperUser } from "shared"
+import { ADMIN, OPCO } from "shared/constants"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/userWithAccount.model"
-import { getLastStatusEvent } from "shared/utils"
+import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
+import { assertUnreachable, getLastStatusEvent } from "shared/utils"
 
 import { RoleManagement, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
+import { createAdminUser, createOpcoUser } from "@/services/userRecruteur.service"
 
 export const createUser2IfNotExist = async (
   userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,
@@ -111,3 +114,22 @@ export const isUserEmailChecked = (user: IUserWithAccount): boolean => user.stat
 const activationStatus = [UserEventType.ACTIF, UserEventType.DESACTIVE]
 export const isUserDisabled = (user: IUserWithAccount): boolean =>
   getLastStatusEvent(user.status.filter((event) => activationStatus.includes(event.status)))?.status === UserEventType.DESACTIVE
+
+export const createSuperUser = async (userFields: INewSuperUser, { grantedBy, origin }: { grantedBy: string; origin: string }) => {
+  const { email, type } = userFields
+  if (await emailHasActiveRole(email)) {
+    throw Boom.badRequest(`User ${email} already have an active role`)
+  }
+  const reason = ""
+
+  if (type === ADMIN) {
+    const user = await createAdminUser(userFields, { grantedBy, origin, reason })
+    return user
+  } else if (type === OPCO) {
+    const { opco } = userFields
+    const user = await createOpcoUser(userFields, opco, { grantedBy, origin, reason })
+    return user
+  } else {
+    assertUnreachable(type)
+  }
+}

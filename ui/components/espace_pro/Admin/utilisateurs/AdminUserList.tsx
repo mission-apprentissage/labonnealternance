@@ -47,13 +47,9 @@ const AdminUserList = () => {
             <Box paddingLeft="1w" as="i" className="ri-close-line" />
           </ModalCloseButton>
           <AdminUserForm
-            user={undefined}
-            role={undefined}
-            onCreate={async (_, error) => {
-              if (!error) {
-                newUser.onClose()
-                await refetchUsers()
-              }
+            onCreate={async () => {
+              newUser.onClose()
+              await refetchUsers()
             }}
           />
         </ModalContent>
