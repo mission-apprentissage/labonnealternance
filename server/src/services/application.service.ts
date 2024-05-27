@@ -603,9 +603,6 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
   }
 
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    if (!("company" in offreOrCompany)) {
-      throw new Error("expected a company")
-    }
     appCount = await Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       company_siret: offreOrCompany.job.siret,
@@ -614,9 +611,6 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
       return BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER
     }
   } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    if (!("offre" in offreOrCompany)) {
-      throw new Error("expected a job")
-    }
     appCount = await Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       job_id: offreOrCompany.job._id.toString(),
