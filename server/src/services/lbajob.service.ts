@@ -97,7 +97,7 @@ export const getJobs = async ({
 
   const recruiters: IRecruiter[] = await Recruiter.aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
 
-  const recruitersWithFilteredJobs = await Promise.all(
+  const recruitersWithJobs = await Promise.all(
     recruiters.map(async (recruiter) => {
       const [firstJob] = recruiter.jobs
       if (!firstJob) {
@@ -129,7 +129,7 @@ export const getJobs = async ({
     })
   )
 
-  return recruitersWithFilteredJobs
+  return recruitersWithJobs
 }
 
 /**
