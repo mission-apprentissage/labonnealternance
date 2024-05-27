@@ -584,23 +584,15 @@ async function getApplicationCountForItemV1(applicantEmail: string, offreOrCompa
   const { type } = offreOrCompany
 
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    if (!("company" in offreOrCompany)) {
-      throw new Error("expected a company")
-    }
-
     return Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
-      company_siret: offreOrCompany.company.siret,
+      company_siret: offreOrCompany.job.siret,
     })
   }
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    if (!("offre" in offreOrCompany)) {
-      throw new Error("expected a job")
-    }
-
     return Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
-      job_id: offreOrCompany.offre._id.toString(),
+      job_id: offreOrCompany.job._id.toString(),
     })
   }
   assertUnreachable(type as never)
@@ -646,7 +638,7 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
     caller
       ? Application.countDocuments({
           caller: caller.toLowerCase(),
-          company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.company.siret : offreOrCompany.recruiter.establishment_siret,
+          company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.job.siret : offreOrCompany.recruiter.establishment_siret,
           created_at: { $gte: start, $lt: end },
         })
       : 0,
