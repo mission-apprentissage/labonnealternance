@@ -11,7 +11,6 @@ import {
   ZEmailBlacklist,
   ZEtablissement,
   ZGeoLocation,
-  ZJob,
   ZLbaCompany,
   ZLbaLegacyCompany,
   ZOptout,
@@ -26,7 +25,7 @@ import {
 import { zCFA } from "shared/models/cfa.model"
 import { ZEntreprise } from "shared/models/entreprise.model"
 import { ZRoleManagement } from "shared/models/roleManagement.model"
-import { ZUser2 } from "shared/models/user2.model"
+import { ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
@@ -45,7 +44,6 @@ import {
   Etablissement,
   FormationCatalogue,
   GeoLocation,
-  Job,
   LbaCompany,
   LbaCompanyLegacy,
   Optout,
@@ -56,7 +54,7 @@ import {
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
-  User2,
+  UserWithAccount,
   eligibleTrainingsForAppointmentHistory,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
@@ -115,7 +113,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(FormationCatalogue, zFormationCatalogueSchema)
   await validateModel(GeoLocation, ZGeoLocation)
   // //  await validateModel(InternalJobs, ZInternalJobs)
-  await validateModel(Job, ZJob)
   await validateModel(LbaCompany, ZLbaCompany)
   await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   //  await validateModel(Opco, ZOpco)
@@ -130,6 +127,6 @@ export async function validateModels(): Promise<void> {
   // await validateModel(UserRecruteur, ZUserRecruteur)
   await validateModel(Entreprise, ZEntreprise)
   await validateModel(Cfa, zCFA)
-  await validateModel(User2, ZUser2)
+  await validateModel(UserWithAccount, ZUserWithAccount)
   await validateModel(RoleManagement, ZRoleManagement)
 }

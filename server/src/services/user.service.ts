@@ -7,7 +7,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId } from "@/common/mongodb"
 
-import { Recruiter, User, User2 } from "../common/model/index"
+import { Recruiter, User, UserWithAccount } from "../common/model/index"
 
 import { getUserRecruteursForManagement } from "./userRecruteur.service"
 
@@ -158,7 +158,7 @@ export const getUserAndRecruitersDataForOpcoUser = async (
 
 export const getUserNamesFromIds = async (ids: string[]) => {
   const deduplicatedIds = [...new Set(ids)].filter((id) => ObjectId.isValid(id))
-  const users = await User2.find({ _id: { $in: deduplicatedIds } }).lean()
+  const users = await UserWithAccount.find({ _id: { $in: deduplicatedIds } }).lean()
   return users
 }
 

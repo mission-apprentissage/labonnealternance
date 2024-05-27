@@ -10,7 +10,7 @@ import config from "../../config"
 
 const saveBlacklistEmails = async (contacts) => {
   for (let i = 0; i < contacts.length; ++i) {
-    const email = contacts[i].email
+    const email = contacts[i].email.toLowerCase()
     const blackListedEmail = await EmailBlacklist.findOne({ email })
     if (!blackListedEmail) {
       await processBlacklistedEmail(email, "brevo_spam")
