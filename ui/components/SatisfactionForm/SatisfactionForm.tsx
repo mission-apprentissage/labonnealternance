@@ -184,7 +184,7 @@ const SatisfactionForm = () => {
   return (
     <Box>
       <SatisfactionFormNavigation />
-      {sendingState !== "ok_sent" ? (
+      {sendingState !== "ok_sent" && (
         <Flex direction="column" width="80%" maxWidth="992px" margin="auto" pt={12} alignItems="center" data-testid="SatisfactionFormSuccess">
           {getFeedbackText()}
           {isNonEmptyString(company_recruitment_intention) && (
@@ -248,18 +248,23 @@ const SatisfactionForm = () => {
                   </>
                 )}
 
-                <Flex direction="row-reverse">
-                  <Button mt={4} variant="blackButton" aria-label="Envoyer le message au candidat" type="submit">
-                    Envoyer le message
-                  </Button>
-                </Flex>
+                {sendingState === "not_sent_because_of_errors" ? (
+                  <Box mt={8} fontWeight={700}>
+                    {getErrorForMessage("Une erreur technique s'est produite")}
+                  </Box>
+                ) : (
+                  <Flex direction="row-reverse">
+                    <Button mt={4} variant="blackButton" aria-label="Envoyer le message au candidat" type="submit">
+                      Envoyer le message
+                    </Button>
+                  </Flex>
+                )}
               </form>
             </Box>
           )}
         </Flex>
-      ) : (
-        <SatisfactionFormSuccess />
       )}
+      {sendingState === "ok_sent" && <SatisfactionFormSuccess />}
     </Box>
   )
 }

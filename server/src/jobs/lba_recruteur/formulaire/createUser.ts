@@ -6,8 +6,8 @@ import { AccessStatus } from "shared/models/roleManagement.model"
 import { upsertCfa } from "@/services/cfa.service"
 import { getEntrepriseDataFromSiret } from "@/services/etablissement.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
-import { emailHasActiveRole } from "@/services/user2.service"
 import { createAdminUser, createOrganizationUser } from "@/services/userRecruteur.service"
+import { emailHasActiveRole } from "@/services/userWithAccount.service"
 
 import { logger } from "../../../common/logger"
 

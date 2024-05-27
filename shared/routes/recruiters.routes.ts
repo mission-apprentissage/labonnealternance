@@ -5,8 +5,8 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZPointGeometry, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
 import { ZEntreprise } from "../models/entreprise.model"
-import { ZUser2 } from "../models/user2.model"
 import { ZCfaReferentielData, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
+import { ZUserWithAccount } from "../models/userWithAccount.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -165,7 +165,7 @@ export const zRecruiterRoutes = {
         "200": z
           .object({
             formulaire: ZRecruiter.optional(),
-            user: ZUser2,
+            user: ZUserWithAccount,
             token: z.string(),
             validated: z.boolean(),
           })

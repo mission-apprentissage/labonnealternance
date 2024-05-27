@@ -1,18 +1,18 @@
 import dayjs from "dayjs"
 
 import { logger } from "../../common/logger"
-import { Recruiter, User2 } from "../../common/model/index"
+import { Recruiter, UserWithAccount } from "../../common/model/index"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymize = async () => {
   const fromDate = dayjs().subtract(2, "years").toDate()
-  const user2Query = { $or: [{ last_action_date: { $lte: fromDate } }, { last_action_date: null, createdAt: { $lte: fromDate } }] }
-  const usersToAnonymize = await User2.find(user2Query).lean()
+  const userWithAccountQuery = { $or: [{ last_action_date: { $lte: fromDate } }, { last_action_date: null, createdAt: { $lte: fromDate } }] }
+  const usersToAnonymize = await UserWithAccount.find(userWithAccountQuery).lean()
   const userIds = usersToAnonymize.map(({ _id }) => _id.toString())
   const recruiterQuery = { "jobs.managed_by": { $in: userIds } }
-  await User2.aggregate([
+  await UserWithAccount.aggregate([
     {
-      $match: user2Query,
+      $match: userWithAccountQuery,
     },
     {
       $project: {
@@ -56,8 +56,8 @@ const anonymize = async () => {
     },
   ])
   const { deletedCount: recruiterCount } = await Recruiter.deleteMany(recruiterQuery)
-  const { deletedCount: user2Count } = await User2.deleteMany(user2Query)
-  return { user2Count, recruiterCount }
+  const { deletedCount: userWithAccountCount } = await UserWithAccount.deleteMany(userWithAccountQuery)
+  return { userWithAccountCount, recruiterCount }
 }
 
 export async function anonimizeUserRecruteurs() {
@@ -65,11 +65,11 @@ export async function anonimizeUserRecruteurs() {
   try {
     logger.info(" -- Anonymisation des users de plus de 2 ans -- ")
 
-    const { recruiterCount, user2Count } = await anonymize()
+    const { recruiterCount, userWithAccountCount } = await anonymize()
 
     await notifyToSlack({
       subject,
-      message: `Anonymisation des users de plus de 2 ans terminée. ${user2Count} user(s) anonymisé(s). ${recruiterCount} recruiter(s) anonymisé(s)`,
+      message: `Anonymisation des users de plus de 2 ans terminée. ${userWithAccountCount} user(s) anonymisé(s). ${recruiterCount} recruiter(s) anonymisé(s)`,
       error: false,
     })
   } catch (err: any) {

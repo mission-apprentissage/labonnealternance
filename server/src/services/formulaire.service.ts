@@ -6,7 +6,7 @@ import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserR
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -132,7 +132,7 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
 /**
  * @description Create job offer for formulaire
  */
-export const createJob = async ({ job, establishment_id, user }: { job: IJobWritable; establishment_id: string; user: IUser2 }): Promise<IRecruiter> => {
+export const createJob = async ({ job, establishment_id, user }: { job: IJobWritable; establishment_id: string; user: IUserWithAccount }): Promise<IRecruiter> => {
   const userId = user._id
   const recruiter = await Recruiter.findOne({ establishment_id: establishment_id }).lean()
   if (!recruiter) {
@@ -191,7 +191,7 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
     return updatedFormulaire
   }
 
-  let contactCFA: IUser2 | null = null
+  let contactCFA: IUserWithAccount | null = null
   if (is_delegated) {
     if (!cfa_delegated_siret) {
       throw Boom.internal(`unexpected: could not find user recruteur CFA that created the job`)
@@ -650,7 +650,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
   })
 }
 
-export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, contactCFA?: IUser2) {
+export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, contactCFA?: IUserWithAccount) {
   const isRecruteurAwaiting = recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION
   if (isRecruteurAwaiting) {
     return

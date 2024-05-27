@@ -13,6 +13,7 @@ const cfaSchema = new Schema<ICFA>(
     siret: {
       type: String,
       description: "Siret de l'établissement",
+      index: true,
     },
     raison_sociale: {
       type: String,

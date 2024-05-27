@@ -6,7 +6,7 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Entreprise, RoleManagement, User2 } from "@/common/model"
+import { Cfa, Entreprise, RoleManagement, UserWithAccount } from "@/common/model"
 
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 
@@ -130,7 +130,7 @@ export const getPublicUserRecruteurPropsOrError = async (
       throw Boom.internal(`inattendu : entreprise non trouvée pour user id=${userId}`)
     }
     const { siret } = entreprise
-    const user = await User2.findOne({ _id: userId }).lean()
+    const user = await UserWithAccount.findOne({ _id: userId }).lean()
     if (!user) {
       throw Boom.internal(`inattendu : user non trouvé`, { userId })
     }

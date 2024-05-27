@@ -9,15 +9,26 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Entreprise, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, User2 } from "../common/model/index"
+import {
+  Cfa,
+  Entreprise,
+  Etablissement,
+  LbaCompany,
+  LbaCompanyLegacy,
+  ReferentielOpco,
+  RoleManagement,
+  SiretDiffusibleStatus,
+  UnsubscribeOF,
+  UserWithAccount,
+} from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -42,8 +53,8 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { UserAndOrganization, updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
-import { emailHasActiveRole } from "./user2.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, isUserEmailChecked, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
+import { emailHasActiveRole } from "./userWithAccount.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -194,7 +205,7 @@ export const findByIdAndDelete = async (id): Promise<IEtablissement | null> => E
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc: string } | undefined> => {
+export const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
   try {
     const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     if (!data) {
@@ -203,7 +214,7 @@ export const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string;
     const { searchStatus, opcoName, idcc } = data
     switch (searchStatus) {
       case "OK": {
-        return { opco: opcoName, idcc: idcc.toString() }
+        return { opco: opcoName, idcc: idcc?.toString() }
       }
       case "MULTIPLE_OPCO": {
         return { opco: "Opco multiple", idcc: "Opco multiple, IDCC non défini" }
@@ -366,10 +377,10 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
     const { data } = await getHttpClient().get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
     return data
   } catch (error: any) {
-    sentryCaptureException(error)
     if (error?.response?.status === 404) {
       return null
     } else {
+      sentryCaptureException(error)
       throw error
     }
   }
@@ -513,7 +524,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
 
   const referentielData = {
     establishment_state: d.etat_administratif,
-    is_qualiopi: d.qualiopi,
+    is_qualiopi: Boolean(d.qualiopi),
     establishment_siret: d.siret,
     establishment_raison_sociale: d.raison_sociale,
     contacts: d.contacts,
@@ -606,7 +617,7 @@ export const isCompanyValid = async (props: UserAndOrganization): Promise<{ isVa
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes): IBusinessError => ({ error: true, message, errorCode })
 
-const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc: string } | undefined> => {
+const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
   const idccResult = await getIdcc(siret)
   if (!idccResult) return undefined
   const convention = idccResult.conventions?.at(0)
@@ -614,7 +625,7 @@ const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; 
     const { num } = convention
     const opcoByIdccResult = await getOpcoByIdcc(num)
     if (opcoByIdccResult) {
-      return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc.toString() }
+      return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc?.toString() }
     }
   }
 }
@@ -760,7 +771,7 @@ export const entrepriseOnboardingWorkflow = {
     }: {
       isUserValidated?: boolean
     } = {}
-  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUser2; validated: boolean }> => {
+  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret })
     if (cfaErrorOpt) return cfaErrorOpt
@@ -912,8 +923,8 @@ const entrepriseToRecruiter = ({ siret, address, address_detail, enseigne, geo_c
   return formulaire
 }
 
-export const sendUserConfirmationEmail = async (user: IUser2) => {
-  const url = createValidationMagicLink(user2ToUserForToken(user))
+export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
+  const url = createValidationMagicLink(userWithAccountToUserForToken(user))
   await mailer.sendEmail({
     to: user.email,
     subject: "Confirmez votre adresse mail",
@@ -929,7 +940,12 @@ export const sendUserConfirmationEmail = async (user: IUser2) => {
   })
 }
 
-export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: IRecruiter, accessStatus: AccessStatus | null, entrepriseStatus: EntrepriseStatus | null) => {
+export const sendEmailConfirmationEntreprise = async (
+  user: IUserWithAccount,
+  recruteur: IRecruiter,
+  accessStatus: AccessStatus | null,
+  entrepriseStatus: EntrepriseStatus | null
+) => {
   if (
     entrepriseStatus !== EntrepriseStatus.VALIDE ||
     isUserEmailChecked(user) ||
@@ -943,7 +959,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: I
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && is_delegated === false) {
     // Get user account validation link
-    const url = createValidationMagicLink(user2ToUserForToken(user))
+    const url = createValidationMagicLink(userWithAccountToUserForToken(user))
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",
@@ -966,7 +982,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: I
       },
     })
   } else {
-    const user2 = await User2.findOne({ _id: user._id.toString() }).lean()
+    const user2 = await UserWithAccount.findOne({ _id: user._id.toString() }).lean()
     if (!user2) {
       throw Boom.internal(`could not find user with id=${user._id}`)
     }

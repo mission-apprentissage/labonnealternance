@@ -2,7 +2,7 @@ import { Box, Button, Center, Heading, Modal, ModalBody, ModalContent, ModalFoot
 import { useRouter } from "next/router"
 import { useContext } from "react"
 import { IRecruiterJson } from "shared"
-import { IUser2Json } from "shared/models/user2.model"
+import { IUserWithAccountJson } from "shared/models/userWithAccount.model"
 
 import { AUTHTYPE } from "../../common/contants"
 import { redirect } from "../../common/utils/router"
@@ -13,7 +13,7 @@ import { cancelAccountCreation } from "../../utils/api"
 export const ConfirmationCreationCompte = (props: {
   isOpen: boolean
   onClose: () => void
-  user: IUser2Json
+  user: IUserWithAccountJson
   formulaire: IRecruiterJson
   isWidget: boolean
   type: "ENTREPRISE" | "CFA"

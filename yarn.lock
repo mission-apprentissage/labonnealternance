@@ -7000,6 +7000,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cypress-plugin-config@npm:^1.0.0":
+  version: 1.2.1
+  resolution: "cypress-plugin-config@npm:1.2.1"
+  checksum: bcf1ce2fc711d48284ff6c7802c3f8a32bbd06c891ea78b17b51f7ac02f26c0ede77c004f1abe5ec24ccd1806b0c5ef9f7425671f8601b182efb8d49f5018c22
+  languageName: node
+  linkType: hard
+
+"cypress-slow-down@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "cypress-slow-down@npm:1.3.1"
+  dependencies:
+    cypress-plugin-config: ^1.0.0
+  checksum: 0f481a64905e0431d6ea586803bf4a10cc11013e23a450c66b16f8826197ece73a64920792e8df5a731d9ce7318d5ffde16d43234943f0bad754472bb5485081
+  languageName: node
+  linkType: hard
+
 "cypress@npm:^13.6.4":
   version: 13.6.4
   resolution: "cypress@npm:13.6.4"
@@ -13827,6 +13843,7 @@ __metadata:
     "@typescript-eslint/parser": ^6.7.2
     cross-env: ^7.0.3
     cypress: ^13.6.4
+    cypress-slow-down: ^1.3.1
     dotenv: ^16.1.4
     eslint: ^8.49.0
     eslint-config-next: ^13.4.19
@@ -13845,6 +13862,7 @@ __metadata:
     semantic-release: ^21.1.1
     semantic-release-slack-bot: ^4.0.2
     ts-node: ^10.9.1
+    type-fest: ^4.18.2
     typescript: ^5.2.2
     vite-tsconfig-paths: ^4.2.1
     vitest: ^1.4.0
@@ -17772,7 +17790,7 @@ __metadata:
     stream-json: ^1.8.0
     supertest: ^6.3.3
     tsup: ^7.2.0
-    type-fest: ^4.3.3
+    type-fest: ^4.18.2
     typescript: ^5.2.2
     xlsx: ^0.18.5
     xml2js: ^0.6.2
@@ -17854,7 +17872,7 @@ __metadata:
     lodash-es: ^4.17.21
     luhn: ^2.4.1
     mongodb: ^3.7.4
-    type-fest: ^4.3.1
+    type-fest: ^4.18.2
     typescript: ^5.2.2
     zod: 3.21.4
   languageName: unknown
@@ -19315,10 +19333,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^4.2.0, type-fest@npm:^4.3.1, type-fest@npm:^4.3.3, type-fest@npm:^4.6.0":
-  version: 4.9.0
-  resolution: "type-fest@npm:4.9.0"
-  checksum: 73383de23237b399a70397a53101152548846d919aebcc7d8733000c6c354dc2632fe37c4a70b8571b79fdbfa099e2d8304c5ac56b3254780acff93e4c7a797f
+"type-fest@npm:^4.18.2, type-fest@npm:^4.2.0":
+  version: 4.18.2
+  resolution: "type-fest@npm:4.18.2"
+  checksum: 2e9272b2b97b2f4ea2bbffda43cfce9ca89c474ad7c9565e39b80fee2ce609ea60385faffbbef98994b38feb3fa5fa38feb33acf175f4f85ee21d1773e87bf44
   languageName: node
   linkType: hard
 
@@ -19486,7 +19504,7 @@ __metadata:
     react-swipeable: ^6.2.2
     react-table: ^7.8.0
     shared: "workspace:*"
-    type-fest: ^4.6.0
+    type-fest: ^4.18.2
     typescript: ^5.2.2
     yup: ^0.32.11
     zod: 3.21.4

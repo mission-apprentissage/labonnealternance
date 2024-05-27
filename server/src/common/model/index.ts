@@ -28,7 +28,7 @@ import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
 import { Cfa } from "./schema/multiCompte/cfa.schema"
 import { Entreprise } from "./schema/multiCompte/entreprise.schema"
 import { RoleManagement } from "./schema/multiCompte/roleManagement.schema"
-import { User2 } from "./schema/multiCompte/user2.schema"
+import { UserWithAccount } from "./schema/multiCompte/userWithAccount.schema"
 import Opco from "./schema/opco/opco.schema"
 import Optout from "./schema/optout/optout.schema"
 import Recruiter from "./schema/recruiter/recruiter.schema"
@@ -53,7 +53,7 @@ export async function createMongoDBIndexes() {
     mongooseInstance.modelNames().map(async (name) => {
       const model = mongooseInstance.model(name)
       return model.createIndexes({ background: true }).catch(async (e) => {
-        if (e.codeName === "IndexOptionsConflict") {
+        if (e.codeName === "IndexOptionsConflict" || e.codeName === "IndexKeySpecsConflict") {
           const err = new Error(`Conflict in indexes for ${name}`, { cause: e })
           logger.error(err)
           captureException(err)
@@ -118,7 +118,7 @@ export {
   User,
   UserRecruteur,
   eligibleTrainingsForAppointmentHistory,
-  User2,
+  UserWithAccount,
   Entreprise,
   Cfa,
   RoleManagement,

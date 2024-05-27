@@ -7,9 +7,30 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId } from "@/common/mongodb"
 
-import { Recruiter, User, User2 } from "../common/model/index"
+import { Recruiter, User, UserWithAccount } from "../common/model/index"
 
 import { getUserRecruteursForManagement } from "./userRecruteur.service"
+
+const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
+  const newUserId = new ObjectId()
+  const user = await User.findOneAndUpdate(
+    { email },
+    {
+      $set: update,
+      $setOnInsert: { _id: newUserId, ...create },
+    },
+    {
+      upsert: true,
+      new: true,
+    }
+  )
+
+  return {
+    user,
+    // If the user is new, we will have to update the _id with the default one
+    isNew: user._id.equals(newUserId),
+  }
+}
 
 /**
  * @description Returns user from its email.
@@ -137,8 +158,8 @@ export const getUserAndRecruitersDataForOpcoUser = async (
 
 export const getUserNamesFromIds = async (ids: string[]) => {
   const deduplicatedIds = [...new Set(ids)].filter((id) => ObjectId.isValid(id))
-  const users = await User2.find({ _id: { $in: deduplicatedIds } }).lean()
+  const users = await UserWithAccount.find({ _id: { $in: deduplicatedIds } }).lean()
   return users
 }
 
-export { createUser, find, findOne, getUserById, getUserByMail, update }
+export { createOrUpdateUserByEmail, createUser, find, findOne, getUserById, getUserByMail, update }

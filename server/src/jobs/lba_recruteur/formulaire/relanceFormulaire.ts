@@ -4,10 +4,10 @@ import { JOB_STATUS } from "shared/models"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../../../common/logger"
-import { Recruiter, User2 } from "../../../common/model/index"
+import { Recruiter, UserWithAccount } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"
@@ -54,7 +54,7 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
       if (!managed_by) {
         throw Boom.internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
       }
-      const contactUser = await User2.findOne({ _id: managed_by }).lean()
+      const contactUser = await UserWithAccount.findOne({ _id: managed_by }).lean()
       if (!contactUser) {
         throw Boom.internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
       }
@@ -77,8 +77,8 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
             job_type: job.job_type,
             job_level_label: job.job_level_label,
             job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
-            supprimer: createCancelJobLink(user2ToUserForToken(contactUser), job._id.toString()),
-            pourvue: createProvidedJobLink(user2ToUserForToken(contactUser), job._id.toString()),
+            supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
+            pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
           })),
           threshold,
           url: `${config.publicUrl}/espace-pro/authentification`,

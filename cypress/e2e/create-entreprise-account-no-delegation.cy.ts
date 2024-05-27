@@ -1,5 +1,9 @@
+import { slowCypressDown } from "cypress-slow-down"
+
 import { FlowCreationEntreprise } from "../pages/FlowCreationEntreprise"
 import { generateRandomString } from "../utils/generateRandomString"
+
+slowCypressDown(300)
 
 describe("create-entreprise-account-no-delegation", () => {
   it("test create-entreprise-account-no-delegation", () => {

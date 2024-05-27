@@ -5,7 +5,7 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Cfa, Recruiter } from "@/common/model"
-import { db } from "@/common/mongodb"
+import { ObjectIdType, db } from "@/common/mongodb"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -54,7 +54,12 @@ export const getJobs = async ({
   caller?: string | null
   isMinimalData: boolean
 }): Promise<IRecruiter[]> => {
-  const clauses: any[] = [{ "jobs.job_status": JOB_STATUS.ACTIVE }, { "jobs.rome_code": { $in: romes } }, { status: RECRUITER_STATUS.ACTIF }]
+  const clauses: any[] = [
+    { "jobs.job_status": JOB_STATUS.ACTIVE },
+    { "jobs.rome_code": { $in: romes } },
+    { status: RECRUITER_STATUS.ACTIF },
+    { jobs: { $exists: true, $not: { $size: 0 } } },
+  ]
 
   if (niveau && niveau !== "Indifférent") {
     clauses.push({
@@ -92,13 +97,16 @@ export const getJobs = async ({
 
   const recruiters: IRecruiter[] = await Recruiter.aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
 
-  const filteredJobs = await Promise.all(
+  const recruitersWithJobs = await Promise.all(
     recruiters.map(async (recruiter) => {
-      const jobs: any[] = []
+      const [firstJob] = recruiter.jobs
+      if (!firstJob) {
+        return recruiter
+      }
 
       if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
         const cfa = await Cfa.findOne({ siret: recruiter.cfa_delegated_siret })
-        const cfaUser = await getUser2ManagingOffer(recruiter.jobs[0])
+        const cfaUser = await getUser2ManagingOffer(firstJob)
         recruiter.phone = cfaUser.phone
         recruiter.email = cfaUser.email
         recruiter.last_name = cfaUser.last_name
@@ -107,6 +115,7 @@ export const getJobs = async ({
         recruiter.address = cfa?.address
       }
 
+      const jobs: any[] = []
       recruiter.jobs.forEach((job) => {
         if (romes.some((item) => job.rome_code.includes(item)) && job.job_status === JOB_STATUS.ACTIVE) {
           job.rome_label = job.rome_appellation_label ?? job.rome_label
@@ -115,13 +124,12 @@ export const getJobs = async ({
           }
         }
       })
-
       recruiter.jobs = jobs
       return recruiter
     })
   )
 
-  return filteredJobs
+  return recruitersWithJobs
 }
 
 /**
@@ -216,7 +224,7 @@ function transformLbaJobs({ jobs, applicationCountByJob, isMinimalData }: { jobs
 /**
  * @description Retourne une offre LBA identifiée par son id
  */
-export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
+export const getLbaJobById = async ({ id, caller }: { id: ObjectIdType; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 
@@ -224,7 +232,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
       return { error: "not_found" }
     }
 
-    const applicationCountByJob = await getApplicationByJobCount([id])
+    const applicationCountByJob = await getApplicationByJobCount([id.toString()])
 
     const job = transformLbaJob({
       recruiter: rawJob.recruiter,
