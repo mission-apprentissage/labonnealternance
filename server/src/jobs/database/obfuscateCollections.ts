@@ -4,7 +4,7 @@ import { Model } from "mongoose"
 import { getLastStatusEvent, IEmailBlacklist, IUser, IUserRecruteur } from "shared"
 import { AUTHTYPE, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { UserEventType } from "shared/models/user2.model"
+import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
 import {

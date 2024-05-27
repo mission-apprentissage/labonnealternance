@@ -1,21 +1,21 @@
 import Boom from "boom"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
-import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model"
+import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils"
 
-import { RoleManagement, User2 } from "@/common/model"
+import { RoleManagement, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 
 export const createUser2IfNotExist = async (
-  userProps: Omit<IUser2, "_id" | "createdAt" | "updatedAt" | "status">,
+  userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,
   is_email_checked: boolean,
   grantedBy: string
-): Promise<IUser2> => {
+): Promise<IUserWithAccount> => {
   const { first_name, last_name, last_action_date, origin, phone } = userProps
   const formatedEmail = userProps.email.toLocaleLowerCase()
 
-  let user = await User2.findOne({ email: formatedEmail }).lean()
+  let user = await UserWithAccount.findOne({ email: formatedEmail }).lean()
   if (!user) {
     const id = new ObjectId()
     grantedBy = grantedBy || id.toString()
@@ -36,7 +36,7 @@ export const createUser2IfNotExist = async (
       validation_type: VALIDATION_UTILISATEUR.MANUAL,
       granted_by: grantedBy,
     })
-    const userFields: Omit<IUser2, "createdAt" | "updatedAt"> = {
+    const userFields: Omit<IUserWithAccount, "createdAt" | "updatedAt"> = {
       _id: id,
       email: formatedEmail,
       first_name,
@@ -46,13 +46,13 @@ export const createUser2IfNotExist = async (
       origin,
       status,
     }
-    user = (await User2.create(userFields)).toObject()
+    user = (await UserWithAccount.create(userFields)).toObject()
   }
   return user
 }
 
-export const validateUser2Email = async (id: string): Promise<IUser2> => {
-  const userOpt = await User2.findOne({ _id: id }).lean()
+export const validateUserWithAccountEmail = async (id: string): Promise<IUserWithAccount> => {
+  const userOpt = await UserWithAccount.findOne({ _id: id }).lean()
   if (!userOpt) {
     throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
   }
@@ -66,14 +66,14 @@ export const validateUser2Email = async (id: string): Promise<IUser2> => {
     granted_by: id,
     reason: "validation de l'email par l'utilisateur",
   }
-  const newUser = await User2.findOneAndUpdate({ _id: id }, { $push: { status: event } }, { new: true }).lean()
+  const newUser = await UserWithAccount.findOneAndUpdate({ _id: id }, { $push: { status: event } }, { new: true }).lean()
   if (!newUser) {
     throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
   }
   return newUser
 }
 
-export const activateUser = async (user: IUser2, granted_by: string): Promise<IUser2> => {
+export const activateUser = async (user: IUserWithAccount, granted_by: string): Promise<IUserWithAccount> => {
   if (!isUserDisabled(user)) {
     return user
   }
@@ -84,17 +84,17 @@ export const activateUser = async (user: IUser2, granted_by: string): Promise<IU
     granted_by,
     reason: "",
   }
-  const newUser = await User2.findOneAndUpdate({ _id: user._id }, { $push: { status: event } }, { new: true }).lean()
+  const newUser = await UserWithAccount.findOneAndUpdate({ _id: user._id }, { $push: { status: event } }, { new: true }).lean()
   if (!newUser) {
     throw Boom.internal(`utilisateur avec id=${user._id} non trouvé`)
   }
   return newUser
 }
 
-export const getUser2ByEmail = async (email: string): Promise<IUser2 | null> => User2.findOne({ email: email.toLocaleLowerCase() }).lean()
+export const getUserWithAccountByEmail = async (email: string): Promise<IUserWithAccount | null> => UserWithAccount.findOne({ email: email.toLocaleLowerCase() }).lean()
 
 export const emailHasActiveRole = async (email: string) => {
-  const userOpt = await getUser2ByEmail(email)
+  const userOpt = await getUserWithAccountByEmail(email)
   if (!userOpt) return
   const roles = await RoleManagement.find({ user_id: userOpt._id }).lean()
   const activeStatus = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]
@@ -105,8 +105,8 @@ export const emailHasActiveRole = async (email: string) => {
   return Boolean(activeRoles.length)
 }
 
-export const isUserEmailChecked = (user: IUser2): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)
+export const isUserEmailChecked = (user: IUserWithAccount): boolean => user.status.some((event) => event.status === UserEventType.VALIDATION_EMAIL)
 
 const activationStatus = [UserEventType.ACTIF, UserEventType.DESACTIVE]
-export const isUserDisabled = (user: IUser2): boolean =>
+export const isUserDisabled = (user: IUserWithAccount): boolean =>
   getLastStatusEvent(user.status.filter((event) => activationStatus.includes(event.status)))?.status === UserEventType.DESACTIVE

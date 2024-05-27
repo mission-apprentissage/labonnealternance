@@ -8,7 +8,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { Cfa, Recruiter } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import {
@@ -21,15 +21,15 @@ import {
   validateCreationEntrepriseFromCfa,
 } from "@/services/etablissement.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { emailHasActiveRole, getUser2ByEmail, isUserDisabled, isUserEmailChecked, validateUser2Email } from "@/services/user2.service"
 import {
   autoValidateUser,
   createOrganizationUser,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
-  updateUser2Fields,
+  updateUserWithAccountFields,
 } from "@/services/userRecruteur.service"
+import { emailHasActiveRole, getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -166,7 +166,7 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
             else throw Boom.badRequest(result.message, result)
           }
-          const token = generateDepotSimplifieToken(user2ToUserForToken(result.user), result.formulaire.establishment_id, siret)
+          const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id, siret)
           return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
@@ -189,7 +189,7 @@ export default (server: Server) => {
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
-          const token = generateCfaCreationToken(user2ToUserForToken(userCfa), establishment_siret)
+          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa), establishment_siret)
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
             await setUserHasToBeManuallyValidated(creationResult, origin)
@@ -255,7 +255,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { _id, ...rest } = req.body
-      const result = await updateUser2Fields(req.params.id, rest)
+      const result = await updateUserWithAccountFields(req.params.id, rest)
       if ("error" in result) {
         throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
       }
@@ -273,7 +273,7 @@ export default (server: Server) => {
       const userFromRequest = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
       const email = userFromRequest.identity.email.toLocaleLowerCase()
 
-      const user = await getUser2ByEmail(email)
+      const user = await getUserWithAccountByEmail(email)
       if (!user) {
         throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
@@ -281,7 +281,7 @@ export default (server: Server) => {
         throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
-        await validateUser2Email(user._id.toString())
+        await validateUserWithAccountEmail(user._id.toString())
       }
       const mainRole = await getMainRoleManagement(user._id, true)
       if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {

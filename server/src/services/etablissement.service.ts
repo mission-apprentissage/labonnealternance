@@ -9,15 +9,15 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, User2 } from "../common/model/index"
+import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -41,7 +41,6 @@ import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
-import { emailHasActiveRole, isUserEmailChecked } from "./user2.service"
 import {
   UserAndOrganization,
   autoValidateUser as authorizeUserOnEntreprise,
@@ -50,6 +49,7 @@ import {
   setEntrepriseValid,
   setUserHasToBeManuallyValidated,
 } from "./userRecruteur.service"
+import { emailHasActiveRole, isUserEmailChecked } from "./userWithAccount.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -760,7 +760,7 @@ export const entrepriseOnboardingWorkflow = {
     }: {
       isUserValidated?: boolean
     } = {}
-  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUser2; validated: boolean }> => {
+  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
@@ -887,8 +887,8 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
-export const sendUserConfirmationEmail = async (user: IUser2) => {
-  const url = createValidationMagicLink(user2ToUserForToken(user))
+export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
+  const url = createValidationMagicLink(userWithAccountToUserForToken(user))
   await mailer.sendEmail({
     to: user.email,
     subject: "Confirmez votre adresse mail",
@@ -904,7 +904,12 @@ export const sendUserConfirmationEmail = async (user: IUser2) => {
   })
 }
 
-export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: IRecruiter, accessStatus: AccessStatus | null, entrepriseStatus: EntrepriseStatus | null) => {
+export const sendEmailConfirmationEntreprise = async (
+  user: IUserWithAccount,
+  recruteur: IRecruiter,
+  accessStatus: AccessStatus | null,
+  entrepriseStatus: EntrepriseStatus | null
+) => {
   if (
     entrepriseStatus !== EntrepriseStatus.VALIDE ||
     isUserEmailChecked(user) ||
@@ -918,7 +923,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: I
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && is_delegated === false) {
     // Get user account validation link
-    const url = createValidationMagicLink(user2ToUserForToken(user))
+    const url = createValidationMagicLink(userWithAccountToUserForToken(user))
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",
@@ -941,7 +946,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUser2, recruteur: I
       },
     })
   } else {
-    const user2 = await User2.findOne({ _id: user._id.toString() }).lean()
+    const user2 = await UserWithAccount.findOne({ _id: user._id.toString() }).lean()
     if (!user2) {
       throw Boom.internal(`could not find user with id=${user._id}`)
     }

@@ -3,7 +3,7 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { IRecruiterJson, assertUnreachable } from "shared"
-import { IUser2Json } from "shared/models/user2.model"
+import { IUserWithAccountJson } from "shared/models/userWithAccount.model"
 import * as Yup from "yup"
 
 import { ApiError } from "@/utils/api.utils"
@@ -151,7 +151,7 @@ const FormulaireLayout = ({ left, right }) => {
 export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boolean }) => {
   const router = useRouter()
   const validationPopup = useDisclosure()
-  const [popupData, setPopupData] = useState<{ user: IUser2Json; formulaire: IRecruiterJson; token?: string; type: "CFA" | "ENTREPRISE" } | null>(null)
+  const [popupData, setPopupData] = useState<{ user: IUserWithAccountJson; formulaire: IRecruiterJson; token?: string; type: "CFA" | "ENTREPRISE" } | null>(null)
 
   const { type, informationSiret: informationSiretString }: { type: "CFA" | "ENTREPRISE"; informationSiret: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
