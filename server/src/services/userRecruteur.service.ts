@@ -7,14 +7,14 @@ import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS, VALIDATION_UTILI
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId, ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../common/model/index"
+import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../common/model/index"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
@@ -22,7 +22,7 @@ import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { createOrganizationIfNotExist } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
-import { createUser2IfNotExist, isUserEmailChecked } from "./user2.service"
+import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
 
 /**
  * @description generate an API key
@@ -78,7 +78,7 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
 export const getUserRecruteurById = (id: string | ObjectIdType) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
 
 export const userAndRoleAndOrganizationToUserRecruteur = (
-  user: IUser2,
+  user: IUserWithAccount,
   role: IRoleManagement,
   organisme: ICFA | IEntreprise | null,
   formulaire: IRecruiter | null
@@ -142,8 +142,8 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
   return userRecruteur
 }
 
-const getUserRecruteurByUser2Query = async (user2query: Partial<IUser2>): Promise<IUserRecruteur | null> => {
-  const user = await User2.findOne(user2query).lean()
+const getUserRecruteurByUser2Query = async (user2query: Partial<IUserWithAccount>): Promise<IUserRecruteur | null> => {
+  const user = await UserWithAccount.findOne(user2query).lean()
   if (!user) return null
   const role = await RoleManagement.findOne({ user_id: user._id.toString() }).lean()
   if (!role) return null
@@ -197,7 +197,7 @@ export const createOrganizationUser = async (
   }
 }
 
-export const createOpcoUser = async (userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">, opco: OPCOS, grantedBy: string) => {
+export const createOpcoUser = async (userProps: Pick<IUserWithAccount, "email" | "first_name" | "last_name" | "phone">, opco: OPCOS, grantedBy: string) => {
   const user = await createUser2IfNotExist(
     {
       ...userProps,
@@ -223,7 +223,7 @@ export const createOpcoUser = async (userProps: Pick<IUser2, "email" | "first_na
 }
 
 export const createAdminUser = async (
-  userProps: Pick<IUser2, "email" | "first_name" | "last_name" | "phone">,
+  userProps: Pick<IUserWithAccount, "email" | "first_name" | "last_name" | "phone">,
   { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }
 ) => {
   const user = await createUser2IfNotExist(
@@ -257,7 +257,7 @@ export const createUser = async (
   userProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status">,
   grantedBy: string,
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
-): Promise<IUser2> => {
+): Promise<IUserWithAccount> => {
   const { first_name, last_name, email, phone, type, opco } = userProps
   const userFields = {
     first_name,
@@ -280,17 +280,17 @@ export const createUser = async (
   }
 }
 
-export const updateUser2Fields = async (userId: ObjectIdType, fields: Partial<IUser2>): Promise<IUser2 | { error: BusinessErrorCodes }> => {
+export const updateUserWithAccountFields = async (userId: ObjectIdType, fields: Partial<IUserWithAccount>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
   const { email, first_name, last_name, phone } = fields
   const newEmail = email?.toLocaleLowerCase()
 
   if (newEmail) {
-    const exist = await User2.findOne({ email: newEmail, _id: { $ne: userId } }).lean()
+    const exist = await UserWithAccount.findOne({ email: newEmail, _id: { $ne: userId } }).lean()
     if (exist) {
       return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
     }
   }
-  const newUser = await User2.findOneAndUpdate({ _id: userId }, removeUndefinedFields({ ...fields, email: newEmail }), { new: true }).lean()
+  const newUser = await UserWithAccount.findOneAndUpdate({ _id: userId }, removeUndefinedFields({ ...fields, email: newEmail }), { new: true }).lean()
   if (!newUser) {
     throw Boom.badRequest("user not found")
   }
@@ -298,7 +298,7 @@ export const updateUser2Fields = async (userId: ObjectIdType, fields: Partial<IU
   return newUser
 }
 
-export const removeUser = async (id: IUser2["_id"] | string) => {
+export const removeUser = async (id: IUserWithAccount["_id"] | string) => {
   await RoleManagement.deleteMany({ user_id: id })
 }
 
@@ -308,7 +308,7 @@ export const removeUser = async (id: IUser2["_id"] | string) => {
  * @returns {Promise<IUserRecruteur>}
  */
 export const updateLastConnectionDate = async (email: IUserRecruteur["email"]): Promise<void> => {
-  await User2.findOneAndUpdate({ email: email.toLowerCase() }, { last_action_date: new Date() }, { new: true }).lean()
+  await UserWithAccount.findOneAndUpdate({ email: email.toLowerCase() }, { last_action_date: new Date() }, { new: true }).lean()
 }
 
 /**
@@ -384,7 +384,7 @@ export const deactivateEntreprise = async (entrepriseId: IEntreprise["_id"], rea
   return setEntrepriseStatus(entrepriseId, reason, EntrepriseStatus.DESACTIVE)
 }
 
-export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
+export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) => {
   const { email, first_name, last_name } = user
   const role = await RoleManagement.findOne({ user_id: user._id, authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] } }).lean()
   if (!role) {
@@ -409,7 +409,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUser2) => {
       first_name: sanitizeForEmail(first_name),
       email: sanitizeForEmail(email),
       is_delegated: isCfa,
-      url: createAuthMagicLink(user2ToUserForToken(user)),
+      url: createAuthMagicLink(userWithAccountToUserForToken(user)),
     },
   })
 }
@@ -420,7 +420,7 @@ export const getAdminUsers = async () => {
   }).lean()
   const grantedRoles = allRoles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
   const userIds = grantedRoles.map((role) => role.user_id.toString())
-  const users = await User2.find({ _id: { $in: userIds } }).lean()
+  const users = await UserWithAccount.find({ _id: { $in: userIds } }).lean()
   return users
 }
 
@@ -433,7 +433,7 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   const roles = [...nonGrantedRoles, ...lastGrantedRoles]
 
   const userIds = roles.map((role) => role.user_id.toString())
-  const users = await User2.find({ _id: { $in: userIds } }).lean()
+  const users = await UserWithAccount.find({ _id: { $in: userIds } }).lean()
 
   const entrepriseIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : []))
   const entreprises = await Entreprise.find({ _id: { $in: entrepriseIds }, ...(opco ? { opco } : {}) }).lean()
@@ -442,7 +442,7 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   const cfas = cfaIds.length ? await Cfa.find({ _id: { $in: cfaIds } }).lean() : []
 
   const userRecruteurs = roles
-    .flatMap<{ user: IUser2; role: IRoleManagement } & ({ entreprise: IEntreprise } | { cfa: ICFA })>((role) => {
+    .flatMap<{ user: IUserWithAccount; role: IRoleManagement } & ({ entreprise: IEntreprise } | { cfa: ICFA })>((role) => {
       const user = users.find((user) => user._id.toString() === role.user_id.toString())
       if (!user) return []
       const { authorized_type } = role
@@ -517,4 +517,4 @@ export const getUsersForAdmin = async () => {
   return getUserRecruteursForManagement({ activeRoleLimit: 40 })
 }
 
-export type UserAndOrganization = { user: IUser2; organization: IEntreprise | ICFA; type: "ENTREPRISE" | "CFA" }
+export type UserAndOrganization = { user: IUserWithAccount; organization: IEntreprise | ICFA; type: "ENTREPRISE" | "CFA" }
