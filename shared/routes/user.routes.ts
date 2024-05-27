@@ -3,7 +3,7 @@ import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model"
-import { ZUserWithAccount, ZNewSuperUser, ZUserWithAccountFields } from "../models/userWithAccount.model"
+import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountFields } from "../models/userWithAccount.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -73,7 +73,7 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z
           .object({
-            users: z.array(ZUserWithAccount),
+            users: z.array(ZUserWithAccount.extend({ type: z.enum([AccessEntityType.ADMIN, AccessEntityType.OPCO]) })),
           })
           .strict(),
       },

@@ -74,6 +74,11 @@ const AdminUserList = () => {
             filter: "fuzzyText",
           },
           {
+            Header: "Type",
+            id: "type",
+            accessor: ({ type }) => type,
+          },
+          {
             Header: "Actif",
             id: "last_connection",
             accessor: ({ last_action_date: date }) => {

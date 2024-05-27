@@ -45,10 +45,8 @@ export const AdminUserForm = ({
 
   const onSubmit = async (values: INewSuperUser) => {
     if (user) {
-      const { email, first_name, last_name, phone = "", type } = values
-      const commonFields = { email, first_name, last_name, phone }
-      const sentFields = { ...commonFields, ...(type === OPCO ? { opco: values.opco } : {}) }
-      updateEntrepriseAdmin(user._id.toString(), sentFields)
+      const { email, first_name, last_name, phone = "" } = values
+      updateEntrepriseAdmin(user._id.toString(), { email, first_name, last_name, phone })
         .then(() => {
           toast({
             title: "Utilisateur mis à jour",
@@ -209,7 +207,15 @@ const UserFieldsForm = ({
           </CustomFormControl>
           {values.type === AUTHTYPE.OPCO && (
             <CustomFormControl name="opco" label="OPCO">
-              <CustomSelect name="opco" possibleValues={Object.values(OPCOS)} value={values.opco} onChange={(newValue) => formik?.setFieldValue("opco", newValue, true)} />
+              <CustomSelect
+                name="opco"
+                possibleValues={Object.values(OPCOS)}
+                value={values.opco}
+                onChange={(newValue) => formik?.setFieldValue("opco", newValue, true)}
+                selectProps={{
+                  isDisabled: Boolean(user),
+                }}
+              />
             </CustomFormControl>
           )}
           <CustomInput required={true} name="first_name" label="Prénom" type="text" value={values.first_name ?? ""} />

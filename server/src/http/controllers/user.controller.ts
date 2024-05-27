@@ -71,7 +71,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/admin/users"],
       onRequest: [server.auth(zRoutes.get["/admin/users"])],
     },
-    async (req, res) => {
+    async (_req, res) => {
       const users = await getAdminUsers()
       return res.status(200).send({ users })
     }
@@ -87,7 +87,7 @@ export default (server: Server) => {
       const { userId } = req.params
       const user = await UserWithAccount.findById(userId).lean()
       if (!user) throw Boom.notFound(`user with id=${userId} not found`)
-      const role = await RoleManagement.findOne({ user_id: userId, authorized_type: AccessEntityType.ADMIN }).lean()
+      const role = await RoleManagement.findOne({ user_id: userId, authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] } }).lean()
       return res.status(200).send({ ...user, role: role ?? undefined })
     }
   )

@@ -382,12 +382,17 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
 
 export const getAdminUsers = async () => {
   const allRoles = await RoleManagement.find({
-    authorized_type: AccessEntityType.ADMIN,
+    authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
   }).lean()
   const grantedRoles = allRoles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
   const userIds = grantedRoles.map((role) => role.user_id.toString())
   const users = await UserWithAccount.find({ _id: { $in: userIds } }).lean()
-  return users
+  return users.map((user) => {
+    return {
+      ...user,
+      type: grantedRoles.find((role) => role.user_id.toString() === user._id.toString())!.authorized_type as typeof AccessEntityType.ADMIN | typeof AccessEntityType.OPCO,
+    }
+  })
 }
 
 export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: { opco?: OPCOS; activeRoleLimit?: number }) => {
