@@ -55,7 +55,6 @@ import {
   UnsubscribedLbaCompany,
   User,
   UserWithAccount,
-  eligibleTrainingsForAppointmentHistory,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
@@ -123,7 +122,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(ReferentielOpco, ZReferentielOpco)
   await validateModel(UnsubscribeOF, ZUnsubscribeOF)
   await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
-  await validateModel(eligibleTrainingsForAppointmentHistory, ZEligibleTrainingsForAppointmentSchema)
   // await validateModel(UserRecruteur, ZUserRecruteur)
   await validateModel(Entreprise, ZEntreprise)
   await validateModel(Cfa, zCFA)
