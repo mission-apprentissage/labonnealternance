@@ -238,7 +238,7 @@ export const sendApplicationV2 = async ({
   newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId
   caller?: string
 }): Promise<void> => {
-  let LbaJob: ILbaJob = { type: null as any, job: null as any, recruiter: null }
+  let lbaJob: ILbaJob = { type: null as any, job: null as any, recruiter: null }
 
   if (isEmailBurner(newApplication.applicant_email)) {
     throw Boom.badRequest(BusinessErrorCodes.BURNER)
@@ -249,7 +249,7 @@ export const sendApplicationV2 = async ({
     if (!LbaRecruteur) {
       throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
     }
-    LbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: LbaRecruteur, recruiter: null }
+    lbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: LbaRecruteur, recruiter: null }
   }
 
   if ("job_id" in newApplication) {
@@ -257,16 +257,16 @@ export const sendApplicationV2 = async ({
     if (!recruiter) {
       throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
     }
-    LbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job: recruiter?.job, recruiter: recruiter?.recruiter }
+    lbaJob = { type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job: recruiter?.job, recruiter: recruiter?.recruiter }
   }
 
-  const { type, job, recruiter } = LbaJob
-
-  await checkUserApplicationCountV2(newApplication.applicant_email.toLowerCase(), LbaJob, caller)
+  await checkUserApplicationCountV2(newApplication.applicant_email.toLowerCase(), lbaJob, caller)
 
   if (await isInfected(newApplication.applicant_file_content)) {
     throw Boom.badRequest(BusinessErrorCodes.ATTACHMENT)
   }
+
+  const { type, job, recruiter } = lbaJob
 
   const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.email)?.toLowerCase()
   if (!recruteurEmail) {
@@ -274,8 +274,8 @@ export const sendApplicationV2 = async ({
     throw Boom.internal(BusinessErrorCodes.INTERNAL_EMAIL)
   }
   try {
-    const application = newApplicationToApplicationDocumentV2(newApplication, LbaJob, recruteurEmail, caller)
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, LbaJob)
+    const application = newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, lbaJob)
     const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
 
     const [emailCompany, emailCandidat] = await Promise.all([
@@ -580,7 +580,7 @@ export const validatePermanentEmail = (email: string): string => {
   return "ok"
 }
 
-async function getApplicationCountForItem(applicantEmail: string, offreOrCompany: ILbaJob) {
+async function getApplicationCountForItemV1(applicantEmail: string, offreOrCompany: ILbaJob) {
   const { type } = offreOrCompany
 
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
@@ -606,6 +606,24 @@ async function getApplicationCountForItem(applicantEmail: string, offreOrCompany
   assertUnreachable(type as never)
 }
 
+async function getApplicationCountForItemV2(applicantEmail: string, LbaJob: ILbaJob) {
+  const { type, job } = LbaJob
+
+  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    return Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      company_siret: job.siret,
+    })
+  }
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    return Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      job_id: job._id.toString(),
+    })
+  }
+  assertUnreachable(type as never)
+}
+
 /**
  * @description checks if email's owner has not sent more than allowed count of applications per day
  * KBA 20240502 : TO DELETE WHEN SWITCHING TO V2
@@ -624,7 +642,7 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
       applicant_email: applicantEmail.toLowerCase(),
       created_at: { $gte: start, $lt: end },
     }),
-    getApplicationCountForItem(applicantEmail, offreOrCompany),
+    getApplicationCountForItemV1(applicantEmail, offreOrCompany),
     caller
       ? Application.countDocuments({
           caller: caller.toLowerCase(),
@@ -661,49 +679,31 @@ const checkUserApplicationCountV2 = async (applicantEmail: string, LbaJob: ILbaJ
 
   const { type, job, recruiter } = LbaJob
 
-  let appCount = await Application.countDocuments({
-    applicant_email: applicantEmail.toLowerCase(),
-    created_at: { $gte: start, $lt: end },
-  })
+  const [todayApplicationsCount, itemApplicationCount, callerApplicationCount] = await Promise.all([
+    Application.countDocuments({
+      applicant_email: applicantEmail.toLowerCase(),
+      created_at: { $gte: start, $lt: end },
+    }),
+    getApplicationCountForItemV2(applicantEmail, LbaJob),
+    caller
+      ? Application.countDocuments({
+          caller,
+          company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.siret : recruiter.establishment_siret,
+          created_at: { $gte: start, $lt: end },
+        })
+      : 0,
+  ])
 
-  if (appCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
+  if (todayApplicationsCount > MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR) {
     throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY)
   }
 
-  switch (type) {
-    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
-      appCount = await Application.countDocuments({
-        applicant_email: applicantEmail.toLowerCase(),
-        company_siret: job.siret,
-      })
-      if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
-        throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER)
-      }
-      break
-
-    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-      appCount = await Application.countDocuments({
-        applicant_email: applicantEmail.toLowerCase(),
-        job_id: job._id.toString(),
-      })
-      if (appCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
-        throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER)
-      }
-      break
-
-    default:
-      assertUnreachable(type as never)
+  if (itemApplicationCount >= MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT) {
+    throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER)
   }
 
-  if (caller) {
-    appCount = await Application.countDocuments({
-      caller: caller.toLowerCase(),
-      company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.siret : recruiter.establishment_siret,
-      created_at: { $gte: start, $lt: end },
-    })
-    if (appCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
-      throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET)
-    }
+  if (callerApplicationCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
+    throw Boom.tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET)
   }
 }
 
