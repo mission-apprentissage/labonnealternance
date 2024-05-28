@@ -45,7 +45,6 @@ import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { migrationUsers } from "./multiCompte/migrationUsers"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
@@ -372,9 +371,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "referentiel-opco:constructys:import": {
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
-      }
-      case "migrate-multi-compte": {
-        return migrationUsers()
       }
       case "prdv:emails:resend": {
         const { fromDate } = job.payload

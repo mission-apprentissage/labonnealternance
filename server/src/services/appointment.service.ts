@@ -150,16 +150,19 @@ export const processAppointmentToApplicantWebhookEvent = async (payload) => {
     // deuxième condition ci-dessus utile uniquement pour typescript car to_applicant_mails peut être null selon le typage
     const firstEmailEvent = appointmentCandidatFound.to_applicant_mails[0]
 
-    await appointmentCandidatFound.update({
-      $push: {
-        to_applicant_mails: {
-          campaign: firstEmailEvent.campaign,
-          status: event,
-          message_id: firstEmailEvent.message_id,
-          webhook_status_at: eventDate,
+    await appointmentCandidatFound.updateOne(
+      { _id: appointmentCandidatFound._id },
+      {
+        $push: {
+          to_applicant_mails: {
+            campaign: firstEmailEvent.campaign,
+            status: event,
+            message_id: firstEmailEvent.message_id,
+            webhook_status_at: eventDate,
+          },
         },
-      },
-    })
+      }
+    )
     return false
   }
   return true
@@ -175,16 +178,19 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
   if (appointment) {
     const firstEmailEvent = appointment.to_cfa_mails[0]
 
-    await appointment.update({
-      $push: {
-        to_cfa_mails: {
-          campaign: firstEmailEvent.campaign,
-          status: event,
-          message_id: firstEmailEvent.message_id,
-          webhook_status_at: eventDate,
+    await appointment.updateOne(
+      { _id: appointment._id },
+      {
+        $push: {
+          to_cfa_mails: {
+            campaign: firstEmailEvent.campaign,
+            status: event,
+            message_id: firstEmailEvent.message_id,
+            webhook_status_at: eventDate,
+          },
         },
-      },
-    })
+      }
+    )
 
     return false
   }

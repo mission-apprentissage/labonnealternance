@@ -493,5 +493,5 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>(
     versionKey: false,
   }
 )
-
+// @ts-ignore
 export default model<IFormationCatalogue>("formationcatalogues", mnaFormationSchema)

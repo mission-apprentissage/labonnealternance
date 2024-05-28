@@ -1,5 +1,5 @@
-import mongodb from "mongodb"
 import type { ObjectId as ObjectIdType } from "mongodb"
+import mongodb from "mongodb"
 import mongoose from "mongoose"
 
 import config from "../config"
@@ -20,12 +20,9 @@ export const connectToMongo = async (mongoUri = config.mongodb.uri) => {
   try {
     // Set up default mongoose connection
     await mongooseInstance.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
       keepAlive: true,
       autoIndex: false,
-      poolSize: 1_000,
+      maxPoolSize: 1_000,
     })
     mongooseInstance.Promise = global.Promise // Get the default connection
     db = mongooseInstance.connection

@@ -1,7 +1,7 @@
 import Boom from "boom"
-import pkg from "mongodb"
 import type { ObjectId as ObjectIdType } from "mongodb"
-import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
+import pkg from "mongodb"
+import type { FilterQuery, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
@@ -280,7 +280,7 @@ export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
  * @param {FilterQuery<IRecruiter>} query
  * @returns {Promise<IRecruiter>}
  */
-export const getFormulaire = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter> => Recruiter.findOne(query).lean()
+export const getFormulaire = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter | null> => Recruiter.findOne(query).lean()
 
 export const getFormulaireWithRomeDetail = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter | null> => {
   const recruiterWithRomeDetail: IRecruiter[] = await Recruiter.aggregate([
@@ -450,7 +450,7 @@ export async function updateOffre(id: string | ObjectIdType, payload: UpdateQuer
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const patchOffre = async (id: IJob["_id"], payload: UpdateQuery<IJob>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+export const patchOffre = async (id: IJob["_id"], payload: UpdateQuery<IJob>, options = { new: true }): Promise<IRecruiter> => {
   const fields = {}
   for (const key in payload) {
     fields[`jobs.$.${key}`] = payload[key]

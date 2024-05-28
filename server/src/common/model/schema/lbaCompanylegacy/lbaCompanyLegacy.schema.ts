@@ -1,9 +1,9 @@
-import { ILbaCompany } from "shared"
+import { ILbaLegacyCompany } from "shared"
 
 import { Schema, model } from "../../../mongodb"
 import { lbaCompanySchema } from "../lbaCompany/lbaCompany.schema"
 
-export const lbaCompanyLegacySchema = new Schema<Pick<ILbaCompany, "siret" | "email">>(
+export const lbaCompanyLegacySchema = new Schema<ILbaLegacyCompany>(
   {
     siret: {
       type: String,
@@ -21,4 +21,5 @@ export const lbaCompanyLegacySchema = new Schema<Pick<ILbaCompany, "siret" | "em
     versionKey: false,
   }
 )
-export default model<Pick<ILbaCompany, "siret" | "email">>("bonnesboiteslegacy", lbaCompanySchema)
+// @ts-ignore
+export default model<ILbaLegacyCompany>("bonnesboiteslegacy", lbaCompanySchema)

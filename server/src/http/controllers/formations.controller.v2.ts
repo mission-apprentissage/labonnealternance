@@ -52,7 +52,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/formations/min"],
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { referer } = req.headers

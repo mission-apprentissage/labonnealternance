@@ -24,7 +24,7 @@ export const updateSAVECompanies = async () => {
     ),
     writeData(async (company) => {
       try {
-        const lbaCompany = await LbaCompany.findOne({ siret: company.siret })
+        const lbaCompany = await LbaCompany.findOne({ siret: company.siret }).lean()
 
         if (lbaCompany) {
           if (company.raison_sociale) {
@@ -50,9 +50,9 @@ export const updateSAVECompanies = async () => {
           }
 
           if (lbaCompany.rome_codes?.length && (await checkIsDiffusible(lbaCompany.siret))) {
-            await lbaCompany.save()
+            await LbaCompany.updateOne({ _id: lbaCompany._id }, lbaCompany)
           } else {
-            await lbaCompany.remove()
+            await LbaCompany.deleteOne({ _id: lbaCompany._id })
           }
         }
         //else company no more in collection => doing nothing
@@ -90,10 +90,9 @@ export const insertSAVECompanies = async () => {
       const company = await getCompanyMissingData(rawCompany)
       if (company) {
         try {
-          let lbaCompany = await LbaCompany.findOne({ siret: company.siret })
+          const lbaCompany = await LbaCompany.findOne({ siret: company.siret }).lean()
           if (!lbaCompany) {
-            lbaCompany = new LbaCompany(company)
-            await lbaCompany.save()
+            await LbaCompany.create(company)
           }
         } catch (err) {
           logMessage("error", err)

@@ -96,7 +96,7 @@ export const zFormationCatalogueSchema = z
     cle_ministere_educatif: z.string().nullish(),
     cfd: z.string(),
     cfd_specialite: z.string().nullish(),
-    cfa_outdated: z.boolean().nullish(),
+    cfd_outdated: z.boolean().nullish(),
     cfd_date_fermeture: z.date().nullish(),
     cfd_entree: z.string().nullish(),
     mef_10_code: z.string().nullish(),

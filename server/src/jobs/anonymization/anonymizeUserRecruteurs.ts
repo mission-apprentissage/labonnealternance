@@ -22,7 +22,7 @@ const anonymize = async () => {
       },
     },
     {
-      $merge: "anonymizeduser2s",
+      $merge: "anonymizeduserswithaccounts",
     },
   ])
   await Recruiter.aggregate([
@@ -52,6 +52,7 @@ const anonymize = async () => {
       },
     },
     {
+      // @ts-ignore
       $merge: "anonymizedrecruiteurs",
     },
   ])

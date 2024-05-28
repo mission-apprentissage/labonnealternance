@@ -14,6 +14,7 @@ const anonimizeUserWithAccount = (_id: string) =>
       },
     },
     {
+      // @ts-ignore
       $merge: "anonymizeduser2s",
     },
   ])
@@ -46,6 +47,7 @@ const anonimizeRecruiterByUserId = (userId: string) =>
       },
     },
     {
+      // @ts-ignore
       $merge: "anonymizedrecruiteurs",
     },
   ])
@@ -71,6 +73,7 @@ const anonymizeApplication = async (_id: string) => {
       },
     },
     {
+      // @ts-ignore
       $merge: "anonymizedapplications",
     },
   ])

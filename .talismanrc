@@ -50,7 +50,7 @@ fileignoreconfig:
 - filename: server/src/jobs/database/obfuscateCollections.ts
   checksum: df959adedd069bbfd68c6c5c99a9f506b980147a973f95b517c24e740d79ee37
 - filename: server/src/jobs/job.actions.ts
-  checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
+  checksum: 40c0dfd4f33ec0f09d736e3e7554b0edee132165e1eb00440e196edf49e0c647
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
 - filename: server/src/security/accessTokenService.ts
@@ -143,6 +143,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: ui/components/ItemDetail/LbaJobComponents/LbaJobTechniques.tsx
   checksum: 553720667140e5bbf7cef1969c02cbcd3c234defc30bb08208398c1900e29e3b
+- filename: server/src/http/sentry.ts
+  checksum: efa665e02ca4d3acbf48c5dc549dae4e915c02ae0626bedf71e3608f8d5e5ebd
 scopeconfig:
 - scope: node
 custom_patterns:

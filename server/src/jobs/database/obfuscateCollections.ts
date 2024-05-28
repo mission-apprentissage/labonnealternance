@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto"
 
-import { Model } from "mongoose"
 import { getLastStatusEvent, IEmailBlacklist, IUser, IUserRecruteur } from "shared"
 import { AUTHTYPE, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -8,13 +7,10 @@ import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
 import {
-  AnonymizedApplication,
-  ApiCalls,
   Application,
   Appointment,
   EligibleTrainingsForAppointment,
   eligibleTrainingsForAppointmentHistory,
-  EmailBlacklist,
   Etablissement,
   FormationCatalogue,
   LbaCompany,
@@ -22,21 +18,20 @@ import {
   Recruiter,
   RoleManagement,
 } from "@/common/model/index"
-import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 import { db } from "@/common/mongodb"
 import config from "@/config"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
 
-async function reduceModel<T>(model: Model<T> | Pagination<T>, limit = 20000) {
-  logger.info(`reducing collection ${model.collection.name} to ${limit} latest documents`)
+async function reduceModel(model: string, limit = 20000) {
+  logger.info(`reducing collection ${model} to ${limit} latest documents`)
   try {
     const aggregationPipeline = [{ $match: {} }, { $sort: { created_at: -1 } }, { $skip: limit }, { $limit: 1 }, { $project: { _id: 0, minDate: "$created_at" } }]
 
-    const result = await model.aggregate(aggregationPipeline)
+    const result = await db.collection(model).aggregate(aggregationPipeline)
 
     if (result.length) {
-      await model.deleteMany({ created_at: { $lt: result[0].minDate } })
+      await db.collection(model).deleteMany({ created_at: { $lt: result[0].minDate } })
     }
   } catch (err) {
     logger.error("Error reducing collection", err)
@@ -271,11 +266,11 @@ export async function obfuscateCollections(): Promise<void> {
     // prévention :)
     return
   }
-  await reduceModel(ApiCalls, 20000)
-  await reduceModel(Application, 50000)
-  await reduceModel(AnonymizedApplication, 5000)
-  await reduceModel(Appointment, 10000)
-  await reduceModel(EmailBlacklist, 100)
+  await reduceModel("apicalls", 20000)
+  await reduceModel("applications", 50000)
+  await reduceModel("anonymizedapplications", 5000)
+  await reduceModel("appointments", 10000)
+  await reduceModel("emailblacklists", 100)
   await obfuscateApplications()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()

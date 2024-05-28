@@ -137,7 +137,7 @@ export default (server: Server) => {
 
       const [createdAppointement, etablissement] = await Promise.all([
         appointmentService.createAppointment({
-          applicant_id: user._id,
+          applicant_id: user._id.toString(),
           cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
           cfa_formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
           applicant_message_to_cfa: applicantMessageToCfa,

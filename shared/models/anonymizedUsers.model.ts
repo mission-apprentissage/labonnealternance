@@ -7,6 +7,7 @@ const collectionName = "anonymized_users" as const
 export const zAnonymizedUser = z
   .object({
     _id: zObjectId,
+    userId: z.string(),
     role: z.string(),
     type: z.string(),
     last_action_date: z.date(),

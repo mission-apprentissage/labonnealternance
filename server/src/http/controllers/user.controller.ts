@@ -180,11 +180,14 @@ export default (server: Server) => {
         throw Boom.internal("user type not found")
       }
       let organization: ICFA | IEntreprise | null = null
-      if (type === CFA || type === ENTREPRISE) {
-        organization = await (type === CFA ? Cfa : Entreprise).findOne({ _id: role.authorized_id }).lean()
-        if (!organization) {
-          throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
-        }
+      if (type === CFA) {
+        organization = await Cfa.findOne({ _id: role.authorized_id }).lean()
+      }
+      if (type === ENTREPRISE) {
+        organization = await Entreprise.findOne({ _id: role.authorized_id }).lean()
+      }
+      if (!organization) {
+        throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
       }
 
       let jobs: IJob[] = []

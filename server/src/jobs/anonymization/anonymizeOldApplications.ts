@@ -27,6 +27,7 @@ const anonymizeApplications = async () => {
       },
     },
     {
+      // @ts-ignore
       $merge: "anonymizedapplications",
     },
   ])

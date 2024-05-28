@@ -1,3 +1,4 @@
+import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { ISiretDiffusibleStatus } from "shared/models"
 
 import { model, Schema } from "../../../mongodb"
@@ -13,7 +14,8 @@ export const siretDiffusibleStatusSchema = new Schema<ISiretDiffusibleStatus>(
     },
     status_diffusion: {
       type: String,
-      default: "diffusible",
+      default: EDiffusibleStatus.DIFFUSIBLE,
+      enum: [Object.values(EDiffusibleStatus)[0], ...Object.values(EDiffusibleStatus).slice(1)],
       description: "Le statut de diffusion : diffusible | partiellement_diffusible | non_diffusible",
     },
     created_at: {
