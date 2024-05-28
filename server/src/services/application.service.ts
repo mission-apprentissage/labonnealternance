@@ -588,12 +588,13 @@ async function getApplicationCountForItem(applicantEmail: string, LbaJob: ILbaJo
       applicant_email: applicantEmail.toLowerCase(),
       company_siret: job.siret,
     })
-  } else {
-    // type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+  } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     return Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       job_id: job._id.toString(),
     })
+  } else {
+   assertUnreachable(type)
   }
 }
 
