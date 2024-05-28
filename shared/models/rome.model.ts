@@ -139,6 +139,7 @@ export const ZReferentielRome = z
     definition: z.string(),
     acces_metier: z.string(),
     competences: ZRomeCompetence,
+    competencesDeBase: z.array(ZRomeCategorieSavoir).nullish(),
     contextes_travail: z.array(ZRomeContextesTravail).nullish(),
     mobilites: z.array(ZRomeMobilite).nullish(),
   })
