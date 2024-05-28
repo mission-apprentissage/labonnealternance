@@ -6,6 +6,7 @@ import { ZLbaCompany } from "./lbaCompany.model"
 const collectionName = "unsubscribedbonnesboites" as const
 
 export const ZUnsubscribedLbaCompany = ZLbaCompany.pick({
+  _id: true,
   siret: true,
   raison_sociale: true,
   enseigne: true,

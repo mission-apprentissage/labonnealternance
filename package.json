@@ -42,6 +42,7 @@
     "postinstall": "husky install",
     "talisman:add-exception": "yarn node-talisman --githook pre-commit -i",
     "test": "vitest",
+    "test:openapi": "vitest helpers/openapi/generateOpenapi.test.ts",
     "test:ci": "yarn test --run",
     "test:ci:coverage": "yarn test:ci --coverage.include='ui' --coverage.include='server/src' --coverage.include='shared' --coverage.provider='v8' --coverage.enabled --coverage.all --coverage.exclude='**/tests' --coverage.exclude='**/.next'",
     "test:watch": "vitest --watch",
@@ -54,13 +55,14 @@
     "e2e": "cypress open",
     "e2e:headless": "cypress run",
     "e2e:production": "cypress run --env host=https://labonnealternance.apprentissage.beta.gouv.fr",
-    "e2e:recette": "cypress run --env ui=https://labonnealternance-recette.apprentissage.beta.gouv.fr,server=https://labonnealternance-recette.apprentissage.beta.gouv.fr",
+    "e2e:recette": "cypress run --env ui=https://labonnealternance-recette.apprentissage.beta.gouv.fr,server=https://labonnealternance-recette.apprentissage.beta.gouv.fr,smtp=https://labonnealternance-recette.apprentissage.beta.gouv.fr/smtp",
     "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
     "e2e:convert2": "node cypress/convertRecords.mjs",
     "e2e:specific": "cypress run --spec=./cypress/e2e/create-cfa-account-autovalidated.cy.ts"
   },
   "dependencies": {
-    "husky": "^8.0.3"
+    "husky": "^8.0.3",
+    "type-fest": "^4.18.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
@@ -70,11 +72,13 @@
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "@types/clamscan": "^2.0.8",
     "@types/node": "20.7.1",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
     "@typescript-eslint/parser": "^6.7.2",
     "cross-env": "^7.0.3",
     "cypress": "^13.6.4",
+    "cypress-slow-down": "^1.3.1",
     "dotenv": "^16.1.4",
     "eslint": "^8.49.0",
     "eslint-config-next": "^13.4.19",

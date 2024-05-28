@@ -18,11 +18,9 @@ export const zLoginRoutes = {
         "200": z.object({}).strict(),
       },
       securityScheme: {
-        auth: "cookie-session",
-        access: "user:manage",
-        resources: {
-          user: [{ _id: { key: "userId", type: "params" } }],
-        },
+        auth: "access-token",
+        access: null,
+        resources: {},
       },
     },
     "/login/magiclink": {

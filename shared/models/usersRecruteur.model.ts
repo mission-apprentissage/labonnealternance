@@ -8,7 +8,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZGlobalAddress, ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
-import { IUser2, ZValidationUtilisateur } from "./user2.model"
+import { IUserWithAccount, ZValidationUtilisateur } from "./userWithAccount.model"
 
 export const ZEtatUtilisateur = enumToZod(ETAT_UTILISATEUR).describe("Statut de l'utilisateur")
 
@@ -138,7 +138,7 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
 }
 
 export function toPublicUser(
-  user: IUser2,
+  user: IUserWithAccount,
   userRecruteurProps: Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret">
 ): z.output<typeof ZUserRecruteurPublic> {
   const { type, establishment_siret } = userRecruteurProps

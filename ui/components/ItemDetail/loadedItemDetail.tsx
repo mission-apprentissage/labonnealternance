@@ -11,6 +11,7 @@ import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
 import { filterLayers } from "../../utils/mapTools"
 import { SendPlausibleEvent } from "../../utils/plausible"
+import InfoBanner from "../InfoBanner/InfoBanner"
 
 import AideApprentissage from "./AideApprentissage"
 import CandidatureLba from "./CandidatureLba/CandidatureLba"
@@ -20,21 +21,21 @@ import FTJobDetail from "./FTJobDetail"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
-import getCurrentList from "./ItemDetailServices/getCurrentList"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
 import getSoustitre from "./ItemDetailServices/getSoustitre"
 import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
+import LbaJobDetail from "./LbaJobDetail"
 import LbbCompanyDetail from "./LbbCompanyDetail"
 import LocationDetail from "./LocationDetail"
-import MatchaDetail from "./MatchaDetail"
 import TrainingDetail from "./TrainingDetail"
 
-const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
-  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
-
+const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
+  const { jobs, extendedSearch, selectedItem, trainings } = useContext(SearchResultContext)
   const { activeFilters } = useContext(DisplayContext)
+
+  const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
 
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
@@ -46,15 +47,14 @@ const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
+    /* @ts-expect-error: à cracker */
   }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
 
   const actualTitle = getActualTitle({ kind, selectedItem })
 
-  const { trainings, jobs, extendedSearch } = useContext(SearchResultContext)
   const hasAlsoJob = hasAlsoEmploi({ isCfa, company: selectedItem?.company, searchedMatchaJobs: jobs?.matchas })
-  const currentList = getCurrentList({ store: { trainings, jobs }, activeFilters, extendedSearch })
 
-  const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem })
+  const { swipeHandlers, goNext, goPrev } = BuildSwipe({ jobs, trainings, extendedSearch, activeFilters, handleSelectItem, selectedItem })
 
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const maxScroll = 100
@@ -65,9 +65,11 @@ const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
   }
 
   const postuleSurFranceTravail = () => {
-    SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre FT", {
-      info_fiche: selectedItem.job.id,
-    })
+    if (selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB) {
+      SendPlausibleEvent("Clic Postuler - Fiche entreprise Offre FT", {
+        info_fiche: selectedItem.job.id,
+      })
+    }
   }
 
   const stickyHeaderProperties = isCollapsedHeader
@@ -94,6 +96,7 @@ const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       }}
       {...swipeHandlers}
     >
+      <InfoBanner />
       {/* @ts-expect-error: TODO */}
       <Box
         as="header"
@@ -139,7 +142,7 @@ const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
 
           {!isCollapsedHeader && getSoustitre({ selectedItem })}
 
-          {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && buttonJePostuleShouldBeDisplayed(selectedItem) && (
             <Box my={4}>
               <Link
                 data-tracking-id="postuler-offre-partenaire"
@@ -161,7 +164,7 @@ const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             </>
           )}
 
-          {kind === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
               <Divider my={2} />
               <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
@@ -171,7 +174,7 @@ const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       </Box>
 
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <MatchaDetail job={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <LbbCompanyDetail lbb={selectedItem} />}
 
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
@@ -218,7 +221,7 @@ const LoadedItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && (
         <>
           <DidYouKnow />
-          {!buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
+          {!buttonJePostuleShouldBeDisplayed(selectedItem) && (
             <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
           )}
         </>

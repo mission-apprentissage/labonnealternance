@@ -2,15 +2,15 @@ import Boom from "boom"
 import { assertUnreachable, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
-import { UserEventType } from "shared/models/user2.model"
+import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { Cfa, Recruiter } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { generateDepotSimplifieToken } from "@/services/appLinks.service"
+import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
@@ -20,18 +20,16 @@ import {
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
 } from "@/services/etablissement.service"
-import { getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
+import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import {
   autoValidateUser,
   createOrganizationUser,
-  getUserRecruteurByEmail,
-  isUserEmailChecked,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateLastConnectionDate,
-  updateUser2Fields,
+  updateUserWithAccountFields,
 } from "@/services/userRecruteur.service"
+import { emailHasActiveRole, getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -168,7 +166,7 @@ export default (server: Server) => {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message, result)
             else throw Boom.badRequest(result.message, result)
           }
-          const token = generateDepotSimplifieToken(user2ToUserForToken(result.user), result.formulaire.establishment_id)
+          const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id, siret)
           return res.status(200).send({ formulaire: result.formulaire, user: result.user, token, validated: result.validated })
         }
         case CFA: {
@@ -176,8 +174,7 @@ export default (server: Server) => {
           const origin = req.body.origin ?? "formulaire public de création"
           const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
-          const userRecruteurOpt = await getUserRecruteurByEmail(formatedEmail)
-          if (userRecruteurOpt) {
+          if (await emailHasActiveRole(formatedEmail)) {
             throw Boom.forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }
 
@@ -192,18 +189,19 @@ export default (server: Server) => {
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${config.publicUrl}/espace-pro/administration/users/${userCfa._id}`,
           }
+          const token = generateCfaCreationToken(userWithAccountToUserForToken(userCfa), establishment_siret)
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            await setUserHasToBeManuallyValidated(creationResult, origin, "pas d'email de contact")
+            await setUserHasToBeManuallyValidated(creationResult, origin)
             await notifyToSlack(slackNotification)
-            return res.status(200).send({ user: userCfa })
+            return res.status(200).send({ user: userCfa, validated: false, token })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
             await autoValidateUser(creationResult, origin, "l'email correspond à un contact")
             await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
-            return res.status(200).send({ user: userCfa })
+            return res.status(200).send({ user: userCfa, validated: true, token })
           }
           if (isEmailFromPrivateCompany(formatedEmail)) {
             const domains = getAllDomainsFromEmailList(contacts.map(({ email }) => email))
@@ -213,14 +211,14 @@ export default (server: Server) => {
               await autoValidateUser(creationResult, origin, "le nom de domaine de l'email correspond à celui d'un contact")
               await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
-              return res.status(200).send({ user: userCfa })
+              return res.status(200).send({ user: userCfa, validated: true, token })
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          await setUserHasToBeManuallyValidated(creationResult, origin, "pas de validation automatique possible")
+          await setUserHasToBeManuallyValidated(creationResult, origin)
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
-          return res.status(200).send({ user: userCfa })
+          return res.status(200).send({ user: userCfa, validated: false, token })
         }
         default: {
           assertUnreachable(type)
@@ -257,7 +255,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { _id, ...rest } = req.body
-      const result = await updateUser2Fields(req.params.id, rest)
+      const result = await updateUserWithAccountFields(req.params.id, rest)
       if ("error" in result) {
         throw Boom.badRequest("L'adresse mail est déjà associée à un compte La bonne alternance.")
       }
@@ -275,16 +273,18 @@ export default (server: Server) => {
       const userFromRequest = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
       const email = userFromRequest.identity.email.toLocaleLowerCase()
 
-      const user = await getUser2ByEmail(email)
+      const user = await getUserWithAccountByEmail(email)
       if (!user) {
         throw Boom.badRequest("La validation de l'adresse mail a échoué. Merci de contacter le support La bonne alternance.")
       }
-      const userStatus = getLastStatusEvent(user.status)?.status
-      if (userStatus === UserEventType.DESACTIVE) {
+      if (isUserDisabled(user)) {
         throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
-        await validateUser2Email(user._id.toString())
+        await validateUserWithAccountEmail(user._id.toString())
+      }
+      const mainRole = await getMainRoleManagement(user._id, true)
+      if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {
         await sendWelcomeEmailToUserRecruteur(user)
       }
 

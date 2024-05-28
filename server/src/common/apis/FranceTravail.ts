@@ -1,66 +1,84 @@
 import { createReadStream } from "fs"
 import querystring from "querystring"
 
+import Boom from "boom"
 import FormData from "form-data"
+import { TDayjs } from "shared/helpers/dayjs"
+import { IFicheRome } from "shared/models"
 
 import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
-import { IAppelattionDetailsFromAPI, IFTAPIToken, IRomeDetailsFromAPI } from "@/services/rome.service.types"
+import { IAppelattionDetailsFromAPI, IRomeDetailsFromAPI, IRomeV4Short, ZFTApiToken } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
+import { logger } from "../logger"
 import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
 
 const axiosClient = getApiClient({})
 
-const ROME_ACESS = querystring.stringify({
+const ROME_ACCESS = querystring.stringify({
   grant_type: "client_credentials",
   client_id: config.esdClientId,
   client_secret: config.esdClientSecret,
   scope: `application_${config.esdClientId} api_romev1 nomenclatureRome`,
 })
 
-const OFFRES_ACESS = querystring.stringify({
+const ROME_V4_ACCESS = querystring.stringify({
+  grant_type: "client_credentials",
+  client_id: config.esdClientId,
+  client_secret: config.esdClientSecret,
+  scope: `application_${config.esdClientId} api_rome-metiersv1 nomenclatureRome`,
+})
+
+const OFFRES_ACCESS = querystring.stringify({
   grant_type: "client_credentials",
   client_id: config.esdClientId,
   client_secret: config.esdClientSecret,
   scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
 })
 
-let tokenOffreFT: IFTAPIToken = {
-  access_token: "",
-  scope: "",
-  token_type: "",
-  expires_in: 0,
-}
-let tokenRomeFT: IFTAPIToken = {
-  access_token: "",
-  scope: "",
-  token_type: "",
-  expires_in: 0,
+const tokens: Record<"OFFRE" | "ROME" | "ROMEV4", FTMemoryToken | null> = {
+  OFFRE: null,
+  ROME: null,
+  ROMEV4: null,
 }
 
-const isTokenValid = (token: IFTAPIToken): any => token?.expire?.isAfter(dayjs())
+type FTMemoryToken = {
+  token: string
+  expire: TDayjs
+}
 
-const getFtAccessToken = async (access: "OFFRE" | "ROME", token): Promise<IFTAPIToken> => {
-  const isValid = isTokenValid(token)
+const isTokenValid = (token: FTMemoryToken): boolean => token.expire.isAfter(dayjs())
 
-  if (isValid) {
+const getFtAccessToken = async (access: "OFFRE" | "ROME" | "ROMEV4"): Promise<FTMemoryToken> => {
+  const token = tokens[access]
+  if (token && isTokenValid(token)) {
     return token
   }
 
   try {
-    const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=%2Fpartenaire`, access === "OFFRE" ? OFFRES_ACESS : ROME_ACESS, {
+    logger.info(`requesting new FT token for access=${access}`)
+    const tokenParams = access === "OFFRE" ? OFFRES_ACCESS : access === "ROME" ? ROME_ACCESS : ROME_V4_ACCESS
+    const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=%2Fpartenaire`, tokenParams, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 3000,
     })
 
-    return {
-      ...response.data,
+    const validation = ZFTApiToken.safeParse(response.data)
+    if (!validation.success) {
+      throw Boom.internal("inattendu: FT api token format non valide", { error: validation.error })
+    }
+
+    const newTokenObject = {
+      token: validation.data.access_token,
       expire: dayjs().add(response.data.expires_in - 10, "s"),
     }
+    tokens[access] = newTokenObject
+    return newTokenObject
   } catch (error: any) {
+    tokens[access] = null
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     return error.response?.data
   }
@@ -79,7 +97,7 @@ export const searchForFtJobs = async (params: {
   insee?: string
   distance?: number
 }): Promise<FTResponse | null | ""> => {
-  tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
+  const { token } = await getFtAccessToken("OFFRE")
 
   try {
     const extendedParams = {
@@ -93,7 +111,7 @@ export const searchForFtJobs = async (params: {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${tokenOffreFT.access_token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
 
@@ -109,21 +127,16 @@ export const searchForFtJobs = async (params: {
  * @description Get a FT Job
  */
 export const getFtJob = async (id: string) => {
-  tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
-  try {
-    const result = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${tokenOffreFT.access_token}`,
-      },
-    })
+  const { token } = await getFtAccessToken("OFFRE")
+  const result = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
 
-    return result
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-  }
+  return result
 }
 
 /**
@@ -134,13 +147,13 @@ export const getFtJob = async (id: string) => {
  */
 export const getFtReferentiels = async (referentiel: string) => {
   try {
-    tokenOffreFT = await getFtAccessToken("OFFRE", tokenOffreFT)
+    const { token } = await getFtAccessToken("OFFRE")
 
     const data = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/referentiel/${referentiel}`, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${tokenOffreFT.access_token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
 
@@ -156,12 +169,12 @@ export const getFtReferentiels = async (referentiel: string) => {
  * @returns
  */
 export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDetailsFromAPI | null | undefined> => {
-  tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
+  const { token } = await getFtAccessToken("ROME")
 
   try {
     const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${config.franceTravailIO.baseUrl}/rome/v1/metier/${romeCode}`, {
       headers: {
-        Authorization: `Bearer ${tokenRomeFT.access_token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
 
@@ -173,12 +186,12 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
 }
 
 export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
-  tokenRomeFT = await getFtAccessToken("ROME", tokenRomeFT)
+  const { token } = await getFtAccessToken("ROME")
 
   try {
     const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${config.franceTravailIO.baseUrl}/rome/v1/appellation/${appellationCode}`, {
       headers: {
-        Authorization: `Bearer ${tokenRomeFT.access_token}`,
+        Authorization: `Bearer ${token}`,
       },
     })
 
@@ -188,6 +201,38 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
     if (error.response.status === 404) {
       return null
     }
+  }
+}
+
+export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IFicheRome | null | undefined> => {
+  const { token } = await getFtAccessToken("ROMEV4")
+
+  try {
+    const { data } = await axiosClient.get<IFicheRome>(`${config.franceTravailIO.baseUrl}/rome-metiers/v1/metiers/metier/${romeCode}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    return data
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    return null
+  }
+}
+
+export const getRomeV4ListFromFT = async (): Promise<IRomeV4Short[] | null | undefined> => {
+  const { token } = await getFtAccessToken("ROMEV4")
+  try {
+    const { data } = await axiosClient.get<IRomeV4Short[]>(`${config.franceTravailIO.baseUrl}/rome-metiers/v1/metiers/metier?champs=code`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    return data
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    return null
   }
 }
 

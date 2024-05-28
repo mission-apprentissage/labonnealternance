@@ -5,7 +5,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZGlobalAddress } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
-import { ZValidationUtilisateur } from "./user2.model"
+import { ZValidationUtilisateur } from "./userWithAccount.model"
 
 export enum EntrepriseStatus {
   ERROR = "ERROR",

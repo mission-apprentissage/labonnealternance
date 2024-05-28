@@ -1,10 +1,9 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes, parseEnumOrError, removeUndefinedFields } from "shared"
+import { IJobWritable, INewDelegations, IRoutes, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { OPCOS } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
 import { publicConfig } from "../config.public"
@@ -74,9 +73,8 @@ export const updateUserValidationHistory = ({
   reason: string
   organizationType: typeof AccessEntityType.ENTREPRISE | typeof AccessEntityType.CFA
 }) => apiPut("/user/:userId/organization/:organizationId/permission", { params: { userId, organizationId }, body: { organizationType, status, reason } }).catch(errorHandler)
-export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
-export const deleteEntreprise = (userId: string, recruiterId: string) => apiDelete(`/user`, { querystring: { userId, recruiterId } }).catch(errorHandler)
-export const createAdminUser = (user: IUser2) => apiPost("/admin/users", { body: user })
+export const cancelAccountCreation = (siret: string, token: string) => apiDelete("/user/organization/:siret", { params: { siret }, headers: { authorization: `Bearer ${token}` } })
+export const createAdminUser = (user: IUserWithAccount) => apiPost("/admin/users", { body: user })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**
@@ -94,7 +92,8 @@ export const updateEntrepriseAdmin = async (userId: string, user: any, siret = "
  * Auth API
  */
 export const sendMagiclink = async (email) => await API.post(`/login/magiclink`, email)
-export const sendValidationLink = async (userId: string) => await apiPost("/login/:userId/resend-confirmation-email", { params: { userId } })
+export const sendValidationLink = async (userId: string, token: string) =>
+  await apiPost("/login/:userId/resend-confirmation-email", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
 
 /**
  * Etablissement API
@@ -132,8 +131,9 @@ export const getEntrepriseOpco = async (siret: string) => {
 export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
 
 export const getRomeDetail = (rome: string) => apiGet("/rome/detail/:rome", { params: { rome } })
-export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) =>
-  API.get(`/etablissement/cfas-proches?rome=${rome}&latitude=${latitude}&longitude=${longitude}`)
+export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) => {
+  return apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude } })
+}
 
 export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: any, token: string) =>
   apiPost("/etablissement/:establishment_siret/proposition/unsubscribe", {
@@ -147,4 +147,4 @@ export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: a
  * Administration OPCO
  */
 
-export const getOpcoUsers = (opco: string) => apiGet("/user/opco", { querystring: { opco: parseEnumOrError(OPCOS, opco) } })
+export const getOpcoUsers = () => apiGet("/user/opco", {})

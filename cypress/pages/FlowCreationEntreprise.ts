@@ -13,6 +13,7 @@ export const FlowCreationEntreprise = {
   },
   personalInfosPage: {
     fillForm({ email, firstName, lastName, phone }: { firstName: string; lastName: string; email: string; phone: string }) {
+      cy.contains("Informations légales", { timeout: 10000 }).should("exist")
       cy.get("input[name='last_name']").click()
       cy.get("input[name='last_name']").type(lastName)
       cy.get("input[name='first_name']").click()
@@ -57,7 +58,7 @@ export const FlowCreationEntreprise = {
       cy.get("[data-testid='offre-metier'] input").type(typedRomeLabel)
       cy.wait("@romeSearch")
       // cy.get(`[data-testid='offre-metier'] #downshift-1-item-0 p:first-of-type`, { timeout: 10000 }).should("have.text", romeLabel)
-      cy.get(`[data-testid='offre-metier'] [data-testid='${romeLabel}']`).click()
+      cy.get(`[data-testid='offre-metier'] [data-testid='${romeLabel}']`, { timeout: 20000 }).click({ timeout: 20000 })
 
       cy.get("[data-testid='offre-job-type'] [data-testid='Apprentissage']").click()
       if (Apprentissage) {

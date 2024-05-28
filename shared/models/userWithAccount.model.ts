@@ -27,7 +27,7 @@ export const ZUserStatusEvent = z
 
 const collectionName = "userswithaccounts" as const
 
-export const ZUser2 = z
+export const ZUserWithAccount = z
   .object({
     _id: zObjectId,
     origin: z.string().nullish(),
@@ -42,14 +42,14 @@ export const ZUser2 = z
   })
   .strict()
 
-export type IUser2 = z.output<typeof ZUser2>
-export type IUser2Json = Jsonify<z.input<typeof ZUser2>>
+export type IUserWithAccount = z.output<typeof ZUserWithAccount>
+export type IUserWithAccountJson = Jsonify<z.input<typeof ZUserWithAccount>>
 
 export type IUserStatusEvent = z.output<typeof ZUserStatusEvent>
 export type IUserStatusEventJson = Jsonify<z.input<typeof ZUserStatusEvent>>
 
 export default {
-  zod: ZUser2,
+  zod: ZUserWithAccount,
   indexes: [],
   collectionName,
 }

@@ -2,12 +2,12 @@ import Boom from "boom"
 import { assertUnreachable } from "shared"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUser2, UserEventType } from "shared/models/user2.model"
+import { IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { Entreprise, RoleManagement } from "@/common/model"
 
-export const controlUserState = async (user: IUser2): Promise<{ error: boolean; reason?: string }> => {
+export const controlUserState = async (user: IUserWithAccount): Promise<{ error: boolean; reason?: string }> => {
   const status = getLastStatusEvent(user.status)?.status
   switch (status) {
     case UserEventType.DESACTIVE:

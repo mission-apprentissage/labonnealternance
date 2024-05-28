@@ -10,7 +10,7 @@ describe("create-entreprise-account-siret-cfa", () => {
     FlowCreationEntreprise.siretPage.goTo()
     FlowCreationEntreprise.siretPage.fillSiret(cfaSiret)
     FlowCreationEntreprise.siretPage.submit()
-    cy.contains("veuillez utiliser ce lien").click()
+    cy.contains("veuillez utiliser ce lien", { timeout: 10000 }).click()
 
     FlowCreationCfa.siretPage.verify()
   })

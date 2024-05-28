@@ -1,11 +1,11 @@
 import dayjs from "dayjs"
 import { getLastStatusEvent, IRecruiter, parseEnumOrError, ZGlobalAddress } from "shared"
-import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
+import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
 import { ICFA } from "shared/models/cfa.model.js"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
-import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
+import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/userWithAccount.model.js"
 
 import { ObjectId } from "@/common/mongodb.js"
 
@@ -14,11 +14,11 @@ import { Recruiter, UserRecruteur } from "../../common/model/index.js"
 import { Cfa } from "../../common/model/schema/multiCompte/cfa.schema.js"
 import { Entreprise } from "../../common/model/schema/multiCompte/entreprise.schema.js"
 import { RoleManagement } from "../../common/model/schema/multiCompte/roleManagement.schema.js"
-import { User2 } from "../../common/model/schema/multiCompte/user2.schema.js"
+import { UserWithAccount } from "../../common/model/schema/multiCompte/userWithAccount.schema.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 export const migrationUsers = async () => {
-  await User2.deleteMany({})
+  await UserWithAccount.deleteMany({})
   await Entreprise.deleteMany({})
   await Cfa.deleteMany({})
   await RoleManagement.deleteMany({})
@@ -39,13 +39,16 @@ const migrationRecruiters = async () => {
       if (cfa_delegated_siret) {
         userRecruiter = await UserRecruteur.findOne({ establishment_siret: cfa_delegated_siret }).lean()
         if (!userRecruiter) {
-          throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_siret=${cfa_delegated_siret}`)
+          recruiterOrphans.push(recruiter._id.toString())
+          await Recruiter.updateOne({ _id: recruiter._id }, { $set: { status: RECRUITER_STATUS.ARCHIVE } })
+          return
         }
       } else {
         userRecruiter = await UserRecruteur.findOne({ establishment_id }).lean()
         if (!userRecruiter) {
-          recruiterOrphans.push(establishment_id)
-          throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_id=${establishment_id}`)
+          recruiterOrphans.push(recruiter._id.toString())
+          await Recruiter.updateOne({ _id: recruiter._id }, { $set: { status: RECRUITER_STATUS.ARCHIVE } })
+          return
         }
       }
       await Recruiter.findOneAndUpdate({ _id: recruiter._id }, { managed_by: userRecruiter._id })
@@ -139,7 +142,7 @@ const migrationUserRecruteurs = async () => {
         validation_type: VALIDATION_UTILISATEUR.AUTO,
         granted_by: "migration",
       })
-      const newUser: IUser2 = {
+      const newUser: IUserWithAccount = {
         _id: userRecruteur._id,
         first_name: first_name ?? "",
         last_name: last_name ?? "",
@@ -151,7 +154,7 @@ const migrationUserRecruteurs = async () => {
         origin,
         status: newStatus,
       }
-      await createWithTimestamps(User2, newUser)
+      await createWithTimestamps(UserWithAccount, newUser)
       stats.userCreated++
       if (type === ENTREPRISE) {
         if (!establishment_siret) {
@@ -190,7 +193,7 @@ const migrationUserRecruteurs = async () => {
           }
         } else {
           if (getLastStatusEvent(newEntreprise.status)?.status !== EntrepriseStatus.ERROR) {
-            if (!newEntreprise.address || !newEntreprise.address_detail || !newEntreprise.enseigne || !newEntreprise.raison_sociale || !newEntreprise.geo_coordinates) {
+            if (!newEntreprise.address || !newEntreprise.address_detail || !newEntreprise.raison_sociale || !newEntreprise.geo_coordinates) {
               newEntreprise.status.push({
                 date: new Date(),
                 reason: "champ manquant",

@@ -212,8 +212,17 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("recruiters:get-missing-address-detail"))
 
-// Temporaire, one shot à executer en recette et prod
-program.command("import:rome").description("import référentiel fiche metier rome v3").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import:rome"))
+program
+  .command("import:ficheromev4")
+  .description("import fiches métiers rome v4 (pas utilisé 29/04/2024)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import:ficheromev4"))
+program
+  .command("import:referentielrome")
+  .description("import référentiel rome v4 from XML")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import:referentielrome"))
+
 // Temporaire, one shot à executer en recette et prod
 program
   .command("migration:remove-version-key-from-all-collections")

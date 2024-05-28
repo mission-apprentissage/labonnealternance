@@ -4,8 +4,8 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZPointGeometry, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUser2 } from "../models/user2.model"
 import { ZCfaReferentielData, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
+import { ZUserWithAccount } from "../models/userWithAccount.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -43,7 +43,7 @@ export const zRecruiterRoutes = {
         .strict(),
       response: {
         // TODO ANY TO BE FIXED
-        "2xx": z.any(),
+        "200": z.array(z.any()),
         // "2xx": zEtablissementCatalogue
         //   .pick({
         //     _id: true,
@@ -166,9 +166,9 @@ export const zRecruiterRoutes = {
         "200": z
           .object({
             formulaire: ZRecruiter.optional(),
-            user: ZUser2,
-            token: z.string().optional(),
-            validated: z.boolean().optional(),
+            user: ZUserWithAccount,
+            token: z.string(),
+            validated: z.boolean(),
           })
           .strict(),
       },

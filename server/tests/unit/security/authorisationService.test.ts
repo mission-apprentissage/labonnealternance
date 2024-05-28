@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessRessouces } from "shared/security/permissions"
 import { describe, expect, it } from "vitest"
@@ -87,7 +87,7 @@ describe("authorisationService", async () => {
     opcoUserA = await saveOpcoUserTest()
   }, "beforeAll")
 
-  const givenACookieUser = (user: IUser2): AccessUser2 => {
+  const givenACookieUser = (user: IUserWithAccount): AccessUser2 => {
     return {
       type: "IUser2",
       value: user,

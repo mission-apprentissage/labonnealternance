@@ -2,8 +2,8 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormL
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
-import { IRecruiterJson } from "shared"
-import { IUser2Json } from "shared/models/user2.model"
+import { IRecruiterJson, assertUnreachable } from "shared"
+import { IUserWithAccountJson } from "shared/models/userWithAccount.model"
 import * as Yup from "yup"
 
 import { ApiError } from "@/utils/api.utils"
@@ -151,7 +151,7 @@ const FormulaireLayout = ({ left, right }) => {
 export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boolean }) => {
   const router = useRouter()
   const validationPopup = useDisclosure()
-  const [popupData, setPopupData] = useState<{ user: IUser2Json; formulaire: IRecruiterJson; token?: string; type: "CFA" | "ENTREPRISE" } | null>(null)
+  const [popupData, setPopupData] = useState<{ user: IUserWithAccountJson; formulaire: IRecruiterJson; token?: string; type: "CFA" | "ENTREPRISE" } | null>(null)
 
   const { type, informationSiret: informationSiretString }: { type: "CFA" | "ENTREPRISE"; informationSiret: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
@@ -175,11 +175,13 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
               pathname: isWidget ? "/espace-pro/widget/entreprise/offre" : "/espace-pro/creation/offre",
               query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id.toString(), token: data.token },
             })
-          } else {
+          } else if (type === AUTHTYPE.CFA) {
             router.push({
               pathname: "/espace-pro/authentification/confirmation",
               query: { email: data.user.email },
             })
+          } else {
+            assertUnreachable(type)
           }
         } else {
           validationPopup.onOpen()
@@ -192,10 +194,8 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
         setSubmitting(false)
       })
       .catch((error) => {
-        console.error(error)
         if (error instanceof ApiError) {
-          const payload: { error: string; statusCode: number; message: string } = error.context.errorData
-          setFieldError("email", payload.message)
+          setFieldError("email", error.message)
           setSubmitting(false)
         }
       })
@@ -203,7 +203,7 @@ export const InformationCreationCompte = ({ isWidget = false }: { isWidget?: boo
 
   return (
     <AnimationContainer>
-      <ConfirmationCreationCompte {...popupData} {...validationPopup} isWidget={isWidget} />
+      <ConfirmationCreationCompte {...popupData} {...validationPopup} isWidget={isWidget} siret={establishment_siret} />
       <AuthentificationLayout>
         <Formulaire submitForm={submitForm} />
       </AuthentificationLayout>

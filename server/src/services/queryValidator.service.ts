@@ -1,4 +1,5 @@
 import axios from "axios"
+import Boom from "boom"
 import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 
 import { isOriginLocal } from "../common/utils/isOriginLocal"
@@ -7,15 +8,37 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
 import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types"
-import { IRncpTCO } from "./queryValidator.service.types"
+import { CertificationAPIApprentissage } from "./queryValidator.service.types"
 
-const getRomesFromRncp = async (rncp: string): Promise<string | null | undefined> => {
+const getFirstCertificationFromAPIApprentissage = async (rncp: string): Promise<CertificationAPIApprentissage | null> => {
   try {
-    const response = await axios.post<IRncpTCO>(`${config.tco.baseUrl}/api/v1/rncp`, { rncp })
-    const romes = response.data.result.romes.map(({ rome }) => rome).join(",")
-    return romes ?? null
-  } catch (error) {
-    sentryCaptureException(error)
+    const { data } = await axios.get<CertificationAPIApprentissage[]>(`${config.apiApprentissage.baseUrl}/certification/v1?identifiant.rncp=${rncp}`, {
+      headers: { Authorization: `Bearer ${config.apiApprentissage.apiKey}` },
+    })
+
+    if (!data.length) return null
+
+    return data[0]
+  } catch (error: any) {
+    sentryCaptureException(error, { responseData: error.response?.data })
+    return null
+  }
+}
+
+const getRomesFromRncp = async (rncp: string): Promise<string | null> => {
+  let certification = await getFirstCertificationFromAPIApprentissage(rncp)
+  if (!certification) return null
+
+  if (certification.periode_validite.rncp.actif) {
+    return certification.domaines.rome.rncp.map((x) => x.code).join(",")
+  } else {
+    const latestRNCP = certification.continuite.rncp.findLast((rncp) => rncp.actif === true)
+    if (!latestRNCP) {
+      throw Boom.internal(`le code RNCP ${rncp} n'a aucune continuité`)
+    }
+    certification = await getFirstCertificationFromAPIApprentissage(latestRNCP.code)
+    if (!certification) return null
+    return certification.domaines.rome.rncp.map((x) => x.code).join(",")
   }
 }
 

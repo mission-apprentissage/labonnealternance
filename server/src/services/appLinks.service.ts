@@ -1,9 +1,17 @@
 import { IJob } from "shared/models"
-import { IUser2 } from "shared/models/user2.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { zRoutes } from "shared/routes"
 
 import config from "@/config"
-import { IUser2ForAccessToken, UserForAccessToken, generateAccessToken, generateScope, user2ToUserForToken } from "@/security/accessTokenService"
+import {
+  IApplicationTForUserToken,
+  IUserWithAccountForAccessToken,
+  UserForAccessToken,
+  applicationToUserForToken,
+  generateAccessToken,
+  generateScope,
+  userWithAccountToUserForToken,
+} from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: UserForAccessToken) {
   return generateAccessToken(user, [
@@ -23,7 +31,7 @@ export function createAuthMagicLink(user: UserForAccessToken) {
   return `${config.publicUrl}/espace-pro/authentification/verification?token=${encodeURIComponent(token)}`
 }
 
-export function createValidationMagicLink(user: IUser2ForAccessToken) {
+export function createValidationMagicLink(user: IUserWithAccountForAccessToken) {
   const token = generateAccessToken(
     user,
     [
@@ -320,7 +328,7 @@ export function generateApplicationReplyToken(tokenUser: UserForAccessToken, app
   )
 }
 
-export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establishment_id: string) {
+export function generateDepotSimplifieToken(user: IUserWithAccountForAccessToken, establishment_id: string, siret: string) {
   return generateAccessToken(
     user,
     [
@@ -345,6 +353,13 @@ export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establis
           querystring: undefined,
         },
       }),
+      generateScope({
+        schema: zRoutes.delete["/user/organization/:siret"],
+        options: {
+          params: { siret },
+          querystring: undefined,
+        },
+      }),
     ],
     {
       expiresIn: "2h",
@@ -352,9 +367,34 @@ export function generateDepotSimplifieToken(user: IUser2ForAccessToken, establis
   )
 }
 
-export function generateOffreToken(user: IUser2, offre: IJob) {
+export function generateCfaCreationToken(user: IUserWithAccountForAccessToken, siret: string) {
   return generateAccessToken(
-    user2ToUserForToken(user),
+    user,
+    [
+      generateScope({
+        schema: zRoutes.get["/user/status/:userId/by-token"],
+        options: {
+          params: { userId: user._id.toString() },
+          querystring: undefined,
+        },
+      }),
+      generateScope({
+        schema: zRoutes.delete["/user/organization/:siret"],
+        options: {
+          params: { siret },
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "2h",
+    }
+  )
+}
+
+export function generateOffreToken(user: IUserWithAccount, offre: IJob) {
+  return generateAccessToken(
+    userWithAccountToUserForToken(user),
     [
       generateScope({
         schema: zRoutes.post["/formulaire/offre/:jobId/delegation/by-token"],
@@ -370,9 +410,28 @@ export function generateOffreToken(user: IUser2, offre: IJob) {
           querystring: undefined,
         },
       }),
+      generateScope({
+        schema: zRoutes.post["/login/:userId/resend-confirmation-email"],
+        options: {
+          params: { userId: user._id.toString() },
+          querystring: undefined,
+        },
+      }),
     ],
     {
       expiresIn: "2h",
     }
   )
+}
+
+export function generateApplicationToken({ company_siret, jobId }: IApplicationTForUserToken) {
+  return generateAccessToken(applicationToUserForToken({ company_siret, jobId }), [
+    generateScope({
+      schema: zRoutes.post["/_private/application"],
+      options: {
+        params: undefined,
+        querystring: undefined,
+      },
+    }),
+  ])
 }

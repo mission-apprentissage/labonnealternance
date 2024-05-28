@@ -2,8 +2,10 @@ import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IUserRecruteur } from "shared/models"
 import { AccessStatus } from "shared/models/roleManagement.model"
 
+import { emailHasActiveRole } from "@/services/userWithAccount.service"
+
 import { logger } from "../../../common/logger"
-import { createUser, getUserRecruteurByEmail } from "../../../services/userRecruteur.service"
+import { createUser } from "../../../services/userRecruteur.service"
 
 export const createUserFromCLI = async (
   {
@@ -19,10 +21,8 @@ export const createUserFromCLI = async (
   { options }: { options: { Type: IUserRecruteur["type"]; Email_valide: IUserRecruteur["is_email_checked"] } }
 ) => {
   const { Type, Email_valide } = options
-  const exist = await getUserRecruteurByEmail(email)
-
-  if (exist) {
-    logger.error(`Users ${email} already exist - ${exist._id}`)
+  if (await emailHasActiveRole(email)) {
+    logger.error(`User ${email} already have an active role`)
     return
   }
 

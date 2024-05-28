@@ -4,7 +4,7 @@ import { ParameterContext } from "../../context/ParameterContextProvider"
 import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
 import { logError } from "../../utils/tools"
 
-const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleItemLoad }) => {
+const InitWidgetSearchParameters = ({ handleSearchSubmit, handleItemLoad }) => {
   const { widgetParameters, itemParameters, setWidgetParameters, setItemParameters } = React.useContext(ParameterContext)
 
   useEffect(() => {
@@ -25,13 +25,10 @@ const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleIt
       // launchItem only
       launchItemFetch()
       setItemParameters({ ...itemParameters, applyItemParameters: false }) // action one shot
-    } else {
-      setIsLoading(false)
     }
   })
 
   const launchWidgetSearch = async ({ selectItem = false }) => {
-    setIsLoading(true)
     // @ts-expect-error: TODO
     const p = widgetParameters.parameters
     try {
@@ -69,23 +66,17 @@ const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleIt
 
         handleSearchSubmit({ values, followUpItem: selectItem ? itemParameters : null })
       }
-      setIsLoading(false)
     } catch (err) {
-      setIsLoading(false)
       logError("WidgetSearch error", err)
     }
   }
 
   const launchItemFetch = async () => {
-    setIsLoading(true)
     // @ts-expect-error: TODO
     const p = itemParameters.parameters
     try {
       await handleItemLoad(p)
-
-      setIsLoading(false)
     } catch (err) {
-      setIsLoading(false)
       logError("WidgetSearch error", err)
     }
   }

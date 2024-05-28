@@ -167,7 +167,7 @@ const AjouterVoeuxForm = (props) => {
       return
     }
     const [latitude, longitude] = geo_coordinates.split(",").map((str) => parseFloat(str))
-    const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
+    const data = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
 
@@ -179,7 +179,7 @@ const AjouterVoeuxForm = (props) => {
         rome_label: props.rome_label ?? "",
         rome_appellation_label: props.rome_appellation_label ?? "",
         rome_code: props.rome_code ?? [],
-        job_level_label: props.job_level_label ?? "",
+        job_level_label: props.job_level_label ?? "Indifférent",
         job_start_date: props.job_start_date ? dayjs(props.job_start_date).format(DATE_FORMAT) : "",
         job_description: props.job_description ?? undefined,
         job_creation_date: props.job_creation_date ?? dayjs().format(DATE_FORMAT),
@@ -218,7 +218,8 @@ const AjouterVoeuxForm = (props) => {
                    * work around until v3 : setTimeout
                    */
                   setTimeout(async () => {
-                    await checkIfThereAreProposal(values.codeRome)
+                    // ne pas ajouter de await puisque l'appel peut être lent et n'est pas primordial
+                    checkIfThereAreProposal(values.codeRome)
                     setFieldValue("rome_label", values.intitule)
                     setFieldValue("rome_appellation_label", values.appellation)
                     setFieldValue("rome_code", [values.codeRome])
@@ -269,9 +270,6 @@ const AjouterVoeuxForm = (props) => {
             <FormControl mt={6} isRequired>
               <FormLabel>Niveau visé en fin d’études</FormLabel>
               <Select size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
-                <option value="" hidden>
-                  Choisissez un niveau
-                </option>
                 <option value="Indifférent">Indifférent</option>
                 <option value="Cap, autres formations niveau (Infrabac)">Cap, autres formations niveau (Infrabac)</option>
                 <option value="BP, Bac, autres formations niveau (Bac)">BP, Bac, autres formations niveau (Bac)</option>

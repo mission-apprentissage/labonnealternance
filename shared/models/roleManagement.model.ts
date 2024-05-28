@@ -4,7 +4,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
-import { ZValidationUtilisateur } from "./user2.model"
+import { ZValidationUtilisateur } from "./userWithAccount.model"
 
 export enum AccessEntityType {
   USER = "USER",

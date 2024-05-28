@@ -26,6 +26,7 @@ const splitter = (str) => str.split(regex).filter(String)
  * @returns {Promise<object>}
  */
 const formatToPe = async (offre) => {
+  //TODO VOIR NECESSITE
   const appellation = offre.rome_detail.appellations.find((v) => v.libelle === offre.rome_appellation_label)
   const adresse = offre.address_detail
   const [latitude, longitude] = offre.geo_coordinates.split(",")
@@ -44,7 +45,7 @@ const formatToPe = async (offre) => {
     Par_nom: "LABONNEALTERNANCE",
     Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${offre.jobId}`,
     Code_rome: offre.rome_code[0],
-    Code_OGR: appellation.code,
+    Code_OGR: appellation.code_ogr,
     Libelle_metier_OGR: appellation.libelle,
     Description: offre.rome_detail.definition,
     Off_experience_duree_min: null,
@@ -183,6 +184,7 @@ export const exportToFranceTravail = async (): Promise<void> => {
         geo_coordinates: { $nin: ["NOT FOUND", null] },
         job_update_date: { $gte: threshold },
         address_detail: { $ne: null },
+        is_multi_published: true,
       })
       .toArray()
 
