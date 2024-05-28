@@ -594,7 +594,7 @@ async function getApplicationCountForItem(applicantEmail: string, LbaJob: ILbaJo
       job_id: job._id.toString(),
     })
   } else {
-   assertUnreachable(type)
+    assertUnreachable(type)
   }
 }
 
