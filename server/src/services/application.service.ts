@@ -580,25 +580,7 @@ export const validatePermanentEmail = (email: string): string => {
   return "ok"
 }
 
-async function getApplicationCountForItemV1(applicantEmail: string, offreOrCompany: ILbaJob) {
-  const { type } = offreOrCompany
-
-  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    return Application.countDocuments({
-      applicant_email: applicantEmail.toLowerCase(),
-      company_siret: offreOrCompany.job.siret,
-    })
-  }
-  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    return Application.countDocuments({
-      applicant_email: applicantEmail.toLowerCase(),
-      job_id: offreOrCompany.job._id.toString(),
-    })
-  }
-  assertUnreachable(type as never)
-}
-
-async function getApplicationCountForItemV2(applicantEmail: string, LbaJob: ILbaJob) {
+async function getApplicationCountForItem(applicantEmail: string, LbaJob: ILbaJob) {
   const { type, job } = LbaJob
 
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
@@ -606,14 +588,13 @@ async function getApplicationCountForItemV2(applicantEmail: string, LbaJob: ILba
       applicant_email: applicantEmail.toLowerCase(),
       company_siret: job.siret,
     })
-  }
-  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+  } else {
+    // type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
     return Application.countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       job_id: job._id.toString(),
     })
   }
-  assertUnreachable(type as never)
 }
 
 /**
@@ -634,7 +615,7 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
       applicant_email: applicantEmail.toLowerCase(),
       created_at: { $gte: start, $lt: end },
     }),
-    getApplicationCountForItemV1(applicantEmail, offreOrCompany),
+    getApplicationCountForItem(applicantEmail, offreOrCompany),
     caller
       ? Application.countDocuments({
           caller: caller.toLowerCase(),
@@ -676,7 +657,7 @@ const checkUserApplicationCountV2 = async (applicantEmail: string, LbaJob: ILbaJ
       applicant_email: applicantEmail.toLowerCase(),
       created_at: { $gte: start, $lt: end },
     }),
-    getApplicationCountForItemV2(applicantEmail, LbaJob),
+    getApplicationCountForItem(applicantEmail, LbaJob),
     caller
       ? Application.countDocuments({
           caller,
