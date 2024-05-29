@@ -4,6 +4,8 @@ import type { FilterQuery } from "mongoose"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 
 import { logger } from "@/common/logger"
+import { getReferrerByKeyName } from "@/common/model/constants/referrers"
+import config from "@/config"
 
 import { EligibleTrainingsForAppointment, Etablissement, ReferentielOnisep } from "../common/model/index"
 import { isValidEmail } from "../common/utils/isValidEmail"
@@ -57,15 +59,15 @@ export const disableEligibleTraininForAppointmentWithEmail = async (disabledEmai
   )
 }
 
-export const findEligibleTrainingByMinisterialKey = async (idCleMinistereEducatif: string) => {
+const findEligibleTrainingByMinisterialKey = async (idCleMinistereEducatif: string) => {
   return await EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: idCleMinistereEducatif })
 }
 
-export const findEligibleTrainingByParcoursupId = async (idParcoursup: string) => {
+const findEligibleTrainingByParcoursupId = async (idParcoursup: string) => {
   return await EligibleTrainingsForAppointment.findOne({ parcoursup_id: idParcoursup })
 }
 
-export const findEligibleTrainingByActionFormation = async (idActionFormation: string) => {
+const findEligibleTrainingByActionFormation = async (idActionFormation: string) => {
   const referentielOnisepIdActionFormation = await ReferentielOnisep.findOne({ id_action_ideo2: idActionFormation })
 
   if (!referentielOnisepIdActionFormation) {
@@ -77,18 +79,57 @@ export const findEligibleTrainingByActionFormation = async (idActionFormation: s
   })
 }
 
-export function isOpenForAppointments(eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerName: string) {
-  return eligibleTrainingsForAppointment.referrers.includes(referrerName)
+function isOpenForAppointments(eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerName: string) {
+  return eligibleTrainingsForAppointment.referrers.includes(referrerName) && eligibleTrainingsForAppointment.lieu_formation_email
 }
 
-export const findOpenAppointments = async (eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerName: string) => {
-  return await EligibleTrainingsForAppointment.findOne({
-    cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-    referrers: { $in: [referrerName] },
-    lieu_formation_email: { $nin: [null, ""] },
-  })
-}
-
-export const findEtablissement = async (formateurSiret: string | null | undefined) => {
+const findEtablissement = async (formateurSiret: string | null | undefined) => {
   return await Etablissement.findOne({ formateur_siret: formateurSiret })
+}
+
+export const findElligibleTrainingForAppointment = async (req: any) => {
+  const { referrer } = req.body
+  const referrerObj = getReferrerByKeyName(referrer)
+  let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null
+
+  if ("idCleMinistereEducatif" in req.body) {
+    eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(req.body.idCleMinistereEducatif)
+  } else if ("idParcoursup" in req.body) {
+    eligibleTrainingsForAppointment = await findEligibleTrainingByParcoursupId(req.body.idParcoursup)
+  } else if ("idActionFormation" in req.body) {
+    eligibleTrainingsForAppointment = await findEligibleTrainingByActionFormation(req.body.idActionFormation)
+  } else {
+    throw Boom.badRequest("Critère de recherche non conforme.")
+  }
+
+  if (!eligibleTrainingsForAppointment) {
+    throw Boom.notFound("Formation introuvable")
+  }
+
+  if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerObj.name)) {
+    return {
+      error: "Prise de rendez-vous non disponible.",
+    }
+  }
+
+  const etablissement = await findEtablissement(eligibleTrainingsForAppointment.etablissement_formateur_siret)
+
+  if (!etablissement) {
+    throw Boom.internal("Etablissement formateur non trouvé")
+  }
+
+  return {
+    etablissement_formateur_entreprise_raison_sociale: etablissement.raison_sociale,
+    intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
+    lieu_formation_adresse: eligibleTrainingsForAppointment.lieu_formation_street,
+    code_postal: eligibleTrainingsForAppointment.lieu_formation_zip_code,
+    etablissement_formateur_siret: etablissement.formateur_siret,
+    cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
+    localite: eligibleTrainingsForAppointment.lieu_formation_city,
+    id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
+    cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
+    form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
+      eligibleTrainingsForAppointment.cle_ministere_educatif
+    )}`,
+  }
 }
