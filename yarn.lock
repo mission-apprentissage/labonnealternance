@@ -5673,17 +5673,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^1.1.4":
-  version: 1.1.6
-  resolution: "bson@npm:1.1.6"
-  checksum: 75762c9b7e0b3156cb0f38c7eb9ffcade53f0b04ac87dece9cba38f6dc570d9af91251de6a8988b294063cfaa21894c60ac9e85c34176accb3674acb092d66a7
-  languageName: node
-  linkType: hard
-
 "bson@npm:^5.5.0":
   version: 5.5.1
   resolution: "bson@npm:5.5.1"
   checksum: f49730504e8362e2c8d1eb0c272e5e125392c41fb7196fc35ccbc39718ee62569a1d197bd2342c3334cd420073d3fd5dc7dea764a7f219dcd79e0ce473dd2772
+  languageName: node
+  linkType: hard
+
+"bson@npm:^6.7.0":
+  version: 6.7.0
+  resolution: "bson@npm:6.7.0"
+  checksum: f77b7001e2ec603b1058e9f2d99b642be4673e0356adf4fbdc463afd89de434d3be9d81305c1befbcda9bf8616e70a8f7ec0c8ec7a79154ca40ba455b73ea280
   languageName: node
   linkType: hard
 
@@ -17833,7 +17833,7 @@ __metadata:
     "@asteasolutions/zod-to-openapi": ^5.5.0
     "@fastify/swagger": ^8.11.0
     "@types/boom": ^7.3.3
-    bson: ^1.1.4
+    bson: ^6.7.0
     dayjs: ^1.11.10
     eslint-plugin-zod: ^1.4.0
     lodash-es: ^4.17.21
