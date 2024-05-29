@@ -2,6 +2,7 @@ import Boom from "boom"
 import type { ObjectId } from "mongodb"
 import type { FilterQuery } from "mongoose"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
+import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
 
 import { logger } from "@/common/logger"
 import { getReferrerByKeyName } from "@/common/model/constants/referrers"
@@ -87,7 +88,7 @@ const findEtablissement = async (formateurSiret: string | null | undefined) => {
   return await Etablissement.findOne({ formateur_siret: formateurSiret })
 }
 
-export const findElligibleTrainingForAppointment = async (req: any) => {
+export const findElligibleTrainingForAppointment = async (req: any): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   const { referrer } = req.body
   const referrerObj = getReferrerByKeyName(referrer)
   let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null
