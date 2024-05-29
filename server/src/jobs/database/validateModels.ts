@@ -90,7 +90,7 @@ async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, a
       .map(([message, count]) => `${count} : ${message}`)
       .join("\n")}
     `
-    console.error(errorMessage)
+    logger.error(errorMessage)
     captureException(new Error(errorMessage))
   } else {
     logger.info(`All documents ${totalCount} for ${collectionName} are valid`)
