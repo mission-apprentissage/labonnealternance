@@ -58,7 +58,7 @@ fileignoreconfig:
 - filename: server/src/services/application.service.ts
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
-  checksum: 52bfe91cc0cd07121cad6dc9490a7345dbbbeb285f11fc844a8dd8eb74fe310f
+  checksum: e3bab02a443c5ddf63d5b6ac2ea4d976f5bb025a6af1ef18bff5f82e377d07e1
 - filename: server/src/services/userRecruteur.service.ts
   checksum: fb8fc73f5ac4491b2a7be99ceaebf96c79bffa63fa6b164eed6e2d3d9fe5dae0
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
