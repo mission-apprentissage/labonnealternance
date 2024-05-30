@@ -8,12 +8,11 @@ export const lbaCompanyUpdateEventSchema = new Schema<ILbaCompanyUpdateEvent>(
       type: String,
       require: true,
       description: "Le Siret de la société",
-      index: true,
     },
     event: {
       type: String,
+      require: true,
       description: "Le type de modification effectué",
-      index: true,
     },
     value: {
       type: String,
