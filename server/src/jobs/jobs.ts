@@ -95,10 +95,6 @@ export const CronsMap = {
     cron_string: "30 5 * * *",
     handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" }, productionOnly: true }),
   },
-  "Check companies validation state": {
-    cron_string: "30 6 * * *",
-    handler: () => addJob({ name: "user:validate", payload: { threshold: "1" } }),
-  },
   "Mise à jour des recruteurs en erreur": {
     cron_string: "10 0 * * *",
     handler: () => addJob({ name: "siret:inError:update", payload: {} }),
