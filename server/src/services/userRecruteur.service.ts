@@ -374,7 +374,6 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   if (!organization) {
     throw Boom.internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }
-  const { raison_sociale: establishment_raison_sociale } = organization
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
@@ -382,13 +381,13 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
     data: {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
-      establishment_raison_sociale: establishment_raison_sociale,
       last_name: sanitizeForEmail(last_name),
       first_name: sanitizeForEmail(first_name),
-      email: sanitizeForEmail(email),
-      is_delegated: isCfa,
-      url: createAuthMagicLink(userWithAccountToUserForToken(user)),
+      confirmation_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
+      email: sanitizeForEmail(user.email),
+      establishment_name: organization.raison_sociale,
     },
   })
 }

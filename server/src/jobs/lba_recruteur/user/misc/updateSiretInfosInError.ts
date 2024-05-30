@@ -66,7 +66,7 @@ const updateEntreprisesInfosInError = async () => {
               if (!status) {
                 throw Boom.internal("inattendu : status du role non trouvé")
               }
-              await sendEmailConfirmationEntreprise(user, entreprise, recruiter, status, EntrepriseStatus.VALIDE)
+              await sendEmailConfirmationEntreprise(user, recruiter, status, EntrepriseStatus.VALIDE)
             }
           })
         }

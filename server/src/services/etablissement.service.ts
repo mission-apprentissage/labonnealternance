@@ -7,8 +7,7 @@ import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCo
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { ICFA } from "shared/models/cfa.model"
-import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
+import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -41,7 +40,7 @@ import {
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
-import { getMainRoleManagement, getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
+import { modifyPermissionToUser } from "./roleManagement.service"
 import {
   UserAndOrganization,
   autoValidateUser as authorizeUserOnEntreprise,
@@ -888,18 +887,7 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
-export const sendUserConfirmationEmail = async (user: IUserWithAccount, organization?: ICFA | IEntreprise) => {
-  if (!organization) {
-    const role = await getMainRoleManagement(user._id)
-    if (!role) {
-      throw new Error("inattendu: aucun role")
-    }
-    const organizationOpt = await getOrganizationFromRole(role)
-    if (!organizationOpt) {
-      throw new Error(`inattendu: role non-cfa et non-entreprise pour role avec id=${role._id}`)
-    }
-    organization = organizationOpt
-  }
+export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
   const url = createValidationMagicLink(userWithAccountToUserForToken(user))
   await mailer.sendEmail({
     to: user.email,
@@ -908,20 +896,16 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount, organiza
     data: {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
       last_name: sanitizeForEmail(user.last_name),
       first_name: sanitizeForEmail(user.first_name),
       confirmation_url: url,
-      email: user.email,
-      establishment_name: organization.raison_sociale,
     },
   })
 }
 
 export const sendEmailConfirmationEntreprise = async (
   user: IUserWithAccount,
-  entreprise: IEntreprise,
   recruteur: IRecruiter,
   accessStatus: AccessStatus | null,
   entrepriseStatus: EntrepriseStatus | null
@@ -966,7 +950,7 @@ export const sendEmailConfirmationEntreprise = async (
     if (!user2) {
       throw Boom.internal(`could not find user with id=${user._id}`)
     }
-    await sendUserConfirmationEmail(user2, entreprise)
+    await sendUserConfirmationEmail(user2)
   }
 }
 
