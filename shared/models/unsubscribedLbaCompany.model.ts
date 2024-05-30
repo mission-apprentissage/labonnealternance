@@ -3,6 +3,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZLbaCompany } from "./lbaCompany.model"
 
 export const ZUnsubscribedLbaCompany = ZLbaCompany.pick({
+  _id: true,
   siret: true,
   raison_sociale: true,
   enseigne: true,

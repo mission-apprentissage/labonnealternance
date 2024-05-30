@@ -1,11 +1,9 @@
-import { OPCOS } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
-import { enumToZod } from "../models/enumToZod"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model"
-import { ZUser2 } from "../models/user2.model"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model"
+import { ZUserWithAccount } from "../models/userWithAccount.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -33,11 +31,6 @@ export const zUserRecruteurRoutes = {
     "/user/opco": {
       method: "get",
       path: "/user/opco",
-      querystring: z
-        .object({
-          opco: enumToZod(OPCOS),
-        })
-        .strict(),
       response: {
         "200": z
           .object({
@@ -50,9 +43,7 @@ export const zUserRecruteurRoutes = {
       securityScheme: {
         auth: "cookie-session",
         access: { every: ["user:manage", "recruiter:manage"] },
-        resources: {
-          recruiter: [{ opco: { type: "query", key: "opco" } }],
-        },
+        resources: {},
       },
     },
     "/user": {
@@ -82,7 +73,7 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z
           .object({
-            users: z.array(ZUser2),
+            users: z.array(ZUserWithAccount),
           })
           .strict(),
       },
@@ -101,7 +92,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "200": ZUser2.extend({
+        "200": ZUserWithAccount.extend({
           role: ZRoleManagement.optional(),
         }),
       },
@@ -188,7 +179,7 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      body: ZUser2.pick({
+      body: ZUserWithAccount.pick({
         first_name: true,
         last_name: true,
         email: true,
@@ -210,7 +201,7 @@ export const zUserRecruteurRoutes = {
       method: "put",
       path: "/user/:userId",
       params: z.object({ userId: zObjectId }).strict(),
-      body: ZUser2.pick({
+      body: ZUserWithAccount.pick({
         last_name: true,
         first_name: true,
         phone: true,
@@ -232,7 +223,7 @@ export const zUserRecruteurRoutes = {
       method: "put",
       path: "/admin/users/:userId/organization/:siret",
       params: z.object({ userId: zObjectId, siret: z.string() }).strict(),
-      body: ZUser2.omit({
+      body: ZUserWithAccount.omit({
         status: true,
         _id: true,
       })

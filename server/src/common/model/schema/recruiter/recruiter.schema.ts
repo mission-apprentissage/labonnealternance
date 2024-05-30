@@ -57,6 +57,7 @@ export const nonPersonalInfosRecruiterSchema = new Schema({
     type: String,
     require: true,
     description: "Numéro SIRET de l'entreprise",
+    index: true,
   },
   address_detail: {
     type: Object,
@@ -85,6 +86,7 @@ export const nonPersonalInfosRecruiterSchema = new Schema({
   cfa_delegated_siret: {
     type: String,
     description: "Siret de l'organisme de formation gestionnaire des offres de l'entreprise",
+    index: true,
   },
 
   jobs: [{ type: jobsSchema, default: {}, description: "Liste des offres d'apprentissage" }],

@@ -2,20 +2,20 @@ import Boom from "boom"
 import { removeUrlsFromText } from "shared/helpers/common"
 import { toPublicUser, zRoutes } from "shared/index"
 
-import { User2 } from "@/common/model"
+import { UserWithAccount } from "@/common/model"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { user2ToUserForToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
 import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { getUser2ByEmail } from "@/services/user2.service"
+import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/userWithAccount.service"
 
 import { startSession, stopSession } from "../../common/utils/session.service"
 import config from "../../config"
 import { sendUserConfirmationEmail } from "../../services/etablissement.service"
 import { controlUserState } from "../../services/login.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
-import { isUserEmailChecked, updateLastConnectionDate } from "../../services/userRecruteur.service"
+import { updateLastConnectionDate } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -27,7 +27,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const user = await User2.findOne({ _id: userId }).lean()
+      const user = await UserWithAccount.findOne({ _id: userId }).lean()
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
@@ -48,7 +48,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { email } = req.body
       const formatedEmail = email.toLowerCase()
-      const user = await User2.findOne({ email: formatedEmail }).lean()
+      const user = await UserWithAccount.findOne({ email: formatedEmail }).lean()
 
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
@@ -79,7 +79,7 @@ export default (server: Server) => {
           },
           last_name: sanitizeForEmail(removeUrlsFromText(last_name)),
           first_name: sanitizeForEmail(removeUrlsFromText(first_name)),
-          connexion_url: createAuthMagicLink(user2ToUserForToken(user)),
+          connexion_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
         },
       })
       return res.status(200).send({})
@@ -97,7 +97,7 @@ export default (server: Server) => {
       const { email } = userFromRequest.identity
       const formatedEmail = email.toLowerCase()
 
-      const user = await getUser2ByEmail(formatedEmail)
+      const user = await getUserWithAccountByEmail(formatedEmail)
 
       if (!user) {
         throw Boom.unauthorized()

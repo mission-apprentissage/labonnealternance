@@ -5,10 +5,8 @@ import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entrepri
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { getUser2ManagingOffer } from "@/services/application.service"
-
 import { logger } from "../../../../common/logger"
-import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../../../../common/model/index"
+import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
@@ -53,7 +51,7 @@ const updateEntreprisesInfosInError = async () => {
           const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
           const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: updatedEntreprise._id.toString() }).lean()
           const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
-          const users = await User2.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
+          const users = await UserWithAccount.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
           await asyncForEach(users, async (user) => {
             const userAndOrganization: UserAndOrganization = { user, type: ENTREPRISE, organization: updatedEntreprise }
             const result = await autoValidateUserRoleOnCompany(userAndOrganization, "reprise des entreprises en erreur")
@@ -110,7 +108,14 @@ const updateRecruteursSiretInfosInError = async () => {
       } else {
         const entrepriseData: Partial<EntrepriseData> = siretResponse
         const updatedRecruiter = await updateFormulaire(establishment_id, { ...entrepriseData, status: RECRUITER_STATUS.ACTIF })
-        const managingUser = await getUser2ManagingOffer(updatedRecruiter.jobs[0])
+        const { managed_by } = updatedRecruiter
+        if (!managed_by) {
+          throw Boom.internal(`inattendu : managed_by vide`)
+        }
+        const managingUser = await UserWithAccount.findOne({ _id: managed_by.toString() })
+        if (!managingUser) {
+          throw Boom.internal(`inattendu : managingUser non trouvé pour _id=${managed_by}`)
+        }
         const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
         if (!cfa) {
           throw Boom.internal(`could not find cfa with siret=${cfa_delegated_siret}`)

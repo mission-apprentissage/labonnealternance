@@ -5,7 +5,7 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Cfa, Recruiter } from "@/common/model"
-import { db } from "@/common/mongodb"
+import { ObjectIdType, db } from "@/common/mongodb"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -14,8 +14,9 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { IApplicationCount, getApplicationByJobCount, getUser2ManagingOffer } from "./application.service"
+import { generateApplicationToken } from "./appLinks.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
-import { getOffreAvecInfoMandataire } from "./formulaire.service"
+import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
@@ -26,6 +27,14 @@ const FRANCE_LATITUDE = 46.227638
 const FRANCE_LONGITUDE = 2.213749
 
 /**
+ * @description get filtered jobs with rome_detail from mongo
+ * @param {Object} payload
+ * @param {number} payload.distance
+ * @param {number} payload.lat
+ * @param {number} payload.long
+ * @param {string[]} payload.romes
+ * @param {string} payload.niveau
+ * @returns {Promise<IRecruiter[]>}
  * @description get OFFRES_EMPLOI_LBA
  */
 export const getJobs = async ({
@@ -35,15 +44,22 @@ export const getJobs = async ({
   romes,
   niveau,
   caller,
+  isMinimalData,
 }: {
   distance: number
-  lat: number
-  lon: number
+  lat: number | undefined
+  lon: number | undefined
   romes: string[]
   niveau: string
   caller?: string | null
+  isMinimalData: boolean
 }): Promise<IRecruiter[]> => {
-  const clauses: any[] = [{ "jobs.job_status": JOB_STATUS.ACTIVE }, { "jobs.rome_code": { $in: romes } }, { status: RECRUITER_STATUS.ACTIF }]
+  const clauses: any[] = [
+    { "jobs.job_status": JOB_STATUS.ACTIVE },
+    { "jobs.rome_code": { $in: romes } },
+    { status: RECRUITER_STATUS.ACTIF },
+    { jobs: { $exists: true, $not: { $size: 0 } } },
+  ]
 
   if (niveau && niveau !== "Indifférent") {
     clauses.push({
@@ -79,15 +95,18 @@ export const getJobs = async ({
     },
   })
 
-  const recruiters: IRecruiter[] = await Recruiter.aggregate(stages)
+  const recruiters: IRecruiter[] = await Recruiter.aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
 
-  const filteredJobs = await Promise.all(
+  const recruitersWithJobs = await Promise.all(
     recruiters.map(async (recruiter) => {
-      const jobs: any[] = []
+      const [firstJob] = recruiter.jobs
+      if (!firstJob) {
+        return recruiter
+      }
 
       if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
         const cfa = await Cfa.findOne({ siret: recruiter.cfa_delegated_siret })
-        const cfaUser = await getUser2ManagingOffer(recruiter.jobs[0])
+        const cfaUser = await getUser2ManagingOffer(firstJob)
         recruiter.phone = cfaUser.phone
         recruiter.email = cfaUser.email
         recruiter.last_name = cfaUser.last_name
@@ -96,6 +115,7 @@ export const getJobs = async ({
         recruiter.address = cfa?.address
       }
 
+      const jobs: any[] = []
       recruiter.jobs.forEach((job) => {
         if (romes.some((item) => job.rome_code.includes(item)) && job.job_status === JOB_STATUS.ACTIVE) {
           job.rome_label = job.rome_appellation_label ?? job.rome_label
@@ -104,13 +124,12 @@ export const getJobs = async ({
           }
         }
       })
-
       recruiter.jobs = jobs
       return recruiter
     })
   )
 
-  return filteredJobs
+  return recruitersWithJobs
 }
 
 /**
@@ -154,6 +173,7 @@ export const getLbaJobs = async ({
       lat: hasLocation ? (latitude as number) : FRANCE_LATITUDE,
       lon: hasLocation ? (longitude as number) : FRANCE_LONGITUDE,
       niveau: diploma ? NIVEAUX_POUR_LBA[diploma] : undefined,
+      isMinimalData,
     }
 
     const jobs = await getJobs(params)
@@ -162,18 +182,18 @@ export const getLbaJobs = async ({
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
-    const matchas = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
+    const lbaJobs = transformLbaJobs({ jobs, applicationCountByJob, isMinimalData })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
-      matchas.results = await filterJobsByOpco({ opco, opcoUrl, jobs: matchas.results })
+      lbaJobs.results = await filterJobsByOpco({ opco, opcoUrl, jobs: lbaJobs.results })
     }
 
-    if (!latitude && matchas.results) {
-      sortLbaJobs(matchas)
+    if (!hasLocation && lbaJobs.results) {
+      sortLbaJobs(lbaJobs)
     }
 
-    return matchas
+    return lbaJobs
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from Matcha (${api})` })
@@ -204,7 +224,7 @@ function transformLbaJobs({ jobs, applicationCountByJob, isMinimalData }: { jobs
 /**
  * @description Retourne une offre LBA identifiée par son id
  */
-export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
+export const getLbaJobById = async ({ id, caller }: { id: ObjectIdType; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 
@@ -212,7 +232,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
       return { error: "not_found" }
     }
 
-    const applicationCountByJob = await getApplicationByJobCount([id])
+    const applicationCountByJob = await getApplicationByJobCount([id.toString()])
 
     const job = transformLbaJob({
       recruiter: rawJob.recruiter,
@@ -343,6 +363,12 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       },
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,
+      token: generateApplicationToken({ jobId: offre._id.toString() }),
+    }
+
+    //TODO: remove when 1j1s switch to api V2
+    if (resultJob?.job?.romeDetails) {
+      resultJob.job.romeDetails.competencesDeBase = resultJob.job.romeDetails?.competences?.savoir_faire
     }
 
     return resultJob
@@ -387,6 +413,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
       },
       applicationCount: applicationCountForCurrentJob?.count || 0,
+      token: generateApplicationToken({ jobId: offre._id.toString() }),
     }
 
     return resultJob

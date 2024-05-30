@@ -5,11 +5,11 @@ import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { IUser2, ZUser2 } from "shared/models/user2.model"
+import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Cfa, Credential, EmailBlacklist, Entreprise, Recruiter, RoleManagement, User2 } from "@/common/model"
+import { Application, Cfa, Credential, EmailBlacklist, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 
 let seed = 0
@@ -61,8 +61,8 @@ export const saveDbEntity = async <T>(schema: ZodTypeAny, dbModel: (item: T) => 
   return u
 }
 
-export const saveUser2 = async (data: Partial<IUser2> = {}) => {
-  return saveDbEntity(ZUser2, (item) => new User2(item), data)
+export const saveUserWithAccount = async (data: Partial<IUserWithAccount> = {}) => {
+  return saveDbEntity(ZUserWithAccount, (item) => new UserWithAccount(item), data)
 }
 export const saveRoleManagement = async (data: Partial<IRoleManagement> = {}) => {
   const role: IRoleManagement = {
@@ -124,7 +124,6 @@ export const jobFactory = (props: Partial<IJob> = {}) => {
     job_description: "job_description",
     job_employer_description: "job_employer_description",
     rome_code: ["rome_code"],
-    rome_detail: null,
     job_creation_date: new Date(),
     job_expiration_date: new Date(),
     job_update_date: new Date(),
@@ -217,8 +216,8 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   return u
 }
 
-export const saveAdminUserTest = async (userProps: Partial<IUser2> = {}) => {
-  const user = await saveUser2(userProps)
+export const saveAdminUserTest = async (userProps: Partial<IUserWithAccount> = {}) => {
+  const user = await saveUserWithAccount(userProps)
   const role = await saveRoleManagement({
     user_id: user._id,
     authorized_type: AccessEntityType.ADMIN,
@@ -228,8 +227,8 @@ export const saveAdminUserTest = async (userProps: Partial<IUser2> = {}) => {
   return { user, role }
 }
 
-export const saveEntrepriseUserTest = async (userProps: Partial<IUser2> = {}, roleProps: Partial<IRoleManagement> = {}, entrepriseProps: Partial<IEntreprise> = {}) => {
-  const user = await saveUser2(userProps)
+export const saveEntrepriseUserTest = async (userProps: Partial<IUserWithAccount> = {}, roleProps: Partial<IRoleManagement> = {}, entrepriseProps: Partial<IEntreprise> = {}) => {
+  const user = await saveUserWithAccount(userProps)
   const entreprise = await saveEntreprise(entrepriseProps)
   const role = await saveRoleManagement({
     user_id: user._id,
@@ -253,8 +252,8 @@ export const saveEntrepriseUserTest = async (userProps: Partial<IUser2> = {}, ro
   return { user, role, entreprise, recruiter }
 }
 
-export const saveCfaUserTest = async (userProps: Partial<IUser2> = {}) => {
-  const user = await saveUser2(userProps)
+export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {}) => {
+  const user = await saveUserWithAccount(userProps)
   const cfa = await saveCfa()
   const role = await saveRoleManagement({
     user_id: user._id,
@@ -276,7 +275,22 @@ export const saveCfaUserTest = async (userProps: Partial<IUser2> = {}) => {
 }
 
 export const saveOpcoUserTest = async () => {
-  const user = await saveUser2()
+  const user = await saveUserWithAccount({
+    status: [
+      {
+        date: new Date(),
+        reason: "test",
+        status: UserEventType.VALIDATION_EMAIL,
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+      },
+      {
+        date: new Date(),
+        reason: "test",
+        status: UserEventType.ACTIF,
+        validation_type: VALIDATION_UTILISATEUR.AUTO,
+      },
+    ],
+  })
   const role = await saveRoleManagement({
     user_id: user._id,
     authorized_id: OPCOS.AKTO,

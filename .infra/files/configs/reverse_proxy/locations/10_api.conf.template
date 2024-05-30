@@ -11,3 +11,11 @@ location ~* ^/api/v1/application$ {
     include includes/error_page_json.conf;
     include includes/proxy.conf;
 }
+
+location ~* ^(/api/v2/application$|/api/v2/_private/application$) {
+    client_max_body_size    5M;
+
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}

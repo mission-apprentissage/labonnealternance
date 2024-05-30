@@ -1,6 +1,6 @@
 import Boom from "boom"
-import { CFA, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { IJob, IRecruiter, getUserStatus, zRoutes } from "shared/index"
+import { CFA, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -9,9 +9,9 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
-import { getUser2ByEmail, validateUser2Email } from "@/services/user2.service"
+import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, User2 } from "../../common/model/index"
+import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
@@ -31,7 +31,7 @@ import {
   getUsersForAdmin,
   removeUser,
   sendWelcomeEmailToUserRecruteur,
-  updateUser2Fields,
+  updateUserWithAccountFields,
   userAndRoleAndOrganizationToUserRecruteur,
 } from "../../services/userRecruteur.service"
 import { Server } from "../server"
@@ -44,7 +44,12 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/user/opco"])],
     },
     async (req, res) => {
-      const { opco } = req.query
+      const userFromRequest = getUserFromRequest(req, zRoutes.get["/user/opco"]).value
+      const opcoRole = await RoleManagement.findOne({ authorized_type: AccessEntityType.OPCO, user_id: userFromRequest._id.toString() }).lean()
+      if (!opcoRole) {
+        throw Boom.forbidden("pas de role opco")
+      }
+      const opco = parseEnumOrError(OPCOS, opcoRole.authorized_id)
       return res.status(200).send(await getUserAndRecruitersDataForOpcoUser(opco))
     }
   )
@@ -80,7 +85,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const user = await User2.findById(userId).lean()
+      const user = await UserWithAccount.findById(userId).lean()
       if (!user) throw Boom.notFound(`user with id=${userId} not found`)
       const role = await RoleManagement.findOne({ user_id: userId, authorized_type: AccessEntityType.ADMIN }).lean()
       return res.status(200).send({ ...user, role: role ?? undefined })
@@ -114,7 +119,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { userId, siret } = req.params
       const { opco, ...userFields } = req.body
-      const result = await updateUser2Fields(userId, userFields)
+      const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
@@ -166,7 +171,7 @@ export default (server: Server) => {
       if (!role) {
         throw Boom.badRequest("role not found")
       }
-      const user = await User2.findOne({ _id: userId }).lean()
+      const user = await UserWithAccount.findOne({ _id: userId }).lean()
       if (!user) {
         throw Boom.badRequest("user not found")
       }
@@ -251,7 +256,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const result = await updateUser2Fields(userId, req.body)
+      const result = await updateUserWithAccountFields(userId, req.body)
       if ("error" in result) {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
@@ -273,7 +278,7 @@ export default (server: Server) => {
       const { userId, organizationId } = req.params
       const requestUser = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
       if (!requestUser) throw Boom.badRequest()
-      const user = await User2.findOne({ _id: userId }).lean()
+      const user = await UserWithAccount.findOne({ _id: userId }).lean()
       if (!user) throw Boom.badRequest()
 
       const roles = await RoleManagement.find({ user_id: userId }).lean()
@@ -353,8 +358,12 @@ export default (server: Server) => {
         }
       }
 
+      if (newEvent.status === AccessStatus.GRANTED) {
+        await activateUser(user, requestUser._id.toString())
+      }
+
       // validate user email addresse
-      await validateUser2Email(user._id.toString())
+      await validateUserWithAccountEmail(user._id.toString())
       await sendWelcomeEmailToUserRecruteur(user)
       return res.status(200).send({})
     }
@@ -387,7 +396,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const requestingUser = getUserFromRequest(req, zRoutes.delete["/user/organization/:siret"]).value
-      const userOpt = await getUser2ByEmail(requestingUser.identity.email)
+      const userOpt = await getUserWithAccountByEmail(requestingUser.identity.email)
       if (!userOpt) {
         throw Boom.notFound("user not found")
       }

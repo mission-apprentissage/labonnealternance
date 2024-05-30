@@ -70,7 +70,7 @@ const fixRomeDetails = async () => {
           if (!romeData) {
             throw Boom.internal(`could not find rome infos for rome=${rome_code}`)
           }
-          job.rome_detail = romeData.fiche_metier
+          job.rome_detail = romeData
         }
         await updateOffre(job._id, { ...job })
       })

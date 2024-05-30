@@ -1,8 +1,8 @@
 import { logger } from "../../common/logger"
-import { AnonymizedUser, Application, Recruiter, User, User2 } from "../../common/model/index"
+import { AnonymizedUser, Application, Recruiter, User, UserWithAccount } from "../../common/model/index"
 
-const anonimizeUser2 = (_id: string) =>
-  User2.aggregate([
+const anonimizeUserWithAccount = (_id: string) =>
+  UserWithAccount.aggregate([
     {
       $match: { _id },
     },
@@ -51,7 +51,7 @@ const anonimizeRecruiterByUserId = (userId: string) =>
   ])
 
 const deleteRecruiter = (query) => Recruiter.deleteMany(query)
-const deleteUser2 = (query) => User2.deleteMany(query)
+const deleteUserWithAccount = (query) => UserWithAccount.deleteMany(query)
 
 const anonymizeApplication = async (_id: string) => {
   await Application.aggregate([
@@ -98,13 +98,13 @@ const anonymizeUser = async (_id: string) => {
   }
 }
 
-const anonymizeUser2AndRecruiter = async (userId: string) => {
-  const user = await User2.findById(userId)
+const anonymizeUserWithAccountAndRecruiter = async (userId: string) => {
+  const user = await UserWithAccount.findById(userId)
   if (!user) {
     throw new Error("Anonymize user not found")
   }
-  await Promise.all([anonimizeUser2(userId), anonimizeRecruiterByUserId(userId)])
-  await Promise.all([deleteUser2({ _id: userId }), deleteRecruiter({ "jobs.managed_by": userId })])
+  await Promise.all([anonimizeUserWithAccount(userId), anonimizeRecruiterByUserId(userId)])
+  await Promise.all([deleteUserWithAccount({ _id: userId }), deleteRecruiter({ "jobs.managed_by": userId })])
 }
 
 export async function anonymizeIndividual({ collection, id }: { collection: string; id: string }): Promise<void> {
@@ -118,7 +118,7 @@ export async function anonymizeIndividual({ collection, id }: { collection: stri
       break
     }
     case "userrecruteurs": {
-      await anonymizeUser2AndRecruiter(id)
+      await anonymizeUserWithAccountAndRecruiter(id)
       break
     }
     default:

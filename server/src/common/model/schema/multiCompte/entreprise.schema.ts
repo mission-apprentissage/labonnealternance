@@ -49,6 +49,7 @@ const entrepriseSchema = new Schema<IEntreprise>(
     siret: {
       type: String,
       description: "Siret de l'établissement",
+      index: true,
     },
     raison_sociale: {
       type: String,

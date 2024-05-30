@@ -32,11 +32,6 @@ export const jobsSchema = new Schema<IJob>(
       default: [],
       description: "Liste des romes liés au métier",
     },
-    rome_detail: {
-      type: Object,
-      default: null,
-      description: "Détail du code ROME selon la nomenclature Pole emploi",
-    },
     job_creation_date: {
       type: Date,
       default: null,

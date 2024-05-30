@@ -1,7 +1,7 @@
 import axios from "axios"
 import { OPCOS } from "shared/constants/recruteur"
 import { z } from "shared/helpers/zodWithOpenApi"
-import { assertUnreachable } from "shared/utils"
+import { assertUnreachable, parseEnum } from "shared/utils"
 
 import config from "@/config"
 
@@ -48,8 +48,13 @@ const mappingOpcoNames: Record<string, OPCOS> = {
   "UNIFORMATION COHESION SOCIALE": OPCOS.UNIFORMATION,
 }
 
-function isOpco(str: string): str is OPCOS {
-  return Boolean(Object.values(OPCOS).find((opco) => opco === str))
+export const FCOpcoToOpcoEnum = (fcOpco: string): OPCOS => {
+  const parsedOpco = parseEnum(OPCOS, fcOpco)
+  const finalOpco: OPCOS | undefined = mappingOpcoNames[fcOpco] ?? parsedOpco ?? undefined
+  if (!finalOpco) {
+    throw new Error(`opco inconnu: ${fcOpco}`)
+  }
+  return finalOpco
 }
 
 export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS | null> => {
@@ -69,11 +74,7 @@ export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS | null> => {
         const {
           opcoRattachement: { nom: opcoName },
         } = data
-        const mappedOpco: OPCOS | undefined = mappingOpcoNames[opcoName] ?? (isOpco(opcoName) ? opcoName : undefined)
-        if (!mappedOpco) {
-          throw new Error(`opco inconnu: ${opcoName}`)
-        }
-        return mappedOpco
+        return FCOpcoToOpcoEnum(opcoName)
       } else {
         assertUnreachable(code)
       }
