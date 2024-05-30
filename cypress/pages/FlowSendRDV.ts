@@ -1,7 +1,12 @@
+import { FlowItemDetail } from "./FlowItemDetail"
+
 export const FlowSendRDV = {
   rdvForm: {
     verifySuccess() {
       cy.get("[data-testid='DemandeDeContactConfirmationTitle']")
+    },
+    verifyDoubleApply() {
+      cy.get("[data-testid='prdv-submit-error']").should("include.text", "Une demande de prise de RDV en date du")
     },
     openForm() {
       cy.get("[data-testid='prdvButton']").click()
@@ -31,6 +36,14 @@ export const FlowSendRDV = {
     verifyAlreadyApplied() {
       this.openForm()
       this.verifySuccess()
+    },
+    verifyNoDoubleApply({ email }: { email: string }) {
+      FlowItemDetail.navigation.goNext()
+      FlowItemDetail.navigation.goPrevious()
+      this.openForm()
+      this.fillForm({ email })
+      this.submit()
+      this.verifyDoubleApply()
     },
   },
 }

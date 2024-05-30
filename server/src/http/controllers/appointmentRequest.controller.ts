@@ -66,7 +66,7 @@ export default (server: Server) => {
         { role: EApplicantRole.CANDIDAT }
       )
 
-      if (isNew) {
+      if (!isNew) {
         const appointment = await appointmentService.findOne({
           applicant_id: user._id.toString(),
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
