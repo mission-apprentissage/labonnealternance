@@ -13,6 +13,7 @@ export const lbaCompanyUpdateEventSchema = new Schema<ILbaCompanyUpdateEvent>(
     event: {
       type: String,
       description: "Le type de modification effectué",
+      index: true,
     },
     value: {
       type: String,

@@ -25,6 +25,7 @@ import InternalJobs from "./schema/internalJobs/internalJobs.schema"
 import Job from "./schema/jobs/jobs.schema"
 import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
 import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
+import LbaCompanyUpdateEvent from "./schema/lbaCompanyUpdateEvent/lbaCompanyUpdateEvent.schema"
 import { Cfa } from "./schema/multiCompte/cfa.schema"
 import { Entreprise } from "./schema/multiCompte/entreprise.schema"
 import { RoleManagement } from "./schema/multiCompte/roleManagement.schema"
@@ -106,6 +107,7 @@ export {
   Job,
   LbaCompany,
   LbaCompanyLegacy,
+  LbaCompanyUpdateEvent,
   Opco,
   Optout,
   Recruiter,
