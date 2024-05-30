@@ -52,6 +52,7 @@ const minimalDataMongoFields = {
   etablissement_gestionnaire_siret: 1,
   intitule_court: 1,
   intitule_long: 1,
+  intitule_rco: 1,
   lieu_formation_adresse: 1,
   lieu_formation_geo_coordonnees: 1,
   localite: 1,
@@ -338,7 +339,7 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
 
   const resultFormation: ILbaItemFormation = {
     ideaType: LBA_ITEM_TYPE_OLD.FORMATION,
-    title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
+    title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
     longTitle: rawFormation.intitule_long ?? null,
     id: rawFormation.cle_ministere_educatif ?? null,
     idRco: rawFormation.id_formation ?? null,
@@ -421,7 +422,7 @@ const transformFormationWithMinimalData = (rawFormation: IFormationCatalogue): I
 
   const resultFormation: ILbaItemFormation = {
     ideaType: LBA_ITEM_TYPE_OLD.FORMATION,
-    title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
+    title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
     id: rawFormation.cle_ministere_educatif ?? null,
 
     place: {
