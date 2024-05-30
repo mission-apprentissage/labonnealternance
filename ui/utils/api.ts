@@ -112,11 +112,14 @@ export const getEntrepriseInformation = async (
     )
     return { statusCode: 200, data, error: false }
   } catch (error: unknown) {
-    captureException(error)
     if (error instanceof ApiError && error.context?.statusCode >= 400) {
       const { errorData, statusCode, message } = error.context
+      if (error.context.statusCode >= 500) {
+        captureException(error)
+      }
       return { statusCode, message, data: errorData, error: true }
     } else {
+      captureException(error)
       return { statusCode: 500, message: "unkown error", error: true }
     }
   }

@@ -366,6 +366,11 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       token: generateApplicationToken({ jobId: offre._id.toString() }),
     }
 
+    //TODO: remove when 1j1s switch to api V2
+    if (resultJob?.job?.romeDetails) {
+      resultJob.job.romeDetails.competencesDeBase = resultJob.job.romeDetails?.competences?.savoir_faire
+    }
+
     return resultJob
   })
 }

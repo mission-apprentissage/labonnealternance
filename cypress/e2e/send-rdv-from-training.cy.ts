@@ -33,6 +33,8 @@ describe("send-rdv-from-training", () => {
     FlowSendRDV.rdvForm.verifySuccess()
     FlowSendRDV.rdvForm.close()
     FlowSendRDV.rdvForm.verifyAlreadyApplied()
+    FlowSendRDV.rdvForm.close()
+    FlowSendRDV.rdvForm.verifyNoDoubleApply({ email: fakeMail })
 
     smtpClient.getMail(fakeMail, "Votre demande de RDV").then((emailContent) => {
       containsText("Merci de votre intérêt pour la formation", emailContent)
