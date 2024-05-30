@@ -155,9 +155,8 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUserWithAccount
 
 /**
  * Crée l'utilisateur si il n'existe pas
- * Mets à jour l'organisation
  * Si statusEvent est passé, ajoute les droits de l'utilisateur sur l'organisation.
- * Sinon, c'est les droits sont mis en attente de validation
+ * Sinon, les droits sont mis en attente de validation
  */
 export const createOrganizationUser = async ({
   userFields,
