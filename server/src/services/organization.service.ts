@@ -25,6 +25,13 @@ export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco
   await Entreprise.findOneAndUpdate({ siret }, { opco, idcc }).lean()
 }
 
+/**
+ * Mets à jour l'entreprise si besoin et si possible, et renvoie l'entreprise la plus à jour possible.
+ * @param siret
+ * @param origin
+ * @param siretResponse Réponse de la fonction getEntrepriseDataFromSiret
+ * @returns renvoie l'entreprise la plus à jour possible.
+ */
 export const upsertEntrepriseData = async (siret: string, origin: string, siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>): Promise<IEntreprise> => {
   let existingEntreprise = await Entreprise.findOne({ siret }).lean()
   if ("error" in siretResponse) {
