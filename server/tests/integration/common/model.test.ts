@@ -18,7 +18,7 @@ describe("createMongoDBIndexes", () => {
     { timeout: 20_000 }
   )
 
-  it.skip(
+  it(
     "should load all schemas",
     async () => {
       const names = mongooseInstance.modelNames()
