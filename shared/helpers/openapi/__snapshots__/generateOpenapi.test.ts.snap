@@ -8436,7 +8436,6 @@ Limite : 5 appel(s) / 1 seconde(s)
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
                   "properties": {
                     "peJobs": {
                       "items": {
