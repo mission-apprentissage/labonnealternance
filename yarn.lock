@@ -2448,16 +2448,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mongodb-js/saslprep@npm:^1.1.0":
-  version: 1.1.6
-  resolution: "@mongodb-js/saslprep@npm:1.1.6"
-  dependencies:
-    sparse-bitfield: ^3.0.3
-  checksum: b458fda2289dfec6eed6867b34ddee815f1d1f9f660df8adcf8e00e6a1f12f39b04bc95cf7885d37df3d1f6cc0f9ff7f3febe91a412de870394c5585a4a50dba
-  languageName: node
-  linkType: hard
-
-"@mongodb-js/saslprep@npm:^1.1.5":
+"@mongodb-js/saslprep@npm:^1.1.0, @mongodb-js/saslprep@npm:^1.1.5":
   version: 1.1.7
   resolution: "@mongodb-js/saslprep@npm:1.1.7"
   dependencies:
