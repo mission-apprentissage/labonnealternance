@@ -1,5 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 
+import { zObjectId } from "./common"
+
 const ZAcademie = z
   .object({
     code: z.string(),
@@ -13,6 +15,7 @@ export const ZPointGeometry = z
   .object({
     coordinates: Z2DCoord,
     type: z.string(),
+    _id: zObjectId,
   })
   .strict()
 
