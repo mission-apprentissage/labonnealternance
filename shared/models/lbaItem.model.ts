@@ -396,6 +396,8 @@ export const ZLbaItemLbaJob = z
   .openapi("LbaJob")
 
 export type ILbaItemLbaJob = z.output<typeof ZLbaItemLbaJob>
+export const ZLbaItemLbaJobReturnedByAPI = z.object({ matchas: z.array(ZLbaItemLbaJob) })
+export type ILbaItemLbaJobReturnedByAPI = z.output<typeof ZLbaItemLbaJobReturnedByAPI>
 
 export const ZLbaItemLbaCompany = z
   .object({
@@ -416,6 +418,8 @@ export const ZLbaItemLbaCompany = z
   .openapi("LbaCompany")
 
 export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
+export const ZLbaItemLbaCompanyReturnedByAPI = z.object({ lbaCompanies: z.array(ZLbaItemLbaCompany) })
+export type ILbaItemLbaCompanyReturnedByAPI = z.output<typeof ZLbaItemLbaCompanyReturnedByAPI>
 
 export const ZLbaItemFtJob = z
   .object({
@@ -436,6 +440,8 @@ export const ZLbaItemFtJob = z
   .openapi("PeJob")
 
 export type ILbaItemFtJob = z.output<typeof ZLbaItemFtJob>
+export const ZLbaItemFtJobReturnedByAPI = z.object({ peJobs: z.array(ZLbaItemFtJob) })
+export type ILbaItemFtJobReturnedByAPI = z.output<typeof ZLbaItemFtJobReturnedByAPI>
 
 export const ZLbaItemFormationResult = z
   .object({
@@ -446,3 +452,4 @@ export const ZLbaItemFormationResult = z
     description:
       "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
   })
+export type ILbaItemFormationResult = z.output<typeof ZLbaItemFormationResult>
