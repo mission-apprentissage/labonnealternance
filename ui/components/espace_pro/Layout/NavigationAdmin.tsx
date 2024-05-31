@@ -1,11 +1,67 @@
-import { Box, Container } from "@chakra-ui/react"
+import { assertUnreachable } from "@/../shared"
+import { Box, Container, Tab, TabList, Tabs } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 
 export enum EAdminPages {
   GESTION_RECRUTEURS = "GESTION_RECRUTEURS",
   ENTREPRISES_ALGO = "ENTREPRISES_ALGO",
 }
 
+const selectedTabParams = {
+  color: "bluefrance.500",
+  background: "white",
+  border: "none",
+  borderBottom: "2px solid",
+  borderBottomColor: "bluefrance.500",
+  cursor: "unset",
+  opacity: 1,
+}
+
+const tabParams = {
+  color: "#161616",
+  background: "white",
+  marginRight: 2,
+  fontSize: "14px",
+  p: { base: 1, sm: 4 },
+}
+
+const focusedTabParams = {}
+
+const getTabIndex = (currentPage) => {
+  switch (currentPage) {
+    case EAdminPages.GESTION_RECRUTEURS:
+      return 0
+    case EAdminPages.ENTREPRISES_ALGO:
+      return 1
+    default:
+      return 0
+  }
+}
+
 const NavigationAdmin = ({ currentPage }) => {
+  const selectedIndex = getTabIndex(currentPage)
+
+  const router = useRouter()
+
+  const handleTabsChange = (index) => {
+    switch (index) {
+      case 0: {
+        console.log("GO RECRUT")
+        router.push("/espace-pro/administration/users")
+        break
+      }
+      case 1: {
+        console.log("GO ALGO")
+        router.push("/espace-pro/administration/gestionEntreprises")
+        break
+      }
+      default: {
+        assertUnreachable("unknown tab" as never)
+        break
+      }
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -13,7 +69,16 @@ const NavigationAdmin = ({ currentPage }) => {
       }}
     >
       <Container as="header" maxW="container.xl" flexGrow="1">
-        BLA {currentPage}
+        <Tabs variant="unstyled" index={selectedIndex} onChange={handleTabsChange}>
+          <TabList px={0}>
+            <Tab {...tabParams} isDisabled={selectedIndex === 0} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Gestion des recruteurs
+            </Tab>
+            <Tab {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Entreprises de l'algorithme
+            </Tab>
+          </TabList>
+        </Tabs>
       </Container>
     </Box>
   )
