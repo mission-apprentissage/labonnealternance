@@ -22,6 +22,7 @@ const anonymize = async () => {
       },
     },
     {
+      // @ts-ignore
       $merge: "anonymizeduserswithaccounts",
     },
   ])

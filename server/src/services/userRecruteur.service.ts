@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, parseEnumOrError, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
@@ -10,7 +11,7 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { ObjectId, ObjectIdType } from "@/common/mongodb"
+import { ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
@@ -280,7 +281,7 @@ export const createUser = async (
   }
 }
 
-export const updateUserWithAccountFields = async (userId: ObjectIdType, fields: Partial<IUserWithAccount>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
+export const updateUserWithAccountFields = async (userId: ObjectId, fields: Partial<IUserWithAccount>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
   const { email, first_name, last_name, phone } = fields
   const newEmail = email?.toLocaleLowerCase()
 

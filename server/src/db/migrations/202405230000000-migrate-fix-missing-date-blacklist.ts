@@ -15,7 +15,6 @@ export const up = async (db: Db) => {
       $set: { created_at: DATE },
     },
     {
-      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
       bypassDocumentValidation: true,
     }
   )
@@ -26,7 +25,6 @@ export const up = async (db: Db) => {
       $set: { applicant_email: "faux_email@faux-domaine.fr" },
     },
     {
-      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
       bypassDocumentValidation: true,
     }
   )

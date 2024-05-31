@@ -61,8 +61,8 @@ const processCompanies = async () => {
     writeData(async (lbaCompany) => {
       try {
         if (lbaCompany) {
-          const parsedCompany = ZLbaCompany.parse(lbaCompany.toObject())
-          await LbaCompany.collection.insertOne(new LbaCompany(parsedCompany))
+          const parsedCompany = ZLbaCompany.omit({ _id: true }).parse(lbaCompany.toObject())
+          await LbaCompany.collection.insertOne(parsedCompany)
         }
       } catch (err) {
         logMessage("error", err)
