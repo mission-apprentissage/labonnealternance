@@ -325,7 +325,9 @@ const DemandeDeContact = (props: Props) => {
       </Box>
       {error && (
         <Box pt={4}>
-          <Text color="redmarianne">{error}</Text>
+          <Text data-testid="prdv-submit-error" color="redmarianne">
+            {error}
+          </Text>
         </Box>
       )}
       <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />

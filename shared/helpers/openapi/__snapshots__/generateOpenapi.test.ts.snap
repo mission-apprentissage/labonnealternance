@@ -1039,6 +1039,50 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                 },
                 "type": "object",
               },
+              "competencesDeBase": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "code_ogr": {
+                            "type": "string",
+                          },
+                          "coeur_metier": {
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                          "libelle": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "libelle",
+                          "code_ogr",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "items",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
               "contextes_travail": {
                 "items": {
                   "additionalProperties": false,
@@ -1955,6 +1999,50 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                   },
                 },
                 "type": "object",
+              },
+              "competencesDeBase": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "code_ogr": {
+                            "type": "string",
+                          },
+                          "coeur_metier": {
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                          "libelle": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "libelle",
+                          "code_ogr",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "items",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
               },
               "contextes_travail": {
                 "items": {

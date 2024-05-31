@@ -82,6 +82,7 @@ export const getNavigationButtons = ({
           onClick={() => {
             goPrev()
           }}
+          data-testid="previous-button"
         >
           <Image width="30px" height="30px" src="/images/chevronleft.svg" alt="Résultat précédent" />
         </Button>
@@ -92,6 +93,7 @@ export const getNavigationButtons = ({
           onClick={() => {
             goNext()
           }}
+          data-testid="next-button"
         >
           <Image width="30px" height="30px" src="/images/chevronright.svg" alt="Résultat suivant" />
         </Button>
@@ -103,6 +105,7 @@ export const getNavigationButtons = ({
             setSeeInfo(false)
             handleClose()
           }}
+          data-testid="close-detail-button"
         >
           <Image width="30px" height="30px" src="/images/close.svg" alt="Fermer la fenêtre" />
         </Button>
