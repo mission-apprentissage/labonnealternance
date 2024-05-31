@@ -1,7 +1,6 @@
 import { Schema } from "../../../mongodb"
 
 export const geoPointSchema = new Schema<{
-  _id: string
   type: string
   coordinates: number[]
 }>(
