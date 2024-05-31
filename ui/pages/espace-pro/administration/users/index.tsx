@@ -26,6 +26,7 @@ import { getLastStatusEvent, IUserRecruteur } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
 import { apiGet } from "@/utils/api.utils"
 
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
@@ -261,7 +262,7 @@ function Users() {
 
 function UsersPage() {
   return (
-    <Layout footer={false}>
+    <Layout adminPage={EAdminPages.GESTION_RECRUTEURS} footer={false}>
       <Users />
     </Layout>
   )

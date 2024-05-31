@@ -3,22 +3,16 @@ import { Box, Container, Flex } from "@chakra-ui/react"
 import Footer from "@/components/footer"
 
 import Header from "./Header"
+import NavigationAdmin, { EAdminPages } from "./NavigationAdmin"
 import NavigationMenu from "./NavigationMenu"
 
-/**
- * @description Layout components.
- * @param {JSX.Element} children
- * @param {boolean} widget
- * @param {boolean} footer
- * @param {boolean} displayNavigationMenu
- * @return {JSX.Element}
- */
 export default function Layout({
   header = true,
   children,
   widget = false,
   footer = true,
   rdva = false,
+  adminPage,
   displayNavigationMenu = true,
 }: {
   children: React.ReactNode
@@ -26,6 +20,7 @@ export default function Layout({
   widget?: boolean
   footer?: boolean
   rdva?: boolean
+  adminPage?: EAdminPages
   displayNavigationMenu?: boolean
 }) {
   return (
@@ -37,6 +32,7 @@ export default function Layout({
             {displayNavigationMenu && <NavigationMenu rdva={rdva} />}
           </Box>
         )}
+        {adminPage && <NavigationAdmin currentPage={adminPage} />}
         <Container as="main" maxW="container.xl" flexGrow="1">
           {children}
         </Container>
