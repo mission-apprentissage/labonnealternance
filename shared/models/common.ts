@@ -1,5 +1,5 @@
-import { CreateIndexesOptions, IndexSpecification, ObjectId } from "mongodb"
-import { ZodType, z } from "zod"
+import { CreateIndexesOptions, IndexSpecification } from "mongodb"
+import { ZodType } from "zod"
 
 export type CollectionName =
   | "anonymized_users"
@@ -47,10 +47,4 @@ export interface IModelDescriptor {
   collectionName: CollectionName
 }
 
-export const zObjectId = z
-  .custom<ObjectId | string>((v: any) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return ObjectId.isValid(v as any)
-  })
-  .transform((v: any) => new ObjectId(v))
-  .describe("Identifiant unique")
+export { zObjectId } from "zod-mongodb-schema"
