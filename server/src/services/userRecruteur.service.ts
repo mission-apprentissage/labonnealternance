@@ -16,6 +16,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../common/model/index"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
@@ -144,7 +145,7 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
 }
 
 const getUserRecruteurByUser2Query = async (user2query: Partial<IUserWithAccount>): Promise<IUserRecruteur | null> => {
-  const user = await UserWithAccount.findOne(user2query).lean()
+  const user = await getDbCollection("userswithaccounts").findOne(user2query)
   if (!user) return null
   const role = await RoleManagement.findOne({ user_id: user._id.toString() }).lean()
   if (!role) return null

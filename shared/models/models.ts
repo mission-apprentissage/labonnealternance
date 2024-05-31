@@ -1,5 +1,7 @@
 import anonymizedApplicationModelDescriptor, { IAnonymizedApplication } from "./anonymizedApplications.model"
 import { IModelDescriptor } from "./common"
+import { IRecruiter } from "./recruiter.model"
+import { IUserWithAccount } from "./userWithAccount.model"
 
 export const modelDescriptors: IModelDescriptor[] = [anonymizedApplicationModelDescriptor]
 
@@ -31,7 +33,7 @@ export type IDocumentMap = {
   internalJobs: { todo: "add_interface" }
   opcos: { todo: "add_interface" }
   optouts: { todo: "add_interface" }
-  recruiters: { todo: "add_interface" }
+  recruiters: IRecruiter
   referentieloniseps: { todo: "add_interface" }
   referentielopcos: { todo: "add_interface" }
   referentielromes: { todo: "add_interface" }
@@ -42,5 +44,5 @@ export type IDocumentMap = {
   unsubscribedofs: { todo: "add_interface" }
   userrecruteurs: { todo: "add_interface" }
   users: { todo: "add_interface" }
-  userswithaccounts: { todo: "add_interface" }
+  userswithaccounts: IUserWithAccount
 }

@@ -13,6 +13,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
 
 import { getUser2ManagingOffer } from "./application.service"
@@ -393,18 +394,19 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @param {IJob["_id"]} id
  */
 export async function getOffre(id: string | ObjectIdType) {
-  return Recruiter.findOne({ "jobs._id": id }).lean()
+  return getDbCollection("recruiters").findOne({ "jobs._id": id })
 }
 
 export async function getOffreWithRomeDetail(id: string | ObjectIdType) {
-  console.log("id", id)
-
-  const recruiter: IRecruiter[] = await Recruiter.aggregate([
-    {
-      $match: { "jobs._id": new ObjectId(id) },
-    },
-    ...romeDetailAggregateStages,
-  ])
+  // return a Document type incompatible, to be checked
+  const recruiter = (await getDbCollection("recruiters")
+    .aggregate([
+      {
+        $match: { "jobs._id": new ObjectId(id) },
+      },
+      ...romeDetailAggregateStages,
+    ])
+    .toArray()) as IRecruiter[]
 
   return recruiter.length ? recruiter[0] : null
 }
@@ -429,15 +431,15 @@ export async function createOffre(establishment_id: IRecruiter["establishment_id
  * @returns {Promise<IRecruiter>}
  */
 export async function updateOffre(id: string | ObjectIdType, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
-  const recruiter = await Recruiter.findOneAndUpdate(
+  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
         "jobs.$": payload,
       },
     },
-    { new: true }
-  ).lean()
+    { returnDocument: "after" }
+  )
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }
