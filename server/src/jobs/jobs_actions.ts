@@ -15,15 +15,16 @@ import { runJob } from "./jobs"
 
 const logger = getLoggerWithContext("script")
 
-type AddJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload"> & Partial<Pick<IInternalJobsSimple, "scheduled_for">> & { queued?: boolean; productionOnly?: boolean }
+type AddJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload"> &
+  Partial<Pick<IInternalJobsSimple, "scheduled_for">> & { queued?: boolean; productionOnly?: boolean; disallowPentest?: boolean }
 
-export async function addJob({ name, payload, scheduled_for = new Date(), queued = false, productionOnly = false }: AddJobSimpleParams): Promise<number> {
+export async function addJob({ name, payload, scheduled_for = new Date(), queued = false, productionOnly = false, disallowPentest = true }: AddJobSimpleParams): Promise<number> {
   if (config.env !== "production" && productionOnly) {
     return 0
   }
 
   // disable all jobs on pentest env
-  if (config.env === "pentest") {
+  if (config.env === "pentest" && disallowPentest) {
     return 0
   }
 
