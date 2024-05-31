@@ -15,7 +15,7 @@ export const ZPointGeometry = z
   .object({
     coordinates: Z2DCoord,
     type: z.string(),
-    _id: zObjectId,
+    _id: zObjectId.nullish(),
   })
   .strict()
 
