@@ -4,13 +4,16 @@ export const geoPointSchema = new Schema<{
   _id: string
   type: string
   coordinates: number[]
-}>({
-  type: { type: String, default: "Point" },
-  coordinates: [
-    {
-      type: Number,
-      default: [],
-      description: "Coordonnées [longitude,latitude] du point",
-    },
-  ],
-})
+}>(
+  {
+    type: { type: String, default: "Point" },
+    coordinates: [
+      {
+        type: Number,
+        default: [],
+        description: "Coordonnées [longitude,latitude] du point",
+      },
+    ],
+  },
+  { _id: false }
+)
