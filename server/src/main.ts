@@ -12,9 +12,9 @@ try {
   logger.warn("starting application")
   // To remove once mongoose is removed from project
   await connectToMongo(config.mongodb.uri)
-  await connectToMongodb(config.mongodb.uri)
-
   await startCLI()
+
+  await connectToMongodb(config.mongodb.uri)
 } catch (err) {
   logger.error(err, "startup error")
   process.exit(1) // eslint-disable-line n/no-process-exit
