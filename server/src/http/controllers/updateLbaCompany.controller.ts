@@ -34,6 +34,20 @@ export default function (server: Server) {
     {
       schema: zRoutes.get["/lbacompany/:siret/contactInfo"],
       // onRequest: [server.auth(zRoutes.get["/lbacompany/:siret/contactInfo"])],
+    },
+    async (req, res) => {
+      const { siret } = req.params
+
+      const companyData = await getCompanyContactInfo({ siret })
+      return res.status(200).send(companyData)
+    }
+  )
+
+  server.put(
+    "/lbacompany/:siret/contactInfo",
+    {
+      schema: zRoutes.put["/lbacompany/:siret/contactInfo"],
+      // onRequest: [server.auth(zRoutes.put["/lbacompany/:siret/contactInfo"])],
       config: {
         rateLimit: {
           max: 1,
