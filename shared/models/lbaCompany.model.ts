@@ -47,4 +47,12 @@ export const ZLbaLegacyCompany = ZLbaCompany.pick({
   _id: true,
 }).strict()
 
+const ZLbaCompanyForContactUpdate = ZLbaCompany.pick({
+  siret: true,
+  email: true,
+  phone: true,
+  enseigne: true,
+})
+
 export type ILbaCompany = z.output<typeof ZLbaCompany>
+export type ILbaCompanyForContactUpdate = z.output<typeof ZLbaCompanyForContactUpdate>

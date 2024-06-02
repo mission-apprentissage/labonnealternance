@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { ILbaCompany } from "shared"
+import { ILbaCompany, ILbaCompanyForContactUpdate } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { LbaCompany } from "../common/model/index"
@@ -380,5 +380,20 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
   } catch (err) {
     sentryCaptureException(err)
     throw err
+  }
+}
+
+export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promise<ILbaCompanyForContactUpdate> => {
+  try {
+    const lbaCompany = await LbaCompany.findOne({ siret })
+
+    if (lbaCompany) {
+      return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }
+    } else {
+      throw Boom.notFound("Société inconnue")
+    }
+  } catch (error) {
+    sentryCaptureException(error)
+    throw Boom.internal("Erreur de chargement des informations de la société")
   }
 }
