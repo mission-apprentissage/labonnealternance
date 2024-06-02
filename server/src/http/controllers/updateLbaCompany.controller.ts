@@ -2,7 +2,7 @@ import Boom from "boom"
 import { zRoutes } from "shared/index"
 
 import config from "../../config"
-import { updateContactInfo } from "../../services/lbacompany.service"
+import { getCompanyContactInfo, updateContactInfo } from "../../services/lbacompany.service"
 import { Server } from "../server"
 
 export default function (server: Server) {
@@ -26,6 +26,26 @@ export default function (server: Server) {
 
       await updateContactInfo({ email, phone, siret })
       return res.status(200).send("OK")
+    }
+  )
+
+  server.get(
+    "/lbacompany/:siret/contactInfo",
+    {
+      schema: zRoutes.get["/lbacompany/:siret/contactInfo"],
+      // onRequest: [server.auth(zRoutes.get["/lbacompany/:siret/contactInfo"])],
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "5s",
+        },
+      },
+    },
+    async (req, res) => {
+      const { siret } = req.params
+
+      const companyData = await getCompanyContactInfo({ siret })
+      return res.status(200).send(companyData)
     }
   )
 }

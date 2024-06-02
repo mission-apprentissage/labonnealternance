@@ -1,5 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
+import { ZLbaCompanyForContactUpdate } from "../models"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { IRoutesDef } from "./common.routes"
@@ -23,6 +24,28 @@ export const zUpdateLbaCompanyRoutes = {
       securityScheme: null,
       openapi: {
         description: `${rateLimitDescription({ max: 1, timeWindow: "20s" })}`,
+      },
+    },
+
+    "/lbacompany/:siret/contactInfo": {
+      method: "get",
+      path: "/lbacompany/:siret/contactInfo",
+      params: z
+        .object({
+          siret: extensions.siret,
+        })
+        .strict(),
+      response: {
+        "200": ZLbaCompanyForContactUpdate,
+      },
+      securityScheme: null,
+      // securityScheme: {
+      //   auth: "cookie-session",
+      //   access: "admin",
+      //   resources: {},
+      // },
+      openapi: {
+        description: `${rateLimitDescription({ max: 1, timeWindow: "5s" })}`,
       },
     },
   },

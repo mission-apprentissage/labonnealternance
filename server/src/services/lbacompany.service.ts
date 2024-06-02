@@ -392,7 +392,10 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
     } else {
       throw Boom.notFound("Société inconnue")
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.output?.statusCode === 404) {
+      throw error
+    }
     sentryCaptureException(error)
     throw Boom.internal("Erreur de chargement des informations de la société")
   }

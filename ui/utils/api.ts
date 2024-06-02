@@ -131,6 +131,11 @@ export const getEntrepriseOpco = async (siret: string) => {
   }
 }
 
+export const getCompanyContactInfo = async (siret: string) => {
+  const data = await apiGet("/lbacompany/:siret/contactInfo", { params: { siret } })
+  return data
+}
+
 export const createEtablissement = (etablissement) => apiPost("/etablissement/creation", { body: etablissement })
 
 export const getRomeDetail = (rome: string) => apiGet("/rome/detail/:rome", { params: { rome } })
