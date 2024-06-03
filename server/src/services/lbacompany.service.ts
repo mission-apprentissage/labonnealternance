@@ -360,7 +360,7 @@ export const getCompanyFromSiret = async ({
  * @param {string} phone
  * @returns {Promise<ILbaCompany | string>}
  */
-export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string | undefined; phone: string | undefined }) => {
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email?: string; phone?: string }) => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
 
