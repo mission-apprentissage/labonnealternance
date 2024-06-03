@@ -34,7 +34,7 @@ const RessourcesCandidat = () => {
                 Pour vous aider dans le suivi de vos candidatures, La bonne alternance vous propose un exemple de tableau :
               </Text>
               <List>
-                  <ListItem mb={2}>
+                <ListItem mb={2}>
                   <Link
                     href="/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"
                     isExternal
