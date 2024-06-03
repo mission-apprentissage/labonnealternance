@@ -5,8 +5,6 @@ import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entrepri
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { getUser2ManagingOffer } from "@/services/application.service"
-
 import { logger } from "../../../../common/logger"
 import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
@@ -110,7 +108,14 @@ const updateRecruteursSiretInfosInError = async () => {
       } else {
         const entrepriseData: Partial<EntrepriseData> = siretResponse
         const updatedRecruiter = await updateFormulaire(establishment_id, { ...entrepriseData, status: RECRUITER_STATUS.ACTIF })
-        const managingUser = await getUser2ManagingOffer(updatedRecruiter.jobs[0])
+        const { managed_by } = updatedRecruiter
+        if (!managed_by) {
+          throw Boom.internal(`inattendu : managed_by vide`)
+        }
+        const managingUser = await UserWithAccount.findOne({ _id: managed_by.toString() })
+        if (!managingUser) {
+          throw Boom.internal(`inattendu : managingUser non trouvé pour _id=${managed_by}`)
+        }
         const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
         if (!cfa) {
           throw Boom.internal(`could not find cfa with siret=${cfa_delegated_siret}`)
