@@ -1,25 +1,59 @@
-import { IUserRecruteur, zRoutes } from "shared"
-import { ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { zRoutes } from "shared"
 import { z } from "shared/helpers/zodWithOpenApi"
+import { EntrepriseStatus } from "shared/models/entreprise.model"
+import { AccessStatus } from "shared/models/roleManagement.model"
 import { describe, expect, it } from "vitest"
 
-import { SchemaWithSecurity, generateAccessToken, generateScope, parseAccessToken } from "../../../src/security/accessTokenService"
+import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.utils"
+
+import {
+  IUserWithAccountForAccessToken as IUserWithAccountForAccessToken,
+  SchemaWithSecurity,
+  UserForAccessToken,
+  generateAccessToken,
+  generateScope,
+  parseAccessToken,
+  userWithAccountToUserForToken,
+} from "../../../src/security/accessTokenService"
 import { useMongo } from "../../utils/mongo.utils"
-import { createUserRecruteurTest } from "../../utils/user.utils"
 
 describe("accessTokenService", () => {
-  let userACTIVE: IUserRecruteur
-  let userPENDING: IUserRecruteur
-  let userDISABLED: IUserRecruteur
-  let userERROR: IUserRecruteur
+  let userACTIVE: IUserWithAccountForAccessToken
+  let userPENDING: IUserWithAccountForAccessToken
+  let userDISABLED: IUserWithAccountForAccessToken
+  let userERROR: IUserWithAccountForAccessToken
   let userCFA
   let userLbaCompany
 
+  const saveEntrepriseUserWithStatus = async (status: AccessStatus) => {
+    const result = await saveEntrepriseUserTest(
+      {},
+      {
+        status: [
+          roleManagementEventFactory({
+            status,
+          }),
+        ],
+      }
+    )
+    return result.user
+  }
+
   const mockData = async () => {
-    userACTIVE = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.VALIDE)
-    userPENDING = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.ATTENTE)
-    userDISABLED = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.DESACTIVE)
-    userERROR = await createUserRecruteurTest({ type: ENTREPRISE }, ETAT_UTILISATEUR.ERROR)
+    userACTIVE = userWithAccountToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.GRANTED))
+    userPENDING = userWithAccountToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.AWAITING_VALIDATION))
+    userDISABLED = userWithAccountToUserForToken(await saveEntrepriseUserWithStatus(AccessStatus.DENIED))
+    userERROR = userWithAccountToUserForToken(
+      (
+        await saveEntrepriseUserTest(
+          {},
+          {},
+          {
+            status: [entrepriseStatusEventFactory({ status: EntrepriseStatus.ERROR })],
+          }
+        )
+      ).user
+    )
     userCFA = { type: "cfa" as const, email: "plop@gmail.com", siret: "12343154300012" }
     userLbaCompany = { type: "lba-company", email: "plop@gmail.com", siret: "12343154300012" }
   }
@@ -52,11 +86,11 @@ describe("accessTokenService", () => {
       skip: "3",
     },
   } as const
-  const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).toBeTruthy()
+  const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).resolves.toBeTruthy()
   const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).rejects.toThrow()
 
   describe("valid tokens", () => {
-    describe.each([
+    describe.each<[string, () => UserForAccessToken]>([
       ["ACTIVE user", () => userACTIVE],
       ["CFA", () => userCFA],
       ["LBA COMPANY user", () => userLbaCompany],
@@ -90,7 +124,7 @@ describe("accessTokenService", () => {
     })
   })
   describe("invalid tokens", () => {
-    describe.each([
+    describe.each<[string, () => UserForAccessToken]>([
       ["ERROR user", () => userERROR],
       ["PENDING user", () => userPENDING],
       ["DISABLED user", () => userDISABLED],

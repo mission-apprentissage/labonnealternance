@@ -1,6 +1,7 @@
 export enum BusinessErrorCodes {
   IS_CFA = "IS_CFA",
   ALREADY_EXISTS = "ALREADY_EXISTS",
+  EMAIL_ALREADY_EXISTS = "EMAIL_ALREADY_EXISTS",
   CLOSED = "CLOSED",
   NON_DIFFUSIBLE = "NON_DIFFUSIBLE",
   UNKNOWN = "UNKNOWN",
@@ -9,4 +10,8 @@ export enum BusinessErrorCodes {
   TOO_MANY_APPLICATIONS_PER_DAY = "TOO_MANY_APPLICATIONS_PER_DAY",
   TOO_MANY_APPLICATIONS_PER_OFFER = "TOO_MANY_APPLICATIONS_PER_OFFER",
   TOO_MANY_APPLICATIONS_PER_SIRET = "Vous avez atteint le quota maximum de candidatures pour ce SIRET",
+  BURNER = "L'email est invalide.",
+  NOTFOUND = "Aucune offre correspondante trouvée.",
+  ATTACHMENT = "Pièce jointe invalide.",
+  INTERNAL_EMAIL = "Aucun email trouver pour l'offre trouvé.",
 }

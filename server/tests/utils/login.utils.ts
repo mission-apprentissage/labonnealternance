@@ -1,18 +1,28 @@
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
-import { IUserRecruteur } from "shared/models"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 
-import { UserRecruteur } from "@/common/model"
 import { Server } from "@/http/server"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLinkToken } from "@/services/appLinks.service"
 
-export const createAndLogUser = async (httpClient: () => Server, username: string, options: Partial<IUserRecruteur> = {}) => {
+import { saveAdminUserTest, saveCfaUserTest } from "./user.utils"
+
+export const createAndLogUser = async (httpClient: () => Server, username: string, { type }: { type: "CFA" | "ADMIN" }) => {
   const email = `${username.toLowerCase()}@mail.com`
-  const user = await UserRecruteur.create({ username, email, first_name: "first name", last_name: "last name", status: [{ status: ETAT_UTILISATEUR.VALIDE }], ...options })
+  let user: IUserWithAccount
+  if (type === "ADMIN") {
+    const result = await saveAdminUserTest({ email })
+    user = result.user
+  } else if (type === "CFA") {
+    const result = await saveCfaUserTest({ email })
+    user = result.user
+  } else {
+    throw new Error(`Unsupported type ${type}`)
+  }
 
   const response = await httpClient().inject({
     method: "POST",
     path: "/api/login/verification",
-    headers: { authorization: `Bearer ${createAuthMagicLinkToken(user)}` },
+    headers: { authorization: `Bearer ${createAuthMagicLinkToken(userWithAccountToUserForToken(user))}` },
   })
   return {
     Cookie: response.cookies.reduce((acc, cookie) => `${acc} ${cookie.name}=${cookie.value}`, ""),

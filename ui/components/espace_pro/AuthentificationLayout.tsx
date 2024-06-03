@@ -6,6 +6,7 @@ import { useContext } from "react"
 import { WidgetContext } from "../../context/contextWidget"
 import { Close } from "../../theme/components/icons"
 import { LbaNew } from "../../theme/components/logos_pro"
+import InfoBanner from "../InfoBanner/InfoBanner"
 
 export default function AuthentificationLayout(props) {
   const router = useRouter()
@@ -27,6 +28,7 @@ export default function AuthentificationLayout(props) {
 
   return (
     <Container maxW="container.xl" px={4} py={4}>
+      <InfoBanner />
       <Flex direction="column" px={[0, 4]}>
         <Flex justifyContent="space-between" align="center" justify="center" mb={["4", "0"]}>
           <Link href="/" aria-label="Retour à la page d'accueil">

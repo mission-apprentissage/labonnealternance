@@ -4,20 +4,24 @@ import { FastifyRequest } from "fastify"
 import { JwtPayload } from "jsonwebtoken"
 import { ICredential, assertUnreachable } from "shared"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
-import { IUserRecruteur } from "shared/models/usersRecruteur.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { Role, UserWithType } from "shared/security/permissions"
 
 import { Credential } from "@/common/model"
 import config from "@/config"
 import { getSession } from "@/services/sessions.service"
-import { getUser as getUserRecruteur, updateLastConnectionDate } from "@/services/userRecruteur.service"
+import { updateLastConnectionDate } from "@/services/userRecruteur.service"
+import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
 import { controlUserState } from "../services/login.service"
 
 import { IAccessToken, parseAccessToken, verifyJwtToken } from "./accessTokenService"
 
-export type IUserWithType = UserWithType<"IUserRecruteur", IUserRecruteur> | UserWithType<"ICredential", ICredential> | UserWithType<"IAccessToken", IAccessToken>
+export type AccessUser2 = UserWithType<"IUser2", IUserWithAccount>
+export type AccessUserCredential = UserWithType<"ICredential", ICredential>
+export type AccessUserToken = UserWithType<"IAccessToken", IAccessToken>
+export type IUserWithType = AccessUser2 | AccessUserCredential | AccessUserToken
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -27,11 +31,11 @@ declare module "fastify" {
 }
 
 type AuthenticatedUser<AuthScheme extends WithSecurityScheme["securityScheme"]["auth"]> = AuthScheme extends "cookie-session"
-  ? UserWithType<"IUserRecruteur", IUserRecruteur>
+  ? AccessUser2
   : AuthScheme extends "api-key"
-    ? UserWithType<"ICredential", ICredential>
+    ? AccessUserCredential
     : AuthScheme extends "access-token"
-      ? UserWithType<"IAccessToken", IAccessToken>
+      ? AccessUserToken
       : never
 
 export const getUserFromRequest = <S extends WithSecurityScheme>(req: Pick<FastifyRequest, "user">, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
@@ -41,7 +45,7 @@ export const getUserFromRequest = <S extends WithSecurityScheme>(req: Pick<Fasti
   return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
 }
 
-async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUserRecruteur", IUserRecruteur> | null> {
+async function authCookieSession(req: FastifyRequest): Promise<AccessUser2 | null> {
   const token = req.cookies?.[config.auth.session.cookieName]
 
   if (!token) {
@@ -57,34 +61,34 @@ async function authCookieSession(req: FastifyRequest): Promise<UserWithType<"IUs
 
     const { email } = verifyJwtToken(token) as JwtPayload
 
-    const user = await getUserRecruteur({ email: email.toLowerCase() })
+    const user = await getUserWithAccountByEmail(email.toLowerCase())
     if (!user) {
       return null
     }
 
-    const userState = controlUserState(user.status)
+    const userState = await controlUserState(user)
 
     if (userState?.error) {
       if (userState.reason !== "VALIDATION") {
-        throw Boom.forbidden()
+        throw Boom.forbidden(`user state invalide : ${userState.reason}`)
       }
     }
 
-    return { type: "IUserRecruteur", value: user }
+    return { type: "IUser2", value: user }
   } catch (error) {
     captureException(error)
     return null
   }
 }
 
-async function authApiKey(req: FastifyRequest): Promise<UserWithType<"ICredential", ICredential> | null> {
+async function authApiKey(req: FastifyRequest): Promise<AccessUserCredential | null> {
   const token = req.headers.authorization
 
   if (token === null) {
     return null
   }
 
-  const user = await Credential.findOne({ api_key: token }).lean()
+  const user = await Credential.findOne({ api_key: token, actif: true }).lean()
 
   return user ? { type: "ICredential", value: user } : null
 }
@@ -102,7 +106,7 @@ function extractBearerTokenFromHeader(req: FastifyRequest): null | string {
   return matches === null ? null : matches[1]
 }
 
-async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyRequest, schema: S): Promise<UserWithType<"IAccessToken", IAccessToken> | null> {
+async function authAccessToken<S extends ISecuredRouteSchema>(req: FastifyRequest, schema: S): Promise<AccessUserToken | null> {
   const token = extractBearerTokenFromHeader(req)
   if (token === null) {
     return null

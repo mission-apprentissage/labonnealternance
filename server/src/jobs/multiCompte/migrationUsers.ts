@@ -1,33 +1,29 @@
 import dayjs from "dayjs"
-import { IRecruiter, IUser, ZGlobalAddress, getLastStatusEvent, parseEnumOrError } from "shared"
-import { AppointmentUserType } from "shared/constants/appointment.js"
-import { EApplicantRole } from "shared/constants/rdva.js"
-import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
+import { getLastStatusEvent, IRecruiter, parseEnumOrError, ZGlobalAddress } from "shared"
+import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur.js"
 import { ICFA } from "shared/models/cfa.model.js"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model.js"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model.js"
-import { IUser2, IUserStatusEvent, UserEventType } from "shared/models/user2.model.js"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model.js"
+import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/userWithAccount.model.js"
 
 import { ObjectId } from "@/common/mongodb.js"
 
 import { logger } from "../../common/logger.js"
-import { Appointment, Recruiter, User, UserRecruteur } from "../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../common/model/index.js"
 import { Cfa } from "../../common/model/schema/multiCompte/cfa.schema.js"
 import { Entreprise } from "../../common/model/schema/multiCompte/entreprise.schema.js"
 import { RoleManagement } from "../../common/model/schema/multiCompte/roleManagement.schema.js"
-import { User2 } from "../../common/model/schema/multiCompte/user2.schema.js"
+import { UserWithAccount } from "../../common/model/schema/multiCompte/userWithAccount.schema.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 export const migrationUsers = async () => {
-  await User2.deleteMany({})
+  await UserWithAccount.deleteMany({})
   await Entreprise.deleteMany({})
   await Cfa.deleteMany({})
   await RoleManagement.deleteMany({})
-  const now = new Date()
   await migrationRecruiters()
   await migrationUserRecruteurs()
-  await migrationCandidats(now)
 }
 
 const migrationRecruiters = async () => {
@@ -35,7 +31,7 @@ const migrationRecruiters = async () => {
   const stats = { success: 0, failure: 0, jobSuccess: 0 }
   const recruiterOrphans: string[] = []
 
-  await cursorForEach<IRecruiter>(Recruiter.find({}).cursor(), async (recruiter, index) => {
+  await cursorForEach<IRecruiter>(await Recruiter.find({}).lean(), async (recruiter, index) => {
     index % 1000 === 0 && logger.info(`import du recruiteur n°${index}`)
     try {
       const { establishment_id, cfa_delegated_siret, jobs } = recruiter
@@ -43,15 +39,19 @@ const migrationRecruiters = async () => {
       if (cfa_delegated_siret) {
         userRecruiter = await UserRecruteur.findOne({ establishment_siret: cfa_delegated_siret }).lean()
         if (!userRecruiter) {
-          throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_siret=${cfa_delegated_siret}`)
+          recruiterOrphans.push(recruiter._id.toString())
+          await Recruiter.updateOne({ _id: recruiter._id }, { $set: { status: RECRUITER_STATUS.ARCHIVE } })
+          return
         }
       } else {
         userRecruiter = await UserRecruteur.findOne({ establishment_id }).lean()
         if (!userRecruiter) {
-          recruiterOrphans.push(establishment_id)
-          throw new Error(`inattendu: impossible de trouver le user recruteur avec establishment_id=${establishment_id}`)
+          recruiterOrphans.push(recruiter._id.toString())
+          await Recruiter.updateOne({ _id: recruiter._id }, { $set: { status: RECRUITER_STATUS.ARCHIVE } })
+          return
         }
       }
+      await Recruiter.findOneAndUpdate({ _id: recruiter._id }, { managed_by: userRecruiter._id })
       await Promise.all(
         jobs.map(async (job) => {
           await Recruiter.findOneAndUpdate(
@@ -94,7 +94,7 @@ const migrationRecruiters = async () => {
 const migrationUserRecruteurs = async () => {
   logger.info(`Migration: lecture des user recruteurs...`)
   const stats = { success: 0, failure: 0, entrepriseCreated: 0, cfaCreated: 0, userCreated: 0, adminAccess: 0, opcoAccess: 0 }
-  await cursorForEach<IUserRecruteur>(UserRecruteur.find({}).cursor(), async (userRecruteur, index) => {
+  await cursorForEach<IUserRecruteur>((await UserRecruteur.find({}).lean()).reverse(), async (userRecruteur, index) => {
     const {
       last_name,
       first_name,
@@ -142,7 +142,7 @@ const migrationUserRecruteurs = async () => {
         validation_type: VALIDATION_UTILISATEUR.AUTO,
         granted_by: "migration",
       })
-      const newUser: IUser2 = {
+      const newUser: IUserWithAccount = {
         _id: userRecruteur._id,
         first_name: first_name ?? "",
         last_name: last_name ?? "",
@@ -154,7 +154,7 @@ const migrationUserRecruteurs = async () => {
         origin,
         status: newStatus,
       }
-      await User2.create(newUser)
+      await createWithTimestamps(UserWithAccount, newUser)
       stats.userCreated++
       if (type === ENTREPRISE) {
         if (!establishment_siret) {
@@ -184,8 +184,26 @@ const migrationUserRecruteurs = async () => {
           status: userRecruteurStatusToEntrepriseStatus(oldStatus),
         }
         let entreprise = await Entreprise.findOne({ siret: newEntreprise.siret }).lean()
-        if (!entreprise) {
-          entreprise = await Entreprise.create(newEntreprise)
+        if (entreprise) {
+          if (dayjs(entreprise.updatedAt).isBefore(updatedAt)) {
+            await Entreprise.findOneAndUpdate({ _id: entreprise._id }, { $set: { updatedAt } }, { timestamps: false })
+          }
+          if (dayjs(entreprise.createdAt).isAfter(createdAt)) {
+            await Entreprise.findOneAndUpdate({ _id: entreprise._id }, { $set: { createdAt } }, { timestamps: false })
+          }
+        } else {
+          if (getLastStatusEvent(newEntreprise.status)?.status !== EntrepriseStatus.ERROR) {
+            if (!newEntreprise.address || !newEntreprise.address_detail || !newEntreprise.raison_sociale || !newEntreprise.geo_coordinates) {
+              newEntreprise.status.push({
+                date: new Date(),
+                reason: "champ manquant",
+                status: EntrepriseStatus.A_METTRE_A_JOUR,
+                validation_type: VALIDATION_UTILISATEUR.AUTO,
+                granted_by: "migration",
+              })
+            }
+          }
+          entreprise = await createWithTimestamps(Entreprise, newEntreprise)
           stats.entrepriseCreated++
         }
         const roleManagement: Omit<IRoleManagement, "_id"> = {
@@ -197,7 +215,7 @@ const migrationUserRecruteurs = async () => {
           origin,
           status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
-        await RoleManagement.create(roleManagement)
+        await createWithTimestamps(RoleManagement, roleManagement)
       } else if (type === "CFA") {
         if (!establishment_siret) {
           throw new Error("inattendu pour un CFA: pas de establishment_siret")
@@ -217,8 +235,15 @@ const migrationUserRecruteurs = async () => {
           updatedAt,
         }
         let cfa = await Cfa.findOne({ siret: newCfa.siret }).lean()
-        if (!cfa) {
-          cfa = await Cfa.create(newCfa)
+        if (cfa) {
+          if (dayjs(cfa.updatedAt).isBefore(updatedAt)) {
+            await Cfa.findOneAndUpdate({ _id: cfa._id }, { $set: { updatedAt } }, { timestamps: false })
+          }
+          if (dayjs(cfa.createdAt).isAfter(createdAt)) {
+            await Cfa.findOneAndUpdate({ _id: cfa._id }, { $set: { createdAt } }, { timestamps: false })
+          }
+        } else {
+          cfa = await createWithTimestamps(Cfa, newCfa)
           stats.cfaCreated++
         }
         const roleManagement: Omit<IRoleManagement, "_id"> = {
@@ -230,7 +255,7 @@ const migrationUserRecruteurs = async () => {
           origin,
           status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
-        await RoleManagement.create(roleManagement)
+        await createWithTimestamps(RoleManagement, roleManagement)
       } else if (type === "ADMIN") {
         const roleManagement: Omit<IRoleManagement, "_id"> = {
           user_id: newUser._id,
@@ -241,7 +266,7 @@ const migrationUserRecruteurs = async () => {
           origin,
           status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
-        await RoleManagement.create(roleManagement)
+        await createWithTimestamps(RoleManagement, roleManagement)
         stats.adminAccess++
       } else if (type === "OPCO") {
         const opco = parseEnumOrError(OPCOS, scope ?? null)
@@ -254,7 +279,7 @@ const migrationUserRecruteurs = async () => {
           origin,
           status: userRecruteurStatusToRoleManagementStatus(oldStatus),
         }
-        await RoleManagement.create(roleManagement)
+        await createWithTimestamps(RoleManagement, roleManagement)
         stats.opcoAccess++
       } else {
         throw new Error(`unsupported type: ${type}`)
@@ -282,67 +307,6 @@ const migrationUserRecruteurs = async () => {
   return stats
 }
 
-const migrationCandidats = async (now: Date) => {
-  logger.info(`Migration: lecture des user candidats...`)
-  const stats = { success: 0, failure: 0, alreadyExist: 0 }
-  await cursorForEach<IUser>(User.find({ role: EApplicantRole.CANDIDAT }).cursor(), async (candidat, index) => {
-    // l'utilisateur admin n'est pas repris
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { firstname, lastname, phone, email, role, type, last_action_date, is_anonymized, _id } = candidat
-    index % 1000 === 0 && logger.info(`import du candidat n°${index}`)
-    try {
-      if (type) {
-        await Appointment.updateMany({ applicant_id: candidat._id.toString() }, { $set: { applicant_type: parseEnumOrError(AppointmentUserType, type) } })
-      }
-      const existingUser = await User2.findOne({ email }).lean()
-      if (existingUser) {
-        await Appointment.updateMany({ applicant_id: candidat._id.toString() }, { $set: { applicant_id: existingUser._id } })
-        if (dayjs(candidat.last_action_date).isAfter(existingUser.last_action_date)) {
-          await User2.updateOne({ _id: existingUser._id }, { last_action_date: candidat.last_action_date })
-        }
-        stats.alreadyExist++
-        return
-      }
-      const newUser: IUser2 = {
-        _id: candidat._id,
-        first_name: firstname,
-        last_name: lastname,
-        phone,
-        email,
-        last_action_date: last_action_date,
-        createdAt: last_action_date,
-        updatedAt: last_action_date,
-        origin: "migration user candidat",
-        status: [
-          {
-            date: now,
-            reason: "migration",
-            status: is_anonymized ? UserEventType.DESACTIVE : UserEventType.ACTIF,
-            validation_type: VALIDATION_UTILISATEUR.AUTO,
-          },
-        ],
-      }
-      await User2.create(newUser)
-      stats.success++
-    } catch (err) {
-      logger.error(`erreur lors de l'import du user candidat avec id=${_id}`)
-      logger.error(err)
-      stats.failure++
-    }
-  })
-  logger.info(`Migration: user candidats terminés`)
-  const message = `${stats.success} user candidats repris avec succès.
-  ${stats.failure} user candidats en erreur.
-  ${stats.alreadyExist} users en doublon.`
-  logger.info(message)
-  await notifyToSlack({
-    subject: "Migration multi-compte",
-    message,
-    error: stats.failure > 0,
-  })
-  return stats
-}
-
 function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["status"] | undefined): IRoleManagementEvent[] {
   const computedStatus = (allStatus ?? []).flatMap((statusEvent) => {
     const { date, reason, status, user, validation_type } = statusEvent
@@ -350,7 +314,7 @@ function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["st
       [ETAT_UTILISATEUR.DESACTIVE]: AccessStatus.DENIED,
       [ETAT_UTILISATEUR.VALIDE]: AccessStatus.GRANTED,
       [ETAT_UTILISATEUR.ATTENTE]: AccessStatus.AWAITING_VALIDATION,
-      [ETAT_UTILISATEUR.ERROR]: null,
+      [ETAT_UTILISATEUR.ERROR]: AccessStatus.AWAITING_VALIDATION,
     }
     const accessStatus = status ? statusMapping[status] : null
     if (accessStatus && date) {
@@ -386,7 +350,7 @@ function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status
       [ETAT_UTILISATEUR.VALIDE]: EntrepriseStatus.VALIDE,
       [ETAT_UTILISATEUR.ERROR]: EntrepriseStatus.ERROR,
       [ETAT_UTILISATEUR.ATTENTE]: EntrepriseStatus.VALIDE,
-      [ETAT_UTILISATEUR.DESACTIVE]: EntrepriseStatus.VALIDE,
+      [ETAT_UTILISATEUR.DESACTIVE]: null,
     }
     const entrepriseStatus = status ? statusMapping[status] : null
     if (entrepriseStatus && date) {
@@ -435,16 +399,17 @@ const checkAddressDetail = (address_detail: any) => {
   }
 }
 
-const cursorForEach = async <T>(cursor: { next: () => Promise<T | null>; close: () => Promise<void> }, fct: (item: T, index: number) => Promise<void>) => {
-  try {
-    let item: T | null = await cursor.next()
-    let index = 0
-    while (item) {
-      await fct(item, index)
-      item = await cursor.next()
-      index++
-    }
-  } finally {
-    await cursor.close()
+const cursorForEach = async <T>(array: T[], fct: (item: T, index: number) => Promise<void>) => {
+  let index = 0
+  let item: T | undefined = array.at(index)
+  while (item) {
+    await fct(item, index)
+    index++
+    item = array.at(index)
   }
+}
+
+const createWithTimestamps = async <T>(collection: any, document: T): Promise<T> => {
+  const docs = await collection.create([document], { timestamps: false })
+  return docs[0]
 }

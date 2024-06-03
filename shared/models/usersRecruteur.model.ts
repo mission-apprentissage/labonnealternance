@@ -7,15 +7,16 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress, ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
+import { enumToZod } from "./enumToZod"
+import { IUserWithAccount, ZValidationUtilisateur } from "./userWithAccount.model"
 
-const etatUtilisateurValues = Object.values(ETAT_UTILISATEUR)
-export const ZEtatUtilisateur = z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).describe("Statut de l'utilisateur")
+export const ZEtatUtilisateur = enumToZod(ETAT_UTILISATEUR).describe("Statut de l'utilisateur")
 
 const authTypeValues = Object.values(AUTHTYPE)
 
 export const ZUserStatusValidation = z
   .object({
-    validation_type: z.enum(["AUTOMATIQUE", "MANUELLE"]).describe("Processus de validation lors de l'inscription de l'utilisateur"),
+    validation_type: ZValidationUtilisateur.describe("Processus de validation lors de l'inscription de l'utilisateur"),
     // TODO : check DB and remove nullish
     status: ZEtatUtilisateur.nullish(),
     reason: z.string().nullish().describe("Raison du changement de statut"),
@@ -111,15 +112,12 @@ export const ZUserRecruteurPublic = ZUserRecruteur.pick({
   last_name: true,
   first_name: true,
   phone: true,
-  opco: true,
-  idcc: true,
-  scope: true,
-  establishment_siret: true,
   establishment_id: true,
+  establishment_siret: true,
+  scope: true,
 }).extend({
-  is_delegated: z.boolean(),
   cfa_delegated_siret: extensions.siret.nullish(),
-  status_current: z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).nullish(),
+  status_current: enumToZod(ETAT_UTILISATEUR).nullish(),
 })
 export type IUserRecruteurPublic = Jsonify<z.output<typeof ZUserRecruteurPublic>>
 
@@ -137,22 +135,20 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
   return lastValidationEvent.status
 }
 
-export function toPublicUser(user: IUserRecruteur): z.output<typeof ZUserRecruteurPublic> {
+export function toPublicUser(
+  user: IUserWithAccount,
+  userRecruteurProps: Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret">
+): z.output<typeof ZUserRecruteurPublic> {
+  const { type, establishment_siret } = userRecruteurProps
+  const cfa_delegated_siret = type === CFA ? establishment_siret : undefined
   return {
+    ...userRecruteurProps,
     _id: user._id,
     email: user.email,
-    type: user.type,
-    last_name: user.last_name,
-    first_name: user.first_name,
-    phone: user.phone,
-    opco: user.opco,
-    idcc: user.idcc,
-    scope: user.scope,
-    establishment_siret: user.establishment_siret,
-    establishment_id: user.establishment_id,
-    is_delegated: user.type === CFA ? true : false,
-    cfa_delegated_siret: user.type === CFA ? user.establishment_siret : undefined,
-    status_current: getUserStatus(user.status),
+    last_name: user.last_name ?? "",
+    first_name: user.first_name ?? "",
+    phone: user.phone ?? "",
+    cfa_delegated_siret,
   }
 }
 
@@ -179,7 +175,6 @@ export type IAnonymizedUserRecruteur = z.output<typeof ZAnonymizedUserRecruteur>
 
 export const UserRecruteurForAdminProjection = {
   _id: true,
-  establishment_id: true,
   establishment_raison_sociale: true,
   establishment_siret: true,
   type: true,
@@ -193,4 +188,8 @@ export const UserRecruteurForAdminProjection = {
   status: true,
 } as const
 
-export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminProjection)
+export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminProjection).extend({
+  organizationId: zObjectId,
+})
+
+export type IUserRecruteurForAdmin = z.output<typeof ZUserRecruteurForAdmin>

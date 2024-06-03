@@ -1,10 +1,13 @@
+import Boom from "boom"
 import { groupBy } from "lodash-es"
 import { JOB_STATUS } from "shared/models"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../../../common/logger"
-import { Recruiter, UserRecruteur } from "../../../common/model/index"
+import { Recruiter, UserWithAccount } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"
@@ -45,38 +48,47 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
 
   await asyncForEach(Object.values(groupByRecruiterOffres), async (jobsWithRecruiter) => {
     const recruiter = jobsWithRecruiter[0].recruiter
-    const { establishment_raison_sociale, establishment_id, is_delegated, cfa_delegated_siret } = recruiter
-    const contactEntreprise = await UserRecruteur.findOne({ establishment_id }).lean()
-    let contactCFA
-    // get CFA informations if formulaire is handled by a CFA
-    if (is_delegated && cfa_delegated_siret) {
-      contactCFA = await UserRecruteur.findOne({ establishment_siret: cfa_delegated_siret })
-    }
+    const { establishment_raison_sociale, is_delegated } = recruiter
+    try {
+      const { managed_by } = recruiter.jobs[0]
+      if (!managed_by) {
+        throw Boom.internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
+      }
+      const contactUser = await UserWithAccount.findOne({ _id: managed_by }).lean()
+      if (!contactUser) {
+        throw Boom.internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
+      }
 
-    await mailer.sendEmail({
-      to: contactCFA?.email ?? contactEntreprise?.email,
-      subject: "Vos offres expirent bientôt",
-      template: getStaticFilePath("./templates/mail-expiration-offres.mjml.ejs"),
-      data: {
-        images: {
-          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+      await mailer.sendEmail({
+        to: contactUser.email,
+        subject: "Vos offres expirent bientôt",
+        template: getStaticFilePath("./templates/mail-expiration-offres.mjml.ejs"),
+        data: {
+          images: {
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+          },
+          last_name: sanitizeForEmail(contactUser.last_name),
+          first_name: sanitizeForEmail(contactUser.first_name),
+          establishment_raison_sociale,
+          is_delegated,
+          offres: jobsWithRecruiter.map((job) => ({
+            rome_appellation_label: job.rome_appellation_label ?? job.rome_label,
+            job_type: job.job_type,
+            job_level_label: job.job_level_label,
+            job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
+            supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
+            pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
+          })),
+          threshold,
+          url: `${config.publicUrl}/espace-pro/authentification`,
         },
-        last_name: sanitizeForEmail(contactCFA?.last_name ?? contactEntreprise?.last_name),
-        first_name: sanitizeForEmail(contactCFA?.first_name ?? contactEntreprise?.first_name),
-        establishment_raison_sociale,
-        is_delegated,
-        offres: jobsWithRecruiter.map((job) => ({
-          rome_appellation_label: job.rome_appellation_label ?? job.rome_label,
-          job_type: job.job_type,
-          job_level_label: job.job_level_label,
-          job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
-          supprimer: createCancelJobLink(contactCFA ?? contactEntreprise, job._id.toString()),
-          pourvue: createProvidedJobLink(contactCFA ?? contactEntreprise, job._id.toString()),
-        })),
-        threshold,
-        url: `${config.publicUrl}/espace-pro/authentification`,
-      },
-    })
+      })
+    } catch (err) {
+      const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
+      logger.error(err)
+      logger.error(`Script de relance formulaire: recruiter id=${recruiter._id}, erreur: ${errorMessage}`)
+      sentryCaptureException(err)
+    }
   })
 }

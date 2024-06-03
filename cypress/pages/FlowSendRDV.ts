@@ -1,7 +1,12 @@
+import { FlowItemDetail } from "./FlowItemDetail"
+
 export const FlowSendRDV = {
   rdvForm: {
     verifySuccess() {
       cy.get("[data-testid='DemandeDeContactConfirmationTitle']")
+    },
+    verifyDoubleApply() {
+      cy.get("[data-testid='prdv-submit-error']").should("include.text", "Une demande de prise de RDV en date du")
     },
     openForm() {
       cy.get("[data-testid='prdvButton']").click()
@@ -17,7 +22,8 @@ export const FlowSendRDV = {
       cy.get("input[type='email']").type(email)
       cy.get(".chakra-accordion__button").click()
       cy.get("[data-testid='fieldset-reasons'] input:checkbox[id='reason-3']").click({ force: true })
-      cy.get("[data-testid='fieldset-reasons'] input:checkbox[id='reason-10']").click({ force: true })
+      cy.get("[data-testid='fieldset-reasons'] input:checkbox[id='reason-11']").click({ force: true })
+      cy.get(".chakra-accordion__button").click()
       cy.get("input[name='applicantMessageToCfa']").click()
       cy.get("input[name='applicantMessageToCfa']").type("horaires")
     },
@@ -30,6 +36,14 @@ export const FlowSendRDV = {
     verifyAlreadyApplied() {
       this.openForm()
       this.verifySuccess()
+    },
+    verifyNoDoubleApply({ email }: { email: string }) {
+      FlowItemDetail.navigation.goNext()
+      FlowItemDetail.navigation.goPrevious()
+      this.openForm()
+      this.fillForm({ email })
+      this.submit()
+      this.verifyDoubleApply()
     },
   },
 }

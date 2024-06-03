@@ -5,12 +5,13 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZGlobalAddress } from "./address.model"
 import { zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
-import { ZValidationUtilisateur } from "./user2.model"
+import { ZValidationUtilisateur } from "./userWithAccount.model"
 
 export enum EntrepriseStatus {
   ERROR = "ERROR",
   VALIDE = "VALIDE",
   DESACTIVE = "DESACTIVE",
+  A_METTRE_A_JOUR = "A_METTRE_A_JOUR",
 }
 
 export const ZEntrepriseStatusEvent = z

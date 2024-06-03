@@ -52,7 +52,6 @@ const SearchForTrainingsAndJobs = () => {
   const [jobSearchError, setJobSearchError] = useState("")
   const [partnerJobSearchError, setPartnerJobSearchError] = useState("")
   const [trainingSearchError, setTrainingSearchError] = useState("")
-  const [isLoading, setIsLoading] = useState(hasSearch ? false : true)
 
   const router = useRouter()
 
@@ -97,12 +96,9 @@ const SearchForTrainingsAndJobs = () => {
   }, [])
 
   const executeSearch = (values) => {
-    setIsLoading(true)
     try {
       handleSearchSubmit({ values })
-      setIsLoading(false)
     } catch (err) {
-      setIsLoading(false)
       logError("Search error", err)
     }
   }
@@ -389,7 +385,7 @@ const SearchForTrainingsAndJobs = () => {
 
   return (
     <Flex direction="column" sx={{ height: "100vh" }}>
-      <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} setIsLoading={setIsLoading} />
+      <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} />
       <WidgetHeader
         handleSearchSubmit={handleSearchSubmit}
         trainingSearchError={trainingSearchError}
@@ -417,7 +413,6 @@ const SearchForTrainingsAndJobs = () => {
             isPartnerJobSearchLoading={isPartnerJobSearchLoading}
             jobSearchError={jobSearchError}
             partnerJobSearchError={partnerJobSearchError}
-            isLoading={isLoading}
           />
         </Box>
         {displayMap ? (

@@ -13,7 +13,6 @@ export const ZUser = z
     type: z.enum([Object.values(EApplicantType)[0], ...Object.values(EApplicantType).slice(1)]),
     role: z.enum([Object.values(EApplicantRole)[0], ...Object.values(EApplicantRole).slice(1)]),
     last_action_date: z.coerce.date(),
-    is_anonymized: z.boolean(),
   })
   .strict()
 

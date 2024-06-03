@@ -1,9 +1,13 @@
+import { slowCypressDown } from "cypress-slow-down"
+
 import { smtpClient } from "../api/smtpClient"
 import { FlowItemList } from "../pages/FlowItemList"
 import { FlowSendRDV } from "../pages/FlowSendRDV"
 import { SearchForm } from "../pages/SearchForm"
 import { containsText } from "../utils/containText"
 import { generateRandomString } from "../utils/generateRandomString"
+
+slowCypressDown(300)
 
 describe("send-rdv-from-training", () => {
   it("test send-rdv-from-training", () => {
@@ -17,7 +21,7 @@ describe("send-rdv-from-training", () => {
     SearchForm.goToSearchFormation()
     SearchForm.fillSearch({
       metier: "Esthétique",
-      location: "Bordeaux 33800",
+      location: "Bordeaux 33000",
     })
     SearchForm.submit()
 
@@ -29,6 +33,8 @@ describe("send-rdv-from-training", () => {
     FlowSendRDV.rdvForm.verifySuccess()
     FlowSendRDV.rdvForm.close()
     FlowSendRDV.rdvForm.verifyAlreadyApplied()
+    FlowSendRDV.rdvForm.close()
+    FlowSendRDV.rdvForm.verifyNoDoubleApply({ email: fakeMail })
 
     smtpClient.getMail(fakeMail, "Votre demande de RDV").then((emailContent) => {
       containsText("Merci de votre intérêt pour la formation", emailContent)

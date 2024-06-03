@@ -11,7 +11,6 @@ import {
   ZEmailBlacklist,
   ZEtablissement,
   ZGeoLocation,
-  ZJob,
   ZLbaCompany,
   ZLbaLegacyCompany,
   ZOptout,
@@ -21,9 +20,12 @@ import {
   ZUnsubscribeOF,
   ZUnsubscribedLbaCompany,
   ZUser,
-  ZUserRecruteur,
   zFormationCatalogueSchema,
 } from "shared/models"
+import { zCFA } from "shared/models/cfa.model"
+import { ZEntreprise } from "shared/models/entreprise.model"
+import { ZRoleManagement } from "shared/models/roleManagement.model"
+import { ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
@@ -32,26 +34,27 @@ import {
   Application,
   Appointment,
   AppointmentDetailed,
+  Cfa,
   Credential,
   DiplomesMetiers,
   DomainesMetiers,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
+  Entreprise,
   Etablissement,
   FormationCatalogue,
   GeoLocation,
-  Job,
   LbaCompany,
   LbaCompanyLegacy,
   Optout,
   Recruiter,
   ReferentielOnisep,
   ReferentielOpco,
+  RoleManagement,
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
-  UserRecruteur,
-  eligibleTrainingsForAppointmentHistory,
+  UserWithAccount,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
@@ -87,7 +90,7 @@ async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, a
       .map(([message, count]) => `${count} : ${message}`)
       .join("\n")}
     `
-    console.error(errorMessage)
+    logger.error(errorMessage)
     captureException(new Error(errorMessage))
   } else {
     logger.info(`All documents ${totalCount} for ${collectionName} are valid`)
@@ -109,7 +112,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(FormationCatalogue, zFormationCatalogueSchema)
   await validateModel(GeoLocation, ZGeoLocation)
   // //  await validateModel(InternalJobs, ZInternalJobs)
-  await validateModel(Job, ZJob)
   await validateModel(LbaCompany, ZLbaCompany)
   await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   //  await validateModel(Opco, ZOpco)
@@ -120,6 +122,9 @@ export async function validateModels(): Promise<void> {
   await validateModel(ReferentielOpco, ZReferentielOpco)
   await validateModel(UnsubscribeOF, ZUnsubscribeOF)
   await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
-  await validateModel(UserRecruteur, ZUserRecruteur)
-  await validateModel(eligibleTrainingsForAppointmentHistory, ZEligibleTrainingsForAppointmentSchema)
+  // await validateModel(UserRecruteur, ZUserRecruteur)
+  await validateModel(Entreprise, ZEntreprise)
+  await validateModel(Cfa, zCFA)
+  await validateModel(UserWithAccount, ZUserWithAccount)
+  await validateModel(RoleManagement, ZRoleManagement)
 }

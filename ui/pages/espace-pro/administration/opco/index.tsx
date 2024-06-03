@@ -27,7 +27,6 @@ import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
-import { useAuth } from "@/context/UserContext"
 
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
@@ -42,7 +41,6 @@ function AdministrationOpco() {
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
   const router = useRouter()
-  const { user } = useAuth()
   const toast = useToast()
 
   useEffect(() => {
@@ -58,7 +56,7 @@ function AdministrationOpco() {
     }
   }, [])
 
-  const { data, isLoading } = useQuery("user-list-opco", () => getOpcoUsers(user.scope))
+  const { data, isLoading } = useQuery("user-list-opco", () => getOpcoUsers())
 
   const columns = [
     {
@@ -73,10 +71,10 @@ function AdministrationOpco() {
           row: { id },
         },
       }) => {
-        const { establishment_raison_sociale, establishment_siret, _id } = data[id]
+        const { establishment_raison_sociale, establishment_siret, _id, organizationId } = data[id]
         return (
           <Flex direction="column">
-            <Link fontWeight="700" href={`/espace-pro/administration/opco/entreprise/${_id}`}>
+            <Link fontWeight="700" href={`/espace-pro/administration/opco/entreprise/${_id}/entreprise/${organizationId}`}>
               {establishment_raison_sociale}
             </Link>
             <Text color="#666666" fontSize="14px">
@@ -162,7 +160,7 @@ function AdministrationOpco() {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link href={`/espace-pro/administration/opco/entreprise/${row._id}`}>Voir les informations</Link>
+                      <Link href={`/espace-pro/administration/opco/entreprise/${row._id}/entreprise/${row.organizationId}`}>Voir les informations</Link>
                     </MenuItem>
                     <MenuItem>
                       <Link href={`/espace-pro/administration/opco/entreprise/${row.establishment_siret}/${row.establishment_id}`}>Voir les offres</Link>

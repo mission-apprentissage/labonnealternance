@@ -321,7 +321,7 @@ export const zV1JobsRoutes = {
       path: "/v1/jobs/matcha/:id",
       params: z
         .object({
-          id: z.string().openapi({
+          id: zObjectId.openapi({
             param: {
               description: "the id the lba job looked for.",
             },
@@ -435,6 +435,8 @@ export const zV1JobsRoutes = {
         is_disabled_elligible: true,
         custom_address: true,
         custom_geo_coordinates: true,
+        is_multi_published: true,
+        custom_job_title: true,
       })
         .extend({
           job_start_date: ZJobStartDateCreate(),

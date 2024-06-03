@@ -1,9 +1,36 @@
+import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IUser, IUserRecruteur } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { IUser } from "shared"
+import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
+import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Recruiter, User, UserRecruteur } from "../common/model/index"
+import { ObjectId } from "@/common/mongodb"
+
+import { Recruiter, User, UserWithAccount } from "../common/model/index"
+
+import { getUserRecruteursForManagement } from "./userRecruteur.service"
+
+const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
+  const newUserId = new ObjectId()
+  const user = await User.findOneAndUpdate(
+    { email },
+    {
+      $set: update,
+      $setOnInsert: { _id: newUserId, ...create },
+    },
+    {
+      upsert: true,
+      new: true,
+    }
+  )
+
+  return {
+    user,
+    // If the user is new, we will have to update the _id with the default one
+    isNew: user._id.equals(newUserId),
+  }
+}
 
 /**
  * @description Returns user from its email.
@@ -63,62 +90,51 @@ const find = (conditions: FilterQuery<IUser>) => User.find(conditions)
  */
 const findOne = (conditions: FilterQuery<IUser>) => User.findOne(conditions)
 
-const getUserAndRecruitersDataForOpcoUser = async (
-  opco: string
+export const getUserAndRecruitersDataForOpcoUser = async (
+  opco: OPCOS
 ): Promise<{
   awaiting: IUserForOpco[]
   active: IUserForOpco[]
   disable: IUserForOpco[]
 }> => {
-  const [users, recruiters] = await Promise.all([
-    UserRecruteur.find({
-      $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
-      opco,
-    })
-      .select({
-        _id: 1,
-        first_name: 1,
-        last_name: 1,
-        establishment_id: 1,
-        establishment_raison_sociale: 1,
-        establishment_siret: 1,
-        createdAt: 1,
-        email: 1,
-        phone: 1,
-        status: 1,
-        type: 1,
-      })
-      .lean(),
-    Recruiter.find({ opco }).select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 }).lean(),
-  ])
+  const userRecruteurs = await getUserRecruteursForManagement({ opco })
+  const filteredUserRecruteurs = [...userRecruteurs.active, ...userRecruteurs.awaiting, ...userRecruteurs.disabled]
+  const userIds = [...new Set(filteredUserRecruteurs.map(({ _id }) => _id.toString()))]
+  const recruiters = await Recruiter.find({ "jobs.managed_by": { $in: userIds } })
+    .select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 })
+    .lean()
 
-  const recruiterPerEtablissement = new Map()
-  for (const recruiter of recruiters) {
-    recruiterPerEtablissement.set(recruiter.establishment_id, recruiter)
-  }
-
-  const results = users.reduce(
-    (acc, user) => {
-      const status = user.status?.at(-1)?.status ?? null
-      if (status === null) {
-        return acc
+  const recruiterMap = new Map<string, (typeof recruiters)[0]>()
+  recruiters.forEach((recruiter) => {
+    recruiter.jobs.forEach((job) => {
+      if (!job.managed_by) {
+        throw Boom.internal(`inattendu: managed_by vide pour le job avec id=${job._id}`)
       }
-      const form = recruiterPerEtablissement.get(user.establishment_id)
+      recruiterMap.set(job.managed_by.toString(), recruiter)
+    })
+  })
 
-      const { _id, first_name, last_name, establishment_id, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type } = user
+  const results = filteredUserRecruteurs.reduce(
+    (acc, userRecruteur) => {
+      const status = getLastStatusEvent(userRecruteur.status)?.status
+      if (!status) return acc
+      const recruiter = recruiterMap.get(userRecruteur._id.toString())
+      const { establishment_id } = recruiter ?? {}
+      const { _id, first_name, last_name, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type, organizationId } = userRecruteur
       const userForOpco: IUserForOpco = {
         _id,
         first_name,
         last_name,
-        establishment_id,
         establishment_raison_sociale,
         establishment_siret,
+        establishment_id,
         createdAt,
         email,
         phone,
         type,
-        jobs_count: form?.jobs?.length ?? 0,
-        origin: form?.origin ?? "",
+        jobs_count: recruiter?.jobs?.length ?? 0,
+        origin: recruiter?.origin ?? "",
+        organizationId,
       }
       if (status === ETAT_UTILISATEUR.ATTENTE) {
         acc.awaiting.push(userForOpco)
@@ -140,14 +156,10 @@ const getUserAndRecruitersDataForOpcoUser = async (
   return results
 }
 
-const getValidatorIdentityFromStatus = async (status: IUserRecruteur["status"]) => {
-  return await Promise.all(
-    status.map(async (state) => {
-      if (state.user === "SERVEUR") return state
-      const user = await UserRecruteur.findById(state.user).select({ first_name: 1, last_name: 1, _id: 0 }).lean()
-      return { ...state, user: `${user?.first_name} ${user?.last_name}` }
-    })
-  )
+export const getUserNamesFromIds = async (ids: string[]) => {
+  const deduplicatedIds = [...new Set(ids)].filter((id) => ObjectId.isValid(id))
+  const users = await UserWithAccount.find({ _id: { $in: deduplicatedIds } }).lean()
+  return users
 }
 
-export { createUser, find, findOne, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, getValidatorIdentityFromStatus, update }
+export { createOrUpdateUserByEmail, createUser, find, findOne, getUserById, getUserByMail, update }

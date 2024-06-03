@@ -2,16 +2,17 @@ import Boom from "boom"
 import jwt from "jsonwebtoken"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { assertUnreachable } from "shared/utils"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, z } from "zod"
 
+import { UserWithAccount } from "@/common/model"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 import { controlUserState } from "../services/login.service"
-import { getUser } from "../services/userRecruteur.service"
 
 // cf https://www.sistrix.com/ask-sistrix/technical-seo/site-structure/url-length-how-long-can-a-url-be
 const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083
@@ -72,13 +73,30 @@ export type IAccessToken<Schema extends SchemaWithSecurity = SchemaWithSecurity>
       }
     | { type: "lba-company"; siret: string; email: string }
     | { type: "candidat"; email: string }
+    | IApplicationForAccessToken
+    | IUserWithAccountForAccessToken
   scopes: ReadonlyArray<IScope<Schema>>
 }
 
+export type IUserWithAccountForAccessToken = { type: "IUser2"; email: string; _id: string }
+
 export type UserForAccessToken = IUserRecruteur | IAccessToken["identity"]
 
+export const userWithAccountToUserForToken = (user: IUserWithAccount): IUserWithAccountForAccessToken => ({ type: "IUser2", _id: user._id.toString(), email: user.email })
+
+export type IApplicationForAccessToken = { type: "application"; company_siret: string; email: "" } | { type: "application"; jobId: string; email: "" }
+export type IApplicationTForUserToken = { company_siret?: string; jobId?: string }
+
+export const applicationToUserForToken = ({ company_siret, jobId }: IApplicationTForUserToken): IApplicationForAccessToken => {
+  if (company_siret) {
+    return { type: "application", company_siret, email: "" }
+  } else {
+    return { type: "application", jobId: jobId as string, email: "" }
+  }
+}
+
 export function generateAccessToken(user: UserForAccessToken, scopes: ReadonlyArray<NewIScope<SchemaWithSecurity>>, options: { expiresIn?: string } = {}): string {
-  const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUserRecruteur", _id: user._id.toString(), email: user.email.toLowerCase() } : user
+  const identity: IAccessToken["identity"] = "_id" in user ? { type: "IUser2", _id: user._id.toString(), email: user.email.toLowerCase() } : user
   const data: IAccessToken<SchemaWithSecurity> = {
     identity,
     scopes,
@@ -172,6 +190,7 @@ export function getAccessTokenScope<Schema extends SchemaWithSecurity>(
   )
 }
 
+// TODO on devrait pouvoir le supprimer ainsi que controlUserState
 const authorizedPaths = [
   "/etablissement/validation",
   "/formulaire/:establishment_id/by-token",
@@ -188,7 +207,11 @@ export const verifyJwtToken = (jwtToken: string) => {
     })
     const token = data.payload as IAccessToken<any>
     return token
-  } catch (err) {
+  } catch (err: any) {
+    const errorStr = err + ""
+    if (errorStr === "TokenExpiredError: jwt expired") {
+      throw Boom.forbidden("JWT expired")
+    }
     console.warn("invalid jwt token", jwtToken, err)
     throw Boom.forbidden()
   }
@@ -202,11 +225,11 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
 ): Promise<IAccessToken<Schema>> {
   const token = verifyJwtToken(jwtToken) as IAccessToken<Schema>
   if (token.identity.type === "IUserRecruteur") {
-    const user = await getUser({ _id: token.identity._id })
+    const user = await UserWithAccount.findOne({ _id: token.identity._id }).lean()
 
     if (!user) throw Boom.forbidden()
 
-    const userStatus = controlUserState(user?.status)
+    const userStatus = await controlUserState(user)
 
     if (userStatus.error && !authorizedPaths.includes(schema.path)) {
       throw Boom.forbidden()

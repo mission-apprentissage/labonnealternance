@@ -1,9 +1,10 @@
-import { IUserRecruteur } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { isEnum } from "shared"
+import { OPCOS } from "shared/constants/recruteur"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { UserRecruteur } from "../../../common/model/index"
+import { Entreprise, RoleManagement, UserWithAccount } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import config from "../../../config"
 import mailer from "../../../services/mailer.service"
@@ -13,42 +14,49 @@ import mailer from "../../../services/mailer.service"
  * @returns {}
  */
 export const relanceOpco = async () => {
-  const userAwaitingValidation = await UserRecruteur.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
-    opco: { $nin: [null, "Opco multiple", "inconnu"] },
-  }).lean()
+  const rolesAwaitingValidation = await RoleManagement.find(
+    {
+      $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.AWAITING_VALIDATION] },
+      authorized_type: AccessEntityType.ENTREPRISE,
+    },
+    { authorized_id: 1 }
+  ).lean()
 
   // Cancel the job if there's no users awaiting validation
-  if (!userAwaitingValidation.length) return
+  if (!rolesAwaitingValidation.length) return
 
-  // count user to validate per opco
-  const userList = userAwaitingValidation.reduce<Record<string, number>>((acc, user) => {
-    if (user.opco) {
-      if (user.opco in acc) {
-        acc[user.opco]++
-      } else {
-        acc[user.opco] = 1
+  const entreprises = await Entreprise.find({ _id: { $in: rolesAwaitingValidation.map(({ authorized_id }) => authorized_id) } })
+  const opcoCounts = entreprises.reduce<Record<OPCOS, number>>(
+    (acc, entreprise) => {
+      const { opco } = entreprise
+      if (!isEnum(OPCOS, opco)) {
+        return acc
       }
-    }
-    return acc
-  }, {})
+      const oldCount = acc[opco] ?? 0
+      acc[opco] = oldCount + 1
+      return acc
+    },
+    {} as Record<OPCOS, number>
+  )
+  await Promise.all(
+    Object.entries(opcoCounts).map(async ([opco, count]) => {
+      // Get related user to send the email
+      const roles = await RoleManagement.find({ authorized_type: AccessEntityType.OPCO, authorized_id: opco }).lean()
+      const users = await UserWithAccount.find({ _id: { $in: roles.map((role) => role.user_id) } })
 
-  for (const opco in userList) {
-    // Get related user to send the email
-    const users = await UserRecruteur.find({ scope: opco, type: "OPCO" })
-
-    await asyncForEach(users, async (user: IUserRecruteur) => {
-      await mailer.sendEmail({
-        to: user.email,
-        subject: "Nouveaux comptes entreprises à valider",
-        template: getStaticFilePath("./templates/mail-relance-opco.mjml.ejs"),
-        data: {
-          images: {
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+      await asyncForEach(users, async (user) => {
+        await mailer.sendEmail({
+          to: user.email,
+          subject: "Nouveaux comptes entreprises à valider",
+          template: getStaticFilePath("./templates/mail-relance-opco.mjml.ejs"),
+          data: {
+            images: {
+              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            },
+            count,
           },
-          count: userList[opco],
-        },
+        })
       })
     })
-  }
+  )
 }

@@ -1,1988 +1,216 @@
 import { FastifyRequest } from "fastify"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
-import { IApplication, ICredential, IJob, IRecruiter, IUserRecruteur } from "shared/models"
-import { SecurityScheme } from "shared/routes/common.routes"
-import { AccessPermission, AccessRessouces, Permission, UserWithType } from "shared/security/permissions"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import { AccessRessouces } from "shared/security/permissions"
 import { describe, expect, it } from "vitest"
 
-import { Application, Recruiter, UserRecruteur } from "@/common/model"
-import { ObjectId } from "@/common/mongodb"
-import { IAccessToken, generateScope } from "@/security/accessTokenService"
+import { AccessUser2, AccessUserCredential, AccessUserToken } from "@/security/authenticationService"
 import { authorizationMiddleware } from "@/security/authorisationService"
 import { useMongo } from "@tests/utils/mongo.utils"
+import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.utils"
 
-import { createApplicationTest, createCredentialTest, createRecruteurTest, createUserRecruteurTest } from "../../utils/user.utils"
+type MockedRequest = Pick<FastifyRequest, "params" | "query">
+const emptyRequest: MockedRequest = { params: {}, query: {} }
 
-describe("authorisationService", () => {
-  let adminUser: IUserRecruteur
-  let opcoUserO1U1: IUserRecruteur
-  let opcoUserO1U2: IUserRecruteur
-  let cfaUser1: IUserRecruteur
-  let cfaUser2: IUserRecruteur
-  let recruteurUserO1E1R1: IUserRecruteur
-  let recruteurO1E1R1: IRecruiter
-  let recruteurUserO1E1R2: IUserRecruteur
-  let recruteurO1E1R2: IRecruiter
-  let recruteurUserO1E2R1: IUserRecruteur
-  let recruteurO1E2R1: IRecruiter
-  let opcoUserO2U1: IUserRecruteur
-  let recruteurUserO2E1R1: IUserRecruteur
-  let recruteurO2E1R1: IRecruiter
-  let recruteurUserO2E1R1P: IUserRecruteur
-  let recruteurO2E1R1P: IRecruiter
-  let credentialO1: ICredential
-  let applicationO1E1R1J1A1: IApplication
-  let applicationO1E1R1J1A2: IApplication
-  let applicationO1E1R1J2A1: IApplication
-  let applicationO1E1R2J1A1: IApplication
+type ResourceType = keyof AccessRessouces
 
-  function getResourceAccessKey(resource: IUserRecruteur | IRecruiter | IJob | IApplication, i: number): string {
-    if (resource instanceof UserRecruteur) {
-      return `userId${i}`
+const givenARoute = ({
+  authStrategy,
+  resourceType,
+  hasRequestedAccess = true,
+}: {
+  authStrategy: AuthStrategy
+  resourceType?: ResourceType
+  hasRequestedAccess?: boolean
+}): Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme => {
+  // TODO formationCatalogue don't have an _id
+  return {
+    method: "get",
+    path: "/path",
+    securityScheme: {
+      access: hasRequestedAccess ? "recruiter:manage" : null,
+      auth: authStrategy,
+      resources: resourceType
+        ? {
+            [resourceType]: [{ _id: { type: "query", key: "resourceId" } }],
+          }
+        : {},
+    },
+  }
+}
+
+const everyResourceType: ResourceType[] = ["application", "appointment", "formationCatalogue", "job", "recruiter", "user"]
+const everyAuthStrategy: AuthStrategy[] = ["access-token", "api-key", "cookie-session"]
+
+const givenATokenUser = (): AccessUserToken => {
+  return {
+    type: "IAccessToken",
+    value: {
+      identity: {
+        _id: "userId",
+        email: "email@mail.com",
+        type: "IUserRecruteur",
+      },
+      scopes: [],
+    },
+  }
+}
+// const givenACredentialUser = (): AccessUserCredential => {
+//   return {
+//     type: "ICredential",
+//     value: {},
+//   }
+// }
+
+const givenARequest = ({ user, resourceId }: { user: AccessUserToken | AccessUserCredential | AccessUser2; resourceId?: string }) => {
+  return {
+    ...emptyRequest,
+    user,
+    ...(resourceId ? { query: { resourceId } } : {}),
+  }
+}
+
+describe("authorisationService", async () => {
+  let adminUser: Awaited<ReturnType<typeof saveAdminUserTest>>
+  let entrepriseUserA: Awaited<ReturnType<typeof saveEntrepriseUserTest>>
+  let entrepriseUserB: Awaited<ReturnType<typeof saveEntrepriseUserTest>>
+  let cfaUserA: Awaited<ReturnType<typeof saveCfaUserTest>>
+  let cfaUserB: Awaited<ReturnType<typeof saveCfaUserTest>>
+  let opcoUserA: Awaited<ReturnType<typeof saveOpcoUserTest>>
+
+  useMongo(async () => {
+    adminUser = await saveAdminUserTest()
+    entrepriseUserA = await saveEntrepriseUserTest()
+    entrepriseUserB = await saveEntrepriseUserTest()
+    cfaUserA = await saveCfaUserTest()
+    cfaUserB = await saveCfaUserTest()
+    opcoUserA = await saveOpcoUserTest()
+  }, "beforeAll")
+
+  const givenACookieUser = (user: IUserWithAccount): AccessUser2 => {
+    return {
+      type: "IUser2",
+      value: user,
     }
-    if (resource instanceof Recruiter) {
-      return `recruiterId${i}`
-    }
-    if (resource instanceof Application) {
-      return `applicationId${i}`
-    }
-
-    return `jobId${i}`
   }
 
-  function generateSecuritySchemeFixture(
-    access: AccessPermission,
-    resources: ReadonlyArray<IUserRecruteur | IRecruiter | IJob | IApplication>,
-    location: "params" | "query"
-  ): [SecurityScheme, Pick<FastifyRequest, "params" | "query">] {
-    return [
-      {
-        auth: "cookie-session",
-        access,
-        resources: resources.reduce((acc, resource, i) => {
-          const key = getResourceAccessKey(resource, i)
-          if (resource instanceof UserRecruteur) {
-            const user = acc.user ?? []
-            acc.user = [...user, { _id: { type: location, key } }]
-            return {
-              ...acc,
-              user: [...user, { _id: { type: location, key } }],
-            }
-          }
-          if (resource instanceof Recruiter) {
-            const recruiter = acc.recruiter ?? []
-            return {
-              ...acc,
-              recruiter: [...recruiter, { _id: { type: location, key } }],
-            }
-          }
-          if (resource instanceof Application) {
-            const application = acc.application ?? []
-            return {
-              ...acc,
-              application: [...application, { _id: { type: location, key } }],
-            }
-          }
-          const job = acc.job ?? []
-          return {
-            ...acc,
-            job: [...job, { _id: { type: location, key } }],
-          }
-        }, {} as AccessRessouces),
-      },
-      resources.reduce(
-        (acc, resource, i) => {
-          const p = acc[location] ?? {}
-          p[getResourceAccessKey(resource, i)] = resource._id
-          acc[location] = p
-
-          return acc
-        },
-        {} as Record<"params" | "query", Record<string, unknown>>
-      ),
-    ]
+  const givenAnAdminUser = (): AccessUser2 => {
+    return givenACookieUser(adminUser.user)
   }
 
-  const mockData = async () => {
-    // Here is the overall relation we will use to test permissions
-
-    // CfaUser  #1
-    // CfaUser  #2
-    // OPCO #O1
-    //  |--- OpcoUser #O1#U1
-    //  |--- OpcoUser #O1#U2
-    //  |--- Entreprise #O1#E1
-    //       --> Recruteur #O1#E1#R1 --> Delegated #01#U3
-    //           ——> Recruteur pending validation #O2#E1#R1#P
-    //           --> Job #O1#E1#R1#J1
-    //               --> Application #O1#E1#R1#J1#A1
-    //               --> Application #O1#E1#R1#J1#A2
-    //           --> Job #O1#E1#R1#J2
-    //               --> Application #O1#E1#R1#J2#A1
-    //       --> Recruteur #O1#E1#R2
-    //           --> Job #O1#E1#R2#J1
-    //               --> Application #O1#E1#R2#J1#A1
-    //           --> Job #O1#E1#R2#J2
-
-    //  |--- Entreprise #O1#E2
-    //       --> Recruteur #O1#E2#R1
-    //           --> Job #O1#E2#R1#J1
-    // OPCO #O2
-    //  |--- Entreprise #O2#E1
-    //       --> Recruteur #O2#E1#R1
-    //           --> Job #O2#E1#R1#J1
-    //  |--- OpcoUser #O2#U1
-
-    const CFA_SIRET = "80300515600044"
-    const O1E1R1J1Id = new ObjectId()
-    const O1E1R1J2Id = new ObjectId()
-    const O1E1R2J1Id = new ObjectId()
-    const O1E1Siret = "88160687500014"
-    const O1E2Siret = "38959133000060"
-
-    adminUser = await createUserRecruteurTest({
-      type: "ADMIN",
-    })
-
-    opcoUserO1U1 = await createUserRecruteurTest({
-      type: "OPCO",
-      scope: "#O1",
-      first_name: "O1U1",
-    })
-    opcoUserO1U2 = await createUserRecruteurTest({
-      type: "OPCO",
-      scope: "#O1",
-      first_name: "O1U2",
-    })
-    cfaUser1 = await createUserRecruteurTest({
-      type: "CFA",
-      first_name: "O1",
-      establishment_siret: CFA_SIRET,
-    })
-
-    recruteurUserO1E1R1 = await createUserRecruteurTest({
-      type: "ENTREPRISE",
-      opco: "#O1",
-      establishment_id: "#O1#E1#R1",
-      establishment_siret: O1E1Siret,
-    })
-    recruteurO1E1R1 = await createRecruteurTest(
-      {
-        opco: "#O1",
-        establishment_id: "#O1#E1#R1",
-        cfa_delegated_siret: CFA_SIRET,
-        establishment_siret: O1E1Siret,
-      },
-      [
-        { _id: O1E1R1J1Id, job_description: "#O1#E1#R1#J1" },
-        { _id: O1E1R1J2Id, job_description: "#O1#E1#R1#J2" },
-      ]
-    )
-    applicationO1E1R1J1A1 = await createApplicationTest({
-      job_id: O1E1R1J1Id.toString(),
-      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-      applicant_message_to_company: "#O1#E1#R1#J1#A1",
-    })
-    applicationO1E1R1J1A2 = await createApplicationTest({
-      job_id: O1E1R1J1Id.toString(),
-      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-      applicant_message_to_company: "#O1#E1#R1#J1#A2",
-    })
-    applicationO1E1R1J2A1 = await createApplicationTest({
-      job_id: O1E1R1J2Id.toString(),
-      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-      applicant_message_to_company: "#O1#E1#R1#J2#A1",
-    })
-
-    recruteurUserO1E1R2 = await createUserRecruteurTest({
-      type: "ENTREPRISE",
-      opco: "#O1",
-      establishment_id: "#O1#E1#R2",
-      establishment_siret: O1E1Siret,
-    })
-    recruteurO1E1R2 = await createRecruteurTest(
-      {
-        opco: "#O1",
-        establishment_id: "#O1#E1#R2",
-        establishment_siret: O1E1Siret,
-      },
-      [{ _id: O1E1R2J1Id, job_description: "#O1#E1#R2#J1" }]
-    )
-    applicationO1E1R2J1A1 = await createApplicationTest({
-      job_id: O1E1R2J1Id.toString(),
-      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-      applicant_message_to_company: "#O1#E1#R2#J1#A1",
-    })
-
-    recruteurUserO1E2R1 = await createUserRecruteurTest({
-      type: "ENTREPRISE",
-      opco: "#O1",
-      establishment_id: "#O1#E2#R1",
-      establishment_siret: O1E2Siret,
-    })
-    recruteurO1E2R1 = await createRecruteurTest(
-      {
-        opco: "#O1",
-        establishment_id: "#O1#E2#R1",
-        establishment_siret: O1E2Siret,
-      },
-      [{ job_description: "#O1#E2#R1#J1" }]
-    )
-
-    opcoUserO2U1 = await createUserRecruteurTest({
-      type: "OPCO",
-      scope: "#O2",
-      first_name: "O2U1",
-    })
-    cfaUser2 = await createUserRecruteurTest({
-      type: "CFA",
-      scope: "#O2",
-      first_name: "O2",
-    })
-
-    recruteurUserO2E1R1 = await createUserRecruteurTest({
-      type: "ENTREPRISE",
-      scope: "#O2",
-      establishment_id: "#O2#E1#R1",
-    })
-    recruteurO2E1R1 = await createRecruteurTest(
-      {
-        opco: "#O2",
-        establishment_id: "#O2#E1#R1",
-      },
-      [{ job_description: "#O2#E1#R1#J1" }]
-    )
-
-    recruteurUserO2E1R1P = await createUserRecruteurTest(
-      {
-        type: "ENTREPRISE",
-        scope: "#O2",
-        establishment_id: "#O2#E1#R1P",
-      },
-      ETAT_UTILISATEUR.ATTENTE
-    )
-    recruteurO2E1R1P = await createRecruteurTest(
-      {
-        opco: "#O2",
-        establishment_id: "#O2#E1#R1P",
-      },
-      [{ job_description: "#O2#E1#R1#J1P" }]
-    )
-
-    credentialO1 = await createCredentialTest({
-      organisation: "#O1",
-    })
-  }
-
-  useMongo(mockData, "beforeAll")
-
-  describe.each<["params" | "query"]>([["params"], ["query"]])("when resources are identified in %s", (location) => {
-    describe("as an admin user", () => {
-      describe.each<[Permission]>([
-        ["recruiter:manage"],
-        ["user:validate"],
-        ["recruiter:add_job"],
-        ["job:manage"],
-        ["school:manage"],
-        ["application:manage"],
-        ["user:manage"],
-        ["admin"],
-      ])("I have %s permission", (permission) => {
-        it("on all ressources", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(
-            permission,
-            [
-              adminUser,
-              opcoUserO1U1,
-              opcoUserO1U2,
-              cfaUser2,
-              recruteurUserO1E1R1,
-              recruteurO1E1R1,
-              ...recruteurO1E1R1.jobs,
-              recruteurUserO1E1R2,
-              recruteurO1E1R2,
-              ...recruteurO1E1R2.jobs,
-              recruteurUserO1E2R1,
-              recruteurO1E2R1,
-              ...recruteurO1E2R1.jobs,
-              opcoUserO2U1,
-              cfaUser1,
-              recruteurUserO2E1R1,
-              recruteurO2E1R1,
-              ...recruteurO2E1R1.jobs,
-              applicationO1E1R1J1A1,
-              applicationO1E1R1J1A2,
-              applicationO1E1R1J2A1,
-            ],
-            location
-          )
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: adminUser,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
+  describe("authorizationMiddleware", () => {
+    describe.each<AuthStrategy>(everyAuthStrategy)("given a route expecting a %s identity type", (authStrategy) => {
+      it("should allow to call a route without requested access", async () => {
+        await expect(authorizationMiddleware(givenARoute({ authStrategy, hasRequestedAccess: false }), emptyRequest)).resolves.toBe(undefined)
+      })
+      it("should reject an unidentified user", async () => {
+        await expect(authorizationMiddleware(givenARoute({ authStrategy }), emptyRequest)).rejects.toThrow("User should be authenticated")
       })
     })
-
-    describe("as an opco user", () => {
-      describe.each<[Permission]>([["recruiter:manage"], ["user:validate"], ["recruiter:add_job"]])("I have %s permission", (permission) => {
-        it("on all recruiters from my opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1, recruteurO1E1R2, recruteurO1E2R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
+    describe.each<ResourceType>(everyResourceType)("given an accessed resource of type %s", (resourceType) => {
+      it("should always allow a token user because authorization has been dealt with in the authentication layer", async () => {
+        await expect(
+          authorizationMiddleware(givenARoute({ authStrategy: "access-token", resourceType }), givenARequest({ user: givenATokenUser(), resourceId: "resourceId" }))
+        ).resolves.toBe(undefined)
       })
-      describe.each<[Permission]>([["job:manage"]])("I have %s permission", (permission) => {
-        it("on all jobs from my opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R1.jobs, ...recruteurO1E1R2.jobs, ...recruteurO1E2R1.jobs], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["user:manage"]])("I have %s permission", (permission) => {
-        it("on myself", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["user:manage"], ["user:validate"]])("I have %s permission", (permission) => {
-        it("on user recruiter from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on recruiter from other Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO2E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["job:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on jobs from other Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO2E1R1.jobs], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["school:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on school", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["application:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on application from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["admin"]])("I do not have %s permission", (permission) => {
-        it("on user recruiter from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"], ["admin"], ["user:validate"]])("I do not have %s permission", (permission) => {
-        it("on admin user", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"], ["admin"], ["user:validate"]])("I do not have %s permission", (permission) => {
-        it("on user CFA", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"], ["admin"], ["user:validate"]])("I do not have %s permission", (permission) => {
-        it("on other user Opco from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: opcoUserO1U1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
+      it("should always allow an admin user", async () => {
+        await expect(
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType }), givenARequest({ user: givenAnAdminUser(), resourceId: "resourceId" }))
+        ).resolves.toBe(undefined)
       })
     })
-
-    describe("as an opco credential", () => {
-      describe.each<[Permission]>([["recruiter:manage"], ["user:validate"], ["recruiter:add_job"]])("I have %s permission", (permission) => {
-        it("on all recruiters from my opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1, recruteurO1E1R2, recruteurO1E2R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["job:manage"]])("I have %s permission", (permission) => {
-        it("on all jobs from my opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R1.jobs, ...recruteurO1E1R2.jobs, ...recruteurO1E2R1.jobs], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["user:manage"]])("I have %s permission", (permission) => {
-        it("on myself", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on recruiter from other Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO2E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["job:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on jobs from other Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO2E1R1.jobs], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["school:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on school", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["application:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on application from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on user recruiter from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on admin user", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on user CFA", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"]])("I have %s permission", (permission) => {
-        it("on user Opco from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-
-      describe.each<[Permission]>([["admin"]])("I do not have %s permission", (permission) => {
-        it("on user Opco from my Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "ICredential",
-                  value: credentialO1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-    })
-
-    describe("as a cfa user", () => {
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:add_job"]])("I have %s permission", (permission) => {
-        it("on all my delegated recruiters", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["job:manage"]])("I have %s permission", (permission) => {
-        it("on all jobs from my delegated recruiters", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R1.jobs], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["user:manage"], ["school:manage"]])("I have %s permission", (permission) => {
-        it("on myself", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-
-      describe.each<[Permission]>([["user:validate"]])("I do not have %s permission", (permission) => {
-        it("on all my delegated recruiters", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["recruiter:manage"], ["user:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on non delegated recruiters", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["job:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on non delegated recruiters", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R2.jobs], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["school:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on other schools", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["application:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on application of my delegated recruiter", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on user recruiter", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on admin user", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on user Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: cfaUser1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-    })
-
-    describe("as a recruiter user", () => {
-      describe.each<[Permission]>([["recruiter:manage"], ["recruiter:add_job"]])("I have %s permission", (permission) => {
-        it("on me", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["job:manage"]])("I have %s permission", (permission) => {
-        it("on my jobs", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R1.jobs], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["application:manage"]])("I have %s permission", (permission) => {
-        it("on my applications", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R1J1A1, applicationO1E1R1J1A2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["user:manage"]])("I have %s permission", (permission) => {
-        it("on myself", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["user:validate"]])("I do not have %s permission", (permission) => {
-        it("on me", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["recruiter:manage"], ["user:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on other recruiters from my company", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["job:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on job from other recruiters from my company", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R2.jobs], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["application:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on other applications", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R2J1A1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["user:manage"], ["school:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on school", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["user:manage"]])("I do not have %s permission", (permission) => {
-        it("on other user recruiter", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on admin user", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on user Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO1E1R1,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-    })
-    describe("as a pending recruiter user", () => {
-      describe.each<[Permission]>([["recruiter:add_job"]])("I have %s permission", (permission) => {
-        it("on me", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO2E1R1P], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO2E1R1P,
-                },
-                ...req,
-              }
-            )
-          ).resolves.toBe(undefined)
-        })
-      })
-      describe.each<[Permission]>([["user:validate"]])("I do not have %s permission", (permission) => {
-        it("on me", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO2E1R1P], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO2E1R1P,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["recruiter:manage"], ["user:validate"], ["recruiter:add_job"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on other recruiters from my company", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurO1E1R2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO2E1R1P,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["job:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on job from other recruiters from my company", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [...recruteurO1E1R2.jobs], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO2E1R1P,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["application:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on other applications", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [applicationO1E1R2J1A1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO2E1R1P,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["user:manage"], ["school:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on school", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [cfaUser1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO2E1R1P,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["user:manage"]])("I do not have %s permission", (permission) => {
-        it("on other user recruiter", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [recruteurUserO1E1R2], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO2E1R1P,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on admin user", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [adminUser], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO2E1R1P,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-      describe.each<[Permission]>([["user:manage"], ["admin"]])("I do not have %s permission", (permission) => {
-        it("on user Opco", async () => {
-          const [securityScheme, req] = generateSecuritySchemeFixture(permission, [opcoUserO1U1], location)
-          await expect(
-            authorizationMiddleware(
-              {
-                method: "get",
-                path: "/path",
-                securityScheme,
-              },
-              {
-                user: {
-                  type: "IUserRecruteur",
-                  value: recruteurUserO2E1R1P,
-                },
-                ...req,
-              }
-            )
-          ).rejects.toThrow("Forbidden")
-        })
-      })
-    })
-  })
-
-  it("should support retrieving recruiter resource per establishment_id", async () => {
-    const securityScheme: SecurityScheme = {
-      auth: "cookie-session",
-      access: "recruiter:manage",
-      resources: {
-        recruiter: [
-          {
-            establishment_id: {
-              type: "query",
-              key: "establishment_id",
-            },
-          },
-        ],
-      },
-    }
-
-    const query = {
-      establishment_id: recruteurO1E1R1.establishment_id,
-    }
-
-    await expect(
-      authorizationMiddleware(
-        {
-          method: "get",
-          path: "/path",
-          securityScheme,
-        },
-        {
-          user: {
-            type: "IUserRecruteur",
-            value: recruteurUserO1E1R1,
-          },
-          query,
-          params: {},
-        }
-      )
-    ).resolves.toBe(undefined)
-    await expect(
-      authorizationMiddleware(
-        {
-          method: "get",
-          path: "/path",
-          securityScheme,
-        },
-        {
-          user: {
-            type: "IUserRecruteur",
-            value: recruteurUserO1E1R2,
-          },
-          query,
-          params: {},
-        }
-      )
-    ).rejects.toThrow("Forbidden")
-  })
-
-  it("should support some operator permission", async () => {
-    const securityScheme: SecurityScheme = {
-      auth: "cookie-session",
-      access: { some: ["recruiter:manage", "user:validate"] },
-      resources: {
-        recruiter: [
-          {
-            establishment_id: {
-              type: "query",
-              key: "establishment_id",
-            },
-          },
-        ],
-      },
-    }
-
-    const query = {
-      establishment_id: recruteurO1E1R1.establishment_id,
-    }
-
-    await expect(
-      authorizationMiddleware(
-        {
-          method: "get",
-          path: "/path",
-          securityScheme,
-        },
-        {
-          user: {
-            type: "IUserRecruteur",
-            value: recruteurUserO1E1R1,
-          },
-          query,
-          params: {},
-        }
-      )
-    ).resolves.toBe(undefined)
-    await expect(
-      authorizationMiddleware(
-        {
-          method: "get",
-          path: "/path",
-          securityScheme,
-        },
-        {
-          user: {
-            type: "IUserRecruteur",
-            value: recruteurUserO1E1R2,
-          },
-          query,
-          params: {},
-        }
-      )
-    ).rejects.toThrow("Forbidden")
-  })
-
-  it("should support every operator permission", async () => {
-    const securityScheme: SecurityScheme = {
-      auth: "cookie-session",
-      access: { every: ["recruiter:manage", "user:validate"] },
-      resources: {
-        recruiter: [
-          {
-            establishment_id: {
-              type: "query",
-              key: "establishment_id",
-            },
-          },
-        ],
-      },
-    }
-
-    const query = {
-      establishment_id: recruteurO1E1R1.establishment_id,
-    }
-
-    await expect(
-      authorizationMiddleware(
-        {
-          method: "get",
-          path: "/path",
-          securityScheme,
-        },
-        {
-          user: {
-            type: "IUserRecruteur",
-            value: opcoUserO1U1,
-          },
-          query,
-          params: {},
-        }
-      )
-    ).resolves.toBe(undefined)
-    await expect(
-      authorizationMiddleware(
-        {
-          method: "get",
-          path: "/path",
-          securityScheme,
-        },
-        {
-          user: {
-            type: "IUserRecruteur",
-            value: recruteurUserO1E1R1,
-          },
-          query,
-          params: {},
-        }
-      )
-    ).rejects.toThrow("Forbidden")
-  })
-
-  it("should support null access", async () => {
-    const securityScheme: SecurityScheme = {
-      auth: "cookie-session",
-      access: null,
-      resources: {},
-    }
-
-    await expect(
-      authorizationMiddleware(
-        {
-          method: "get",
-          path: "/path",
-          securityScheme,
-        },
-        {
-          user: {
-            type: "IUserRecruteur",
-            value: opcoUserO1U1,
-          },
-          query: {},
-          params: {},
-        }
-      )
-    ).resolves.toBe(undefined)
-  })
-
-  describe("with access token", () => {
-    describe("when accessing recruiter resource", () => {
-      it("should allow when resource is present in token for same scope", async () => {
-        const securityScheme: SecurityScheme = {
-          auth: "cookie-session",
-          access: "recruiter:manage",
-          resources: {
-            recruiter: [{ _id: { type: "params", key: "id" } }],
-          },
-        }
-        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
-          type: "IAccessToken",
-          value: {
-            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
-            scopes: [
-              generateScope({
-                schema: {
-                  method: "post",
-                  path: "/path/:id",
-                  securityScheme: {
-                    auth: "access-token",
-                    access: null,
-                    resources: {},
-                  },
-                },
-                options: "all",
-              }),
-              generateScope({
-                schema: {
-                  method: "get",
-                  path: "/path/:id",
-                  securityScheme: {
-                    auth: "access-token",
-                    access: null,
-                    resources: {},
-                  },
-                },
-                options: "all",
-              }),
-            ],
-          },
-        }
-
+    describe("user access", () => {
+      it("an entreprise user should have access to its user", async () => {
+        const user = entrepriseUserA.user
         await expect(
           authorizationMiddleware(
-            {
-              method: "get",
-              path: "/path/:id",
-              securityScheme,
-            },
-            {
-              user: userWithType,
-              query: {},
-              params: {
-                id: recruteurO1E1R1._id.toString(),
-              },
-            }
+            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: user._id.toString() })
+          )
+        ).resolves.toBe(undefined)
+      })
+      it("an entreprise user should NOT have access to another user", async () => {
+        const user = entrepriseUserA.user
+        const accessedUser = cfaUserA.user
+        await expect(
+          authorizationMiddleware(
+            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: accessedUser._id.toString() })
+          )
+        ).rejects.toThrow("non autorisé")
+      })
+      it("a cfa user should have access to its user", async () => {
+        const user = cfaUserA.user
+        await expect(
+          authorizationMiddleware(
+            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: user._id.toString() })
+          )
+        ).resolves.toBe(undefined)
+      })
+      it("an opco user should have access to its user", async () => {
+        const user = opcoUserA.user
+        await expect(
+          authorizationMiddleware(
+            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: user._id.toString() })
           )
         ).resolves.toBe(undefined)
       })
     })
-    describe("when accessing job resource", () => {
-      it("should allow when resource is present in token for same scope", async () => {
-        const securityScheme: SecurityScheme = {
-          auth: "cookie-session",
-          access: "job:manage",
-          resources: {
-            job: [{ _id: { type: "params", key: "id" } }],
-          },
-        }
-        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
-          type: "IAccessToken",
-          value: {
-            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
-            scopes: [
-              generateScope({
-                schema: {
-                  method: "post",
-                  path: "/path/:id",
-                  securityScheme: {
-                    auth: "access-token",
-                    access: null,
-                    resources: {},
-                  },
-                },
-                options: "all",
-              }),
-              generateScope({
-                schema: {
-                  method: "get",
-                  path: "/path/:id",
-                  securityScheme: {
-                    auth: "access-token",
-                    access: null,
-                    resources: {},
-                  },
-                },
-                options: "all",
-              }),
-            ],
-          },
-        }
-
+    describe("job access", () => {
+      it("an entreprise user should have access to its jobs", async () => {
+        const { user, recruiter } = entrepriseUserA
+        const [job] = recruiter.jobs
         await expect(
           authorizationMiddleware(
-            {
-              method: "get",
-              path: "/path/:id",
-              securityScheme,
-            },
-            {
-              user: userWithType,
-              query: {},
-              params: {
-                id: recruteurO1E1R1.jobs.map((j) => j._id.toString())[0],
-              },
-            }
+            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
           )
         ).resolves.toBe(undefined)
       })
-    })
-    describe("when accessing application resource", () => {
-      it("should allow when resource is present in token for same scope", async () => {
-        const securityScheme: SecurityScheme = {
-          auth: "cookie-session",
-          access: "application:manage",
-          resources: {
-            application: [{ _id: { type: "params", key: "id" } }],
-          },
-        }
-        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
-          type: "IAccessToken",
-          value: {
-            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
-            scopes: [
-              generateScope({
-                schema: {
-                  method: "post",
-                  path: "/path/:id",
-                  securityScheme: {
-                    auth: "access-token",
-                    access: null,
-                    resources: {},
-                  },
-                },
-                options: "all",
-              }),
-              generateScope({
-                schema: {
-                  method: "get",
-                  path: "/path/:id",
-                  securityScheme: {
-                    auth: "access-token",
-                    access: null,
-                    resources: {},
-                  },
-                },
-                options: "all",
-              }),
-            ],
-          },
-        }
-
+      it("an entreprise user should NOT have access to another entreprise's jobs", async () => {
+        const user = entrepriseUserA.user
+        const { recruiter } = entrepriseUserB
+        const [job] = recruiter.jobs
         await expect(
           authorizationMiddleware(
-            {
-              method: "get",
-              path: "/path/:id",
-              securityScheme,
-            },
-            {
-              user: userWithType,
-              query: {},
-              params: {
-                id: applicationO1E1R1J1A1._id.toString(),
-              },
-            }
+            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
+          )
+        ).rejects.toThrow("non autorisé")
+      })
+      it("a cfa user should have access to its jobs", async () => {
+        const { user, recruiter } = cfaUserA
+        const [job] = recruiter.jobs
+        await expect(
+          authorizationMiddleware(
+            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
           )
         ).resolves.toBe(undefined)
       })
-    })
-    describe("when accessing user resource", () => {
-      it("should allow when resource is present in token for same scope", async () => {
-        const securityScheme: SecurityScheme = {
-          auth: "cookie-session",
-          access: "user:manage",
-          resources: {
-            user: [{ _id: { type: "params", key: "id" } }],
-          },
-        }
-        const userWithType: UserWithType<"IAccessToken", IAccessToken> = {
-          type: "IAccessToken",
-          value: {
-            identity: { type: "cfa", email: "mail@mail.com", siret: "55327987900672" },
-            scopes: [
-              generateScope({
-                schema: {
-                  method: "post",
-                  path: "/path/:id",
-                  securityScheme: {
-                    auth: "access-token",
-                    access: null,
-                    resources: {},
-                  },
-                },
-                options: "all",
-              }),
-              generateScope({
-                schema: {
-                  method: "get",
-                  path: "/path/:id",
-                  securityScheme: {
-                    auth: "access-token",
-                    access: null,
-                    resources: {},
-                  },
-                },
-                options: "all",
-              }),
-            ],
-          },
-        }
-
+      it("a cfa user should NOT have access to another cfa's job", async () => {
+        const user = cfaUserA.user
+        const { recruiter } = cfaUserB
+        const [job] = recruiter.jobs
         await expect(
           authorizationMiddleware(
-            {
-              method: "get",
-              path: "/path/:id",
-              securityScheme,
-            },
-            {
-              user: userWithType,
-              query: {},
-              params: {
-                id: opcoUserO1U1._id.toString(),
-              },
-            }
+            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
           )
-        ).resolves.toBe(undefined)
+        ).rejects.toThrow("non autorisé")
+      })
+      it("a cfa user should NOT have access to another entreprise job", async () => {
+        const user = cfaUserA.user
+        const { recruiter } = entrepriseUserA
+        const [job] = recruiter.jobs
+        await expect(
+          authorizationMiddleware(
+            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
+            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
+          )
+        ).rejects.toThrow("non autorisé")
       })
     })
   })

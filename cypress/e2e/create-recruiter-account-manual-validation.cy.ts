@@ -1,11 +1,15 @@
+import { slowCypressDown } from "cypress-slow-down"
+
 import { loginClient } from "../api/loginClient"
 import { smtpClient } from "../api/smtpClient"
 import { FlowCreationEntreprise } from "../pages/FlowCreationEntreprise"
 import { JobPage } from "../pages/JobPage"
 import { generateRandomString } from "../utils/generateRandomString"
 
-describe("create-recruiter-account-siret-inexistent", () => {
-  it("tests create-recruiter-account-siret-inexistent", () => {
+slowCypressDown(200)
+
+describe("create-recruiter-account-manual-validation", () => {
+  it("tests create-recruiter-account-manual-validation", () => {
     cy.viewport(1271, 721)
 
     const email = `cypress-manual-validation-${generateRandomString()}@mail.com`

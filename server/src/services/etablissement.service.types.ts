@@ -135,7 +135,7 @@ interface IReferentielRaw {
   adresse: IAdresseCFA
   nature: string
   numero_declaration_activite: string
-  qualiopi: boolean
+  qualiopi?: boolean
   uai: string
 }
 
@@ -342,7 +342,7 @@ export interface ICFADock {
   filterNAFCode: string
   filterNAFType: string
   filters: IFilters
-  idcc: number
+  idcc: number | null
   opcoName: string
   opcoSiren: string
   searchStatus: string

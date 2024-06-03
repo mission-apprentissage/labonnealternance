@@ -1,7 +1,7 @@
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError } from "../common/utils/errorManager"
@@ -52,9 +52,11 @@ const minimalDataMongoFields = {
   etablissement_gestionnaire_siret: 1,
   intitule_court: 1,
   intitule_long: 1,
+  intitule_rco: 1,
   lieu_formation_adresse: 1,
   lieu_formation_geo_coordonnees: 1,
   localite: 1,
+  distance: 1,
 }
 
 /**
@@ -336,8 +338,8 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
   const duration = getDurationFromSessions(sessions)
 
   const resultFormation: ILbaItemFormation = {
-    ideaType: LBA_ITEM_TYPE.FORMATION,
-    title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
+    ideaType: LBA_ITEM_TYPE_OLD.FORMATION,
+    title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
     longTitle: rawFormation.intitule_long ?? null,
     id: rawFormation.cle_ministere_educatif ?? null,
     idRco: rawFormation.id_formation ?? null,
@@ -419,8 +421,8 @@ const transformFormationWithMinimalData = (rawFormation: IFormationCatalogue): I
   const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
 
   const resultFormation: ILbaItemFormation = {
-    ideaType: LBA_ITEM_TYPE.FORMATION,
-    title: (rawFormation?.intitule_long || rawFormation.intitule_court) ?? null,
+    ideaType: LBA_ITEM_TYPE_OLD.FORMATION,
+    title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
     id: rawFormation.cle_ministere_educatif ?? null,
 
     place: {

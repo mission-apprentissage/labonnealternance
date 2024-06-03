@@ -36,8 +36,7 @@
             <a style="font-weight: bold; color: black" href="<%= data.urlOfDetail %>"> votre offre</a>
             sur le métier <%= data.job_title %>. <% } else { %> Bonjour,
             <br /><br />
-            <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé spontanément <% if (data.searched_for_job_label!= "") { %>
-            dans le domaine <%= data.searched_for_job_label %> <% } %> à partir du site
+            <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé spontanément à partir du site
             <a style="font-weight: bold; color: black" href="<%= data.urlOfDetail %>"> La bonne alternance</a>. <br /><br />
             Votre entreprise <span class="nom-societe"><%= data.company_name %></span>
             a été identifiée par notre algorithme comme susceptible de recruter en alternance. <% } %>

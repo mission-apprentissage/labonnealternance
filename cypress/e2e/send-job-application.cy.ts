@@ -1,3 +1,5 @@
+import { slowCypressDown } from "cypress-slow-down"
+
 import { smtpClient } from "../api/smtpClient"
 import { FlowItemList } from "../pages/FlowItemList"
 import { FlowSendApplication } from "../pages/FlowSendApplication"
@@ -5,6 +7,8 @@ import { givenAMatchaOffer } from "../pages/givenAMatchaOffer"
 import { SearchForm } from "../pages/SearchForm"
 import { containsText } from "../utils/containText"
 import { generateRandomString } from "../utils/generateRandomString"
+
+slowCypressDown(300)
 
 describe("send-job-application", () => {
   it("tests send-job-application", () => {
