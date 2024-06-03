@@ -291,4 +291,4 @@ function DetailEntreprisePage() {
 
 export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
 
-export default authProvider(withAuth(DetailEntreprisePage, "adminLbaR"))
+export default authProvider(withAuth(DetailEntreprisePage, "admin"))

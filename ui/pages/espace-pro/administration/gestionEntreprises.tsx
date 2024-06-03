@@ -137,4 +137,4 @@ function GestionEntreprises() {
   )
 }
 
-export default authProvider(withAuth(GestionEntreprises, "adminLbaR"))
+export default authProvider(withAuth(GestionEntreprises, "admin"))
