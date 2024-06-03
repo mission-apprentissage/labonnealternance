@@ -202,7 +202,7 @@ export const createOpcoUser = async (
       last_action_date: new Date(),
       origin,
     },
-    false,
+    true,
     grantedBy
   )
   await modifyPermissionToUser(
