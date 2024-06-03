@@ -27,7 +27,7 @@ export const connectToMongo = async (mongoUri = config.mongodb.uri) => {
     mongooseInstance.Promise = global.Promise // Get the default connection
     db = mongooseInstance.connection
 
-    logger.info("MongoDB: Connected")
+    logger.info("MongoDB (Mongoose): Connected")
     return { db }
   } catch (error: any) {
     logger.error("MongoDB: connection error:", error.message)
@@ -36,6 +36,6 @@ export const connectToMongo = async (mongoUri = config.mongodb.uri) => {
 }
 
 export const closeMongoConnection = async () => {
-  logger.info("MongoDB: closing connection")
+  logger.info("MongoDB (Mongoose): closing connection")
   await mongooseInstance.disconnect()
 }

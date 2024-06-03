@@ -7,6 +7,7 @@ import { closeMongoConnection } from "@/common/mongodb"
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
+import { closeMongodbConnection } from "./common/utils/mongodbUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { closeSentry, initSentryProcessor } from "./http/sentry"
@@ -70,7 +71,7 @@ program
     logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await Promise.all([closeMongoConnection(), closeMemoryCache()])
+    await Promise.all([closeMongoConnection(), closeMongodbConnection(), closeMemoryCache()])
     await closeSentry()
 
     setTimeout(async () => {
