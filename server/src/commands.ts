@@ -151,6 +151,7 @@ function createJobAction(name) {
         name,
         queued,
         payload,
+        disallowPentest: false,
       })
 
       if (exitCode) {
