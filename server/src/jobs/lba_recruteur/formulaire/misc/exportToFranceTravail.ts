@@ -212,7 +212,7 @@ export const exportToFranceTravail = async (): Promise<void> => {
     logger.info(`get info from ${offres.length} offers...`)
     await asyncForEach(offres, async (offre) => {
       const cfa = offre.is_delegated ? await Cfa.findOne({ siret: offre.cfa_delegated_siret }) : null
-      offre.job_type.map(async (type) => {
+      offre.job_type.map((type) => {
         const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
         buffer.push({ ...offre, type, cfa: cfaFields })
       })
