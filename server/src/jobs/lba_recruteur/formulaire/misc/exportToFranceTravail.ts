@@ -26,7 +26,7 @@ const splitter = (str) => str.split(regex).filter(String)
  * @returns {Promise<object>}
  */
 const formatToPe = async (offre) => {
-  //TODO VOIR NECESSITE
+  //Récupération de l'appellation dans le rome_detail pour identifier le code OGR
   const appellation = offre.rome_detail.appellations.find((v) => v.libelle === offre.rome_appellation_label)
   const adresse = offre.address_detail
   const [latitude, longitude] = offre.geo_coordinates.split(",")
@@ -178,28 +178,44 @@ export const exportToFranceTravail = async (): Promise<void> => {
     // Retrieve only active offers
     const offres: any[] = await db
       .collection("jobs")
-      .find({
-        job_status: JOB_STATUS.ACTIVE,
-        recruiterStatus: RECRUITER_STATUS.ACTIF,
-        geo_coordinates: { $nin: ["NOT FOUND", null] },
-        job_update_date: { $gte: threshold },
-        address_detail: { $ne: null },
-        is_multi_published: true,
-      })
+      .aggregate([
+        {
+          $match: {
+            job_status: JOB_STATUS.ACTIVE,
+            recruiterStatus: RECRUITER_STATUS.ACTIF,
+            geo_coordinates: { $nin: ["NOT FOUND", null] },
+            job_update_date: { $gte: threshold },
+            address_detail: { $ne: null },
+            is_multi_published: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "referentielromes",
+            localField: "rome_code.0",
+            foreignField: "rome.code_rome",
+            as: "referentielrome",
+          },
+        },
+        {
+          $unwind: { path: "$referentielrome" },
+        },
+        {
+          $set: { rome_detail: "$referentielrome" },
+        },
+        {
+          $project: { referentielrome: 0, "rome_detail._id": 0 },
+        },
+      ])
       .toArray()
 
     logger.info(`get info from ${offres.length} offers...`)
     await asyncForEach(offres, async (offre) => {
       const cfa = offre.is_delegated ? await Cfa.findOne({ siret: offre.cfa_delegated_siret }) : null
-
-      if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
-        offre.job_type.map(async (type) => {
-          if (offre.rome_detail && typeof offre.rome_detail !== "string") {
-            const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
-            buffer.push({ ...offre, type, cfa: cfaFields })
-          }
-        })
-      }
+      offre.job_type.map(async (type) => {
+        const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
+        buffer.push({ ...offre, type, cfa: cfaFields })
+      })
     })
 
     logger.info("Start stream to CSV...")
