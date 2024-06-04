@@ -122,7 +122,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(ReferentielOpco, ZReferentielOpco)
   await validateModel(UnsubscribeOF, ZUnsubscribeOF)
   await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
-  // await validateModel(UserRecruteur, ZUserRecruteur)
   await validateModel(Entreprise, ZEntreprise)
   await validateModel(Cfa, zCFA)
   await validateModel(UserWithAccount, ZUserWithAccount)
