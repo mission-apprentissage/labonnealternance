@@ -30,9 +30,9 @@ export default function Layout({
           <Box as="header">
             {header && <Header />}
             {displayNavigationMenu && <NavigationMenu rdva={rdva} />}
+            {adminPage && <NavigationAdmin currentPage={adminPage} />}
           </Box>
         )}
-        {adminPage && <NavigationAdmin currentPage={adminPage} />}
         <Container as="main" maxW="container.xl" flexGrow="1">
           {children}
         </Container>
