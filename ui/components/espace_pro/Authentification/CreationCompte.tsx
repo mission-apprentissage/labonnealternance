@@ -13,7 +13,7 @@ import { SIRETValidation } from "../../../common/validation/fieldValidations"
 import { LogoContext } from "../../../context/contextLogo"
 import { WidgetContext } from "../../../context/contextWidget"
 import { SearchLine } from "../../../theme/components/icons"
-import { getCfaInformation, getEntrepriseInformation, getEntrepriseOpco } from "../../../utils/api"
+import { getEntrepriseInformation, getEntrepriseOpco, validateCfaCreation } from "../../../utils/api"
 import { BandeauProps } from "../Bandeau"
 import { Section } from "../common/components/Section"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
@@ -65,7 +65,7 @@ const CreationCompteForm = ({
         }
       })
     } else {
-      getCfaInformation(formattedSiret)
+      validateCfaCreation(formattedSiret)
         .then(() => {
           setSubmitting(false)
           router.push({

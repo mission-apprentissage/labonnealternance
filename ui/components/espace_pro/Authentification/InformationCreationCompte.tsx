@@ -33,7 +33,7 @@ const Formulaire = ({ submitForm }) => {
     <Formik
       validateOnMount={true}
       initialValues={{
-        opco,
+        opco: opco ?? "",
         last_name: "",
         first_name: "",
         phone: "",

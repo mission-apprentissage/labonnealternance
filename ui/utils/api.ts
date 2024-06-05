@@ -99,6 +99,7 @@ export const sendValidationLink = async (userId: string, token: string) =>
  */
 export const getEntreprisesManagedByCfa = (cfaId: string) => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
 export const getCfaInformation = async (siret: string) => apiGet("/etablissement/cfa/:siret", { params: { siret } })
+export const validateCfaCreation = async (siret: string) => apiGet("/etablissement/cfa/:siret/validate-creation", { params: { siret } })
 
 export const getEntrepriseInformation = async (
   siret: string,

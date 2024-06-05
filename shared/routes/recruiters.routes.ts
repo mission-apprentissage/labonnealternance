@@ -96,6 +96,15 @@ export const zRecruiterRoutes = {
       },
       securityScheme: null,
     },
+    "/etablissement/cfa/:siret/validate-creation": {
+      method: "get",
+      path: "/etablissement/cfa/:siret/validate-creation",
+      params: z.object({ siret: extensions.siret }).strict(),
+      response: {
+        "200": ZCfaReferentielData,
+      },
+      securityScheme: null,
+    },
     "/etablissement/cfa/:siret": {
       method: "get",
       path: "/etablissement/cfa/:siret",

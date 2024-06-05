@@ -18,6 +18,7 @@ import {
   getEntrepriseDataFromSiret,
   getOpcoData,
   getOrganismeDeFormationDataFromSiret,
+  isCfaCreationValid,
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
 } from "@/services/etablissement.service"
@@ -134,6 +135,28 @@ export default (server: Server) => {
   )
 
   /**
+   * Récupération des informations d'un cfa à l'aide des tables de correspondances et du référentiel
+   */
+  server.get(
+    "/etablissement/cfa/:siret/validate-creation",
+    {
+      schema: zRoutes.get["/etablissement/cfa/:siret/validate-creation"],
+    },
+    async (req, res) => {
+      const { siret } = req.params
+      if (!siret) {
+        throw Boom.badRequest("Le numéro siret est obligatoire.")
+      }
+      const isValid = await isCfaCreationValid(siret)
+      if (!isValid) {
+        throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
+      }
+      const response = await getOrganismeDeFormationDataFromSiret(siret)
+      return res.status(200).send(response)
+    }
+  )
+
+  /**
    * Retourne les entreprises gérées par un CFA
    */
   server.get(
@@ -187,6 +210,10 @@ export default (server: Server) => {
             throw Boom.forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }
 
+          const isValid = await isCfaCreationValid(establishment_siret)
+          if (!isValid) {
+            throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
+          }
           const { contacts, establishment_raison_sociale, geo_coordinates, address, address_detail } = await getOrganismeDeFormationDataFromSiret(establishment_siret)
 
           const cfa = await upsertCfa(

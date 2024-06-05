@@ -709,7 +709,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: strin
   return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}`, geopoint: { type: "Point", coordinates: [longitude, latitude] as [number, number] } }
 }
 
-const isCfaCreationValid = async (siret: string): Promise<boolean> => {
+export const isCfaCreationValid = async (siret: string): Promise<boolean> => {
   const cfa = await Cfa.findOne({ siret }).lean()
   if (!cfa) return true
   const roles = await RoleManagement.find({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
@@ -722,10 +722,6 @@ const isCfaCreationValid = async (siret: string): Promise<boolean> => {
 }
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
-  const isValid = await isCfaCreationValid(siret)
-  if (!isValid) {
-    throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
-  }
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
     throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: BusinessErrorCodes.UNKNOWN })
