@@ -1,6 +1,6 @@
 import Boom from "boom"
-import pkg from "mongodb"
 import type { ObjectId as ObjectIdType } from "mongodb"
+import pkg from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -17,7 +17,7 @@ import config from "../config"
 
 import { getUser2ManagingOffer } from "./application.service"
 import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.service"
-import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
+import { getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
@@ -224,17 +224,16 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       shouldSentMailToCfa = true
     }
   }
-  const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } }, { _id: 1 })
   const delegations: IDelegation[] = []
-  const promises = etablissements.map(async (etablissement) => {
+  const promises = etablissementCatalogueIds.map(async (etablissementId) => {
     const formations = await getCatalogueFormations(
       {
         $or: [
           {
-            etablissement_gestionnaire_id: etablissement._id,
+            etablissement_gestionnaire_id: etablissementId,
           },
           {
-            etablissement_formateur_id: etablissement._id,
+            etablissement_formateur_id: etablissementId,
           },
         ],
         etablissement_gestionnaire_courriel: { $nin: [null, ""] },
@@ -243,7 +242,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1 }
     )
 
-    const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formations[0] ?? {}
+    const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formations.at(0) ?? {}
 
     if (!email || !siret_code) {
       // This shouldn't happen considering the query filter
