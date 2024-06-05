@@ -556,12 +556,6 @@ program
   .requiredOption("--from-date <string>, [fromDate]", "format DD-MM-YYYY. Date depuis laquelle les prises de rendez-vous sont renvoyéees")
   .action(createJobAction("prdv:emails:resend"))
 
-program
-  .command("migrate-multi-compte")
-  .description("Migre les données vers les tables multi-compte")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("migrate-multi-compte"))
-
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }

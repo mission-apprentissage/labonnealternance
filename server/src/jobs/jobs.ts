@@ -7,7 +7,7 @@ import { getLoggerWithContext } from "../common/logger"
 import anonymizeOldAppointments from "./anonymization/anonumizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
-import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
+import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
@@ -43,7 +43,6 @@ import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { migrationUsers } from "./multiCompte/migrationUsers"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
@@ -319,7 +318,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "applications:anonymize":
         return anonymizeOldApplications()
       case "user-recruteurs:anonymize":
-        return anonimizeUserRecruteurs()
+        return anonimizeUsers()
       case "companies:update":
         return updateLbaCompanies(job.payload)
       case "geo-locations:update":
@@ -347,9 +346,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "referentiel-opco:constructys:import": {
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
-      }
-      case "migrate-multi-compte": {
-        return migrationUsers()
       }
       case "prdv:emails:resend": {
         const { fromDate } = job.payload

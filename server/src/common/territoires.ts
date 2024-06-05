@@ -263,6 +263,20 @@ const departmentsRegionAndAcademieCode: IDepartmentsRegionAndAcademieCode[] = [
     },
   },
   {
+    // rattrapage de zip en erreur pour lesquels nous n'avons besoin que du code région
+    nom: "Corse",
+    code: "20",
+    uaiCode: "620", // uai valable uniquement pour un des deux départements de Corse
+    region: {
+      code: "94",
+      nom: "Corse",
+    },
+    academie: {
+      code: "27",
+      nom: "Corse",
+    },
+  },
+  {
     nom: "Côte-d'Or",
     code: "21",
     uaiCode: "21",
