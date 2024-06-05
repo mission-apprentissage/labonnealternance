@@ -16,6 +16,7 @@ import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { isUserEmailChecked, emailHasActiveRole } from "@/services/userWithAccount.service"
 
 import {
   Cfa,
@@ -53,8 +54,7 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
 import { UserAndOrganization, updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
-import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, isUserEmailChecked, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
-import { emailHasActiveRole } from "./userWithAccount.service"
+import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
