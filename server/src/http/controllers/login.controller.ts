@@ -53,6 +53,10 @@ export default (server: Server) => {
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
+      const userState = await controlUserState(user)
+      if (userState?.error) {
+        return res.status(400).send(userState)
+      }
 
       const is_email_checked = isUserEmailChecked(user)
       const { email: userEmail, first_name, last_name } = user
@@ -63,11 +67,6 @@ export default (server: Server) => {
           error: true,
           reason: "VERIFY",
         })
-      }
-
-      const userState = await controlUserState(user)
-      if (userState?.error) {
-        return res.status(400).send(userState)
       }
 
       await mailer.sendEmail({
