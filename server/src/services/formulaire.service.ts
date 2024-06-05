@@ -225,38 +225,39 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     }
   }
   const delegations: IDelegation[] = []
-  const promises = etablissementCatalogueIds.map(async (etablissementId) => {
-    const formations = await getCatalogueFormations(
-      {
-        $or: [
-          {
-            etablissement_gestionnaire_id: etablissementId,
-          },
-          {
-            etablissement_formateur_id: etablissementId,
-          },
-        ],
-        etablissement_gestionnaire_courriel: { $nin: [null, ""] },
-        catalogue_published: true,
-      },
-      { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1 }
-    )
 
-    const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formations.at(0) ?? {}
+  const formations = await getCatalogueFormations(
+    {
+      $or: [
+        {
+          etablissement_gestionnaire_id: { $in: etablissementCatalogueIds },
+        },
+        {
+          etablissement_formateur_id: { $in: etablissementCatalogueIds },
+        },
+      ],
+      etablissement_gestionnaire_courriel: { $nin: [null, ""] },
+      catalogue_published: true,
+    },
+    { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1, etablissement_gestionnaire_id: 1, etablissement_formateur_id: 1 }
+  )
 
-    if (!email || !siret_code) {
-      // This shouldn't happen considering the query filter
-      throw Boom.internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
-    }
+  await Promise.all(
+    etablissementCatalogueIds.map(async (etablissementId) => {
+      const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
+      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formation ?? {}
+      if (!email || !siret_code) {
+        // This shouldn't happen considering the query filter
+        throw Boom.internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
+      }
 
-    delegations.push({ siret_code, email })
+      delegations.push({ siret_code, email })
 
-    if (shouldSentMailToCfa) {
-      await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
-    }
-  })
-
-  await Promise.all(promises)
+      if (shouldSentMailToCfa) {
+        await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
+      }
+    })
+  )
 
   offre.delegations = offre.delegations?.concat(delegations) ?? delegations
   offre.job_delegation_count = offre.delegations.length
