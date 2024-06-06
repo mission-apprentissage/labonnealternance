@@ -3,12 +3,12 @@ import { Form, Formik } from "formik"
 import NavLink from "next/link"
 import { useRouter } from "next/router"
 import { useContext } from "react"
+import { ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
 import { useAuth } from "@/context/UserContext"
 
-import { AUTHTYPE } from "../../../../common/contants"
 import { phoneValidation } from "../../../../common/validation/fieldValidations"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise, Layout } from "../../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
@@ -98,7 +98,7 @@ const Formulaire = () => {
 
 function CreationEntrepriseDetail() {
   const router = useRouter()
-  const informationEntreprise = { ...JSON.parse((router.query.informationSiret as string) || "{}"), type: AUTHTYPE.ENTREPRISE }
+  const informationEntreprise = JSON.parse((router.query.informationSiret as string) || "{}")
 
   return (
     <AnimationContainer>
@@ -126,7 +126,7 @@ function CreationEntrepriseDetail() {
             <Formulaire />
           </GridItem>
           <GridItem rowStart={["auto", 2]} pt={[4, 8]} minW="0">
-            <InformationLegaleEntreprise {...informationEntreprise} />
+            <InformationLegaleEntreprise siret={informationEntreprise.establishment_siret} type={ENTREPRISE} />
           </GridItem>
         </Grid>
       </Container>

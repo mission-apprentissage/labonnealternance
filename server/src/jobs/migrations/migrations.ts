@@ -56,7 +56,7 @@ export async function status(): Promise<number> {
 
   // @ts-ignore
   const migrationStatus = await mstatus(client.db())
-  migrationStatus.forEach(({ fileName, appliedAt }) => console.log(fileName, ":", appliedAt))
+  migrationStatus.forEach(({ fileName, appliedAt }) => console.info(fileName, ":", appliedAt))
 
   return migrationStatus.filter(({ appliedAt }) => appliedAt === "PENDING").length
 }

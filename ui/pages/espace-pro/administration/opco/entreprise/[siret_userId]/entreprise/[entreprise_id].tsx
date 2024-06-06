@@ -22,7 +22,7 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserStatusValidation } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import { AUTHTYPE } from "@/common/contants"
@@ -266,7 +266,7 @@ function DetailEntreprise() {
                       </Box>
                     </Box>
                     <Box>
-                      <InformationLegaleEntreprise {...userRecruteur} />
+                      <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
                     </Box>
                   </SimpleGrid>
                   {(user.type === AUTHTYPE.OPCO || user.type === AUTHTYPE.ADMIN) && (

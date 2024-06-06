@@ -56,7 +56,7 @@ const CreationCompte = () => {
           setSubmitting(true)
           router.push({
             pathname: "/espace-pro/administration/entreprise/detail",
-            query: { informationSiret: JSON.stringify({ ...entrepriseData.data, ...opcoInfos }) },
+            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
           })
         }
       }

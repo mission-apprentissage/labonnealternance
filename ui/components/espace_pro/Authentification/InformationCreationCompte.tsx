@@ -2,7 +2,8 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormL
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
-import { IRecruiterJson, assertUnreachable } from "shared"
+import { IRecruiterJson, assertUnreachable, parseEnum } from "shared"
+import { CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
 import { IUserWithAccountJson } from "shared/models/userWithAccount.model"
 import * as Yup from "yup"
 
@@ -24,15 +25,15 @@ const Formulaire = ({ submitForm }) => {
   const { type, informationSiret: informationSiretString, origin }: { type: string; informationSiret: string; origin: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
 
-  const { email = "", opco = "" } = informationSiret ?? {}
+  const { email = "", establishment_siret = "" } = informationSiret ?? {}
+  const opco = parseEnum(OPCOS, informationSiret.opco)
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
-  const informationEntreprise = { ...informationSiret, type }
 
   return (
     <Formik
       validateOnMount={true}
       initialValues={{
-        opco,
+        opco: opco ?? "",
         last_name: "",
         first_name: "",
         phone: "",
@@ -107,7 +108,7 @@ const Formulaire = ({ submitForm }) => {
               }
               right={
                 <>
-                  <InformationLegaleEntreprise {...informationEntreprise} />
+                  <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} />
                   {informationOpco && <InformationOpco disabled={!shouldSelectOpco} informationOpco={informationOpco} resetOpcoChoice={() => setFieldValue("opco", "")} />}
                 </>
               }

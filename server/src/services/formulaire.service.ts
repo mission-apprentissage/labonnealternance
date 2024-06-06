@@ -397,8 +397,6 @@ export async function getOffre(id: string | ObjectIdType) {
 }
 
 export async function getOffreWithRomeDetail(id: string | ObjectIdType) {
-  console.log("id", id)
-
   const recruiter: IRecruiter[] = await Recruiter.aggregate([
     {
       $match: { "jobs._id": new ObjectId(id) },

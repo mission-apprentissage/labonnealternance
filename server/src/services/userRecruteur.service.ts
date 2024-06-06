@@ -1,13 +1,13 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
-import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, parseEnumOrError, removeUndefinedFields } from "shared"
+import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import { IUserWithAccount, IUserWithAccountFields } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId, ObjectIdType } from "@/common/mongodb"
@@ -20,7 +20,7 @@ import config from "../config"
 import { createAuthMagicLink } from "./appLinks.service"
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
-import { createOrganizationIfNotExist } from "./organization.service"
+import { Organization, UserAndOrganization } from "./organization.service"
 import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
 
@@ -31,9 +31,9 @@ import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.ser
 export const createApiKey = (): string => `mna-${randomUUID()}`
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
-  const { date, reason, validation_type, granted_by } = entrepriseStatusEvent
+  const { reason, validation_type, granted_by } = entrepriseStatusEvent
   return {
-    date,
+    date: new Date(),
     user: granted_by ?? "",
     validation_type,
     reason,
@@ -134,55 +134,54 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUserWithAccount
 
 /**
  * Crée l'utilisateur si il n'existe pas
- * Crée l'organisation si elle n'existe pas
  * Si statusEvent est passé, ajoute les droits de l'utilisateur sur l'organisation.
- * Sinon, c'est de la responsabilité de l'appelant d'ajouter le status des droits ultérieurement.
+ * Sinon, les droits sont mis en attente de validation
  */
-export const createOrganizationUser = async (
-  userRecruteurProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status" | "scope">,
-  grantedBy?: string,
+export const createOrganizationUser = async ({
+  userFields,
+  is_email_checked,
+  organization,
+  grantedBy,
+  statusEvent,
+}: {
+  userFields: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">
+  is_email_checked: boolean
+  organization: Organization
+  grantedBy?: string
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
-): Promise<UserAndOrganization> => {
-  const { type, origin, first_name, last_name, last_connection, email, is_email_checked, phone } = userRecruteurProps
-  if (type === ENTREPRISE || type === CFA) {
-    const user = await createUser2IfNotExist(
-      {
-        email,
-        first_name,
-        last_name,
-        phone: phone ?? "",
-        last_action_date: last_connection,
-      },
-      is_email_checked,
-      grantedBy ?? ""
-    )
-    const organization = await createOrganizationIfNotExist(userRecruteurProps)
-    await modifyPermissionToUser(
-      {
-        user_id: user._id,
-        authorized_id: organization._id.toString(),
-        authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
-        origin: origin ?? "création de compte",
-      },
-      statusEvent ?? {
-        reason: "création de compte",
-        status: AccessStatus.AWAITING_VALIDATION,
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-      }
-    )
-    return { organization, user, type }
-  } else {
-    throw Boom.internal(`unsupported type ${type}`)
-  }
+}): Promise<IUserWithAccount> => {
+  const user = await createUser2IfNotExist(userFields, is_email_checked, grantedBy ?? "")
+  const org = organization.type === CFA ? organization.cfa : organization.entreprise
+  const orgId = org._id
+  const { type } = organization
+  await modifyPermissionToUser(
+    {
+      user_id: user._id,
+      authorized_id: orgId.toString(),
+      authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
+      origin: userFields.origin ?? "création de compte",
+    },
+    statusEvent ?? {
+      reason: "création de compte",
+      status: AccessStatus.AWAITING_VALIDATION,
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
+    }
+  )
+  return user
 }
 
-export const createOpcoUser = async (userProps: Pick<IUserWithAccount, "email" | "first_name" | "last_name" | "phone">, opco: OPCOS, grantedBy: string) => {
+export const createOpcoUser = async (
+  userProps: IUserWithAccountFields,
+  opco: OPCOS,
+  { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }
+) => {
   const user = await createUser2IfNotExist(
     {
       ...userProps,
       last_action_date: new Date(),
+      origin,
     },
-    false,
+    true,
     grantedBy
   )
   await modifyPermissionToUser(
@@ -190,25 +189,23 @@ export const createOpcoUser = async (userProps: Pick<IUserWithAccount, "email" |
       user_id: user._id,
       authorized_id: opco,
       authorized_type: AccessEntityType.OPCO,
-      origin: "",
+      origin,
     },
     {
       validation_type: VALIDATION_UTILISATEUR.AUTO,
       status: AccessStatus.GRANTED,
-      reason: "",
+      reason,
     }
   )
   return user
 }
 
-export const createAdminUser = async (
-  userProps: Pick<IUserWithAccount, "email" | "first_name" | "last_name" | "phone">,
-  { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }
-) => {
+export const createAdminUser = async (userProps: IUserWithAccountFields, { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }) => {
   const user = await createUser2IfNotExist(
     {
       ...userProps,
       last_action_date: new Date(),
+      origin,
     },
     false,
     grantedBy
@@ -229,37 +226,7 @@ export const createAdminUser = async (
   return user
 }
 
-/**
- * @description création d'un nouveau user recruteur. Le champ status peut être passé ou, s'il n'est pas passé, être sauvé ultérieurement
- */
-export const createUser = async (
-  userProps: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status">,
-  grantedBy: string,
-  statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
-): Promise<IUserWithAccount> => {
-  const { first_name, last_name, email, phone, type, opco } = userProps
-  const userFields = {
-    first_name,
-    last_name,
-    email,
-    phone: phone ?? "",
-  }
-
-  if (type === ENTREPRISE || type === CFA) {
-    const { user } = await createOrganizationUser(userProps, grantedBy, statusEvent)
-    return user
-  } else if (type === ADMIN) {
-    const user = await createAdminUser(userFields, { grantedBy })
-    return user
-  } else if (type === OPCO) {
-    const user = await createOpcoUser(userFields, parseEnumOrError(OPCOS, opco ?? null), grantedBy)
-    return user
-  } else {
-    assertUnreachable(type)
-  }
-}
-
-export const updateUserWithAccountFields = async (userId: ObjectIdType, fields: Partial<IUserWithAccount>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
+export const updateUserWithAccountFields = async (userId: ObjectIdType, fields: Partial<IUserWithAccountFields>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
   const { email, first_name, last_name, phone } = fields
   const newEmail = email?.toLocaleLowerCase()
 
@@ -312,7 +279,7 @@ export const setEntrepriseInError = async (entrepriseId: IEntreprise["_id"], rea
   return setEntrepriseStatus(entrepriseId, reason, EntrepriseStatus.ERROR)
 }
 
-export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reason: string, status: EntrepriseStatus) => {
+const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reason: string, status: EntrepriseStatus) => {
   const entreprise = await Entreprise.findOne({ _id: entrepriseId })
   if (!entreprise) {
     throw Boom.internal(`could not find entreprise with id=${entrepriseId}`)
@@ -335,11 +302,13 @@ export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reas
   )
 }
 
-const setAccessOfUserOnOrganization = async ({ user, organization, type }: UserAndOrganization, status: AccessStatus, origin: string, reason: string) => {
+const setAccessOfUserOnOrganization = async ({ user, organization }: UserAndOrganization, status: AccessStatus, origin: string, reason: string) => {
+  const { type } = organization
+  const orgId = type === CFA ? organization.cfa._id : organization.entreprise._id
   await modifyPermissionToUser(
     {
       user_id: user._id,
-      authorized_id: organization._id.toString(),
+      authorized_id: orgId.toString(),
       authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
       origin,
     },
@@ -394,12 +363,17 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
 
 export const getAdminUsers = async () => {
   const allRoles = await RoleManagement.find({
-    authorized_type: AccessEntityType.ADMIN,
+    authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
   }).lean()
   const grantedRoles = allRoles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
   const userIds = grantedRoles.map((role) => role.user_id.toString())
   const users = await UserWithAccount.find({ _id: { $in: userIds } }).lean()
-  return users
+  return users.map((user) => {
+    return {
+      ...user,
+      type: grantedRoles.find((role) => role.user_id.toString() === user._id.toString())!.authorized_type as typeof AccessEntityType.ADMIN | typeof AccessEntityType.OPCO,
+    }
+  })
 }
 
 export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: { opco?: OPCOS; activeRoleLimit?: number }) => {
@@ -494,5 +468,3 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
 export const getUsersForAdmin = async () => {
   return getUserRecruteursForManagement({ activeRoleLimit: 40 })
 }
-
-export type UserAndOrganization = { user: IUserWithAccount; organization: IEntreprise | ICFA; type: "ENTREPRISE" | "CFA" }

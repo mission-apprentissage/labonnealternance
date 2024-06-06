@@ -30,12 +30,12 @@ export const updateAddressDetailOnRecruitersCollection = async () => {
           errors.includes("Le numéro de siret n'est pas correctement formatté") ||
           errors.includes("Le siret ou siren indiqué n'existe pas, n'est pas connu ou ne comporte aucune information pour cet appel")
         ) {
-          console.log(`Invalid siret DELETED : ${etb.establishment_siret}`)
+          console.warn(`Invalid siret DELETED : ${etb.establishment_siret}`)
           await Recruiter.findByIdAndDelete(etb._id)
           return
         }
       } else {
-        console.log(error.response)
+        console.error(error.response)
       }
     }
   })

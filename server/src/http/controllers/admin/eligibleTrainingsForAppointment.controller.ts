@@ -41,7 +41,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"])],
     },
     async ({ body, params }, res) => {
-      console.log(body)
+      console.info(body)
       if ("is_lieu_formation_email_customized" in body) {
         if (body.is_lieu_formation_email_customized) {
           if ("cle_ministere_educatif" in body && "lieu_formation_email" in body && body.lieu_formation_email && body.cle_ministere_educatif) {
