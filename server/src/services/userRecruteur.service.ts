@@ -21,7 +21,7 @@ import { createAuthMagicLink } from "./appLinks.service"
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { createOrganizationIfNotExist } from "./organization.service"
-import { modifyPermissionToUser } from "./roleManagement.service"
+import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
 
 /**
@@ -38,27 +38,6 @@ const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: 
     validation_type,
     reason,
     status: forcedStatus,
-  }
-}
-
-const getOrganismeFromRole = async (role: IRoleManagement): Promise<IEntreprise | ICFA | null> => {
-  switch (role.authorized_type) {
-    case AccessEntityType.ENTREPRISE: {
-      const entreprise = await Entreprise.findOne({ _id: role.authorized_id }).lean()
-      if (!entreprise) {
-        throw Boom.internal(`could not find entreprise for role ${role._id}`)
-      }
-      return entreprise
-    }
-    case AccessEntityType.CFA: {
-      const cfa = await Cfa.findOne({ _id: role.authorized_id }).lean()
-      if (!cfa) {
-        throw Boom.internal(`could not find cfa for role ${role._id}`)
-      }
-      return cfa
-    }
-    default:
-      return null
   }
 }
 
@@ -147,10 +126,10 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUserWithAccount
   if (!user) return null
   const role = await RoleManagement.findOne({ user_id: user._id.toString() }).lean()
   if (!role) return null
-  const organisme = await getOrganismeFromRole(role)
-  if (!organisme) return null
+  const organization = await getOrganizationFromRole(role)
+  if (!organization) return null
   const formulaire = role.authorized_type === AccessEntityType.ENTREPRISE ? await getFormulaireFromUserIdOrError(user._id.toString()) : null
-  return userAndRoleAndOrganizationToUserRecruteur(user, role, organisme, formulaire)
+  return userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
 }
 
 /**
@@ -395,7 +374,6 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   if (!organization) {
     throw Boom.internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }
-  const { raison_sociale: establishment_raison_sociale } = organization
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
@@ -403,13 +381,13 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
     data: {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
-      establishment_raison_sociale: establishment_raison_sociale,
       last_name: sanitizeForEmail(last_name),
       first_name: sanitizeForEmail(first_name),
-      email: sanitizeForEmail(email),
-      is_delegated: isCfa,
-      url: createAuthMagicLink(userWithAccountToUserForToken(user)),
+      confirmation_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
+      email: sanitizeForEmail(user.email),
+      establishment_name: organization.raison_sociale,
     },
   })
 }
