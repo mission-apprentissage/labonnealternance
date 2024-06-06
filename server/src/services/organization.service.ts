@@ -39,22 +39,19 @@ export const upsertEntrepriseData = async (
 ): Promise<IEntreprise> => {
   let existingEntreprise = await Entreprise.findOne({ siret }).lean()
   if ("error" in siretResponse) {
-    if (existingEntreprise) {
-      if (isInternalError) {
-        await setEntrepriseInError(existingEntreprise._id, siretResponse.message)
-      } else {
-        await deactivateEntreprise(existingEntreprise._id, siretResponse.message)
-      }
-      return Entreprise.findOne({ siret }).lean()
-    } else {
+    if (!existingEntreprise) {
       existingEntreprise = (await Entreprise.create({ siret, origin, status: [] })).toObject()
-      if (isInternalError) {
-        await setEntrepriseInError(existingEntreprise._id, siretResponse.message)
-      } else {
-        await deactivateEntreprise(existingEntreprise._id, siretResponse.message)
-      }
-      return existingEntreprise
     }
+    if (isInternalError) {
+      const statusToUpdate = [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]
+      const lastStatus = getLastStatusEvent(existingEntreprise.status)?.status
+      if (lastStatus && statusToUpdate.includes(lastStatus)) {
+        await setEntrepriseInError(existingEntreprise._id, siretResponse.message)
+      }
+    } else {
+      await deactivateEntreprise(existingEntreprise._id, siretResponse.message)
+    }
+    return Entreprise.findOne({ siret }).lean()
   }
 
   const { address, address_detail, establishment_enseigne, geo_coordinates, establishment_raison_sociale } = siretResponse

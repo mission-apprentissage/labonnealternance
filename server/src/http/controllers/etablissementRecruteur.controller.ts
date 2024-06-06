@@ -85,7 +85,7 @@ export default (server: Server) => {
         }
       }
       const siretResponse = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
-      const entreprise = await upsertEntrepriseData(siret, "création de compte entreprise", siretResponse)
+      const entreprise = await upsertEntrepriseData(siret, "création de compte entreprise", siretResponse, false)
 
       if ("error" in siretResponse) {
         throw Boom.badRequest(siretResponse.message, siretResponse)
