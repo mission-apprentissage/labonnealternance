@@ -98,7 +98,7 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
               <Text fontSize="20px" pt="32px">
                 Les centres de formation suivants proposent des formations en lien avec votre offre et sont localisés à proximité de votre entreprise.
                 <br />
-                Choisissez ceux que vous souhaitez solliciter.
+                Choisissez ceux à qui vous souhaitez partager votre offre.
               </Text>
             </GridItem>
             {etablissements && (
