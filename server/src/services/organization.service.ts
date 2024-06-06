@@ -45,7 +45,7 @@ export const upsertEntrepriseData = async (
     if (isInternalError) {
       const statusToUpdate = [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]
       const lastStatus = getLastStatusEvent(existingEntreprise.status)?.status
-      if (lastStatus && statusToUpdate.includes(lastStatus)) {
+      if (!lastStatus || statusToUpdate.includes(lastStatus)) {
         await setEntrepriseInError(existingEntreprise._id, siretResponse.message)
       }
     } else {
