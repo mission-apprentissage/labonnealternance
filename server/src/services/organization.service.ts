@@ -1,7 +1,6 @@
 import Boom from "boom"
-import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ICFA } from "shared/models/cfa.model"
-import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
+import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils"
@@ -12,7 +11,7 @@ import { asyncForEach } from "@/common/utils/asyncUtils"
 import { CFA, ENTREPRISE } from "./constant.service"
 import { autoValidateUserRoleOnCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { activateEntrepriseRecruiterForTheFirstTime } from "./formulaire.service"
-import { setEntrepriseValid } from "./userRecruteur.service"
+import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "./userRecruteur.service"
 
 export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } | { cfa: ICFA; type: typeof CFA }
 export type UserAndOrganization = { user: IUserWithAccount; organization: Organization }
@@ -32,20 +31,28 @@ export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco
  * @param siretResponse Réponse de la fonction getEntrepriseDataFromSiret
  * @returns renvoie l'entreprise la plus à jour possible.
  */
-export const upsertEntrepriseData = async (siret: string, origin: string, siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>): Promise<IEntreprise> => {
+export const upsertEntrepriseData = async (
+  siret: string,
+  origin: string,
+  siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>,
+  isInternalError: boolean
+): Promise<IEntreprise> => {
   let existingEntreprise = await Entreprise.findOne({ siret }).lean()
   if ("error" in siretResponse) {
     if (existingEntreprise) {
-      return existingEntreprise
-    } else {
-      const entrepriseEvent: IEntrepriseStatusEvent = {
-        date: new Date(),
-        reason: siretResponse.message,
-        status: EntrepriseStatus.ERROR,
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-        granted_by: "",
+      if (isInternalError) {
+        await setEntrepriseInError(existingEntreprise._id, siretResponse.message)
+      } else {
+        await deactivateEntreprise(existingEntreprise._id, siretResponse.message)
       }
-      existingEntreprise = (await Entreprise.create({ siret, origin, status: [entrepriseEvent] })).toObject()
+      return Entreprise.findOne({ siret }).lean()
+    } else {
+      existingEntreprise = (await Entreprise.create({ siret, origin, status: [] })).toObject()
+      if (isInternalError) {
+        await setEntrepriseInError(existingEntreprise._id, siretResponse.message)
+      } else {
+        await deactivateEntreprise(existingEntreprise._id, siretResponse.message)
+      }
       return existingEntreprise
     }
   }

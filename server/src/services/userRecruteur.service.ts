@@ -275,7 +275,11 @@ export const setEntrepriseValid = async (entrepriseId: IEntreprise["_id"]) => {
   return setEntrepriseStatus(entrepriseId, "", EntrepriseStatus.VALIDE)
 }
 
-export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reason: string, status: EntrepriseStatus) => {
+export const setEntrepriseInError = async (entrepriseId: IEntreprise["_id"], reason: string) => {
+  return setEntrepriseStatus(entrepriseId, reason, EntrepriseStatus.ERROR)
+}
+
+const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reason: string, status: EntrepriseStatus) => {
   const entreprise = await Entreprise.findOne({ _id: entrepriseId })
   if (!entreprise) {
     throw Boom.internal(`could not find entreprise with id=${entrepriseId}`)

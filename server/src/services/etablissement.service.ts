@@ -776,19 +776,21 @@ export const entrepriseOnboardingWorkflow = {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
+    let isSiretInternalError = false
     try {
       siretResponse = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
       if ("error" in siretResponse) {
         return siretResponse
       }
     } catch (err: any) {
+      isSiretInternalError = true
       siretResponse = {
         error: true,
         message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}`,
       }
       sentryCaptureException(err)
     }
-    const entreprise = await upsertEntrepriseData(siret, origin, siretResponse)
+    const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     await updateEntrepriseOpco(siret, { opco, idcc })
 
     let validated = false
@@ -868,19 +870,21 @@ export const entrepriseOnboardingWorkflow = {
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
+    let isSiretInternalError = false
     try {
       siretResponse = await getEntrepriseDataFromSiret({ siret, type: CFA })
       if ("error" in siretResponse) {
         return siretResponse
       }
     } catch (err: any) {
+      isSiretInternalError = true
       siretResponse = {
         error: true,
         message: `erreur lors de l'appel de l'api entreprise : ${err?.message ?? err + ""}`,
       }
       sentryCaptureException(err)
     }
-    const entreprise = await upsertEntrepriseData(siret, origin, siretResponse)
+    const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
     if (opco) {
       await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
     }

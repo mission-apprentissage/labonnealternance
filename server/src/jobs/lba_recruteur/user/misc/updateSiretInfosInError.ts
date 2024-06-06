@@ -5,8 +5,9 @@ import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { UserWithAccount, Cfa, Entreprise, Recruiter, RoleManagement } from "@/common/model"
+import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
 import { upsertEntrepriseData } from "@/services/organization.service"
+import { setEntrepriseInError } from "@/services/userRecruteur.service"
 
 import { logger } from "../../../../common/logger"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
@@ -29,13 +30,16 @@ const updateEntreprisesInfosInError = async () => {
         throw Boom.internal("unexpected: no siret for entreprise", { id: entreprise._id })
       }
       const siretResponse = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
-      await upsertEntrepriseData(siret, "script de reprise de données entreprise", siretResponse)
+      await upsertEntrepriseData(siret, "script de reprise de données entreprise", siretResponse, false)
       stats.success++
     } catch (err) {
       const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
       logger.error(err)
       logger.error(`Correction des entreprises en erreur: entreprise id=${_id}, erreur: ${errorMessage}`)
       sentryCaptureException(err)
+      if (getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.ERROR) {
+        await setEntrepriseInError(entreprise._id, errorMessage + "")
+      }
       stats.failure++
     }
   })
@@ -64,7 +68,7 @@ const updateRecruteursSiretInfosInError = async () => {
         await archiveFormulaire(establishment_id)
         stats.deactivated++
       } else {
-        await upsertEntrepriseData(establishment_siret, "script de reprise de données entreprise", siretResponse)
+        await upsertEntrepriseData(establishment_siret, "script de reprise de données entreprise", siretResponse, false)
 
         const entrepriseData: Partial<EntrepriseData> = siretResponse
         const updatedRecruiter = await updateFormulaire(establishment_id, { ...entrepriseData, status: RECRUITER_STATUS.ACTIF })
