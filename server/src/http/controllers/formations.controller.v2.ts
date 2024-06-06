@@ -1,7 +1,8 @@
+import Boom from "boom"
 import { zRoutes } from "shared"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
-import { getFormationQuery, getFormationsParRegionQuery, getFormationsQuery } from "../../services/formation.service"
+import { getFormationsParRegionQuery, getFormationsQuery, getFormationv2 } from "../../services/formation.service"
 import { Server } from "../server"
 
 const config = {
@@ -92,21 +93,26 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       const { caller } = req.query
+      const api_path = "/v2/formations/formation/:id"
       try {
-        const result = await getFormationQuery({ id })
+        const formationOpt = await getFormationv2({ id })
         if (caller) {
           trackApiCall({
             caller,
-            api_path: "formationV1/formation",
+            api_path,
             training_count: 1,
             result_count: 1,
             response: "OK",
           })
         }
-        return res.send(result)
+        if (formationOpt) {
+          return res.send(formationOpt)
+        } else {
+          throw Boom.notFound("formation introuvable")
+        }
       } catch (err) {
         if (caller) {
-          trackApiCall({ caller, api_path: "formationV1/formation", response: "Error" })
+          trackApiCall({ caller, api_path, response: "Error" })
         }
         throw err
       }

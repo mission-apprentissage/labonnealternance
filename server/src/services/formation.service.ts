@@ -1,7 +1,7 @@
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
-import type { IFormationCatalogue } from "shared"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import type { IFormationCatalogue, ILbaItemFormation2 } from "shared"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { FormationCatalogue } from "../common/model/index"
 import { IApiError } from "../common/utils/errorManager"
@@ -416,6 +416,84 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
+const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormation2 => {
+  const geoSource = rawFormation.lieu_formation_geo_coordonnees
+  const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
+  const sessions = setSessions(rawFormation)
+  const duration = getDurationFromSessions(sessions)
+
+  const resultFormation: ILbaItemFormation2 = {
+    type: LBA_ITEM_TYPE.FORMATION,
+
+    contact: {
+      phone: rawFormation.num_tel ?? null,
+    },
+
+    place: {
+      distance: rawFormation.distance ? roundDistance(rawFormation.distance / 1000) : rawFormation.distance === 0 ? 0 : null,
+      fullAddress: getTrainingAddress(rawFormation), // adresse postale reconstruite à partir des éléments d'adresse fournis
+      latitude: latOpt ?? null,
+      longitude: longOpt ?? null,
+      city: rawFormation.localite ?? null,
+      address: `${rawFormation.lieu_formation_adresse}`,
+      cedex: rawFormation.etablissement_formateur_cedex,
+      zipCode: rawFormation.code_postal,
+      departementNumber: rawFormation.num_departement,
+      region: rawFormation.region,
+      insee: rawFormation.code_commune_insee,
+      remoteOnly: rawFormation.entierement_a_distance,
+    },
+
+    company: {
+      name: getSchoolName(rawFormation), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
+      siret: rawFormation.etablissement_formateur_siret,
+      uai: rawFormation.etablissement_formateur_uai,
+      headquarter: {
+        // uniquement pour formation
+        id: rawFormation.etablissement_gestionnaire_id ?? null,
+        uai: rawFormation.etablissement_gestionnaire_uai ?? null,
+        siret: rawFormation.etablissement_gestionnaire_siret ?? null,
+        type: rawFormation.etablissement_gestionnaire_type ?? null,
+        hasConvention: rawFormation.etablissement_gestionnaire_conventionne ?? null,
+        place: {
+          address: `${rawFormation.etablissement_gestionnaire_adresse}${
+            rawFormation.etablissement_gestionnaire_complement_adresse ? ", " + rawFormation.etablissement_gestionnaire_complement_adresse : ""
+          }`,
+          cedex: rawFormation.etablissement_gestionnaire_cedex,
+          zipCode: rawFormation.etablissement_gestionnaire_code_postal,
+          city: rawFormation.etablissement_gestionnaire_localite,
+        },
+        name: rawFormation.etablissement_gestionnaire_entreprise_raison_sociale ?? null,
+      },
+      place: {
+        city: rawFormation.etablissement_formateur_localite,
+      },
+    },
+
+    training: {
+      title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
+      idRco: rawFormation.id_formation ?? null,
+      cleMinistereEducatif: rawFormation.cle_ministere_educatif ?? null,
+      diplomaLevel: rawFormation.niveau ?? null,
+      diploma: rawFormation.diplome ?? null,
+      cfd: rawFormation.cfd ?? null,
+      rncpCode: rawFormation.rncp_code ?? null,
+      rncpLabel: rawFormation.rncp_intitule ?? null,
+      onisepUrl: rawFormation.onisep_url ?? null,
+      romes: rawFormation.rome_codes && rawFormation.rome_codes.length ? rawFormation.rome_codes.map((rome) => ({ code: rome })) : null,
+
+      objectif: rawFormation?.objectif?.trim() ?? null,
+      description: rawFormation?.contenu?.trim() ?? null,
+      sessions,
+      duration,
+    },
+  }
+  return resultFormation
+}
+
+/**
+ * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
+ */
 const transformFormationWithMinimalData = (rawFormation: IFormationCatalogue): ILbaItemFormation => {
   const geoSource = rawFormation.lieu_formation_geo_coordonnees
   const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
@@ -582,9 +660,20 @@ export const getFormationsQuery = async ({
  * Retourne une formation identifiée par son id
  */
 export const getFormationQuery = async ({ id }: { id: string }): Promise<{ results: ILbaItemFormation[] }> => {
-  const formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id })
+  const formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id }).lean()
   const formations = formation ? [transformFormation(formation)] : []
   return { results: formations }
+}
+
+/**
+ * Retourne une formation identifiée par son id
+ */
+export const getFormationv2 = async ({ id }: { id: string }): Promise<ILbaItemFormation2 | null> => {
+  const formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id }).lean()
+  if (!formation) {
+    return null
+  }
+  return transformFormationV2(formation)
 }
 
 /**

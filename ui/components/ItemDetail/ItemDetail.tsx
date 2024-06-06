@@ -11,7 +11,7 @@ import { ApiError } from "@/utils/api.utils"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import fetchTrainingDetails from "../../services/fetchTrainingDetails"
+import { fetchTrainingDetails } from "../../services/fetchTrainingDetails"
 import ErrorMessage from "../ErrorMessage"
 
 import getActualTitle from "./ItemDetailServices/getActualTitle"
@@ -26,7 +26,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
     case LBA_ITEM_TYPE_OLD.FORMATION: {
       const trainingWithDetails = await fetchTrainingDetails(selectedItem)
       const updatedTrainings = trainings.map((v) => {
-        if (v.id === trainingWithDetails.id) {
+        if (v.id === trainingWithDetails.training.cleMinistereEducatif) {
           trainingWithDetails.place.distance = v.place.distance
           return trainingWithDetails
         }

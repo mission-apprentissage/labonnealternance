@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
-import { ZLbaItemFormation, ZLbaItemFormationResult, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob } from "../models/lbaItem.model"
+import { ZLbaItemFormation, ZLbaItemFormationResult, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob, ZLbaItemFormation2 } from "../models/lbaItem.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import {
@@ -133,7 +133,7 @@ export const zFormationsRoutesV2 = {
         })
         .strict(),
       response: {
-        "200": ZLbaItemFormationResult,
+        "200": ZLbaItemFormation2,
         "400": z.union([ZResError, ZLbacError]),
         "404": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZLbacError]),
