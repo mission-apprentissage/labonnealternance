@@ -45,7 +45,7 @@ function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoad
         return (
           <Form>
             <CustomInput required={true} name="siret" label="SIRET de l'établissement" type="text" value={values.siret} />
-            <Flex justify="flex-end" mt={5}>
+            <Flex justify="flex-start">
               <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isLoading} isLoading={isLoading}>
                 Chercher
               </Button>
@@ -74,38 +74,43 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
     }
   }
   return (
-    <Formik
-      validateOnMount
-      initialValues={{ phone: currentCompany.phone, email: currentCompany.email }}
-      validationSchema={Yup.object().shape({
-        email: Yup.string().email("Insérez un email valide"),
-        phone: phoneValidation(),
-      })}
-      onSubmit={submitUpdateForSiret}
-    >
-      {({ values, isValid }) => {
-        return (
-          <Form>
-            {currentCompany.enseigne}
-            <br />
-            {currentCompany.siret}
-            <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-            <CustomInput required={false} name="email" label="Email" type="email" value={values.email} />
-            {error && (
-              <Alert>
-                <AlertIcon />
-                {error}
-              </Alert>
-            )}
-            <Flex justify="flex-end" mt={5}>
-              <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isLoading} isLoading={isLoading}>
-                Modifier
-              </Button>
-            </Flex>
-          </Form>
-        )
-      }}
-    </Formik>
+    <>
+      <Text my={6}>Mise à jour des coordonnées pour l’entreprise :</Text>
+      <Box p={5} pt={6} mb={6} borderColor="bluefrance.500" borderWidth="1px">
+        <Formik
+          validateOnMount
+          initialValues={{ phone: currentCompany.phone, email: currentCompany.email }}
+          validationSchema={Yup.object().shape({
+            email: Yup.string().email("Insérez un email valide"),
+            phone: phoneValidation(),
+          })}
+          onSubmit={submitUpdateForSiret}
+        >
+          {({ values, isValid }) => {
+            return (
+              <Form>
+                {currentCompany.enseigne}
+                <br />
+                {currentCompany.siret}
+                <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
+                <CustomInput required={false} name="email" label="Email" type="email" value={values.email} />
+                {error && (
+                  <Alert>
+                    <AlertIcon />
+                    {error}
+                  </Alert>
+                )}
+                <Flex justify="flex-start">
+                  <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isLoading} isLoading={isLoading}>
+                    Modifier
+                  </Button>
+                </Flex>
+              </Form>
+            )
+          }}
+        </Formik>
+      </Box>
+    </>
   )
 }
 
