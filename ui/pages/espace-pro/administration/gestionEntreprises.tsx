@@ -89,11 +89,14 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
           {({ values, isValid }) => {
             return (
               <Form>
-                {currentCompany.enseigne}
-                <br />
-                {currentCompany.siret}
-                <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                <CustomInput required={false} name="email" label="Email" type="email" value={values.email} />
+                <Text fontWeight={700} mb={2} fontSize="22px">
+                  {currentCompany.enseigne}
+                </Text>
+                <Text mb={2} color="grey.425">
+                  SIRET {currentCompany.siret}
+                </Text>
+                <CustomInput required={false} name="phone" label="Nouvel email de contact" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
+                <CustomInput required={false} name="email" label="Nouveau numéro de téléphone" type="email" value={values.email} />
                 {error && (
                   <Alert>
                     <AlertIcon />
