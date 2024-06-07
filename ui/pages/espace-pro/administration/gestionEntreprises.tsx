@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Spinner, Alert, AlertIcon } from "@chakra-ui/react"
+import { Box, Button, Flex, Spinner, Alert, AlertIcon, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useState } from "react"
 import * as Yup from "yup"
@@ -16,9 +16,7 @@ const pageTitle = "Entreprises de l'algorithme"
 const noCompany: { siret?: string; phone?: string; email?: string; enseigne?: string } = {}
 
 function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoading }) {
-  const [error, setError] = useState("")
-
-  const submitSearchForSiret = async ({ siret }: { siret: string }) => {
+  const submitSearchForSiret = async ({ siret }: { siret: string }, { setFieldError }) => {
     const formattedSiret = siret.replace(/[^0-9]/g, "")
 
     setCurrentCompany(null)
@@ -27,7 +25,7 @@ function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoad
     try {
       setCurrentCompany(await getCompanyContactInfo(formattedSiret))
     } catch (err: any) {
-      setError(err.message)
+      setFieldError("siret", err.message)
       setCurrentCompany(noCompany)
     } finally {
       setIsLoading(false)
@@ -46,13 +44,7 @@ function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoad
       {({ values, isValid }) => {
         return (
           <Form>
-            <CustomInput required={false} name="siret" label="SIRET" type="text" value={values.siret} />
-            {error && (
-              <Alert>
-                <AlertIcon />
-                {error}
-              </Alert>
-            )}
+            <CustomInput required={true} name="siret" label="SIRET de l'établissement" type="text" value={values.siret} />
             <Flex justify="flex-end" mt={5}>
               <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isLoading} isLoading={isLoading}>
                 Chercher
@@ -126,12 +118,18 @@ function GestionEntreprises() {
       <Box pt={5}>
         <Breadcrumb pages={[{ title: "Acceuil", to: "/espace-pro/administration/users" }, { title: pageTitle }]} />
 
-        <FormulaireRechercheEntreprise setCurrentCompany={setCurrentCompany} isLoading={isLoading} setIsLoading={setIsLoading} />
+        <Box mt={6} px={4}>
+          <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">
+            Entreprises de l'algorithme
+          </Text>
 
-        {isLoading && <Spinner />}
-        {!isLoading && currentCompany?.siret && (
-          <FormulaireModificationEntreprise currentCompany={currentCompany} setCurrentCompany={setCurrentCompany} isLoading={isLoading} setIsLoading={setIsLoading} />
-        )}
+          <FormulaireRechercheEntreprise setCurrentCompany={setCurrentCompany} isLoading={isLoading} setIsLoading={setIsLoading} />
+
+          {isLoading && <Spinner />}
+          {!isLoading && currentCompany?.siret && (
+            <FormulaireModificationEntreprise currentCompany={currentCompany} setCurrentCompany={setCurrentCompany} isLoading={isLoading} setIsLoading={setIsLoading} />
+          )}
+        </Box>
       </Box>
     </Layout>
   )
