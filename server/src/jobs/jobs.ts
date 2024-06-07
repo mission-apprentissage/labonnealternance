@@ -27,7 +27,6 @@ import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
-import { exportToFranceTravail } from "./lba_recruteur/formulaire/misc/exportToFranceTravail"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
 import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire/misc/sendDelegationEmailWithSecuredToken"
@@ -43,6 +42,8 @@ import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
+import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
@@ -205,6 +206,10 @@ export const CronsMap = {
     cron_string: "30 3 * * *",
     handler: () => addJob({ name: "garbage-collector:run", payload: {} }),
   },
+  "export des offres LBA sur S3": {
+    cron_string: "30 6 * * 1",
+    handler: () => addJob({ name: "lbajobs:export:s3", payload: {} }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -223,6 +228,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "lbajobs:export:s3":
+        return exportLbaJobsToS3()
       case "sync:etablissement:dates":
         return syncEtablissementDates()
       case "remove:duplicates:etablissements":

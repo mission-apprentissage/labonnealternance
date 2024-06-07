@@ -8,13 +8,13 @@ import { JOB_STATUS } from "shared/models"
 
 import { db } from "@/common/mongodb"
 
-import { sendCsvToFranceTravail } from "../../../../common/apis/FranceTravail"
-import { logger } from "../../../../common/logger"
-import { Cfa } from "../../../../common/model/index"
-import { getDepartmentByZipCode } from "../../../../common/territoires"
-import { asyncForEach } from "../../../../common/utils/asyncUtils"
-import { notifyToSlack } from "../../../../common/utils/slackUtils"
-import dayjs from "../../../../services/dayjs.service"
+import { sendCsvToFranceTravail } from "../../common/apis/FranceTravail"
+import { logger } from "../../common/logger"
+import { Cfa } from "../../common/model/index"
+import { getDepartmentByZipCode } from "../../common/territoires"
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import dayjs from "../../services/dayjs.service"
 
 const regex = /^(.*) (\d{4,5}) (.*)$/
 const formatDate = (date) => dayjs(date).format("DD/MM/YYYY")
