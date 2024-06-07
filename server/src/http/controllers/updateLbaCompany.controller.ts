@@ -32,8 +32,9 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const { siret } = req.params
+      const { phone, email } = req.body
 
-      const companyData = await updateContactInfo({ siret })
+      const companyData = await updateContactInfo({ siret, email, phone })
       return res.status(200).send(companyData)
     }
   )

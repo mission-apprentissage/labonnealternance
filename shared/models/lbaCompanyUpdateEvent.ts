@@ -2,7 +2,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
 
-export enum EEvent {
+export enum ELbaCompanyUpdateEventType {
   DELETE_PHONE = "DELETE_PHONE",
   DELETE_EMAIL = "DELETE_EMAIL",
   UPDATE_PHONE = "UPDATE_PHONE",
@@ -12,7 +12,7 @@ export enum EEvent {
 export const ZLbaCompanyUpdateEvent = z
   .object({
     siret: z.string().describe("Le Siret de la société"),
-    event: z.enum([Object.values(EEvent)[0], ...Object.values(EEvent).slice(1)]).describe("Le type d'événement"),
+    event: z.enum([Object.values(ELbaCompanyUpdateEventType)[0], ...Object.values(ELbaCompanyUpdateEventType).slice(1)]).describe("Le type d'événement"),
     value: z.string().describe("La nouvelle valeur"),
     created_at: z.date().describe("La date création de la demande"),
     _id: zObjectId,
