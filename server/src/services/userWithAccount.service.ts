@@ -93,7 +93,8 @@ export const activateUser = async (user: IUserWithAccount, granted_by: string): 
   return newUser
 }
 
-export const getUserWithAccountByEmail = async (email: string): Promise<IUserWithAccount | null> => UserWithAccount.findOne({ email: email.toLocaleLowerCase() }).lean()
+export const getUserWithAccountByEmail = async (email: string): Promise<IUserWithAccount | null> =>
+  getDbCollection("userswithaccounts").findOne({ email: email.toLocaleLowerCase() })
 
 export const emailHasActiveRole = async (email: string) => {
   const userOpt = await getUserWithAccountByEmail(email)

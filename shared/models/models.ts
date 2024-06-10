@@ -4,6 +4,7 @@ import { IModelDescriptor } from "./common"
 import { IEntreprise } from "./entreprise.model"
 import { IRecruiter } from "./recruiter.model"
 import { IRoleManagement } from "./roleManagement.model"
+import { ISession } from "./session.model"
 import { IUserWithAccount } from "./userWithAccount.model"
 
 export const modelDescriptors: IModelDescriptor[] = [anonymizedApplicationModelDescriptor]
@@ -41,7 +42,7 @@ export type IDocumentMap = {
   referentielopcos: { todo: "add_interface" }
   referentielromes: { todo: "add_interface" }
   rolemanagements: IRoleManagement
-  sessions: { todo: "add_interface" }
+  sessions: ISession
   siretdiffusiblestatuses: { todo: "add_interface" }
   unsubscribedbonnesboites: { todo: "add_interface" }
   unsubscribedofs: { todo: "add_interface" }

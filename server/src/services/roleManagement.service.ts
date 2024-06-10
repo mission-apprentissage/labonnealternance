@@ -6,7 +6,7 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Entreprise, RoleManagement, UserWithAccount } from "@/common/model"
+import { Cfa, Entreprise, RoleManagement } from "@/common/model"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
@@ -53,12 +53,12 @@ export const getGrantedRoles = async (userId: string) => {
 }
 
 // TODO à supprimer lorsque les utilisateurs pourront avoir plusieurs types
-export const getMainRoleManagement = async (userId: string | ObjectId, includeUserAwaitingValidation: boolean = false): Promise<IRoleManagement | null> => {
+export const getMainRoleManagement = async (userId: ObjectId, includeUserAwaitingValidation: boolean = false): Promise<IRoleManagement | null> => {
   const validStatus = [AccessStatus.GRANTED]
   if (includeUserAwaitingValidation) {
     validStatus.push(AccessStatus.AWAITING_VALIDATION)
   }
-  const allRoles = await RoleManagement.find({ user_id: userId }).lean()
+  const allRoles = await getDbCollection("rolemanagements").find({ user_id: userId }).toArray()
   const roles = allRoles.filter((role) => {
     const status = getLastStatusEvent(role.status)?.status
     return status ? validStatus.includes(status) : false
@@ -104,10 +104,11 @@ const roleToStatus = (role: IRoleManagement) => {
 }
 
 export const getPublicUserRecruteurPropsOrError = async (
-  userId: string | ObjectId,
+  userId: ObjectId,
   includeUserAwaitingValidation: boolean = false
 ): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
   const mainRole = await getMainRoleManagement(userId, includeUserAwaitingValidation)
+  console.log({ mainRole })
   if (!mainRole) {
     throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
   }
@@ -137,7 +138,7 @@ export const getPublicUserRecruteurPropsOrError = async (
       throw Boom.internal(`inattendu : entreprise non trouvée pour user id=${userId}`)
     }
     const { siret } = entreprise
-    const user = await UserWithAccount.findOne({ _id: userId }).lean()
+    const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
     if (!user) {
       throw Boom.internal(`inattendu : user non trouvé`, { userId })
     }
