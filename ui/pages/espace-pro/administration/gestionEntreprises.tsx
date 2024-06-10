@@ -1,3 +1,4 @@
+import { CheckIcon } from "@chakra-ui/icons"
 import { Box, Button, Flex, Spinner, Alert, AlertIcon, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useState } from "react"
@@ -57,9 +58,8 @@ function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoad
   )
 }
 
-function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, isLoading, setIsLoading }) {
+function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, isLoading, setIsLoading, isSuccess, setIsSuccess }) {
   const [error, setError] = useState("")
-  const [isSuccess, setIsSuccess] = useState(false)
 
   const submitUpdateForSiret = async ({ phone, email }: { phone: string; email: string }) => {
     setIsSuccess(false)
@@ -80,7 +80,16 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
     <>
       <Text my={6}>Mise à jour des coordonnées pour l’entreprise :</Text>
 
-      {isSuccess && "cadre vert"}
+      {isSuccess && (
+        <Flex borderColor="#18753C" my={4} borderWidth="1px">
+          <Box textAlign="center" mr={3} width="32px" height="32px" backgroundColor="#18753C">
+            <CheckIcon mt={1} padding={1} width="20px" height="20px" sx={{ borderRadius: "10px" }} background="white" color="#18753C" />
+          </Box>
+          <Text mt={1} color="#3A3A3A">
+            Le SIRET {currentCompany.siret} a été mis à jour avec succès.
+          </Text>
+        </Flex>
+      )}
       <Box p={5} pt={6} mb={6} borderColor="bluefrance.500" borderWidth="1px">
         <Formik
           validateOnMount
@@ -100,8 +109,8 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
                 <Text mb={2} color="grey.425">
                   SIRET {currentCompany.siret}
                 </Text>
-                <CustomInput required={false} name="phone" label="Nouvel email de contact" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                <CustomInput required={false} name="email" label="Nouveau numéro de téléphone" type="email" value={values.email} />
+                <CustomInput required={false} name="phone" label="Nouveau numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
+                <CustomInput required={false} name="email" label="Nouvel email de contact" type="email" value={values.email} />
                 {error && (
                   <Alert>
                     <AlertIcon />
@@ -125,6 +134,7 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
 function GestionEntreprises() {
   const [currentCompany, setCurrentCompany] = useState(noCompany)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
 
   return (
     <Layout adminPage={EAdminPages.ENTREPRISES_ALGO} footer={false}>
@@ -140,7 +150,14 @@ function GestionEntreprises() {
 
           {isLoading && <Spinner />}
           {!isLoading && currentCompany?.siret && (
-            <FormulaireModificationEntreprise currentCompany={currentCompany} setCurrentCompany={setCurrentCompany} isLoading={isLoading} setIsLoading={setIsLoading} />
+            <FormulaireModificationEntreprise
+              currentCompany={currentCompany}
+              setCurrentCompany={setCurrentCompany}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+              isSuccess={isSuccess}
+              setIsSuccess={setIsSuccess}
+            />
           )}
         </Box>
       </Box>
