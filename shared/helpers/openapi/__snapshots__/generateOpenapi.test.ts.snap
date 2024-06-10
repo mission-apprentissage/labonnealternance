@@ -5109,7 +5109,7 @@ Limite : 1 appel(s) / 1 seconde(s)
             "schema": {
               "enum": [
                 "offres_emploi_lba",
-                "lba_recruteurs",
+                "recruteurs_lba",
               ],
               "type": "string",
             },
