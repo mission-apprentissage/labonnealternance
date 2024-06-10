@@ -201,10 +201,10 @@ export default (server: Server) => {
 
       const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
 
-      const opcoOrAdminRole = await RoleManagement.findOne({
+      const opcoOrAdminRole = await getDbCollection("rolemanagements").findOne({
         user_id: requestUser._id,
         authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
-      }).lean()
+      })
       if (opcoOrAdminRole && getLastStatusEvent(opcoOrAdminRole.status)?.status === AccessStatus.GRANTED) {
         const userIds = userRecruteur.status.flatMap(({ user }) => (user ? [user] : []))
         const users = await getUsersFromIds(userIds)
