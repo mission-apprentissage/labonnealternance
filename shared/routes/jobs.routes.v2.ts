@@ -372,6 +372,31 @@ export const zJobsRoutesV2 = {
         description: `Get one lba job identified by it's id\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
+    "/jobs/export": {
+      method: "get",
+      path: "/jobs/export",
+      querystring: z
+        .object({
+          source: z.enum(["offres_emploi_lba", "lba_recruteurs"]),
+        })
+        .strict(),
+      response: {
+        "200": z.string(),
+      },
+      securityScheme: {
+        auth: "api-key",
+        access: null,
+        resources: {},
+      },
+      openapi: {
+        tags: ["V2 - Jobs"] as string[],
+        operationId: "getLbaJobExportFile",
+        description: `Get a S3 link of the full JSON export of lba recruters and lba job offers. The link generated is valid for 2 minutes.\n${rateLimitDescription({
+          max: 1,
+          timeWindow: "1s",
+        })}`,
+      },
+    },
   },
   post: {
     "/jobs/establishment": {

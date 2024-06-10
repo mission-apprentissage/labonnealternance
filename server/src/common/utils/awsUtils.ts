@@ -20,7 +20,7 @@ export const getFileFromS3Bucket = ({ key }: { key: string }): stream.Readable =
   return repository.getObject({ Bucket: bucket, Key: key }).createReadStream()
 }
 
-export const getFileSignedURL = async ({ key, expire = 90 }: { key: string; expire?: number }): Promise<string> => {
+export const getFileSignedURL = async ({ key, expire = 120 }: { key: string; expire?: number }): Promise<string> => {
   return await repository.getSignedUrl("getObject", { Bucket: bucket, Key: key, Expires: expire })
 }
 
