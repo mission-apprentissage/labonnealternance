@@ -46,12 +46,10 @@ const NavigationAdmin = ({ currentPage }) => {
   const handleTabsChange = (index) => {
     switch (index) {
       case 0: {
-        console.log("GO RECRUT")
         router.push("/espace-pro/administration/users")
         break
       }
       case 1: {
-        console.log("GO ALGO")
         router.push("/espace-pro/administration/gestionEntreprises")
         break
       }
