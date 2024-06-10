@@ -1,6 +1,6 @@
 import Boom from "boom"
-import pkg from "mongodb"
 import type { ObjectId as ObjectIdType } from "mongodb"
+import pkg from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -17,7 +17,7 @@ import config from "../config"
 
 import { getUser2ManagingOffer } from "./application.service"
 import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.service"
-import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
+import { getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
@@ -224,40 +224,40 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       shouldSentMailToCfa = true
     }
   }
-  const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } }, { _id: 1 })
   const delegations: IDelegation[] = []
-  const promises = etablissements.map(async (etablissement) => {
-    const formations = await getCatalogueFormations(
-      {
-        $or: [
-          {
-            etablissement_gestionnaire_id: etablissement._id,
-          },
-          {
-            etablissement_formateur_id: etablissement._id,
-          },
-        ],
-        etablissement_gestionnaire_courriel: { $nin: [null, ""] },
-        catalogue_published: true,
-      },
-      { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1 }
-    )
 
-    const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formations[0] ?? {}
+  const formations = await getCatalogueFormations(
+    {
+      $or: [
+        {
+          etablissement_gestionnaire_id: { $in: etablissementCatalogueIds },
+        },
+        {
+          etablissement_formateur_id: { $in: etablissementCatalogueIds },
+        },
+      ],
+      etablissement_gestionnaire_courriel: { $nin: [null, ""] },
+      catalogue_published: true,
+    },
+    { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1, etablissement_gestionnaire_id: 1, etablissement_formateur_id: 1 }
+  )
 
-    if (!email || !siret_code) {
-      // This shouldn't happen considering the query filter
-      throw Boom.internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
-    }
+  await Promise.all(
+    etablissementCatalogueIds.map(async (etablissementId) => {
+      const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
+      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formation ?? {}
+      if (!email || !siret_code) {
+        // This shouldn't happen considering the query filter
+        throw Boom.internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
+      }
 
-    delegations.push({ siret_code, email })
+      delegations.push({ siret_code, email })
 
-    if (shouldSentMailToCfa) {
-      await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
-    }
-  })
-
-  await Promise.all(promises)
+      if (shouldSentMailToCfa) {
+        await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
+      }
+    })
+  )
 
   offre.delegations = offre.delegations?.concat(delegations) ?? delegations
   offre.job_delegation_count = offre.delegations.length
@@ -397,8 +397,6 @@ export async function getOffre(id: string | ObjectIdType) {
 }
 
 export async function getOffreWithRomeDetail(id: string | ObjectIdType) {
-  console.log("id", id)
-
   const recruiter: IRecruiter[] = await Recruiter.aggregate([
     {
       $match: { "jobs._id": new ObjectId(id) },

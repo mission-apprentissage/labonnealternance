@@ -4,6 +4,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZPointGeometry, ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
+import { ZEntreprise } from "../models/entreprise.model"
 import { ZCfaReferentielData, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 import { ZUserWithAccount } from "../models/userWithAccount.model"
 
@@ -73,10 +74,11 @@ export const zRecruiterRoutes = {
       querystring: z
         .object({
           cfa_delegated_siret: z.string().optional(),
+          skipUpdate: z.string().optional(),
         })
         .strict(),
       response: {
-        "200": ZEntrepriseInformations,
+        "200": ZEntreprise,
       },
       securityScheme: null,
     },
@@ -94,6 +96,15 @@ export const zRecruiterRoutes = {
       },
       securityScheme: null,
     },
+    "/etablissement/cfa/:siret/validate-creation": {
+      method: "get",
+      path: "/etablissement/cfa/:siret/validate-creation",
+      params: z.object({ siret: extensions.siret }).strict(),
+      response: {
+        "200": ZCfaReferentielData,
+      },
+      securityScheme: null,
+    },
     "/etablissement/cfa/:siret": {
       method: "get",
       path: "/etablissement/cfa/:siret",
@@ -101,7 +112,7 @@ export const zRecruiterRoutes = {
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "2xx": ZCfaReferentielData,
+        "200": ZCfaReferentielData,
       },
       securityScheme: null,
     },
@@ -148,9 +159,6 @@ export const zRecruiterRoutes = {
             idcc: z.string().optional(),
           })
           .strict()
-          .extend({
-            cfa_delegated_siret: ZRecruiter.shape.cfa_delegated_siret,
-          })
           .extend(
             ZUserRecruteurWritable.pick({
               last_name: true,
