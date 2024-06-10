@@ -1,5 +1,5 @@
 import Boom from "boom"
-import type { ObjectId } from "mongodb"
+import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS } from "shared/constants/recruteur"
 import { ComputedUserAccess, IUserRecruteurPublic } from "shared/models"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
@@ -8,35 +8,42 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { Cfa, Entreprise, RoleManagement, UserWithAccount } from "@/common/model"
 
+import { getDbCollection } from "../common/utils/mongodbUtils"
+
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
   eventProps: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 ): Promise<IRoleManagement> => {
+  const now = new Date()
   const event: IRoleManagementEvent = {
     ...eventProps,
-    date: new Date(),
+    date: now,
   }
   const { authorized_id, authorized_type, user_id } = props
-  const role = await RoleManagement.findOne({ authorized_id, authorized_type, user_id }).lean()
+  const role = await getDbCollection("rolemanagements").findOne({ authorized_id, authorized_type, user_id })
+
   if (role) {
     const lastEvent = getLastStatusEvent(role.status)
     if (lastEvent?.status === eventProps.status) {
       return role
     }
-    const newRole = await RoleManagement.findOneAndUpdate({ _id: role._id }, { $push: { status: event } }, { new: true }).lean()
+    const newRole = await getDbCollection("rolemanagements").findOneAndUpdate({ _id: role._id }, { $push: { status: event } }, { returnDocument: "after" })
     if (!newRole) {
       throw Boom.internal("inattendu")
     }
     return newRole
   } else {
-    const newRole: Omit<IRoleManagement, "_id" | "updatedAt" | "createdAt"> = {
+    const newRole: IRoleManagement = {
       ...props,
+      _id: new ObjectId(),
       status: [event],
+      updatedAt: now,
+      createdAt: now,
     }
-    const role = (await RoleManagement.create(newRole)).toObject()
-    return role
+    await getDbCollection("rolemanagements").insertOne(newRole)
+    return newRole
   }
 }
 

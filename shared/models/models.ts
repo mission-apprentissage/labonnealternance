@@ -1,6 +1,9 @@
 import anonymizedApplicationModelDescriptor, { IAnonymizedApplication } from "./anonymizedApplications.model"
+import { ICFA } from "./cfa.model"
 import { IModelDescriptor } from "./common"
+import { IEntreprise } from "./entreprise.model"
 import { IRecruiter } from "./recruiter.model"
+import { IRoleManagement } from "./roleManagement.model"
 import { IUserWithAccount } from "./userWithAccount.model"
 
 export const modelDescriptors: IModelDescriptor[] = [anonymizedApplicationModelDescriptor]
@@ -17,7 +20,7 @@ export type IDocumentMap = {
   applications: { todo: "add_interface" }
   bonnesboites: { todo: "add_interface" }
   bonnesboiteslegacies: { todo: "add_interface" }
-  cfas: { todo: "add_interface" }
+  cfas: ICFA
   changelog: { todo: "add_interface" }
   credentials: { todo: "add_interface" }
   customemailetfas: { todo: "add_interface" }
@@ -26,7 +29,7 @@ export type IDocumentMap = {
   eligible_trainings_for_appointments: { todo: "add_interface" }
   eligible_trainings_for_appointments_histories: { todo: "add_interface" }
   emailblacklists: { todo: "add_interface" }
-  entreprises: { todo: "add_interface" }
+  entreprises: IEntreprise
   etablissements: { todo: "add_interface" }
   formationcatalogues: { todo: "add_interface" }
   geolocations: { todo: "add_interface" }
@@ -37,7 +40,7 @@ export type IDocumentMap = {
   referentieloniseps: { todo: "add_interface" }
   referentielopcos: { todo: "add_interface" }
   referentielromes: { todo: "add_interface" }
-  rolemanagements: { todo: "add_interface" }
+  rolemanagements: IRoleManagement
   sessions: { todo: "add_interface" }
   siretdiffusiblestatuses: { todo: "add_interface" }
   unsubscribedbonnesboites: { todo: "add_interface" }

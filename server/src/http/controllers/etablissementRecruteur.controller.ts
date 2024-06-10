@@ -281,7 +281,7 @@ export default (server: Server) => {
         throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
-        await validateUserWithAccountEmail(user._id.toString())
+        await validateUserWithAccountEmail(user._id)
       }
       const mainRole = await getMainRoleManagement(user._id, true)
       if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {

@@ -13,6 +13,7 @@ import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail }
 
 import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import config from "../../config"
 import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
 import {
@@ -281,10 +282,10 @@ export default (server: Server) => {
       const { userId, organizationId } = req.params
       const requestUser = getUserFromRequest(req, zRoutes.put["/user/:userId/organization/:organizationId/permission"]).value
       if (!requestUser) throw Boom.badRequest()
-      const user = await UserWithAccount.findOne({ _id: userId }).lean()
+      const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
       if (!user) throw Boom.badRequest()
 
-      const roles = await RoleManagement.find({ user_id: userId }).lean()
+      const roles = await getDbCollection("rolemanagements").find({ user_id: userId }).toArray()
       if (roles.length !== 1) {
         throw Boom.internal(`inattendu : attendu 1 role, ${roles.length} roles trouvés pour user id=${userId}`)
       }
@@ -366,7 +367,7 @@ export default (server: Server) => {
       }
 
       // validate user email addresse
-      await validateUserWithAccountEmail(user._id.toString())
+      await validateUserWithAccountEmail(user._id)
       await sendWelcomeEmailToUserRecruteur(user)
       return res.status(200).send({})
     }

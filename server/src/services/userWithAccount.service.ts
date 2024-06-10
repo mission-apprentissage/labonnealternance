@@ -1,11 +1,13 @@
 import Boom from "boom"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount, IUserStatusEvent, UserEventType } from "shared/models/userWithAccount.model"
+import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils"
 
 import { RoleManagement, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
+
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
 export const createUser2IfNotExist = async (
   userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,
@@ -51,8 +53,8 @@ export const createUser2IfNotExist = async (
   return user
 }
 
-export const validateUserWithAccountEmail = async (id: string): Promise<IUserWithAccount> => {
-  const userOpt = await UserWithAccount.findOne({ _id: id }).lean()
+export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]): Promise<IUserWithAccount> => {
+  const userOpt = await getDbCollection("userswithaccounts").findOne({ _id: id })
   if (!userOpt) {
     throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
   }
@@ -63,10 +65,10 @@ export const validateUserWithAccountEmail = async (id: string): Promise<IUserWit
     date: new Date(),
     status: UserEventType.VALIDATION_EMAIL,
     validation_type: VALIDATION_UTILISATEUR.MANUAL,
-    granted_by: id,
+    granted_by: id.toString(),
     reason: "validation de l'email par l'utilisateur",
   }
-  const newUser = await UserWithAccount.findOneAndUpdate({ _id: id }, { $push: { status: event } }, { new: true }).lean()
+  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: id }, { $push: { status: event } }, { returnDocument: "after" })
   if (!newUser) {
     throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
   }
@@ -84,7 +86,7 @@ export const activateUser = async (user: IUserWithAccount, granted_by: string): 
     granted_by,
     reason: "",
   }
-  const newUser = await UserWithAccount.findOneAndUpdate({ _id: user._id }, { $push: { status: event } }, { new: true }).lean()
+  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: user._id }, { $push: { status: event } }, { returnDocument: "after" })
   if (!newUser) {
     throw Boom.internal(`utilisateur avec id=${user._id} non trouvé`)
   }

@@ -357,12 +357,11 @@ export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Pro
  * @returns {Promise<boolean>}
  */
 export const reactivateRecruiter = async (id: IRecruiter["_id"]): Promise<boolean> => {
-  const recruiter = await Recruiter.findOne({ _id: id })
+  const recruiter = await getDbCollection("recruiters").findOne({ _id: id })
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }
-  recruiter.status = RECRUITER_STATUS.ACTIF
-  await recruiter.save()
+  await getDbCollection("recruiters").updateOne({ _id: id }, { $set: { status: RECRUITER_STATUS.ACTIF } })
   return true
 }
 
@@ -557,16 +556,17 @@ export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
 }
 
 const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
-  const recruiter = await Recruiter.findOneAndUpdate(
+  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
-        "jobs.$.job_status": JOB_STATUS.ACTIVE,
+        "jobs.$[x].job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
+        "jobs.$[x].job_status": JOB_STATUS.ACTIVE,
       },
     },
-    { new: true }
-  ).lean()
+    { arrayFilters: [{ "x._id": id }], returnDocument: "after" }
+  )
+  console.log({ recruiter })
   if (!recruiter) {
     throw Boom.notFound(`job with id=${id} not found`)
   }
@@ -583,8 +583,10 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
  */
 export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecruiter: IRecruiter) => {
   const firstJob = entrepriseRecruiter.jobs.at(0)
+  console.log({ firstJob })
   if (firstJob) {
     const job = await activateAndExtendOffre(firstJob._id)
+    console.log({ job })
     // Send delegation if any
     if (job.delegations?.length) {
       await Promise.all(
@@ -698,6 +700,7 @@ export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob 
 }
 
 export const getFormulaireFromUserId = async (userId: string) => {
+  return getDbCollection("recruiters").findOne({ managed_by: userId })
   return Recruiter.findOne({ managed_by: userId }).lean()
 }
 

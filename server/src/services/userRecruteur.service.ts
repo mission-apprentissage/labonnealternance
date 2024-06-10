@@ -388,7 +388,7 @@ export const deactivateEntreprise = async (entrepriseId: IEntreprise["_id"], rea
 
 export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) => {
   const { email, first_name, last_name } = user
-  const role = await RoleManagement.findOne({ user_id: user._id, authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] } }).lean()
+  const role = await getDbCollection("rolemanagements").findOne({ user_id: user._id, authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] } })
   if (!role) {
     throw Boom.internal(`inattendu : pas de role pour user id=${user._id}`)
   }
