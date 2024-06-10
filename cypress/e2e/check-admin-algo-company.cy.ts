@@ -14,5 +14,9 @@ describe("Test connexion admin", () => {
     FlowAdminPage.adminAuth.clickLinkInEmail()
 
     cy.url().should("contain", "/espace-pro/administration/users")
+
+    FlowAdminPage.navigation.goToAlgoCompanyManagement()
+    FlowAdminPage.editAlgoCompany.findCompany()
+    FlowAdminPage.editAlgoCompany.updateCompany()
   })
 })

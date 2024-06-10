@@ -49,7 +49,15 @@ function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoad
           <Form>
             <CustomInput required={true} name="siret" label="SIRET de l'établissement" type="text" value={values.siret} />
             <Flex justify="flex-start">
-              <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isLoading} isLoading={isLoading}>
+              <Button
+                type="submit"
+                variant="form"
+                data-testid="search_for_algo_company"
+                leftIcon={<SearchLine width={5} />}
+                isActive={isValid}
+                isDisabled={!isValid || isLoading}
+                isLoading={isLoading}
+              >
                 Chercher
               </Button>
             </Flex>
@@ -60,7 +68,7 @@ function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoad
   )
 }
 
-function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, isLoading, setIsLoading, isSuccess, setIsSuccess }) {
+function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, isLoading, setIsLoading, setIsSuccess }) {
   const [error, setError] = useState("")
 
   const submitUpdateForSiret = async ({ phone, email }: { phone: string; email: string }) => {
@@ -82,16 +90,6 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
     <>
       <Text my={6}>Mise à jour des coordonnées pour l’entreprise :</Text>
 
-      {isSuccess && (
-        <Flex borderColor="#18753C" my={4} borderWidth="1px">
-          <Box textAlign="center" mr={3} width="32px" height="32px" backgroundColor="#18753C">
-            <CheckIcon mt={1} padding={1} width="20px" height="20px" sx={{ borderRadius: "10px" }} background="white" color="#18753C" />
-          </Box>
-          <Text mt={1} color="#3A3A3A">
-            Le SIRET {currentCompany.siret} a été mis à jour avec succès.
-          </Text>
-        </Flex>
-      )}
       <Box p={5} pt={6} mb={6} borderColor="bluefrance.500" borderWidth="1px">
         <Formik
           validateOnMount
@@ -120,7 +118,15 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
                   </Alert>
                 )}
                 <Flex justify="flex-start">
-                  <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isLoading} isLoading={isLoading}>
+                  <Button
+                    type="submit"
+                    data-testid="update_algo_company"
+                    variant="form"
+                    leftIcon={<SearchLine width={5} />}
+                    isActive={isValid}
+                    isDisabled={!isValid || isLoading}
+                    isLoading={isLoading}
+                  >
                     Modifier
                   </Button>
                 </Flex>
@@ -148,6 +154,17 @@ function GestionEntreprises() {
             Entreprises de l'algorithme
           </Text>
 
+          {isSuccess && (
+            <Flex borderColor="#18753C" my={4} borderWidth="1px">
+              <Box textAlign="center" mr={3} width="32px" height="32px" backgroundColor="#18753C">
+                <CheckIcon mt={1} padding={1} width="20px" height="20px" sx={{ borderRadius: "10px" }} background="white" color="#18753C" />
+              </Box>
+              <Text mt={1} data-testid="algo_company_updated_ok" color="#3A3A3A">
+                Le SIRET {currentCompany.siret} a été mis à jour avec succès.
+              </Text>
+            </Flex>
+          )}
+
           <FormulaireRechercheEntreprise setCurrentCompany={setCurrentCompany} isLoading={isLoading} setIsLoading={setIsLoading} setIsSuccess={setIsSuccess} />
 
           {isLoading && <Spinner size="lg" my={5} />}
@@ -157,7 +174,6 @@ function GestionEntreprises() {
               setCurrentCompany={setCurrentCompany}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
-              isSuccess={isSuccess}
               setIsSuccess={setIsSuccess}
             />
           )}

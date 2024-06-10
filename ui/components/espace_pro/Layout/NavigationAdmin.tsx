@@ -69,10 +69,10 @@ const NavigationAdmin = ({ currentPage }) => {
       <Container as="header" maxW="container.xl" flexGrow="1">
         <Tabs variant="unstyled" index={selectedIndex} onChange={handleTabsChange}>
           <TabList px={0}>
-            <Tab {...tabParams} isDisabled={selectedIndex === 0} _focus={focusedTabParams} _selected={selectedTabParams}>
+            <Tab data-testid="recruiter_management_tab" {...tabParams} isDisabled={selectedIndex === 0} _focus={focusedTabParams} _selected={selectedTabParams}>
               Gestion des recruteurs
             </Tab>
-            <Tab {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
+            <Tab data-testid="algo_company_tab" {...tabParams} isDisabled={selectedIndex === 1} _focus={focusedTabParams} _selected={selectedTabParams}>
               Entreprises de l'algorithme
             </Tab>
           </TabList>

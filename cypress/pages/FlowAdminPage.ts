@@ -2,6 +2,7 @@ import { smtpClient } from "../api/smtpClient"
 import { containsText } from "../utils/containText"
 
 const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
+const ALGO_COMPANY_SIRET = "10200000700876"
 
 export const FlowAdminPage = {
   adminAuth: {
@@ -36,6 +37,29 @@ export const FlowAdminPage = {
         const authLink = smtpClient.findUrlInBrackets(`${Cypress.env("ui")}/espace-pro/authentification/verification?token=*`, emailContent)
         cy.visit(authLink)
       })
+    },
+  },
+  navigation: {
+    goToAlgoCompanyManagement() {
+      cy.get("[data-testid='algo_company_tab']").click()
+      cy.contains("SIRET de l'établissement", { timeout: 10000 }).should("exist")
+      cy.url().should("contain", "/espace-pro/administration/gestionEntreprises")
+    },
+  },
+  editAlgoCompany: {
+    findCompany() {
+      cy.get("input[name='siret']").click()
+      cy.get("input[name='siret']").clear()
+      cy.get("input[name='siret']").type(ALGO_COMPANY_SIRET)
+      cy.get("[data-testid='search_for_algo_company']").click()
+      cy.contains(`SIRET ${ALGO_COMPANY_SIRET}`, { timeout: 10000 }).should("exist")
+      cy.contains("Mise à jour des coordonnées pour l’entreprise", { timeout: 10000 }).should("exist")
+    },
+    updateCompany() {
+      cy.get("input[name='email']").click()
+      cy.get("input[name='email']").clear()
+      cy.get("[data-testid='update_algo_company']").click()
+      cy.get("[data-testid='algo_company_updated_ok']")
     },
   },
 }
