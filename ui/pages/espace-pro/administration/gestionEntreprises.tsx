@@ -16,10 +16,12 @@ import { SearchLine } from "../../../theme/components/icons"
 const pageTitle = "Entreprises de l'algorithme"
 const noCompany: { siret?: string; phone?: string; email?: string; enseigne?: string } = {}
 
-function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoading }) {
+function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoading, setIsSuccess }) {
   const submitSearchForSiret = async ({ siret }: { siret: string }, { setFieldError }) => {
     const formattedSiret = siret.replace(/[^0-9]/g, "")
 
+    // reset des states
+    setIsSuccess(false)
     setCurrentCompany(null)
     setIsLoading(true)
 
@@ -137,7 +139,7 @@ function GestionEntreprises() {
   const [isSuccess, setIsSuccess] = useState(false)
 
   return (
-    <Layout adminPage={EAdminPages.ENTREPRISES_ALGO} footer={false}>
+    <Layout displayNavigationMenu={false} adminPage={EAdminPages.ENTREPRISES_ALGO} footer={false}>
       <Box pt={5}>
         <Breadcrumb pages={[{ title: "Acceuil", to: "/espace-pro/administration/users" }, { title: pageTitle }]} />
 
@@ -146,9 +148,9 @@ function GestionEntreprises() {
             Entreprises de l'algorithme
           </Text>
 
-          <FormulaireRechercheEntreprise setCurrentCompany={setCurrentCompany} isLoading={isLoading} setIsLoading={setIsLoading} />
+          <FormulaireRechercheEntreprise setCurrentCompany={setCurrentCompany} isLoading={isLoading} setIsLoading={setIsLoading} setIsSuccess={setIsSuccess} />
 
-          {isLoading && <Spinner />}
+          {isLoading && <Spinner size="lg" my={5} />}
           {!isLoading && currentCompany?.siret && (
             <FormulaireModificationEntreprise
               currentCompany={currentCompany}

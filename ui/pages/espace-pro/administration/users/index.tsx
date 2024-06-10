@@ -262,7 +262,7 @@ function Users() {
 
 function UsersPage() {
   return (
-    <Layout adminPage={EAdminPages.GESTION_RECRUTEURS} footer={false}>
+    <Layout displayNavigationMenu={false} adminPage={EAdminPages.GESTION_RECRUTEURS} footer={false}>
       <Users />
     </Layout>
   )
