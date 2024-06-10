@@ -421,7 +421,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
         db.collection("lbacompanyupdateevents").insertOne(update)
       }),
     ])
-    return { enseigne: lbaCompany.enseigne, phone, email, siret: lbaCompany.siret }
+    return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }
   } catch (err) {
     sentryCaptureException(err)
     throw err
