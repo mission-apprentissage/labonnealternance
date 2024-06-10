@@ -208,7 +208,7 @@ export const CronsMap = {
   },
   "export des offres LBA sur S3": {
     cron_string: "30 6 * * 1",
-    handler: () => addJob({ name: "lbajobs:export:s3", payload: {} }),
+    handler: () => addJob({ name: "lbajobs:export:s3", payload: {}, productionOnly: true }),
   },
 } satisfies Record<string, Omit<CronDef, "name">>
 
