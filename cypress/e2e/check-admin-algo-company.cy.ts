@@ -2,6 +2,8 @@ import { FlowAdminPage } from "../pages/FlowAdminPage"
 
 describe("Test connexion admin", () => {
   it('Vérifie le fonctionnement de la connexion admin"', () => {
+    FlowAdminPage.adminAuth.ifNoAuthNoAccess()
+
     FlowAdminPage.adminAuth.goTo()
     FlowAdminPage.adminAuth.fillFakeEmail()
     FlowAdminPage.adminAuth.submit()

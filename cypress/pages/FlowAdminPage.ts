@@ -38,6 +38,11 @@ export const FlowAdminPage = {
         cy.visit(authLink)
       })
     },
+    ifNoAuthNoAccess() {
+      cy.visit(`${Cypress.env("ui")}/espace-pro/administration/gestionEntreprises`)
+      cy.contains("Vous avez déjà un compte ?", { timeout: 10000 }).should("exist")
+      cy.url().should("contain", "/espace-pro/authentification")
+    },
   },
   navigation: {
     goToAlgoCompanyManagement() {
