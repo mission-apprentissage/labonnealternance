@@ -1,5 +1,4 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -45,9 +44,6 @@ export const zCoreRoutes = {
           .strict(),
       },
       securityScheme: null,
-      openapi: {
-        description: `${rateLimitDescription({ max: 3, timeWindow: "1s" })}`,
-      },
     },
   },
 } as const satisfies IRoutesDef
