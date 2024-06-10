@@ -25,7 +25,7 @@ export const manageApiError = ({ error, api_path, caller, errorTitle }: { error:
     errorObj.status = status
   }
 
-  console.log(`error ${errorTitle}`, errorObj)
+  console.error(`error ${errorTitle}`, errorObj)
 
   return errorObj
 }

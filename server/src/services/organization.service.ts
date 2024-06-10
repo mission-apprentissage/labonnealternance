@@ -1,53 +1,99 @@
 import Boom from "boom"
-import { IUserRecruteur } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
-import { IEntreprise } from "shared/models/entreprise.model"
+import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import { getLastStatusEvent } from "shared/utils"
 
-import { Cfa, Entreprise } from "@/common/model"
+import { Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 
 import { CFA, ENTREPRISE } from "./constant.service"
+import { autoValidateUserRoleOnCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "./etablissement.service"
+import { activateEntrepriseRecruiterForTheFirstTime } from "./formulaire.service"
+import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "./userRecruteur.service"
 
-export const createOrganizationIfNotExist = async (organization: Omit<IUserRecruteur, "_id" | "createdAt" | "updatedAt" | "status">): Promise<IEntreprise | ICFA> => {
-  const { address, address_detail, establishment_enseigne, establishment_raison_sociale, establishment_siret, geo_coordinates, idcc, opco, origin, type } = organization
+export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } | { cfa: ICFA; type: typeof CFA }
+export type UserAndOrganization = { user: IUserWithAccount; organization: Organization }
 
-  if (!establishment_siret) {
-    throw Boom.internal("siret is missing")
+export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco: string; idcc?: string }) => {
+  const entreprise = await Entreprise.findOne({ siret }).lean()
+  if (!entreprise) {
+    throw new Error("inattendu: aucune entreprise trouvée. Merci d'appeler cette méthode une fois l'entreprise créée")
   }
-  if (type === ENTREPRISE || type === CFA) {
-    let entreprise = await Entreprise.findOne({ siret: establishment_siret }).lean()
-    if (!entreprise) {
-      const entrepriseFields: Omit<IEntreprise, "_id" | "createdAt" | "updatedAt"> = {
-        siret: establishment_siret,
-        address,
-        address_detail,
-        enseigne: establishment_enseigne,
-        raison_sociale: establishment_raison_sociale,
-        origin,
-        opco,
-        idcc,
-        geo_coordinates,
-        status: [],
-      }
-      entreprise = (await Entreprise.create(entrepriseFields)).toObject()
+  await Entreprise.findOneAndUpdate({ siret }, { opco, idcc }).lean()
+}
+
+/**
+ * Mets à jour l'entreprise si besoin et si possible, et renvoie l'entreprise la plus à jour possible.
+ * @param siret
+ * @param origin
+ * @param siretResponse Réponse de la fonction getEntrepriseDataFromSiret
+ * @returns renvoie l'entreprise la plus à jour possible.
+ */
+export const upsertEntrepriseData = async (
+  siret: string,
+  origin: string,
+  siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>,
+  isInternalError: boolean
+): Promise<IEntreprise> => {
+  let existingEntreprise = await Entreprise.findOne({ siret }).lean()
+  if ("error" in siretResponse) {
+    if (!existingEntreprise) {
+      existingEntreprise = (await Entreprise.create({ siret, origin, status: [] })).toObject()
     }
-    if (type === CFA) {
-      let cfa = await Cfa.findOne({ siret: establishment_siret }).lean()
-      if (!cfa) {
-        const cfaFields: Omit<ICFA, "_id" | "createdAt" | "updatedAt"> = {
-          siret: establishment_siret,
-          address,
-          address_detail,
-          enseigne: establishment_enseigne,
-          raison_sociale: establishment_raison_sociale,
-          origin,
-          geo_coordinates,
-        }
-        cfa = (await Cfa.create(cfaFields)).toObject()
+    if (isInternalError) {
+      const statusToUpdate = [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]
+      const lastStatus = getLastStatusEvent(existingEntreprise.status)?.status
+      if (!lastStatus || statusToUpdate.includes(lastStatus)) {
+        await setEntrepriseInError(existingEntreprise._id, siretResponse.message)
       }
-      return cfa
+    } else {
+      await deactivateEntreprise(existingEntreprise._id, siretResponse.message)
     }
-    return entreprise
+    return Entreprise.findOne({ siret }).lean()
+  }
+
+  const { address, address_detail, establishment_enseigne, geo_coordinates, establishment_raison_sociale } = siretResponse
+
+  const entrepriseFields: Omit<IEntreprise, "_id" | "createdAt" | "updatedAt" | "status" | "origin" | "siret" | "opco" | "idcc"> = {
+    address,
+    address_detail,
+    enseigne: establishment_enseigne,
+    geo_coordinates,
+    raison_sociale: establishment_raison_sociale,
+  }
+  let savedEntreprise: IEntreprise
+  if (existingEntreprise) {
+    savedEntreprise = await Entreprise.findOneAndUpdate({ siret }, { $set: entrepriseFields }, { new: true }).lean()
   } else {
-    throw Boom.internal(`type unsupported: ${type}`)
+    savedEntreprise = (await Entreprise.create({ ...entrepriseFields, siret, origin })).toObject()
   }
+  await setEntrepriseValid(savedEntreprise._id)
+
+  await Recruiter.updateMany({ establishment_siret: siret }, siretResponse)
+  if (getLastStatusEvent(existingEntreprise?.status)?.status === EntrepriseStatus.ERROR) {
+    const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
+    const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: savedEntreprise._id.toString() }).lean()
+    const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
+    const users = await UserWithAccount.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
+    await asyncForEach(users, async (user) => {
+      const userAndOrganization: UserAndOrganization = { user, organization: { entreprise: savedEntreprise, type: ENTREPRISE } }
+      const result = await autoValidateUserRoleOnCompany(userAndOrganization, origin)
+      if (result.validated) {
+        const recruiter = recruiters.find((recruiter) => recruiter.managed_by?.toString() === user._id.toString())
+        if (!recruiter) {
+          return
+        }
+        await activateEntrepriseRecruiterForTheFirstTime(recruiter)
+        const role = rolesToUpdate.find((role) => role.user_id.toString() === user._id.toString())
+        const status = getLastStatusEvent(role?.status)?.status
+        if (!status) {
+          throw Boom.internal("inattendu : status du role non trouvé")
+        }
+        await sendEmailConfirmationEntreprise(user, recruiter, status, EntrepriseStatus.VALIDE)
+      }
+    })
+  }
+  return savedEntreprise
 }

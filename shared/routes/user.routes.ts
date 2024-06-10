@@ -3,7 +3,7 @@ import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
 import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../models/roleManagement.model"
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model"
-import { ZUserWithAccount } from "../models/userWithAccount.model"
+import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountFields } from "../models/userWithAccount.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -73,7 +73,7 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z
           .object({
-            users: z.array(ZUserWithAccount),
+            users: z.array(ZUserWithAccount.extend({ type: z.enum([AccessEntityType.ADMIN, AccessEntityType.OPCO]) })),
           })
           .strict(),
       },
@@ -179,13 +179,7 @@ export const zUserRecruteurRoutes = {
     "/admin/users": {
       method: "post",
       path: "/admin/users",
-      body: ZUserWithAccount.pick({
-        first_name: true,
-        last_name: true,
-        email: true,
-        phone: true,
-        origin: true,
-      }),
+      body: ZNewSuperUser,
       response: {
         "200": z.object({ _id: zObjectId }).strict(),
       },
@@ -223,17 +217,11 @@ export const zUserRecruteurRoutes = {
       method: "put",
       path: "/admin/users/:userId/organization/:siret",
       params: z.object({ userId: zObjectId, siret: z.string() }).strict(),
-      body: ZUserWithAccount.omit({
-        status: true,
-        _id: true,
-      })
-        .extend({
-          opco: ZUserRecruteur.shape.opco,
-        })
-        .partial(),
+      body: ZUserWithAccountFields.extend({
+        opco: ZUserRecruteur.shape.opco,
+      }).partial(),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
-        "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
       },
       securityScheme: {
         auth: "cookie-session",
