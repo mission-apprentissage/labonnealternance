@@ -144,7 +144,7 @@ fileignoreconfig:
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: server/src/common/utils/awsUtils.ts
-  checksum: 168a564ced99bc96dcfcfa0cbe834e468a4cb744cd2ac3efdd6bf194703aeb5b
+  checksum: 0acc085847288b9f2d5235f118e29199a168b368c33a7e37ab7dfc7e143fb507
 scopeconfig:
 - scope: node
 custom_patterns:

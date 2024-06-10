@@ -465,7 +465,7 @@ export default (server: Server) => {
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.get["/jobs/export"]).value
       const { source } = req.query
-      if (source === "offres_emploi_lba") {
+      if (source === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
         try {
           const url = await getFileSignedURL({ key: "offres_emploi_lba.json" })
           trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/jobs/export"].path}/${source}`, response: "OK" })

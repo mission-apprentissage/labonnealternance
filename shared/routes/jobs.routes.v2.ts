@@ -1,3 +1,4 @@
+import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
@@ -377,7 +378,7 @@ export const zJobsRoutesV2 = {
       path: "/jobs/export",
       querystring: z
         .object({
-          source: z.enum(["offres_emploi_lba", "lba_recruteurs"]),
+          source: z.enum([LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA]),
         })
         .strict(),
       response: {
