@@ -21,13 +21,26 @@ async function exportLbaJobsToS3() {
   const offres_emploi_lba: IGeneratorParams = {
     collection: "jobs",
     query: { job_status: "Active" },
-    projection: { rome_detail: 0, _id: 0, delegations: 0, address_detail: 0, jobId: 0, recruiterId: 0, email: 0, phone: 0 },
+    projection: {
+      rome_detail: 0,
+      _id: 0,
+      delegations: 0,
+      address_detail: 0,
+      jobId: 0,
+      recruiterId: 0,
+      email: 0,
+      phone: 0,
+      first_name: 0,
+      last_name: 0,
+      relance_mail_sent: 0,
+      is_disabled_elligible: 0,
+    },
     fileName: "offres_emploi_lba.json",
   }
   const recruteurs_lba: IGeneratorParams = {
     collection: "bonnesboites",
     query: {},
-    projection: { _id: 0, email: 0, phone: 0, geopoint: 0 },
+    projection: { _id: 0, email: 0, phone: 0, geopoint: 0, recruitment_potential: 0 },
     fileName: "lba_recruteurs.json",
   }
   const paths = await Promise.all([generateJsonExport(offres_emploi_lba), generateJsonExport(recruteurs_lba)])
