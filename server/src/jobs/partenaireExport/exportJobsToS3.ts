@@ -43,8 +43,10 @@ async function exportLbaJobsToS3() {
     projection: { _id: 0, email: 0, phone: 0, geopoint: 0, recruitment_potential: 0 },
     fileName: "lba_recruteurs.json",
   }
-  const paths = await Promise.all([generateJsonExport(offres_emploi_lba), generateJsonExport(recruteurs_lba)])
-  await Promise.all(paths.map((path) => uploadFileToS3({ key: path.split("/").pop() as string, filePath: path, noCache: true })))
+  await Promise.all([
+    generateJsonExport(offres_emploi_lba).then((path) => uploadFileToS3({ key: path.split("/").pop() as string, filePath: path, noCache: true })),
+    generateJsonExport(recruteurs_lba).then((path) => uploadFileToS3({ key: path.split("/").pop() as string, filePath: path, noCache: true })),
+  ])
 }
 
 export { exportLbaJobsToS3 }
