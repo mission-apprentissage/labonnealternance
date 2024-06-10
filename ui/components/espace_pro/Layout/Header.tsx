@@ -50,8 +50,8 @@ const Header = () => {
               <Menu>
                 <MenuButton as={Button} variant="pill">
                   <Flex alignItems="center">
-                    <Icon as={RiAccountCircleLine} color="bluefrance.500" />
-                    <Box display={["none", "block"]} ml={2}>
+                    <Icon width="32px" height="32px" as={RiAccountCircleLine} color="bluefrance.500" />
+                    <Box display={["none", "none", "block"]} ml={2}>
                       <Text color="bluefrance.500" data-testid="logged-name">
                         {user.first_name} {user.last_name}
                       </Text>
@@ -71,6 +71,7 @@ const Header = () => {
                       <MenuItem onClick={() => router.push("/espace-pro/administration/users")}>Gestion des recruteurs</MenuItem>
                       <MenuItem onClick={() => router.push("/espace-pro/admin/utilisateurs")}>Gestion des administrateurs</MenuItem>
                       <MenuItem onClick={() => router.push("/espace-pro/admin")}>Rendez-vous Apprentissage</MenuItem>
+                      <MenuItem onClick={() => router.push("/espace-pro/administration/gestionEntreprises")}>Entreprises de l'algorithme</MenuItem>
                       <MenuDivider />
                     </>
                   )}

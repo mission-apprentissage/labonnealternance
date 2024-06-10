@@ -34,7 +34,7 @@ function AdminUserViewPage() {
   const { userId } = router.query as { userId: string }
 
   return (
-    <Layout footer={false}>
+    <Layout displayNavigationMenu={false} footer={false}>
       <AdminUserView userId={userId} />
     </Layout>
   )
