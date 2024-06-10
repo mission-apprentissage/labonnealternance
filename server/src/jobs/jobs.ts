@@ -7,7 +7,7 @@ import { getLoggerWithContext } from "../common/logger"
 import anonymizeOldAppointments from "./anonymization/anonumizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
-import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
+import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
@@ -24,7 +24,6 @@ import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
 import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
-import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
@@ -44,7 +43,6 @@ import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { migrationUsers } from "./multiCompte/migrationUsers"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
@@ -253,27 +251,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return removeVersionKeyFromAllCollections()
       case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
         return removeIsDelegatedFromJobs()
-      case "user:create": {
-        const { first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope } = job.payload
-        return createUserFromCLI(
-          {
-            first_name,
-            last_name,
-            establishment_siret,
-            establishment_raison_sociale,
-            phone,
-            address,
-            email,
-            scope,
-          },
-          {
-            options: {
-              Type: job.payload.type,
-              Email_valide: job.payload.email_valide,
-            },
-          }
-        )
-      }
       case "api:user:create": {
         const { nom, prenom, email, organization, scope } = job.payload
         return createApiUser(nom, prenom, email, organization, scope)
@@ -337,7 +314,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "applications:anonymize":
         return anonymizeOldApplications()
       case "user-recruteurs:anonymize":
-        return anonimizeUserRecruteurs()
+        return anonimizeUsers()
       case "companies:update":
         return updateLbaCompanies(job.payload)
       case "geo-locations:update":
@@ -366,9 +343,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
       }
-      case "migrate-multi-compte": {
-        return migrationUsers()
-      }
       case "prdv:emails:resend": {
         const { fromDate } = job.payload
         return repriseEmailRdvs({ fromDateStr: fromDate })
@@ -392,7 +366,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "migrations:status": {
         const pendingMigrations = await statusMigration()
-        console.log(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
+        console.info(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
         return
       }
       case "migrations:create":

@@ -54,7 +54,7 @@ class ApiGeoAdresse {
 
       return response
     } catch (error) {
-      console.log(`geo search error : ${q} ${postcode} ${error}`)
+      console.error(`geo search error : ${q} ${postcode} ${error}`)
       return null
     }
   }
@@ -83,7 +83,7 @@ class ApiGeoAdresse {
       const response = await getHttpClient().get<IGeoAddress>(`${apiEndpoint}/search/?q=${postcode}&postcode=${postcode}`)
       return response.data
     } catch (error) {
-      console.log(`geo searchPostcodeOnly error : ${postcode} ${error}`)
+      console.error(`geo searchPostcodeOnly error : ${postcode} ${error}`)
       return null
     }
   }

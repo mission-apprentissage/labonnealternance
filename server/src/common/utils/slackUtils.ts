@@ -9,6 +9,6 @@ export const notifyToSlack = async ({ subject, message, error }: { subject: stri
       text,
     })
   } else {
-    console.log(text)
+    console.info(text)
   }
 }

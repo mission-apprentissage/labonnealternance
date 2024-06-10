@@ -23,7 +23,7 @@ class FTPClient {
   }
 
   async list() {
-    console.log(await this.client.list())
+    console.info(await this.client.list())
   }
 
   /**

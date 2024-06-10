@@ -41,7 +41,6 @@ import SiretDiffusibleStatus from "./schema/siretDiffusibleStatusSchema/siretDif
 import UnsubscribedLbaCompany from "./schema/unsubscribedLbaCompany/unsubscribedLbaCompany.schema"
 import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema"
 import User from "./schema/user/user.schema"
-import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema"
 
 const createSpecialIndexes = async () => {
   await db.collection("bonnesboites").createIndex({ geopoint: "2dsphere" })
@@ -92,15 +91,16 @@ export {
   Application,
   Appointment,
   AppointmentDetailed,
+  Cfa,
   Credential,
   CustomEmailETFA,
   DiplomesMetiers,
   DomainesMetiers,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
+  Entreprise,
   Etablissement,
   FicheMetierRomeV4,
-  ReferentielRome,
   FormationCatalogue,
   GeoLocation,
   InternalJobs,
@@ -113,15 +113,13 @@ export {
   Recruiter,
   ReferentielOnisep,
   ReferentielOpco,
+  ReferentielRome,
+  RoleManagement,
   Session,
   SiretDiffusibleStatus,
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
-  UserRecruteur,
-  eligibleTrainingsForAppointmentHistory,
   UserWithAccount,
-  Entreprise,
-  Cfa,
-  RoleManagement,
+  eligibleTrainingsForAppointmentHistory,
 }

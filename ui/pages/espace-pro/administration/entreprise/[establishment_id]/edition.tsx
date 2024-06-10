@@ -2,6 +2,7 @@ import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Fle
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
@@ -161,14 +162,15 @@ function EditionEntrepriseContact() {
 
   const { establishment_id } = router.query as { establishment_id: string }
   // TODO pourquoi afficher le formulaire ?
-  const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(establishment_id), { cacheTime: 0, enabled: !!establishment_id })
+  const { data: formulaire, isLoading } = useQuery("formulaire-edition", () => getFormulaire(establishment_id), { cacheTime: 0, enabled: !!establishment_id })
 
   if (isLoading || !establishment_id) {
     return <LoadingEmptySpace />
   }
 
   // add type ENTREPRISE for legale information
-  const entreprise = { ...data, type: AUTHTYPE.ENTREPRISE }
+  const entreprise = { ...formulaire, type: AUTHTYPE.ENTREPRISE }
+  const siret = formulaire.establishment_siret
 
   return (
     <AnimationContainer>
@@ -200,7 +202,7 @@ function EditionEntrepriseContact() {
             </Box>
           </Box>
           <Box>
-            <InformationLegaleEntreprise {...entreprise} />
+            <InformationLegaleEntreprise type={ENTREPRISE} siret={siret} />
           </Box>
         </SimpleGrid>
       </Container>

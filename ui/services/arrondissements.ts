@@ -15,7 +15,7 @@ const simplifiedArrondissements = (rawItems, town) => {
   return result
 }
 
-const simplifiedItems = (rawItems) => {
+export const simplifiedItems = (rawItems) => {
   const firstLabel = rawItems[0]?.label?.toLowerCase() || ""
 
   if (firstLabel.includes("paris")) {
@@ -28,5 +28,3 @@ const simplifiedItems = (rawItems) => {
     return rawItems
   }
 }
-
-export { simplifiedArrondissements, simplifiedItems }

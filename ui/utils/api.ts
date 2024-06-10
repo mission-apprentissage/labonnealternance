@@ -1,12 +1,11 @@
 import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
-import { IJobWritable, INewDelegations, IRoutes, removeUndefinedFields } from "shared"
+import { IJobWritable, INewDelegations, INewSuperUser, IRoutes, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { IEntrepriseJson } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { IEntrepriseInformations } from "shared/routes/recruiters.routes"
 
-import { publicConfig } from "../config.public"
+import { publicConfig } from "@/config.public"
 
 import { ApiError, apiDelete, apiGet, apiPost, apiPut } from "./api.utils"
 
@@ -74,7 +73,7 @@ export const updateUserValidationHistory = ({
   organizationType: typeof AccessEntityType.ENTREPRISE | typeof AccessEntityType.CFA
 }) => apiPut("/user/:userId/organization/:organizationId/permission", { params: { userId, organizationId }, body: { organizationType, status, reason } }).catch(errorHandler)
 export const cancelAccountCreation = (siret: string, token: string) => apiDelete("/user/organization/:siret", { params: { siret }, headers: { authorization: `Bearer ${token}` } })
-export const createAdminUser = (user: IUserWithAccount) => apiPost("/admin/users", { body: user })
+export const createSuperUser = (user: INewSuperUser) => apiPost("/admin/users", { body: user })
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
 /**
@@ -100,13 +99,18 @@ export const sendValidationLink = async (userId: string, token: string) =>
  */
 export const getEntreprisesManagedByCfa = (cfaId: string) => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
 export const getCfaInformation = async (siret: string) => apiGet("/etablissement/cfa/:siret", { params: { siret } })
+export const validateCfaCreation = async (siret: string) => apiGet("/etablissement/cfa/:siret/validate-creation", { params: { siret } })
 
 export const getEntrepriseInformation = async (
   siret: string,
-  options: { cfa_delegated_siret?: string } = {}
-): Promise<{ statusCode: 200; data: IEntrepriseInformations; error: false } | { statusCode: number; message: string; data?: { errorCode?: BusinessErrorCodes }; error: true }> => {
+  { cfa_delegated_siret, skipUpdate }: { cfa_delegated_siret?: string; skipUpdate?: boolean } = {}
+): Promise<{ statusCode: 200; data: IEntrepriseJson; error: false } | { statusCode: number; message: string; data?: { errorCode?: BusinessErrorCodes }; error: true }> => {
   try {
-    const data = await apiGet("/etablissement/entreprise/:siret", { params: { siret }, querystring: removeUndefinedFields(options) }, { timeout: 7000 })
+    const data = await apiGet(
+      "/etablissement/entreprise/:siret",
+      { params: { siret }, querystring: removeUndefinedFields({ cfa_delegated_siret, skipUpdate: skipUpdate ? "true" : "false" }) },
+      { timeout: 7000 }
+    )
     return { statusCode: 200, data, error: false }
   } catch (error: unknown) {
     if (error instanceof ApiError && error.context?.statusCode >= 400) {
