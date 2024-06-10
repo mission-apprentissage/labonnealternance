@@ -69,4 +69,6 @@ const roleManagementSchema = new Schema<IRoleManagement>(
   }
 )
 
+roleManagementSchema.index({ user_id: 1, authorized_id: 1, authorized_type: 1 }, { unique: true })
+
 export const RoleManagement = buildMongooseModel(roleManagementSchema, "roleManagement")
