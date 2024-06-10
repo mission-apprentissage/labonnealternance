@@ -59,14 +59,17 @@ function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoad
 
 function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, isLoading, setIsLoading }) {
   const [error, setError] = useState("")
+  const [isSuccess, setIsSuccess] = useState(false)
 
-  const submitUpdateForSiret = async ({ siret, phone, email }: { siret: string; phone: string; email: string }) => {
-    const formattedSiret = siret.replace(/[^0-9]/g, "")
+  const submitUpdateForSiret = async ({ phone, email }: { phone: string; email: string }) => {
+    setIsSuccess(false)
+    const formattedSiret = currentCompany.siret.replace(/[^0-9]/g, "")
 
     setIsLoading(true)
 
     try {
       setCurrentCompany(await putCompanyContactInfo({ siret: formattedSiret, phone, email }))
+      setIsSuccess(true)
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -76,6 +79,8 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
   return (
     <>
       <Text my={6}>Mise à jour des coordonnées pour l’entreprise :</Text>
+
+      {isSuccess && "cadre vert"}
       <Box p={5} pt={6} mb={6} borderColor="bluefrance.500" borderWidth="1px">
         <Formik
           validateOnMount
