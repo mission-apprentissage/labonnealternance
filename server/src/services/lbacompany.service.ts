@@ -1,7 +1,7 @@
 import Boom from "boom"
-import { ILbaCompany, ILbaCompanyForContactUpdate } from "shared"
+import { ILbaCompany, ILbaCompanyForContactUpdate, ELbaCompanyUpdateEventType } from "shared"
+import type { ILbaCompanyUpdateEventNew } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { ELbaCompanyUpdateEventType, ILbaCompanyUpdateEventNew } from "shared/models/lbaCompanyUpdateEvent"
 
 import { db } from "@/common/mongodb"
 

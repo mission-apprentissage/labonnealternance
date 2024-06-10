@@ -1,4 +1,4 @@
-import { ILbaCompanyUpdateEvent } from "shared"
+import type { ILbaCompanyUpdateEvent } from "shared"
 
 import { Schema, model } from "../../../mongodb"
 
