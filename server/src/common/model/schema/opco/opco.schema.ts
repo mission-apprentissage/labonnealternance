@@ -1,6 +1,6 @@
-import { model, Schema } from "../../../mongodb"
+import { IOpco } from "shared/models/opco.model"
 
-import { IOpco } from "./opco.types"
+import { model, Schema } from "../../../mongodb"
 
 export const opcoSchema = new Schema<IOpco>(
   {
