@@ -1,48 +1,8 @@
 import { CreateIndexesOptions, IndexSpecification } from "mongodb"
 import { ZodType } from "zod"
 
-export type CollectionName =
-  | "anonymized_users"
-  | "anonymizedapplications"
-  | "anonymizedappointments"
-  | "anonymizedrecruiters"
-  | "anonymizedusers2s"
-  | "apicalls"
-  | "appointments"
-  | "applications"
-  | "bonnesboites"
-  | "bonnesboiteslegacies"
-  | "cfas"
-  | "changelog"
-  | "credentials"
-  | "customemailetfas"
-  | "diplomesmetiers"
-  | "domainesmetiers"
-  | "eligible_trainings_for_appointments"
-  | "eligible_trainings_for_appointments_histories"
-  | "emailblacklists"
-  | "entreprises"
-  | "etablissements"
-  | "formationcatalogues"
-  | "geolocations"
-  | "internalJobs"
-  | "opcos"
-  | "optouts"
-  | "recruiters"
-  | "referentieloniseps"
-  | "referentielopcos"
-  | "referentielromes"
-  | "rolemanagements"
-  | "sessions"
-  | "siretdiffusiblestatuses"
-  | "unsubscribedbonnesboites"
-  | "unsubscribedofs"
-  | "userrecruteurs"
-  | "users"
-  | "userswithaccounts"
-
-export interface IModelDescriptor {
-  zod: ZodType
+export interface IModelDescriptor<CollectionName = string, LocalZodType = ZodType> {
+  zod: LocalZodType
   indexes: [IndexSpecification, CreateIndexesOptions][]
   collectionName: CollectionName
 }

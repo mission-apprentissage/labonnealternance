@@ -4,7 +4,7 @@ import { VALIDATION_UTILISATEUR } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
 
 export enum UserEventType {
@@ -50,6 +50,6 @@ export type IUserStatusEventJson = Jsonify<z.input<typeof ZUserStatusEvent>>
 
 export default {
   zod: ZUserWithAccount,
-  indexes: [],
+  indexes: [[{ email: 1 }, { unique: true }]],
   collectionName,
-}
+} as const satisfies IModelDescriptor

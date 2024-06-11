@@ -69,4 +69,4 @@ export default {
   zod: ZAppointment,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor
