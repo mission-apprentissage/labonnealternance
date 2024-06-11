@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 
 export const ZRomeWithLabel = z
   .object({
@@ -111,4 +111,4 @@ export default {
   zod: ZDiplomesMetiers,
   indexes: [],
   collectionName,
-}
+} as const satisfies IModelDescriptor

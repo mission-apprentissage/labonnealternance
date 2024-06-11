@@ -18,4 +18,4 @@ export default {
   zod: ZCustomEmailETFA,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

@@ -19,4 +19,4 @@ export default {
   zod: ZReferentielOnisep,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

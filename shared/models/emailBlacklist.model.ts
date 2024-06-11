@@ -22,4 +22,4 @@ export default {
   zod: ZEmailBlacklist,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

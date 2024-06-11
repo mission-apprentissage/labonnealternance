@@ -32,4 +32,4 @@ export default {
   zod: ZUnsubscribedLbaCompany,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

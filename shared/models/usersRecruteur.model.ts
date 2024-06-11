@@ -6,7 +6,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress, ZPointGeometry } from "./address.model"
-import { IModelDescriptor, zObjectId } from "./common"
+import { zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
 import { IUserWithAccount, ZValidationUtilisateur } from "./userWithAccount.model"
 
@@ -59,8 +59,6 @@ export const ZUserRecruteurWritable = z
     is_qualiopi: z.boolean().describe("Statut qualiopi d'un CFA (toujours à true pour les CFA, false pour les entreprises)"),
   })
   .strict()
-
-const collectionName = "userrecruteurs" as const
 
 export const ZUserRecruteur = ZUserRecruteurWritable.omit({
   // Following field are not supposed to be nullish but they are...
@@ -195,9 +193,3 @@ export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminP
 })
 
 export type IUserRecruteurForAdmin = z.output<typeof ZUserRecruteurForAdmin>
-
-export default {
-  zod: ZUserRecruteur,
-  indexes: [],
-  collectionName,
-} as IModelDescriptor

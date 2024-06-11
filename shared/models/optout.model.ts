@@ -51,4 +51,4 @@ export default {
   zod: ZOptout,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

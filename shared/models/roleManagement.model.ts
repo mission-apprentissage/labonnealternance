@@ -55,4 +55,4 @@ export default {
   zod: ZRoleManagement,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor
