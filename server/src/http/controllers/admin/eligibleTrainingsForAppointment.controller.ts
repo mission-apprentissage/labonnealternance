@@ -1,7 +1,8 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
-import { CustomEmailETFA, EligibleTrainingsForAppointment } from "../../../common/model/index"
+import { EligibleTrainingsForAppointment } from "../../../common/model/index"
+import { getDbCollection } from "../../../common/utils/mongodbUtils"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
 
@@ -45,9 +46,9 @@ export default (server: Server) => {
       if ("is_lieu_formation_email_customized" in body) {
         if (body.is_lieu_formation_email_customized) {
           if ("cle_ministere_educatif" in body && "lieu_formation_email" in body && body.lieu_formation_email && body.cle_ministere_educatif) {
-            await CustomEmailETFA.findOneAndUpdate(
+            await getDbCollection("customemailetfas").findOneAndUpdate(
               { cle_ministere_educatif: body.cle_ministere_educatif },
-              { email: body.lieu_formation_email, cle_ministere_educatif: body.cle_ministere_educatif },
+              { $set: { email: body.lieu_formation_email, cle_ministere_educatif: body.cle_ministere_educatif } },
               { upsert: true }
             )
           }

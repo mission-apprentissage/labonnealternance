@@ -7,7 +7,6 @@ import { logger } from "../logger"
 import Application from "./schema/application/applications.schema"
 import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
 import Appointment from "./schema/appointments/appointment.schema"
-import CustomEmailETFA from "./schema/customEmailETFA/customEmailETFA.schema"
 import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema"
 import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema"
@@ -85,7 +84,6 @@ export {
   Appointment,
   AppointmentDetailed,
   Cfa,
-  CustomEmailETFA,
   DiplomesMetiers,
   DomainesMetiers,
   EligibleTrainingsForAppointment,
