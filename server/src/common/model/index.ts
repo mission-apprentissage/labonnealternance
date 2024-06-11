@@ -5,7 +5,6 @@ import { db, mongooseInstance } from "@/common/mongodb"
 import { logger } from "../logger"
 
 import AnonymizedUser from "./schema/anonymizedUsers/anonymizedUsers.schema"
-import ApiCalls from "./schema/apiCall/apiCall.schema"
 import AnonymizedApplication from "./schema/application/anonymizedApplications.schema"
 import Application from "./schema/application/applications.schema"
 import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
@@ -87,19 +86,19 @@ export async function createMongoDBIndexes() {
 export {
   AnonymizedApplication,
   AnonymizedUser,
-  ApiCalls,
   Application,
   Appointment,
   AppointmentDetailed,
+  Cfa,
   Credential,
   CustomEmailETFA,
   DiplomesMetiers,
   DomainesMetiers,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
+  Entreprise,
   Etablissement,
   FicheMetierRomeV4,
-  ReferentielRome,
   FormationCatalogue,
   GeoLocation,
   InternalJobs,
@@ -111,15 +110,14 @@ export {
   Recruiter,
   ReferentielOnisep,
   ReferentielOpco,
+  ReferentielRome,
+  RoleManagement,
   Session,
   SiretDiffusibleStatus,
   UnsubscribeOF,
   UnsubscribedLbaCompany,
   User,
   UserRecruteur,
-  eligibleTrainingsForAppointmentHistory,
   UserWithAccount,
-  Entreprise,
-  Cfa,
-  RoleManagement,
+  eligibleTrainingsForAppointmentHistory,
 }

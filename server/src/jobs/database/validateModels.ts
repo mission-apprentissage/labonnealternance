@@ -1,7 +1,6 @@
 import { captureException } from "@sentry/node"
 import { Model } from "mongoose"
 import {
-  ZApiCall,
   ZApplication,
   ZAppointment,
   ZCredential,
@@ -30,7 +29,6 @@ import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
 import {
-  ApiCalls,
   Application,
   Appointment,
   AppointmentDetailed,
@@ -99,7 +97,6 @@ async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, a
 
 export async function validateModels(): Promise<void> {
   // TODO: Create Zod for missing models
-  await validateModel(ApiCalls, ZApiCall)
   await validateModel(Application, ZApplication)
   await validateModel(Appointment, ZAppointment)
   await validateModel(AppointmentDetailed, ZAppointment)
