@@ -25,7 +25,6 @@ import InternalJobs from "./schema/internalJobs/internalJobs.schema"
 import Job from "./schema/jobs/jobs.schema"
 import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
 import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
-import LbaCompanyUpdateEvent from "./schema/lbaCompanyUpdateEvent/lbaCompanyUpdateEvent.schema"
 import { Cfa } from "./schema/multiCompte/cfa.schema"
 import { Entreprise } from "./schema/multiCompte/entreprise.schema"
 import { RoleManagement } from "./schema/multiCompte/roleManagement.schema"
@@ -33,6 +32,7 @@ import { UserWithAccount } from "./schema/multiCompte/userWithAccount.schema"
 import Opco from "./schema/opco/opco.schema"
 import Optout from "./schema/optout/optout.schema"
 import Recruiter from "./schema/recruiter/recruiter.schema"
+import RecruteurLbaUpdateEvent from "./schema/recruteurLbaUpdateEvent/recruteurLbaUpdateEvent.schema"
 import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema"
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
 import ReferentielRome from "./schema/referentielRome/referentielRome"
@@ -107,7 +107,7 @@ export {
   Job,
   LbaCompany,
   LbaCompanyLegacy,
-  LbaCompanyUpdateEvent,
+  RecruteurLbaUpdateEvent,
   Opco,
   Optout,
   Recruiter,

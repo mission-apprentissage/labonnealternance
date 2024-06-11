@@ -1,11 +1,11 @@
 import Boom from "boom"
-import { ILbaCompany, ILbaCompanyForContactUpdate, ELbaCompanyUpdateEventType } from "shared"
-import type { ILbaCompanyUpdateEventNew } from "shared"
+import { ILbaCompany, ILbaCompanyForContactUpdate, ERecruteurLbaUpdateEventType } from "shared"
+import type { IRecruteurLbaUpdateEventNew } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { db } from "@/common/mongodb"
 
-import { LbaCompany, LbaCompanyUpdateEvent } from "../common/model/index"
+import { LbaCompany, RecruteurLbaUpdateEvent } from "../common/model/index"
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -366,7 +366,7 @@ export const getCompanyFromSiret = async ({
 export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email?: string; phone?: string }) => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
-    const fieldUpdates: ILbaCompanyUpdateEventNew[] = []
+    const fieldUpdates: IRecruteurLbaUpdateEventNew[] = []
 
     if (!lbaCompany) {
       throw Boom.badRequest()
@@ -375,19 +375,19 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
     if (lbaCompany.email !== email) {
       if (!email) {
         fieldUpdates.push(
-          new LbaCompanyUpdateEvent({
+          new RecruteurLbaUpdateEvent({
             siret,
             value: "",
-            event: ELbaCompanyUpdateEventType.DELETE_EMAIL,
+            event: ERecruteurLbaUpdateEventType.DELETE_EMAIL,
           })
         )
         lbaCompany.email = ""
       } else {
         fieldUpdates.push(
-          new LbaCompanyUpdateEvent({
+          new RecruteurLbaUpdateEvent({
             siret,
             value: email,
-            event: ELbaCompanyUpdateEventType.UPDATE_EMAIL,
+            event: ERecruteurLbaUpdateEventType.UPDATE_EMAIL,
           })
         )
         lbaCompany.email = email
@@ -397,19 +397,19 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
     if (lbaCompany.phone !== phone) {
       if (!phone) {
         fieldUpdates.push(
-          new LbaCompanyUpdateEvent({
+          new RecruteurLbaUpdateEvent({
             siret,
             value: "",
-            event: ELbaCompanyUpdateEventType.DELETE_PHONE,
+            event: ERecruteurLbaUpdateEventType.DELETE_PHONE,
           })
         )
         lbaCompany.phone = ""
       } else {
         fieldUpdates.push(
-          new LbaCompanyUpdateEvent({
+          new RecruteurLbaUpdateEvent({
             siret,
             value: phone,
-            event: ELbaCompanyUpdateEventType.UPDATE_PHONE,
+            event: ERecruteurLbaUpdateEventType.UPDATE_PHONE,
           })
         )
         lbaCompany.phone = phone
@@ -418,7 +418,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
     await Promise.all([
       db.collection("bonnesboites").updateOne({ _id: lbaCompany._id }, { $set: { phone: lbaCompany.phone, email: lbaCompany.email, last_update_at: new Date() } }),
       ...fieldUpdates.map(async (update) => {
-        db.collection("lbacompanyupdateevents").insertOne(update)
+        db.collection("recruteurlbaupdateevents").insertOne(update)
       }),
     ])
     return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }

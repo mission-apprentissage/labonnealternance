@@ -1,8 +1,8 @@
-import type { ILbaCompanyUpdateEvent } from "shared"
+import type { IRecruteurLbaUpdateEvent } from "shared"
 
 import { Schema, model } from "../../../mongodb"
 
-export const lbaCompanyUpdateEventSchema = new Schema<ILbaCompanyUpdateEvent>(
+export const recruteurLbaUpdateEventSchema = new Schema<IRecruteurLbaUpdateEvent>(
   {
     siret: {
       type: String,
@@ -30,4 +30,4 @@ export const lbaCompanyUpdateEventSchema = new Schema<ILbaCompanyUpdateEvent>(
   }
 )
 
-export default model<ILbaCompanyUpdateEvent>("lbacompanyupdateevents", lbaCompanyUpdateEventSchema)
+export default model<IRecruteurLbaUpdateEvent>("recruteurlbaupdateevents", recruteurLbaUpdateEventSchema)

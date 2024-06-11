@@ -18,7 +18,7 @@ import {
   Etablissement,
   FormationCatalogue,
   LbaCompany,
-  LbaCompanyUpdateEvent,
+  RecruteurLbaUpdateEvent,
   Optout,
   Recruiter,
   RoleManagement,
@@ -288,5 +288,5 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
   await Optout.deleteMany({})
-  await LbaCompanyUpdateEvent.deleteMany({})
+  await RecruteurLbaUpdateEvent.deleteMany({})
 }
