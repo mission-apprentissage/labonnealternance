@@ -13,7 +13,7 @@ import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
  * @description get opco from database collection OPCOS
  */
 export const getOpcoBySirenFromDB = async (siren: string) => {
-  const opcoFromDB = await Opco.findOne({ siren })
+  const opcoFromDB = await getDbCollection("opcos").findOne({ siren })
   if (opcoFromDB) {
     const { opco, idcc } = opcoFromDB
     return { opco, idcc }
