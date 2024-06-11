@@ -32,6 +32,7 @@ import { UserWithAccount } from "./schema/multiCompte/userWithAccount.schema"
 import Opco from "./schema/opco/opco.schema"
 import Optout from "./schema/optout/optout.schema"
 import Recruiter from "./schema/recruiter/recruiter.schema"
+import RecruteurLbaUpdateEvent from "./schema/recruteurLbaUpdateEvent/recruteurLbaUpdateEvent.schema"
 import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema"
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
 import ReferentielRome from "./schema/referentielRome/referentielRome"
@@ -106,6 +107,7 @@ export {
   Job,
   LbaCompany,
   LbaCompanyLegacy,
+  RecruteurLbaUpdateEvent,
   Opco,
   Optout,
   Recruiter,

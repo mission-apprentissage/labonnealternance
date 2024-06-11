@@ -9,7 +9,7 @@ import { authProvider, withAuth } from "@/components/espace_pro/withAuth"
 function AdminUsersPage() {
   const title = "Gestion des administrateurs"
   return (
-    <Layout footer={false}>
+    <Layout displayNavigationMenu={false} footer={false}>
       <Box mt={5}>
         <Breadcrumb pages={[{ title: "Administration", to: "/espace-pro/administration/users" }, { title }]} />
         <Heading as="h2" fontSize="2xl" mb={[3, 6]} mt={3}>
@@ -23,4 +23,4 @@ function AdminUsersPage() {
 
 export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
 
-export default authProvider(withAuth(AdminUsersPage, "adminLbaR"))
+export default authProvider(withAuth(AdminUsersPage, "admin"))

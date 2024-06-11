@@ -130,7 +130,7 @@ export const zAppointmentsRoute = {
                     })
                     .strict(),
                 })
-                .strict()
+                .nullish()
             ),
           })
           .strict(),

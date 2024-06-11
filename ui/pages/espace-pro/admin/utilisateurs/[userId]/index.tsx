@@ -34,7 +34,7 @@ function AdminUserViewPage() {
   const { userId } = router.query as { userId: string }
 
   return (
-    <Layout footer={false}>
+    <Layout displayNavigationMenu={false} footer={false}>
       <AdminUserView userId={userId} />
     </Layout>
   )
@@ -42,4 +42,4 @@ function AdminUserViewPage() {
 
 export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
 
-export default authProvider(withAuth(AdminUserViewPage, "adminLbaR"))
+export default authProvider(withAuth(AdminUserViewPage, "admin"))

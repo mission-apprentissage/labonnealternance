@@ -15,14 +15,7 @@ export const withAuth = (Component, scope = null) => {
       return <></>
     }
 
-    if (scope && scope === "adminLbaR" && user.type !== AUTHTYPE.ADMIN) {
-      if (typeof window !== "undefined") {
-        router.push("/espace-pro/authentification")
-      }
-      return <></>
-    }
-
-    if (scope && scope === "adminRva" && user.type !== AUTHTYPE.ADMIN) {
+    if (scope && scope === "admin" && user.type !== AUTHTYPE.ADMIN) {
       if (typeof window !== "undefined") {
         router.push("/espace-pro/authentification")
       }

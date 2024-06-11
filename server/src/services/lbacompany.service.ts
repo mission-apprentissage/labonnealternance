@@ -1,8 +1,11 @@
 import Boom from "boom"
-import { ILbaCompany } from "shared"
+import { ILbaCompany, ILbaCompanyForContactUpdate, ERecruteurLbaUpdateEventType } from "shared"
+import type { IRecruteurLbaUpdateEventNew } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { LbaCompany } from "../common/model/index"
+import { db } from "@/common/mongodb"
+
+import { LbaCompany, RecruteurLbaUpdateEvent } from "../common/model/index"
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -360,25 +363,85 @@ export const getCompanyFromSiret = async ({
  * @param {string} phone
  * @returns {Promise<ILbaCompany | string>}
  */
-export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string | undefined; phone: string | undefined }) => {
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email?: string; phone?: string }) => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
+    const fieldUpdates: IRecruteurLbaUpdateEventNew[] = []
 
     if (!lbaCompany) {
       throw Boom.badRequest()
     }
 
-    if (email !== undefined) {
-      lbaCompany.email = email
+    if (lbaCompany.email !== email) {
+      if (!email) {
+        fieldUpdates.push(
+          new RecruteurLbaUpdateEvent({
+            siret,
+            value: "",
+            event: ERecruteurLbaUpdateEventType.DELETE_EMAIL,
+          })
+        )
+        lbaCompany.email = ""
+      } else {
+        fieldUpdates.push(
+          new RecruteurLbaUpdateEvent({
+            siret,
+            value: email,
+            event: ERecruteurLbaUpdateEventType.UPDATE_EMAIL,
+          })
+        )
+        lbaCompany.email = email
+      }
     }
 
-    if (phone !== undefined) {
-      lbaCompany.phone = phone
+    if (lbaCompany.phone !== phone) {
+      if (!phone) {
+        fieldUpdates.push(
+          new RecruteurLbaUpdateEvent({
+            siret,
+            value: "",
+            event: ERecruteurLbaUpdateEventType.DELETE_PHONE,
+          })
+        )
+        lbaCompany.phone = ""
+      } else {
+        fieldUpdates.push(
+          new RecruteurLbaUpdateEvent({
+            siret,
+            value: phone,
+            event: ERecruteurLbaUpdateEventType.UPDATE_PHONE,
+          })
+        )
+        lbaCompany.phone = phone
+      }
     }
-
-    await lbaCompany.save() // obligatoire pour trigger la mise à jour de l'index ES. update ne le fait pas
+    await Promise.all([
+      db.collection("bonnesboites").updateOne({ _id: lbaCompany._id }, { $set: { phone: lbaCompany.phone, email: lbaCompany.email, last_update_at: new Date() } }),
+      ...fieldUpdates.map(async (update) => {
+        db.collection("recruteurlbaupdateevents").insertOne(update)
+      }),
+    ])
+    return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }
   } catch (err) {
     sentryCaptureException(err)
     throw err
+  }
+}
+
+export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promise<ILbaCompanyForContactUpdate> => {
+  try {
+    const lbaCompany = await LbaCompany.findOne({ siret })
+
+    if (lbaCompany) {
+      return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }
+    } else {
+      throw Boom.notFound("Société inconnue")
+    }
+  } catch (error: any) {
+    if (error?.output?.statusCode === 404) {
+      throw error
+    }
+    sentryCaptureException(error)
+    throw Boom.internal("Erreur de chargement des informations de la société")
   }
 }

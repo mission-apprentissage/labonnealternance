@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input } from "@chakra-ui/react"
+import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Image, Input } from "@chakra-ui/react"
 import { useField } from "formik"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
@@ -8,11 +8,10 @@ import Link from "../Link"
 
 export const CustomInput = (props) => {
   const [field, meta] = useField(props)
-
   return (
     <Box pb={props.pb ?? "5"}>
       <FormControl isInvalid={meta.error && meta.touched} isRequired={props.required ?? true}>
-        <FormLabel>{props.label}</FormLabel>
+        <FormLabel _invalid={{ color: "red.500" }}>{props.label}</FormLabel>
         {props.info && <FormHelperText pb={2}>{props.info}</FormHelperText>}
         <Input {...field} {...props} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
@@ -35,7 +34,7 @@ export const CustomInput = (props) => {
             </Box>
           ) : (
             <Flex direction="row" alignItems="center">
-              <Warning m={0} />
+              {meta.error === "Société inconnue" ? <Image src="/images/icons/crossInOctogon.svg" alt="" h="13px" aria-hidden="true" m={0} mt={1} /> : <Warning m={0} />}
               <Flex ml={1}>
                 <div dangerouslySetInnerHTML={{ __html: meta.error }} />
                 {meta.error?.includes("déjà associé") && (
