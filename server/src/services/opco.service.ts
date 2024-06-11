@@ -2,6 +2,8 @@ import memoize from "memoizee"
 import { OPCOS } from "shared/constants/recruteur"
 import { IReferentielOpco, ZReferentielOpcoInsert } from "shared/models"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { Opco } from "../common/model/index"
 import { IOpco } from "../common/model/schema/opco/opco.types"
 
@@ -73,7 +75,7 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
     searchForOpcoParams.opco = OPCOS[opco.toUpperCase()]
   }
 
-  const foundInMongoOpcos = await Opco.find(searchForOpcoParams)
+  const foundInMongoOpcos = await getDbCollection("opcos").find(searchForOpcoParams)
 
   let opcoFilteredSirens: any[] = []
 

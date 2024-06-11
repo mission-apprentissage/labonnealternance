@@ -15,6 +15,7 @@ import entrepriseModel from "./entreprise.model"
 import etablissementModel from "./etablissement.model"
 import formationModel from "./formation.model"
 import geolocationsModel from "./geolocations.model"
+import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
 import recruiterModel from "./recruiter.model"
 import referentielOnisepModel from "./referentielOnisep.model"
@@ -41,6 +42,7 @@ const modelDescriptorMap = {
   [etablissementModel.collectionName]: etablissementModel,
   [formationModel.collectionName]: formationModel,
   [geolocationsModel.collectionName]: geolocationsModel,
+  [opcoModel.collectionName]: opcoModel,
   [optoutModel.collectionName]: optoutModel,
   [recruiterModel.collectionName]: recruiterModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
