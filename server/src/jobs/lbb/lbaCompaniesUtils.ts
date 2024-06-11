@@ -5,10 +5,11 @@ import { compose, oleoduc, writeData } from "oleoduc"
 import { ILbaCompany, ZGeoLocation } from "shared/models"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { EmailBlacklist, GeoLocation, Opco, LbaCompany } from "../../common/model/index"
+import { EmailBlacklist, GeoLocation, LbaCompany } from "../../common/model/index"
 import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
 import geoData from "../../common/utils/geoData"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -195,7 +196,7 @@ const getGeoLocationForCompany = async (company) => {
 
 const getOpcoForCompany = async (lbaCompany) => {
   const siren = lbaCompany.siret.substring(0, 9)
-  return await Opco.findOne({ siren })
+  return await getDbCollection("opcos").findOne({ siren })
 }
 
 let nafScoreMap = {}
