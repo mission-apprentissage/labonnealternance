@@ -9,8 +9,10 @@ import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Cfa, Credential, EmailBlacklist, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
+import { Application, Cfa, EmailBlacklist, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
+
+import { getDbCollection } from "../../src/common/utils/mongodbUtils"
 
 let seed = 0
 function getFixture() {
@@ -151,11 +153,11 @@ export const jobFactory = (props: Partial<IJob> = {}) => {
 }
 
 export async function createCredentialTest(data: Partial<ICredential>) {
-  const u = new Credential({
+  const u: ICredential = {
     ...getFixture().fromSchema(ZCredential),
     ...data,
-  })
-  await u.save()
+  }
+  await getDbCollection("credentials").insertOne(u)
   return u
 }
 

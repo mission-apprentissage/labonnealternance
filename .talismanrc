@@ -145,6 +145,8 @@ fileignoreconfig:
   checksum: 553720667140e5bbf7cef1969c02cbcd3c234defc30bb08208398c1900e29e3b
 - filename: server/src/http/sentry.ts
   checksum: efa665e02ca4d3acbf48c5dc549dae4e915c02ae0626bedf71e3608f8d5e5ebd
+- filename: server/src/jobs/lba_recruteur/api/createApiUser.ts
+  checksum: 8e4712bae8747c1f0f2ba8b4ac3f3af118772136c16b6318b14a2d8b7e277dc6
 scopeconfig:
 - scope: node
 custom_patterns:

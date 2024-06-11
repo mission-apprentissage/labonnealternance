@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto"
-
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, parseEnumOrError, removeUndefinedFields } from "shared"
@@ -25,12 +23,6 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { createOrganizationIfNotExist } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
-
-/**
- * @description generate an API key
- * @returns {string}
- */
-export const createApiKey = (): string => `mna-${randomUUID()}`
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
   const { date, reason, validation_type, granted_by } = entrepriseStatusEvent
