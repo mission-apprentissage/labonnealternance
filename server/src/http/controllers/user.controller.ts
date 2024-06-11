@@ -46,7 +46,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const userFromRequest = getUserFromRequest(req, zRoutes.get["/user/opco"]).value
-      const opcoRole = await RoleManagement.findOne({ authorized_type: AccessEntityType.OPCO, user_id: userFromRequest._id.toString() }).lean()
+      const opcoRole = await getDbCollection("rolemanagements").findOne({ authorized_type: AccessEntityType.OPCO, user_id: userFromRequest._id })
       if (!opcoRole) {
         throw Boom.forbidden("pas de role opco")
       }

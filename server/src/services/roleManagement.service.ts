@@ -108,7 +108,6 @@ export const getPublicUserRecruteurPropsOrError = async (
   includeUserAwaitingValidation: boolean = false
 ): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
   const mainRole = await getMainRoleManagement(userId, includeUserAwaitingValidation)
-  console.log({ mainRole })
   if (!mainRole) {
     throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
   }
