@@ -2,14 +2,14 @@ import fs from "fs"
 import path from "path"
 
 import { compose, oleoduc, writeData } from "oleoduc"
-import { ILbaCompany, ZGeoLocation } from "shared/models"
+import { IGeoLocationNew, ILbaCompany, ZGeoLocationNew } from "shared/models"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { EmailBlacklist, GeoLocation, LbaCompany } from "../../common/model/index"
+import { EmailBlacklist, LbaCompany } from "../../common/model/index"
 import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
 import geoData from "../../common/utils/geoData"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -164,7 +164,7 @@ const getGeoLocationForCompany = async (company) => {
   const geoKey = `${company.street_number} ${company.street_name} ${company.zip_code}`.trim().toUpperCase()
 
   // a t on déjà une geoloc pour cette adresse
-  let result = await GeoLocation.findOne({ address: geoKey })
+  let result = await getDbCollection("geolocations").findOne({ address: geoKey })
 
   // si pas de geoloc on en recherche une avec la ban
   if (!result) {
@@ -174,15 +174,15 @@ const getGeoLocationForCompany = async (company) => {
     if (!result) {
       return null
     } else {
-      const geoLocation = new GeoLocation({
+      const geoLocation: IGeoLocationNew = {
         // @ts-expect-error: TODO
         address: geoKey,
         ...result,
-      })
+      }
       try {
         // on enregistre la geoloc trouvée
-        if (ZGeoLocation.safeParse(geoLocation).success) {
-          await geoLocation.save()
+        if (ZGeoLocationNew.safeParse(geoLocation).success) {
+          await getDbCollection("geolocations").insertOne(geoLocation)
         }
       } catch (err) {
         //ignore duplicate error
