@@ -1,5 +1,5 @@
 import { logger } from "../../common/logger"
-import { Appointment } from "../../common/model/index"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymizeAppointments = async () => {
@@ -8,7 +8,7 @@ const anonymizeAppointments = async () => {
   const lastYear = new Date()
   lastYear.setFullYear(lastYear.getFullYear() - 1)
 
-  await Appointment.aggregate([
+  await getDbCollection("appointments").aggregate([
     {
       $match: { created_at: { $lte: lastYear } },
     },
@@ -26,12 +26,11 @@ const anonymizeAppointments = async () => {
       },
     },
     {
-      // @ts-ignore
       $merge: "anonymizedappointments",
     },
   ])
 
-  const res = await Appointment.deleteMany({ created_at: { $lte: lastYear } })
+  const res = await getDbCollection("appointments").deleteMany({ created_at: { $lte: lastYear } })
 
   return res.deletedCount
 }

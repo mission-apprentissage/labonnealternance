@@ -1,5 +1,5 @@
 import { logger } from "../../common/logger"
-import { Application } from "../../common/model/index"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymizeApplications = async () => {
@@ -10,7 +10,7 @@ const anonymizeApplications = async () => {
 
   const matchCondition = { created_at: { $lte: lastYear } }
 
-  await Application.aggregate([
+  await getDbCollection("applications").aggregate([
     {
       $match: matchCondition,
     },
@@ -27,12 +27,11 @@ const anonymizeApplications = async () => {
       },
     },
     {
-      // @ts-ignore
       $merge: "anonymizedapplications",
     },
   ])
 
-  const res = await Application.deleteMany(matchCondition)
+  const res = await getDbCollection("applications").deleteMany(matchCondition)
 
   return res.deletedCount
 }

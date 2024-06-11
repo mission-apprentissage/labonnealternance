@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb"
+
 import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
@@ -381,7 +383,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return createMongoDBIndexes()
       case "anonymize-individual": {
         const { collection, id } = job.payload
-        return anonymizeIndividual({ collection, id })
+        return anonymizeIndividual({ collection, id: new ObjectId(id) })
       }
       case "db:validate":
         return validateModels()
