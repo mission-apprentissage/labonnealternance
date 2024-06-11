@@ -25,4 +25,4 @@ export default {
   zod: ZSession,
   indexes,
   collectionName,
-}
+} as const satisfies IModelDescriptor

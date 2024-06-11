@@ -203,4 +203,4 @@ export default {
   zod: zFormationCatalogueSchema,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

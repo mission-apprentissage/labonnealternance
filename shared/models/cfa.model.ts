@@ -29,4 +29,4 @@ export default {
   zod: zCFA,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

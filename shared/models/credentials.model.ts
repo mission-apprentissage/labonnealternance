@@ -25,4 +25,4 @@ export default {
   zod: ZCredential,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

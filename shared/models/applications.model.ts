@@ -227,4 +227,4 @@ export default {
   zod: ZApplication,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

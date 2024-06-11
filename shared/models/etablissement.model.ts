@@ -46,4 +46,4 @@ export default {
   zod: ZEtablissement,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

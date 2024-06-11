@@ -24,4 +24,4 @@ export default {
   zod: ZUser,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

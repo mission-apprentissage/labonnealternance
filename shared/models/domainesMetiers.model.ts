@@ -54,4 +54,4 @@ export default {
   zod: ZDomainesMetiers,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

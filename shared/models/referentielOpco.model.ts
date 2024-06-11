@@ -27,4 +27,4 @@ export default {
   zod: ZReferentielOpco,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

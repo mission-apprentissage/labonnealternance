@@ -86,4 +86,4 @@ export default {
   zod: ZRecruiter,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

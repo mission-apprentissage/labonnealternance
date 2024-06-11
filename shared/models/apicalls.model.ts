@@ -26,4 +26,4 @@ export default {
   zod: ZApiCall,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

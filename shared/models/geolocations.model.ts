@@ -20,4 +20,4 @@ export default {
   zod: ZGeoLocation,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor

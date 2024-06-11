@@ -47,4 +47,4 @@ export default {
   zod: ZEligibleTrainingsForAppointmentSchema,
   indexes: [],
   collectionName,
-} as IModelDescriptor
+} as const satisfies IModelDescriptor
