@@ -2,7 +2,7 @@ import { captureException, getCurrentHub, runWithAsyncContext } from "@sentry/no
 import { formatDuration, intervalToDuration } from "date-fns"
 import mongoose from "mongoose"
 
-import { IInternalJobs, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { IInternalJobs, IInternalJobsSimple } from "@/common/model/internalJobs.types"
 import { db } from "@/common/mongodb"
 import { sleep } from "@/common/utils/asyncUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"

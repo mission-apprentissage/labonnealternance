@@ -108,7 +108,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(EmailBlacklist, ZEmailBlacklist)
   await validateModel(Etablissement, ZEtablissement)
   await validateModel(FormationCatalogue, zFormationCatalogueSchema)
-  // //  await validateModel(InternalJobs, ZInternalJobs)
   await validateModel(LbaCompany, ZLbaCompany)
   await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   await validateModel(Optout, ZOptout)

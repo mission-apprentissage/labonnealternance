@@ -1,7 +1,7 @@
 import cronParser from "cron-parser"
 import mongoose from "mongoose"
 
-import { IInternalJobsCron } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { IInternalJobsCron } from "@/common/model/internalJobs.types"
 import { db } from "@/common/mongodb"
 import config from "@/config"
 

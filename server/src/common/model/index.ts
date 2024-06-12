@@ -20,7 +20,6 @@ import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema"
 import Etablissement from "./schema/etablissements/etablissement.schema"
 import FicheMetierRomeV4 from "./schema/ficheRomeV4/ficheRomeV4"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema"
-import InternalJobs from "./schema/internalJobs/internalJobs.schema"
 import Job from "./schema/jobs/jobs.schema"
 import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
 import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
@@ -99,7 +98,6 @@ export {
   FicheMetierRomeV4,
   ReferentielRome,
   FormationCatalogue,
-  InternalJobs,
   Job,
   LbaCompany,
   LbaCompanyLegacy,

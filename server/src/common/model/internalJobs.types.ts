@@ -1,5 +1,20 @@
 import { CronName } from "@/jobs/jobs"
 
+/*
+  name: Le nom de la tâche
+  type: Type du job simple ou cron
+  status: Statut courant du job
+  sync: Si le job est synchrone
+  payload: La donnée liéé à la tâche
+  output: Les valeurs de retours du job
+  cron_string: standard cron string exemple: '*\/2 * * * *'
+  scheduled_for: Date de lancement programmée
+  started_at: Date de lancement
+  ended_at: Date de fin d'execution
+  updated_at: Date de mise à jour en base de données
+  created_at: Date d'ajout en base de données
+*/
+
 interface IInternalJobsSimple {
   _id: string
   name: string
