@@ -25,7 +25,7 @@ export const premiumInviteOneShot = async () => {
       },
       premium_activation_date: null,
     }).lean(),
-    eligibleTrainingsForAppointmentService.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
+    eligibleTrainingsForAppointmentService.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }),
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
