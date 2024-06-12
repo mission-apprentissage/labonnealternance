@@ -19,7 +19,6 @@ import GeoLocation from "./schema/geolocation/geolocation.schema"
 import InternalJobs from "./schema/internalJobs/internalJobs.schema"
 import Job from "./schema/jobs/jobs.schema"
 import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
-import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
 import { Cfa } from "./schema/multiCompte/cfa.schema"
 import { Entreprise } from "./schema/multiCompte/entreprise.schema"
 import { RoleManagement } from "./schema/multiCompte/roleManagement.schema"
@@ -96,7 +95,6 @@ export {
   InternalJobs,
   Job,
   LbaCompany,
-  LbaCompanyLegacy,
   Opco,
   Optout,
   Recruiter,

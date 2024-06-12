@@ -2,8 +2,20 @@ import { setTimeout } from "timers/promises"
 
 import { AxiosResponse } from "axios"
 import Boom from "boom"
+import { Filter as MongoDBFilter } from "mongodb"
 import type { FilterQuery } from "mongoose"
-import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, ZAdresseV3, ZCfaReferentielData } from "shared"
+import {
+  IAdresseV3,
+  IBusinessError,
+  ICfaReferentielData,
+  IEtablissement,
+  ILbaCompany,
+  ILbaCompanyLegacy,
+  IRecruiter,
+  IReferentielOpco,
+  ZAdresseV3,
+  ZCfaReferentielData,
+} from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
@@ -17,8 +29,9 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
+import { Cfa, Etablissement, LbaCompany, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
@@ -447,8 +460,8 @@ export const getAllEstablishmentFromOpcoReferentiel = async (query: FilterQuery<
  * @param {FilterQuery<ILbaCompany>} query
  * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromLbaCompanyLegacy = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> =>
-  await LbaCompanyLegacy.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
+  await getDbCollection("bonnesboiteslegacies").find(query).project({ email: 1, _id: 0 }).toArray()
 
 /**
  * @description Get all matching records from the LbaCompanies collection

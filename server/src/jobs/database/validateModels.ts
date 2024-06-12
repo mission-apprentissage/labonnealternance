@@ -10,7 +10,6 @@ import {
   ZEtablissement,
   ZGeoLocation,
   ZLbaCompany,
-  ZLbaLegacyCompany,
   ZOptout,
   ZRecruiter,
   ZReferentielOnisep,
@@ -41,7 +40,6 @@ import {
   FormationCatalogue,
   GeoLocation,
   LbaCompany,
-  LbaCompanyLegacy,
   Optout,
   Recruiter,
   ReferentielOnisep,
@@ -107,7 +105,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(GeoLocation, ZGeoLocation)
   // //  await validateModel(InternalJobs, ZInternalJobs)
   await validateModel(LbaCompany, ZLbaCompany)
-  await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   //  await validateModel(Opco, ZOpco)
   await validateModel(Optout, ZOptout)
   await validateModel(Recruiter, ZRecruiter)
