@@ -1,5 +1,4 @@
-import { ObjectId } from "bson"
-import { IDiplomesMetiers, ZDiplomesMetiersNew } from "shared/models"
+import { ZDiplomesMetiers } from "shared/models"
 
 import { initializeCacheDiplomas } from "@/services/metiers.service"
 
@@ -93,16 +92,9 @@ export default async function () {
     diplomesMetiers[k].acronymes_intitule = buildAcronyms(diplomesMetiers[k].intitule_long)
 
     if (diplomesMetiers[k]?.codes_romes?.length) {
-      const parsedDiplomeMetier = ZDiplomesMetiersNew.safeParse(diplomesMetiers[k])
+      const parsedDiplomeMetier = ZDiplomesMetiers.safeParse(diplomesMetiers[k])
       if (parsedDiplomeMetier.success) {
-        const now = new Date()
-        const newDiplomesMetiers: IDiplomesMetiers = {
-          _id: new ObjectId(),
-          created_at: now,
-          last_update_at: now,
-          ...parsedDiplomeMetier.data,
-        }
-        await getDbCollection("diplomesmetiers").insertOne(newDiplomesMetiers)
+        await getDbCollection("diplomesmetiers").insertOne(parsedDiplomeMetier.data)
       } else {
         logger.error(`Mauvais format diplomesmetier pour le diplôme ${diplomesMetiers[k].intitule_long}`)
       }

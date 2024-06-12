@@ -7,7 +7,6 @@ import { logger } from "../logger"
 import Application from "./schema/application/applications.schema"
 import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
 import Appointment from "./schema/appointments/appointment.schema"
-import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema"
 import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema"
 import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema"
@@ -79,7 +78,6 @@ export {
   Application,
   Appointment,
   AppointmentDetailed,
-  DomainesMetiers,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
   Entreprise,

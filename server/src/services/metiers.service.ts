@@ -1,11 +1,10 @@
 import Boom from "boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
+import { IDiplomesMetiers, IDomainesMetiers } from "shared"
 import { removeAccents, removeRegexChars } from "shared/utils"
 
 import { logger } from "@/common/logger"
-import { IDiplomesMetiers } from "@/common/model/schema/diplomesmetiers/diplomesmetiers.types"
-import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
 import { db } from "@/common/mongodb"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
