@@ -18,7 +18,6 @@ import {
   ZUnsubscribeOF,
   ZUnsubscribedLbaCompany,
   ZUser,
-  zFormationCatalogueSchema,
 } from "shared/models"
 import { zCFA } from "shared/models/cfa.model"
 import { ZEntreprise } from "shared/models/entreprise.model"
@@ -39,7 +38,6 @@ import {
   EligibleTrainingsForAppointment,
   Entreprise,
   Etablissement,
-  FormationCatalogue,
   LbaCompany,
   LbaCompanyLegacy,
   Optout,
@@ -104,7 +102,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(DomainesMetiers, ZDomainesMetiers)
   await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
   await validateModel(Etablissement, ZEtablissement)
-  await validateModel(FormationCatalogue, zFormationCatalogueSchema)
   await validateModel(LbaCompany, ZLbaCompany)
   await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   await validateModel(Optout, ZOptout)

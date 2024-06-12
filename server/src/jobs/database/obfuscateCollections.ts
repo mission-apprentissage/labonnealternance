@@ -12,13 +12,13 @@ import {
   EligibleTrainingsForAppointment,
   eligibleTrainingsForAppointmentHistory,
   Etablissement,
-  FormationCatalogue,
   LbaCompany,
   Optout,
   Recruiter,
   RoleManagement,
 } from "@/common/model/index"
 import { db } from "@/common/mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
@@ -117,7 +117,7 @@ const obfuscateEtablissements = async () => {
 
 const obfuscateFormations = async () => {
   logger.info(`obfuscating formations`)
-  await FormationCatalogue.updateMany(
+  await getDbCollection("formationcatalogues").updateMany(
     {},
     {
       email: fakeEmail,

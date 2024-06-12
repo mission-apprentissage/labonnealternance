@@ -178,8 +178,8 @@ const getGeoLocationForCompany = async (company) => {
       const geoLocation: IGeoLocation = {
         // @ts-expect-error: TODO
         _id: new ObjectId(),
-        address: geoKey,
         ...result,
+        address: geoKey,
       }
       try {
         // on enregistre la geoloc trouvée

@@ -1,9 +1,10 @@
 import { ZDiplomesMetiersNew } from "shared/models"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { initializeCacheDiplomas } from "@/services/metiers.service"
 
 import { logger } from "../../common/logger"
-import { DiplomesMetiers, FormationCatalogue } from "../../common/model/index"
+import { DiplomesMetiers } from "../../common/model/index"
 
 const motsIgnores = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", "des", "et", "en"]
 const diplomesMetiers = {}
@@ -56,7 +57,7 @@ const filterWrongRomes = (formation) => {
 }
 
 const getIntitulesFormations = async () => {
-  const intitulesFormations = await FormationCatalogue.find({}, { _id: 0, intitule_long: 1, rome_codes: 1, rncp_code: 1 }).lean()
+  const intitulesFormations = await getDbCollection("formationcatalogues").find({}, { projection: { _id: 0, intitule_long: 1, rome_codes: 1, rncp_code: 1 } })
 
   for (const formation of intitulesFormations) {
     filterWrongRomes(formation)
