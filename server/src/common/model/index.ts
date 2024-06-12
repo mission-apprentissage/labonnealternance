@@ -18,7 +18,6 @@ import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppoin
 import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
 import Etablissement from "./schema/etablissements/etablissement.schema"
 import FicheMetierRomeV4 from "./schema/ficheRomeV4/ficheRomeV4"
-import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema"
 import Job from "./schema/jobs/jobs.schema"
 import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
 import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
@@ -95,7 +94,6 @@ export {
   Etablissement,
   FicheMetierRomeV4,
   ReferentielRome,
-  FormationCatalogue,
   Job,
   LbaCompany,
   LbaCompanyLegacy,
