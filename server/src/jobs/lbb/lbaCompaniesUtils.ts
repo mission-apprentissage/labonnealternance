@@ -10,7 +10,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { EmailBlacklist, LbaCompany } from "../../common/model/index"
+import { LbaCompany } from "../../common/model/index"
 import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
 import geoData from "../../common/utils/geoData"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -158,7 +158,7 @@ export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | n
 }
 
 const getNotBlacklistedEmail = async (email) => {
-  return (await EmailBlacklist.findOne({ email })) ? null : email
+  return (await getDbCollection("emailblacklists").findOne({ email })) ? null : email
 }
 
 const getGeoLocationForCompany = async (company) => {

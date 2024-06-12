@@ -11,11 +11,13 @@ import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 import { z } from "zod"
 
+import { ObjectId } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
-import { Application, EmailBlacklist, LbaCompany, Recruiter, UserWithAccount } from "../common/model"
+import { Application, LbaCompany, Recruiter, UserWithAccount } from "../common/model"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -73,7 +75,7 @@ export const getApplicationCount = (job_id: IApplication["job_id"]) => Applicati
  * @param {string} email - Email
  * @return {Promise<boolean>}
  */
-export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await EmailBlacklist.countDocuments({ email }))
+export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await getDbCollection("emailblacklists").countDocuments({ email }))
 
 /**
  * @description Add an email address to the blacklist collection.
@@ -85,12 +87,12 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
   try {
     z.string().email().parse(email)
 
-    await EmailBlacklist.findOneAndUpdate(
+    await getDbCollection("emailblacklists").findOneAndUpdate(
       { email },
       {
         email,
         blacklisting_origin: blacklistingOrigin,
-        $setOnInsert: { created_at: new Date() },
+        $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
       },
       { upsert: true }
     )

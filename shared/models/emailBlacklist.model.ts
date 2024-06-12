@@ -20,6 +20,6 @@ export type IEmailBlacklistJson = Jsonify<z.input<typeof ZEmailBlacklist>>
 
 export default {
   zod: ZEmailBlacklist,
-  indexes: [],
+  indexes: [[{ email: 1 }, { unique: true }]],
   collectionName,
 } as const satisfies IModelDescriptor

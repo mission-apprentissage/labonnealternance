@@ -9,8 +9,9 @@ import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Cfa, Credential, EmailBlacklist, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
+import { Application, Cfa, Credential, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 let seed = 0
 function getFixture() {
@@ -208,11 +209,11 @@ export async function createApplicationTest(data: Partial<IApplication>) {
 }
 
 export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
-  const u = new EmailBlacklist({
+  const u = {
     ...getFixture().fromSchema(ZEmailBlacklist),
     ...data,
-  })
-  await u.save()
+  }
+  await getDbCollection("emailblacklists").insertOne(u)
   return u
 }
 

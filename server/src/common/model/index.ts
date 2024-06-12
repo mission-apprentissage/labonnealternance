@@ -16,7 +16,6 @@ import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema"
 import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema"
 import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
-import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema"
 import Etablissement from "./schema/etablissements/etablissement.schema"
 import FicheMetierRomeV4 from "./schema/ficheRomeV4/ficheRomeV4"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema"
@@ -93,7 +92,6 @@ export {
   DiplomesMetiers,
   DomainesMetiers,
   EligibleTrainingsForAppointment,
-  EmailBlacklist,
   Etablissement,
   FicheMetierRomeV4,
   ReferentielRome,
