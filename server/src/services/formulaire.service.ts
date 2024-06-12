@@ -276,7 +276,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
  * @returns {Promise<IRecruiter>}
  */
 export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
-  const offre = await getOffre(id.toString())
+  const offre = await getOffre(id)
   return offre ? true : false
 }
 
@@ -518,15 +518,16 @@ export const cancelOffre = async (id: IJob["_id"]): Promise<boolean> => {
  * @returns {Promise<boolean>}
  */
 export const cancelOffreFromAdminInterface = async (id: IJob["_id"], { job_status, job_status_comment }): Promise<boolean> => {
-  await Recruiter.findOneAndUpdate(
+  await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_status": job_status,
-        "jobs.$.job_status_comment": job_status_comment,
-        "jobs.$.job_update_date": Date.now(),
+        "jobs.$[elem].job_status": job_status,
+        "jobs.$[elem].job_status_comment": job_status_comment,
+        "jobs.$[elem].job_update_date": new Date(),
       },
-    }
+    },
+    { arrayFilters: [{ "elem._id": id }] }
   )
   return true
 }
