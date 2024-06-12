@@ -4,6 +4,7 @@ import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
 import { Appointment, EligibleTrainingsForAppointment, Etablissement, User } from "../../common/model/index"
@@ -12,7 +13,7 @@ import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
 import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
-import { findElligibleTrainingForAppointment, findOne, getParameterByCleMinistereEducatif } from "../../services/eligibleTrainingsForAppointment.service"
+import { findElligibleTrainingForAppointment, getParameterByCleMinistereEducatif } from "../../services/eligibleTrainingsForAppointment.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import * as users from "../../services/user.service"
 import { Server } from "../server"
@@ -46,7 +47,7 @@ export default (server: Server) => {
 
       const referrerObj = getReferrerByKeyName(appointmentOrigin)
 
-      const eligibleTrainingsForAppointment = await findOne({
+      const eligibleTrainingsForAppointment = await getDbCollection("eligible_trainings_for_appointments").findOne({
         cle_ministere_educatif: cleMinistereEducatif,
         referrers: { $in: [referrerObj.name] },
       })

@@ -564,13 +564,6 @@ program
   .option("-parallelism, [parallelism]", "Number of threads", "10")
   .action(createJobAction("referentiel-opco:constructys:import"))
 
-program
-  .command("resend-prdv-emails")
-  .description("Renvoie les emails de prises de rendez-vous")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .requiredOption("--from-date <string>, [fromDate]", "format DD-MM-YYYY. Date depuis laquelle les prises de rendez-vous sont renvoyéees")
-  .action(createJobAction("prdv:emails:resend"))
-
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }

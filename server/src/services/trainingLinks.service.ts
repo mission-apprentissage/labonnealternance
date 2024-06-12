@@ -6,7 +6,6 @@ import { IFormationCatalogue } from "shared/models"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { EligibleTrainingsForAppointment } from "../common/model/index"
 import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
@@ -107,7 +106,7 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
     return ""
   }
 
-  const elligibleFormation = await EligibleTrainingsForAppointment.findOne(
+  const elligibleFormation = await getDbCollection("eligible_trainings_for_appointments").findOne(
     {
       cle_ministere_educatif: wish.cle_ministere_educatif,
       lieu_formation_email: {
@@ -116,7 +115,7 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
         $not: /^$/,
       },
     },
-    { _id: 1 }
+    { projection: { _id: 1 } }
   )
 
   if (elligibleFormation) {

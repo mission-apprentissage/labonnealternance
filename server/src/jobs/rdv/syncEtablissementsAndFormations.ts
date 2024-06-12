@@ -5,7 +5,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
 import { Etablissement, ReferentielOnisep } from "../../common/model/index"
-import { create, findOne, getEmailForRdv, updateParameter } from "../../services/eligibleTrainingsForAppointment.service"
+import { create, getEmailForRdv, updateParameter } from "../../services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
 const hasDateProperty = (etablissements, propertyName) => {
@@ -26,11 +26,12 @@ export const syncEtablissementsAndFormations = async () => {
     writeData(
       async (formation) => {
         const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
-          findOne({
-            cle_ministere_educatif: formation.cle_ministere_educatif,
-          })
-            .select({ lieu_formation_email: 1, is_lieu_formation_email_customized: 1 })
-            .lean(),
+          getDbCollection("eligible_trainings_for_appointments").findOne(
+            {
+              cle_ministere_educatif: formation.cle_ministere_educatif,
+            },
+            { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1 } }
+          ),
           Etablissement.find({
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })
