@@ -467,7 +467,7 @@ export default (server: Server) => {
       const { source } = req.query
       if (source === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
         try {
-          const url = await getFileSignedURL({ key: "offres_emploi_lba.json" })
+          const url = await getFileSignedURL({ key: `${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}.json` })
           trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/jobs/export"].path}/${source}`, response: "OK" })
           return res.send(url)
         } catch (error) {
@@ -476,7 +476,7 @@ export default (server: Server) => {
         }
       } else {
         try {
-          const url = await getFileSignedURL({ key: "lba_recruters.json" })
+          const url = await getFileSignedURL({ key: `${LBA_ITEM_TYPE.RECRUTEURS_LBA}.json` })
           trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/jobs/export"].path}/${source}`, response: "OK" })
           return res.send(url)
         } catch (error) {
