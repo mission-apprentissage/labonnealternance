@@ -292,7 +292,9 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
       return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
     }
   }
-  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: userId }, removeUndefinedFields({ ...fields, email: newEmail }), { returnDocument: "after" })
+  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: userId }, removeUndefinedFields({ ...fields, email: newEmail, updatedAt: new Date() }), {
+    returnDocument: "after",
+  })
   if (!newUser) {
     throw Boom.badRequest("user not found")
   }
