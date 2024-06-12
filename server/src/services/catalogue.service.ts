@@ -2,14 +2,16 @@ import querystring from "node:querystring"
 
 import axios, { AxiosInstance } from "axios"
 import Boom from "boom"
+import { ObjectId } from "bson"
 import { got } from "got"
 import { sortBy } from "lodash-es"
 import { compose } from "oleoduc"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 import { logger } from "../common/logger"
-import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
+import { UnsubscribeOF } from "../common/model/index"
 import { getDistanceInKm } from "../common/utils/geolib"
 import { fetchStream } from "../common/utils/httpUtils"
 import { isValidEmail } from "../common/utils/isValidEmail"
@@ -110,7 +112,7 @@ const neededFieldsFromCatalogue = {
  * @param {String} id
  * @returns {Promise<Object>}
  */
-export const getFormationById = (id: string) => FormationCatalogue.findById(id)
+export const getFormationById = (id: string) => getDbCollection("formationcatalogues").findOne({ _id: new ObjectId(id) })
 
 /**
  * @description Get formations by idRcoFormations.
@@ -118,7 +120,7 @@ export const getFormationById = (id: string) => FormationCatalogue.findById(id)
  * @returns {Promise<Object[]>}
  */
 export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: { cleMinistereEducatifs: string[] }) =>
-  FormationCatalogue.find({ cle_ministere_educatif: { $in: cleMinistereEducatifs } }).lean()
+  getDbCollection("formationcatalogues").find({ cle_ministere_educatif: { $in: cleMinistereEducatifs } })
 
 /**
  * @description Get formations from the formation catalogue collection.
@@ -126,7 +128,7 @@ export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: {
  * @param {Object} select
  * @returns {Promise<Object>}
  */
-export const getCatalogueFormations = (query: object, select?: object) => FormationCatalogue.find(query, select).lean()
+export const getCatalogueFormations = (query: object, select?: object) => getDbCollection("formationcatalogues").find(query, select).toArray()
 
 /**
  * @description Get formations count through the CARIF OREF catalogue API.
@@ -313,7 +315,7 @@ export const getRomesFromCatalogue = async ({
   if (cfd) query.cfd = cfd
   if (siret) query.etablissement_formateur_siret = siret
 
-  const formationsFromDb = await FormationCatalogue.find(query).lean()
+  const formationsFromDb = await getDbCollection("formationcatalogues").find(query)
 
   const romes: Set<string> = new Set()
 
