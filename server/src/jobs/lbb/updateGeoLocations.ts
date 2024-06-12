@@ -5,8 +5,9 @@ import axios from "axios"
 import FormData from "form-data"
 import fsExtra from "fs-extra"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
-import { ZGeoLocationNew } from "shared/models"
+import { ZGeoLocation } from "shared/models"
 
+import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
@@ -56,7 +57,8 @@ const createToGeolocateFile = (addressesToGeolocate, sourceFileCount) => {
 }
 
 const saveGeoData = async (geoData) => {
-  if (ZGeoLocationNew.safeParse(geoData).success) {
+  geoData._id = new ObjectId()
+  if (ZGeoLocation.safeParse(geoData).success) {
     if ((await getDbCollection("geolocations").countDocuments({ address: geoData.address })) === 0) {
       try {
         await getDbCollection("geolocations").insertOne(geoData)

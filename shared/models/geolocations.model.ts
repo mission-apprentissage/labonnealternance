@@ -14,8 +14,7 @@ export const ZGeoLocation = z
   })
   .strict()
 
-export const ZGeoLocationNew = ZGeoLocation.omit({ _id: true }).strict()
-export type IGeoLocationNew = z.output<typeof ZGeoLocationNew>
+export type IGeoLocation = z.output<typeof ZGeoLocation>
 
 export default {
   zod: ZGeoLocation,

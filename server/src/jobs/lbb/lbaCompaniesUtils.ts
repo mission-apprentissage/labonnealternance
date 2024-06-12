@@ -2,8 +2,9 @@ import fs from "fs"
 import path from "path"
 
 import { compose, oleoduc, writeData } from "oleoduc"
-import { IGeoLocationNew, ILbaCompany, ZGeoLocationNew } from "shared/models"
+import { IGeoLocation, ILbaCompany, ZGeoLocation } from "shared/models"
 
+import { ObjectId } from "@/common/mongodb"
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -174,14 +175,15 @@ const getGeoLocationForCompany = async (company) => {
     if (!result) {
       return null
     } else {
-      const geoLocation: IGeoLocationNew = {
+      const geoLocation: IGeoLocation = {
         // @ts-expect-error: TODO
+        _id: new ObjectId(),
         address: geoKey,
         ...result,
       }
       try {
         // on enregistre la geoloc trouvée
-        if (ZGeoLocationNew.safeParse(geoLocation).success) {
+        if (ZGeoLocation.safeParse(geoLocation).success) {
           await getDbCollection("geolocations").insertOne(geoLocation)
         }
       } catch (err) {
