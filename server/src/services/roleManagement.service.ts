@@ -29,7 +29,11 @@ export const modifyPermissionToUser = async (
     if (lastEvent?.status === eventProps.status) {
       return role
     }
-    const newRole = await getDbCollection("rolemanagements").findOneAndUpdate({ _id: role._id }, { $push: { status: event } }, { returnDocument: "after" })
+    const newRole = await getDbCollection("rolemanagements").findOneAndUpdate(
+      { _id: role._id },
+      { $push: { status: event }, $set: { updatedAt: new Date() } },
+      { returnDocument: "after" }
+    )
     if (!newRole) {
       throw Boom.internal("inattendu")
     }
