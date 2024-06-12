@@ -10,7 +10,7 @@ import { AccessPermission, AccessResourcePath } from "shared/security/permission
 import { assertUnreachable, parseEnum } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { Application, Entreprise, Recruiter, UserWithAccount } from "@/common/model"
+import { Entreprise, Recruiter, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
@@ -166,7 +166,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
     schema.securityScheme.resources.application.map(async (applicationDef): Promise<ApplicationResource | null> => {
       if ("_id" in applicationDef) {
         const id = getAccessResourcePathValue(applicationDef._id, req)
-        const application = await Application.findById(id).lean()
+        const application = await getDbCollection("applications").findOne({ _id: id })
 
         if (!application) return null
         const { job_id } = application

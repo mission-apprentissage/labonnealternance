@@ -10,7 +10,7 @@ import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models
 import { ZodObject, ZodSchema, ZodString } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, EmailBlacklist, Recruiter, RoleManagement } from "@/common/model"
+import { EmailBlacklist, Recruiter, RoleManagement } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 
 import { getDbCollection } from "../../src/common/utils/mongodbUtils"
@@ -202,11 +202,11 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
 }
 
 export async function createApplicationTest(data: Partial<IApplication>) {
-  const u = new Application({
+  const u: IApplication = {
     ...getFixture().fromSchema(ZApplication),
     ...data,
-  })
-  await u.save()
+  }
+  await getDbCollection("applications").insertOne(u)
   return u
 }
 

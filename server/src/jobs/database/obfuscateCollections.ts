@@ -7,7 +7,6 @@ import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
 import {
-  Application,
   Appointment,
   EligibleTrainingsForAppointment,
   eligibleTrainingsForAppointmentHistory,
@@ -41,17 +40,19 @@ async function reduceModel(model: string, limit = 20000) {
 
 const obfuscateApplications = async () => {
   logger.info(`obfuscating applications`)
-  await Application.updateMany(
+  await getDbCollection("applications").updateMany(
     {},
     {
-      applicant_email: "faux_email@faux-domaine.fr",
-      applicant_phone: "0601010106",
-      applicant_last_name: "nom_famille",
-      applicant_first_name: "prenom",
-      applicant_attachment_name: "titre_cv.pdf",
-      applicant_message_to_company: "Cher recruteur, embauchez moi ...",
-      company_feedback: "Cher candidat ...",
-      company_email: fakeEmail,
+      $set: {
+        applicant_email: "faux_email@faux-domaine.fr",
+        applicant_phone: "0601010106",
+        applicant_last_name: "nom_famille",
+        applicant_first_name: "prenom",
+        applicant_attachment_name: "titre_cv.pdf",
+        applicant_message_to_company: "Cher recruteur, embauchez moi ...",
+        company_feedback: "Cher candidat ...",
+        company_email: fakeEmail,
+      },
     }
   )
 }

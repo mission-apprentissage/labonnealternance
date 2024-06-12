@@ -62,12 +62,12 @@ type ILbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; recruiter
 /**
  * @description Get applications by job id
  */
-export const getApplicationsByJobId = (job_id: IApplication["job_id"]) => Application.find({ job_id }).lean()
+export const getApplicationsByJobId = (job_id: IApplication["job_id"]) => getDbCollection("applications").find({ job_id }).toArray()
 
 /**
  * @description Get applications count by job id
  */
-export const getApplicationCount = (job_id: IApplication["job_id"]) => Application.count({ job_id }).lean()
+export const getApplicationCount = (job_id: IApplication["job_id"]) => getDbCollection("applications").countDocuments({ job_id })
 
 /**
  * @description Check if an email if blacklisted.
@@ -108,7 +108,7 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
  * @returns {Promise<IApplication>}
  */
 export const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
-  Application.findOne({ company_email: email, to_company_message_id: messageId })
+  getDbCollection("applications").findOne({ company_email: email, to_company_message_id: messageId })
 
 export const removeEmailFromLbaCompanies = async (email: string) => {
   return await getDbCollection("bonnesboites").updateMany({ email }, { email: "" })
@@ -585,12 +585,12 @@ async function getApplicationCountForItem(applicantEmail: string, LbaJob: ILbaJo
   const { type, job } = LbaJob
 
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    return Application.countDocuments({
+    return getDbCollection("applications").countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       company_siret: job.siret,
     })
   } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    return Application.countDocuments({
+    return getDbCollection("applications").countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       job_id: job._id.toString(),
     })
@@ -613,13 +613,13 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
   const { type } = offreOrCompany
 
   const [todayApplicationsCount, itemApplicationCount, callerApplicationCount] = await Promise.all([
-    Application.countDocuments({
+    getDbCollection("applications").countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       created_at: { $gte: start, $lt: end },
     }),
     getApplicationCountForItem(applicantEmail, offreOrCompany),
     caller
-      ? Application.countDocuments({
+      ? getDbCollection("applications").countDocuments({
           caller: caller.toLowerCase(),
           company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.job.siret : offreOrCompany.recruiter.establishment_siret,
           created_at: { $gte: start, $lt: end },
@@ -655,13 +655,13 @@ const checkUserApplicationCountV2 = async (applicantEmail: string, LbaJob: ILbaJ
   const { type, job, recruiter } = LbaJob
 
   const [todayApplicationsCount, itemApplicationCount, callerApplicationCount] = await Promise.all([
-    Application.countDocuments({
+    getDbCollection("applications").countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       created_at: { $gte: start, $lt: end },
     }),
     getApplicationCountForItem(applicantEmail, LbaJob),
     caller
-      ? Application.countDocuments({
+      ? getDbCollection("applications").countDocuments({
           caller,
           company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.siret : recruiter.establishment_siret,
           created_at: { $gte: start, $lt: end },
@@ -803,19 +803,21 @@ export interface IApplicationCount {
  * @returns {Promise<IApplicationCount[]>} token data
  */
 export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]): Promise<IApplicationCount[]> => {
-  const applicationCountByJob: IApplicationCount[] = await Application.aggregate([
-    {
-      $match: {
-        job_id: { $in: job_ids },
+  const applicationCountByJob = (await getDbCollection("applications")
+    .aggregate([
+      {
+        $match: {
+          job_id: { $in: job_ids },
+        },
       },
-    },
-    {
-      $group: {
-        _id: "$job_id",
-        count: { $sum: 1 },
+      {
+        $group: {
+          _id: "$job_id",
+          count: { $sum: 1 },
+        },
       },
-    },
-  ])
+    ])
+    .toArray()) as IApplicationCount[]
 
   return applicationCountByJob
 }
@@ -826,19 +828,21 @@ export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]
  * @returns {Promise<IApplicationCount[]>} token data
  */
 export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][]): Promise<IApplicationCount[]> => {
-  const applicationCountByCompany: IApplicationCount[] = await Application.aggregate([
-    {
-      $match: {
-        company_siret: { $in: sirets },
+  const applicationCountByCompany = (await getDbCollection("applications")
+    .aggregate([
+      {
+        $match: {
+          company_siret: { $in: sirets },
+        },
       },
-    },
-    {
-      $group: {
-        _id: "$company_siret",
-        count: { $sum: 1 },
+      {
+        $group: {
+          _id: "$company_siret",
+          count: { $sum: 1 },
+        },
       },
-    },
-  ])
+    ])
+    .toArray()) as IApplicationCount[]
 
   return applicationCountByCompany
 }
@@ -869,7 +873,7 @@ export const processApplicationHardbounceEvent = async (payload) => {
 
 export const obfuscateLbaCompanyApplications = async (company_siret: string) => {
   const fakeEmail = "faux_email@faux-domaine-compagnie.com"
-  await Application.updateMany(
+  await getDbCollection("applications").updateMany(
     { job_origin: { $in: [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA] }, company_siret },
     { $set: { to_company_message_id: fakeEmail, company_email: fakeEmail } }
   )
