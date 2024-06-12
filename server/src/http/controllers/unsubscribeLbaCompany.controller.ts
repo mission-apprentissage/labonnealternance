@@ -6,7 +6,8 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { obfuscateLbaCompanyApplications } from "@/services/application.service"
 import { buildLbaCompanyAddress } from "@/services/lbacompany.service"
 
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
+import { UnsubscribedLbaCompany } from "../../common/model"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import config from "../../config"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
 import mailer from "../../services/mailer.service"
@@ -44,7 +45,7 @@ export default function (server: Server) {
         }
       }
 
-      const lbaCompaniesToUnsubscribe = await LbaCompany.find(criteria).limit(ARBITRARY_COMPANY_LIMIT).lean()
+      const lbaCompaniesToUnsubscribe = await getDbCollection("bonnesboites").find(criteria).limit(ARBITRARY_COMPANY_LIMIT).toArray()
 
       if (!lbaCompaniesToUnsubscribe.length) {
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU }
@@ -75,9 +76,9 @@ export default function (server: Server) {
 
           await unsubscribedLbaCompany.save()
 
-          const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret }).lean()
+          const lbaCompanyToUnsubscribe = await getDbCollection("bonnesboites").findOne({ siret })
           if (lbaCompanyToUnsubscribe) {
-            await LbaCompany.deleteOne({ _id: lbaCompanyToUnsubscribe._id })
+            await getDbCollection("bonnesboites").deleteOne({ _id: lbaCompanyToUnsubscribe._id })
           }
 
           if (reason === "OPPOSITION") {

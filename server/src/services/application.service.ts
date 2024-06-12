@@ -15,8 +15,9 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
-import { Application, EmailBlacklist, LbaCompany, Recruiter, UserWithAccount } from "../common/model"
+import { Application, EmailBlacklist, Recruiter, UserWithAccount } from "../common/model"
 import { manageApiError } from "../common/utils/errorManager"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
@@ -110,7 +111,7 @@ export const findApplicationByMessageId = async ({ messageId, email }: { message
   Application.findOne({ company_email: email, to_company_message_id: messageId })
 
 export const removeEmailFromLbaCompanies = async (email: string) => {
-  return await LbaCompany.updateMany({ email }, { email: "" })
+  return await getDbCollection("bonnesboites").updateMany({ email }, { email: "" })
 }
 
 /**
@@ -244,7 +245,8 @@ export const sendApplicationV2 = async ({
   }
 
   if ("company_siret" in newApplication) {
-    const LbaRecruteur = await LbaCompany.findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } }).lean() // email can be null in collection
+    // email can be null in collection
+    const LbaRecruteur = await getDbCollection("bonnesboites").findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } })
     if (!LbaRecruteur) {
       throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
     }
@@ -550,7 +552,7 @@ export const validateJob = async (application: INewApplicationV2): Promise<ILbaJ
     if (!company_siret) {
       return { error: "company_siret manquant" }
     }
-    const lbaCompany = await LbaCompany.findOne({ siret: company_siret })
+    const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret: company_siret })
     if (!lbaCompany) {
       return { error: "société manquante" }
     }

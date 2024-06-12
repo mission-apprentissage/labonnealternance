@@ -2,11 +2,11 @@ import Boom from "boom"
 import { ILbaCompany } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { LbaCompany } from "../common/model/index"
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { isAllowedSource } from "../common/utils/isAllowedSource"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
@@ -202,30 +202,34 @@ const getCompanies = async ({
     let companies: ILbaCompany[] = []
 
     if (latitude && longitude) {
-      companies = await LbaCompany.aggregate([
-        {
-          $geoNear: {
-            near: { type: "Point", coordinates: [longitude, latitude] },
-            distanceField: "distance",
-            maxDistance: distance * 1000,
-            query,
+      companies = (await getDbCollection("bonnesboites")
+        .aggregate([
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [longitude, latitude] },
+              distanceField: "distance",
+              maxDistance: distance * 1000,
+              query,
+            },
           },
-        },
-        {
-          $limit: companyLimit,
-        },
-      ])
+          {
+            $limit: companyLimit,
+          },
+        ])
+        .toArray()) as ILbaCompany[]
     } else {
-      companies = await LbaCompany.aggregate([
-        {
-          $match: query,
-        },
-        {
-          $sample: {
-            size: companyLimit,
+      companies = (await getDbCollection("bonnesboites")
+        .aggregate([
+          {
+            $match: query,
           },
-        },
-      ])
+          {
+            $sample: {
+              size: companyLimit,
+            },
+          },
+        ])
+        .toArray()) as ILbaCompany[]
     }
 
     if (!latitude) {
@@ -317,7 +321,7 @@ export const getCompanyFromSiret = async ({
     }
 > => {
   try {
-    const lbaCompany = await LbaCompany.findOne({ siret })
+    const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret })
 
     if (lbaCompany) {
       const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.siret])
@@ -362,21 +366,19 @@ export const getCompanyFromSiret = async ({
  */
 export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string | undefined; phone: string | undefined }) => {
   try {
-    const lbaCompany = await LbaCompany.findOne({ siret })
+    const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret })
 
     if (!lbaCompany) {
       throw Boom.badRequest()
     }
 
     if (email !== undefined) {
-      lbaCompany.email = email
+      await getDbCollection("bonnesboites").findOneAndUpdate({ siret }, { $set: { email } })
     }
 
     if (phone !== undefined) {
-      lbaCompany.phone = phone
+      await getDbCollection("bonnesboites").findOneAndUpdate({ siret }, { $set: { phone } })
     }
-
-    await lbaCompany.save() // obligatoire pour trigger la mise à jour de l'index ES. update ne le fait pas
   } catch (err) {
     sentryCaptureException(err)
     throw err

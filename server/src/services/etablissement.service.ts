@@ -29,7 +29,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Etablissement, LbaCompany, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
+import { Cfa, Etablissement, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
@@ -455,20 +455,14 @@ export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentie
  * @returns {Promise<IReferentielOpco[]>}
  */
 export const getAllEstablishmentFromOpcoReferentiel = async (query: FilterQuery<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
-/**
- * @description Get all matching records from the LbaCompanyLegacy collection
- * @param {FilterQuery<ILbaCompany>} query
- * @returns {Promise<ILbaCompany["email"]>}
- */
-export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
-  await getDbCollection("bonnesboiteslegacies").find(query).project({ email: 1, _id: 0 }).toArray()
 
-/**
- * @description Get all matching records from the LbaCompanies collection
- * @param {FilterQuery<ILbaCompany>} query
- * @returns {Promise<ILbaCompany["email"]>}
- */
-export const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
+type IGetAllEmailFromLbaCompanyLegacy = Pick<ILbaCompanyLegacy, "email">
+export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
+  (await getDbCollection("bonnesboiteslegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
+
+type IGetAllEmailFromLbaCompany = Pick<ILbaCompany, "email">
+export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<ILbaCompany>) =>
+  (await getDbCollection("bonnesboites").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
 
 function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undefined {
   const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale

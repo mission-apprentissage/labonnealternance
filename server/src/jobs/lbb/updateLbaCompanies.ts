@@ -3,8 +3,9 @@ import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 
 import { checkIsDiffusible } from "@/services/etablissement.service"
 
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
+import { UnsubscribedLbaCompany } from "../../common/model"
 import { logMessage } from "../../common/utils/logMessage"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils"
@@ -61,8 +62,8 @@ const processCompanies = async () => {
     writeData(async (lbaCompany) => {
       try {
         if (lbaCompany) {
-          const parsedCompany = ZLbaCompany.omit({ _id: true }).parse(lbaCompany.toObject())
-          await LbaCompany.collection.insertOne(parsedCompany)
+          const parsedCompany = ZLbaCompany.parse(lbaCompany)
+          await getDbCollection("bonnesboites").insertOne(parsedCompany)
         }
       } catch (err) {
         logMessage("error", err)
@@ -111,7 +112,7 @@ export default async function updateLbaCompanies({
 
     if (ClearMongo) {
       logMessage("info", `Clearing bonnesboites db...`)
-      await LbaCompany.deleteMany({})
+      await getDbCollection("bonnesboites").deleteMany({})
     }
 
     if (UseAlgoFile) {
