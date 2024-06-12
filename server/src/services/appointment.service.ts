@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import type { FilterQuery, ObjectId } from "mongoose"
+import { Filter, ObjectId } from "mongodb"
 import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 
 import { mailType } from "@/common/model/constants/appointments"
@@ -8,6 +8,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import config from "@/config"
 
 import { Appointment } from "../common/model/index"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
@@ -24,17 +25,17 @@ const createAppointment = async (params: NewAppointment) => {
   return appointment.toObject()
 }
 
-const findById = async (id: ObjectId | string): Promise<IAppointment | null> => Appointment.findById(id).lean()
+const findById = async (id: ObjectId | string): Promise<IAppointment | null> => getDbCollection("appointments").findOne({ _id: new ObjectId(id) })
 
-const find = (conditions: FilterQuery<IAppointment>) => Appointment.find(conditions)
+const find = (conditions: Filter<IAppointment>) => getDbCollection("appointments").find(conditions)
 
-const findOne = (conditions: FilterQuery<IAppointment>) => Appointment.findOne(conditions)
+const findOne = (conditions: Filter<IAppointment>) => getDbCollection("appointments").findOne(conditions)
 
-const findOneAndUpdate = (conditions: FilterQuery<IAppointment>, values) => Appointment.findOneAndUpdate(conditions, values, { new: true })
+const findOneAndUpdate = (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").findOneAndUpdate(conditions, values, { new: true })
 
-const updateMany = (conditions: FilterQuery<IAppointment>, values) => Appointment.updateMany(conditions, values)
+const updateMany = (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").updateMany(conditions, values)
 
-const updateAppointment = (id: string, values) => Appointment.findOneAndUpdate({ _id: id }, values, { new: true })
+const updateAppointment = (id: string, values) => getDbCollection("appointments").findOneAndUpdate({ _id: new ObjectId(id) }, values, { new: true })
 
 export { createAppointment, find, findById, findOne, findOneAndUpdate, updateAppointment, updateMany }
 
@@ -150,7 +151,7 @@ export const processAppointmentToApplicantWebhookEvent = async (payload) => {
     // deuxième condition ci-dessus utile uniquement pour typescript car to_applicant_mails peut être null selon le typage
     const firstEmailEvent = appointmentCandidatFound.to_applicant_mails[0]
 
-    await appointmentCandidatFound.updateOne(
+    await getDbCollection("appointments").updateOne(
       { _id: appointmentCandidatFound._id },
       {
         $push: {
@@ -178,7 +179,7 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
   if (appointment) {
     const firstEmailEvent = appointment.to_cfa_mails[0]
 
-    await appointment.updateOne(
+    await getDbCollection("appointments").updateOne(
       { _id: appointment._id },
       {
         $push: {

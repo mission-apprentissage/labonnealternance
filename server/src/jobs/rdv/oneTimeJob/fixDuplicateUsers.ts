@@ -1,7 +1,8 @@
 import { IUser } from "shared"
 
 import { logger } from "../../../common/logger"
-import { Appointment, User } from "../../../common/model"
+import { User } from "../../../common/model"
+import { getDbCollection } from "../../../common/utils/mongodbUtils"
 
 const findDuplicates = (users) => {
   const emailMap: { [key: string]: IUser[] } = {}
@@ -31,7 +32,7 @@ export const fixDuplicateUsers = async () => {
   for await (const groupOfUsers of duplicates) {
     const userToKeep = groupOfUsers.shift()
     for await (const group of groupOfUsers) {
-      await Appointment.updateMany({ applicant_id: group._id.toString() }, { $set: { applicant_id: userToKeep?._id.toString() } })
+      await getDbCollection("appointments").updateMany({ applicant_id: group._id.toString() }, { $set: { applicant_id: userToKeep?._id.toString() } })
       await User.findByIdAndDelete(group._id)
     }
   }

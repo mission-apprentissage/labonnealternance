@@ -22,7 +22,6 @@ import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
 import {
-  Appointment,
   AppointmentDetailed,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
@@ -83,7 +82,6 @@ async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, a
 
 export async function validateModels(): Promise<void> {
   // TODO: Create Zod for missing models
-  await validateModel(Appointment, ZAppointment)
   await validateModel(AppointmentDetailed, ZAppointment)
   await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
   await validateModel(EmailBlacklist, ZEmailBlacklist)

@@ -6,16 +6,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
-import {
-  Appointment,
-  EligibleTrainingsForAppointment,
-  eligibleTrainingsForAppointmentHistory,
-  Etablissement,
-  FormationCatalogue,
-  Optout,
-  Recruiter,
-  RoleManagement,
-} from "@/common/model/index"
+import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, Etablissement, FormationCatalogue, Optout, Recruiter, RoleManagement } from "@/common/model/index"
 import { db } from "@/common/mongodb"
 import config from "@/config"
 
@@ -70,12 +61,14 @@ const obfuscateEmailBlackList = async () => {
 
 const obfuscateAppointments = async () => {
   logger.info(`obfuscating appointments`)
-  await Appointment.updateMany(
+  await getDbCollection("appointments").updateMany(
     {},
     {
-      cfa_message_to_applicant: "Réponse du cfa ...",
-      applicant_message_to_cfa: "Message du candidat ...",
-      cfa_recipient_email: fakeEmail,
+      $set: {
+        cfa_message_to_applicant: "Réponse du cfa ...",
+        applicant_message_to_cfa: "Message du candidat ...",
+        cfa_recipient_email: fakeEmail,
+      },
     }
   )
 }

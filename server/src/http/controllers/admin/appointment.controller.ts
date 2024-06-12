@@ -1,7 +1,8 @@
 import Boom from "boom"
 import { IFormationCatalogue, zRoutes } from "shared/index"
 
-import { Appointment, User } from "../../../common/model/index"
+import { User } from "../../../common/model/index"
+import { getDbCollection } from "../../../common/utils/mongodbUtils"
 import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service"
 import { Server } from "../../server"
 
@@ -19,7 +20,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/admin/appointments/details"])],
     },
     async (_req, res) => {
-      const allAppointments = await Appointment.find().limit(100).sort({ _id: -1 }).lean()
+      const allAppointments = await getDbCollection("appointments").find().limit(100).sort({ _id: -1 }).toArray()
 
       const cleMinistereEducatifs: Set<string> = new Set()
       if (allAppointments) {

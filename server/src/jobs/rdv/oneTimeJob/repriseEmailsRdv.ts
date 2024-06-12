@@ -2,8 +2,9 @@ import Boom from "boom"
 
 import { logger } from "../../../common/logger"
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers"
-import { Appointment, Etablissement, User } from "../../../common/model/index"
+import { Etablissement, User } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
+import { getDbCollection } from "../../../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import { sendFormateurAppointmentEmail } from "../../../services/appointment.service"
@@ -18,7 +19,9 @@ export const repriseEmailRdvs = async ({ fromDateStr }: { fromDateStr: string })
   }
   const fromDate = dayjsDate.toDate()
   logger.info(`Reprise des emails de rdv: récupération des rdvs depuis le ${fromDate.toISOString()}...`)
-  const appointments = await Appointment.find({ created_at: { $gt: fromDate } }).lean()
+  const appointments = await getDbCollection("appointments")
+    .find({ created_at: { $gt: fromDate } })
+    .toArray()
   logger.info(`Reprise des emails de rdv: ${appointments.length} rdvs à envoyer`)
   const stats = { success: 0, failure: 0 }
 

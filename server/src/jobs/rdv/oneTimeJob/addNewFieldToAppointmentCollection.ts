@@ -1,8 +1,8 @@
-import { Appointment } from "../../../common/model/index"
+import { getDbCollection } from "../../../common/utils/mongodbUtils"
 import { runScript } from "../../scriptWrapper"
 
 export const addNewFieldToAppointmentCollection = async () => {
-  const result = await Appointment.updateMany(
+  const result = await getDbCollection("appointments").updateMany(
     {},
     {
       $set: {

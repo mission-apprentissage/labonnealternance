@@ -1,7 +1,8 @@
 import { z } from "zod"
 
-import { Appointment, Optout, User } from "../../../common/model"
+import { Optout, User } from "../../../common/model"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
+import { getDbCollection } from "../../../common/utils/mongodbUtils"
 
 const fixOptoutContactList = async () => {
   const optouts = await Optout.find({}).lean()
@@ -21,7 +22,7 @@ const fixUserEmail = async () => {
   const users = await User.find({}).lean()
   await asyncForEach(users, async (user) => {
     if (!z.string().email().safeParse(user.email).success) {
-      await Appointment.findOneAndDelete({ applicant_id: user._id.toString() })
+      await getDbCollection("appointments").findOneAndDelete({ applicant_id: user._id.toString() })
       await User.findByIdAndDelete(user._id)
     }
   })
