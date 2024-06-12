@@ -312,7 +312,7 @@ export const removeUser = async (id: IUserWithAccount["_id"] | string) => {
  * @returns {Promise<IUserRecruteur>}
  */
 export const updateLastConnectionDate = async (email: IUserRecruteur["email"]): Promise<void> => {
-  await getDbCollection("userswithaccounts").updateOne({ email: email.toLowerCase() }, { $set: { last_action_date: new Date() } })
+  await getDbCollection("userswithaccounts").updateOne({ email: email.toLowerCase() }, { $set: { last_action_date: new Date(), updatedAt: new Date() } })
 }
 
 /**

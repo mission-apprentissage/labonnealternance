@@ -71,7 +71,11 @@ export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]):
     granted_by: id.toString(),
     reason: "validation de l'email par l'utilisateur",
   }
-  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: id }, { $push: { status: event } }, { returnDocument: "after" })
+  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate(
+    { _id: id },
+    { $push: { status: event }, $set: { updatedAt: new Date() } },
+    { returnDocument: "after" }
+  )
   if (!newUser) {
     throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
   }
@@ -89,7 +93,11 @@ export const activateUser = async (user: IUserWithAccount, granted_by: string): 
     granted_by,
     reason: "",
   }
-  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: user._id }, { $push: { status: event } }, { returnDocument: "after" })
+  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate(
+    { _id: user._id },
+    { $push: { status: event }, $set: { updatedAt: new Date() } },
+    { returnDocument: "after" }
+  )
   if (!newUser) {
     throw Boom.internal(`utilisateur avec id=${user._id} non trouvé`)
   }
