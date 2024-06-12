@@ -3,7 +3,6 @@ import { Model } from "mongoose"
 import {
   ZApplication,
   ZAppointment,
-  ZDiplomesMetiers,
   ZDomainesMetiers,
   ZEligibleTrainingsForAppointmentSchema,
   ZEmailBlacklist,
@@ -28,7 +27,6 @@ import {
   Application,
   Appointment,
   AppointmentDetailed,
-  DiplomesMetiers,
   DomainesMetiers,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
@@ -92,7 +90,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(Application, ZApplication)
   await validateModel(Appointment, ZAppointment)
   await validateModel(AppointmentDetailed, ZAppointment)
-  await validateModel(DiplomesMetiers, ZDiplomesMetiers)
   await validateModel(DomainesMetiers, ZDomainesMetiers)
   await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
   await validateModel(EmailBlacklist, ZEmailBlacklist)
