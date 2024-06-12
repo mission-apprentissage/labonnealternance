@@ -16,9 +16,9 @@ import {
   LbaCompany,
   Optout,
   Recruiter,
-  RoleManagement,
 } from "@/common/model/index"
 import { db } from "@/common/mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
@@ -131,7 +131,7 @@ const obfuscateFormations = async () => {
 const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
 const keepSpecificUser = async (email: string, type: AccessEntityType) => {
-  const role = await RoleManagement.findOne({ authorized_type: type }).lean()
+  const role = await getDbCollection("rolemanagements").findOne({ authorized_type: type })
   const replacement = {
     $set: { email },
     $push: {
@@ -147,7 +147,7 @@ const keepSpecificUser = async (email: string, type: AccessEntityType) => {
     await db.collection("userswithaccounts").findOneAndUpdate({ _id: role.user_id }, replacement)
 
     if (getLastStatusEvent(role.status)?.status !== AccessStatus.GRANTED) {
-      await RoleManagement.findOneAndUpdate(
+      await getDbCollection("rolemanagements").findOneAndUpdate(
         { _id: role._id },
         {
           $push: {

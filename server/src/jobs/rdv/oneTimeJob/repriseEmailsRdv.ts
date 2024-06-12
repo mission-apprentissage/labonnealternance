@@ -1,8 +1,11 @@
 import Boom from "boom"
+import { ObjectId } from "bson"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../../common/logger"
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers"
-import { Appointment, Etablissement, User } from "../../../common/model/index"
+import { Appointment, Etablissement } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
@@ -24,7 +27,7 @@ export const repriseEmailRdvs = async ({ fromDateStr }: { fromDateStr: string })
 
   await asyncForEach(appointments, async (appointment) => {
     try {
-      const user = await User.findOne({ _id: appointment.applicant_id })
+      const user = await getDbCollection("users").findOne({ _id: new ObjectId(appointment.applicant_id) })
       const referrerObj = getReferrerByKeyName(appointment.appointment_origin)
       const eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
         cle_ministere_educatif: appointment.cle_ministere_educatif,

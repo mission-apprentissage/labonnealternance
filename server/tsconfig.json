@@ -33,6 +33,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["./**/*.ts", "./**/*.js"],
+  "include": ["./**/*.ts", "./**/*.js", "../shared/models/session.model.ts"],
   "exclude": ["**/node_modules", "coverage", "dist"]
 }

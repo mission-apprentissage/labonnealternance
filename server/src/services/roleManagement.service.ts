@@ -6,7 +6,7 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Entreprise, RoleManagement } from "@/common/model"
+import { Cfa, Entreprise } from "@/common/model"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
@@ -48,7 +48,9 @@ export const modifyPermissionToUser = async (
 }
 
 export const getGrantedRoles = async (userId: string) => {
-  const roles = await RoleManagement.find({ user_id: userId }).lean()
+  const roles = await getDbCollection("rolemanagements")
+    .find({ user_id: new ObjectId(userId) })
+    .toArray()
   return roles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
 }
 
@@ -108,7 +110,6 @@ export const getPublicUserRecruteurPropsOrError = async (
   includeUserAwaitingValidation: boolean = false
 ): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
   const mainRole = await getMainRoleManagement(userId, includeUserAwaitingValidation)
-  console.log({ mainRole })
   if (!mainRole) {
     throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
   }

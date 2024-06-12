@@ -1,5 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZMetiersEnrichis, ZReferentielRome } from "../models"
+import { ZMetiersEnrichis, ZReferentielRomeForJob } from "../models"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -28,7 +28,7 @@ export const zRomeRoutes = {
         })
         .strict(),
       response: {
-        "200": ZReferentielRome,
+        "200": ZReferentielRomeForJob,
       },
       securityScheme: null,
     },

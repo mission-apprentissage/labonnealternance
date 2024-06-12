@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { ObjectId } from "bson"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
@@ -12,10 +13,11 @@ import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "sha
 import { z } from "zod"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
-import { Application, EmailBlacklist, LbaCompany, Recruiter, UserWithAccount } from "../common/model"
+import { Application, EmailBlacklist, LbaCompany, Recruiter } from "../common/model"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -391,7 +393,7 @@ const buildReplyLink = (application: IApplication, intention: ApplicantIntention
 export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id">): Promise<IUserWithAccount> => {
   const { managed_by } = job
   if (managed_by) {
-    const user = await UserWithAccount.findOne({ _id: managed_by }).lean()
+    const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
     if (!user) {
       throw new Error(`could not find offer manager with id=${managed_by}`)
     }

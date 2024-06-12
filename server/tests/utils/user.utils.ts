@@ -9,8 +9,9 @@ import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Cfa, Credential, EmailBlacklist, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
+import { Application, Credential, EmailBlacklist, Recruiter } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 let seed = 0
 function getFixture() {
@@ -52,17 +53,17 @@ function getFixture() {
   ])
 }
 
-export const saveDbEntity = async <T>(schema: ZodTypeAny, dbModel: (item: T) => { save: () => Promise<any> } & T, data: Partial<T>) => {
-  const u = dbModel({
+export const saveDbEntity = async <T>(schema: ZodTypeAny, saveEntity: (item: T) => Promise<any>, data: Partial<T>) => {
+  const entity = {
     ...getFixture().fromSchema(schema),
     ...data,
-  })
-  await u.save()
-  return u
+  }
+  await saveEntity(entity)
+  return entity
 }
 
 export const saveUserWithAccount = async (data: Partial<IUserWithAccount> = {}) => {
-  return saveDbEntity(ZUserWithAccount, (item) => new UserWithAccount(item), data)
+  return saveDbEntity(ZUserWithAccount, (item) => getDbCollection("userswithaccounts").insertOne(item), data)
 }
 export const saveRoleManagement = async (data: Partial<IRoleManagement> = {}) => {
   const role: IRoleManagement = {
@@ -76,7 +77,7 @@ export const saveRoleManagement = async (data: Partial<IRoleManagement> = {}) =>
     user_id: new ObjectId(),
     ...data,
   }
-  await new RoleManagement(role).save()
+  await getDbCollection("rolemanagements").insertOne(role)
   return role
 }
 
@@ -97,7 +98,7 @@ export const roleManagementEventFactory = ({
 }
 
 export const saveEntreprise = async (data: Partial<IEntreprise> = {}) => {
-  return saveDbEntity(ZEntreprise, (item) => new Entreprise(item), data)
+  return saveDbEntity(ZEntreprise, (item) => getDbCollection("entreprises").insertOne(item), data)
 }
 
 export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEvent> = {}): IEntrepriseStatusEvent => {
@@ -111,7 +112,7 @@ export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEve
 }
 
 export const saveCfa = async (data: Partial<ICFA> = {}) => {
-  return saveDbEntity(zCFA, (item) => new Cfa(item), data)
+  return saveDbEntity(zCFA, (item) => getDbCollection("cfas").insertOne(item), data)
 }
 
 export const jobFactory = (props: Partial<IJob> = {}) => {
@@ -144,7 +145,7 @@ export const jobFactory = (props: Partial<IJob> = {}) => {
     custom_geo_coordinates: "custom_geo_coordinates",
     stats_detail_view: 0,
     stats_search_view: 0,
-    managed_by: new ObjectId(),
+    managed_by: new ObjectId().toString(),
     ...props,
   }
   return job
