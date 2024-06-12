@@ -57,7 +57,9 @@ const filterWrongRomes = (formation) => {
 }
 
 const getIntitulesFormations = async () => {
-  const intitulesFormations = await getDbCollection("formationcatalogues").find({}, { projection: { _id: 0, intitule_long: 1, rome_codes: 1, rncp_code: 1 } })
+  const intitulesFormations = await getDbCollection("formationcatalogues")
+    .find({}, { projection: { _id: 0, intitule_long: 1, rome_codes: 1, rncp_code: 1 } })
+    .toArray()
 
   for (const formation of intitulesFormations) {
     filterWrongRomes(formation)

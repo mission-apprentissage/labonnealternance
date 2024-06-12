@@ -73,7 +73,7 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
     searchForOpcoParams.opco = OPCOS[opco.toUpperCase()]
   }
 
-  const foundInMongoOpcos = await getDbCollection("opcos").find(searchForOpcoParams)
+  const foundInMongoOpcos = await getDbCollection("opcos").find(searchForOpcoParams).toArray()
 
   let opcoFilteredSirens: any[] = []
 

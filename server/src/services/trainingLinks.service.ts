@@ -56,7 +56,7 @@ const getFormations = (
     rome_codes: 1,
     _id: 0,
   }
-) => getDbCollection("formationcatalogues").find(query, filter)
+) => getDbCollection("formationcatalogues").find(query, filter).toArray()
 
 /**
  * @description get formation according to the available parameters passed to the API endpoint

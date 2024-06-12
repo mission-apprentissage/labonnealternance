@@ -9,7 +9,9 @@ import { getParcoursupAndAffelnetPerimetreFromCatalogueME } from "../../services
 
 export const updateParcoursupAndAffelnetInfoOnFormationCatalogue = async () => {
   logger.info("--- update formation catalogue data --- start")
-  const formations = await getDbCollection("formationcatalogues").find({}, { projection: { _id: 0, cle_ministere_educatif: 1 } })
+  const formations = await getDbCollection("formationcatalogues")
+    .find({}, { projection: { _id: 0, cle_ministere_educatif: 1 } })
+    .toArray()
   const catalogueMinistereEducatif = await getParcoursupAndAffelnetPerimetreFromCatalogueME()
 
   if (!catalogueMinistereEducatif) return

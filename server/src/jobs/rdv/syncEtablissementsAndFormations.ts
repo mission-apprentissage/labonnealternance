@@ -20,11 +20,9 @@ export const syncEtablissementsAndFormations = async () => {
   logger.info("Cron #syncEtablissementsAndFormations started.")
 
   await oleoduc(
-    getDbCollection("formationcatalogues")
-      .find({
-        cle_ministere_educatif: { $ne: null },
-      })
-      .cursor(),
+    getDbCollection("formationcatalogues").find({
+      cle_ministere_educatif: { $ne: null },
+    }),
     writeData(
       async (formation) => {
         const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
