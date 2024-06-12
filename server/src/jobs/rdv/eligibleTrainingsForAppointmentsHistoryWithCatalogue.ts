@@ -1,7 +1,9 @@
 import { oleoduc, writeData } from "oleoduc"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, FormationCatalogue } from "../../common/model/index"
+import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory } from "../../common/model/index"
 
 /**
  * @description Check if a training is still available for appointments again it's presence in the training catalogue
@@ -10,7 +12,7 @@ import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory
 export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => {
   logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue started.")
 
-  const control = await FormationCatalogue.countDocuments()
+  const control = await getDbCollection("formationcatalogues").countDocuments()
 
   if (control === 0) {
     return
@@ -27,7 +29,7 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
     EligibleTrainingsForAppointment.find({}).lean().cursor(),
     writeData(
       async (formation) => {
-        const exist = await FormationCatalogue.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
+        const exist = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
 
         formation._id = undefined
 

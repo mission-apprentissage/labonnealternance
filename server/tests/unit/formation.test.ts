@@ -2,22 +2,20 @@ import assert from "assert"
 
 import { describe, it } from "vitest"
 
-import { FormationCatalogue } from "@/common/model"
-
 import { deduplicateFormations } from "../../src/services/formation.service"
 
 describe("formation", () => {
   const sampleFormation1 = [
-    new FormationCatalogue({ nom: "a1", intitule: "b1", etablissement_formateur_siret: "c1", diplome: "d1", code_postal: "e1" }),
-    new FormationCatalogue({ nom: "a1", intitule: "b1", etablissement_formateur_siret: "c1", diplome: "d1", code_postal: "e1" }),
-    new FormationCatalogue({ nom: "a2", intitule: "b2", etablissement_formateur_siret: "c2", diplome: "d2", code_postal: "e2" }),
-    new FormationCatalogue({ nom: "a1", intitule: "b1", etablissement_formateur_siret: "c1", diplome: "d1", code_postal: "e1" }),
+    { nom: "a1", intitule: "b1", etablissement_formateur_siret: "c1", diplome: "d1", code_postal: "e1" },
+    { nom: "a1", intitule: "b1", etablissement_formateur_siret: "c1", diplome: "d1", code_postal: "e1" },
+    { nom: "a2", intitule: "b2", etablissement_formateur_siret: "c2", diplome: "d2", code_postal: "e2" },
+    { nom: "a1", intitule: "b1", etablissement_formateur_siret: "c1", diplome: "d1", code_postal: "e1" },
   ]
 
   const sampleFormation2 = [
-    new FormationCatalogue({ nom: "a1", intitule: "b1", etablissement_formateur_siret: "c1", diplome: "d1", code_postal: "e1" }),
-    new FormationCatalogue({ nom: "a2", intitule: "b2", etablissement_formateur_siret: "c2", diplome: "d2", code_postal: "e2" }),
-    new FormationCatalogue({ nom: "a3", intitule: "b3", etablissement_formateur_siret: "c3", diplome: "d3", code_postal: "e3" }),
+    { nom: "a1", intitule: "b1", etablissement_formateur_siret: "c1", diplome: "d1", code_postal: "e1" },
+    { nom: "a2", intitule: "b2", etablissement_formateur_siret: "c2", diplome: "d2", code_postal: "e2" },
+    { nom: "a3", intitule: "b3", etablissement_formateur_siret: "c3", diplome: "d3", code_postal: "e3" },
   ]
 
   it("Détecte les doublons et retourne les items sans doublon ", () => {

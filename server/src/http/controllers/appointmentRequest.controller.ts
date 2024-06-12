@@ -6,7 +6,7 @@ import { zRoutes } from "shared/index"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { Appointment, EligibleTrainingsForAppointment, Etablissement, FormationCatalogue, User } from "../../common/model/index"
+import { Appointment, EligibleTrainingsForAppointment, Etablissement, User } from "../../common/model/index"
 import config from "../../config"
 import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
@@ -253,7 +253,7 @@ export default (server: Server) => {
       if (!user) throw Boom.notFound()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
-        const formationCatalogue = cle_ministere_educatif ? await FormationCatalogue.findOne({ cle_ministere_educatif }) : undefined
+        const formationCatalogue = cle_ministere_educatif ? await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif }) : undefined
 
         await mailer.sendEmail({
           to: user.email,

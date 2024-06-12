@@ -4,7 +4,9 @@ import { URL } from "url"
 import { getDistance } from "geolib"
 import { IFormationCatalogue } from "shared/models"
 
-import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
+import { EligibleTrainingsForAppointment } from "../common/model/index"
 import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
@@ -54,7 +56,7 @@ const getFormations = (
     rome_codes: 1,
     _id: 0,
   }
-) => FormationCatalogue.find(query, filter)
+) => getDbCollection("formationcatalogues").find(query, filter)
 
 /**
  * @description get formation according to the available parameters passed to the API endpoint
@@ -129,25 +131,30 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
 
 const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
   let romes = [] as string[]
-  const tmpFormations = await FormationCatalogue.find(
-    {
-      $or: [
-        {
-          rncp_code: rncp,
+  const tmpFormations = await getDbCollection("formationcatalogues")
+    .find(
+      {
+        $or: [
+          {
+            rncp_code: rncp,
+          },
+          {
+            cfd: cfd ? cfd : undefined,
+          },
+          {
+            "bcn_mefs_10.mef10": mef,
+          },
+        ],
+      },
+      {
+        projection: {
+          rome_codes: 1,
+          _id: 0,
         },
-        {
-          cfd: cfd ? cfd : undefined,
-        },
-        {
-          "bcn_mefs_10.mef10": mef,
-        },
-      ],
-    },
-    {
-      rome_codes: 1,
-      _id: 0,
-    }
-  ).limit(5)
+      }
+    )
+    .limit(5)
+    .toArray()
   if (tmpFormations.length) {
     romes = [...new Set(tmpFormations.flatMap(({ rome_codes }) => rome_codes))] as string[]
   }

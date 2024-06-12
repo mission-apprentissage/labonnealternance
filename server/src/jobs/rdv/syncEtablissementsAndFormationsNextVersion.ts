@@ -2,8 +2,10 @@ import { oleoduc, writeData } from "oleoduc"
 import { IEligibleTrainingsForAppointment, IEtablissement } from "shared"
 import { referrers } from "shared/constants/referers"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
+import { Etablissement, ReferentielOnisep } from "../../common/model/index"
 import { db } from "../../common/mongodb"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { isValidEmail } from "../../common/utils/isValidEmail"
@@ -13,7 +15,7 @@ import { getMostFrequentEmailByGestionnaireSiret } from "../../services/formatio
 import { removeDuplicateEtablissements } from "./removeDuplicateEtablissements"
 
 const prepareETFA = async () => {
-  await FormationCatalogue.aggregate([
+  await getDbCollection("formationcatalogues").aggregate([
     {
       $project: {
         training_id_catalogue: "$_id",

@@ -1,8 +1,10 @@
 import { oleoduc, writeData } from "oleoduc"
 import { referrers } from "shared/constants/referers"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
+import { Etablissement, ReferentielOnisep } from "../../common/model/index"
 import { create, findOne, getEmailForRdv, updateParameter } from "../../services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
@@ -18,9 +20,11 @@ export const syncEtablissementsAndFormations = async () => {
   logger.info("Cron #syncEtablissementsAndFormations started.")
 
   await oleoduc(
-    FormationCatalogue.find({
-      cle_ministere_educatif: { $ne: null },
-    }).cursor(),
+    getDbCollection("formationcatalogues")
+      .find({
+        cle_ministere_educatif: { $ne: null },
+      })
+      .cursor(),
     writeData(
       async (formation) => {
         const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
