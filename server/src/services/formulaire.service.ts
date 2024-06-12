@@ -11,7 +11,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, UnsubscribeOF } from "../common/model/index"
+import { Entreprise, Recruiter, RoleManagement, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
@@ -86,7 +86,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Pro
   if (recruiterOpt.is_delegated && recruiterOpt.address) {
     const { cfa_delegated_siret } = recruiterOpt
     if (cfa_delegated_siret) {
-      const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+      const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
       if (cfa) {
         const cfaUser = await getUser2ManagingOffer(getJobFromRecruiter(recruiterOpt, id.toString()))
 
@@ -140,7 +140,9 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
     throw Boom.internal(`recruiter with establishment_id=${establishment_id} not found`)
   }
   const { is_delegated, cfa_delegated_siret } = recruiter
-  const organization = await (cfa_delegated_siret ? Cfa.findOne({ siret: cfa_delegated_siret }).lean() : Entreprise.findOne({ siret: recruiter.establishment_siret }).lean())
+  const organization = await (cfa_delegated_siret
+    ? getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
+    : Entreprise.findOne({ siret: recruiter.establishment_siret }).lean())
   if (!organization) {
     throw Boom.internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${establishment_id}`)
   }

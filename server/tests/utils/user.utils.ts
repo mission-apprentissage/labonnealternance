@@ -4,12 +4,13 @@ import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, JOB_STATU
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
+import { CollectionName } from "shared/models/models"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
-import { ZodObject, ZodString, ZodTypeAny } from "zod"
+import { ZodObject, ZodSchema, ZodString } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Cfa, EmailBlacklist, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
+import { Application, EmailBlacklist, Recruiter, RoleManagement } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 
 import { getDbCollection } from "../../src/common/utils/mongodbUtils"
@@ -54,17 +55,17 @@ function getFixture() {
   ])
 }
 
-export const saveDbEntity = async <T>(schema: ZodTypeAny, dbModel: (item: T) => { save: () => Promise<any> } & T, data: Partial<T>) => {
-  const u = dbModel({
+export const saveDbEntity = async (schema: ZodSchema, data: object, collection: CollectionName) => {
+  const u = {
     ...getFixture().fromSchema(schema),
     ...data,
-  })
-  await u.save()
+  }
+  await getDbCollection(collection).insertOne(u)
   return u
 }
 
 export const saveUserWithAccount = async (data: Partial<IUserWithAccount> = {}) => {
-  return saveDbEntity(ZUserWithAccount, (item) => new UserWithAccount(item), data)
+  return saveDbEntity(ZUserWithAccount, data, "userswithaccounts")
 }
 export const saveRoleManagement = async (data: Partial<IRoleManagement> = {}) => {
   const role: IRoleManagement = {
@@ -99,7 +100,7 @@ export const roleManagementEventFactory = ({
 }
 
 export const saveEntreprise = async (data: Partial<IEntreprise> = {}) => {
-  return saveDbEntity(ZEntreprise, (item) => new Entreprise(item), data)
+  return saveDbEntity(ZEntreprise, data, "entreprises")
 }
 
 export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEvent> = {}): IEntrepriseStatusEvent => {
@@ -113,7 +114,7 @@ export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEve
 }
 
 export const saveCfa = async (data: Partial<ICFA> = {}) => {
-  return saveDbEntity(zCFA, (item) => new Cfa(item), data)
+  return saveDbEntity(zCFA, data, "cfas")
 }
 
 export const jobFactory = (props: Partial<IJob> = {}) => {

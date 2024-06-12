@@ -29,7 +29,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Etablissement, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
+import { Etablissement, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
@@ -704,7 +704,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: strin
 }
 
 const isCfaCreationValid = async (siret: string): Promise<boolean> => {
-  const cfa = await Cfa.findOne({ siret }).lean()
+  const cfa = await getDbCollection("cfas").findOne({ siret })
   if (!cfa) return true
   const roles = await RoleManagement.find({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
   const managingAccess = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]

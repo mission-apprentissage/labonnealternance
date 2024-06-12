@@ -4,12 +4,13 @@ import { IJob, IRecruiter, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { Cfa, Recruiter } from "@/common/model"
+import { Recruiter } from "@/common/model"
 import { ObjectIdType, db } from "@/common/mongodb"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
@@ -105,7 +106,7 @@ export const getJobs = async ({
       }
 
       if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
-        const cfa = await Cfa.findOne({ siret: recruiter.cfa_delegated_siret })
+        const cfa = await getDbCollection("cfas").findOne({ siret: recruiter.cfa_delegated_siret })
         const cfaUser = await getUser2ManagingOffer(firstJob)
         recruiter.phone = cfaUser.phone
         recruiter.email = cfaUser.email

@@ -10,10 +10,12 @@ import { AccessPermission, AccessResourcePath } from "shared/security/permission
 import { assertUnreachable, parseEnum } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { Application, Cfa, Entreprise, Recruiter, UserWithAccount } from "@/common/model"
+import { Application, Entreprise, Recruiter, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
+
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { getUserFromRequest } from "./authenticationService"
 
@@ -51,7 +53,7 @@ function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): an
 const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<RecruiterResource> => {
   const { cfa_delegated_siret, establishment_siret } = recruiter
   if (cfa_delegated_siret) {
-    const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+    const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
     if (!cfa) {
       throw Boom.internal(`could not find cfa for recruiter with id=${recruiter._id}`)
     }

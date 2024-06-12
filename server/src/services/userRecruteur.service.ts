@@ -13,7 +13,7 @@ import { ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../common/model/index"
+import { Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../common/model/index"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
 
@@ -45,7 +45,7 @@ const getOrganismeFromRole = async (role: IRoleManagement): Promise<IEntreprise 
       return entreprise
     }
     case AccessEntityType.CFA: {
-      const cfa = await Cfa.findOne({ _id: role.authorized_id }).lean()
+      const cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(role.authorized_id) })
       if (!cfa) {
         throw Boom.internal(`could not find cfa for role ${role._id}`)
       }
@@ -387,7 +387,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   const isCfa = role.authorized_type === AccessEntityType.CFA
   let organization
   if (isCfa) {
-    organization = await Cfa.findOne({ _id: role.authorized_id }).lean()
+    organization = await getDbCollection("cfas").findOne({ _id: new ObjectId(role.authorized_id) })
   } else {
     organization = await Entreprise.findOne({ _id: role.authorized_id }).lean()
   }
@@ -437,8 +437,12 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   const entrepriseIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : []))
   const entreprises = await Entreprise.find({ _id: { $in: entrepriseIds }, ...(opco ? { opco } : {}) }).lean()
 
-  const cfaIds = opco ? [] : roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : []))
-  const cfas = cfaIds.length ? await Cfa.find({ _id: { $in: cfaIds } }).lean() : []
+  const cfaIds = opco ? [] : roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [new ObjectId(role.authorized_id)] : []))
+  const cfas = cfaIds.length
+    ? await getDbCollection("cfas")
+        .find({ _id: { $in: cfaIds } })
+        .toArray()
+    : []
 
   const userRecruteurs = roles
     .flatMap<{ user: IUserWithAccount; role: IRoleManagement } & ({ entreprise: IEntreprise } | { cfa: ICFA })>((role) => {

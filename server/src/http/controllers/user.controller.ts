@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { CFA, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
@@ -11,7 +12,7 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
 import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../common/model/index"
+import { Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import config from "../../config"
@@ -182,7 +183,7 @@ export default (server: Server) => {
       }
       let organization: ICFA | IEntreprise | null = null
       if (type === CFA) {
-        organization = await Cfa.findOne({ _id: role.authorized_id }).lean()
+        organization = await getDbCollection("cfas").findOne({ _id: new ObjectId(role.authorized_id) })
       }
       if (type === ENTREPRISE) {
         organization = await Entreprise.findOne({ _id: role.authorized_id }).lean()
@@ -409,7 +410,7 @@ export default (server: Server) => {
       if (entrepriseOpt) {
         await RoleManagement.deleteOne({ user_id: userOpt._id, authorized_id: entrepriseOpt._id.toString(), authorized_type: AccessEntityType.ENTREPRISE })
       }
-      const cfaOpt = await Cfa.findOne({ siret }).lean()
+      const cfaOpt = await getDbCollection("cfas").findOne({ siret })
       if (cfaOpt) {
         await RoleManagement.deleteOne({ user_id: userOpt._id, authorized_id: cfaOpt._id.toString(), authorized_type: AccessEntityType.CFA })
       }
