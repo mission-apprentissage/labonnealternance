@@ -13,7 +13,6 @@ import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
-import { fixRDVACollections } from "./database/temp/fixRDVACollections"
 import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -239,8 +238,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return resendDelegationEmailWithAccessToken()
       case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
         return fixDuplicateUsers()
-      case "migration:correctionRDVA": // Temporaire, doit tourner une fois en recette et production
-        return fixRDVACollections()
       case "control:applications":
         return controlApplications()
       case "control:appointments":

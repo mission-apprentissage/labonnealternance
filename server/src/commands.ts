@@ -181,11 +181,6 @@ program
   .description("Fix duplicated users in users collections and update appointment collection accordingly")
   .action(createJobAction("fix:duplicate:users"))
 
-program
-  .command("migration:correctionRDVA")
-  .description("Corrige les erreurs de données ne correspondant pas aux modèles associés")
-  .action(createJobAction("migration:correctionRDVA"))
-
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
 program.command("recruiters:delegations").description("Resend delegation email for all jobs created on November 2023").action(createJobAction("recruiters:delegations"))
