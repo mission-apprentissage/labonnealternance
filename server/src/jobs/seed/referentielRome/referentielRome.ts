@@ -130,8 +130,7 @@ export const importReferentielRome = async () => {
 
     await asyncForEach(data.fiches_metier.fiche_metier, async (ficheMetier: any) => {
       const fiche = formatRawData(ficheMetier)
-      // TODO est ce que c'est à jour ?
-      // @ts-ignore typage cassé
+      // @ts-expect-error TODO lors du prochain import
       const savedFiche: IReferentielRome = {
         ...fiche,
         _id: new ObjectId(),
