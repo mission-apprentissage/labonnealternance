@@ -1,42 +1,11 @@
 import { captureException } from "@sentry/node"
 import { Model } from "mongoose"
-import {
-  ZEligibleTrainingsForAppointmentSchema,
-  ZEmailBlacklist,
-  ZEtablissement,
-  ZGeoLocation,
-  ZOptout,
-  ZRecruiter,
-  ZReferentielOnisep,
-  ZReferentielOpco,
-  ZUnsubscribeOF,
-  ZUnsubscribedLbaCompany,
-  ZUser,
-  zFormationCatalogueSchema,
-} from "shared/models"
+import { ZEligibleTrainingsForAppointmentSchema, ZEmailBlacklist, ZEtablissement, ZGeoLocation, ZOptout, ZRecruiter, zFormationCatalogueSchema } from "shared/models"
 import { ZEntreprise } from "shared/models/entreprise.model"
-import { ZRoleManagement } from "shared/models/roleManagement.model"
-import { ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
-import {
-  EligibleTrainingsForAppointment,
-  EmailBlacklist,
-  Entreprise,
-  Etablissement,
-  FormationCatalogue,
-  GeoLocation,
-  Optout,
-  Recruiter,
-  ReferentielOnisep,
-  ReferentielOpco,
-  RoleManagement,
-  UnsubscribeOF,
-  UnsubscribedLbaCompany,
-  User,
-  UserWithAccount,
-} from "@/common/model/index"
+import { EligibleTrainingsForAppointment, EmailBlacklist, Entreprise, Etablissement, FormationCatalogue, GeoLocation, Optout, Recruiter } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
 async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, any, any>) {
@@ -89,13 +58,6 @@ export async function validateModels(): Promise<void> {
   //  await validateModel(Opco, ZOpco)
   await validateModel(Optout, ZOptout)
   await validateModel(Recruiter, ZRecruiter)
-  await validateModel(ReferentielOnisep, ZReferentielOnisep)
-  await validateModel(User, ZUser)
-  await validateModel(ReferentielOpco, ZReferentielOpco)
-  await validateModel(UnsubscribeOF, ZUnsubscribeOF)
-  await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
   // await validateModel(UserRecruteur, ZUserRecruteur)
   await validateModel(Entreprise, ZEntreprise)
-  await validateModel(UserWithAccount, ZUserWithAccount)
-  await validateModel(RoleManagement, ZRoleManagement)
 }

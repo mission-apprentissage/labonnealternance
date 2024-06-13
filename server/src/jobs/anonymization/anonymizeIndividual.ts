@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 const anonimizeUserWithAccount = (_id: ObjectId) =>
   getDbCollection("userswithaccounts").aggregate([

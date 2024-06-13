@@ -5,7 +5,8 @@
 import { IJob, IRecruiter } from "shared"
 import dayjs from "shared/helpers/dayjs"
 
-import { UnsubscribeOF } from "../../../../common/model"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { db } from "../../../../common/mongodb"
 import { getStaticFilePath } from "../../../../common/utils/getStaticFilePath"
 import config from "../../../../config"
@@ -16,7 +17,7 @@ import mailer from "../../../../services/mailer.service"
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
 export async function sendDelegationMailToCFAERRATUM(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
-  const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
+  const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   await mailer.sendEmail({

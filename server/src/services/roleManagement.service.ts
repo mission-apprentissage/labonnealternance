@@ -6,7 +6,7 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Entreprise, RoleManagement } from "@/common/model"
+import { Entreprise } from "@/common/model"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
@@ -29,7 +29,11 @@ export const modifyPermissionToUser = async (
     if (lastEvent?.status === eventProps.status) {
       return role
     }
-    const newRole = await getDbCollection("rolemanagements").findOneAndUpdate({ _id: role._id }, { $push: { status: event } }, { returnDocument: "after" })
+    const newRole = await getDbCollection("rolemanagements").findOneAndUpdate(
+      { _id: role._id },
+      { $push: { status: event }, $set: { updatedAt: new Date() } },
+      { returnDocument: "after" }
+    )
     if (!newRole) {
       throw Boom.internal("inattendu")
     }
@@ -48,7 +52,9 @@ export const modifyPermissionToUser = async (
 }
 
 export const getGrantedRoles = async (userId: string) => {
-  const roles = await RoleManagement.find({ user_id: userId }).lean()
+  const roles = await getDbCollection("rolemanagements")
+    .find({ user_id: new ObjectId(userId) })
+    .toArray()
   return roles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
 }
 

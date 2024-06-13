@@ -1,8 +1,9 @@
 import Boom from "boom"
+import { ObjectId } from "bson"
 import { IFormationCatalogue, zRoutes } from "shared/index"
 
-import { User } from "../../../common/model/index"
-import { getDbCollection } from "../../../common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service"
 import { Server } from "../../server"
 
@@ -34,7 +35,7 @@ export default (server: Server) => {
       const formations: IFormationCatalogue[] = await getFormationsByCleMinistereEducatif({ cleMinistereEducatifs: Array.from(cleMinistereEducatifs) })
 
       const appointmentsPromises = allAppointments.map(async (appointment) => {
-        const user = await User.findById(appointment.applicant_id).lean()
+        const user = await getDbCollection("users").findOne({ _id: new ObjectId(appointment.applicant_id) })
 
         if (!user) {
           throw Boom.internal("Candidat non trouvé.")

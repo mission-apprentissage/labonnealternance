@@ -2,8 +2,8 @@ import Boom from "boom"
 import { removeUrlsFromText } from "shared/helpers/common"
 import { toPublicUser, zRoutes } from "shared/index"
 
-import { UserWithAccount } from "@/common/model"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { createAuthMagicLink } from "@/services/appLinks.service"
@@ -27,7 +27,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const user = await UserWithAccount.findOne({ _id: userId }).lean()
+      const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
@@ -48,7 +48,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { email } = req.body
       const formatedEmail = email.toLowerCase()
-      const user = await UserWithAccount.findOne({ email: formatedEmail }).lean()
+      const user = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
 
       if (!user) {
         return res.status(400).send({ error: true, reason: "UNKNOWN" })

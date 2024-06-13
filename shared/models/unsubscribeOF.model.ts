@@ -18,6 +18,9 @@ export type IUnsubscribedOF = z.output<typeof ZUnsubscribeOF>
 
 export default {
   zod: ZUnsubscribeOF,
-  indexes: [],
+  indexes: [
+    [{ catalogue_id: 1 }, {}],
+    [{ establishment_siret: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

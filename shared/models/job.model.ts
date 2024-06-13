@@ -5,7 +5,7 @@ import dayjs from "../helpers/dayjs"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
-import { ZReferentielRome } from "./rome.model"
+import { ZReferentielRomeForJob } from "./rome.model"
 
 export enum JOB_STATUS {
   ACTIVE = "Active",
@@ -41,7 +41,7 @@ export const ZJobFields = z
     job_description: z.string().nullish().describe("Description de l'offre d'alternance - minimum 30 charactères si rempli"),
     job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
-    rome_detail: ZReferentielRome.nullish().describe("Détail du code ROME selon la nomenclature Pole emploi"),
+    rome_detail: ZReferentielRomeForJob.nullish().describe("Détail du code ROME selon la nomenclature Pole emploi"),
     job_creation_date: z.date().nullish().describe("Date de creation de l'offre"),
     job_expiration_date: z.date().nullish().describe("Date d'expiration de l'offre"),
     job_update_date: z.date().nullish().describe("Date de dernière mise à jour de l'offre"),
@@ -66,7 +66,7 @@ export const ZJobFields = z
     custom_job_title: z.string().nullish().describe("Titre personnalisée de l'offre"),
     stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
-    managed_by: zObjectId.nullish().describe("Id de l'utilisateur gérant l'offre"),
+    managed_by: z.string().nullish().describe("Id de l'utilisateur gérant l'offre"),
   })
   .strict()
   .openapi("JobWritable")
@@ -78,7 +78,7 @@ export const ZJob = ZJobFields.extend({
   .openapi("Job")
 
 export const ZJobWithRomeDetail = ZJob.extend({
-  rome_detail: ZReferentielRome.nullish(),
+  rome_detail: ZReferentielRomeForJob.nullish(),
 })
   .strict()
   .openapi("JobWithRomeDetail")

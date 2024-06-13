@@ -1,14 +1,16 @@
 import Boom from "boom"
+import { ObjectId } from "bson"
 import { JOB_STATUS } from "shared"
 import { CFA, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../../../common/logger"
-import { Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../../../common/model/index"
+import { Entreprise, Recruiter } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
-import { getDbCollection } from "../../../../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { ENTREPRISE } from "../../../../services/constant.service"
@@ -50,9 +52,11 @@ const updateEntreprisesInfosInError = async () => {
         await Recruiter.updateMany({ establishment_siret: siret }, entrepriseData)
         if (getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.ERROR) {
           const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
-          const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: updatedEntreprise._id.toString() }).lean()
+          const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: updatedEntreprise._id.toString() }).toArray()
           const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
-          const users = await UserWithAccount.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
+          const users = await getDbCollection("userswithaccounts")
+            .find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } })
+            .toArray()
           await asyncForEach(users, async (user) => {
             const userAndOrganization: UserAndOrganization = { user, type: ENTREPRISE, organization: updatedEntreprise }
             const result = await autoValidateUserRoleOnCompany(userAndOrganization, "reprise des entreprises en erreur")
@@ -113,7 +117,7 @@ const updateRecruteursSiretInfosInError = async () => {
         if (!managed_by) {
           throw Boom.internal(`inattendu : managed_by vide`)
         }
-        const managingUser = await UserWithAccount.findOne({ _id: managed_by.toString() })
+        const managingUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
         if (!managingUser) {
           throw Boom.internal(`inattendu : managingUser non trouvé pour _id=${managed_by}`)
         }
@@ -121,7 +125,7 @@ const updateRecruteursSiretInfosInError = async () => {
         if (!cfa) {
           throw Boom.internal(`could not find cfa with siret=${cfa_delegated_siret}`)
         }
-        const role = await RoleManagement.findOne({ user_id: managingUser._id, authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
+        const role = await getDbCollection("rolemanagements").findOne({ user_id: managingUser._id, authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() })
         if (!role) {
           throw Boom.internal(`could not find role with user_id=${managingUser._id} and authorized_id=${cfa._id}`)
         }

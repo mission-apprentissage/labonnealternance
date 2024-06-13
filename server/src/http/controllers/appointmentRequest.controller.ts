@@ -1,14 +1,14 @@
 import Boom from "boom"
+import { ObjectId } from "bson"
 import Joi from "joi"
-import { ObjectId } from "mongodb"
 import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { EligibleTrainingsForAppointment, Etablissement, FormationCatalogue, User } from "../../common/model/index"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
+import { EligibleTrainingsForAppointment, Etablissement, FormationCatalogue } from "../../common/model/index"
 import config from "../../config"
 import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
@@ -141,13 +141,18 @@ export default (server: Server) => {
             _id: 0,
           }
         ).lean(),
-        User.findById(appointment.applicant_id, {
-          lastname: 1,
-          firstname: 1,
-          phone: 1,
-          email: 1,
-          _id: 0,
-        }).lean(),
+        getDbCollection("users").findOne(
+          { _id: new ObjectId(appointment.applicant_id) },
+          {
+            projection: {
+              lastname: 1,
+              firstname: 1,
+              phone: 1,
+              email: 1,
+              _id: 0,
+            },
+          }
+        ),
       ])
 
       if (!formation) {
@@ -210,13 +215,18 @@ export default (server: Server) => {
             lieu_formation_city: 1,
           }
         ).lean(),
-        User.findById(appointment.applicant_id, {
-          type: 1,
-          lastname: 1,
-          firstname: 1,
-          phone: 1,
-          email: 1,
-        }).lean(),
+        getDbCollection("users").findOne(
+          { _id: new ObjectId(appointment.applicant_id) },
+          {
+            projection: {
+              type: 1,
+              lastname: 1,
+              firstname: 1,
+              phone: 1,
+              email: 1,
+            },
+          }
+        ),
       ])
 
       if (!user) {

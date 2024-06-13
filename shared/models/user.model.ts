@@ -22,6 +22,6 @@ export type IUser = z.output<typeof ZUser>
 
 export default {
   zod: ZUser,
-  indexes: [],
+  indexes: [[{ email: 1 }, {}]],
   collectionName,
 } as const satisfies IModelDescriptor

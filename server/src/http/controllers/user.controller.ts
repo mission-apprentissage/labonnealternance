@@ -12,7 +12,7 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
 import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
-import { Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../common/model/index"
+import { Entreprise, Recruiter } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import config from "../../config"
@@ -87,9 +87,9 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { userId } = req.params
-      const user = await UserWithAccount.findById(userId).lean()
+      const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(userId) })
       if (!user) throw Boom.notFound(`user with id=${userId} not found`)
-      const role = await RoleManagement.findOne({ user_id: userId, authorized_type: AccessEntityType.ADMIN }).lean()
+      const role = await getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(userId), authorized_type: AccessEntityType.ADMIN })
       return res.status(200).send({ ...user, role: role ?? undefined })
     }
   )
@@ -165,15 +165,15 @@ export default (server: Server) => {
       const requestUser = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
       if (!requestUser) throw Boom.badRequest()
       const { userId } = req.params
-      const role = await RoleManagement.findOne({
-        user_id: userId,
+      const role = await getDbCollection("rolemanagements").findOne({
+        user_id: new ObjectId(userId),
         // TODO à activer lorsque le frontend passe organizationId correctement
         // authorized_id: organizationId,
-      }).lean()
+      })
       if (!role) {
         throw Boom.badRequest("role not found")
       }
-      const user = await UserWithAccount.findOne({ _id: userId }).lean()
+      const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(userId) })
       if (!user) {
         throw Boom.badRequest("user not found")
       }
@@ -408,11 +408,11 @@ export default (server: Server) => {
       const { siret } = req.params
       const entrepriseOpt = await Entreprise.findOne({ siret }).lean()
       if (entrepriseOpt) {
-        await RoleManagement.deleteOne({ user_id: userOpt._id, authorized_id: entrepriseOpt._id.toString(), authorized_type: AccessEntityType.ENTREPRISE })
+        await getDbCollection("rolemanagements").deleteOne({ user_id: userOpt._id, authorized_id: entrepriseOpt._id.toString(), authorized_type: AccessEntityType.ENTREPRISE })
       }
       const cfaOpt = await getDbCollection("cfas").findOne({ siret })
       if (cfaOpt) {
-        await RoleManagement.deleteOne({ user_id: userOpt._id, authorized_id: cfaOpt._id.toString(), authorized_type: AccessEntityType.CFA })
+        await getDbCollection("rolemanagements").deleteOne({ user_id: userOpt._id, authorized_id: cfaOpt._id.toString(), authorized_type: AccessEntityType.CFA })
       }
       await Recruiter.deleteOne({ establishment_siret: siret, managed_by: userOpt._id.toString() })
       return res.status(200).send({})
