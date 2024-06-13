@@ -1,8 +1,9 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
+import { Etablissement } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
@@ -57,11 +58,11 @@ export const inviteEtablissementAffelnetToPremium = async () => {
 
   for (const etablissement of etablissementsToInviteToPremium) {
     // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
-    const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
+    const hasOneAvailableFormation = await getDbCollection("eligible_trainings_for_appointments").findOne({
       etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
       lieu_formation_email: { $ne: null },
       affelnet_visible: true,
-    }).lean()
+    })
 
     if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret || !etablissement.gestionnaire_email) {
       continue

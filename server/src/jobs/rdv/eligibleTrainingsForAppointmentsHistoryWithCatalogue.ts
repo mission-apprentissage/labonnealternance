@@ -3,7 +3,7 @@ import { oleoduc, writeData } from "oleoduc"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory } from "../../common/model/index"
+import { eligibleTrainingsForAppointmentHistory } from "../../common/model/index"
 
 /**
  * @description Check if a training is still available for appointments again it's presence in the training catalogue
@@ -23,10 +23,10 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
     NewElligibleTrainingCount: 0,
   }
 
-  stats.AncientElligibleTrainingCount = await EligibleTrainingsForAppointment.countDocuments()
+  stats.AncientElligibleTrainingCount = await getDbCollection("eligible_trainings_for_appointments").countDocuments()
 
   await oleoduc(
-    EligibleTrainingsForAppointment.find({}).lean().cursor(),
+    getDbCollection("eligible_trainings_for_appointments").find({}),
     writeData(
       async (formation) => {
         const exist = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
@@ -35,14 +35,14 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
 
         if (!exist) {
           await eligibleTrainingsForAppointmentHistory.create({ ...formation, email_rdv: undefined, historization_date: new Date() })
-          await EligibleTrainingsForAppointment.findOneAndRemove({ cle_ministere_educatif: formation.cle_ministere_educatif })
+          await getDbCollection("eligible_trainings_for_appointments").deleteOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
         }
       },
       { parallel: 20 }
     )
   )
 
-  stats.NewElligibleTrainingCount = await EligibleTrainingsForAppointment.countDocuments()
+  stats.NewElligibleTrainingCount = await getDbCollection("eligible_trainings_for_appointments").countDocuments()
 
   logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue done.")
 

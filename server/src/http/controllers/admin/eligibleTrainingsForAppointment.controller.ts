@@ -2,7 +2,7 @@ import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { zRoutes } from "shared/index"
 
-import { CustomEmailETFA, EligibleTrainingsForAppointment } from "../../../common/model/index"
+import { CustomEmailETFA } from "../../../common/model/index"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
 
@@ -22,7 +22,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { siret } = req.params
 
-      const parameters = await EligibleTrainingsForAppointment.find({ etablissement_formateur_siret: siret }).lean()
+      const parameters = await getDbCollection("eligible_trainings_for_appointments").find({ etablissement_formateur_siret: siret }).toArray()
 
       if (parameters == undefined || parameters.length == 0) {
         throw Boom.badRequest()

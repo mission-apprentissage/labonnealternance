@@ -6,17 +6,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
-import {
-  Application,
-  Appointment,
-  EligibleTrainingsForAppointment,
-  eligibleTrainingsForAppointmentHistory,
-  Etablissement,
-  LbaCompany,
-  Optout,
-  Recruiter,
-  RoleManagement,
-} from "@/common/model/index"
+import { Application, Appointment, eligibleTrainingsForAppointmentHistory, Etablissement, LbaCompany, Optout, Recruiter, RoleManagement } from "@/common/model/index"
 import { db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
@@ -91,10 +81,10 @@ const obfuscateLbaCompanies = async () => {
 
 const obfuscateElligibleTrainingsForAppointment = async () => {
   logger.info(`obfuscating elligible trainings for appointments`)
-  await EligibleTrainingsForAppointment.updateMany(
+  await getDbCollection("eligible_trainings_for_appointments").updateMany(
     {},
     {
-      lieu_formation_email: fakeEmail,
+      $set: { lieu_formation_email: fakeEmail },
     }
   )
   await eligibleTrainingsForAppointmentHistory.updateMany(
