@@ -22,7 +22,7 @@ export const updateAddressDetailOnRecruitersCollection = async () => {
 
       etb.address_detail = etablissement?.data.adresse
 
-      await etb.save()
+      await getDbCollection("recruiters").updateOne({ _id: etb._id }, { $set: { ...etb } })
     } catch (error: any) {
       const { errors } = error.response.data
 

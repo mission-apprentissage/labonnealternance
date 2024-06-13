@@ -1,6 +1,7 @@
 import Boom from "boom"
 import { IJob, JOB_STATUS, zRoutes } from "shared"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"

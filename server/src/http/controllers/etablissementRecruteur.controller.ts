@@ -6,6 +6,7 @@ import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { Cfa } from "@/common/model"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"

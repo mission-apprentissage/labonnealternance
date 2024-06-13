@@ -18,7 +18,7 @@ runScript(async () => {
         job.job_delegation_count = job.delegations.length
       }
     })
-    await form.save({ timestamps: false })
+    await getDbCollection("recruiters").updateOne({ _id: form._id }, { $set: { ...form } })
   })
   logger.info("End update delegation count job")
 })

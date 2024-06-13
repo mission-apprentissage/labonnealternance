@@ -32,7 +32,7 @@ runScript(async () => {
     f.opco = data.opcoName
     f.idcc = data.idcc
 
-    await f.save()
+    await getDbCollection("recruiters").updateOne({ _id: f._id }, { $set: { ...f } })
     count++
     await delay(2000)
   })

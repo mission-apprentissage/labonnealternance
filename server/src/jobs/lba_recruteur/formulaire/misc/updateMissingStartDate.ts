@@ -14,7 +14,7 @@ export const updateMissingStartDate = async () => {
         }
       }
     })
-    await form.save({ timestamps: false })
+    await getDbCollection("recruiters").updateOne({ _id: form._id }, { $set: { ...form } })
   })
   logger.info("End update missing job_start_date")
 }
