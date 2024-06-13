@@ -19,6 +19,7 @@ describe("formation", () => {
   ]
 
   it("Détecte les doublons et retourne les items sans doublon ", () => {
+    // @ts-ignore
     const deduplicatedList = deduplicateFormations(sampleFormation1)
     assert.strictEqual(deduplicatedList.length, 2)
     assert.strictEqual(deduplicatedList[0].nom, "a1")
@@ -26,6 +27,7 @@ describe("formation", () => {
   })
 
   it("Retourne tous les items si pas de doublons ", () => {
+    // @ts-ignore
     const deduplicatedList = deduplicateFormations(sampleFormation2)
 
     assert.strictEqual(deduplicatedList.length, 3)

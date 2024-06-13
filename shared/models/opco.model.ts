@@ -19,6 +19,12 @@ export type IOpco = z.output<typeof ZOpco>
 
 export default {
   zod: ZOpco,
-  indexes: [[{ siren: 1 }, { unique: true }], [{ opco: 1 }], [{ opco_short_name: 1 }], [{ idcc: 1 }], [{ url: 1 }]],
+  indexes: [
+    [{ siren: 1 }, { unique: true }],
+    [{ opco: 1 }, {}],
+    [{ opco_short_name: 1 }, {}],
+    [{ idcc: 1 }, {}],
+    [{ url: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor
