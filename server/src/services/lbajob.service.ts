@@ -4,8 +4,9 @@ import { IJob, IRecruiter, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { Cfa, Recruiter } from "@/common/model"
+import { Cfa } from "@/common/model"
 import { ObjectIdType, db } from "@/common/mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -95,7 +96,9 @@ export const getJobs = async ({
     },
   })
 
-  const recruiters: IRecruiter[] = await Recruiter.aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
+  const recruiters: IRecruiter[] = (await getDbCollection("recruiters")
+    .aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
+    .toArray()) as IRecruiter[]
 
   const recruitersWithJobs = await Promise.all(
     recruiters.map(async (recruiter) => {
