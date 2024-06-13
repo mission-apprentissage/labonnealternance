@@ -36,23 +36,21 @@ export const createOrganizationIfNotExist = async (organization: Omit<IUserRecru
     if (type === CFA) {
       const cfa = await getDbCollection("cfas").findOne({ siret: establishment_siret })
       if (cfa) return cfa
-      if (!cfa) {
-        const now = new Date()
-        const newCfa: ICFA = {
-          _id: new ObjectId(),
-          createdAt: now,
-          updatedAt: now,
-          siret: establishment_siret,
-          address,
-          address_detail,
-          enseigne: establishment_enseigne,
-          raison_sociale: establishment_raison_sociale,
-          origin,
-          geo_coordinates,
-        }
-        await getDbCollection("cfas").insertOne(newCfa)
-        return newCfa
+      const now = new Date()
+      const newCfa: ICFA = {
+        _id: new ObjectId(),
+        createdAt: now,
+        updatedAt: now,
+        siret: establishment_siret,
+        address,
+        address_detail,
+        enseigne: establishment_enseigne,
+        raison_sociale: establishment_raison_sociale,
+        origin,
+        geo_coordinates,
       }
+      await getDbCollection("cfas").insertOne(newCfa)
+      return newCfa
     }
     return entreprise
   } else {
