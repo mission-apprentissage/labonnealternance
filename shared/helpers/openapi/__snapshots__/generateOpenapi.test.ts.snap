@@ -5095,6 +5095,48 @@ Limite : 5 appel(s) / 1 seconde(s)
         ],
       },
     },
+    "/jobs/export": {
+      "get": {
+        "description": "Get a S3 link of the full JSON export of lba recruters and lba job offers. The link generated is valid for 2 minutes.
+Limite : 1 appel(s) / 1 seconde(s)
+",
+        "operationId": "getLbaJobExportFile",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "source",
+            "required": true,
+            "schema": {
+              "enum": [
+                "offres_emploi_lba",
+                "recruteurs_lba",
+              ],
+              "type": "string",
+            },
+          },
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "V2 - Jobs",
+        ],
+      },
+    },
     "/jobs/extend/{jobId}": {
       "post": {
         "description": "Update a job expiration date by 30 days.

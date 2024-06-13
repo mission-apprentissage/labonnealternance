@@ -167,6 +167,12 @@ function createJobAction(name) {
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
+  .command("lbajobs:export:s3")
+  .description("Export LBA jobs to JSON files on S3")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("lbajobs:export:s3"))
+
+program
   .command("anonymize-individual")
   .description("Anonymize elements based on id")
   .requiredOption("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
