@@ -1,7 +1,9 @@
 import dayjs from "dayjs"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { Recruiter, UserWithAccount } from "../../common/model/index"
+import { UserWithAccount } from "../../common/model/index"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymize = async () => {
@@ -26,7 +28,7 @@ const anonymize = async () => {
       $merge: "anonymizeduserswithaccounts",
     },
   ])
-  await Recruiter.aggregate([
+  await getDbCollection("recruiters").aggregate([
     {
       $match: recruiterQuery,
     },
@@ -57,7 +59,7 @@ const anonymize = async () => {
       $merge: "anonymizedrecruiteurs",
     },
   ])
-  const { deletedCount: recruiterCount } = await Recruiter.deleteMany(recruiterQuery)
+  const { deletedCount: recruiterCount } = await getDbCollection("recruiters").deleteMany(recruiterQuery)
   const { deletedCount: userWithAccountCount } = await UserWithAccount.deleteMany(userWithAccountQuery)
   return { userWithAccountCount, recruiterCount }
 }

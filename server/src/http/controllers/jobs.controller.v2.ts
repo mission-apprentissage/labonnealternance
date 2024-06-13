@@ -2,10 +2,10 @@ import Boom from "boom"
 import { IJob, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
 
-import { Recruiter } from "../../common/model/index"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
 import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
@@ -48,7 +48,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { establishment_siret, email } = req.query
 
-      const establishment = await Recruiter.findOne({ establishment_siret, email }).lean()
+      const establishment = await getDbCollection("recruiters").findOne({ establishment_siret, email })
 
       if (!establishment) {
         return res.status(400).send({ error: true, message: "Establishment not found" })

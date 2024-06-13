@@ -5,8 +5,9 @@ import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType } from "shared/models/roleManagement.model"
 
 import { logger } from "@/common/logger"
-import { Entreprise, Recruiter, RoleManagement } from "@/common/model"
+import { Entreprise, RoleManagement } from "@/common/model"
 import { db } from "@/common/mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getDiffusionStatus } from "@/services/etablissement.service"
 
 const ANONYMIZED = "anonymized"
@@ -55,7 +56,7 @@ const deactivateRecruiter = async (recruiter: IRecruiter) => {
     job.job_status = JOB_STATUS.ACTIVE ? JOB_STATUS.ANNULEE : job.job_status
   }
 
-  await Recruiter.updateOne({ _id: recruiter._id }, { $set: { ...recruiter } })
+  await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updateAt: new Date() } })
 }
 
 const deactivateEntreprise = async (entreprise: IEntreprise) => {

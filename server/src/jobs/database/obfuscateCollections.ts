@@ -6,7 +6,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
-import { Application, Appointment, Etablissement, LbaCompany, Recruiter, RoleManagement } from "@/common/model/index"
+import { Application, Appointment, Etablissement, LbaCompany, RoleManagement } from "@/common/model/index"
 import { db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
@@ -192,7 +192,8 @@ const obfuscateRecruiter = async () => {
     db.collection("recruiters").findOneAndUpdate({ _id: user._id }, replacement)
   }
 
-  const recruitersWithDelegations = Recruiter.find({ "jobs.delegations.0": { $exists: true } })
+  const recruitersWithDelegations = getDbCollection("recruiters").find({ "jobs.delegations.0": { $exists: true } })
+
   for await (const recruiter of recruitersWithDelegations) {
     let shouldSave = false
     if (recruiter.jobs) {
@@ -206,7 +207,7 @@ const obfuscateRecruiter = async () => {
       })
     }
     if (shouldSave) {
-      await Recruiter.updateOne({ _id: recruiter._id }, { $set: { ...recruiter } })
+      await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } })
     }
   }
 

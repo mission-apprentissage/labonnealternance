@@ -1,5 +1,7 @@
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { AnonymizedUser, Application, Recruiter, User, UserWithAccount } from "../../common/model/index"
+import { AnonymizedUser, Application, User, UserWithAccount } from "../../common/model/index"
 
 const anonimizeUserWithAccount = (_id: string) =>
   UserWithAccount.aggregate([
@@ -20,7 +22,7 @@ const anonimizeUserWithAccount = (_id: string) =>
   ])
 
 const anonimizeRecruiterByUserId = (userId: string) =>
-  Recruiter.aggregate([
+  getDbCollection("recruiters").aggregate([
     {
       $match: { "jobs.managed_by": userId },
     },
@@ -52,7 +54,7 @@ const anonimizeRecruiterByUserId = (userId: string) =>
     },
   ])
 
-const deleteRecruiter = (query) => Recruiter.deleteMany(query)
+const deleteRecruiter = (query) => getDbCollection("recruiters").deleteMany(query)
 const deleteUserWithAccount = (query) => UserWithAccount.deleteMany(query)
 
 const anonymizeApplication = async (_id: string) => {

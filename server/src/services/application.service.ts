@@ -17,7 +17,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
-import { Application, LbaCompany, Recruiter, UserWithAccount } from "../common/model"
+import { Application, LbaCompany, UserWithAccount } from "../common/model"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -412,7 +412,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   // get the related recruiters to fetch it's establishment_id
   let user: IUserWithAccount | undefined
   if (application.job_id) {
-    const recruiter = await Recruiter.findOne({ "jobs._id": application.job_id }).lean()
+    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": application.job_id })
     if (recruiter) {
       user = await getUser2ManagingOffer(getJobFromRecruiter(recruiter, application.job_id))
     }

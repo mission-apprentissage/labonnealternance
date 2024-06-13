@@ -1,13 +1,16 @@
 import { IJob } from "shared"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../../../common/logger"
-import { Recruiter } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { runScript } from "../../../scriptWrapper"
 
 runScript(async () => {
   logger.info("Start update delegation count job")
-  const forms = await Recruiter.find({ "jobs.delegations": { $not: { $size: 0 }, $ne: null }, jobs: { $not: { $size: 0 } } })
+  const forms = await getDbCollection("recruiters")
+    .find({ "jobs.delegations": { $not: { $size: 0 }, $ne: null }, jobs: { $not: { $size: 0 } } })
+    .toArray()
 
   await asyncForEach(forms, async (form) => {
     await asyncForEach(form.jobs, async (job: IJob) => {

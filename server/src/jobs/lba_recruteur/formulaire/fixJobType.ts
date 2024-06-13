@@ -1,8 +1,8 @@
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
-import { Recruiter } from "@/common/model"
 import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { updateOffre } from "@/services/formulaire.service"
@@ -10,9 +10,11 @@ import { updateOffre } from "@/services/formulaire.service"
 export const fixJobType = async () => {
   const misspelledProfessionalisation = "Professionalisation"
 
-  const recruiters = await Recruiter.find({
-    "jobs.job_type": misspelledProfessionalisation,
-  }).lean()
+  const recruiters = await getDbCollection("recruiters")
+    .find({
+      "jobs.job_type": misspelledProfessionalisation,
+    })
+    .toArray()
   const stats = { success: 0, failure: 0 }
   logger.info(`Correction des job type=Professionalisation: ${recruiters.length} recruteurs à mettre à jour...`)
   await asyncForEach(recruiters, async (recruiter) => {

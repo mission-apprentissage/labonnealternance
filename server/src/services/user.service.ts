@@ -6,8 +6,9 @@ import { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { ObjectId } from "@/common/mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { Recruiter, User, UserWithAccount } from "../common/model/index"
+import { User, UserWithAccount } from "../common/model/index"
 
 import { getUserRecruteursForManagement } from "./userRecruteur.service"
 
@@ -100,9 +101,9 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   const userRecruteurs = await getUserRecruteursForManagement({ opco })
   const filteredUserRecruteurs = [...userRecruteurs.active, ...userRecruteurs.awaiting, ...userRecruteurs.disabled]
   const userIds = [...new Set(filteredUserRecruteurs.map(({ _id }) => _id.toString()))]
-  const recruiters = await Recruiter.find({ "jobs.managed_by": { $in: userIds } })
-    .select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 })
-    .lean()
+  const recruiters = await getDbCollection("recruiters")
+    .find({ "jobs.managed_by": { $in: userIds } }, { projection: { establishment_id: 1, origin: 1, jobs: 1, _id: 0 } })
+    .toArray()
 
   const recruiterMap = new Map<string, (typeof recruiters)[0]>()
   recruiters.forEach((recruiter) => {

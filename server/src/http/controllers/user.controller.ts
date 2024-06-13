@@ -11,7 +11,7 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
 import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../common/model/index"
+import { Cfa, Entreprise, RoleManagement, UserWithAccount } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import config from "../../config"
@@ -413,7 +413,7 @@ export default (server: Server) => {
       if (cfaOpt) {
         await RoleManagement.deleteOne({ user_id: userOpt._id, authorized_id: cfaOpt._id.toString(), authorized_type: AccessEntityType.CFA })
       }
-      await Recruiter.deleteOne({ establishment_siret: siret, managed_by: userOpt._id.toString() })
+      await getDbCollection("recruiters").deleteOne({ establishment_siret: siret, managed_by: userOpt._id.toString() })
       return res.status(200).send({})
     }
   )
