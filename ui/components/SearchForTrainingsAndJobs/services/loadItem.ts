@@ -4,7 +4,7 @@ import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import fetchFtJobDetails from "@/services/fetchFtJobDetails"
 import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
-import fetchTrainingDetails from "@/services/fetchTrainingDetails"
+import { fetchTrainingDetails } from "@/services/fetchTrainingDetails"
 
 import {
   flyToMarker,

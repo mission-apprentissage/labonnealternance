@@ -268,11 +268,10 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
 /**
  * Ensemble de contrôles complexes sur la requête de recherche de formations
  * @param {TFormationSearchQuery} query paramètres de la requête
- * @returns {Promise<{ result: "passed", romes: string } | { error: string; error_messages: string[] }>}
  */
 export const formationsQueryValidator = async (
   query: Omit<TFormationSearchQuery, "isMinimalData">
-): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
+): Promise<{ result: "passed"; romes: string | undefined } | { error: "wrong_parameters"; error_messages: string[] }> => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
@@ -302,7 +301,9 @@ export const formationsQueryValidator = async (
  * @param {TFormationSearchQuery} query paramètres de la requête
  * @returns {{ result: "passed" } | { error: string; error_messages: string[] }}
  */
-export const formationsRegionQueryValidator = (query: Omit<TFormationSearchQuery, "isMinimalData">): { result: "passed" } | { error: string; error_messages: string[] } => {
+export const formationsRegionQueryValidator = (
+  query: Omit<TFormationSearchQuery, "isMinimalData">
+): { result: "passed" } | { error: "wrong_parameters"; error_messages: string[] } => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller

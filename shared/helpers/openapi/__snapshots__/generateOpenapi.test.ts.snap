@@ -3656,61 +3656,315 @@ Limite : 7 appel(s) / 1 seconde(s)
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-                  "properties": {
-                    "results": {
-                      "description": "Un tableau de formations correspondantes aux critères",
-                      "items": {
+                  "items": {
+                    "allOf": [
+                      {
                         "$ref": "#/components/schemas/Formation",
                       },
-                      "type": "array",
-                    },
+                      {
+                        "properties": {
+                          "company": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "creationDate": {
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "description": {
+                                "description": "La description de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "headquarter": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "hasConvention": {
+                                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "id": {
+                                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "name": {
+                                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
+                                    "example": "ECOLE DE TRAVAIL ORT",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "place": {
+                                    "$ref": "#/components/schemas/Place",
+                                  },
+                                  "siret": {
+                                    "description": "Le numéro de SIRET de l'établissement",
+                                    "example": "78424186100011",
+                                    "pattern": "^[0-9]{14}$",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "type": {
+                                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "uai": {
+                                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                                "required": [
+                                  "siret",
+                                ],
+                                "type": [
+                                  "object",
+                                  "null",
+                                ],
+                              },
+                              "logo": {
+                                "description": "L'url du logo de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "mandataire": {
+                                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
+                                "type": [
+                                  "boolean",
+                                  "null",
+                                ],
+                              },
+                              "name": {
+                                "description": "La raison sociale de l'entreprise",
+                                "example": "ECOLE DE TRAVAIL ORT",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "opco": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "label": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                                "required": [
+                                  "label",
+                                  "url",
+                                ],
+                                "type": [
+                                  "object",
+                                  "null",
+                                ],
+                              },
+                              "place": {
+                                "$ref": "#/components/schemas/Place",
+                              },
+                              "siret": {
+                                "description": "Le numéro de SIRET de l'établissement",
+                                "example": "78424186100011",
+                                "pattern": "^[0-9]{14}$",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "size": {
+                                "description": "La tranche d'effectifs de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "uai": {
+                                "description": "Lieu de formation seulement : l'uai du lieu de formation",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                            },
+                            "type": [
+                              "object",
+                              "null",
+                            ],
+                          },
+                          "contact": {
+                            "$ref": "#/components/schemas/Contact",
+                          },
+                          "place": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/Place",
+                              },
+                              {
+                                "description": "Le lieu de formation",
+                              },
+                            ],
+                          },
+                          "training": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/Training",
+                              },
+                              {
+                                "properties": {
+                                  "cfd": {
+                                    "description": "Le code formation diplôme de l'éducation nationale.",
+                                    "example": "50023324",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "cleMinistereEducatif": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "description": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "diploma": {
+                                    "description": "Le diplôme délivré par la formation.",
+                                    "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "diplomaLevel": {
+                                    "description": "Le niveau de la formation.",
+                                    "example": "3 (CAP...)",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "duration": {
+                                    "$ref": "#/components/schemas/Durée de session en jours",
+                                  },
+                                  "idRco": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "objectif": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "onisepUrl": {
+                                    "description": "Le lien vers la description de la formation sur le site de l'ONISEP",
+                                    "example": "http://www.onisep.fr/http/redirection/formation/identifiant/7872",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "rncpCode": {
+                                    "description": "Le code RNCP.",
+                                    "example": "RNCP31899",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "rncpLabel": {
+                                    "description": "L'intitulé RNCP.",
+                                    "example": "Intégrateur - Développeur Web",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "romes": {
+                                    "items": {
+                                      "$ref": "#/components/schemas/Rome",
+                                    },
+                                    "type": [
+                                      "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "sessions": {
+                                    "items": {
+                                      "$ref": "#/components/schemas/Session de formation",
+                                    },
+                                    "type": [
+                                      "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "title": {
+                                    "description": "Le titre de la formation",
+                                    "example": "CAP Monteur en Installation Thermique",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                          "type": {
+                            "description": "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
+                            "enum": [
+                              "formation",
+                            ],
+                            "example": "formation",
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "type",
+                          "place",
+                          "company",
+                        ],
+                      },
+                    ],
                   },
-                  "required": [
-                    "results",
-                  ],
-                  "type": "object",
+                  "type": "array",
                 },
               },
             },
-            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Bad Request",
-                },
-              },
-            },
-            "description": "Bad Request",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Internal Server Error",
-                },
-              },
-            },
-            "description": "Internal Server Error",
+            "description": "",
           },
         },
         "security": [
@@ -3755,70 +4009,306 @@ Limite : 7 appel(s) / 1 seconde(s)
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-                  "properties": {
-                    "results": {
-                      "description": "Un tableau de formations correspondantes aux critères",
-                      "items": {
-                        "$ref": "#/components/schemas/Formation",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Formation",
+                    },
+                    {
+                      "properties": {
+                        "company": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "creationDate": {
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                            "description": {
+                              "description": "La description de l'entreprise",
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                            "headquarter": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "hasConvention": {
+                                  "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "id": {
+                                  "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "name": {
+                                  "description": "La raison sociale du centre de formation auquel est affilié la formation",
+                                  "example": "ECOLE DE TRAVAIL ORT",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "place": {
+                                  "$ref": "#/components/schemas/Place",
+                                },
+                                "siret": {
+                                  "description": "Le numéro de SIRET de l'établissement",
+                                  "example": "78424186100011",
+                                  "pattern": "^[0-9]{14}$",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "type": {
+                                  "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "uai": {
+                                  "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                              },
+                              "required": [
+                                "siret",
+                              ],
+                              "type": [
+                                "object",
+                                "null",
+                              ],
+                            },
+                            "logo": {
+                              "description": "L'url du logo de l'entreprise",
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                            "mandataire": {
+                              "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
+                              "type": [
+                                "boolean",
+                                "null",
+                              ],
+                            },
+                            "name": {
+                              "description": "La raison sociale de l'entreprise",
+                              "example": "ECOLE DE TRAVAIL ORT",
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                            "opco": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "label": {
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "url": {
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                              },
+                              "required": [
+                                "label",
+                                "url",
+                              ],
+                              "type": [
+                                "object",
+                                "null",
+                              ],
+                            },
+                            "place": {
+                              "$ref": "#/components/schemas/Place",
+                            },
+                            "siret": {
+                              "description": "Le numéro de SIRET de l'établissement",
+                              "example": "78424186100011",
+                              "pattern": "^[0-9]{14}$",
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                            "size": {
+                              "description": "La tranche d'effectifs de l'entreprise",
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                            "uai": {
+                              "description": "Lieu de formation seulement : l'uai du lieu de formation",
+                              "type": [
+                                "string",
+                                "null",
+                              ],
+                            },
+                          },
+                          "type": [
+                            "object",
+                            "null",
+                          ],
+                        },
+                        "contact": {
+                          "$ref": "#/components/schemas/Contact",
+                        },
+                        "place": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/Place",
+                            },
+                            {
+                              "description": "Le lieu de formation",
+                            },
+                          ],
+                        },
+                        "training": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/Training",
+                            },
+                            {
+                              "properties": {
+                                "cfd": {
+                                  "description": "Le code formation diplôme de l'éducation nationale.",
+                                  "example": "50023324",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "cleMinistereEducatif": {
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "description": {
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "diploma": {
+                                  "description": "Le diplôme délivré par la formation.",
+                                  "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "diplomaLevel": {
+                                  "description": "Le niveau de la formation.",
+                                  "example": "3 (CAP...)",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "duration": {
+                                  "$ref": "#/components/schemas/Durée de session en jours",
+                                },
+                                "idRco": {
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "objectif": {
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "onisepUrl": {
+                                  "description": "Le lien vers la description de la formation sur le site de l'ONISEP",
+                                  "example": "http://www.onisep.fr/http/redirection/formation/identifiant/7872",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "rncpCode": {
+                                  "description": "Le code RNCP.",
+                                  "example": "RNCP31899",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "rncpLabel": {
+                                  "description": "L'intitulé RNCP.",
+                                  "example": "Intégrateur - Développeur Web",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                                "romes": {
+                                  "items": {
+                                    "$ref": "#/components/schemas/Rome",
+                                  },
+                                  "type": [
+                                    "array",
+                                    "null",
+                                  ],
+                                },
+                                "sessions": {
+                                  "items": {
+                                    "$ref": "#/components/schemas/Session de formation",
+                                  },
+                                  "type": [
+                                    "array",
+                                    "null",
+                                  ],
+                                },
+                                "title": {
+                                  "description": "Le titre de la formation",
+                                  "example": "CAP Monteur en Installation Thermique",
+                                  "type": [
+                                    "string",
+                                    "null",
+                                  ],
+                                },
+                              },
+                            },
+                          ],
+                        },
+                        "type": {
+                          "description": "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
+                          "enum": [
+                            "formation",
+                          ],
+                          "example": "formation",
+                          "type": "string",
+                        },
                       },
-                      "type": "array",
-                    },
-                  },
-                  "required": [
-                    "results",
-                  ],
-                  "type": "object",
-                },
-              },
-            },
-            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
+                      "required": [
+                        "type",
+                        "place",
+                        "company",
+                      ],
                     },
                   ],
                 },
@@ -3958,61 +4448,315 @@ Limite : 7 appel(s) / 1 seconde(s)
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-                  "properties": {
-                    "results": {
-                      "description": "Un tableau de formations correspondantes aux critères",
-                      "items": {
+                  "items": {
+                    "allOf": [
+                      {
                         "$ref": "#/components/schemas/Formation",
                       },
-                      "type": "array",
-                    },
+                      {
+                        "properties": {
+                          "company": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "creationDate": {
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "description": {
+                                "description": "La description de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "headquarter": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "hasConvention": {
+                                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "id": {
+                                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "name": {
+                                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
+                                    "example": "ECOLE DE TRAVAIL ORT",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "place": {
+                                    "$ref": "#/components/schemas/Place",
+                                  },
+                                  "siret": {
+                                    "description": "Le numéro de SIRET de l'établissement",
+                                    "example": "78424186100011",
+                                    "pattern": "^[0-9]{14}$",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "type": {
+                                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "uai": {
+                                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                                "required": [
+                                  "siret",
+                                ],
+                                "type": [
+                                  "object",
+                                  "null",
+                                ],
+                              },
+                              "logo": {
+                                "description": "L'url du logo de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "mandataire": {
+                                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
+                                "type": [
+                                  "boolean",
+                                  "null",
+                                ],
+                              },
+                              "name": {
+                                "description": "La raison sociale de l'entreprise",
+                                "example": "ECOLE DE TRAVAIL ORT",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "opco": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "label": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                                "required": [
+                                  "label",
+                                  "url",
+                                ],
+                                "type": [
+                                  "object",
+                                  "null",
+                                ],
+                              },
+                              "place": {
+                                "$ref": "#/components/schemas/Place",
+                              },
+                              "siret": {
+                                "description": "Le numéro de SIRET de l'établissement",
+                                "example": "78424186100011",
+                                "pattern": "^[0-9]{14}$",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "size": {
+                                "description": "La tranche d'effectifs de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "uai": {
+                                "description": "Lieu de formation seulement : l'uai du lieu de formation",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                            },
+                            "type": [
+                              "object",
+                              "null",
+                            ],
+                          },
+                          "contact": {
+                            "$ref": "#/components/schemas/Contact",
+                          },
+                          "place": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/Place",
+                              },
+                              {
+                                "description": "Le lieu de formation",
+                              },
+                            ],
+                          },
+                          "training": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/Training",
+                              },
+                              {
+                                "properties": {
+                                  "cfd": {
+                                    "description": "Le code formation diplôme de l'éducation nationale.",
+                                    "example": "50023324",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "cleMinistereEducatif": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "description": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "diploma": {
+                                    "description": "Le diplôme délivré par la formation.",
+                                    "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "diplomaLevel": {
+                                    "description": "Le niveau de la formation.",
+                                    "example": "3 (CAP...)",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "duration": {
+                                    "$ref": "#/components/schemas/Durée de session en jours",
+                                  },
+                                  "idRco": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "objectif": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "onisepUrl": {
+                                    "description": "Le lien vers la description de la formation sur le site de l'ONISEP",
+                                    "example": "http://www.onisep.fr/http/redirection/formation/identifiant/7872",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "rncpCode": {
+                                    "description": "Le code RNCP.",
+                                    "example": "RNCP31899",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "rncpLabel": {
+                                    "description": "L'intitulé RNCP.",
+                                    "example": "Intégrateur - Développeur Web",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "romes": {
+                                    "items": {
+                                      "$ref": "#/components/schemas/Rome",
+                                    },
+                                    "type": [
+                                      "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "sessions": {
+                                    "items": {
+                                      "$ref": "#/components/schemas/Session de formation",
+                                    },
+                                    "type": [
+                                      "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "title": {
+                                    "description": "Le titre de la formation",
+                                    "example": "CAP Monteur en Installation Thermique",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                          "type": {
+                            "description": "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
+                            "enum": [
+                              "formation",
+                            ],
+                            "example": "formation",
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "type",
+                          "place",
+                          "company",
+                        ],
+                      },
+                    ],
                   },
-                  "required": [
-                    "results",
-                  ],
-                  "type": "object",
+                  "type": "array",
                 },
               },
             },
-            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Bad Request",
-                },
-              },
-            },
-            "description": "Bad Request",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Internal Server Error",
-                },
-              },
-            },
-            "description": "Internal Server Error",
+            "description": "",
           },
         },
         "security": [
@@ -4126,61 +4870,315 @@ Limite : 7 appel(s) / 1 seconde(s)
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": false,
-                  "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-                  "properties": {
-                    "results": {
-                      "description": "Un tableau de formations correspondantes aux critères",
-                      "items": {
+                  "items": {
+                    "allOf": [
+                      {
                         "$ref": "#/components/schemas/Formation",
                       },
-                      "type": "array",
-                    },
+                      {
+                        "properties": {
+                          "company": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "creationDate": {
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "description": {
+                                "description": "La description de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "headquarter": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "hasConvention": {
+                                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "id": {
+                                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "name": {
+                                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
+                                    "example": "ECOLE DE TRAVAIL ORT",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "place": {
+                                    "$ref": "#/components/schemas/Place",
+                                  },
+                                  "siret": {
+                                    "description": "Le numéro de SIRET de l'établissement",
+                                    "example": "78424186100011",
+                                    "pattern": "^[0-9]{14}$",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "type": {
+                                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "uai": {
+                                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                                "required": [
+                                  "siret",
+                                ],
+                                "type": [
+                                  "object",
+                                  "null",
+                                ],
+                              },
+                              "logo": {
+                                "description": "L'url du logo de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "mandataire": {
+                                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
+                                "type": [
+                                  "boolean",
+                                  "null",
+                                ],
+                              },
+                              "name": {
+                                "description": "La raison sociale de l'entreprise",
+                                "example": "ECOLE DE TRAVAIL ORT",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "opco": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "label": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                                "required": [
+                                  "label",
+                                  "url",
+                                ],
+                                "type": [
+                                  "object",
+                                  "null",
+                                ],
+                              },
+                              "place": {
+                                "$ref": "#/components/schemas/Place",
+                              },
+                              "siret": {
+                                "description": "Le numéro de SIRET de l'établissement",
+                                "example": "78424186100011",
+                                "pattern": "^[0-9]{14}$",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "size": {
+                                "description": "La tranche d'effectifs de l'entreprise",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "uai": {
+                                "description": "Lieu de formation seulement : l'uai du lieu de formation",
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                            },
+                            "type": [
+                              "object",
+                              "null",
+                            ],
+                          },
+                          "contact": {
+                            "$ref": "#/components/schemas/Contact",
+                          },
+                          "place": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/Place",
+                              },
+                              {
+                                "description": "Le lieu de formation",
+                              },
+                            ],
+                          },
+                          "training": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/Training",
+                              },
+                              {
+                                "properties": {
+                                  "cfd": {
+                                    "description": "Le code formation diplôme de l'éducation nationale.",
+                                    "example": "50023324",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "cleMinistereEducatif": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "description": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "diploma": {
+                                    "description": "Le diplôme délivré par la formation.",
+                                    "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "diplomaLevel": {
+                                    "description": "Le niveau de la formation.",
+                                    "example": "3 (CAP...)",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "duration": {
+                                    "$ref": "#/components/schemas/Durée de session en jours",
+                                  },
+                                  "idRco": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "objectif": {
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "onisepUrl": {
+                                    "description": "Le lien vers la description de la formation sur le site de l'ONISEP",
+                                    "example": "http://www.onisep.fr/http/redirection/formation/identifiant/7872",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "rncpCode": {
+                                    "description": "Le code RNCP.",
+                                    "example": "RNCP31899",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "rncpLabel": {
+                                    "description": "L'intitulé RNCP.",
+                                    "example": "Intégrateur - Développeur Web",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                  "romes": {
+                                    "items": {
+                                      "$ref": "#/components/schemas/Rome",
+                                    },
+                                    "type": [
+                                      "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "sessions": {
+                                    "items": {
+                                      "$ref": "#/components/schemas/Session de formation",
+                                    },
+                                    "type": [
+                                      "array",
+                                      "null",
+                                    ],
+                                  },
+                                  "title": {
+                                    "description": "Le titre de la formation",
+                                    "example": "CAP Monteur en Installation Thermique",
+                                    "type": [
+                                      "string",
+                                      "null",
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                          "type": {
+                            "description": "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
+                            "enum": [
+                              "formation",
+                            ],
+                            "example": "formation",
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "type",
+                          "place",
+                          "company",
+                        ],
+                      },
+                    ],
                   },
-                  "required": [
-                    "results",
-                  ],
-                  "type": "object",
+                  "type": "array",
                 },
               },
             },
-            "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Bad Request",
-                },
-              },
-            },
-            "description": "Bad Request",
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/LbacError",
-                    },
-                  ],
-                  "description": "Internal Server Error",
-                },
-              },
-            },
-            "description": "Internal Server Error",
+            "description": "",
           },
         },
         "security": [
