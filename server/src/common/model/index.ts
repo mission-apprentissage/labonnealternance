@@ -5,8 +5,6 @@ import { db, mongooseInstance } from "@/common/mongodb"
 import { logger } from "../logger"
 
 import Application from "./schema/application/applications.schema"
-import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
-import Appointment from "./schema/appointments/appointment.schema"
 import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema"
 import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema"
@@ -76,8 +74,6 @@ export async function createMongoDBIndexes() {
 
 export {
   Application,
-  Appointment,
-  AppointmentDetailed,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
   Entreprise,

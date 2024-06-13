@@ -1,7 +1,6 @@
 import { captureException } from "@sentry/node"
 import { Model } from "mongoose"
 import {
-  ZAppointment,
   ZEligibleTrainingsForAppointmentSchema,
   ZEmailBlacklist,
   ZEtablissement,
@@ -22,7 +21,6 @@ import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
 import {
-  AppointmentDetailed,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
   Entreprise,
@@ -82,7 +80,6 @@ async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, a
 
 export async function validateModels(): Promise<void> {
   // TODO: Create Zod for missing models
-  await validateModel(AppointmentDetailed, ZAppointment)
   await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
   await validateModel(EmailBlacklist, ZEmailBlacklist)
   await validateModel(Etablissement, ZEtablissement)

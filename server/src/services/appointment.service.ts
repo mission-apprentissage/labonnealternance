@@ -1,28 +1,21 @@
 import dayjs from "dayjs"
 import { Filter, ObjectId } from "mongodb"
-import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
+import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, INewAppointment, IUser } from "shared"
 
 import { mailType } from "@/common/model/constants/appointments"
 import { ReferrerObject } from "@/common/model/constants/referrers"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import config from "@/config"
 
-import { Appointment } from "../common/model/index"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 
-export type NewAppointment = Pick<
-  IAppointment,
-  "applicant_id" | "cfa_recipient_email" | "cfa_formateur_siret" | "applicant_message_to_cfa" | "applicant_reasons" | "appointment_origin" | "cle_ministere_educatif"
->
-
-const createAppointment = async (params: NewAppointment) => {
-  const appointment = new Appointment(params)
-  await appointment.save()
-
-  return appointment.toObject()
+const createAppointment = async (params: Omit<INewAppointment, "_id" | "created_at">) => {
+  const appointment: INewAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }
+  await getDbCollection("appointments").insertOne(appointment)
+  return appointment
 }
 
 const findById = async (id: ObjectId | string): Promise<IAppointment | null> => getDbCollection("appointments").findOne({ _id: new ObjectId(id) })
@@ -177,21 +170,23 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
   // If mail sent from appointment model
   const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
   if (appointment) {
-    const firstEmailEvent = appointment.to_cfa_mails[0]
+    if (appointment.to_cfa_mails?.length) {
+      const firstEmailEvent = appointment.to_cfa_mails[0]
 
-    await getDbCollection("appointments").updateOne(
-      { _id: appointment._id },
-      {
-        $push: {
-          to_cfa_mails: {
-            campaign: firstEmailEvent.campaign,
-            status: event,
-            message_id: firstEmailEvent.message_id,
-            webhook_status_at: eventDate,
+      await getDbCollection("appointments").updateOne(
+        { _id: appointment._id },
+        {
+          $push: {
+            to_cfa_mails: {
+              campaign: firstEmailEvent.campaign,
+              status: event,
+              message_id: firstEmailEvent.message_id,
+              webhook_status_at: eventDate,
+            },
           },
-        },
-      }
-    )
+        }
+      )
+    }
 
     return false
   }
