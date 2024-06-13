@@ -11,7 +11,7 @@ const fixOptoutContactList = async () => {
   await asyncForEach(optouts, async ({ contacts, _id }) => {
     await asyncForEach(contacts, async (contact) => {
       if (!z.string().email().safeParse(contact.email).success) {
-        await Optout.findByIdAndUpdate(_id, { $pull: { contacts: { email: contact.email } } })
+        await getDbCollection("optouts").findOneAndUpdate({ _id }, { $pull: { contacts: { email: contact.email } } })
       }
     })
   })
