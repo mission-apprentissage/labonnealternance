@@ -31,11 +31,11 @@ const find = (conditions: Filter<IAppointment>) => getDbCollection("appointments
 
 const findOne = (conditions: Filter<IAppointment>) => getDbCollection("appointments").findOne(conditions)
 
-const findOneAndUpdate = (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").findOneAndUpdate(conditions, values, { new: true })
+const findOneAndUpdate = (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").findOneAndUpdate(conditions, values, { returnDocument: "after" })
 
 const updateMany = (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").updateMany(conditions, values)
 
-const updateAppointment = (id: string, values) => getDbCollection("appointments").findOneAndUpdate({ _id: new ObjectId(id) }, values, { new: true })
+const updateAppointment = (id: string, values) => getDbCollection("appointments").findOneAndUpdate({ _id: new ObjectId(id) }, values, { returnDocument: "after" })
 
 export { createAppointment, find, findById, findOne, findOneAndUpdate, updateAppointment, updateMany }
 
