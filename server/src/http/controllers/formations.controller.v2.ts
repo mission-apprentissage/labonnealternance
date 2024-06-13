@@ -2,7 +2,7 @@ import Boom from "boom"
 import { zRoutes } from "shared"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
-import { getFormationsParRegionQuery, getFormationsQuery, getFormationv2 } from "../../services/formation.service"
+import { getFormationsParRegionV2, getFormationsV2, getFormationv2 } from "../../services/formation.service"
 import { Server } from "../server"
 
 const config = {
@@ -23,27 +23,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
-      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: false })
-
-      if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else {
-          res.status(500)
-        }
-
-        return res.send(result)
-      }
-
-      if (caller && "results" in result) {
-        trackApiCall({
-          caller: caller,
-          api_path: "formationV2",
-          training_count: result.results?.length,
-          result_count: result.results?.length,
-          response: "OK",
-        })
-      }
+      const result = await getFormationsV2({ api: "/formations", romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: false })
       return res.send(result)
     }
   )
@@ -52,33 +32,13 @@ export default (server: Server) => {
     "/formations/min",
     {
       schema: zRoutes.get["/formations/min"],
+      onRequest: server.auth(zRoutes.get["/formations/min"]),
       config,
-      // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { referer } = req.headers
       const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
-      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: true })
-
-      if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else {
-          res.status(500)
-        }
-
-        return res.send(result)
-      }
-
-      if (caller && "results" in result) {
-        trackApiCall({
-          caller: caller,
-          api_path: "formationV2min",
-          training_count: result.results?.length,
-          result_count: result.results?.length,
-          response: "OK",
-        })
-      }
+      const result = await getFormationsV2({ api: "/formations/min", romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, isMinimalData: true })
       return res.send(result)
     }
   )
@@ -128,29 +88,17 @@ export default (server: Server) => {
     async (req, res) => {
       const { romes, romeDomain, caller, departement, region, diploma, options } = req.query
       const { referer } = req.headers
-
-      const result = await getFormationsParRegionQuery({ romes, departement, region, diploma, romeDomain, caller, options, referer })
-
-      if ("error" in result) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else {
-          res.status(500)
-        }
-
-        return res.send(result)
-      }
-
-      if (caller) {
-        trackApiCall({
-          caller: caller,
-          api_path: "formationRegionV1",
-          training_count: result.results.length,
-          result_count: result.results.length,
-          response: "OK",
-        })
-      }
-
+      const result = await getFormationsParRegionV2({
+        apiPath: "/formationsParRegion",
+        romes,
+        departement,
+        region,
+        diploma,
+        romeDomain,
+        caller,
+        withDescription: options === "with_description",
+        referer,
+      })
       return res.send(result)
     }
   )

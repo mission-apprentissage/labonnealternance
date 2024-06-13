@@ -273,10 +273,10 @@ export type ILbaItemTraining = z.output<typeof ZLbaItemTraining>
 
 const ZLbaItemTraining2 = z
   .object({
-    description: z.string().nullable(),
-    objectif: z.string().nullable(),
+    description: z.string().nullish(),
+    objectif: z.string().nullish(),
     sessions: z.array(ZLbaItemTrainingSession).nullish(),
-    duration: z.number().nullable().openapi("Durée de session en jours"),
+    duration: z.number().nullish().openapi("Durée de session en jours"),
     title: z.string().nullish().openapi({
       description: "Le titre de la formation",
       example: "CAP Monteur en Installation Thermique",

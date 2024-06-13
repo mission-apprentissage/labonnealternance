@@ -1,6 +1,7 @@
+import Boom from "boom"
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
-import type { IFormationCatalogue, ILbaItemFormation2 } from "shared"
+import { assertUnreachable, type IFormationCatalogue, type ILbaItemFormation2 } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { FormationCatalogue } from "../common/model/index"
@@ -255,7 +256,7 @@ const getAtLeastSomeFormations = async ({
   caller?: string
   options: "with_description"[]
   isMinimalData: boolean
-}): Promise<ILbaItemFormation[]> => {
+}): Promise<IFormationCatalogue[]> => {
   const currentRadius = radius
 
   const parameters = {
@@ -279,9 +280,7 @@ const getAtLeastSomeFormations = async ({
   }
 
   rawFormations = deduplicateFormations(rawFormations)
-  const formations = transformFormations(rawFormations, isMinimalData)
-  sortFormations(formations)
-  return formations
+  return rawFormations
 }
 
 /**
@@ -491,6 +490,36 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormat
   return resultFormation
 }
 
+const transformFormationWithMinimalDataV2 = (rawFormation: IFormationCatalogue): ILbaItemFormation2 => {
+  const geoSource = rawFormation.lieu_formation_geo_coordonnees
+  const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
+
+  const resultFormation: ILbaItemFormation2 = {
+    type: LBA_ITEM_TYPE.FORMATION,
+    place: {
+      distance: rawFormation.distance ? roundDistance(rawFormation.distance / 1000) : rawFormation.distance === 0 ? 0 : null,
+      fullAddress: getTrainingAddress(rawFormation), // adresse postale reconstruite à partir des éléments d'adresse fournis
+      latitude: latOpt ?? null,
+      longitude: longOpt ?? null,
+      city: rawFormation.localite ?? null,
+      zipCode: rawFormation.code_postal,
+      insee: rawFormation.code_commune_insee,
+    },
+    company: {
+      name: getSchoolName(rawFormation), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
+      siret: rawFormation.etablissement_formateur_siret,
+      headquarter: {
+        siret: rawFormation.etablissement_gestionnaire_siret ?? null,
+      },
+    },
+    training: {
+      title: (rawFormation.intitule_long || rawFormation.intitule_court || rawFormation.intitule_rco) ?? null,
+      cleMinistereEducatif: rawFormation.cle_ministere_educatif ?? null,
+    },
+  }
+  return resultFormation
+}
+
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
@@ -634,7 +663,7 @@ export const getFormationsQuery = async ({
   }
 
   try {
-    const formations = await getAtLeastSomeFormations({
+    const rawFormations = await getAtLeastSomeFormations({
       romes: parameterControl.romes?.split(","),
       coords: longitude !== undefined && latitude !== undefined ? [longitude, latitude] : undefined,
       radius,
@@ -645,7 +674,8 @@ export const getFormationsQuery = async ({
       options: options === "with_description" ? ["with_description"] : [],
       isMinimalData,
     })
-
+    const formations = transformFormations(rawFormations, isMinimalData)
+    sortFormations(formations)
     return { results: formations }
   } catch (err) {
     sentryCaptureException(err)
@@ -653,6 +683,72 @@ export const getFormationsQuery = async ({
       trackApiCall({ caller, api_path: api, response: "Error" })
     }
     return { error: "internal_error" }
+  }
+}
+
+export const getFormationsV2 = async ({
+  romes,
+  longitude,
+  latitude,
+  radius,
+  diploma,
+  romeDomain,
+  caller,
+  options,
+  referer,
+  api = "formationV1",
+  isMinimalData,
+}: {
+  romes?: string
+  longitude?: number
+  latitude?: number
+  radius?: number
+  diploma?: string
+  romeDomain?: string
+  caller?: string
+  options?: "with_description"
+  referer?: string
+  api: string
+  isMinimalData: boolean
+}): Promise<ILbaItemFormation2[]> => {
+  try {
+    const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer })
+    if ("error" in parameterControl) {
+      switch (parameterControl.error) {
+        case "wrong_parameters":
+          throw Boom.badRequest("wrong_parameters", parameterControl)
+        default:
+          assertUnreachable(parameterControl.error)
+      }
+    }
+    const rawFormations = await getAtLeastSomeFormations({
+      romes: parameterControl.romes?.split(","),
+      coords: longitude !== undefined && latitude !== undefined ? [longitude, latitude] : undefined,
+      radius,
+      diploma: diploma,
+      maxOutLimitFormation: 5,
+      romeDomain,
+      caller,
+      options: options === "with_description" ? ["with_description"] : [],
+      isMinimalData,
+    })
+    const formations = (rawFormations || []).map(isMinimalData ? transformFormationWithMinimalDataV2 : transformFormationV2)
+    sortFormations(formations)
+    if (caller) {
+      trackApiCall({
+        caller: caller,
+        api_path: api,
+        training_count: formations.length,
+        result_count: formations.length,
+        response: "OK",
+      })
+    }
+    return formations
+  } catch (err) {
+    if (caller) {
+      trackApiCall({ caller, api_path: api, response: "Error" })
+    }
+    throw err
   }
 }
 
@@ -718,7 +814,6 @@ export const getFormationsParRegionQuery = async ({
 
     const formations = transformFormations(rawFormations, false)
     sortFormations(formations)
-
     return { results: formations }
   } catch (err) {
     sentryCaptureException(err)
@@ -731,10 +826,74 @@ export const getFormationsParRegionQuery = async ({
 }
 
 /**
+ * Retourne les formations matchant les critères dans la requête
+ * TODO: déporter les ctrls dans le controller, appeler directement getRegionFormations depuis le controller
+ */
+export const getFormationsParRegionV2 = async ({
+  romes,
+  departement,
+  region,
+  diploma,
+  romeDomain,
+  caller,
+  referer,
+  withDescription,
+  apiPath,
+}: {
+  romes?: string
+  departement?: string
+  region?: string
+  diploma?: string
+  romeDomain?: string
+  caller?: string
+  withDescription?: boolean
+  referer?: string
+  apiPath: string
+}): Promise<ILbaItemFormation2[]> => {
+  try {
+    const queryValidationResult = formationsRegionQueryValidator({ romes, departement, region, diploma, romeDomain, caller, referer })
+    if ("error" in queryValidationResult) {
+      switch (queryValidationResult.error) {
+        case "wrong_parameters":
+          throw Boom.badRequest("wrong_parameters", queryValidationResult)
+        default:
+          assertUnreachable(queryValidationResult.error)
+      }
+    }
+    const rawFormations = await getRegionFormations({
+      romes: romes ? romes.split(",") : [],
+      region: region,
+      departement: departement,
+      diploma: diploma,
+      romeDomain: romeDomain,
+      caller: caller,
+      options: withDescription ? ["with_description"] : [],
+    })
+    const formations = rawFormations.map(transformFormationV2)
+    sortFormations(formations)
+    if (caller) {
+      trackApiCall({
+        caller: caller,
+        api_path: apiPath,
+        training_count: formations.length,
+        result_count: formations.length,
+        response: "OK",
+      })
+    }
+    return formations
+  } catch (err) {
+    if (caller) {
+      trackApiCall({ caller, api_path: apiPath, response: "Error" })
+    }
+    throw err
+  }
+}
+
+/**
  * tri alphabétique de formations sur le title (primaire) ou le company.name (secondaire )
  * lorsque les formations ne sont pas déjà triées sur la distance par rapport à un point de recherche
  */
-const sortFormations = (formations: ILbaItemFormation[]) => {
+const sortFormations = (formations: { title?: string | null; company?: { name?: string | null } | null; place?: { distance?: number | null } | null }[]) => {
   formations.sort((a, b) => {
     if (a?.place?.distance !== null) {
       return 0
