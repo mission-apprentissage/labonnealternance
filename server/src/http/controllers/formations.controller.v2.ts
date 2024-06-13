@@ -56,16 +56,16 @@ export default (server: Server) => {
       const api_path = "/v2/formations/formation/:id"
       try {
         const formationOpt = await getFormationv2({ id })
-        if (caller) {
-          trackApiCall({
-            caller,
-            api_path,
-            training_count: 1,
-            result_count: 1,
-            response: "OK",
-          })
-        }
         if (formationOpt) {
+          if (caller) {
+            trackApiCall({
+              caller,
+              api_path,
+              training_count: 1,
+              result_count: 1,
+              response: "OK",
+            })
+          }
           return res.send(formationOpt)
         } else {
           throw Boom.notFound("formation introuvable")
