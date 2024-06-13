@@ -1,31 +1,41 @@
-import Boom from "boom"
 import { zRoutes } from "shared/index"
 
-import config from "../../config"
-import { updateContactInfo } from "../../services/lbacompany.service"
+import { getCompanyContactInfo, updateContactInfo } from "../../services/lbacompany.service"
 import { Server } from "../server"
 
 export default function (server: Server) {
   server.get(
-    "/updateLBB/updateContactInfo",
+    "/lbacompany/:siret/contactInfo",
     {
-      schema: zRoutes.get["/updateLBB/updateContactInfo"],
+      schema: zRoutes.get["/lbacompany/:siret/contactInfo"],
+      onRequest: [server.auth(zRoutes.get["/lbacompany/:siret/contactInfo"])],
+    },
+    async (req, res) => {
+      const { siret } = req.params
+
+      const companyData = await getCompanyContactInfo({ siret })
+      return res.status(200).send(companyData)
+    }
+  )
+
+  server.put(
+    "/lbacompany/:siret/contactInfo",
+    {
+      schema: zRoutes.put["/lbacompany/:siret/contactInfo"],
+      onRequest: [server.auth(zRoutes.put["/lbacompany/:siret/contactInfo"])],
       config: {
         rateLimit: {
           max: 1,
-          timeWindow: "20s",
+          timeWindow: "5s",
         },
       },
     },
     async (req, res) => {
-      const { email, phone, siret } = req.query
+      const { siret } = req.params
+      const { phone, email } = req.body
 
-      if (req.query.secret !== config.lbaSecret) {
-        throw Boom.unauthorized()
-      }
-
-      await updateContactInfo({ email, phone, siret })
-      return res.status(200).send("OK")
+      const companyData = await updateContactInfo({ siret, email, phone })
+      return res.status(200).send(companyData)
     }
   )
 }

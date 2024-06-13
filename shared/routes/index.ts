@@ -109,6 +109,7 @@ const zRoutesPut = {
   ...zUserRecruteurRoutes.put,
   ...zFormulaireRoute.put,
   ...zRecruiterRoutes.put,
+  ...zUpdateLbaCompanyRoutes.put,
 } as const
 
 const zRoutesDelete = {

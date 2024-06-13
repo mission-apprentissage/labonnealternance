@@ -103,7 +103,7 @@ export const AdminUserForm = ({
     <>
       {user && (
         <>
-          <HStack mb={4} alignItems="baseline">
+          <HStack mt={4} mb={4} alignItems="baseline">
             <Box w="300px">Type de compte </Box>
             <Box>ADMIN</Box>
           </HStack>

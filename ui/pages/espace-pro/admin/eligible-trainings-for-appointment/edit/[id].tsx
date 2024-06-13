@@ -368,4 +368,4 @@ function EditPage() {
 
 export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
 
-export default authProvider(withAuth(EditPage, "adminRva"))
+export default authProvider(withAuth(EditPage, "admin"))

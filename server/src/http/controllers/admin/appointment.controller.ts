@@ -1,5 +1,6 @@
-import Boom from "boom"
 import { IFormationCatalogue, zRoutes } from "shared/index"
+
+import { logger } from "@/common/logger"
 
 import { Appointment, User } from "../../../common/model/index"
 import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service"
@@ -36,15 +37,16 @@ export default (server: Server) => {
         const user = await User.findById(appointment.applicant_id).lean()
 
         if (!user) {
-          throw Boom.internal("Candidat non trouvé.")
+          logger.error(`Candidat non trouvé pour rendez-vous. user_id=${appointment.applicant_id}`)
+          return null
         }
 
         const formation = formations.find((item) => item.cle_ministere_educatif === appointment.cle_ministere_educatif)
 
-        // TODO do not throw but do something else
-        // if (!formation) {
-        //   throw Boom.internal("Formation non trouvée.")
-        // }
+        if (!formation) {
+          logger.error(`Formation non trouvé pour rendez-vous. user_id=${appointment.applicant_id}. cle_ministere_educatif=${appointment.cle_ministere_educatif}`)
+          return null
+        }
 
         return {
           created_at: appointment.created_at,
@@ -65,7 +67,7 @@ export default (server: Server) => {
         }
       })
 
-      const appointments = await Promise.all(appointmentsPromises || [])
+      const appointments = (await Promise.all(appointmentsPromises || [])).filter((appointment) => !!appointment)
 
       return res.status(200).send({
         appointments,
