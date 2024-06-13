@@ -120,7 +120,9 @@ export const getFormationById = (id: string) => getDbCollection("formationcatalo
  * @returns {Promise<Object[]>}
  */
 export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: { cleMinistereEducatifs: string[] }) =>
-  getDbCollection("formationcatalogues").find({ cle_ministere_educatif: { $in: cleMinistereEducatifs } })
+  getDbCollection("formationcatalogues")
+    .find({ cle_ministere_educatif: { $in: cleMinistereEducatifs } })
+    .toArray()
 
 /**
  * @description Get formations from the formation catalogue collection.

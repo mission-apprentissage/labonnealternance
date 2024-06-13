@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { referrers } from "shared/constants/referers"
 
@@ -122,6 +123,10 @@ export const syncEtablissementsAndFormations = async () => {
           if (!emailRdv) return
 
           await create({
+            _id: new ObjectId(),
+            created_at: new Date(),
+            last_catalogue_sync_date: new Date(),
+            rco_formation_id: formation.id_rco_formation,
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,

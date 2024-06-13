@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { zRoutes } from "shared/index"
 
 import { CustomEmailETFA, EligibleTrainingsForAppointment } from "../../../common/model/index"
@@ -41,7 +42,6 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"])],
     },
     async ({ body, params }, res) => {
-      console.log(body)
       if ("is_lieu_formation_email_customized" in body) {
         if (body.is_lieu_formation_email_customized) {
           if ("cle_ministere_educatif" in body && "lieu_formation_email" in body && body.lieu_formation_email && body.cle_ministere_educatif) {
@@ -53,7 +53,7 @@ export default (server: Server) => {
           }
         }
       }
-      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id.toString(), body).lean()
+      const result = await eligibleTrainingsForAppointmentService.updateParameter(new ObjectId(params.id), body)
 
       res.send(result)
     }

@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { zFormationCatalogueSchemaNew } from "shared/models"
 
@@ -29,7 +30,7 @@ const importFormations = async () => {
           formation.lieu_formation_geopoint = convertStringCoordinatesToGeoPoint(formation.lieu_formation_geo_coordonnees)
           const parsedFormation = zFormationCatalogueSchemaNew.parse(formation)
 
-          await getDbCollection("formationcatalogues").insertOne(parsedFormation)
+          await getDbCollection("formationcatalogues").insertOne({ _id: new ObjectId(), ...parsedFormation })
           stats.created++
         } catch (e) {
           logger.error("Erreur enregistrement de formation", e)

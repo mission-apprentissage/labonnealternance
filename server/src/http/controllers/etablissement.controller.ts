@@ -132,7 +132,7 @@ export default (server: Server) => {
       const [resultAffelnet] = await Promise.all([
         Etablissement.findById(req.params.id, etablissementProjection).lean(),
         ...eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) =>
-          eligibleTrainingsForAppointmentService.update(
+          eligibleTrainingsForAppointmentService.findOneAndUpdate(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
               referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.AFFELNET.name])],
@@ -232,7 +232,7 @@ export default (server: Server) => {
       const [result] = await Promise.all([
         Etablissement.findById(req.params.id).lean(),
         ...eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) =>
-          eligibleTrainingsForAppointmentService.update(
+          eligibleTrainingsForAppointmentService.findOneAndUpdate(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
               referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])],
@@ -421,7 +421,7 @@ export default (server: Server) => {
 
       // If opt-out is already running but user unsubscribe, disable all formations
       /**
-       * WARNING KBA 2024-02-12 : ALL REFERRERS ARE REMOVE AND ITS BAD IF PREMIUM IS AVAILABLE
+       * WARNING KBA 2024-02-12 : ALL REFERRERS ARE REMOVED AND ITS BAD IF PREMIUM IS AVAILABLE
        */
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
         // Disable all formations
