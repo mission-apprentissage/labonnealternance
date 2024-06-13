@@ -5,8 +5,10 @@ import { EntrepriseStatus, IEntrepriseStatusEvent } from "shared/models/entrepri
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../../../common/logger"
-import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../../../../common/model/index"
+import { Cfa, Entreprise, RoleManagement, UserWithAccount } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
@@ -46,9 +48,9 @@ const updateEntreprisesInfosInError = async () => {
           granted_by: "",
         }
         await Entreprise.updateOne({ _id }, { $push: { status: entrepriseEvent } })
-        await Recruiter.updateMany({ establishment_siret: siret }, entrepriseData)
+        await getDbCollection("recruiters").updateMany({ establishment_siret: siret }, { $set: { ...entrepriseData, updatedAt: new Date() } })
         if (getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.ERROR) {
-          const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
+          const recruiters = await getDbCollection("recruiters").find({ establishment_siret: siret }).toArray()
           const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: updatedEntreprise._id.toString() }).lean()
           const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
           const users = await UserWithAccount.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
@@ -89,9 +91,11 @@ const updateEntreprisesInfosInError = async () => {
   return stats
 }
 const updateRecruteursSiretInfosInError = async () => {
-  const recruteurs = await Recruiter.find({
-    status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
-  }).lean()
+  const recruteurs = await getDbCollection("recruiters")
+    .find({
+      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+    })
+    .toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(recruteurs, async (recruteur) => {
