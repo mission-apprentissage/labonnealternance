@@ -19,6 +19,8 @@ export const create = (params: IEligibleTrainingsForAppointment) => getDbCollect
 export const find = (conditions: Filter<IEligibleTrainingsForAppointment>, options = {}) =>
   getDbCollection("eligible_trainings_for_appointments").find(conditions, options).toArray()
 
+export const findOne = (conditions: Filter<IEligibleTrainingsForAppointment>, options = {}) => getDbCollection("eligible_trainings_for_appointments").findOne(conditions, options)
+
 export const updateParameter = (id: ObjectId, params: Partial<IEligibleTrainingsForAppointment>) =>
   getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: id }, params, { returnDocument: "after" })
 

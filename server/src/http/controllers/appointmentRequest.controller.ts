@@ -7,12 +7,13 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { Appointment, EligibleTrainingsForAppointment, Etablissement, User } from "../../common/model/index"
+import { Appointment, Etablissement, User } from "../../common/model/index"
 import config from "../../config"
 import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
 import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import { findElligibleTrainingForAppointment, getParameterByCleMinistereEducatif } from "../../services/eligibleTrainingsForAppointment.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import * as users from "../../services/user.service"
@@ -132,14 +133,12 @@ export default (server: Server) => {
       }
 
       const [formation, user] = await Promise.all([
-        EligibleTrainingsForAppointment.findOne(
+        eligibleTrainingsForAppointmentService.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
-            etablissement_formateur_raison_sociale: 1,
-            lieu_formation_email: 1,
-            _id: 0,
+            projection: { etablissement_formateur_raison_sociale: 1, lieu_formation_email: 1, _id: 0 },
           }
-        ).lean(),
+        ),
         User.findById(appointment.applicant_id, {
           lastname: 1,
           firstname: 1,
@@ -193,17 +192,19 @@ export default (server: Server) => {
       }
 
       const [formation, user] = await Promise.all([
-        EligibleTrainingsForAppointment.findOne(
+        eligibleTrainingsForAppointmentService.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
-            training_intitule_long: 1,
-            etablissement_formateur_raison_sociale: 1,
-            lieu_formation_street: 1,
-            lieu_formation_zip_code: 1,
-            lieu_formation_email: 1,
-            lieu_formation_city: 1,
+            projection: {
+              training_intitule_long: 1,
+              etablissement_formateur_raison_sociale: 1,
+              lieu_formation_street: 1,
+              lieu_formation_zip_code: 1,
+              lieu_formation_email: 1,
+              lieu_formation_city: 1,
+            },
           }
-        ).lean(),
+        ),
         User.findById(appointment.applicant_id, {
           type: 1,
           lastname: 1,
