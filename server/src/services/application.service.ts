@@ -161,7 +161,7 @@ export const sendApplication = async ({
       const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
       const searched_for_job_label = newApplication.searched_for_job_label || ""
 
-      const buildTopic = (company_type: INewApplicationV2["company_type"], aJobTitle: string) => {
+      const buildTopic = (company_type: INewApplicationV2["company_type"], aJobTitle?: string | null) => {
         if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
           return `Candidature en alternance - ${aJobTitle}`
         } else {
@@ -172,7 +172,7 @@ export const sendApplication = async ({
       // Sends acknowledge email to "candidate" and application email to "company"
       const emailCompany = await mailer.sendEmail({
         to: newApplication.company_email && newApplication.secret && newApplication.secret === config.lbaSecret ? newApplication.company_email : application.company_email,
-        subject: buildTopic(newApplication.company_type, application.job_title as string),
+        subject: buildTopic(newApplication.company_type, application.job_title),
         template: getEmailTemplate("mail-candidature"),
         data: {
           ...sanitizeApplicationForEmail(application),
