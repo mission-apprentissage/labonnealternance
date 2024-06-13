@@ -43,6 +43,7 @@ async function exportLbaJobsToS3() {
       job_delegation_count: 0,
       stats_detail_view: 0,
       stats_search_view: 0,
+      job_status: 0,
     },
     fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   }
