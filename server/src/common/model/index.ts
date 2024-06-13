@@ -23,7 +23,6 @@ import { Cfa } from "./schema/multiCompte/cfa.schema"
 import { Entreprise } from "./schema/multiCompte/entreprise.schema"
 import { RoleManagement } from "./schema/multiCompte/roleManagement.schema"
 import { UserWithAccount } from "./schema/multiCompte/userWithAccount.schema"
-import Optout from "./schema/optout/optout.schema"
 import Recruiter from "./schema/recruiter/recruiter.schema"
 import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema"
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
@@ -94,7 +93,6 @@ export {
   Job,
   LbaCompany,
   LbaCompanyLegacy,
-  Optout,
   Recruiter,
   ReferentielOnisep,
   ReferentielOpco,

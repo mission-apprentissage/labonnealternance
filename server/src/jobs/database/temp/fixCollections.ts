@@ -1,10 +1,12 @@
 import { z } from "zod"
 
-import { Appointment, Optout, User } from "../../../common/model"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
+import { Appointment, User } from "../../../common/model"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 
 const fixOptoutContactList = async () => {
-  const optouts = await Optout.find({}).lean()
+  const optouts = await getDbCollection("optouts").find({}).toArray()
 
   await asyncForEach(optouts, async ({ contacts, _id }) => {
     await asyncForEach(contacts, async (contact) => {
