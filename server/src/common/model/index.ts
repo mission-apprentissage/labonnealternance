@@ -14,8 +14,6 @@ import Credential from "./schema/credentials/credential.schema"
 import CustomEmailETFA from "./schema/customEmailETFA/customEmailETFA.schema"
 import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema"
-import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema"
-import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
 import Etablissement from "./schema/etablissements/etablissement.schema"
 import FicheMetierRomeV4 from "./schema/ficheRomeV4/ficheRomeV4"
 import Job from "./schema/jobs/jobs.schema"
@@ -90,7 +88,6 @@ export {
   CustomEmailETFA,
   DiplomesMetiers,
   DomainesMetiers,
-  EligibleTrainingsForAppointment,
   Etablissement,
   FicheMetierRomeV4,
   ReferentielRome,
@@ -107,7 +104,6 @@ export {
   UnsubscribedLbaCompany,
   User,
   UserRecruteur,
-  eligibleTrainingsForAppointmentHistory,
   UserWithAccount,
   Entreprise,
   Cfa,

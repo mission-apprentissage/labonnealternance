@@ -10,6 +10,7 @@ import customEmailETFAModel from "./customEmailETFA.model"
 import diplomesMetiersModel from "./diplomesMetiers.model"
 import domainesMetiersModel from "./domainesMetiers.model"
 import elligibleTrainingModel from "./elligibleTraining.model"
+import elligibleTrainingHistoryModel from "./elligibleTrainingHistory.model"
 import emailBlacklistModel from "./emailBlacklist.model"
 import entrepriseModel from "./entreprise.model"
 import etablissementModel from "./etablissement.model"
@@ -37,6 +38,7 @@ const modelDescriptorMap = {
   [diplomesMetiersModel.collectionName]: diplomesMetiersModel,
   [domainesMetiersModel.collectionName]: domainesMetiersModel,
   [elligibleTrainingModel.collectionName]: elligibleTrainingModel,
+  [elligibleTrainingHistoryModel.collectionName]: elligibleTrainingHistoryModel,
   [emailBlacklistModel.collectionName]: emailBlacklistModel,
   [entrepriseModel.collectionName]: entrepriseModel,
   [etablissementModel.collectionName]: etablissementModel,

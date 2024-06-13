@@ -3,7 +3,6 @@ import { oleoduc, writeData } from "oleoduc"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { eligibleTrainingsForAppointmentHistory } from "../../common/model/index"
 
 /**
  * @description Check if a training is still available for appointments again it's presence in the training catalogue
@@ -34,7 +33,7 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
         formation._id = undefined
 
         if (!exist) {
-          await eligibleTrainingsForAppointmentHistory.create({ ...formation, email_rdv: undefined, historization_date: new Date() })
+          await getDbCollection("eligible_trainings_for_appointments_history").insertOne({ ...formation, email_rdv: undefined, historization_date: new Date() })
           await getDbCollection("eligible_trainings_for_appointments").deleteOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
         }
       },
