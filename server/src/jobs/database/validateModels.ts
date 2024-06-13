@@ -10,7 +10,6 @@ import {
   ZEtablissement,
   ZLbaCompany,
   ZLbaLegacyCompany,
-  ZRecruiter,
   ZReferentielOnisep,
   ZReferentielOpco,
   ZUnsubscribeOF,
@@ -37,7 +36,6 @@ import {
   Etablissement,
   LbaCompany,
   LbaCompanyLegacy,
-  Recruiter,
   ReferentielOnisep,
   ReferentielOpco,
   RoleManagement,
@@ -99,7 +97,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(Etablissement, ZEtablissement)
   await validateModel(LbaCompany, ZLbaCompany)
   await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
-  await validateModel(Recruiter, ZRecruiter)
   await validateModel(ReferentielOnisep, ZReferentielOnisep)
   await validateModel(User, ZUser)
   await validateModel(ReferentielOpco, ZReferentielOpco)

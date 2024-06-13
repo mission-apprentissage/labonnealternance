@@ -11,7 +11,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, UnsubscribeOF } from "../common/model/index"
+import { Cfa, Entreprise, RoleManagement, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
@@ -110,16 +110,18 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
  * @param {number} payload.limit
  */
 export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
-  const response = await Recruiter.paginate({ query, select, page, limit, lean: true })
-
+  const response = getDbCollection("recruiters").find({ query }, { projection: select })
+  const data = page && limit ? await response.skip(page).limit(limit).toArray() : await response.toArray()
+  const total = await getDbCollection("recruiters").countDocuments(query)
+  const number_of_page = limit ? Math.ceil(total / limit) : undefined
   return {
     pagination: {
-      page: response?.page,
+      page,
       result_per_page: limit,
-      number_of_page: response?.totalPages,
-      total: response?.totalDocs,
+      number_of_page,
+      total,
     },
-    data: response?.docs,
+    data,
   }
 }
 
