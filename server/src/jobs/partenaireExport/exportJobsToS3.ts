@@ -41,8 +41,8 @@ async function exportLbaJobsToS3() {
       recruiterStatus: 0,
       is_multi_published: 0,
       job_delegation_count: 0,
-      stat_detail_view: 0,
-      stat_search_view: 0,
+      stats_detail_view: 0,
+      stats_search_view: 0,
     },
     fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   }
