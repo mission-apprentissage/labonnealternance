@@ -3,8 +3,6 @@ import { z } from "../helpers/zodWithOpenApi"
 import { IModelDescriptor } from "./common"
 import { ZLbaCompany } from "./lbaCompany.model"
 
-const collectionName = "unsubscribedbonnesboites" as const
-
 export const ZUnsubscribedLbaCompany = ZLbaCompany.pick({
   _id: true,
   siret: true,
@@ -31,5 +29,5 @@ export type IUnsubscribedLbaCompany = z.output<typeof ZUnsubscribedLbaCompany>
 export default {
   zod: ZUnsubscribedLbaCompany,
   indexes: [],
-  collectionName,
+  collectionName: "unsubscribedbonnesboites" as const,
 } as const satisfies IModelDescriptor

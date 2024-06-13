@@ -11,7 +11,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, UnsubscribeOF } from "../common/model/index"
+import { Cfa, Entreprise, Recruiter } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
@@ -172,7 +172,7 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
-    managed_by: userId,
+    managed_by: userId.toString(),
   })
   // insert job
   const updatedFormulaire = await createOffre(establishment_id, updatedJob)
@@ -186,7 +186,7 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
     if (!entrepriseStatus) {
       throw Boom.internal(`inattendu : pas de status pour l'entreprise pour establishment_id=${establishment_id}`)
     }
-    const role = await RoleManagement.findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() }).lean()
+    const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
     return updatedFormulaire
@@ -220,7 +220,11 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   const entreprise = await Entreprise.findOne({ siret: recruiter.establishment_siret }).lean()
   let shouldSentMailToCfa = false
   if (entreprise) {
-    const role = await RoleManagement.findOne({ user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }).lean()
+    const role = await getDbCollection("rolemanagements").findOne({
+      user_id: managingUser._id,
+      authorized_id: entreprise._id.toString(),
+      authorized_type: AccessEntityType.ENTREPRISE,
+    })
     if (role && getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED) {
       shouldSentMailToCfa = true
     }
@@ -393,7 +397,7 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @param {IJob["_id"]} id
  */
 export async function getOffre(id: string | ObjectIdType) {
-  return getDbCollection("recruiters").findOne({ "jobs._id": id })
+  return getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(id.toString()) })
 }
 
 export async function getOffreWithRomeDetail(id: string | ObjectIdType) {
@@ -632,7 +636,7 @@ export const getJobWithRomeDetail = async (id: string | ObjectIdType): Promise<I
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
 export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
-  const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
+  const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   await mailer.sendEmail({

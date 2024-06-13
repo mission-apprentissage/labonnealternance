@@ -17,6 +17,6 @@ export type IReferentielOnisep = z.output<typeof ZReferentielOnisep>
 
 export default {
   zod: ZReferentielOnisep,
-  indexes: [],
+  indexes: [[{ id_action_ideo2: 1 }, {}]],
   collectionName,
 } as const satisfies IModelDescriptor

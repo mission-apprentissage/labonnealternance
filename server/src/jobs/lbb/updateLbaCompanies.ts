@@ -1,9 +1,10 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
 import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { checkIsDiffusible } from "@/services/etablissement.service"
 
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
+import { LbaCompany } from "../../common/model"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
@@ -44,7 +45,15 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
     return null
   }
 
-  const unsubscribedLbaCompany = await UnsubscribedLbaCompany.findOne({ siret: rawCompany.siret }, { siret: 1, _id: 0 })
+  const unsubscribedLbaCompany = await getDbCollection("unsubscribedbonnesboites").findOne(
+    { siret: rawCompany.siret },
+    {
+      projection: {
+        siret: 1,
+        _id: 0,
+      },
+    }
+  )
   if (unsubscribedLbaCompany) {
     return null
   }

@@ -2,8 +2,10 @@ import { oleoduc, writeData } from "oleoduc"
 import { IEligibleTrainingsForAppointment, IEtablissement } from "shared"
 import { referrers } from "shared/constants/referers"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
+import { Etablissement, FormationCatalogue } from "../../common/model/index"
 import { db } from "../../common/mongodb"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { isValidEmail } from "../../common/utils/isValidEmail"
@@ -112,7 +114,7 @@ const addReferrersToETFA = async () => {
           })
             .select({ optout_activation_date: 1, premium_activation_date: 1 })
             .lean(),
-          ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
+          getDbCollection("referentieloniseps").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }),
         ])
         const hasOptOutActivation = etablissements.some((etab) => etab.optout_activation_date !== null && etab.optout_activation_date !== undefined)
         const hasPremiumActivation = etablissements.some((etab) => etab.premium_activation_date !== null && etab.premium_activation_date !== undefined)

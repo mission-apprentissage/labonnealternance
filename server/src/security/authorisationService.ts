@@ -10,8 +10,9 @@ import { AccessPermission, AccessResourcePath } from "shared/security/permission
 import { assertUnreachable, parseEnum } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { Application, Cfa, Entreprise, Recruiter, UserWithAccount } from "@/common/model"
+import { Application, Cfa, Entreprise, Recruiter } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
 
@@ -146,7 +147,7 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
     await Promise.all(
       schema.securityScheme.resources.user.map(async (userDef) => {
         if ("_id" in userDef) {
-          const userOpt = await UserWithAccount.findOne({ _id: getAccessResourcePathValue(userDef._id, req) }).lean()
+          const userOpt = await getDbCollection("userswithaccounts").findOne({ _id: getAccessResourcePathValue(userDef._id, req) })
           return userOpt ? { _id: userOpt._id.toString() } : null
         }
         assertUnreachable(userDef)

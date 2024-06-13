@@ -15,17 +15,10 @@ import {
   ZLbaLegacyCompany,
   ZOptout,
   ZRecruiter,
-  ZReferentielOnisep,
-  ZReferentielOpco,
-  ZUnsubscribeOF,
-  ZUnsubscribedLbaCompany,
-  ZUser,
   zFormationCatalogueSchema,
 } from "shared/models"
 import { zCFA } from "shared/models/cfa.model"
 import { ZEntreprise } from "shared/models/entreprise.model"
-import { ZRoleManagement } from "shared/models/roleManagement.model"
-import { ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
@@ -48,13 +41,6 @@ import {
   LbaCompanyLegacy,
   Optout,
   Recruiter,
-  ReferentielOnisep,
-  ReferentielOpco,
-  RoleManagement,
-  UnsubscribeOF,
-  UnsubscribedLbaCompany,
-  User,
-  UserWithAccount,
 } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
@@ -117,14 +103,7 @@ export async function validateModels(): Promise<void> {
   //  await validateModel(Opco, ZOpco)
   await validateModel(Optout, ZOptout)
   await validateModel(Recruiter, ZRecruiter)
-  await validateModel(ReferentielOnisep, ZReferentielOnisep)
-  await validateModel(User, ZUser)
-  await validateModel(ReferentielOpco, ZReferentielOpco)
-  await validateModel(UnsubscribeOF, ZUnsubscribeOF)
-  await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
   // await validateModel(UserRecruteur, ZUserRecruteur)
   await validateModel(Entreprise, ZEntreprise)
   await validateModel(Cfa, zCFA)
-  await validateModel(UserWithAccount, ZUserWithAccount)
-  await validateModel(RoleManagement, ZRoleManagement)
 }

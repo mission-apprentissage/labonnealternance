@@ -4,11 +4,10 @@ import querystring from "querystring"
 import Boom from "boom"
 import FormData from "form-data"
 import { TDayjs } from "shared/helpers/dayjs"
-import { IFicheRome } from "shared/models"
 
 import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
-import { IAppelattionDetailsFromAPI, IRomeDetailsFromAPI, IRomeV4Short, ZFTApiToken } from "@/services/rome.service.types"
+import { IAppelattionDetailsFromAPI, IRomeDetailsFromAPI, ZFTApiToken } from "@/services/rome.service.types"
 
 import dayjs from "../../services/dayjs.service"
 import { logger } from "../logger"
@@ -201,38 +200,6 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
     if (error.response.status === 404) {
       return null
     }
-  }
-}
-
-export const getRomeV4DetailsFromFT = async (romeCode: string): Promise<IFicheRome | null | undefined> => {
-  const { token } = await getFtAccessToken("ROMEV4")
-
-  try {
-    const { data } = await axiosClient.get<IFicheRome>(`${config.franceTravailIO.baseUrl}/rome-metiers/v1/metiers/metier/${romeCode}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    return data
-  } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    return null
-  }
-}
-
-export const getRomeV4ListFromFT = async (): Promise<IRomeV4Short[] | null | undefined> => {
-  const { token } = await getFtAccessToken("ROMEV4")
-  try {
-    const { data } = await axiosClient.get<IRomeV4Short[]>(`${config.franceTravailIO.baseUrl}/rome-metiers/v1/metiers/metier?champs=code`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    return data
-  } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    return null
   }
 }
 

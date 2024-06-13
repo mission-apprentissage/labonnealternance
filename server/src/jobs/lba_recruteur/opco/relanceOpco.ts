@@ -3,8 +3,9 @@ import { OPCOS } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { Entreprise, RoleManagement, UserWithAccount } from "../../../common/model/index"
+import { Entreprise } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import config from "../../../config"
 import mailer from "../../../services/mailer.service"
@@ -14,13 +15,19 @@ import mailer from "../../../services/mailer.service"
  * @returns {}
  */
 export const relanceOpco = async () => {
-  const rolesAwaitingValidation = await RoleManagement.find(
-    {
-      $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.AWAITING_VALIDATION] },
-      authorized_type: AccessEntityType.ENTREPRISE,
-    },
-    { authorized_id: 1 }
-  ).lean()
+  const rolesAwaitingValidation = await getDbCollection("rolemanagements")
+    .find(
+      {
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.AWAITING_VALIDATION] },
+        authorized_type: AccessEntityType.ENTREPRISE,
+      },
+      {
+        projection: {
+          authorized_id: 1,
+        },
+      }
+    )
+    .toArray()
 
   // Cancel the job if there's no users awaiting validation
   if (!rolesAwaitingValidation.length) return
@@ -41,8 +48,10 @@ export const relanceOpco = async () => {
   await Promise.all(
     Object.entries(opcoCounts).map(async ([opco, count]) => {
       // Get related user to send the email
-      const roles = await RoleManagement.find({ authorized_type: AccessEntityType.OPCO, authorized_id: opco }).lean()
-      const users = await UserWithAccount.find({ _id: { $in: roles.map((role) => role.user_id) } })
+      const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.OPCO, authorized_id: opco }).toArray()
+      const users = await getDbCollection("userswithaccounts")
+        .find({ _id: { $in: roles.map((role) => role.user_id) } })
+        .toArray()
 
       await asyncForEach(users, async (user) => {
         await mailer.sendEmail({

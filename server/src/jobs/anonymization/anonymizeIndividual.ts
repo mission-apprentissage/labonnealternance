@@ -1,8 +1,12 @@
+import { ObjectId } from "bson"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { AnonymizedUser, Application, Recruiter, User, UserWithAccount } from "../../common/model/index"
+import { AnonymizedUser, Application, Recruiter } from "../../common/model/index"
 
 const anonimizeUserWithAccount = (_id: string) =>
-  UserWithAccount.aggregate([
+  getDbCollection("userswithaccounts").aggregate([
     {
       $match: { _id },
     },
@@ -53,7 +57,7 @@ const anonimizeRecruiterByUserId = (userId: string) =>
   ])
 
 const deleteRecruiter = (query) => Recruiter.deleteMany(query)
-const deleteUserWithAccount = (query) => UserWithAccount.deleteMany(query)
+const deleteUserWithAccount = (query) => getDbCollection("userswithaccounts").deleteMany(query)
 
 const anonymizeApplication = async (_id: string) => {
   await Application.aggregate([
@@ -84,7 +88,7 @@ const anonymizeApplication = async (_id: string) => {
 }
 
 const anonymizeUser = async (_id: string) => {
-  const user = await User.findOne({ _id }).lean()
+  const user = await getDbCollection("users").findOne({ _id: new ObjectId(_id) })
 
   if (user) {
     await AnonymizedUser.create({
@@ -93,7 +97,7 @@ const anonymizeUser = async (_id: string) => {
       role: user.role,
       last_action_date: user.last_action_date,
     })
-    await User.deleteOne({ _id })
+    await getDbCollection("users").deleteOne({ _id: new ObjectId(_id) })
 
     logger.info(`Anonymized user ${_id}`)
   } else {
@@ -102,7 +106,7 @@ const anonymizeUser = async (_id: string) => {
 }
 
 const anonymizeUserWithAccountAndRecruiter = async (userId: string) => {
-  const user = await UserWithAccount.findById(userId)
+  const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(userId) })
   if (!user) {
     throw new Error("Anonymize user not found")
   }

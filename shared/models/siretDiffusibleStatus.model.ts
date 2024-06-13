@@ -3,8 +3,6 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
 
-const collectionName = "siretdiffusiblestatuses" as const
-
 export const ZSiretDiffusibleStatus = z
   .object({
     _id: zObjectId,
@@ -19,6 +17,6 @@ export type ISiretDiffusibleStatus = z.output<typeof ZSiretDiffusibleStatus>
 
 export default {
   zod: ZSiretDiffusibleStatus,
-  indexes: [],
-  collectionName,
-} as IModelDescriptor
+  indexes: [[{ siret: 1 }, { unique: true }]],
+  collectionName: "siretdiffusiblestatuses" as const,
+} as const satisfies IModelDescriptor
