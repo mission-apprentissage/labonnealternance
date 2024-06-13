@@ -36,13 +36,20 @@ async function exportLbaJobsToS3() {
       last_name: 0,
       relance_mail_sent: 0,
       is_disabled_elligible: 0,
+      establishment_id: 0,
+      origin: 0,
+      recruiterStatus: 0,
+      is_multi_published: 0,
+      job_delegation_count: 0,
+      stat_detail_view: 0,
+      stat_search_view: 0,
     },
     fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   }
   const recruteurs_lba: IGeneratorParams = {
     collection: "bonnesboites",
     query: {},
-    projection: { _id: 0, email: 0, phone: 0, geopoint: 0, recruitment_potential: 0 },
+    projection: { _id: 0, email: 0, phone: 0, geopoint: 0, recruitment_potential: 0, opco_short_name: 0 },
     fileName: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }
   await Promise.all([
