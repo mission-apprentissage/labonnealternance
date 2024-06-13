@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb"
+
 import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
@@ -13,8 +15,8 @@ import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
+import { validateModels } from "./database/schemaValidation"
 import { fixRDVACollections } from "./database/temp/fixRDVACollections"
-import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
@@ -378,7 +380,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return createMongoDBIndexes()
       case "anonymize-individual": {
         const { collection, id } = job.payload
-        return anonymizeIndividual({ collection, id })
+        return anonymizeIndividual({ collection, id: new ObjectId(id) })
       }
       case "db:validate":
         return validateModels()

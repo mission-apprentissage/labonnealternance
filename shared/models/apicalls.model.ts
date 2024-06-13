@@ -17,10 +17,7 @@ export const ZApiCall = z
   })
   .strict()
 
-export const ZApiCallNew = ZApiCall.omit({
-  _id: true,
-  created_at: true,
-})
+export type IApiCall = z.output<typeof ZApiCall>
 
 export default {
   zod: ZApiCall,

@@ -5,7 +5,7 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Recruiter } from "@/common/model"
+import { Recruiter } from "@/common/model"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
@@ -32,6 +32,7 @@ import {
 import { emailHasActiveRole, getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
 import { CFA, ENTREPRISE } from "../../services/constant.service"
@@ -134,7 +135,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { cfaId } = req.params
-      const cfa = await Cfa.findOne({ _id: cfaId }).lean()
+      const cfa = await getDbCollection("cfas").findOne({ _id: cfaId })
       if (!cfa) {
         throw Boom.notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
       }

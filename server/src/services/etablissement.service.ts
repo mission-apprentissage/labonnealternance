@@ -3,8 +3,19 @@ import { setTimeout } from "timers/promises"
 import { AxiosResponse } from "axios"
 import Boom from "boom"
 import { ObjectId } from "bson"
-import type { FilterQuery } from "mongoose"
-import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, ISiretDiffusibleStatus, ZAdresseV3, ZCfaReferentielData } from "shared"
+import { Filter as MongoDBFilter } from "mongodb"
+import {
+  IAdresseV3,
+  IBusinessError,
+  ICfaReferentielData,
+  IEtablissement,
+  ILbaCompany,
+  ILbaCompanyLegacy,
+  IRecruiter,
+  ISiretDiffusibleStatus,
+  ZAdresseV3,
+  ZCfaReferentielData,
+} from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
@@ -19,7 +30,7 @@ import { getHttpClient } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy } from "../common/model/index"
+import { Etablissement } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -337,20 +348,13 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
   }
 }
 
-/**
- * @description Get all matching records from the LbaCompanyLegacy collection
- * @param {FilterQuery<ILbaCompany>} query
- * @returns {Promise<ILbaCompany["email"]>}
- */
-const getAllEstablishmentFromLbaCompanyLegacy = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> =>
-  await LbaCompanyLegacy.find(query).select({ email: 1, _id: 0 }).lean()
+type IGetAllEmailFromLbaCompanyLegacy = Pick<ILbaCompanyLegacy, "email">
+export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
+  (await getDbCollection("bonnesboiteslegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
 
-/**
- * @description Get all matching records from the LbaCompanies collection
- * @param {FilterQuery<ILbaCompany>} query
- * @returns {Promise<ILbaCompany["email"]>}
- */
-const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
+type IGetAllEmailFromLbaCompany = Pick<ILbaCompany, "email">
+export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<ILbaCompany>) =>
+  (await getDbCollection("bonnesboites").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
 
 function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undefined {
   const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
@@ -595,7 +599,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: strin
 }
 
 const isCfaCreationValid = async (siret: string): Promise<boolean> => {
-  const cfa = await Cfa.findOne({ siret }).lean()
+  const cfa = await getDbCollection("cfas").findOne({ siret })
   if (!cfa) return true
   const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).toArray()
   const managingAccess = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]

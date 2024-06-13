@@ -16,6 +16,6 @@ export type ICustomEmailETFA = z.output<typeof ZCustomEmailETFA>
 
 export default {
   zod: ZCustomEmailETFA,
-  indexes: [],
+  indexes: [[{ cle_ministere_educatif: 1 }, {}]],
   collectionName,
 } as const satisfies IModelDescriptor

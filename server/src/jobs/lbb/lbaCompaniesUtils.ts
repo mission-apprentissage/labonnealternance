@@ -1,6 +1,7 @@
 import fs from "fs"
 import path from "path"
 
+import { ObjectId } from "mongodb"
 import { compose, oleoduc, writeData } from "oleoduc"
 import { ILbaCompany, ZGeoLocation } from "shared/models"
 
@@ -8,9 +9,10 @@ import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { EmailBlacklist, GeoLocation, Opco, LbaCompany } from "../../common/model/index"
+import { EmailBlacklist, GeoLocation, Opco } from "../../common/model/index"
 import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
 import geoData from "../../common/utils/geoData"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { streamJsonArray } from "../../common/utils/streamUtils"
 import config from "../../config"
@@ -45,7 +47,8 @@ export const removePredictionFile = async () => {
  */
 export const checkIfAlgoFileIsNew = async (reason: string) => {
   const algoFileLastModificationDate = await getS3FileLastUpdate({ key: s3File })
-  const currentDbCreatedDate = ((await LbaCompany.findOne({}).select({ created_at: 1, _id: 0 })) as ILbaCompany).created_at
+  // projection to be added, not working when migrated to mongoDB
+  const currentDbCreatedDate = ((await getDbCollection("bonnesboites").findOne({})) as ILbaCompany).created_at
 
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
     await notifyToSlack({
@@ -115,7 +118,7 @@ export const countCompaniesInFile = async (): Promise<number> => {
 Initialize bonneBoite from data, add missing data from maps,
 */
 export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | null> => {
-  const company = new LbaCompany(rawCompany)
+  const company = { _id: new ObjectId(), ...rawCompany }
   const geo = await getGeoLocationForCompany(company)
   if (!geo) {
     return null

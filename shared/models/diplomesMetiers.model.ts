@@ -105,7 +105,7 @@ export const ZDiplomesMetiers = z
   })
   .strict()
 
-export const ZDiplomesMetiersNew = ZDiplomesMetiers.omit({ _id: true, created_at: true, last_update_at: true }).strict()
+export type IDiplomesMetiers = z.output<typeof ZDiplomesMetiers>
 
 export default {
   zod: ZDiplomesMetiers,

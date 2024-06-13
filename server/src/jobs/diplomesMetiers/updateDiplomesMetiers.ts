@@ -1,9 +1,10 @@
-import { ZDiplomesMetiersNew } from "shared/models"
+import { ZDiplomesMetiers } from "shared/models"
 
 import { initializeCacheDiplomas } from "@/services/metiers.service"
 
 import { logger } from "../../common/logger"
-import { DiplomesMetiers, FormationCatalogue } from "../../common/model/index"
+import { FormationCatalogue } from "../../common/model/index"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 const motsIgnores = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", "des", "et", "en"]
 const diplomesMetiers = {}
@@ -81,7 +82,7 @@ export default async function () {
   logger.info(" -- Start of DiplomesMetiers initializer -- ")
 
   logger.info(`Clearing diplomesmetiers...`)
-  await DiplomesMetiers.deleteMany({})
+  await getDbCollection("diplomesmetiers").deleteMany({})
 
   logger.info(`Début traitement`)
 
@@ -91,9 +92,9 @@ export default async function () {
     diplomesMetiers[k].acronymes_intitule = buildAcronyms(diplomesMetiers[k].intitule_long)
 
     if (diplomesMetiers[k]?.codes_romes?.length) {
-      const parsedDiplomeMetier = ZDiplomesMetiersNew.safeParse(diplomesMetiers[k])
+      const parsedDiplomeMetier = ZDiplomesMetiers.safeParse(diplomesMetiers[k])
       if (parsedDiplomeMetier.success) {
-        await new DiplomesMetiers(parsedDiplomeMetier.data).save()
+        await getDbCollection("diplomesmetiers").insertOne(parsedDiplomeMetier.data)
       } else {
         logger.error(`Mauvais format diplomesmetier pour le diplôme ${diplomesMetiers[k].intitule_long}`)
       }

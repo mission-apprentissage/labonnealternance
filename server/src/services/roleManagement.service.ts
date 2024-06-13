@@ -6,7 +6,7 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Entreprise } from "@/common/model"
+import { Entreprise } from "@/common/model"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
@@ -130,7 +130,7 @@ export const getPublicUserRecruteurPropsOrError = async (
     status_current,
   } as const
   if (type === CFA) {
-    const cfa = await Cfa.findOne({ _id: mainRole.authorized_id }).lean()
+    const cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(mainRole.authorized_id) })
     if (!cfa) {
       throw Boom.internal(`inattendu : cfa non trouvé pour user id=${userId}`)
     }

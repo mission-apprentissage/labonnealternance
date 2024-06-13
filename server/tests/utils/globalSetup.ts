@@ -5,7 +5,11 @@ export default async () => {
   return async () => {
     config({ path: "./server/.env.test" })
 
-    const client = new MongoClient(process.env.LBA_MONGODB_URI?.replace("VITEST_POOL_ID", "") ?? "")
+    const client = new MongoClient(process.env.LBA_MONGODB_URI?.replace("VITEST_POOL_ID", "") ?? "", {
+      connectTimeoutMS: 1_000,
+      socketTimeoutMS: 1_000,
+      serverSelectionTimeoutMS: 1_000,
+    })
     try {
       if (process.env.CI) {
         return

@@ -3,14 +3,13 @@ import dayjs from "dayjs"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { Recruiter } from "../../common/model/index"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymize = async () => {
   const fromDate = dayjs().subtract(2, "years").toDate()
   const userWithAccountQuery = { $or: [{ last_action_date: { $lte: fromDate } }, { last_action_date: null, createdAt: { $lte: fromDate } }] }
   const usersToAnonymize = await getDbCollection("userswithaccounts").find(userWithAccountQuery).toArray()
-  const userIds = usersToAnonymize.map(({ _id }) => _id.toString())
+  const userIds = usersToAnonymize.map(({ _id }) => _id)
   const recruiterQuery = { "jobs.managed_by": { $in: userIds } }
   await getDbCollection("userswithaccounts").aggregate([
     {
@@ -24,11 +23,10 @@ const anonymize = async () => {
       },
     },
     {
-      // @ts-ignore
       $merge: "anonymizeduserswithaccounts",
     },
   ])
-  await Recruiter.aggregate([
+  await getDbCollection("recruiters").aggregate([
     {
       $match: recruiterQuery,
     },
@@ -55,11 +53,10 @@ const anonymize = async () => {
       },
     },
     {
-      // @ts-ignore
       $merge: "anonymizedrecruiteurs",
     },
   ])
-  const { deletedCount: recruiterCount } = await Recruiter.deleteMany(recruiterQuery)
+  const { deletedCount: recruiterCount } = await getDbCollection("recruiters").deleteMany(recruiterQuery)
   const { deletedCount: userWithAccountCount } = await getDbCollection("userswithaccounts").deleteMany(userWithAccountQuery)
   return { userWithAccountCount, recruiterCount }
 }

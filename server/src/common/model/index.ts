@@ -4,16 +4,7 @@ import { db, mongooseInstance } from "@/common/mongodb"
 
 import { logger } from "../logger"
 
-import AnonymizedUser from "./schema/anonymizedUsers/anonymizedUsers.schema"
-import ApiCalls from "./schema/apiCall/apiCall.schema"
-import AnonymizedApplication from "./schema/application/anonymizedApplications.schema"
 import Application from "./schema/application/applications.schema"
-import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
-import Appointment from "./schema/appointments/appointment.schema"
-import Credential from "./schema/credentials/credential.schema"
-import CustomEmailETFA from "./schema/customEmailETFA/customEmailETFA.schema"
-import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema"
-import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema"
 import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema"
 import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema"
@@ -23,9 +14,6 @@ import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.s
 import GeoLocation from "./schema/geolocation/geolocation.schema"
 import InternalJobs from "./schema/internalJobs/internalJobs.schema"
 import Job from "./schema/jobs/jobs.schema"
-import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
-import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
-import { Cfa } from "./schema/multiCompte/cfa.schema"
 import { Entreprise } from "./schema/multiCompte/entreprise.schema"
 import Opco from "./schema/opco/opco.schema"
 import Optout from "./schema/optout/optout.schema"
@@ -74,17 +62,7 @@ export async function createMongoDBIndexes() {
 }
 
 export {
-  AnonymizedApplication,
-  AnonymizedUser,
-  ApiCalls,
   Application,
-  Appointment,
-  AppointmentDetailed,
-  Cfa,
-  Credential,
-  CustomEmailETFA,
-  DiplomesMetiers,
-  DomainesMetiers,
   EligibleTrainingsForAppointment,
   EmailBlacklist,
   Entreprise,
@@ -94,8 +72,6 @@ export {
   GeoLocation,
   InternalJobs,
   Job,
-  LbaCompany,
-  LbaCompanyLegacy,
   Opco,
   Optout,
   Recruiter,

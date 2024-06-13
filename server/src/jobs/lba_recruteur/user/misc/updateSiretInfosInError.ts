@@ -9,7 +9,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../../../common/logger"
-import { Cfa, Entreprise, Recruiter } from "../../../../common/model/index"
+import { Entreprise, Recruiter } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
@@ -121,7 +121,7 @@ const updateRecruteursSiretInfosInError = async () => {
         if (!managingUser) {
           throw Boom.internal(`inattendu : managingUser non trouvé pour _id=${managed_by}`)
         }
-        const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+        const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
         if (!cfa) {
           throw Boom.internal(`could not find cfa with siret=${cfa_delegated_siret}`)
         }

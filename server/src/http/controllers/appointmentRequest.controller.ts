@@ -8,7 +8,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { Appointment, EligibleTrainingsForAppointment, Etablissement, FormationCatalogue } from "../../common/model/index"
+import { EligibleTrainingsForAppointment, Etablissement, FormationCatalogue } from "../../common/model/index"
 import config from "../../config"
 import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
@@ -126,7 +126,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { appointmentId } = req.query
 
-      const appointment = await Appointment.findById(appointmentId, { cle_ministere_educatif: 1, applicant_id: 1 }).lean()
+      const appointment = await getDbCollection("appointments").findOne({ _id: new ObjectId(appointmentId) }, { projection: { cle_ministere_educatif: 1, applicant_id: 1 } })
 
       if (!appointment) {
         throw Boom.notFound()
@@ -179,23 +179,28 @@ export default (server: Server) => {
     async (req, res) => {
       const { appointmentId } = req.query
 
-      const appointment = await Appointment.findById(appointmentId, {
-        cle_ministere_educatif: 1,
-        applicant_id: 1,
-        applicant_reasons: 1,
-        applicant_message_to_cfa: 1,
-        cfa_intention_to_applicant: 1,
-        cfa_message_to_applicant: 1,
-        cfa_message_to_applicant_date: 1,
-        cfa_read_appointment_details_date: 1,
-      }).lean()
+      const appointment = await getDbCollection("appointments").findOne(
+        { _id: new ObjectId(appointmentId) },
+        {
+          projection: {
+            cle_ministere_educatif: 1,
+            applicant_id: 1,
+            applicant_reasons: 1,
+            applicant_message_to_cfa: 1,
+            cfa_intention_to_applicant: 1,
+            cfa_message_to_applicant: 1,
+            cfa_message_to_applicant_date: 1,
+            cfa_read_appointment_details_date: 1,
+          },
+        }
+      )
 
       if (!appointment) {
         throw Boom.notFound()
       }
 
       if (!appointment.cfa_read_appointment_details_date) {
-        await Appointment.findByIdAndUpdate(appointmentId, { cfa_read_appointment_details_date: new Date() })
+        await getDbCollection("appointments").findOneAndUpdate({ _id: new ObjectId(appointmentId) }, { $set: { cfa_read_appointment_details_date: new Date() } })
       }
 
       const [formation, user] = await Promise.all([
@@ -246,7 +251,7 @@ export default (server: Server) => {
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
       const { appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } = req.body
 
-      const appointment = await Appointment.findById(appointment_id)
+      const appointment = await getDbCollection("appointments").findOne({ _id: new ObjectId(appointment_id) })
 
       if (!appointment) throw Boom.notFound()
 

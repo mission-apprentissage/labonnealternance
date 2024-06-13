@@ -1,9 +1,12 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { IUserRecruteur } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 
-import { Cfa, Entreprise } from "@/common/model"
+import { Entreprise } from "@/common/model"
+
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { CFA, ENTREPRISE } from "./constant.service"
 
@@ -31,20 +34,23 @@ export const createOrganizationIfNotExist = async (organization: Omit<IUserRecru
       entreprise = (await Entreprise.create(entrepriseFields)).toObject()
     }
     if (type === CFA) {
-      let cfa = await Cfa.findOne({ siret: establishment_siret }).lean()
-      if (!cfa) {
-        const cfaFields: Omit<ICFA, "_id" | "createdAt" | "updatedAt"> = {
-          siret: establishment_siret,
-          address,
-          address_detail,
-          enseigne: establishment_enseigne,
-          raison_sociale: establishment_raison_sociale,
-          origin,
-          geo_coordinates,
-        }
-        cfa = (await Cfa.create(cfaFields)).toObject()
+      const cfa = await getDbCollection("cfas").findOne({ siret: establishment_siret })
+      if (cfa) return cfa
+      const now = new Date()
+      const newCfa: ICFA = {
+        _id: new ObjectId(),
+        createdAt: now,
+        updatedAt: now,
+        siret: establishment_siret,
+        address,
+        address_detail,
+        enseigne: establishment_enseigne,
+        raison_sociale: establishment_raison_sociale,
+        origin,
+        geo_coordinates,
       }
-      return cfa
+      await getDbCollection("cfas").insertOne(newCfa)
+      return newCfa
     }
     return entreprise
   } else {

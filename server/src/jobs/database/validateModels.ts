@@ -1,47 +1,11 @@
 import { captureException } from "@sentry/node"
 import { Model } from "mongoose"
-import {
-  ZApiCall,
-  ZApplication,
-  ZAppointment,
-  ZCredential,
-  ZDiplomesMetiers,
-  ZDomainesMetiers,
-  ZEligibleTrainingsForAppointmentSchema,
-  ZEmailBlacklist,
-  ZEtablissement,
-  ZGeoLocation,
-  ZLbaCompany,
-  ZLbaLegacyCompany,
-  ZOptout,
-  ZRecruiter,
-  zFormationCatalogueSchema,
-} from "shared/models"
-import { zCFA } from "shared/models/cfa.model"
+import { ZEligibleTrainingsForAppointmentSchema, ZEmailBlacklist, ZEtablissement, ZGeoLocation, ZOptout, ZRecruiter, zFormationCatalogueSchema } from "shared/models"
 import { ZEntreprise } from "shared/models/entreprise.model"
 import { ZodType } from "zod"
 
 import { logger } from "@/common/logger"
-import {
-  ApiCalls,
-  Application,
-  Appointment,
-  AppointmentDetailed,
-  Cfa,
-  Credential,
-  DiplomesMetiers,
-  DomainesMetiers,
-  EligibleTrainingsForAppointment,
-  EmailBlacklist,
-  Entreprise,
-  Etablissement,
-  FormationCatalogue,
-  GeoLocation,
-  LbaCompany,
-  LbaCompanyLegacy,
-  Optout,
-  Recruiter,
-} from "@/common/model/index"
+import { EligibleTrainingsForAppointment, EmailBlacklist, Entreprise, Etablissement, FormationCatalogue, GeoLocation, Optout, Recruiter } from "@/common/model/index"
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
 async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, any, any>) {
@@ -85,25 +49,15 @@ async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, a
 
 export async function validateModels(): Promise<void> {
   // TODO: Create Zod for missing models
-  await validateModel(ApiCalls, ZApiCall)
-  await validateModel(Application, ZApplication)
-  await validateModel(Appointment, ZAppointment)
-  await validateModel(AppointmentDetailed, ZAppointment)
-  await validateModel(Credential, ZCredential)
-  await validateModel(DiplomesMetiers, ZDiplomesMetiers)
-  await validateModel(DomainesMetiers, ZDomainesMetiers)
   await validateModel(EligibleTrainingsForAppointment, ZEligibleTrainingsForAppointmentSchema)
   await validateModel(EmailBlacklist, ZEmailBlacklist)
   await validateModel(Etablissement, ZEtablissement)
   await validateModel(FormationCatalogue, zFormationCatalogueSchema)
   await validateModel(GeoLocation, ZGeoLocation)
   // //  await validateModel(InternalJobs, ZInternalJobs)
-  await validateModel(LbaCompany, ZLbaCompany)
-  await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   //  await validateModel(Opco, ZOpco)
   await validateModel(Optout, ZOptout)
   await validateModel(Recruiter, ZRecruiter)
   // await validateModel(UserRecruteur, ZUserRecruteur)
   await validateModel(Entreprise, ZEntreprise)
-  await validateModel(Cfa, zCFA)
 }

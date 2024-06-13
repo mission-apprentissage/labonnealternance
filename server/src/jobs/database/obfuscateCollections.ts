@@ -6,17 +6,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
-import {
-  Application,
-  Appointment,
-  EligibleTrainingsForAppointment,
-  eligibleTrainingsForAppointmentHistory,
-  Etablissement,
-  FormationCatalogue,
-  LbaCompany,
-  Optout,
-  Recruiter,
-} from "@/common/model/index"
+import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, Etablissement, FormationCatalogue, Optout, Recruiter } from "@/common/model/index"
 import { db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
@@ -40,17 +30,19 @@ async function reduceModel(model: string, limit = 20000) {
 
 const obfuscateApplications = async () => {
   logger.info(`obfuscating applications`)
-  await Application.updateMany(
+  await getDbCollection("applications").updateMany(
     {},
     {
-      applicant_email: "faux_email@faux-domaine.fr",
-      applicant_phone: "0601010106",
-      applicant_last_name: "nom_famille",
-      applicant_first_name: "prenom",
-      applicant_attachment_name: "titre_cv.pdf",
-      applicant_message_to_company: "Cher recruteur, embauchez moi ...",
-      company_feedback: "Cher candidat ...",
-      company_email: fakeEmail,
+      $set: {
+        applicant_email: "faux_email@faux-domaine.fr",
+        applicant_phone: "0601010106",
+        applicant_last_name: "nom_famille",
+        applicant_first_name: "prenom",
+        applicant_attachment_name: "titre_cv.pdf",
+        applicant_message_to_company: "Cher recruteur, embauchez moi ...",
+        company_feedback: "Cher candidat ...",
+        company_email: fakeEmail,
+      },
     }
   )
 }
@@ -68,19 +60,21 @@ const obfuscateEmailBlackList = async () => {
 
 const obfuscateAppointments = async () => {
   logger.info(`obfuscating appointments`)
-  await Appointment.updateMany(
+  await getDbCollection("appointments").updateMany(
     {},
     {
-      cfa_message_to_applicant: "Réponse du cfa ...",
-      applicant_message_to_cfa: "Message du candidat ...",
-      cfa_recipient_email: fakeEmail,
+      $set: {
+        cfa_message_to_applicant: "Réponse du cfa ...",
+        applicant_message_to_cfa: "Message du candidat ...",
+        cfa_recipient_email: fakeEmail,
+      },
     }
   )
 }
 
 const obfuscateLbaCompanies = async () => {
   logger.info(`obfuscating lbacompanies`)
-  await LbaCompany.updateMany(
+  await getDbCollection("bonnesboites").updateMany(
     {},
     {
       email: fakeEmail,

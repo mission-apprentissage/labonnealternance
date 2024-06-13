@@ -48,7 +48,7 @@ fileignoreconfig:
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
 - filename: server/src/jobs/database/obfuscateCollections.ts
-  checksum: df959adedd069bbfd68c6c5c99a9f506b980147a973f95b517c24e740d79ee37
+  checksum: 48cd231b18912d01f652735bbb9be5625ec70bd9e3da7933365863db636d59c9
 - filename: server/src/jobs/job.actions.ts
   checksum: 40c0dfd4f33ec0f09d736e3e7554b0edee132165e1eb00440e196edf49e0c647
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
@@ -145,6 +145,8 @@ fileignoreconfig:
   checksum: 553720667140e5bbf7cef1969c02cbcd3c234defc30bb08208398c1900e29e3b
 - filename: server/src/http/sentry.ts
   checksum: efa665e02ca4d3acbf48c5dc549dae4e915c02ae0626bedf71e3608f8d5e5ebd
+- filename: server/src/jobs/lba_recruteur/api/createApiUser.ts
+  checksum: 8e4712bae8747c1f0f2ba8b4ac3f3af118772136c16b6318b14a2d8b7e277dc6
 scopeconfig:
 - scope: node
 custom_patterns:
