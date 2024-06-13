@@ -15,7 +15,7 @@ import { ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "../common/model/index"
+import { Cfa, Entreprise, RoleManagement, UserWithAccount } from "../common/model/index"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
 
@@ -296,7 +296,10 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
   if (!newUser) {
     throw Boom.badRequest("user not found")
   }
-  await Recruiter.updateMany({ "jobs.managed_by": userId.toString() }, { $set: removeUndefinedFields({ first_name, last_name, phone, email: newEmail }) })
+  await getDbCollection("recruiters").updateMany(
+    { "jobs.managed_by": userId.toString() },
+    { $set: { ...removeUndefinedFields({ first_name, last_name, phone, email: newEmail }), updatedAt: new Date() } }
+  )
   return newUser
 }
 
