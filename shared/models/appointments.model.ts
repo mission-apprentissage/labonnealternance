@@ -65,20 +65,6 @@ export const ZAppointment = z
 export type IAppointment = z.output<typeof ZAppointment>
 export type IAppointmentJson = Jsonify<z.input<typeof ZAppointment>>
 
-export const ZNewAppointment = ZAppointment.pick({
-  applicant_id: true,
-  cfa_recipient_email: true,
-  cfa_formateur_siret: true,
-  applicant_message_to_cfa: true,
-  applicant_reasons: true,
-  appointment_origin: true,
-  cle_ministere_educatif: true,
-  _id: true,
-  created_at: true,
-})
-
-export type INewAppointment = z.output<typeof ZNewAppointment>
-
 export default {
   zod: ZAppointment,
   indexes: [],

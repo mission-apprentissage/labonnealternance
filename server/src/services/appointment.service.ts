@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 import { Filter, ObjectId } from "mongodb"
-import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, INewAppointment, IUser } from "shared"
+import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 
 import { mailType } from "@/common/model/constants/appointments"
 import { ReferrerObject } from "@/common/model/constants/referrers"
@@ -12,8 +12,8 @@ import { getDbCollection } from "../common/utils/mongodbUtils"
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 
-const createAppointment = async (params: Omit<INewAppointment, "_id" | "created_at">) => {
-  const appointment: INewAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }
+const createAppointment = async (params: Omit<IAppointment, "_id" | "created_at">) => {
+  const appointment: IAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }
   await getDbCollection("appointments").insertOne(appointment)
   return appointment
 }
