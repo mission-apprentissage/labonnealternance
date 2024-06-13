@@ -2,6 +2,8 @@ import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { zRoutes } from "shared/index"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { CustomEmailETFA } from "../../../common/model/index"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
