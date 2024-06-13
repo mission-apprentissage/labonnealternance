@@ -866,6 +866,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
           "managed_by": {
             "description": "Id de l'utilisateur gérant l'offre",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "relance_mail_sent": {
             "description": "Statut de l'envoi du mail de relance avant expiration",
