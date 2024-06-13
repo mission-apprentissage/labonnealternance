@@ -126,8 +126,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { appointmentId } = req.query
 
-      // projection missing { cle_ministere_educatif: 1, applicant_id: 1 }
-      const appointment = await getDbCollection("appointments").findOne({ _id: new ObjectId(appointmentId) })
+      const appointment = await getDbCollection("appointments").findOne({ _id: new ObjectId(appointmentId) }, { projection: { cle_ministere_educatif: 1, applicant_id: 1 } })
 
       if (!appointment) {
         throw Boom.notFound()
@@ -175,9 +174,10 @@ export default (server: Server) => {
     async (req, res) => {
       const { appointmentId } = req.query
 
-      // projection missing
-      /**
-       *   {
+      const appointment = await getDbCollection("appointments").findOne(
+        { _id: new ObjectId(appointmentId) },
+        {
+          projection: {
             cle_ministere_educatif: 1,
             applicant_id: 1,
             applicant_reasons: 1,
@@ -186,16 +186,16 @@ export default (server: Server) => {
             cfa_message_to_applicant: 1,
             cfa_message_to_applicant_date: 1,
             cfa_read_appointment_details_date: 1,
-          }
-       */
-      const appointment = await getDbCollection("appointments").findOne({ _id: new ObjectID(appointmentId) })
+          },
+        }
+      )
 
       if (!appointment) {
         throw Boom.notFound()
       }
 
       if (!appointment.cfa_read_appointment_details_date) {
-        await getDbCollection("appointments").findOneAndUpdate({ _id: new ObjectID(appointmentId) }, { $set: { cfa_read_appointment_details_date: new Date() } })
+        await getDbCollection("appointments").findOneAndUpdate({ _id: new ObjectId(appointmentId) }, { $set: { cfa_read_appointment_details_date: new Date() } })
       }
 
       const [formation, user] = await Promise.all([
