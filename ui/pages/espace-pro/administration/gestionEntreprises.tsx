@@ -118,14 +118,7 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
                   </Alert>
                 )}
                 <Flex justify="flex-start">
-                  <Button
-                    type="submit"
-                    data-testid="update_algo_company"
-                    variant="form"
-                    isActive={isValid}
-                    isDisabled={!isValid || isLoading}
-                    isLoading={isLoading}
-                  >
+                  <Button type="submit" data-testid="update_algo_company" variant="form" isActive={isValid} isDisabled={!isValid || isLoading} isLoading={isLoading}>
                     Enregistrer les modifications
                   </Button>
                 </Flex>
