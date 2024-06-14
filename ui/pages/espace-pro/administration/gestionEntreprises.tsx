@@ -122,12 +122,11 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
                     type="submit"
                     data-testid="update_algo_company"
                     variant="form"
-                    leftIcon={<SearchLine width={5} />}
                     isActive={isValid}
                     isDisabled={!isValid || isLoading}
                     isLoading={isLoading}
                   >
-                    Modifier
+                    Enregistrer les modifications
                   </Button>
                 </Flex>
               </Form>
