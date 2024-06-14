@@ -7,7 +7,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { Appointment, Etablissement, User } from "../../common/model/index"
+import { Appointment, User } from "../../common/model/index"
 import config from "../../config"
 import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
@@ -96,7 +96,7 @@ export default (server: Server) => {
           appointment_origin: referrerObj.name,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
         }),
-        Etablissement.findOne({
+        getDbCollection("etablissements").findOne({
           formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
         }),
       ])
