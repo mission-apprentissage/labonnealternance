@@ -11,7 +11,7 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
 import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
-import { Cfa, Entreprise, RoleManagement, UserWithAccount } from "../../common/model/index"
+import { Cfa, RoleManagement, UserWithAccount } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import config from "../../config"
@@ -125,7 +125,7 @@ export default (server: Server) => {
         return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
       if (opco) {
-        const entreprise = await Entreprise.findOneAndUpdate({ siret }, { opco }).lean()
+        const entreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updateAt: new Date() } })
         if (!entreprise) {
           throw Boom.badRequest(`pas d'entreprise ayant le siret ${siret}`)
         }
@@ -185,7 +185,7 @@ export default (server: Server) => {
         organization = await Cfa.findOne({ _id: role.authorized_id }).lean()
       }
       if (type === ENTREPRISE) {
-        organization = await Entreprise.findOne({ _id: role.authorized_id }).lean()
+        organization = await getDbCollection("entreprises").findOne({ _id: role.authorized_id })
       }
       if (!organization) {
         throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
@@ -405,7 +405,7 @@ export default (server: Server) => {
         throw Boom.notFound("user not found")
       }
       const { siret } = req.params
-      const entrepriseOpt = await Entreprise.findOne({ siret }).lean()
+      const entrepriseOpt = await getDbCollection("entreprises").findOne({ siret })
       if (entrepriseOpt) {
         await RoleManagement.deleteOne({ user_id: userOpt._id, authorized_id: entrepriseOpt._id.toString(), authorized_type: AccessEntityType.ENTREPRISE })
       }

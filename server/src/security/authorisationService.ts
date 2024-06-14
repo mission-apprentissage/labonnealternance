@@ -10,7 +10,7 @@ import { AccessPermission, AccessResourcePath } from "shared/security/permission
 import { assertUnreachable, parseEnum } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { Application, Cfa, Entreprise, UserWithAccount } from "@/common/model"
+import { Application, Cfa, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
@@ -58,7 +58,7 @@ const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<Recr
     }
     return { recruiter, type: CFA, cfa }
   } else {
-    const entreprise = await Entreprise.findOne({ siret: establishment_siret }).lean()
+    const entreprise = await getDbCollection("entreprises").findOne({ siret: establishment_siret })
     if (!entreprise) {
       throw Boom.internal(`could not find entreprise for recruiter with id=${recruiter._id}`)
     }
@@ -208,7 +208,7 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
     schema.securityScheme.resources.entreprise.map(async (entrepriseDef): Promise<EntrepriseResource | null> => {
       if ("siret" in entrepriseDef) {
         const siret = getAccessResourcePathValue(entrepriseDef.siret, req)
-        const entreprise = await Entreprise.findOne({ siret }).lean()
+        const entreprise = await getDbCollection("entreprises").findOne({ siret })
         return entreprise ? { entreprise } : null
       } else if ("_id" in entrepriseDef) {
         const id = getAccessResourcePathValue(entrepriseDef._id, req)
@@ -217,7 +217,7 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
         } catch (e) {
           return null
         }
-        const entreprise = await Entreprise.findById(id).lean()
+        const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(id.toString()) })
         return entreprise ? { entreprise } : null
       }
 

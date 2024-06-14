@@ -6,7 +6,7 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Entreprise, RoleManagement } from "@/common/model"
+import { Cfa, RoleManagement } from "@/common/model"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
@@ -133,7 +133,7 @@ export const getPublicUserRecruteurPropsOrError = async (
     return { ...commonFields, establishment_siret: siret }
   }
   if (type === ENTREPRISE) {
-    const entreprise = await Entreprise.findOne({ _id: mainRole.authorized_id }).lean()
+    const entreprise = await getDbCollection("entreprises").findOne({ _id: mainRole.authorized_id })
     if (!entreprise) {
       throw Boom.internal(`inattendu : entreprise non trouvée pour user id=${userId}`)
     }

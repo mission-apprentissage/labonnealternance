@@ -20,7 +20,6 @@ import Job from "./schema/jobs/jobs.schema"
 import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
 import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
 import { Cfa } from "./schema/multiCompte/cfa.schema"
-import { Entreprise } from "./schema/multiCompte/entreprise.schema"
 import { RoleManagement } from "./schema/multiCompte/roleManagement.schema"
 import { UserWithAccount } from "./schema/multiCompte/userWithAccount.schema"
 import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema"
@@ -101,7 +100,6 @@ export {
   User,
   UserRecruteur,
   UserWithAccount,
-  Entreprise,
   Cfa,
   RoleManagement,
 }

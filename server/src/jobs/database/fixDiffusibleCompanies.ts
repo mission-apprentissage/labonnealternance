@@ -5,7 +5,7 @@ import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType } from "shared/models/roleManagement.model"
 
 import { logger } from "@/common/logger"
-import { Entreprise, RoleManagement } from "@/common/model"
+import { RoleManagement } from "@/common/model"
 import { db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getDiffusionStatus } from "@/services/etablissement.service"
@@ -62,7 +62,7 @@ const deactivateRecruiter = async (recruiter: IRecruiter) => {
 const deactivateEntreprise = async (entreprise: IEntreprise) => {
   const { siret } = entreprise
   console.info("deactivating non diffusible entreprise : ", siret)
-  await Entreprise.deleteOne({ _id: entreprise._id })
+  await getDbCollection("entreprises").deleteOne({ _id: entreprise._id })
   await RoleManagement.deleteMany({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() })
 }
 

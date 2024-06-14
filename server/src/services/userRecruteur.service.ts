@@ -15,7 +15,7 @@ import { ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Entreprise, RoleManagement, UserWithAccount } from "../common/model/index"
+import { Cfa, RoleManagement, UserWithAccount } from "../common/model/index"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
 
@@ -46,7 +46,7 @@ const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: 
 const getOrganismeFromRole = async (role: IRoleManagement): Promise<IEntreprise | ICFA | null> => {
   switch (role.authorized_type) {
     case AccessEntityType.ENTREPRISE: {
-      const entreprise = await Entreprise.findOne({ _id: role.authorized_id }).lean()
+      const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id.toString()) })
       if (!entreprise) {
         throw Boom.internal(`could not find entreprise for role ${role._id}`)
       }
@@ -339,7 +339,7 @@ export const setEntrepriseInError = async (entrepriseId: IEntreprise["_id"], rea
 }
 
 export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reason: string, status: EntrepriseStatus) => {
-  const entreprise = await Entreprise.findOne({ _id: entrepriseId })
+  const entreprise = await getDbCollection("entreprises").findOne({ _id: entrepriseId })
   if (!entreprise) {
     throw Boom.internal(`could not find entreprise with id=${entrepriseId}`)
   }
@@ -351,11 +351,14 @@ export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reas
     status,
     validation_type: VALIDATION_UTILISATEUR.AUTO,
   }
-  await Entreprise.updateOne(
+  await getDbCollection("entreprises").updateOne(
     { _id: entrepriseId },
     {
       $push: {
         status: event,
+      },
+      $set: {
+        updatedAt: new Date(),
       },
     }
   )
@@ -400,7 +403,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   if (isCfa) {
     organization = await Cfa.findOne({ _id: role.authorized_id }).lean()
   } else {
-    organization = await Entreprise.findOne({ _id: role.authorized_id }).lean()
+    organization = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id.toString()) })
   }
   if (!organization) {
     throw Boom.internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
@@ -446,7 +449,9 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   const users = await UserWithAccount.find({ _id: { $in: userIds } }).lean()
 
   const entrepriseIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : []))
-  const entreprises = await Entreprise.find({ _id: { $in: entrepriseIds }, ...(opco ? { opco } : {}) }).lean()
+  const entreprises = await getDbCollection("entreprises")
+    .find({ _id: { $in: entrepriseIds }, ...(opco ? { opco } : {}) })
+    .toArray()
 
   const cfaIds = opco ? [] : roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : []))
   const cfas = cfaIds.length ? await Cfa.find({ _id: { $in: cfaIds } }).lean() : []

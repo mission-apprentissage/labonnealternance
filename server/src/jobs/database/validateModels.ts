@@ -17,7 +17,6 @@ import {
   ZUser,
 } from "shared/models"
 import { zCFA } from "shared/models/cfa.model"
-import { ZEntreprise } from "shared/models/entreprise.model"
 import { ZRoleManagement } from "shared/models/roleManagement.model"
 import { ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodType } from "zod"
@@ -32,7 +31,6 @@ import {
   Credential,
   DiplomesMetiers,
   DomainesMetiers,
-  Entreprise,
   Etablissement,
   LbaCompany,
   LbaCompanyLegacy,
@@ -103,7 +101,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(UnsubscribeOF, ZUnsubscribeOF)
   await validateModel(UnsubscribedLbaCompany, ZUnsubscribedLbaCompany)
   // await validateModel(UserRecruteur, ZUserRecruteur)
-  await validateModel(Entreprise, ZEntreprise)
   await validateModel(Cfa, zCFA)
   await validateModel(UserWithAccount, ZUserWithAccount)
   await validateModel(RoleManagement, ZRoleManagement)

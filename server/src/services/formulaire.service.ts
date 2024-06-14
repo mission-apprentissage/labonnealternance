@@ -11,7 +11,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { Cfa, Entreprise, RoleManagement, UnsubscribeOF } from "../common/model/index"
+import { Cfa, RoleManagement, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
@@ -140,7 +140,9 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
     throw Boom.internal(`recruiter with establishment_id=${establishment_id} not found`)
   }
   const { is_delegated, cfa_delegated_siret } = recruiter
-  const organization = await (cfa_delegated_siret ? Cfa.findOne({ siret: cfa_delegated_siret }).lean() : Entreprise.findOne({ siret: recruiter.establishment_siret }).lean())
+  const organization = await (cfa_delegated_siret
+    ? Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+    : await getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret }))
   if (!organization) {
     throw Boom.internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${establishment_id}`)
   }
@@ -217,7 +219,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   }
   const offre = getJobFromRecruiter(recruiter, jobId.toString())
   const managingUser = await getUser2ManagingOffer(offre)
-  const entreprise = await Entreprise.findOne({ siret: recruiter.establishment_siret }).lean()
+  const entreprise = await getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret })
   let shouldSentMailToCfa = false
   if (entreprise) {
     const role = await RoleManagement.findOne({ user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }).lean()
