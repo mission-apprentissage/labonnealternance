@@ -7,7 +7,6 @@ import {
   ZCredential,
   ZDiplomesMetiers,
   ZDomainesMetiers,
-  ZEtablissement,
   ZLbaCompany,
   ZLbaLegacyCompany,
   ZReferentielOnisep,
@@ -31,7 +30,6 @@ import {
   Credential,
   DiplomesMetiers,
   DomainesMetiers,
-  Etablissement,
   LbaCompany,
   LbaCompanyLegacy,
   ReferentielOnisep,
@@ -92,7 +90,6 @@ export async function validateModels(): Promise<void> {
   await validateModel(Credential, ZCredential)
   await validateModel(DiplomesMetiers, ZDiplomesMetiers)
   await validateModel(DomainesMetiers, ZDomainesMetiers)
-  await validateModel(Etablissement, ZEtablissement)
   await validateModel(LbaCompany, ZLbaCompany)
   await validateModel(LbaCompanyLegacy, ZLbaLegacyCompany)
   await validateModel(ReferentielOnisep, ZReferentielOnisep)

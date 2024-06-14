@@ -44,6 +44,14 @@ export type IEtablissementJson = Jsonify<z.input<typeof ZEtablissement>>
 
 export default {
   zod: ZEtablissement,
-  indexes: [],
+  indexes: [
+    [{ formateur_siret: 1 }, {}],
+    [{ gestionnaire_siret: 1 }, {}],
+    [{ premium_activation_date: 1 }, {}],
+    [{ premium_affelnet_activation_date: 1 }, {}],
+    [{ to_CFA_invite_optout_last_message_id: 1 }, {}],
+    [{ optout_activation_date: 1 }, {}],
+  ],
+
   collectionName,
 } as const satisfies IModelDescriptor
