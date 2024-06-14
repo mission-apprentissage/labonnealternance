@@ -14,7 +14,6 @@ import Credential from "./schema/credentials/credential.schema"
 import CustomEmailETFA from "./schema/customEmailETFA/customEmailETFA.schema"
 import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema"
-import Etablissement from "./schema/etablissements/etablissement.schema"
 import FicheMetierRomeV4 from "./schema/ficheRomeV4/ficheRomeV4"
 import Job from "./schema/jobs/jobs.schema"
 import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
@@ -85,7 +84,6 @@ export {
   CustomEmailETFA,
   DiplomesMetiers,
   DomainesMetiers,
-  Etablissement,
   FicheMetierRomeV4,
   ReferentielRome,
   Job,

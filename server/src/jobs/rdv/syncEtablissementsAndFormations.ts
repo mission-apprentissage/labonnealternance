@@ -5,7 +5,7 @@ import { referrers } from "shared/constants/referers"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { Etablissement, ReferentielOnisep } from "../../common/model/index"
+import { ReferentielOnisep } from "../../common/model/index"
 import { create, getEmailForRdv, updateParameter } from "../../services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
@@ -33,9 +33,10 @@ export const syncEtablissementsAndFormations = async () => {
             },
             { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1 } }
           ),
-          Etablissement.find({
-            gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-          })
+          getDbCollection("etablissements")
+            .find({
+              gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+            })
             .select({
               premium_affelnet_activation_date: 1,
               optout_refusal_date: 1,
@@ -45,7 +46,7 @@ export const syncEtablissementsAndFormations = async () => {
               premium_affelnet_refusal_date: 1,
               gestionnaire_email: 1,
             })
-            .lean(),
+            .toArray(),
           ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])
 
@@ -157,17 +158,19 @@ export const syncEtablissementsAndFormations = async () => {
           )
         }
 
-        await Etablissement.updateMany(
+        await getDbCollection("etablissements").updateMany(
           { $and: [{ formateur_siret: formation.etablissement_formateur_siret, gestionnaire_siret: formation.etablissement_gestionnaire_siret }] },
           {
-            gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            gestionnaire_email: gestionnaireEmail,
-            raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-            formateur_siret: formation.etablissement_formateur_siret,
-            formateur_address: formation.etablissement_formateur_adresse,
-            formateur_zip_code: formation.etablissement_formateur_code_postal,
-            formateur_city: formation.etablissement_formateur_localite,
-            last_catalogue_sync_date: new Date(),
+            $set: {
+              gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+              gestionnaire_email: gestionnaireEmail,
+              raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
+              formateur_siret: formation.etablissement_formateur_siret,
+              formateur_address: formation.etablissement_formateur_adresse,
+              formateur_zip_code: formation.etablissement_formateur_code_postal,
+              formateur_city: formation.etablissement_formateur_localite,
+              last_catalogue_sync_date: new Date(),
+            },
           },
           {
             upsert: true,

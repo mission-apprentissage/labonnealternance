@@ -8,7 +8,6 @@ import { getReferrerByKeyName } from "@/common/model/constants/referrers"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
-import { Etablissement, ReferentielOnisep } from "../common/model/index"
 import { isValidEmail } from "../common/utils/isValidEmail"
 
 import { isEmailBlacklisted } from "./application.service"
@@ -86,7 +85,7 @@ function isOpenForAppointments(eligibleTrainingsForAppointment: IEligibleTrainin
 }
 
 const findEtablissement = async (formateurSiret: string | null | undefined) => {
-  return await Etablissement.findOne({ formateur_siret: formateurSiret })
+  return await getDbCollection("etablissements").findOne({ formateur_siret: formateurSiret })
 }
 
 export const findElligibleTrainingForAppointment = async (req: any): Promise<IAppointmentRequestContextCreateResponseSchema> => {
