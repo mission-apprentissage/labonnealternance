@@ -44,6 +44,7 @@ export const connectToMongodb = async (uri: string) => {
   })
 
   await client.connect()
+  // @ts-expect-error
   mongodbClientState = client.topology.s.state
   mongodbClient = client
   logger.info("Connected to MongoDB")
