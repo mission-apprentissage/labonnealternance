@@ -9,7 +9,7 @@ import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Cfa, Credential, Entreprise, RoleManagement, UserWithAccount } from "@/common/model"
+import { Application, Cfa, Credential, RoleManagement, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -62,6 +62,16 @@ export const saveDbEntity = async <T>(schema: ZodTypeAny, dbModel: (item: T) => 
   return u
 }
 
+export const saveMongoDbEntity = async <T>(schema: ZodTypeAny, collection: "entreprises", data: Partial<T>) => {
+  const u = {
+    ...getFixture().fromSchema(schema),
+    ...data,
+    _id: new ObjectId(),
+  }
+  await getDbCollection(collection).insertOne(u)
+  return u
+}
+
 export const saveUserWithAccount = async (data: Partial<IUserWithAccount> = {}) => {
   return saveDbEntity(ZUserWithAccount, (item) => new UserWithAccount(item), data)
 }
@@ -98,7 +108,7 @@ export const roleManagementEventFactory = ({
 }
 
 export const saveEntreprise = async (data: Partial<IEntreprise> = {}) => {
-  return saveDbEntity(ZEntreprise, (item) => new Entreprise(item), data)
+  return saveMongoDbEntity(ZEntreprise, "entreprises", data)
 }
 
 export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEvent> = {}): IEntrepriseStatusEvent => {
