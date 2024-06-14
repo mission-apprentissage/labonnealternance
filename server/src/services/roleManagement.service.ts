@@ -133,7 +133,7 @@ export const getPublicUserRecruteurPropsOrError = async (
     return { ...commonFields, establishment_siret: siret }
   }
   if (type === ENTREPRISE) {
-    const entreprise = await getDbCollection("entreprises").findOne({ _id: mainRole.authorized_id })
+    const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(mainRole.authorized_id.toString()) })
     if (!entreprise) {
       throw Boom.internal(`inattendu : entreprise non trouvée pour user id=${userId}`)
     }

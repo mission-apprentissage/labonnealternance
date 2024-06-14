@@ -448,7 +448,7 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   const userIds = roles.map((role) => role.user_id.toString())
   const users = await UserWithAccount.find({ _id: { $in: userIds } }).lean()
 
-  const entrepriseIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : []))
+  const entrepriseIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [new ObjectId(role.authorized_id.toString())] : []))
   const entreprises = await getDbCollection("entreprises")
     .find({ _id: { $in: entrepriseIds }, ...(opco ? { opco } : {}) })
     .toArray()

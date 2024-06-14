@@ -24,7 +24,9 @@ export const controlUserState = async (user: IUserWithAccount): Promise<{ error:
       }
       const entrepriseRoles = rolesWithAccess.filter((role) => role.authorized_type === AccessEntityType.ENTREPRISE)
       if (entrepriseRoles.length) {
-        const entreprises = await getDbCollection("entreprises").find({ _id: { $in: entrepriseRoles.map((role) => new ObjectId(role.authorized_id.toString())) } })
+        const entreprises = await getDbCollection("entreprises")
+          .find({ _id: { $in: entrepriseRoles.map((role) => new ObjectId(role.authorized_id.toString())) } })
+          .toArray()
         const hasSomeEntrepriseReady = entreprises.find((entreprise) => getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.VALIDE)
         if (hasSomeEntrepriseReady) {
           return { error: false }

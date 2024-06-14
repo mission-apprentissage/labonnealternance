@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { CFA, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
@@ -185,7 +186,7 @@ export default (server: Server) => {
         organization = await Cfa.findOne({ _id: role.authorized_id }).lean()
       }
       if (type === ENTREPRISE) {
-        organization = await getDbCollection("entreprises").findOne({ _id: role.authorized_id })
+        organization = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id.toString()) })
       }
       if (!organization) {
         throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
