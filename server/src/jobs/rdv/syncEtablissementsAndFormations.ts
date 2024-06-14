@@ -34,18 +34,22 @@ export const syncEtablissementsAndFormations = async () => {
             { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1 } }
           ),
           getDbCollection("etablissements")
-            .find({
-              gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            })
-            .select({
-              premium_affelnet_activation_date: 1,
-              optout_refusal_date: 1,
-              optout_activation_date: 1,
-              premium_refusal_date: 1,
-              premium_activation_date: 1,
-              premium_affelnet_refusal_date: 1,
-              gestionnaire_email: 1,
-            })
+            .find(
+              {
+                gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+              },
+              {
+                projection: {
+                  premium_affelnet_activation_date: 1,
+                  optout_refusal_date: 1,
+                  optout_activation_date: 1,
+                  premium_refusal_date: 1,
+                  premium_activation_date: 1,
+                  premium_affelnet_refusal_date: 1,
+                  gestionnaire_email: 1,
+                },
+              }
+            )
             .toArray(),
           ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
         ])

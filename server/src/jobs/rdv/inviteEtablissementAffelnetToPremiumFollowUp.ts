@@ -29,7 +29,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: b
     clause = [{ premium_affelnet_invitation_date: { $ne: null } }]
   }
 
-  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await getDbCollection("etablissements")
+  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = (await getDbCollection("etablissements")
     .aggregate([
       {
         $match: {
@@ -54,7 +54,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: b
         },
       },
     ])
-    .toArray()
+    .toArray()) as Array<IEtablissementsToInviteToPremium>
 
   for (const etablissement of etablissementsToInviteToPremium) {
     const hasOneAvailableFormation = await getDbCollection("eligible_trainings_for_appointments").findOne({

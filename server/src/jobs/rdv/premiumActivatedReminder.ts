@@ -1,4 +1,5 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
 import { isValidEmail } from "../../common/utils/isValidEmail"

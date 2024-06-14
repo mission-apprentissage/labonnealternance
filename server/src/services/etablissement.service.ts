@@ -15,9 +15,10 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
+import { Cfa, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -116,84 +117,11 @@ const getEffectif = (code) => {
 }
 
 /**
- * @description Creates an etablissement.
- * @param {Object} options
- * @returns {Promise<Etablissement>}
- */
-export const create = async (options = {}) => {
-  const etablissement = new Etablissement(options)
-  await etablissement.save()
-
-  return etablissement.toObject()
-}
-
-/**
- * @description Returns an etablissement from its id.
- * @param {ObjectId} id
- * @returns {Promise<Etablissement>}
- */
-export const findById = async (id): Promise<IEtablissement> => {
-  const etablissement = await Etablissement.findById(id)
-
-  if (!etablissement) {
-    throw new Error(`Unable to find etablissement ${id}`)
-  }
-
-  return etablissement.toObject()
-}
-
-/**
- * @description Returns items.
- * @param {Object} conditions
- * @returns {Promise<Etablissement[]>}
- */
-export const find = async (conditions): Promise<IEtablissement[]> => Etablissement.find(conditions).lean()
-
-/**
  * @description Returns one item.
  * @param {Object} conditions
  * @returns {Promise<Etablissement>}
  */
-export const findOne = async (conditions): Promise<IEtablissement | null> => Etablissement.findOne(conditions).lean()
-
-/**
- * @description Updates an etablissement from its conditions.
- * @param {Object} conditions
- * @param {Object} values
- * @returns {Promise<Etablissement>}
- */
-export const findOneAndUpdate = async (conditions, values): Promise<IEtablissement | null> => Etablissement.findOneAndUpdate(conditions, values, { new: true }).lean()
-
-/**
- * @description Upserts.
- * @param {Object} conditions
- * @param {Object} values
- * @returns {Promise<Etablissement>}
- */
-export const updateMany = async (conditions, values): Promise<any> => Etablissement.updateMany(conditions, values, { new: true, upsert: true }).lean()
-
-/**
- * @description Update one.
- * @param {Object} conditions
- * @param {Object} values
- * @returns {Promise<Etablissement>}
- */
-export const updateOne = async (conditions, values): Promise<any> => Etablissement.updateOne(conditions, values, { new: true, upsert: true }).lean()
-
-/**
- * @description Updates an etablissement from its id.
- * @param {ObjectId} id
- * @param {Object} values
- * @returns {Promise<Etablissement>}
- */
-export const findByIdAndUpdate = async (id, values): Promise<IEtablissement | null> => Etablissement.findByIdAndUpdate({ _id: id }, values, { new: true }).lean()
-
-/**
- * @description Deletes an etablissement from its id.
- * @param {ObjectId} id
- * @returns {Promise<void>}
- */
-export const findByIdAndDelete = async (id): Promise<IEtablissement | null> => Etablissement.findByIdAndDelete(id).lean()
+export const findOne = async (conditions): Promise<IEtablissement | null> => getDbCollection("etablissements").findOne(conditions)
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET

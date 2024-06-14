@@ -33,7 +33,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
     return
   }
 
-  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await getDbCollection("etablissements")
+  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = (await getDbCollection("etablissements")
     .aggregate([
       {
         $match: {
@@ -55,7 +55,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         },
       },
     ])
-    .toArray()
+    .toArray()) as Array<IEtablissementsToInviteToPremium>
 
   for (const etablissement of etablissementsToInviteToPremium) {
     // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"

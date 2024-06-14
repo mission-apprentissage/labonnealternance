@@ -49,7 +49,7 @@ type IEtablissementByGestionnaireSiret = Array<{
 }>
 
 export const syncEtablissementDates = async () => {
-  const etablissementByGestionnaireSiret: IEtablissementByGestionnaireSiret = await getDbCollection("etablissements")
+  const etablissementByGestionnaireSiret: IEtablissementByGestionnaireSiret = (await getDbCollection("etablissements")
     .aggregate([
       {
         $group: {
@@ -90,7 +90,7 @@ export const syncEtablissementDates = async () => {
         },
       },
     ])
-    .toArray()
+    .toArray()) as IEtablissementByGestionnaireSiret
 
   if (etablissementByGestionnaireSiret.length) {
     for await (const etablissement of etablissementByGestionnaireSiret) {

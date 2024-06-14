@@ -32,7 +32,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
     return
   }
 
-  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await getDbCollection("etablissements")
+  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = (await getDbCollection("etablissements")
     .aggregate([
       {
         $match: {
@@ -55,7 +55,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
         },
       },
     ])
-    .toArray()
+    .toArray()) as Array<IEtablissementsToInviteToPremium>
 
   let count = 0
 

@@ -28,7 +28,7 @@ function findDocumentWithMostFields(documents: Array<Partial<IEtablissement>>): 
 }
 
 export const removeDuplicateEtablissements = async () => {
-  const duplicates: Array<{ duplicateDocuments: Partial<IEtablissement>[] }> = await getDbCollection("etablissements")
+  const duplicates: Array<{ duplicateDocuments: Partial<IEtablissement>[] }> = (await getDbCollection("etablissements")
     .aggregate([
       {
         $group: {
@@ -52,7 +52,7 @@ export const removeDuplicateEtablissements = async () => {
         },
       },
     ])
-    .toArray()
+    .toArray()) as Array<{ duplicateDocuments: Partial<IEtablissement>[] }>
   if (!duplicates.length) return
 
   logger.info(`${duplicates.length} etablissements duplicated to control`)

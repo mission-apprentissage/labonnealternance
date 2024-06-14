@@ -25,7 +25,7 @@ export const inviteEtablissementToOptOut = async () => {
   logger.info("Cron #inviteEtablissementToOptOut started.")
 
   // Opt-out etablissement to activate
-  const etablissementsWithouOptMode: Array<IEtablissementsWithouOptMode> = await getDbCollection("etablissements")
+  const etablissementsWithouOptMode: Array<IEtablissementsWithouOptMode> = (await getDbCollection("etablissements")
     .aggregate([
       {
         $match: {
@@ -44,7 +44,7 @@ export const inviteEtablissementToOptOut = async () => {
         },
       },
     ])
-    .toArray()
+    .toArray()) as Array<IEtablissementsWithouOptMode>
   const willBeActivatedAt = dayjs().add(15, "days")
 
   logger.info(`Etablissements to invite: ${etablissementsWithouOptMode.length}`)

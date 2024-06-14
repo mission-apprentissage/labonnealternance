@@ -8,6 +8,7 @@ import { getReferrerByKeyName } from "@/common/model/constants/referrers"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
+import { ReferentielOnisep } from "../common/model/index"
 import { isValidEmail } from "../common/utils/isValidEmail"
 
 import { isEmailBlacklisted } from "./application.service"
