@@ -61,16 +61,6 @@ export const saveDbEntity = async <T>(schema: ZodTypeAny, saveEntity: (item: T) 
   return entity
 }
 
-export const saveMongoDbEntity = async <T>(schema: ZodTypeAny, collection: "entreprises", data: Partial<T>) => {
-  const u = {
-    ...getFixture().fromSchema(schema),
-    ...data,
-    _id: new ObjectId(),
-  }
-  await getDbCollection(collection).insertOne(u)
-  return u
-}
-
 export const saveUserWithAccount = async (data: Partial<IUserWithAccount> = {}) => {
   return saveDbEntity(ZUserWithAccount, (item) => getDbCollection("userswithaccounts").insertOne(item), data)
 }
@@ -107,7 +97,7 @@ export const roleManagementEventFactory = ({
 }
 
 export const saveEntreprise = async (data: Partial<IEntreprise> = {}) => {
-  return saveMongoDbEntity(ZEntreprise, "entreprises", data)
+  return saveDbEntity(ZEntreprise, (item) => getDbCollection("entreprises").insertOne(item), data)
 }
 
 export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEvent> = {}): IEntrepriseStatusEvent => {
