@@ -4,10 +4,10 @@ import path from "path"
 import axios from "axios"
 import FormData from "form-data"
 import fsExtra from "fs-extra"
+import { ObjectId } from "mongodb"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 import { ZGeoLocation } from "shared/models"
 
-import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
