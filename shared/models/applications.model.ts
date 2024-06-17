@@ -88,7 +88,7 @@ export const ZApplication = z
       }),
     to_applicant_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé au candidat"),
     to_company_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé à l'entreprise"),
-    caller: z.string().nullish().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
+    caller: z.string().nullish().describe("L'identification de la source d'émission de la candidature (pour widget uniquement)"),
     created_at: z.date().nullable().describe("La date création de la demande"),
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
   })
