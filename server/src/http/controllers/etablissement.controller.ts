@@ -258,7 +258,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/affelnet/refuse"])],
     },
     async (req, res) => {
-      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
+      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -324,7 +324,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/refuse"])],
     },
     async (req, res) => {
-      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
+      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
