@@ -4,7 +4,6 @@ import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
 
 import { logger } from "@/common/logger"
-import { getReferrerByKeyName } from "@/common/model/constants/referrers"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
@@ -12,6 +11,7 @@ import { isValidEmail } from "../common/utils/isValidEmail"
 
 import { isEmailBlacklisted } from "./application.service"
 import { getMostFrequentEmailByGestionnaireSiret } from "./formation.service"
+import { getReferrerByKeyName } from "./referrers.service"
 
 export const create = (params: IEligibleTrainingsForAppointment) => getDbCollection("eligible_trainings_for_appointments").insertOne(params)
 

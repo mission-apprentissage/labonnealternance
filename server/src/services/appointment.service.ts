@@ -2,8 +2,8 @@ import dayjs from "dayjs"
 import { Filter, ObjectId } from "mongodb"
 import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 import { mailType } from "shared/constants/appointment"
+import { ReferrerObject } from "shared/constants/referers"
 
-import { ReferrerObject } from "@/common/model/constants/referrers"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import config from "@/config"
 
