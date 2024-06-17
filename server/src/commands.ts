@@ -2,8 +2,6 @@ import { captureException } from "@sentry/node"
 import { program } from "commander"
 import HttpTerminator from "lil-http-terminator"
 
-import { closeMongoConnection } from "@/common/mongodb"
-
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
@@ -71,7 +69,7 @@ program
     logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await Promise.all([closeMongoConnection(), closeMongodbConnection(), closeMemoryCache()])
+    await Promise.all([closeMongodbConnection(), closeMemoryCache()])
     await closeSentry()
 
     setTimeout(async () => {
@@ -228,12 +226,6 @@ program
   .description("Retirer le champ is_delegated des offres")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("migration:remove-delegated-from-jobs"))
-
-program
-  .command("mongodb:indexes:create")
-  .description("Creation des indexes mongo")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("mongodb:indexes:create"))
 
 /********************/
 

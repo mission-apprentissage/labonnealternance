@@ -4,7 +4,6 @@ import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/inter
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 
 import { getLoggerWithContext } from "../common/logger"
-import { createIndexes } from "../common/utils/mongodbUtils"
 
 import anonymizeOldAppointments from "./anonymization/anonumizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
@@ -367,9 +366,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
       }
-      ///////
-      case "mongodb:indexes:create":
-        return createIndexes()
       case "anonymize-individual": {
         const { collection, id } = job.payload
         return anonymizeIndividual({ collection, id: new ObjectId(id) })

@@ -47,5 +47,4 @@ yarn services:start
 yarn setup:mongodb
 yarn build:dev
 yarn cli migrations:up
-yarn cli mongodb:indexes:create
-# yarn cli recreate:indexes // when migration to V7 to replace with above
+yarn cli recreate:indexes
