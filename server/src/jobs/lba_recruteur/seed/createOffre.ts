@@ -1,7 +1,6 @@
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../../common/logger"
-import { Job } from "../../../common/model/index"
 
 export const createOffreCollection = async () => {
   logger.info("Creating offres collections...")
@@ -69,8 +68,4 @@ export const createOffreCollection = async () => {
     },
     { $out: "jobs" },
   ])
-
-  const jobs = await Job.countDocuments()
-
-  return { jobs }
 }
