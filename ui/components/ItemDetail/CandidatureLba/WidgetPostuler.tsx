@@ -39,7 +39,7 @@ const WidgetPostuler = () => {
           break
         }
       }
-
+      setCaller(parameters.caller)
       setItem(item)
     } catch (err) {
       setHasError(err.message)
@@ -51,6 +51,7 @@ const WidgetPostuler = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(null)
   const [item, setItem] = useState(null)
+  const [caller, setCaller] = useState(null)
 
   return hasError ? (
     <WidgetPostulerError hasError={hasError} />
@@ -60,7 +61,7 @@ const WidgetPostuler = () => {
       Veuillez patienter
     </Flex>
   ) : (
-    <WidgetCandidatureLba item={item} />
+    <WidgetCandidatureLba item={item} caller={caller} />
   )
 }
 

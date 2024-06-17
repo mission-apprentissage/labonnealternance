@@ -13,7 +13,7 @@ import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandid
 import submitCandidature from "./services/submitCandidature"
 import useLocalStorage from "./services/useLocalStorage"
 
-const WidgetCandidatureLba = ({ item, fakeLocalStorage = null }) => {
+const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage = null }) => {
   const [sendingState, setSendingState] = useState("not_sent")
   const kind: LBA_ITEM_TYPE_OLD = item?.ideaType || ""
 
@@ -55,6 +55,7 @@ const WidgetCandidatureLba = ({ item, fakeLocalStorage = null }) => {
         formValues,
         setSendingState,
         LbaJob: item,
+        caller,
       })
       if (success) {
         setApplied(Date.now().toString())

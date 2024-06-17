@@ -10,6 +10,7 @@ const ZNewApplicationV2NEWCompanySiret = ZApplication.pick({
   applicant_email: true,
   applicant_phone: true,
   company_siret: true,
+  caller: true,
 })
   .extend({
     message: ZApplication.shape.applicant_message_to_company.optional(),
@@ -21,7 +22,7 @@ const ZNewApplicationV2NEWCompanySiret = ZApplication.pick({
   })
   .openapi("V2 - Application")
 
-const ZNewApplicationV2NEWJobId = ZApplication.pick({ applicant_first_name: true, applicant_last_name: true, applicant_email: true, applicant_phone: true })
+const ZNewApplicationV2NEWJobId = ZApplication.pick({ applicant_first_name: true, applicant_last_name: true, applicant_email: true, applicant_phone: true, caller: true })
   .extend({
     message: ZApplication.shape.applicant_message_to_company.optional(),
     applicant_file_name: ZApplication.shape.applicant_attachment_name,
