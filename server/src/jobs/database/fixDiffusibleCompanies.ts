@@ -1,4 +1,4 @@
-import { ILbaCompany, IRecruiter, JOB_STATUS } from "shared"
+import { IRecruiter, JOB_STATUS } from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { IEntreprise } from "shared/models/entreprise.model"
@@ -13,7 +13,7 @@ const FAKE_GEOLOCATION = "0,0"
 
 const fixLbaCompanies = async () => {
   logger.info(`Fixing diffusible lba companies`)
-  const lbaCompanies: AsyncIterable<ILbaCompany> = await getDbCollection("bonnesboites").find({})
+  const lbaCompanies = getDbCollection("bonnesboites").find({})
 
   let count = 0
   let deletedCount = 0
@@ -66,7 +66,7 @@ const deactivateEntreprise = async (entreprise: IEntreprise) => {
 
 const fixRecruiters = async () => {
   logger.info(`Fixing diffusible recruiters and offers`)
-  const recruiters: AsyncIterable<IRecruiter> = await getDbCollection("recruiters").find({})
+  const recruiters = getDbCollection("recruiters").find({})
 
   let count = 0
   let deactivatedCount = 0
@@ -91,7 +91,7 @@ const fixRecruiters = async () => {
     }
   }
 
-  const entreprises: AsyncIterable<IEntreprise> = await getDbCollection("entreprises").find({})
+  const entreprises = getDbCollection("entreprises").find({})
 
   count = 0
   deactivatedCount = 0

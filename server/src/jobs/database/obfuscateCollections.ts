@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto"
 
-import { getLastStatusEvent, IEmailBlacklist, IUser, IUserRecruteur } from "shared"
+import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { CollectionName } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -48,7 +48,7 @@ const obfuscateApplications = async () => {
 
 const obfuscateEmailBlackList = async () => {
   logger.info(`obfuscating email blacklist`)
-  const emails: AsyncIterable<IEmailBlacklist> = await getDbCollection("emailblacklists").find({})
+  const emails = getDbCollection("emailblacklists").find({})
   for await (const ebl of emails) {
     const email = getFakeEmail()
     const replacement = { $set: { email } }
@@ -162,7 +162,7 @@ const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
 const obfuscateRecruiter = async () => {
   logger.info(`obfuscating recruiters`)
 
-  const remainingUsers: AsyncIterable<IUserRecruteur> = getDbCollection("recruiters").find({ first_name: { $ne: "prenom" } })
+  const remainingUsers = getDbCollection("recruiters").find({ first_name: { $ne: "prenom" } })
   for await (const user of remainingUsers) {
     const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
     getDbCollection("recruiters").findOneAndUpdate({ _id: user._id }, replacement)
@@ -192,7 +192,7 @@ const obfuscateRecruiter = async () => {
 
 const obfuscateUser = async () => {
   logger.info(`obfuscating users`)
-  const users: AsyncIterable<IUser> = await getDbCollection("users").find({})
+  const users = getDbCollection("users").find({})
   for await (const user of users) {
     const email = getFakeEmail()
     const replacement = { $set: { email, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
@@ -204,7 +204,7 @@ const obfuscateUser = async () => {
 
 const obfuscateUsersWithAccounts = async () => {
   logger.info(`obfuscating userswithaccounts`)
-  const users: AsyncIterable<IUser> = await getDbCollection("userswithaccounts").find({})
+  const users = getDbCollection("userswithaccounts").find({})
   for await (const user of users) {
     const email = getFakeEmail()
     const replacement = {
