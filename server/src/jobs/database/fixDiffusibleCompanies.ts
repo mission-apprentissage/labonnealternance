@@ -66,7 +66,6 @@ const deactivateEntreprise = async (entreprise: IEntreprise) => {
 }
 
 const fixRecruiters = async () => {
-  await RoleManagement.deleteMany({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() })
   logger.info(`Fixing diffusible recruiters and offers`)
   const recruiters: AsyncIterable<IRecruiter> = await db.collection("recruiters").find({})
 
