@@ -13,5 +13,5 @@ export enum BusinessErrorCodes {
   BURNER = "L'email est invalide.",
   NOTFOUND = "Aucune offre correspondante trouvée.",
   ATTACHMENT = "Pièce jointe invalide.",
-  INTERNAL_EMAIL = "Aucun email trouver pour l'offre trouvé.",
+  INTERNAL_EMAIL = "Aucun email pour l'offre trouvée.",
 }

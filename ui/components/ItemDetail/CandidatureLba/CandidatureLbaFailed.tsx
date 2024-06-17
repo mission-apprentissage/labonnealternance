@@ -46,6 +46,11 @@ const sendingStateValues = {
     text: "Vous pourrez en envoyer de nouveau demain",
     dataTestId: "CandidatureSpontaneeFailedTooManyApplicationsPerCompanyPerCaller",
   },
+  [BusinessErrorCodes.INTERNAL_EMAIL]: {
+    title: "Aucune information de contact disponible pour postuler",
+    text: "Nous ne disposons pas des éléments de contact nécessaires pour relayer votre candidatuer à cette entreprise",
+    dataTestId: "CandidatureSpontaneeFailedNoEmail",
+  },
   "Internal Server Error": {
     title: "Erreur technique",
     text: "Veuillez patienter quelques instants et réessayer. Si l'erreur persiste merci de nous contacter.",
