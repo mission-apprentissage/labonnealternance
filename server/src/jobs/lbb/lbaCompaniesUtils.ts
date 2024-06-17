@@ -5,7 +5,6 @@ import { ObjectId } from "mongodb"
 import { compose, oleoduc, writeData } from "oleoduc"
 import { IGeoLocation, ILbaCompany, ZGeoLocation } from "shared/models"
 
-import { ObjectId } from "@/common/mongodb"
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
