@@ -50,6 +50,8 @@ export const ZDomainesMetiers = z
   })
   .strict()
 
+export type IDomainesMetiers = z.output<typeof ZDomainesMetiers>
+
 export default {
   zod: ZDomainesMetiers,
   indexes: [],

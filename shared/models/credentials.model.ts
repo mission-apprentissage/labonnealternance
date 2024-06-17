@@ -23,6 +23,6 @@ export type ICredential = z.output<typeof ZCredential>
 
 export default {
   zod: ZCredential,
-  indexes: [],
+  indexes: [[{ api_key: 1 }, { unique: true }]],
   collectionName,
 } as const satisfies IModelDescriptor

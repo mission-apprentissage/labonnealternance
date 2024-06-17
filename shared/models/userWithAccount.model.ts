@@ -50,6 +50,10 @@ export type IUserStatusEventJson = Jsonify<z.input<typeof ZUserStatusEvent>>
 
 export default {
   zod: ZUserWithAccount,
-  indexes: [[{ email: 1 }, { unique: true }]],
+  indexes: [
+    [{ email: 1 }, { unique: true }],
+    [{ last_action_date: 1 }, {}],
+    [{ "status.status": 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

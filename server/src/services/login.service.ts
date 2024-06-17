@@ -6,7 +6,6 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { RoleManagement } from "@/common/model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const controlUserState = async (user: IUserWithAccount): Promise<{ error: boolean; reason?: string }> => {
@@ -16,7 +15,7 @@ export const controlUserState = async (user: IUserWithAccount): Promise<{ error:
       return { error: true, reason: "DISABLED" }
     case UserEventType.VALIDATION_EMAIL:
     case UserEventType.ACTIF: {
-      const roles = await RoleManagement.find({ user_id: user._id.toString() }).lean()
+      const roles = await getDbCollection("rolemanagements").find({ user_id: user._id }).toArray()
       const rolesWithAccess = roles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
       const cfaOpcoOrAdminRoles = rolesWithAccess.filter((role) => [AccessEntityType.ADMIN, AccessEntityType.OPCO, AccessEntityType.CFA].includes(role.authorized_type))
       if (cfaOpcoOrAdminRoles.length) {

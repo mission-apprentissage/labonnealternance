@@ -9,7 +9,6 @@ import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { Application, Cfa, Credential, RoleManagement, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -53,13 +52,13 @@ function getFixture() {
   ])
 }
 
-export const saveDbEntity = async <T>(schema: ZodTypeAny, dbModel: (item: T) => { save: () => Promise<any> } & T, data: Partial<T>) => {
-  const u = dbModel({
+export const saveDbEntity = async <T>(schema: ZodTypeAny, saveEntity: (item: T) => Promise<any>, data: Partial<T>) => {
+  const entity = {
     ...getFixture().fromSchema(schema),
     ...data,
-  })
-  await u.save()
-  return u
+  }
+  await saveEntity(entity)
+  return entity
 }
 
 export const saveMongoDbEntity = async <T>(schema: ZodTypeAny, collection: "entreprises", data: Partial<T>) => {
@@ -73,7 +72,7 @@ export const saveMongoDbEntity = async <T>(schema: ZodTypeAny, collection: "entr
 }
 
 export const saveUserWithAccount = async (data: Partial<IUserWithAccount> = {}) => {
-  return saveDbEntity(ZUserWithAccount, (item) => new UserWithAccount(item), data)
+  return saveDbEntity(ZUserWithAccount, (item) => getDbCollection("userswithaccounts").insertOne(item), data)
 }
 export const saveRoleManagement = async (data: Partial<IRoleManagement> = {}) => {
   const role: IRoleManagement = {
@@ -87,7 +86,7 @@ export const saveRoleManagement = async (data: Partial<IRoleManagement> = {}) =>
     user_id: new ObjectId(),
     ...data,
   }
-  await new RoleManagement(role).save()
+  await getDbCollection("rolemanagements").insertOne(role)
   return role
 }
 
@@ -122,7 +121,7 @@ export const entrepriseStatusEventFactory = (props: Partial<IEntrepriseStatusEve
 }
 
 export const saveCfa = async (data: Partial<ICFA> = {}) => {
-  return saveDbEntity(zCFA, (item) => new Cfa(item), data)
+  return saveDbEntity(zCFA, (item) => getDbCollection("cfas").insertOne(item), data)
 }
 
 export const jobFactory = (props: Partial<IJob> = {}) => {
@@ -155,18 +154,18 @@ export const jobFactory = (props: Partial<IJob> = {}) => {
     custom_geo_coordinates: "custom_geo_coordinates",
     stats_detail_view: 0,
     stats_search_view: 0,
-    managed_by: new ObjectId(),
+    managed_by: new ObjectId().toString(),
     ...props,
   }
   return job
 }
 
 export async function createCredentialTest(data: Partial<ICredential>) {
-  const u = new Credential({
+  const u: ICredential = {
     ...getFixture().fromSchema(ZCredential),
     ...data,
-  })
-  await u.save()
+  }
+  await getDbCollection("credentials").insertOne(u)
   return u
 }
 
@@ -209,11 +208,11 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
 }
 
 export async function createApplicationTest(data: Partial<IApplication>) {
-  const u = new Application({
+  const u: IApplication = {
     ...getFixture().fromSchema(ZApplication),
     ...data,
-  })
-  await u.save()
+  }
+  await getDbCollection("applications").insertOne(u)
   return u
 }
 

@@ -10,7 +10,6 @@ import { AccessPermission, AccessResourcePath } from "shared/security/permission
 import { assertUnreachable, parseEnum } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { Application, Cfa, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
@@ -52,7 +51,7 @@ function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): an
 const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<RecruiterResource> => {
   const { cfa_delegated_siret, establishment_siret } = recruiter
   if (cfa_delegated_siret) {
-    const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+    const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
     if (!cfa) {
       throw Boom.internal(`could not find cfa for recruiter with id=${recruiter._id}`)
     }
@@ -155,7 +154,7 @@ async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRe
     await Promise.all(
       schema.securityScheme.resources.user.map(async (userDef) => {
         if ("_id" in userDef) {
-          const userOpt = await UserWithAccount.findOne({ _id: getAccessResourcePathValue(userDef._id, req) }).lean()
+          const userOpt = await getDbCollection("userswithaccounts").findOne({ _id: getAccessResourcePathValue(userDef._id, req) })
           return userOpt ? { _id: userOpt._id.toString() } : null
         }
         assertUnreachable(userDef)
@@ -173,7 +172,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
     schema.securityScheme.resources.application.map(async (applicationDef): Promise<ApplicationResource | null> => {
       if ("_id" in applicationDef) {
         const id = getAccessResourcePathValue(applicationDef._id, req)
-        const application = await Application.findById(id).lean()
+        const application = await getDbCollection("applications").findOne({ _id: id })
 
         if (!application) return null
         const { job_id } = application

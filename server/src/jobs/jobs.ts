@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb"
+
 import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
@@ -13,7 +15,7 @@ import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
-import { validateModels } from "./database/validateModels"
+import { validateModels } from "./database/schemaValidation"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
@@ -60,7 +62,6 @@ import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { importFichesRomeV4 } from "./seed/ficheMetierRomev4/ficheMetierRomev4"
 import { importReferentielRome } from "./seed/referentielRome/referentielRome"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -247,8 +248,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return repiseGeocoordinates()
       case "recruiters:get-missing-address-detail":
         return updateAddressDetailOnRecruitersCollection()
-      case "import:ficheromev4":
-        return importFichesRomeV4()
       case "import:referentielrome":
         return importReferentielRome()
       case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
@@ -373,7 +372,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return createMongoDBIndexes()
       case "anonymize-individual": {
         const { collection, id } = job.payload
-        return anonymizeIndividual({ collection, id })
+        return anonymizeIndividual({ collection, id: new ObjectId(id) })
       }
       case "db:validate":
         return validateModels()

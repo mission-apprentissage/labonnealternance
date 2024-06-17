@@ -4,7 +4,6 @@ import { AccessStatus } from "shared/models/roleManagement.model"
 import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils"
 
-import { RoleManagement, UserWithAccount } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
@@ -17,7 +16,7 @@ export const createUser2IfNotExist = async (
   const { first_name, last_name, last_action_date, origin, phone } = userProps
   const formatedEmail = userProps.email.toLocaleLowerCase()
 
-  let user = await UserWithAccount.findOne({ email: formatedEmail }).lean()
+  let user = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
   if (!user) {
     const id = new ObjectId()
     grantedBy = grantedBy || id.toString()
@@ -38,7 +37,8 @@ export const createUser2IfNotExist = async (
       validation_type: VALIDATION_UTILISATEUR.MANUAL,
       granted_by: grantedBy,
     })
-    const userFields: Omit<IUserWithAccount, "createdAt" | "updatedAt"> = {
+    const now = new Date()
+    const userFields: IUserWithAccount = {
       _id: id,
       email: formatedEmail,
       first_name,
@@ -47,8 +47,11 @@ export const createUser2IfNotExist = async (
       last_action_date: last_action_date ?? new Date(),
       origin,
       status,
+      createdAt: now,
+      updatedAt: now,
     }
-    user = (await UserWithAccount.create(userFields)).toObject()
+    await getDbCollection("userswithaccounts").insertOne(userFields)
+    user = userFields
   }
   return user
 }
@@ -68,7 +71,11 @@ export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]):
     granted_by: id.toString(),
     reason: "validation de l'email par l'utilisateur",
   }
-  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: id }, { $push: { status: event } }, { returnDocument: "after" })
+  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate(
+    { _id: id },
+    { $push: { status: event }, $set: { updatedAt: new Date() } },
+    { returnDocument: "after" }
+  )
   if (!newUser) {
     throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
   }
@@ -86,7 +93,11 @@ export const activateUser = async (user: IUserWithAccount, granted_by: string): 
     granted_by,
     reason: "",
   }
-  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: user._id }, { $push: { status: event } }, { returnDocument: "after" })
+  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate(
+    { _id: user._id },
+    { $push: { status: event }, $set: { updatedAt: new Date() } },
+    { returnDocument: "after" }
+  )
   if (!newUser) {
     throw Boom.internal(`utilisateur avec id=${user._id} non trouvé`)
   }
@@ -99,7 +110,7 @@ export const getUserWithAccountByEmail = async (email: string): Promise<IUserWit
 export const emailHasActiveRole = async (email: string) => {
   const userOpt = await getUserWithAccountByEmail(email)
   if (!userOpt) return
-  const roles = await RoleManagement.find({ user_id: userOpt._id }).lean()
+  const roles = await getDbCollection("rolemanagements").find({ user_id: userOpt._id }).toArray()
   const activeStatus = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]
   const activeRoles = roles.filter((role) => {
     const roleStatus = getLastStatusEvent(role.status)?.status

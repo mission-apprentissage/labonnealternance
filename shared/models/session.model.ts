@@ -4,10 +4,6 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
 
-const collectionName = "sessions" as const
-
-const indexes: IModelDescriptor["indexes"] = []
-
 export const ZSession = z
   .object({
     _id: zObjectId,
@@ -23,6 +19,10 @@ export type ISessionJson = Jsonify<z.input<typeof ZSession>>
 
 export default {
   zod: ZSession,
-  indexes,
-  collectionName,
+  indexes: [
+    [{ token: 1 }, {}],
+    // TODO
+    // [{ expires_at: 1 }, { expireAfterSeconds: config.auth.session.cookie.maxAge / 100 }],
+  ],
+  collectionName: "sessions" as const,
 } as const satisfies IModelDescriptor

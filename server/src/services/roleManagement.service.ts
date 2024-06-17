@@ -6,8 +6,6 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, RoleManagement } from "@/common/model"
-
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
@@ -29,7 +27,11 @@ export const modifyPermissionToUser = async (
     if (lastEvent?.status === eventProps.status) {
       return role
     }
-    const newRole = await getDbCollection("rolemanagements").findOneAndUpdate({ _id: role._id }, { $push: { status: event } }, { returnDocument: "after" })
+    const newRole = await getDbCollection("rolemanagements").findOneAndUpdate(
+      { _id: role._id },
+      { $push: { status: event }, $set: { updatedAt: new Date() } },
+      { returnDocument: "after" }
+    )
     if (!newRole) {
       throw Boom.internal("inattendu")
     }
@@ -48,7 +50,9 @@ export const modifyPermissionToUser = async (
 }
 
 export const getGrantedRoles = async (userId: string) => {
-  const roles = await RoleManagement.find({ user_id: userId }).lean()
+  const roles = await getDbCollection("rolemanagements")
+    .find({ user_id: new ObjectId(userId) })
+    .toArray()
   return roles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
 }
 
@@ -108,7 +112,6 @@ export const getPublicUserRecruteurPropsOrError = async (
   includeUserAwaitingValidation: boolean = false
 ): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
   const mainRole = await getMainRoleManagement(userId, includeUserAwaitingValidation)
-  console.log({ mainRole })
   if (!mainRole) {
     throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
   }
@@ -125,7 +128,7 @@ export const getPublicUserRecruteurPropsOrError = async (
     status_current,
   } as const
   if (type === CFA) {
-    const cfa = await Cfa.findOne({ _id: mainRole.authorized_id }).lean()
+    const cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(mainRole.authorized_id) })
     if (!cfa) {
       throw Boom.internal(`inattendu : cfa non trouvé pour user id=${userId}`)
     }

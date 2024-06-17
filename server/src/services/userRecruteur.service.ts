@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto"
-
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, parseEnumOrError, removeUndefinedFields } from "shared"
@@ -15,7 +13,6 @@ import { ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, RoleManagement, UserWithAccount } from "../common/model/index"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
 
@@ -25,12 +22,6 @@ import mailer, { sanitizeForEmail } from "./mailer.service"
 import { createOrganizationIfNotExist } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
-
-/**
- * @description generate an API key
- * @returns {string}
- */
-export const createApiKey = (): string => `mna-${randomUUID()}`
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
   const { date, reason, validation_type, granted_by } = entrepriseStatusEvent
@@ -53,7 +44,7 @@ const getOrganismeFromRole = async (role: IRoleManagement): Promise<IEntreprise 
       return entreprise
     }
     case AccessEntityType.CFA: {
-      const cfa = await Cfa.findOne({ _id: role.authorized_id }).lean()
+      const cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(role.authorized_id) })
       if (!cfa) {
         throw Boom.internal(`could not find cfa for role ${role._id}`)
       }
@@ -147,7 +138,7 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
 const getUserRecruteurByUser2Query = async (user2query: Partial<IUserWithAccount>): Promise<IUserRecruteur | null> => {
   const user = await getDbCollection("userswithaccounts").findOne(user2query)
   if (!user) return null
-  const role = await RoleManagement.findOne({ user_id: user._id.toString() }).lean()
+  const role = await getDbCollection("rolemanagements").findOne({ user_id: user._id })
   if (!role) return null
   const organisme = await getOrganismeFromRole(role)
   if (!organisme) return null
@@ -287,12 +278,14 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
   const newEmail = email?.toLocaleLowerCase()
 
   if (newEmail) {
-    const exist = await UserWithAccount.findOne({ email: newEmail, _id: { $ne: userId } }).lean()
+    const exist = await getDbCollection("userswithaccounts").findOne({ email: newEmail, _id: { $ne: userId } })
     if (exist) {
       return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
     }
   }
-  const newUser = await UserWithAccount.findOneAndUpdate({ _id: userId }, removeUndefinedFields({ ...fields, email: newEmail }), { new: true }).lean()
+  const newUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: userId }, removeUndefinedFields({ ...fields, email: newEmail, updatedAt: new Date() }), {
+    returnDocument: "after",
+  })
   if (!newUser) {
     throw Boom.badRequest("user not found")
   }
@@ -304,7 +297,7 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
 }
 
 export const removeUser = async (id: IUserWithAccount["_id"] | string) => {
-  await RoleManagement.deleteMany({ user_id: id })
+  await getDbCollection("rolemanagements").deleteMany({ user_id: new ObjectId(id.toString()) })
 }
 
 /**
@@ -313,7 +306,7 @@ export const removeUser = async (id: IUserWithAccount["_id"] | string) => {
  * @returns {Promise<IUserRecruteur>}
  */
 export const updateLastConnectionDate = async (email: IUserRecruteur["email"]): Promise<void> => {
-  await getDbCollection("userswithaccounts").updateOne({ email: email.toLowerCase() }, { $set: { last_action_date: new Date() } })
+  await getDbCollection("userswithaccounts").updateOne({ email: email.toLowerCase() }, { $set: { last_action_date: new Date(), updatedAt: new Date() } })
 }
 
 /**
@@ -401,7 +394,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   const isCfa = role.authorized_type === AccessEntityType.CFA
   let organization
   if (isCfa) {
-    organization = await Cfa.findOne({ _id: role.authorized_id }).lean()
+    organization = await getDbCollection("cfas").findOne({ _id: new ObjectId(role.authorized_id) })
   } else {
     organization = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id.toString()) })
   }
@@ -428,33 +421,46 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
 }
 
 export const getAdminUsers = async () => {
-  const allRoles = await RoleManagement.find({
-    authorized_type: AccessEntityType.ADMIN,
-  }).lean()
+  const allRoles = await getDbCollection("rolemanagements")
+    .find({
+      authorized_type: AccessEntityType.ADMIN,
+    })
+    .toArray()
   const grantedRoles = allRoles.filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
-  const userIds = grantedRoles.map((role) => role.user_id.toString())
-  const users = await UserWithAccount.find({ _id: { $in: userIds } }).lean()
+  const userIds = grantedRoles.map((role) => role.user_id)
+  const users = await getDbCollection("userswithaccounts")
+    .find({ _id: { $in: userIds } })
+    .toArray()
   return users
 }
 
 export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: { opco?: OPCOS; activeRoleLimit?: number }) => {
-  const nonGrantedRoles = await RoleManagement.find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } }).lean()
-  const lastGrantedRoles = await RoleManagement.find({ $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } })
+  const nonGrantedRoles = await getDbCollection("rolemanagements")
+    .find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } })
+    .toArray()
+  const lastGrantedRoles = await getDbCollection("rolemanagements")
+    .find({ $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } })
     .sort({ updatedAt: -1 })
     .limit(activeRoleLimit ?? 1000)
-    .lean()
+    .toArray()
   const roles = [...nonGrantedRoles, ...lastGrantedRoles]
 
-  const userIds = roles.map((role) => role.user_id.toString())
-  const users = await UserWithAccount.find({ _id: { $in: userIds } }).lean()
+  const userIds = roles.map((role) => role.user_id)
+  const users = await getDbCollection("userswithaccounts")
+    .find({ _id: { $in: userIds } })
+    .toArray()
 
   const entrepriseIds = roles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [new ObjectId(role.authorized_id.toString())] : []))
   const entreprises = await getDbCollection("entreprises")
     .find({ _id: { $in: entrepriseIds }, ...(opco ? { opco } : {}) })
     .toArray()
 
-  const cfaIds = opco ? [] : roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [role.authorized_id] : []))
-  const cfas = cfaIds.length ? await Cfa.find({ _id: { $in: cfaIds } }).lean() : []
+  const cfaIds = opco ? [] : roles.flatMap((role) => (role.authorized_type === AccessEntityType.CFA ? [new ObjectId(role.authorized_id)] : []))
+  const cfas = cfaIds.length
+    ? await getDbCollection("cfas")
+        .find({ _id: { $in: cfaIds } })
+        .toArray()
+    : []
 
   const userRecruteurs = roles
     .flatMap<{ user: IUserWithAccount; role: IRoleManagement } & ({ entreprise: IEntreprise } | { cfa: ICFA })>((role) => {

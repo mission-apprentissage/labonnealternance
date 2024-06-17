@@ -11,7 +11,6 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { Cfa, RoleManagement, UnsubscribeOF } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
@@ -84,7 +83,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
   if (recruiterOpt.is_delegated && recruiterOpt.address) {
     const { cfa_delegated_siret } = recruiterOpt
     if (cfa_delegated_siret) {
-      const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+      const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
       if (cfa) {
         const cfaUser = await getUser2ManagingOffer(getJobFromRecruiter(recruiterOpt, id.toString()))
 
@@ -141,8 +140,8 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
   }
   const { is_delegated, cfa_delegated_siret } = recruiter
   const organization = await (cfa_delegated_siret
-    ? Cfa.findOne({ siret: cfa_delegated_siret }).lean()
-    : await getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret }))
+    ? getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
+    : getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret }))
   if (!organization) {
     throw Boom.internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${establishment_id}`)
   }
@@ -174,7 +173,7 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
     job_creation_date: creationDate,
     job_expiration_date: addExpirationPeriod(creationDate).toDate(),
     job_update_date: creationDate,
-    managed_by: userId,
+    managed_by: userId.toString(),
   })
   // insert job
   const updatedFormulaire = await createOffre(establishment_id, updatedJob)
@@ -188,7 +187,7 @@ export const createJob = async ({ job, establishment_id, user }: { job: IJobWrit
     if (!entrepriseStatus) {
       throw Boom.internal(`inattendu : pas de status pour l'entreprise pour establishment_id=${establishment_id}`)
     }
-    const role = await RoleManagement.findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() }).lean()
+    const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
     return updatedFormulaire
@@ -222,7 +221,11 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   const entreprise = await getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret })
   let shouldSentMailToCfa = false
   if (entreprise) {
-    const role = await RoleManagement.findOne({ user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE }).lean()
+    const role = await getDbCollection("rolemanagements").findOne({
+      user_id: managingUser._id,
+      authorized_id: entreprise._id.toString(),
+      authorized_type: AccessEntityType.ENTREPRISE,
+    })
     if (role && getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED) {
       shouldSentMailToCfa = true
     }
@@ -274,7 +277,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
  * @returns {Promise<IRecruiter>}
  */
 export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
-  const offre = await getOffre(id.toString())
+  const offre = await getOffre(id)
   return offre ? true : false
 }
 
@@ -402,7 +405,7 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @param {IJob["_id"]} id
  */
 export async function getOffre(id: string | ObjectId) {
-  return getDbCollection("recruiters").findOne({ "jobs._id": id })
+  return getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(id.toString()) })
 }
 
 export async function getOffreWithRomeDetail(id: string | ObjectId) {
@@ -532,11 +535,12 @@ export const cancelOffreFromAdminInterface = async (id: IJob["_id"], { job_statu
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_status": job_status,
-        "jobs.$.job_status_comment": job_status_comment,
-        "jobs.$.job_update_date": Date.now(),
+        "jobs.$[elem].job_status": job_status,
+        "jobs.$[elem].job_status_comment": job_status_comment,
+        "jobs.$[elem].job_update_date": new Date(),
       },
-    }
+    },
+    { arrayFilters: [{ "elem._id": id }] }
   )
   return true
 }
@@ -645,7 +649,7 @@ export const getJobWithRomeDetail = async (id: string | ObjectId): Promise<IJobW
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
 export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
-  const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
+  const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   const unsubscribeToken = createCfaUnsubscribeToken(email, siret_code)
   await mailer.sendEmail({

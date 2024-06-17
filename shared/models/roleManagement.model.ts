@@ -53,6 +53,11 @@ export type IRoleManagementEvent = z.output<typeof ZRoleManagementEvent>
 
 export default {
   zod: ZRoleManagement,
-  indexes: [],
+  indexes: [
+    [{ authorized_id: 1 }, {}],
+    [{ authorized_type: 1 }, {}],
+    [{ user_id: 1 }, {}],
+    [{ user_id: 1, authorized_id: 1, authorized_type: 1 }, { unique: true }],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

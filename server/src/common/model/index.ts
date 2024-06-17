@@ -4,32 +4,8 @@ import { db, mongooseInstance } from "@/common/mongodb"
 
 import { logger } from "../logger"
 
-import AnonymizedUser from "./schema/anonymizedUsers/anonymizedUsers.schema"
-import ApiCalls from "./schema/apiCall/apiCall.schema"
-import AnonymizedApplication from "./schema/application/anonymizedApplications.schema"
-import Application from "./schema/application/applications.schema"
-import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema"
-import Appointment from "./schema/appointments/appointment.schema"
-import Credential from "./schema/credentials/credential.schema"
-import CustomEmailETFA from "./schema/customEmailETFA/customEmailETFA.schema"
-import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema"
-import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema"
 import FicheMetierRomeV4 from "./schema/ficheRomeV4/ficheRomeV4"
 import Job from "./schema/jobs/jobs.schema"
-import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
-import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
-import { Cfa } from "./schema/multiCompte/cfa.schema"
-import { RoleManagement } from "./schema/multiCompte/roleManagement.schema"
-import { UserWithAccount } from "./schema/multiCompte/userWithAccount.schema"
-import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema"
-import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
-import ReferentielRome from "./schema/referentielRome/referentielRome"
-import Session from "./schema/session/session.schema"
-import SiretDiffusibleStatus from "./schema/siretDiffusibleStatusSchema/siretDiffusibleStatusSchema.schema"
-import UnsubscribedLbaCompany from "./schema/unsubscribedLbaCompany/unsubscribedLbaCompany.schema"
-import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema"
-import User from "./schema/user/user.schema"
-import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema"
 
 const createSpecialIndexes = async () => {
   await db.collection("bonnesboites").createIndex({ geopoint: "2dsphere" })
@@ -73,31 +49,4 @@ export async function createMongoDBIndexes() {
   }
 }
 
-export {
-  AnonymizedApplication,
-  AnonymizedUser,
-  ApiCalls,
-  Application,
-  Appointment,
-  AppointmentDetailed,
-  Credential,
-  CustomEmailETFA,
-  DiplomesMetiers,
-  DomainesMetiers,
-  FicheMetierRomeV4,
-  ReferentielRome,
-  Job,
-  LbaCompany,
-  LbaCompanyLegacy,
-  ReferentielOnisep,
-  ReferentielOpco,
-  Session,
-  SiretDiffusibleStatus,
-  UnsubscribeOF,
-  UnsubscribedLbaCompany,
-  User,
-  UserRecruteur,
-  UserWithAccount,
-  Cfa,
-  RoleManagement,
-}
+export { FicheMetierRomeV4, Job }

@@ -25,6 +25,9 @@ export type IReferentielOpco = z.output<typeof ZReferentielOpco>
 
 export default {
   zod: ZReferentielOpco,
-  indexes: [],
+  indexes: [
+    [{ siret_code: 1 }, {}],
+    [{ emails: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

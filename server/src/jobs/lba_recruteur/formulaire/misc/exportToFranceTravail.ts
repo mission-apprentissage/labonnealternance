@@ -10,9 +10,9 @@ import { db } from "@/common/mongodb"
 
 import { sendCsvToFranceTravail } from "../../../../common/apis/FranceTravail"
 import { logger } from "../../../../common/logger"
-import { Cfa } from "../../../../common/model/index"
 import { getDepartmentByZipCode } from "../../../../common/territoires"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { getDbCollection } from "../../../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import dayjs from "../../../../services/dayjs.service"
 
@@ -190,7 +190,7 @@ export const exportToFranceTravail = async (): Promise<void> => {
 
     logger.info(`get info from ${offres.length} offers...`)
     await asyncForEach(offres, async (offre) => {
-      const cfa = offre.is_delegated ? await Cfa.findOne({ siret: offre.cfa_delegated_siret }) : null
+      const cfa = offre.is_delegated ? await getDbCollection("cfas").findOne({ siret: offre.cfa_delegated_siret }) : null
 
       if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
         offre.job_type.map(async (type) => {

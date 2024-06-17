@@ -2,8 +2,20 @@ import { setTimeout } from "timers/promises"
 
 import { AxiosResponse } from "axios"
 import Boom from "boom"
-import type { FilterQuery } from "mongoose"
-import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, ILbaCompany, IRecruiter, IReferentielOpco, ZAdresseV3, ZCfaReferentielData } from "shared"
+import { ObjectId } from "bson"
+import { Filter as MongoDBFilter } from "mongodb"
+import {
+  IAdresseV3,
+  IBusinessError,
+  ICfaReferentielData,
+  IEtablissement,
+  ILbaCompany,
+  ILbaCompanyLegacy,
+  IRecruiter,
+  ISiretDiffusibleStatus,
+  ZAdresseV3,
+  ZCfaReferentielData,
+} from "shared"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
@@ -18,7 +30,6 @@ import { getHttpClient } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Cfa, LbaCompany, LbaCompanyLegacy, ReferentielOpco, RoleManagement, SiretDiffusibleStatus, UnsubscribeOF, UserWithAccount } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -28,16 +39,7 @@ import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
-import {
-  IAPIAdresse,
-  IAPIEtablissement,
-  ICFADock,
-  IEtablissementCatalogue,
-  IEtablissementGouv,
-  IFormatAPIEntreprise,
-  IReferentiel,
-  ISIRET2IDCC,
-} from "./etablissement.service.types"
+import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementGouv, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
@@ -128,7 +130,7 @@ export const findOne = async (conditions): Promise<IEtablissement | null> => get
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
+const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc?: string } | undefined> => {
   try {
     const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     if (!data) {
@@ -157,7 +159,7 @@ export const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string;
  * @param {Number} idcc
  * @returns {Promise<Object>}
  */
-export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
+const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
   try {
     const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
     return data
@@ -172,7 +174,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
+const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
   try {
     const { data } = await getHttpClient({ timeout: 5000 }).get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
     return data
@@ -185,7 +187,7 @@ export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  */
-export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIEtablissement | BusinessErrorCodes.NON_DIFFUSIBLE | null> => {
+const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIEtablissement | BusinessErrorCodes.NON_DIFFUSIBLE | null> => {
   try {
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
@@ -214,13 +216,13 @@ export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIE
 /**
  * @description Get diffusion status from the ENTREPRISE API for a given SIRET
  */
-export const getEtablissementDiffusionStatus = async (siret: string): Promise<string> => {
+const getEtablissementDiffusionStatus = async (siret: string): Promise<string> => {
   try {
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
     }
 
-    const siretDiffusibleStatus = await SiretDiffusibleStatus.findOne({ siret }).lean()
+    const siretDiffusibleStatus = await getDbCollection("siretdiffusiblestatuses").findOne({ siret })
     if (siretDiffusibleStatus) {
       return siretDiffusibleStatus.status_diffusion
     }
@@ -254,12 +256,17 @@ export const getEtablissementDiffusionStatus = async (siret: string): Promise<st
   }
 }
 
-export const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
+const saveSiretDiffusionStatus = async (siret, diffusionStatus) => {
   try {
-    await new SiretDiffusibleStatus({
+    const now = new Date()
+    const obj: ISiretDiffusibleStatus = {
+      _id: new ObjectId(),
       siret,
       status_diffusion: diffusionStatus,
-    }).save()
+      created_at: now,
+      last_update_at: now,
+    }
+    await getDbCollection("siretdiffusiblestatuses").insertOne(obj)
   } catch (err) {
     // non blocking error
     sentryCaptureException(err)
@@ -295,7 +302,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
 /**
  * @description Get the establishment information from the REFERENTIEL API for a given SIRET
  */
-export const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
+const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
   try {
     const { data } = await getHttpClient().get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
     return data
@@ -306,24 +313,6 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
       sentryCaptureException(error)
       throw error
     }
-  }
-}
-/**
- * @description Get the establishment information from the CATALOGUE API for a given SIRET
- * @param {String} siret
- * @returns {Promise<IEtablissementCatalogue>}
- */
-export const getEtablissementFromCatalogue = async (siret: string): Promise<IEtablissementCatalogue> => {
-  try {
-    const result: IEtablissementCatalogue = await getHttpClient().get("https://catalogue.apprentissage.beta.gouv.fr/api/v1/entity/etablissements/", {
-      params: {
-        query: { siret },
-      },
-    })
-    return result
-  } catch (error: any) {
-    sentryCaptureException(error)
-    return error
   }
 }
 
@@ -358,32 +347,13 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
   }
 }
 
-/**
- * @description Get matching records from the ReferentielOpco collection for a given siret & email
- * @param {IReferentielOpco["siret_code"]} siretCode
- * @returns {Promise<IReferentielOpco>}
- */
-export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentielOpco["siret_code"]) => await ReferentielOpco.findOne({ siret_code: siretCode })
-/**
- * @description Get all matching records from the ReferentielOpco collection
- * @param {FilterQuery<IReferentielOpco>} query
- * @returns {Promise<IReferentielOpco[]>}
- */
-export const getAllEstablishmentFromOpcoReferentiel = async (query: FilterQuery<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
-/**
- * @description Get all matching records from the LbaCompanyLegacy collection
- * @param {FilterQuery<ILbaCompany>} query
- * @returns {Promise<ILbaCompany["email"]>}
- */
-export const getAllEstablishmentFromLbaCompanyLegacy = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> =>
-  await LbaCompanyLegacy.find(query).select({ email: 1, _id: 0 }).lean()
+type IGetAllEmailFromLbaCompanyLegacy = Pick<ILbaCompanyLegacy, "email">
+export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
+  (await getDbCollection("bonnesboiteslegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
 
-/**
- * @description Get all matching records from the LbaCompanies collection
- * @param {FilterQuery<ILbaCompany>} query
- * @returns {Promise<ILbaCompany["email"]>}
- */
-export const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
+type IGetAllEmailFromLbaCompany = Pick<ILbaCompany, "email">
+export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<ILbaCompany>) =>
+  (await getDbCollection("bonnesboites").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
 
 function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undefined {
   const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
@@ -405,7 +375,7 @@ const addressDetailToString = (address: IAdresseV3): string => {
 /**
  * @description Format Entreprise data
  */
-export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
+const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
   if (!d.adresse) {
     throw new Error("erreur dans le format de l'api SIRENE : le champ adresse est vide")
   }
@@ -471,7 +441,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
  * @param etablissementSiret siret de l'organisme de formation ne souhaitant plus recevoir les demandes
  */
 export const etablissementUnsubscribeDemandeDelegation = async (etablissementSiret: string) => {
-  const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
+  const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: etablissementSiret })
 
   if (!unsubscribeOF) {
     const { etablissements } = await getCatalogueEtablissements(
@@ -482,7 +452,8 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
     )
     const [{ _id }] = etablissements
     if (!_id) return
-    await UnsubscribeOF.create({
+    await getDbCollection("unsubscribedofs").insertOne({
+      _id: new ObjectId(),
       catalogue_id: _id,
       establishment_siret: etablissementSiret,
       unsubscribe_date: new Date(),
@@ -501,7 +472,7 @@ export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOr
   return { validated }
 }
 
-export const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: boolean; validator: string }> => {
+const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: boolean; validator: string }> => {
   const {
     organization: { siret },
     user: { email },
@@ -516,7 +487,9 @@ export const isCompanyValid = async (props: UserAndOrganization): Promise<{ isVa
   const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
     getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: sirenRegex }, email: { $nin: ["", null] } }),
     getAllEstablishmentFromLbaCompany({ siret: { $regex: sirenRegex }, email: { $nin: ["", null] } }),
-    getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: sirenRegex } }),
+    getDbCollection("referentielopcos")
+      .find({ siret_code: { $regex: sirenRegex } })
+      .toArray(),
   ])
 
   // Format arrays to get only the emails
@@ -625,9 +598,9 @@ export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: strin
 }
 
 const isCfaCreationValid = async (siret: string): Promise<boolean> => {
-  const cfa = await Cfa.findOne({ siret }).lean()
+  const cfa = await getDbCollection("cfas").findOne({ siret })
   if (!cfa) return true
-  const roles = await RoleManagement.find({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
+  const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).toArray()
   const managingAccess = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]
   const managingRoles = roles.filter((role) => {
     const roleStatus = getLastStatusEvent(role.status)?.status
@@ -874,7 +847,7 @@ export const sendEmailConfirmationEntreprise = async (
       },
     })
   } else {
-    const user2 = await UserWithAccount.findOne({ _id: user._id.toString() }).lean()
+    const user2 = await getDbCollection("userswithaccounts").findOne({ _id: user._id })
     if (!user2) {
       throw Boom.internal(`could not find user with id=${user._id}`)
     }

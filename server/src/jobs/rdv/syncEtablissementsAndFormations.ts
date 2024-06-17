@@ -5,7 +5,6 @@ import { referrers } from "shared/constants/referers"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { ReferentielOnisep } from "../../common/model/index"
 import { create, getEmailForRdv, updateParameter } from "../../services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
@@ -51,7 +50,7 @@ export const syncEtablissementsAndFormations = async () => {
               }
             )
             .toArray(),
-          ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
+          getDbCollection("referentieloniseps").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }),
         ])
 
         const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")

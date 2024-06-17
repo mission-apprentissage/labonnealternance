@@ -5,7 +5,6 @@ import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType } from "shared/models/roleManagement.model"
 
 import { logger } from "@/common/logger"
-import { RoleManagement } from "@/common/model"
 import { db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getDiffusionStatus } from "@/services/etablissement.service"
@@ -63,10 +62,11 @@ const deactivateEntreprise = async (entreprise: IEntreprise) => {
   const { siret } = entreprise
   console.info("deactivating non diffusible entreprise : ", siret)
   await getDbCollection("entreprises").deleteOne({ _id: entreprise._id })
-  await RoleManagement.deleteMany({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() })
+  await getDbCollection("rolemanagements").deleteMany({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() })
 }
 
 const fixRecruiters = async () => {
+  await RoleManagement.deleteMany({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() })
   logger.info(`Fixing diffusible recruiters and offers`)
   const recruiters: AsyncIterable<IRecruiter> = await db.collection("recruiters").find({})
 

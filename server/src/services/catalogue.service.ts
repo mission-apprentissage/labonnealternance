@@ -11,7 +11,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 import { logger } from "../common/logger"
-import { UnsubscribeOF } from "../common/model/index"
 import { getDistanceInKm } from "../common/utils/geolib"
 import { fetchStream } from "../common/utils/httpUtils"
 import { isValidEmail } from "../common/utils/isValidEmail"
@@ -209,7 +208,9 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
     ]
   })
   etablissementsRefined = sortBy(etablissementsRefined, "distance_en_km")
-  const unsubscribedEtablissements = await UnsubscribeOF.find({ catalogue_id: { $in: etablissementsRefined.map((etablissement) => etablissement._id) } })
+  const unsubscribedEtablissements = await getDbCollection("unsubscribedofs")
+    .find({ catalogue_id: { $in: etablissementsRefined.map((etablissement) => etablissement._id) } })
+    .toArray()
   const unsubscribedIds = unsubscribedEtablissements.map((unsubscribeOF) => unsubscribeOF.catalogue_id)
   etablissementsRefined = etablissementsRefined.filter((etablissement) => !unsubscribedIds.includes(etablissement._id))
   return etablissementsRefined

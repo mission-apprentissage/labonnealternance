@@ -1,9 +1,12 @@
-import { CustomEmailETFA } from "../../common/model"
+import { ObjectId } from "mongodb"
+import { ICustomEmailETFA } from "shared/models"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { asyncForEach } from "../../common/utils/asyncUtils"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 
 export const up = async () => {
-  const emailCustom = await eligibleTrainingsForAppointmentService
+  const emailCustom = await getDbCollection("eligible_trainings_for_appointments")
     .find(
       { is_lieu_formation_email_customized: true },
       {
@@ -17,6 +20,11 @@ export const up = async () => {
     .toArray()
 
   await asyncForEach(emailCustom, async (custom) => {
-    await CustomEmailETFA.create({ email: custom.lieu_formation_email, ...custom })
+    const newCustomMailETFA: ICustomEmailETFA = {
+      _id: new ObjectId(),
+      cle_ministere_educatif: custom.cle_ministere_educatif,
+      email: custom.lieu_formation_email as string,
+    }
+    await getDbCollection("customemailetfas").insertOne(newCustomMailETFA)
   })
 }

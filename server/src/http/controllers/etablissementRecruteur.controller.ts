@@ -5,7 +5,6 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa } from "@/common/model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
@@ -135,7 +134,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { cfaId } = req.params
-      const cfa = await Cfa.findOne({ _id: cfaId }).lean()
+      const cfa = await getDbCollection("cfas").findOne({ _id: cfaId })
       if (!cfa) {
         throw Boom.notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
       }

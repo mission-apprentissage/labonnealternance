@@ -46,9 +46,9 @@ export const ZApplication = z
       description: "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
       example: "Madame, monsieur...",
     }),
-    company_recruitment_intention: z.string().nullable().describe("L'intention de la société vis à vis du candidat"),
-    company_feedback: z.string().nullable().describe("L'avis donné par la société"),
-    company_feedback_date: z.date().nullable().describe("Date d'intention/avis donnée"),
+    company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
+    company_feedback: z.string().nullish().describe("L'avis donné par la société"),
+    company_feedback_date: z.date().nullish().describe("Date d'intention/avis donnée"),
     company_siret: extensions.siret.openapi({
       description: "Le siret de l'entreprise. Fourni par La bonne alternance. ",
       example: "00004993900000",
@@ -62,7 +62,7 @@ export const ZApplication = z
       description: "Le nom de la société. Fourni par La bonne alternance. ",
       example: "Au bon pain d'antan",
     }),
-    company_naf: z.string().openapi({
+    company_naf: z.string().nullish().openapi({
       description: "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
       example: "Boulangerie et boulangerie-pâtisserie",
     }),
@@ -77,20 +77,23 @@ export const ZApplication = z
         description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
         example: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       }),
-    job_title: z.string().openapi({
-      description: `Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `,
-      example: "Téléconseil, vente à distance",
-    }),
+    job_title: z
+      .string()
+      .nullish()
+      .openapi({
+        description: `Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `,
+        example: "Téléconseil, vente à distance",
+      }),
     job_id: z
       .string()
-      .nullable()
+      .nullish()
       .openapi({
         description: `L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `,
         example: "...59c24c059b...",
       }),
-    to_applicant_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé au candidat"),
-    to_company_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé à l'entreprise"),
-    caller: z.string().nullable().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
+    to_applicant_message_id: z.string().nullish().describe("Identifiant chez le transporteur du mail envoyé au candidat"),
+    to_company_message_id: z.string().nullish().describe("Identifiant chez le transporteur du mail envoyé à l'entreprise"),
+    caller: z.string().nullish().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
     created_at: z.date().nullable().describe("La date création de la demande"),
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
   })

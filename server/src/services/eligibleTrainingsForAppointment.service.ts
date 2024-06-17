@@ -8,7 +8,6 @@ import { getReferrerByKeyName } from "@/common/model/constants/referrers"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
-import { ReferentielOnisep } from "../common/model/index"
 import { isValidEmail } from "../common/utils/isValidEmail"
 
 import { isEmailBlacklisted } from "./application.service"
@@ -70,7 +69,7 @@ const findEligibleTrainingByParcoursupId = async (idParcoursup: string) => {
 }
 
 const findEligibleTrainingByActionFormation = async (idActionFormation: string) => {
-  const referentielOnisepIdActionFormation = await ReferentielOnisep.findOne({ id_action_ideo2: idActionFormation })
+  const referentielOnisepIdActionFormation = await getDbCollection("referentieloniseps").findOne({ id_action_ideo2: idActionFormation })
 
   if (!referentielOnisepIdActionFormation) {
     throw Boom.notFound("Formation not found")

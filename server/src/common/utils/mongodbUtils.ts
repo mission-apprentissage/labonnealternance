@@ -6,11 +6,13 @@ import { IModelDescriptor } from "shared/models/common"
 import { CollectionName, IDocument, modelDescriptors } from "shared/models/models"
 import { zodToMongoSchema } from "zod-mongodb-schema"
 
+import config from "../../config"
 import { logger } from "../logger"
 
 import { sleep } from "./asyncUtils"
 
 let mongodbClient: MongoClient | null = null
+let mongodbClientState: string | null = null
 
 export const ensureInitialization = () => {
   if (!mongodbClient) {
@@ -24,7 +26,12 @@ export const ensureInitialization = () => {
  * @returns client
  */
 export const connectToMongodb = async (uri: string) => {
-  const client = new MongoClient(uri)
+  const client = new MongoClient(uri, {
+    heartbeatFrequencyMS: 10_000,
+    retryWrites: true,
+    retryReads: true,
+    minPoolSize: config.env === "local" ? 0 : 5,
+  })
 
   client.on("connectionPoolReady", () => {
     logger.info("MongoDB reconnected")
@@ -37,6 +44,8 @@ export const connectToMongodb = async (uri: string) => {
   })
 
   await client.connect()
+  // @ts-expect-error
+  mongodbClientState = client.topology.s.state
   mongodbClient = client
   logger.info("Connected to MongoDB")
 
@@ -44,6 +53,7 @@ export const connectToMongodb = async (uri: string) => {
 }
 
 export const getMongodbClient = () => mongodbClient
+export const getMongodbClientState = () => mongodbClientState
 
 export const closeMongodbConnection = async () => {
   logger.warn("Closing MongoDB")

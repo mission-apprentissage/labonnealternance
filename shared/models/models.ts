@@ -16,13 +16,17 @@ import entrepriseModel from "./entreprise.model"
 import etablissementModel from "./etablissement.model"
 import formationModel from "./formation.model"
 import geolocationsModel from "./geolocations.model"
+import lbaCompanyModel from "./lbaCompany.model"
+import lbaCompanyLegacyModel from "./lbaCompanyLegacy.model"
 import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
 import recruiterModel from "./recruiter.model"
 import referentielOnisepModel from "./referentielOnisep.model"
 import referentielOpcoModel from "./referentielOpco.model"
 import roleManagementModel from "./roleManagement.model"
+import romeModel from "./rome.model"
 import sessionModel from "./session.model"
+import siretDiffusibleStatusModel from "./siretDiffusibleStatus.model"
 import unsubscribedLbaCompanyModel from "./unsubscribedLbaCompany.model"
 import unsubscribeOFModel from "./unsubscribeOF.model"
 import userModel from "./user.model"
@@ -44,13 +48,17 @@ const modelDescriptorMap = {
   [etablissementModel.collectionName]: etablissementModel,
   [formationModel.collectionName]: formationModel,
   [geolocationsModel.collectionName]: geolocationsModel,
+  [lbaCompanyModel.collectionName]: lbaCompanyModel,
+  [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,
   [optoutModel.collectionName]: optoutModel,
   [recruiterModel.collectionName]: recruiterModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielOpcoModel.collectionName]: referentielOpcoModel,
+  [romeModel.collectionName]: romeModel,
   [roleManagementModel.collectionName]: roleManagementModel,
   [sessionModel.collectionName]: sessionModel,
+  [siretDiffusibleStatusModel.collectionName]: siretDiffusibleStatusModel,
   [unsubscribedLbaCompanyModel.collectionName]: unsubscribedLbaCompanyModel,
   [unsubscribeOFModel.collectionName]: unsubscribeOFModel,
   [userModel.collectionName]: userModel,
