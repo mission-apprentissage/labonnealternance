@@ -3,9 +3,10 @@ import path from "path"
 
 import { config as mconfig, create as mcreate, status as mstatus, up as mup } from "migrate-mongo"
 
-import { mongooseInstance } from "@/common/mongodb"
 import { __dirname } from "@/common/utils/esmUtils"
 import config from "@/config"
+
+import { getMongodbClient } from "../../common/utils/mongodbUtils"
 
 const myConfig = {
   mongodb: {
@@ -44,7 +45,8 @@ export async function up() {
 
   await status()
 
-  const client = mongooseInstance.connection.getClient()
+  const client = getMongodbClient()
+  // @ts-ignore
   await mup(client.db(), client)
 }
 
@@ -52,7 +54,7 @@ export async function up() {
 export async function status(): Promise<number> {
   // @ts-ignore
   mconfig.set(myConfig)
-  const client = mongooseInstance.connection.getClient()
+  const client = getMongodbClient()
 
   // @ts-ignore
   const migrationStatus = await mstatus(client.db())

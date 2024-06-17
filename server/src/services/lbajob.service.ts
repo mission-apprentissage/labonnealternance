@@ -1,10 +1,9 @@
 import Boom from "boom"
-import pkg from "mongodb"
+import { ObjectId } from "mongodb"
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { ObjectIdType, db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
@@ -19,8 +18,6 @@ import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
-
-const { ObjectId } = pkg
 
 const JOB_SEARCH_LIMIT = 250
 const FRANCE_LATITUDE = 46.227638
@@ -226,7 +223,7 @@ function transformLbaJobs({ jobs, applicationCountByJob, isMinimalData }: { jobs
 /**
  * @description Retourne une offre LBA identifiée par son id
  */
-export const getLbaJobById = async ({ id, caller }: { id: ObjectIdType; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
+export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 
@@ -456,13 +453,14 @@ function sortLbaJobs(jobs: { results: ILbaItemLbaJob[] }) {
  */
 export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
   try {
-    await db.collection("recruiters").updateOne(
+    await getDbCollection("recruiters").updateOne(
       { "jobs._id": jobId },
       {
         $inc: {
-          "jobs.$.stats_detail_view": 1,
+          "jobs.$[elem].stats_detail_view": 1,
         },
-      }
+      },
+      { arrayFilters: [{ "elem._id": jobId }] }
     )
   } catch (err) {
     sentryCaptureException(err)
@@ -475,7 +473,7 @@ export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
 export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
   const ids = jobIds.map((id) => new ObjectId(id))
   try {
-    await db.collection("recruiters").updateMany(
+    await getDbCollection("recruiters").updateMany(
       { "jobs._id": { $in: ids } },
       {
         $inc: {

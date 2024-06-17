@@ -1,10 +1,9 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils"
-
-import { ObjectId } from "@/common/mongodb"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 

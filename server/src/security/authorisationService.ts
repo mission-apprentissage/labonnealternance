@@ -1,5 +1,6 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
+import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
 import { ComputedUserAccess, IApplication, IJob, IRecruiter } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
@@ -10,7 +11,6 @@ import { AccessPermission, AccessResourcePath } from "shared/security/permission
 import { assertUnreachable, parseEnum } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"

@@ -9,7 +9,6 @@ import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent }
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { ObjectIdType } from "@/common/mongodb"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
@@ -68,7 +67,7 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
   }
 }
 
-export const getUserRecruteurById = (id: string | ObjectIdType) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
+export const getUserRecruteurById = (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
 
 export const userAndRoleAndOrganizationToUserRecruteur = (
   user: IUserWithAccount,

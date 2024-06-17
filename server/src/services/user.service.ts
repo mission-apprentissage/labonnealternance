@@ -1,10 +1,10 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { IUser } from "shared"
 import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getUserRecruteursForManagement } from "./userRecruteur.service"

@@ -5,9 +5,10 @@ import { IDiplomesMetiers, IDomainesMetiers } from "shared"
 import { removeAccents, removeRegexChars } from "shared/utils"
 
 import { logger } from "@/common/logger"
-import { db } from "@/common/mongodb"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
+
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
@@ -23,7 +24,7 @@ export const initializeCacheMetiers = async () => {
   if (!cacheMetierLoading) {
     cacheMetierLoading = true
     logger.info("initializeCacheMetiers on first use")
-    globalCacheMetiers = await db.collection("domainesmetiers").find({}).toArray()
+    globalCacheMetiers = await getDbCollection("domainesmetiers").find({}).toArray()
     cacheMetierLoading = false
     const roughObjSize = JSON.stringify(globalCacheMetiers).length
     if (config.env === "production") {
@@ -41,7 +42,7 @@ export const initializeCacheDiplomas = async () => {
   if (!cacheDiplomaLoading) {
     cacheDiplomaLoading = true
     logger.info("initializeCacheDiplomas on first use")
-    globalCacheDiplomas = await db.collection("diplomesmetiers").find({}).toArray()
+    globalCacheDiplomas = await getDbCollection("diplomesmetiers").find({}).toArray()
     cacheDiplomaLoading = false
     const roughObjSize = JSON.stringify(globalCacheDiplomas).length
     if (config.env === "production") {

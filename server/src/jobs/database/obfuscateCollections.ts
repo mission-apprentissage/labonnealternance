@@ -1,26 +1,26 @@
 import { randomUUID } from "crypto"
 
 import { getLastStatusEvent, IEmailBlacklist, IUser, IUserRecruteur } from "shared"
-import { AUTHTYPE, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { CollectionName } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
-import { db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
 
-async function reduceModel(model: string, limit = 20000) {
+async function reduceModel(model: CollectionName, limit = 20000) {
   logger.info(`reducing collection ${model} to ${limit} latest documents`)
   try {
     const aggregationPipeline = [{ $match: {} }, { $sort: { created_at: -1 } }, { $skip: limit }, { $limit: 1 }, { $project: { _id: 0, minDate: "$created_at" } }]
 
-    const result = await db.collection(model).aggregate(aggregationPipeline)
+    const result = await getDbCollection(model).aggregate(aggregationPipeline).toArray()
 
     if (result.length) {
-      await db.collection(model).deleteMany({ created_at: { $lt: result[0].minDate } })
+      await getDbCollection(model).deleteMany({ created_at: { $lt: result[0].minDate } })
     }
   } catch (err) {
     logger.error("Error reducing collection", err)
@@ -48,11 +48,11 @@ const obfuscateApplications = async () => {
 
 const obfuscateEmailBlackList = async () => {
   logger.info(`obfuscating email blacklist`)
-  const emails: AsyncIterable<IEmailBlacklist> = await db.collection("emailblacklists").find({})
+  const emails: AsyncIterable<IEmailBlacklist> = await getDbCollection("emailblacklists").find({})
   for await (const ebl of emails) {
     const email = getFakeEmail()
     const replacement = { $set: { email } }
-    await db.collection("emailblacklists").findOneAndUpdate({ _id: ebl._id }, replacement)
+    await getDbCollection("emailblacklists").findOneAndUpdate({ _id: ebl._id }, replacement)
   }
   logger.info(`obfuscating email blacklist done`)
 }
@@ -137,7 +137,7 @@ const keepSpecificUser = async (email: string, type: AccessEntityType) => {
     },
   }
   if (role) {
-    await db.collection("userswithaccounts").findOneAndUpdate({ _id: role.user_id }, replacement)
+    await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: role.user_id }, replacement)
 
     if (getLastStatusEvent(role.status)?.status !== AccessStatus.GRANTED) {
       await getDbCollection("rolemanagements").findOneAndUpdate(
@@ -162,37 +162,10 @@ const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
 const obfuscateRecruiter = async () => {
   logger.info(`obfuscating recruiters`)
 
-  const users: AsyncIterable<IUserRecruteur> = db.collection("userrecruteurs").find({})
-  for await (const user of users) {
-    const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
-
-    switch (user.type) {
-      case AUTHTYPE.ENTREPRISE: {
-        await Promise.all([
-          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
-          db.collection("recruiters").findOneAndUpdate({ establishment_id: user.establishment_id }, replacement),
-        ])
-        break
-      }
-      case AUTHTYPE.CFA: {
-        await Promise.all([
-          db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement),
-          db.collection("recruiters").updateMany({ cfa_delegated_siret: user.establishment_siret }, replacement),
-        ])
-        break
-      }
-
-      default: {
-        await db.collection("userrecruteurs").findOneAndUpdate({ _id: user._id }, replacement)
-        break
-      }
-    }
-  }
-
-  const remainingUsers: AsyncIterable<IUserRecruteur> = db.collection("recruiters").find({ first_name: { $ne: "prenom" } })
+  const remainingUsers: AsyncIterable<IUserRecruteur> = getDbCollection("recruiters").find({ first_name: { $ne: "prenom" } })
   for await (const user of remainingUsers) {
     const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
-    db.collection("recruiters").findOneAndUpdate({ _id: user._id }, replacement)
+    getDbCollection("recruiters").findOneAndUpdate({ _id: user._id }, replacement)
   }
 
   const recruitersWithDelegations = getDbCollection("recruiters").find({ "jobs.delegations.0": { $exists: true } })
@@ -219,11 +192,11 @@ const obfuscateRecruiter = async () => {
 
 const obfuscateUser = async () => {
   logger.info(`obfuscating users`)
-  const users: AsyncIterable<IUser> = await db.collection("users").find({})
+  const users: AsyncIterable<IUser> = await getDbCollection("users").find({})
   for await (const user of users) {
     const email = getFakeEmail()
     const replacement = { $set: { email, phone: "0601010106", lastname: "nom_famille", firstname: "prenom" } }
-    await db.collection("users").findOneAndUpdate({ _id: user._id }, replacement)
+    await getDbCollection("users").findOneAndUpdate({ _id: user._id }, replacement)
   }
 
   logger.info(`obfuscating users done`)
@@ -231,13 +204,13 @@ const obfuscateUser = async () => {
 
 const obfuscateUsersWithAccounts = async () => {
   logger.info(`obfuscating userswithaccounts`)
-  const users: AsyncIterable<IUser> = await db.collection("userswithaccounts").find({})
+  const users: AsyncIterable<IUser> = await getDbCollection("userswithaccounts").find({})
   for await (const user of users) {
     const email = getFakeEmail()
     const replacement = {
       $set: { email, phone: "0601010106", last_name: "nom_famille", first_name: "prenom" },
     }
-    await db.collection("userswithaccounts").findOneAndUpdate({ _id: user._id }, replacement)
+    await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: user._id }, replacement)
   }
 
   logger.info(`obfuscating userswithaccounts done`)
@@ -262,7 +235,7 @@ export async function obfuscateCollections(): Promise<void> {
   }
   await reduceModel("apicalls", 20000)
   await reduceModel("applications", 50000)
-  await reduceModel("anonymizedapplications", 5000)
+  // await reduceModel("anonymizedapplications", 5000) // TODO
   await reduceModel("appointments", 10000)
   await reduceModel("emailblacklists", 100)
   await obfuscateApplications()

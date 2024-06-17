@@ -1,6 +1,5 @@
 import { IFormationCatalogue } from "shared"
 
-import { db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
@@ -21,12 +20,10 @@ export const updateParcoursupAndAffelnetInfoOnFormationCatalogue = async () => {
 
     if (found) {
       const { parcoursup_perimetre_prise_rdv, affelnet_perimetre_prise_rdv, parcoursup_id } = found
-      await db
-        .collection("formationcatalogues")
-        .updateOne(
-          { cle_ministere_educatif: formation.cle_ministere_educatif },
-          { $set: { affelnet_visible: affelnet_perimetre_prise_rdv, parcoursup_visible: parcoursup_perimetre_prise_rdv, parcoursup_id } }
-        )
+      await getDbCollection("formationcatalogues").updateOne(
+        { cle_ministere_educatif: formation.cle_ministere_educatif },
+        { $set: { affelnet_visible: affelnet_perimetre_prise_rdv, parcoursup_visible: parcoursup_perimetre_prise_rdv, parcoursup_id } }
+      )
     }
   })
   logger.info("--- update formation catalogue data --- end")

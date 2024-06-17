@@ -5,7 +5,6 @@ import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType } from "shared/models/roleManagement.model"
 
 import { logger } from "@/common/logger"
-import { db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getDiffusionStatus } from "@/services/etablissement.service"
 
@@ -14,7 +13,7 @@ const FAKE_GEOLOCATION = "0,0"
 
 const fixLbaCompanies = async () => {
   logger.info(`Fixing diffusible lba companies`)
-  const lbaCompanies: AsyncIterable<ILbaCompany> = await db.collection("bonnesboites").find({})
+  const lbaCompanies: AsyncIterable<ILbaCompany> = await getDbCollection("bonnesboites").find({})
 
   let count = 0
   let deletedCount = 0
@@ -28,7 +27,7 @@ const fixLbaCompanies = async () => {
       const isDiffusible = await getDiffusionStatus(lbaCompany.siret)
 
       if (isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
-        await db.collection("bonnesboites").deleteOne({ siret: lbaCompany.siret })
+        await getDbCollection("bonnesboites").deleteOne({ siret: lbaCompany.siret })
         deletedCount++
       }
     } catch (err) {
@@ -67,7 +66,7 @@ const deactivateEntreprise = async (entreprise: IEntreprise) => {
 
 const fixRecruiters = async () => {
   logger.info(`Fixing diffusible recruiters and offers`)
-  const recruiters: AsyncIterable<IRecruiter> = await db.collection("recruiters").find({})
+  const recruiters: AsyncIterable<IRecruiter> = await getDbCollection("recruiters").find({})
 
   let count = 0
   let deactivatedCount = 0
@@ -92,7 +91,7 @@ const fixRecruiters = async () => {
     }
   }
 
-  const entreprises: AsyncIterable<IEntreprise> = await db.collection("entreprises").find({})
+  const entreprises: AsyncIterable<IEntreprise> = await getDbCollection("entreprises").find({})
 
   count = 0
   deactivatedCount = 0
@@ -131,57 +130,4 @@ export async function fixDiffusibleCompanies(payload: { collection_list?: string
   if (list.includes("recruiters")) {
     await fixRecruiters()
   }
-}
-
-export async function checkDiffusibleCompanies(): Promise<void> {
-  logger.info(`Checking diffusible sirets`)
-  const sirets: AsyncIterable<{ _id: string }> = await db.collection("tmp_siret").find({})
-
-  let count = 0
-  let nonDiffusibleCount = 0
-  let partiellementDiffusibleCount = 0
-  let unavailableCount = 0
-  let notFoundCount = 0
-  let errorCount = 0
-
-  for await (const { _id } of sirets) {
-    if (count % 100 === 0) {
-      logger.info(
-        `${count} sirets checked. ${partiellementDiffusibleCount} partDiff. ${unavailableCount} indisp. ${notFoundCount} non trouvé. ${nonDiffusibleCount} nonDiff. ${errorCount} errors`
-      )
-    }
-    count++
-    try {
-      const isDiffusible = await getDiffusionStatus(_id)
-
-      switch (isDiffusible) {
-        case EDiffusibleStatus.NON_DIFFUSIBLE: {
-          nonDiffusibleCount++
-          break
-        }
-        case EDiffusibleStatus.PARTIELLEMENT_DIFFUSIBLE: {
-          partiellementDiffusibleCount++
-          break
-        }
-        case EDiffusibleStatus.UNAVAILABLE: {
-          unavailableCount++
-          break
-        }
-        case EDiffusibleStatus.NOT_FOUND: {
-          notFoundCount++
-          break
-        }
-        default:
-      }
-    } catch (err) {
-      errorCount++
-      console.log(err)
-      break
-    }
-  }
-  logger.info(
-    `FIN : ${count} companies checked. ${partiellementDiffusibleCount} partDiff. ${unavailableCount} indisp. ${notFoundCount} non trouvé. ${nonDiffusibleCount} nonDiff. ${errorCount} errors`
-  )
-
-  logger.info(`Checking sirets done`)
 }

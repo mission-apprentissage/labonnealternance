@@ -13,7 +13,6 @@ import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
-import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
 import { validateModels } from "./database/schemaValidation"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
@@ -30,9 +29,7 @@ import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpiratio
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
 import { exportToFranceTravail } from "./lba_recruteur/formulaire/misc/exportToFranceTravail"
-import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
-import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire/misc/sendDelegationEmailWithSecuredToken"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
@@ -233,8 +230,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return runGarbageCollector()
       case "anonymize:appointments":
         return anonymizeOldAppointments()
-      case "recruiters:delegations": // Temporaire, doit tourner une fois en production
-        return resendDelegationEmailWithAccessToken()
       case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
         return fixDuplicateUsers()
       case "control:applications":
@@ -249,10 +244,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateAddressDetailOnRecruitersCollection()
       case "import:referentielrome":
         return importReferentielRome()
-      case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
-        return removeVersionKeyFromAllCollections()
-      case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
-        return removeIsDelegatedFromJobs()
       case "user:create": {
         const { first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope } = job.payload
         return createUserFromCLI(
