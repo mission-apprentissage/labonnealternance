@@ -9,7 +9,6 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../../../common/logger"
-import { Recruiter } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"
@@ -18,10 +17,12 @@ import dayjs from "../../../services/dayjs.service"
 import mailer, { sanitizeForEmail } from "../../../services/mailer.service"
 
 export const relanceFormulaire = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
-  const recruiters = await Recruiter.find({
-    $nor: [{ jobs: { $exists: false } }, { jobs: { $size: 0 } }],
-    "jobs.job_status": JOB_STATUS.ACTIVE,
-  }).lean()
+  const recruiters = await getDbCollection("recruiters")
+    .find({
+      $nor: [{ jobs: { $exists: false } }, { jobs: { $size: 0 } }],
+      "jobs.job_status": JOB_STATUS.ACTIVE,
+    })
+    .toArray()
 
   const jobsWithRecruteurs = recruiters.flatMap((recruiter) => {
     return recruiter.jobs.flatMap((job) => {

@@ -3,16 +3,15 @@ import path from "path"
 
 import { ObjectId } from "mongodb"
 import { compose, oleoduc, writeData } from "oleoduc"
-import { ILbaCompany, ZGeoLocation } from "shared/models"
+import { IGeoLocation, ILbaCompany, ZGeoLocation } from "shared/models"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { EmailBlacklist, GeoLocation, Opco } from "../../common/model/index"
 import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
 import geoData from "../../common/utils/geoData"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { streamJsonArray } from "../../common/utils/streamUtils"
 import config from "../../config"
@@ -159,14 +158,14 @@ export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | n
 }
 
 const getNotBlacklistedEmail = async (email) => {
-  return (await EmailBlacklist.findOne({ email })) ? null : email
+  return (await getDbCollection("emailblacklists").findOne({ email })) ? null : email
 }
 
 const getGeoLocationForCompany = async (company) => {
   const geoKey = `${company.street_number} ${company.street_name} ${company.zip_code}`.trim().toUpperCase()
 
   // a t on déjà une geoloc pour cette adresse
-  let result = await GeoLocation.findOne({ address: geoKey })
+  let result = await getDbCollection("geolocations").findOne({ address: geoKey })
 
   // si pas de geoloc on en recherche une avec la ban
   if (!result) {
@@ -176,15 +175,16 @@ const getGeoLocationForCompany = async (company) => {
     if (!result) {
       return null
     } else {
-      const geoLocation = new GeoLocation({
+      const geoLocation: IGeoLocation = {
         // @ts-expect-error: TODO
-        address: geoKey,
+        _id: new ObjectId(),
         ...result,
-      })
+        address: geoKey,
+      }
       try {
         // on enregistre la geoloc trouvée
         if (ZGeoLocation.safeParse(geoLocation).success) {
-          await geoLocation.save()
+          await getDbCollection("geolocations").insertOne(geoLocation)
         }
       } catch (err) {
         //ignore duplicate error
@@ -198,7 +198,7 @@ const getGeoLocationForCompany = async (company) => {
 
 const getOpcoForCompany = async (lbaCompany) => {
   const siren = lbaCompany.siret.substring(0, 9)
-  return await Opco.findOne({ siren })
+  return await getDbCollection("opcos").findOne({ siren })
 }
 
 let nafScoreMap = {}

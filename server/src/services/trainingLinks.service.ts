@@ -4,7 +4,8 @@ import { URL } from "url"
 import { getDistance } from "geolib"
 import { IFormationCatalogue } from "shared/models"
 
-import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
@@ -54,7 +55,7 @@ const getFormations = (
     rome_codes: 1,
     _id: 0,
   }
-) => FormationCatalogue.find(query, filter)
+) => getDbCollection("formationcatalogues").find(query, filter).toArray()
 
 /**
  * @description get formation according to the available parameters passed to the API endpoint
@@ -105,7 +106,7 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
     return ""
   }
 
-  const elligibleFormation = await EligibleTrainingsForAppointment.findOne(
+  const elligibleFormation = await getDbCollection("eligible_trainings_for_appointments").findOne(
     {
       cle_ministere_educatif: wish.cle_ministere_educatif,
       lieu_formation_email: {
@@ -114,7 +115,7 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
         $not: /^$/,
       },
     },
-    { _id: 1 }
+    { projection: { _id: 1 } }
   )
 
   if (elligibleFormation) {
@@ -129,25 +130,30 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
 
 const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
   let romes = [] as string[]
-  const tmpFormations = await FormationCatalogue.find(
-    {
-      $or: [
-        {
-          rncp_code: rncp,
+  const tmpFormations = await getDbCollection("formationcatalogues")
+    .find(
+      {
+        $or: [
+          {
+            rncp_code: rncp,
+          },
+          {
+            cfd: cfd ? cfd : undefined,
+          },
+          {
+            "bcn_mefs_10.mef10": mef,
+          },
+        ],
+      },
+      {
+        projection: {
+          rome_codes: 1,
+          _id: 0,
         },
-        {
-          cfd: cfd ? cfd : undefined,
-        },
-        {
-          "bcn_mefs_10.mef10": mef,
-        },
-      ],
-    },
-    {
-      rome_codes: 1,
-      _id: 0,
-    }
-  ).limit(5)
+      }
+    )
+    .limit(5)
+    .toArray()
   if (tmpFormations.length) {
     romes = [...new Set(tmpFormations.flatMap(({ rome_codes }) => rome_codes))] as string[]
   }

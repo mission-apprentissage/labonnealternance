@@ -5,7 +5,6 @@ import { referrers } from "shared/constants/referers"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { Etablissement, FormationCatalogue } from "../../common/model/index"
 import { db } from "../../common/mongodb"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { isValidEmail } from "../../common/utils/isValidEmail"
@@ -15,7 +14,7 @@ import { getMostFrequentEmailByGestionnaireSiret } from "../../services/formatio
 import { removeDuplicateEtablissements } from "./removeDuplicateEtablissements"
 
 const prepareETFA = async () => {
-  await FormationCatalogue.aggregate([
+  await getDbCollection("formationcatalogues").aggregate([
     {
       $project: {
         training_id_catalogue: "$_id",
@@ -108,12 +107,15 @@ const addReferrersToETFA = async () => {
     writeData(
       async (formation) => {
         const [etablissements, existInReferentielOnisep] = await Promise.all([
-          Etablissement.find({
-            gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            $and: [{ optout_activation_date: { $exists: true, $ne: null } }, { premium_activation_date: { $exists: true, $ne: null } }],
-          })
-            .select({ optout_activation_date: 1, premium_activation_date: 1 })
-            .lean(),
+          getDbCollection("etablissements")
+            .find(
+              {
+                gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+                $and: [{ optout_activation_date: { $exists: true, $ne: null } }, { premium_activation_date: { $exists: true, $ne: null } }],
+              },
+              { projection: { optout_activation_date: 1, premium_activation_date: 1 } }
+            )
+            .toArray(),
           getDbCollection("referentieloniseps").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }),
         ])
         const hasOptOutActivation = etablissements.some((etab) => etab.optout_activation_date !== null && etab.optout_activation_date !== undefined)
@@ -196,11 +198,11 @@ const createMissingEtablissement = async () => {
 }
 
 const updateGestionnaireEmailEtablissement = async () => {
-  const etablissements: IEtablissement[] = await Etablissement.find({ gestionnaire_email: null }).lean()
+  const etablissements: IEtablissement[] = await getDbCollection("etablissements").find({ gestionnaire_email: null }).toArray()
   await asyncForEach(etablissements, async (etab) => {
     if (!etab.gestionnaire_siret) return
     const email = await getMostFrequentEmailByGestionnaireSiret(etab.gestionnaire_siret, "etablissement_gestionnaire_courriel")
-    await Etablissement.findByIdAndUpdate(etab._id, { $set: { gestionnaire_email: email, last_catalogue_sync_date: new Date() } })
+    await getDbCollection("etablissements").updateOne({ _id: etab._id }, { $set: { gestionnaire_email: email, last_catalogue_sync_date: new Date() } })
   })
 }
 

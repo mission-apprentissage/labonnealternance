@@ -9,7 +9,6 @@ import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models
 import { ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
-import { EmailBlacklist, Recruiter } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -194,9 +193,8 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
     establishment_creation_date: new Date(),
     ...data,
   }
-  const u = new Recruiter(recruiter)
-  await u.save()
-  return u
+  await getDbCollection("recruiters").insertOne(recruiter)
+  return recruiter
 }
 
 export async function createApplicationTest(data: Partial<IApplication>) {
@@ -209,11 +207,11 @@ export async function createApplicationTest(data: Partial<IApplication>) {
 }
 
 export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
-  const u = new EmailBlacklist({
+  const u = {
     ...getFixture().fromSchema(ZEmailBlacklist),
     ...data,
-  })
-  await u.save()
+  }
+  await getDbCollection("emailblacklists").insertOne(u)
   return u
 }
 

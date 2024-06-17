@@ -1,7 +1,8 @@
 import { JOB_STATUS } from "shared/models"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../../common/logger"
-import { Recruiter } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import dayjs from "../../../services/dayjs.service"
@@ -9,10 +10,12 @@ import dayjs from "../../../services/dayjs.service"
 export const annuleFormulaire = async () => {
   const today = dayjs().startOf("day").utc(true)
 
-  const formulaires = await Recruiter.find({
-    "jobs.job_status": JOB_STATUS.ACTIVE,
-    "jobs.job_expiration_date": { $lte: today },
-  }).lean()
+  const formulaires = await getDbCollection("recruiters")
+    .find({
+      "jobs.job_status": JOB_STATUS.ACTIVE,
+      "jobs.job_expiration_date": { $lte: today },
+    })
+    .toArray()
 
   // reduce formulaire with eligible offers
   const offersToCancel = formulaires.reduce((acc: any[], formulaire) => {
@@ -35,7 +38,10 @@ export const annuleFormulaire = async () => {
   }
 
   await asyncForEach(offersToCancel, async (job) => {
-    await Recruiter.findOneAndUpdate({ "jobs._id": job._id }, { $set: { "jobs.$.job_status": JOB_STATUS.ANNULEE } })
+    await getDbCollection("recruiters").findOneAndUpdate(
+      { "jobs._id": job._id },
+      { $set: { "jobs.$.job_status": JOB_STATUS.ANNULEE, updatedAt: new Date(), "jobs.$.job_update_date": new Date() } }
+    )
   })
 
   logger.info(`${offersToCancel.length} offres expirés`)

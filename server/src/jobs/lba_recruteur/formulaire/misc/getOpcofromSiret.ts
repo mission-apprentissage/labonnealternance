@@ -1,14 +1,17 @@
 import axios from "axios"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../../../common/logger"
-import { Recruiter } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { runScript } from "../../../scriptWrapper"
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 runScript(async () => {
-  const form = await Recruiter.find({ $or: [{ opco: { $exists: false } }, { opco: null }] })
+  const form = await getDbCollection("recruiters")
+    .find({ $or: [{ opco: { $exists: false } }, { opco: null }] })
+    .toArray()
   logger.info(`${form.length} entreprise à rechercher`)
   let count = 0
 
@@ -29,7 +32,7 @@ runScript(async () => {
     f.opco = data.opcoName
     f.idcc = data.idcc
 
-    await f.save()
+    await getDbCollection("recruiters").updateOne({ _id: f._id }, { $set: { ...f } })
     count++
     await delay(2000)
   })

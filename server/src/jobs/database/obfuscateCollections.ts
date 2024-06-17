@@ -6,7 +6,6 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
-import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, Etablissement, FormationCatalogue, Optout, Recruiter } from "@/common/model/index"
 import { db } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
@@ -85,33 +84,33 @@ const obfuscateLbaCompanies = async () => {
 
 const obfuscateElligibleTrainingsForAppointment = async () => {
   logger.info(`obfuscating elligible trainings for appointments`)
-  await EligibleTrainingsForAppointment.updateMany(
+  await getDbCollection("eligible_trainings_for_appointments").updateMany(
     {},
     {
-      lieu_formation_email: fakeEmail,
+      $set: { lieu_formation_email: fakeEmail },
     }
   )
-  await eligibleTrainingsForAppointmentHistory.updateMany(
+  await getDbCollection("eligible_trainings_for_appointments_history").updateMany(
     {},
     {
-      lieu_formation_email: fakeEmail,
+      $set: { lieu_formation_email: fakeEmail },
     }
   )
 }
 
 const obfuscateEtablissements = async () => {
   logger.info(`obfuscating etablissements`)
-  await Etablissement.updateMany(
+  await getDbCollection("etablissements").updateMany(
     {},
     {
-      gestionnaire_email: fakeEmail,
+      $set: { gestionnaire_email: fakeEmail },
     }
   )
 }
 
 const obfuscateFormations = async () => {
   logger.info(`obfuscating formations`)
-  await FormationCatalogue.updateMany(
+  await getDbCollection("formationcatalogues").updateMany(
     {},
     {
       email: fakeEmail,
@@ -196,7 +195,8 @@ const obfuscateRecruiter = async () => {
     db.collection("recruiters").findOneAndUpdate({ _id: user._id }, replacement)
   }
 
-  const recruitersWithDelegations = Recruiter.find({ "jobs.delegations.0": { $exists: true } })
+  const recruitersWithDelegations = getDbCollection("recruiters").find({ "jobs.delegations.0": { $exists: true } })
+
   for await (const recruiter of recruitersWithDelegations) {
     let shouldSave = false
     if (recruiter.jobs) {
@@ -210,7 +210,7 @@ const obfuscateRecruiter = async () => {
       })
     }
     if (shouldSave) {
-      await Recruiter.updateOne({ _id: recruiter._id }, { $set: { ...recruiter } })
+      await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } })
     }
   }
 
@@ -275,5 +275,5 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateRecruiter()
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
-  await Optout.deleteMany({})
+  await getDbCollection("optouts").deleteMany({})
 }

@@ -1,8 +1,9 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { zRoutes } from "shared/index"
 
-import { EligibleTrainingsForAppointment } from "../../../common/model/index"
-import { getDbCollection } from "../../../common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
 
@@ -22,7 +23,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { siret } = req.params
 
-      const parameters = await EligibleTrainingsForAppointment.find({ etablissement_formateur_siret: siret }).lean()
+      const parameters = await getDbCollection("eligible_trainings_for_appointments").find({ etablissement_formateur_siret: siret }).toArray()
 
       if (parameters == undefined || parameters.length == 0) {
         throw Boom.badRequest()
@@ -42,7 +43,6 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"])],
     },
     async ({ body, params }, res) => {
-      console.log(body)
       if ("is_lieu_formation_email_customized" in body) {
         if (body.is_lieu_formation_email_customized) {
           if ("cle_ministere_educatif" in body && "lieu_formation_email" in body && body.lieu_formation_email && body.cle_ministere_educatif) {
@@ -54,7 +54,7 @@ export default (server: Server) => {
           }
         }
       }
-      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id.toString(), body).lean()
+      const result = await eligibleTrainingsForAppointmentService.updateParameter(new ObjectId(params.id), body)
 
       res.send(result)
     }

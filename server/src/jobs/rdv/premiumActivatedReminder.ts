@@ -1,7 +1,7 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { Etablissement } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
@@ -16,15 +16,17 @@ export const premiumActivatedReminder = async () => {
   logger.info("Cron #premiumActivatedReminder started.")
 
   const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
-    Etablissement.find({
-      gestionnaire_email: {
-        $ne: null,
-      },
-      premium_activation_date: {
-        $ne: null,
-      },
-    }).lean(),
-    eligibleTrainingsForAppointmentService.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
+    getDbCollection("etablissements")
+      .find({
+        gestionnaire_email: {
+          $ne: null,
+        },
+        premium_activation_date: {
+          $ne: null,
+        },
+      })
+      .toArray(),
+    eligibleTrainingsForAppointmentService.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }),
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
@@ -84,10 +86,12 @@ export const premiumActivatedReminder = async () => {
           },
         })
 
-        await Etablissement.updateOne(
+        await getDbCollection("etablissements").updateOne(
           { formateur_siret: etablissement.formateur_siret },
           {
-            premium_invitation_date: dayjs().toDate(),
+            $set: {
+              premium_invitation_date: dayjs().toDate(),
+            },
           }
         )
       } catch (error) {

@@ -30,7 +30,6 @@ import { getHttpClient } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { Etablissement } from "../common/model/index"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -124,7 +123,7 @@ const getEffectif = (code) => {
  * @param {Object} conditions
  * @returns {Promise<Etablissement>}
  */
-const findOne = async (conditions): Promise<IEtablissement | null> => Etablissement.findOne(conditions).lean()
+export const findOne = async (conditions): Promise<IEtablissement | null> => getDbCollection("etablissements").findOne(conditions)
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET

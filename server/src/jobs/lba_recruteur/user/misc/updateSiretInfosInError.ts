@@ -9,7 +9,6 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../../../common/logger"
-import { Entreprise, Recruiter } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
@@ -19,9 +18,11 @@ import { activateEntrepriseRecruiterForTheFirstTime, archiveFormulaire, sendMail
 import { UserAndOrganization, deactivateEntreprise, setEntrepriseInError } from "../../../../services/userRecruteur.service"
 
 const updateEntreprisesInfosInError = async () => {
-  const entreprises = await Entreprise.find({
-    $expr: { $in: [{ $arrayElemAt: ["$status.status", -1] }, [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]] },
-  }).lean()
+  const entreprises = await getDbCollection("entreprises")
+    .find({
+      $expr: { $in: [{ $arrayElemAt: ["$status.status", -1] }, [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]] },
+    })
+    .toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des entreprises en erreur: ${entreprises.length} entreprises à mettre à jour...`)
   await asyncForEach(entreprises, async (entreprise) => {
@@ -37,7 +38,11 @@ const updateEntreprisesInfosInError = async () => {
         stats.deactivated++
       } else {
         const entrepriseData: Partial<EntrepriseData> = siretResponse
-        const updatedEntreprise = await Entreprise.findOneAndUpdate({ _id }, entrepriseData, { new: true }).lean()
+        const updatedEntreprise = await getDbCollection("entreprises").findOneAndUpdate(
+          { _id },
+          { $set: { ...entrepriseData, updatedAt: new Date() } },
+          { returnDocument: "after" }
+        )
         if (!updatedEntreprise) {
           throw Boom.internal(`could not find and update entreprise with id=${_id}`)
         }
@@ -48,10 +53,10 @@ const updateEntreprisesInfosInError = async () => {
           validation_type: VALIDATION_UTILISATEUR.AUTO,
           granted_by: "",
         }
-        await Entreprise.updateOne({ _id }, { $push: { status: entrepriseEvent } })
-        await Recruiter.updateMany({ establishment_siret: siret }, entrepriseData)
+        await getDbCollection("entreprises").updateOne({ _id }, { $push: { status: entrepriseEvent }, $set: { updatedAt: new Date() } })
+        await getDbCollection("recruiters").updateMany({ establishment_siret: siret }, { $set: { ...entrepriseData, updatedAt: new Date() } })
         if (getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.ERROR) {
-          const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
+          const recruiters = await getDbCollection("recruiters").find({ establishment_siret: siret }).toArray()
           const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: updatedEntreprise._id.toString() }).toArray()
           const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
           const users = await getDbCollection("userswithaccounts")
@@ -94,9 +99,11 @@ const updateEntreprisesInfosInError = async () => {
   return stats
 }
 const updateRecruteursSiretInfosInError = async () => {
-  const recruteurs = await Recruiter.find({
-    status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
-  }).lean()
+  const recruteurs = await getDbCollection("recruiters")
+    .find({
+      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+    })
+    .toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(recruteurs, async (recruteur) => {

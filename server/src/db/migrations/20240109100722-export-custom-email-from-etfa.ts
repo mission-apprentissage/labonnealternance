@@ -1,17 +1,22 @@
 import { ObjectId } from "mongodb"
-import { ICustomEmailETFA } from "shared"
+import { ICustomEmailETFA } from "shared/models"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { asyncForEach } from "../../common/utils/asyncUtils"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 export const up = async () => {
   const emailCustom = await getDbCollection("eligible_trainings_for_appointments")
-    .find({ is_lieu_formation_email_customized: true })
-    .project({
-      lieu_formation_email: 1,
-      cle_ministere_educatif: 1,
-      _id: 0,
-    })
+    .find(
+      { is_lieu_formation_email_customized: true },
+      {
+        projection: {
+          lieu_formation_email: 1,
+          cle_ministere_educatif: 1,
+          _id: 0,
+        },
+      }
+    )
     .toArray()
 
   await asyncForEach(emailCustom, async (custom) => {

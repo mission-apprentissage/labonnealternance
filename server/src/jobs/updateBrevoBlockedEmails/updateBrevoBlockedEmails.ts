@@ -1,9 +1,9 @@
 import SibApiV3Sdk from "sib-api-v3-sdk"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { processBlacklistedEmail } from "@/services/emails.service"
 
 import { logger } from "../../common/logger"
-import { EmailBlacklist } from "../../common/model"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
@@ -11,7 +11,7 @@ import config from "../../config"
 const saveBlacklistEmails = async (contacts) => {
   for (let i = 0; i < contacts.length; ++i) {
     const email = contacts[i].email.toLowerCase()
-    const blackListedEmail = await EmailBlacklist.findOne({ email })
+    const blackListedEmail = await getDbCollection("emailblacklists").findOne({ email })
     if (!blackListedEmail) {
       await processBlacklistedEmail(email, "brevo_spam")
     }

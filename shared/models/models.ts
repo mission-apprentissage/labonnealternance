@@ -10,6 +10,7 @@ import customEmailETFAModel from "./customEmailETFA.model"
 import diplomesMetiersModel from "./diplomesMetiers.model"
 import domainesMetiersModel from "./domainesMetiers.model"
 import elligibleTrainingModel from "./elligibleTraining.model"
+import elligibleTrainingHistoryModel from "./elligibleTrainingHistory.model"
 import emailBlacklistModel from "./emailBlacklist.model"
 import entrepriseModel from "./entreprise.model"
 import etablissementModel from "./etablissement.model"
@@ -17,6 +18,7 @@ import formationModel from "./formation.model"
 import geolocationsModel from "./geolocations.model"
 import lbaCompanyModel from "./lbaCompany.model"
 import lbaCompanyLegacyModel from "./lbaCompanyLegacy.model"
+import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
 import recruiterModel from "./recruiter.model"
 import referentielOnisepModel from "./referentielOnisep.model"
@@ -40,6 +42,7 @@ const modelDescriptorMap = {
   [diplomesMetiersModel.collectionName]: diplomesMetiersModel,
   [domainesMetiersModel.collectionName]: domainesMetiersModel,
   [elligibleTrainingModel.collectionName]: elligibleTrainingModel,
+  [elligibleTrainingHistoryModel.collectionName]: elligibleTrainingHistoryModel,
   [emailBlacklistModel.collectionName]: emailBlacklistModel,
   [entrepriseModel.collectionName]: entrepriseModel,
   [etablissementModel.collectionName]: etablissementModel,
@@ -47,6 +50,7 @@ const modelDescriptorMap = {
   [geolocationsModel.collectionName]: geolocationsModel,
   [lbaCompanyModel.collectionName]: lbaCompanyModel,
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
+  [opcoModel.collectionName]: opcoModel,
   [optoutModel.collectionName]: optoutModel,
   [recruiterModel.collectionName]: recruiterModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,

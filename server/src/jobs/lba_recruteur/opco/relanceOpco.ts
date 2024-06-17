@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import { isEnum } from "shared"
 import { OPCOS } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -5,7 +6,6 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { Entreprise } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import config from "../../../config"
 import mailer from "../../../services/mailer.service"
@@ -32,7 +32,9 @@ export const relanceOpco = async () => {
   // Cancel the job if there's no users awaiting validation
   if (!rolesAwaitingValidation.length) return
 
-  const entreprises = await Entreprise.find({ _id: { $in: rolesAwaitingValidation.map(({ authorized_id }) => authorized_id) } })
+  const entreprises = await getDbCollection("entreprises")
+    .find({ _id: { $in: rolesAwaitingValidation.map(({ authorized_id }) => new ObjectId(authorized_id.toString())) } })
+    .toArray()
   const opcoCounts = entreprises.reduce<Record<OPCOS, number>>(
     (acc, entreprise) => {
       const { opco } = entreprise

@@ -14,10 +14,10 @@ export const ZGeoLocation = z
   })
   .strict()
 
-export const ZGeoLocationNew = ZGeoLocation.omit({ _id: true }).strict()
+export type IGeoLocation = z.output<typeof ZGeoLocation>
 
 export default {
   zod: ZGeoLocation,
-  indexes: [],
+  indexes: [[{ address: 1 }, { unique: true }]],
   collectionName,
 } as const satisfies IModelDescriptor

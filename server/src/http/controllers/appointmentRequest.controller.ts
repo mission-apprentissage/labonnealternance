@@ -8,13 +8,13 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { EligibleTrainingsForAppointment, Etablissement, FormationCatalogue } from "../../common/model/index"
 import config from "../../config"
 import { createRdvaShortRecapToken } from "../../services/appLinks.service"
 import * as appointmentService from "../../services/appointment.service"
 import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
-import { findElligibleTrainingForAppointment, findOne, getParameterByCleMinistereEducatif } from "../../services/eligibleTrainingsForAppointment.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import { findElligibleTrainingForAppointment, getParameterByCleMinistereEducatif } from "../../services/eligibleTrainingsForAppointment.service"
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import * as users from "../../services/user.service"
 import { Server } from "../server"
@@ -48,7 +48,7 @@ export default (server: Server) => {
 
       const referrerObj = getReferrerByKeyName(appointmentOrigin)
 
-      const eligibleTrainingsForAppointment = await findOne({
+      const eligibleTrainingsForAppointment = await getDbCollection("eligible_trainings_for_appointments").findOne({
         cle_ministere_educatif: cleMinistereEducatif,
         referrers: { $in: [referrerObj.name] },
       })
@@ -96,7 +96,7 @@ export default (server: Server) => {
           appointment_origin: referrerObj.name,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
         }),
-        Etablissement.findOne({
+        getDbCollection("etablissements").findOne({
           formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
         }),
       ])
@@ -133,14 +133,12 @@ export default (server: Server) => {
       }
 
       const [formation, user] = await Promise.all([
-        EligibleTrainingsForAppointment.findOne(
+        eligibleTrainingsForAppointmentService.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
-            etablissement_formateur_raison_sociale: 1,
-            lieu_formation_email: 1,
-            _id: 0,
+            projection: { etablissement_formateur_raison_sociale: 1, lieu_formation_email: 1, _id: 0 },
           }
-        ).lean(),
+        ),
         getDbCollection("users").findOne(
           { _id: new ObjectId(appointment.applicant_id) },
           {
@@ -204,17 +202,19 @@ export default (server: Server) => {
       }
 
       const [formation, user] = await Promise.all([
-        EligibleTrainingsForAppointment.findOne(
+        eligibleTrainingsForAppointmentService.findOne(
           { cle_ministere_educatif: appointment.cle_ministere_educatif },
           {
-            training_intitule_long: 1,
-            etablissement_formateur_raison_sociale: 1,
-            lieu_formation_street: 1,
-            lieu_formation_zip_code: 1,
-            lieu_formation_email: 1,
-            lieu_formation_city: 1,
+            projection: {
+              training_intitule_long: 1,
+              etablissement_formateur_raison_sociale: 1,
+              lieu_formation_street: 1,
+              lieu_formation_zip_code: 1,
+              lieu_formation_email: 1,
+              lieu_formation_city: 1,
+            },
           }
-        ).lean(),
+        ),
         getDbCollection("users").findOne(
           { _id: new ObjectId(appointment.applicant_id) },
           {
@@ -270,7 +270,7 @@ export default (server: Server) => {
       if (!user) throw Boom.notFound()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
-        const formationCatalogue = cle_ministere_educatif ? await FormationCatalogue.findOne({ cle_ministere_educatif }) : undefined
+        const formationCatalogue = cle_ministere_educatif ? await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif }) : undefined
 
         await mailer.sendEmail({
           to: user.email,

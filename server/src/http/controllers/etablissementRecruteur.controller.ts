@@ -5,7 +5,7 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Recruiter } from "@/common/model"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
@@ -32,7 +32,6 @@ import {
 import { emailHasActiveRole, getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
 import { CFA, ENTREPRISE } from "../../services/constant.service"
@@ -143,7 +142,9 @@ export default (server: Server) => {
       if (!cfa_delegated_siret) {
         throw Boom.internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
       }
-      const entreprises = await Recruiter.find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret }).lean()
+      const entreprises = await getDbCollection("recruiters")
+        .find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret })
+        .toArray()
       return res.status(200).send(entreprises)
     }
   )

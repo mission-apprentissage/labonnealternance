@@ -10,7 +10,6 @@ import { AccessPermission, AccessResourcePath } from "shared/security/permission
 import { assertUnreachable, parseEnum } from "shared/utils"
 import { Primitive } from "type-fest"
 
-import { Entreprise, Recruiter } from "@/common/model"
 import { ObjectId } from "@/common/mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
@@ -58,7 +57,7 @@ const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<Recr
     }
     return { recruiter, type: CFA, cfa }
   } else {
-    const entreprise = await Entreprise.findOne({ siret: establishment_siret }).lean()
+    const entreprise = await getDbCollection("entreprises").findOne({ siret: establishment_siret })
     if (!entreprise) {
       throw Boom.internal(`could not find entreprise for recruiter with id=${recruiter._id}`)
     }
@@ -80,25 +79,33 @@ async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, re
     await Promise.all(
       schema.securityScheme.resources.recruiter.map(async (recruiterDef): Promise<IRecruiter[]> => {
         if ("_id" in recruiterDef) {
-          const recruiterOpt = await Recruiter.findById(getAccessResourcePathValue(recruiterDef._id, req)).lean()
+          const recruiterOpt = await getDbCollection("recruiters").findOne({ _id: getAccessResourcePathValue(recruiterDef._id, req) })
           return recruiterOpt ? [recruiterOpt] : []
         }
         if ("establishment_id" in recruiterDef) {
-          return Recruiter.find({
-            establishment_id: getAccessResourcePathValue(recruiterDef.establishment_id, req),
-          }).lean()
+          return getDbCollection("recruiters")
+            .find({
+              establishment_id: getAccessResourcePathValue(recruiterDef.establishment_id, req),
+            })
+            .toArray()
         }
         if ("email" in recruiterDef && "establishment_siret" in recruiterDef) {
-          return Recruiter.find({
-            email: getAccessResourcePathValue(recruiterDef.email, req),
-            establishment_siret: getAccessResourcePathValue(recruiterDef.establishment_siret, req),
-          }).lean()
+          return getDbCollection("recruiters")
+            .find({
+              email: getAccessResourcePathValue(recruiterDef.email, req),
+              establishment_siret: getAccessResourcePathValue(recruiterDef.establishment_siret, req),
+            })
+            .toArray()
         }
         if ("opco" in recruiterDef) {
-          return Recruiter.find({ opco: getAccessResourcePathValue(recruiterDef.opco, req) }).lean()
+          return getDbCollection("recruiters")
+            .find({ opco: getAccessResourcePathValue(recruiterDef.opco, req) })
+            .toArray()
         }
         if ("cfa_delegated_siret" in recruiterDef) {
-          return Recruiter.find({ cfa_delegated_siret: getAccessResourcePathValue(recruiterDef.cfa_delegated_siret, req) }).lean()
+          return getDbCollection("recruiters")
+            .find({ cfa_delegated_siret: getAccessResourcePathValue(recruiterDef.cfa_delegated_siret, req) })
+            .toArray()
         }
 
         assertUnreachable(recruiterDef)
@@ -118,7 +125,7 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
       schema.securityScheme.resources.job.map(async (jobDef): Promise<JobResource | null> => {
         if ("_id" in jobDef) {
           const id = getAccessResourcePathValue(jobDef._id, req)
-          const recruiter = await Recruiter.findOne({ "jobs._id": id }).lean()
+          const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": id })
 
           if (!recruiter) {
             return null
@@ -172,7 +179,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
         if (!job_id) {
           return { application }
         }
-        const recruiter = await Recruiter.findOne({ "jobs._id": job_id }).lean()
+        const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
         if (!recruiter) {
           return { application }
         }
@@ -200,7 +207,7 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
     schema.securityScheme.resources.entreprise.map(async (entrepriseDef): Promise<EntrepriseResource | null> => {
       if ("siret" in entrepriseDef) {
         const siret = getAccessResourcePathValue(entrepriseDef.siret, req)
-        const entreprise = await Entreprise.findOne({ siret }).lean()
+        const entreprise = await getDbCollection("entreprises").findOne({ siret })
         return entreprise ? { entreprise } : null
       } else if ("_id" in entrepriseDef) {
         const id = getAccessResourcePathValue(entrepriseDef._id, req)
@@ -209,7 +216,7 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
         } catch (e) {
           return null
         }
-        const entreprise = await Entreprise.findById(id).lean()
+        const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(id.toString()) })
         return entreprise ? { entreprise } : null
       }
 

@@ -1,7 +1,7 @@
 import Boom from "boom"
-import { ObjectId } from "bson"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
+import { ObjectId } from "mongodb"
 import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -17,7 +17,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
-import { EmailBlacklist, Recruiter } from "../common/model"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -75,7 +74,7 @@ export const getApplicationCount = (job_id: IApplication["job_id"]) => getDbColl
  * @param {string} email - Email
  * @return {Promise<boolean>}
  */
-export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await EmailBlacklist.countDocuments({ email }))
+export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await getDbCollection("emailblacklists").countDocuments({ email }))
 
 /**
  * @description Add an email address to the blacklist collection.
@@ -87,12 +86,12 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
   try {
     z.string().email().parse(email)
 
-    await EmailBlacklist.findOneAndUpdate(
+    await getDbCollection("emailblacklists").findOneAndUpdate(
       { email },
       {
         email,
         blacklisting_origin: blacklistingOrigin,
-        $setOnInsert: { created_at: new Date() },
+        $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
       },
       { upsert: true }
     )
@@ -409,7 +408,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   // get the related recruiters to fetch it's establishment_id
   let user: IUserWithAccount | undefined
   if (application.job_id) {
-    const recruiter = await Recruiter.findOne({ "jobs._id": application.job_id }).lean()
+    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": application.job_id })
     if (recruiter) {
       user = await getUser2ManagingOffer(getJobFromRecruiter(recruiter, application.job_id))
     }

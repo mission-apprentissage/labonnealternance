@@ -4,19 +4,8 @@ import { db, mongooseInstance } from "@/common/mongodb"
 
 import { logger } from "../logger"
 
-import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema"
-import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema"
-import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema"
-import Etablissement from "./schema/etablissements/etablissement.schema"
 import FicheMetierRomeV4 from "./schema/ficheRomeV4/ficheRomeV4"
-import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema"
-import GeoLocation from "./schema/geolocation/geolocation.schema"
-import InternalJobs from "./schema/internalJobs/internalJobs.schema"
 import Job from "./schema/jobs/jobs.schema"
-import { Entreprise } from "./schema/multiCompte/entreprise.schema"
-import Opco from "./schema/opco/opco.schema"
-import Optout from "./schema/optout/optout.schema"
-import Recruiter from "./schema/recruiter/recruiter.schema"
 
 const createSpecialIndexes = async () => {
   await db.collection("bonnesboites").createIndex({ geopoint: "2dsphere" })
@@ -60,18 +49,4 @@ export async function createMongoDBIndexes() {
   }
 }
 
-export {
-  EligibleTrainingsForAppointment,
-  EmailBlacklist,
-  Entreprise,
-  Etablissement,
-  FicheMetierRomeV4,
-  FormationCatalogue,
-  GeoLocation,
-  InternalJobs,
-  Job,
-  Opco,
-  Optout,
-  Recruiter,
-  eligibleTrainingsForAppointmentHistory,
-}
+export { FicheMetierRomeV4, Job }

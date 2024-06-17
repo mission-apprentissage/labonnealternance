@@ -1,6 +1,6 @@
 import type { Filter, FindOptions, MatchKeysAndValues, ObjectId } from "mongodb"
 
-import { IInternalJobs, IInternalJobsCron, IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { IInternalJobs, IInternalJobsCron, IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/internalJobs.types"
 import { db } from "@/common/mongodb"
 
 type CreateJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload" | "scheduled_for" | "sync">

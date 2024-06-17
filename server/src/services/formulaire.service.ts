@@ -1,7 +1,7 @@
 import Boom from "boom"
-import type { ObjectId as ObjectIdType } from "mongodb"
-import pkg from "mongodb"
-import type { FilterQuery, UpdateQuery } from "mongoose"
+import type { Filter } from "mongodb"
+import { ObjectId } from "mongodb"
+import type { UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
@@ -11,7 +11,6 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import { Entreprise, Recruiter } from "../common/model/index"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
@@ -24,8 +23,6 @@ import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
-
-const { ObjectId } = pkg
 
 export interface IOffreExtended extends IJob {
   candidatures: number
@@ -72,7 +69,7 @@ export const romeDetailAggregateStages = [
 /**
  * @description get formulaire by offer id
  */
-export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
+export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
   const recruiterOpt = await getOffreWithRomeDetail(id)
 
   if (!recruiterOpt) {
@@ -106,26 +103,28 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectIdType): Pro
 /**
  * @description Get formulaire list with mondodb paginate query
  * @param {Object} payload
- * @param {FilterQuery<IRecruiter>} payload.query
+ * @param {Filter<IRecruiter>} payload.query
  * @param {object} payload.options
  * @param {number} payload.page
  * @param {number} payload.limit
  */
-export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
-  const response = await Recruiter.paginate({ query, select, page, limit, lean: true })
-
+export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
+  const response = getDbCollection("recruiters").find({ query }, { projection: select })
+  const data = page && limit ? await response.skip(page).limit(limit).toArray() : await response.toArray()
+  const total = await getDbCollection("recruiters").countDocuments(query)
+  const number_of_page = limit ? Math.ceil(total / limit) : undefined
   return {
     pagination: {
-      page: response?.page,
+      page,
       result_per_page: limit,
-      number_of_page: response?.totalPages,
-      total: response?.totalDocs,
+      number_of_page,
+      total,
     },
-    data: response?.docs,
+    data,
   }
 }
 
-const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectIdType; entrepriseId: ObjectIdType }) => {
+const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectId; entrepriseId: ObjectId }) => {
   const access = getComputedUserAccess(userId.toString(), await getGrantedRoles(userId.toString()))
   return access.admin || access.entreprises.includes(entrepriseId.toString())
 }
@@ -135,14 +134,14 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
  */
 export const createJob = async ({ job, establishment_id, user }: { job: IJobWritable; establishment_id: string; user: IUserWithAccount }): Promise<IRecruiter> => {
   const userId = user._id
-  const recruiter = await Recruiter.findOne({ establishment_id: establishment_id }).lean()
+  const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: establishment_id })
   if (!recruiter) {
     throw Boom.internal(`recruiter with establishment_id=${establishment_id} not found`)
   }
   const { is_delegated, cfa_delegated_siret } = recruiter
   const organization = await (cfa_delegated_siret
     ? getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
-    : Entreprise.findOne({ siret: recruiter.establishment_siret }).lean())
+    : getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret }))
   if (!organization) {
     throw Boom.internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${establishment_id}`)
   }
@@ -219,7 +218,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   }
   const offre = getJobFromRecruiter(recruiter, jobId.toString())
   const managingUser = await getUser2ManagingOffer(offre)
-  const entreprise = await Entreprise.findOne({ siret: recruiter.establishment_siret }).lean()
+  const entreprise = await getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret })
   let shouldSentMailToCfa = false
   if (entreprise) {
     const role = await getDbCollection("rolemanagements").findOne({
@@ -284,18 +283,20 @@ export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
 
 /**
  * @description Find formulaire by query
- * @param {FilterQuery<IRecruiter>} query
+ * @param {Filter<IRecruiter>} query
  * @returns {Promise<IRecruiter>}
  */
-export const getFormulaire = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter | null> => Recruiter.findOne(query).lean()
+export const getFormulaire = async (query: Filter<IRecruiter>): Promise<IRecruiter | null> => getDbCollection("recruiters").findOne(query)
 
-export const getFormulaireWithRomeDetail = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter | null> => {
-  const recruiterWithRomeDetail: IRecruiter[] = await Recruiter.aggregate([
-    {
-      $match: query,
-    },
-    ...romeDetailAggregateStages,
-  ])
+export const getFormulaireWithRomeDetail = async (query: Filter<IRecruiter>): Promise<IRecruiter | null> => {
+  const recruiterWithRomeDetail: IRecruiter[] = (await getDbCollection("recruiters")
+    .aggregate([
+      {
+        $match: query,
+      },
+      ...romeDetailAggregateStages,
+    ])
+    .toArray()) as IRecruiter[]
 
   return recruiterWithRomeDetail.length ? recruiterWithRomeDetail[0] : await getFormulaire(query)
 }
@@ -306,14 +307,19 @@ export const getFormulaireWithRomeDetail = async (query: FilterQuery<IRecruiter>
  * @returns {Promise<IRecruiter>}
  */
 export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" | "establishment_id" | "createdAt" | "updatedAt">>, managedBy: string): Promise<IRecruiter> => {
-  const recruiter = await Recruiter.create({ ...payload, managed_by: managedBy })
-  return recruiter.toObject()
+  const recruiter = await getDbCollection("recruiters").insertOne(
+    // @ts-ignore todo: fix establishment_id
+    { ...payload, managed_by: managedBy, _id: new ObjectId(), createdAt: new Date(), updatedAt: new Date() },
+    { returnDocument: "after" }
+  )
+  // @ts-ignore todo: fix
+  return recruiter
 }
 
 /**
  * Remove formulaire by id
  */
-export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruiter | null> => await Recruiter.findByIdAndDelete(id)
+export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruiter | null> => await getDbCollection("recruiters").findOneAndDelete({ _id: id })
 
 /**
  * @description Remove all formulaires belonging to gestionnaire
@@ -321,14 +327,14 @@ export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruite
  * @returns {Promise<IRecruiter>}
  */
 export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<void> => {
-  await Recruiter.deleteMany({ cfa_delegated_siret: siret })
+  await getDbCollection("recruiters").deleteMany({ cfa_delegated_siret: siret })
 }
 
 /**
  * @description Update existing formulaire and return updated version
  */
 export const updateFormulaire = async (establishment_id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>): Promise<IRecruiter> => {
-  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id }, payload, { new: true }).lean()
+  const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ establishment_id }, { $set: { ...payload, updatedAt: new Date() } }, { returnDocument: "after" })
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }
@@ -341,7 +347,7 @@ export const updateFormulaire = async (establishment_id: IRecruiter["establishme
  * @returns {Promise<boolean>}
  */
 export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
-  const recruiter = await Recruiter.findOne({ establishment_id: id })
+  const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: id })
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }
@@ -352,7 +358,7 @@ export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Pro
     job.job_status = JOB_STATUS.ANNULEE
   })
 
-  await recruiter.save()
+  await getDbCollection("recruiters").findOneAndUpdate({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } })
 
   return true
 }
@@ -367,7 +373,7 @@ export const reactivateRecruiter = async (id: IRecruiter["_id"]): Promise<boolea
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }
-  await getDbCollection("recruiters").updateOne({ _id: id }, { $set: { status: RECRUITER_STATUS.ACTIF } })
+  await getDbCollection("recruiters").updateOne({ _id: id }, { $set: { status: RECRUITER_STATUS.ACTIF, updatedAt: new Date() } })
   return true
 }
 
@@ -377,7 +383,7 @@ export const reactivateRecruiter = async (id: IRecruiter["_id"]): Promise<boolea
  * @returns {Promise<boolean>}
  */
 export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<boolean> => {
-  const formulaires = await Recruiter.find({ cfa_delegated_siret: siret }).lean()
+  const formulaires = await getDbCollection("recruiters").find({ cfa_delegated_siret: siret }).toArray()
 
   if (!formulaires.length) return false
 
@@ -388,7 +394,7 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
       job.job_status = JOB_STATUS.ANNULEE
     })
 
-    await Recruiter.findByIdAndUpdate(form._id, form)
+    await getDbCollection("recruiters").findOneAndUpdate(form._id, { ...form, updatedAt: new Date() })
   })
 
   return true
@@ -398,11 +404,11 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @description Get job offer by job id
  * @param {IJob["_id"]} id
  */
-export async function getOffre(id: string | ObjectIdType) {
+export async function getOffre(id: string | ObjectId) {
   return getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(id.toString()) })
 }
 
-export async function getOffreWithRomeDetail(id: string | ObjectIdType) {
+export async function getOffreWithRomeDetail(id: string | ObjectId) {
   // return a Document type incompatible, to be checked
   const recruiter = (await getDbCollection("recruiters")
     .aggregate([
@@ -420,7 +426,12 @@ export async function getOffreWithRomeDetail(id: string | ObjectIdType) {
  * Create job offer on existing formulaire
  */
 export async function createOffre(establishment_id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> {
-  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id }, { $push: { jobs: payload } }, { new: true }).lean()
+  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
+    { establishment_id },
+    // @ts-ignore TODO: fix
+    { $push: { jobs: { ...payload, _id: new ObjectId() } } }, // jobs timestamp are delivered in payload
+    { returnDocument: "after" }
+  )
 
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
@@ -435,7 +446,7 @@ export async function createOffre(establishment_id: IRecruiter["establishment_id
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export async function updateOffre(id: string | ObjectIdType, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
@@ -457,19 +468,19 @@ export async function updateOffre(id: string | ObjectIdType, payload: UpdateQuer
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const patchOffre = async (id: IJob["_id"], payload: UpdateQuery<IJob>, options = { new: true }): Promise<IRecruiter> => {
+export const patchOffre = async (id: IJob["_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> => {
   const fields = {}
   for (const key in payload) {
     fields[`jobs.$.${key}`] = payload[key]
   }
 
-  const recruiter = await Recruiter.findOneAndUpdate(
+  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
-      $set: fields,
+      $set: { ...fields, "jobs.$.job_update_date": new Date(), updatedAt: new Date() },
     },
-    options
-  ).lean()
+    { returnDocument: "after" }
+  )
 
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
@@ -484,7 +495,7 @@ export const patchOffre = async (id: IJob["_id"], payload: UpdateQuery<IJob>, op
  * @returns {Promise<boolean>}
  */
 export const provideOffre = async (id: IJob["_id"]): Promise<boolean> => {
-  await Recruiter.findOneAndUpdate(
+  await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
@@ -502,7 +513,7 @@ export const provideOffre = async (id: IJob["_id"]): Promise<boolean> => {
  * @returns {Promise<boolean>}
  */
 export const cancelOffre = async (id: IJob["_id"]): Promise<boolean> => {
-  await Recruiter.findOneAndUpdate(
+  await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
@@ -540,7 +551,7 @@ export const cancelOffreFromAdminInterface = async (id: IJob["_id"], { job_statu
  * @returns {Promise<boolean>}
  */
 export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
-  const recruiter = await Recruiter.findOneAndUpdate(
+  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
@@ -550,8 +561,8 @@ export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
       },
       $inc: { "jobs.$.job_prolongation_count": 1 },
     },
-    { new: true }
-  ).lean()
+    { returnDocument: "after" }
+  )
   if (!recruiter) {
     throw Boom.notFound(`job with id=${id} not found`)
   }
@@ -608,7 +619,7 @@ export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecru
 /**
  * @description Get job offer by its id.
  */
-export const getJob = async (id: string | ObjectIdType): Promise<IJob | null> => {
+export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
   const offre = await getOffre(id)
   if (!offre) return null
   return offre.jobs.find((job) => job._id.toString() === id.toString()) ?? null
@@ -617,7 +628,7 @@ export const getJob = async (id: string | ObjectIdType): Promise<IJob | null> =>
 /**
  * @description Get job offer by its id.
  */
-export const getJobWithRomeDetail = async (id: string | ObjectIdType): Promise<IJobWithRomeDetail | null> => {
+export const getJobWithRomeDetail = async (id: string | ObjectId): Promise<IJobWithRomeDetail | null> => {
   const offre = await getOffre(id)
   if (!offre) return null
 
@@ -708,7 +719,6 @@ export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob 
 
 export const getFormulaireFromUserId = async (userId: string) => {
   return getDbCollection("recruiters").findOne({ managed_by: userId })
-  return Recruiter.findOne({ managed_by: userId }).lean()
 }
 
 export const getFormulaireFromUserIdOrError = async (userId: string) => {

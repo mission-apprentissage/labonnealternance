@@ -84,6 +84,11 @@ export type IAnonymizedRecruiter = z.output<typeof ZAnonymizedRecruiter>
 
 export default {
   zod: ZRecruiter,
-  indexes: [],
+  indexes: [
+    [{ establishment_id: 1 }, {}],
+    [{ establishment_siret: 1 }, {}],
+    [{ cfa_delegated_siret: 1 }, {}],
+    [{ geopoint: "2dsphere" }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

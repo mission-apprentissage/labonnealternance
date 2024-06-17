@@ -1,9 +1,11 @@
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../../common/logger"
-import { Recruiter, Job } from "../../../common/model/index"
+import { Job } from "../../../common/model/index"
 
 export const createOffreCollection = async () => {
   logger.info("Creating offres collections...")
-  await Recruiter.aggregate([
+  await getDbCollection("recruiters").aggregate([
     { $unwind: "$jobs" },
     {
       $project: {

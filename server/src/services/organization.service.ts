@@ -4,9 +4,7 @@ import { IUserRecruteur } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
 
-import { Entreprise } from "@/common/model"
-
-import { getDbCollection } from "../common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { CFA, ENTREPRISE } from "./constant.service"
 
@@ -17,9 +15,12 @@ export const createOrganizationIfNotExist = async (organization: Omit<IUserRecru
     throw Boom.internal("siret is missing")
   }
   if (type === ENTREPRISE || type === CFA) {
-    let entreprise = await Entreprise.findOne({ siret: establishment_siret }).lean()
+    let entreprise: IEntreprise | null = await getDbCollection("entreprises").findOne({ siret: establishment_siret })
     if (!entreprise) {
-      const entrepriseFields: Omit<IEntreprise, "_id" | "createdAt" | "updatedAt"> = {
+      entreprise = {
+        _id: new ObjectId(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
         siret: establishment_siret,
         address,
         address_detail,
@@ -31,7 +32,7 @@ export const createOrganizationIfNotExist = async (organization: Omit<IUserRecru
         geo_coordinates,
         status: [],
       }
-      entreprise = (await Entreprise.create(entrepriseFields)).toObject()
+      await getDbCollection("entreprises").insertOne(entreprise)
     }
     if (type === CFA) {
       const cfa = await getDbCollection("cfas").findOne({ siret: establishment_siret })

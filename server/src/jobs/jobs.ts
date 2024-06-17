@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 
 import { createMongoDBIndexes } from "@/common/model"
-import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 
 import { getLoggerWithContext } from "../common/logger"
@@ -16,7 +16,6 @@ import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
 import { validateModels } from "./database/schemaValidation"
-import { fixRDVACollections } from "./database/temp/fixRDVACollections"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
@@ -58,7 +57,6 @@ import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissemen
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
-import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
@@ -240,8 +238,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return resendDelegationEmailWithAccessToken()
       case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
         return fixDuplicateUsers()
-      case "migration:correctionRDVA": // Temporaire, doit tourner une fois en recette et production
-        return fixRDVACollections()
       case "control:applications":
         return controlApplications()
       case "control:appointments":
@@ -370,10 +366,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "referentiel-opco:constructys:import": {
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
-      }
-      case "prdv:emails:resend": {
-        const { fromDate } = job.payload
-        return repriseEmailRdvs({ fromDateStr: fromDate })
       }
       ///////
       case "mongodb:indexes:create":

@@ -1,17 +1,19 @@
 import dayjs from "dayjs"
 
 import { logger } from "@/common/logger"
-import { Recruiter } from "@/common/model"
 import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { addExpirationPeriod, updateOffre } from "@/services/formulaire.service"
 
 export const fixJobExpirationDate = async () => {
   const latestExpirationDate = addExpirationPeriod(dayjs())
-  const recruiters = await Recruiter.find({
-    "jobs.job_expiration_date": { $gt: latestExpirationDate.toDate() },
-  }).lean()
+  const recruiters = await getDbCollection("recruiters")
+    .find({
+      "jobs.job_expiration_date": { $gt: latestExpirationDate.toDate() },
+    })
+    .toArray()
   const stats = { success: 0, failure: 0, jobSuccess: 0 }
   logger.info(`Correction des dates d'expiration des offres: ${recruiters.length} recruteurs à mettre à jour...`)
   await asyncForEach(recruiters, async (recruiter) => {

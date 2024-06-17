@@ -1,10 +1,11 @@
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../../../common/logger"
-import { Recruiter } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 
 export const updateMissingStartDate = async () => {
   logger.info("Start update missing job_start_date")
-  const forms = await Recruiter.find({ "jobs.job_start_date": null })
+  const forms = await getDbCollection("recruiters").find({ "jobs.job_start_date": null }).toArray()
   await asyncForEach(forms, async (form) => {
     await asyncForEach(form.jobs, async (job) => {
       if (job.job_start_date === null) {
@@ -13,7 +14,7 @@ export const updateMissingStartDate = async () => {
         }
       }
     })
-    await form.save({ timestamps: false })
+    await getDbCollection("recruiters").updateOne({ _id: form._id }, { $set: { ...form } })
   })
   logger.info("End update missing job_start_date")
 }
