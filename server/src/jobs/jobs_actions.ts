@@ -49,7 +49,7 @@ export async function processor(signal: AbortSignal): Promise<void> {
 
   logger.debug(`Process jobs queue - looking for a job to execute`)
 
-  const { value: nextJob } = await getDbCollection("internalJobs").findOneAndUpdate(
+  const nextJob = await getDbCollection("internalJobs").findOneAndUpdate(
     {
       type: { $in: ["simple", "cron_task"] },
       status: "pending",
