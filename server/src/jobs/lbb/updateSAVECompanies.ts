@@ -2,7 +2,7 @@ import { oleoduc, transformData, writeData } from "oleoduc"
 
 import { checkIsDiffusible } from "@/services/etablissement.service"
 
-import { LbaCompany } from "../../common/model"
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
 import { logMessage } from "../../common/utils/logMessage"
 
 import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./lbaCompaniesUtils"
@@ -121,6 +121,28 @@ export const removeSAVECompanies = async () => {
       { parallel: 8 }
     ),
     writeData(async (company) => {
+      // Ce bloc ne sera utile qu'une seule fois.
+      const unsubed = await UnsubscribedLbaCompany.findOne({ siret: company.siret })
+      if (!unsubed) {
+        const toUnsub = new UnsubscribedLbaCompany({
+          siret: company.siret,
+          raison_sociale: "",
+          enseigne: "Suppression via script SAVE",
+          naf_code: "",
+          naf_label: "",
+          rome_codes: [],
+          insee_city_code: "",
+          zip_code: "",
+          city: "",
+          company_size: "",
+          created_at: new Date(),
+          last_update_at: new Date(),
+          unsubscribe_date: new Date(),
+          unsubscribe_reason: "Autre",
+        })
+        await toUnsub.save()
+      }
+
       await LbaCompany.deleteOne({ siret: company.siret })
     })
   )
