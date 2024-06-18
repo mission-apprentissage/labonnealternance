@@ -119,7 +119,7 @@ export const jobFactory = (props: Partial<IJob> = {}) => {
     _id: new ObjectId(),
     rome_label: "rome_label",
     rome_appellation_label: "rome_appellation_label",
-    job_level_label: "job_level_label",
+    job_level_label: "BTS, DEUST, autres formations niveau (Bac+2)",
     job_start_date: new Date(),
     job_description: "job_description",
     job_employer_description: "job_employer_description",
@@ -139,7 +139,7 @@ export const jobFactory = (props: Partial<IJob> = {}) => {
     is_disabled_elligible: false,
     job_count: 1,
     job_duration: 6,
-    job_rythm: "job_rythm",
+    job_rythm: "Indifférent",
     custom_address: "custom_address",
     custom_geo_coordinates: "custom_geo_coordinates",
     stats_detail_view: 0,
@@ -220,7 +220,7 @@ export const saveAdminUserTest = async (userProps: Partial<IUserWithAccount> = {
   const role = await saveRoleManagement({
     user_id: user._id,
     authorized_type: AccessEntityType.ADMIN,
-    authorized_id: undefined,
+    authorized_id: new ObjectId().toString(),
     status: [roleManagementEventFactory()],
   })
   return { user, role }
@@ -244,7 +244,7 @@ export const saveEntrepriseUserTest = async (userProps: Partial<IUserWithAccount
     opco: entreprise.opco,
     jobs: [
       jobFactory({
-        managed_by: user._id,
+        managed_by: user._id.toString(),
       }),
     ],
   })
@@ -266,7 +266,7 @@ export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {})
     status: RECRUITER_STATUS.ACTIF,
     jobs: [
       jobFactory({
-        managed_by: user._id,
+        managed_by: user._id.toString(),
       }),
     ],
   })
