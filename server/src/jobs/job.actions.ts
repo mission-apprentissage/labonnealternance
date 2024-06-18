@@ -1,7 +1,8 @@
 import type { Filter, FindOptions, MatchKeysAndValues, ObjectId } from "mongodb"
 
 import { IInternalJobs, IInternalJobsCron, IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/internalJobs.types"
-import { db } from "@/common/mongodb"
+
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
 type CreateJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload" | "scheduled_for" | "sync">
 
@@ -16,7 +17,7 @@ export const createJobSimple = async ({ name, payload, scheduled_for = new Date(
     scheduled_for,
     sync,
   }
-  const { insertedId: _id } = await db.collection("internalJobs").insertOne(job)
+  const { insertedId: _id } = await getDbCollection("internalJobs").insertOne(job)
   return { ...job, _id } as IInternalJobsSimple
 }
 
@@ -33,7 +34,7 @@ export const createJobCron = async ({ name, cron_string, scheduled_for = new Dat
     scheduled_for,
     sync,
   }
-  const { insertedId: _id } = await db.collection("internalJobs").insertOne(job)
+  const { insertedId: _id } = await getDbCollection("internalJobs").insertOne(job)
   return { ...job, _id }
 }
 
@@ -49,21 +50,21 @@ export const createJobCronTask = async ({ name, scheduled_for }: CreateJobCronTa
     scheduled_for,
     sync: false,
   }
-  const { insertedId: _id } = await db.collection("internalJobs").insertOne(job)
+  const { insertedId: _id } = await getDbCollection("internalJobs").insertOne(job)
   return { ...job, _id }
 }
 
 export const findJob = async (filter: Filter<IInternalJobs>, options?: FindOptions<IInternalJobs>): Promise<IInternalJobs | null> => {
-  return await db.collection("internalJobs").findOne(filter, options)
+  return await getDbCollection("internalJobs").findOne(filter, options)
 }
 
 export const findJobs = async <T extends IInternalJobs>(filter: Filter<T>, options?: FindOptions<T>): Promise<T[]> => {
-  return await db.collection("internalJobs").find(filter, options).toArray()
+  return await getDbCollection("internalJobs").find(filter, options).toArray()
 }
 
 /**
  * Mise à jour d'un job
  */
 export const updateJob = async (_id: ObjectId, data: MatchKeysAndValues<IInternalJobs>) => {
-  return db.collection("internalJobs").updateOne({ _id }, { $set: { ...data, updated_at: new Date() } })
+  return getDbCollection("internalJobs").updateOne({ _id }, { $set: { ...data, updated_at: new Date() } })
 }

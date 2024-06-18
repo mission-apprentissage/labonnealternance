@@ -3,11 +3,11 @@ import { formatDuration, intervalToDuration } from "date-fns"
 import mongoose from "mongoose"
 
 import { IInternalJobs, IInternalJobsSimple } from "@/common/model/internalJobs.types"
-import { db } from "@/common/mongodb"
 import { sleep } from "@/common/utils/asyncUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
 import { getLoggerWithContext } from "../common/logger"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import config from "../config"
 
 import { createJobSimple, updateJob } from "./job.actions"
@@ -49,7 +49,7 @@ export async function processor(signal: AbortSignal): Promise<void> {
 
   logger.debug(`Process jobs queue - looking for a job to execute`)
 
-  const { value: nextJob } = await db.collection("internalJobs").findOneAndUpdate(
+  const { value: nextJob } = await getDbCollection("internalJobs").findOneAndUpdate(
     {
       type: { $in: ["simple", "cron_task"] },
       status: "pending",

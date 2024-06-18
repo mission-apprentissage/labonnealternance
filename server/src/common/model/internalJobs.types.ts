@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb"
+
 import { CronName } from "@/jobs/jobs"
 
 /*
@@ -16,7 +18,7 @@ import { CronName } from "@/jobs/jobs"
 */
 
 interface IInternalJobsSimple {
-  _id: string
+  _id: ObjectId
   name: string
   type: "simple"
   status: "pending" | "will_start" | "running" | "finished" | "blocked" | "errored"
@@ -31,7 +33,7 @@ interface IInternalJobsSimple {
 }
 
 interface IInternalJobsCron {
-  _id: string
+  _id: ObjectId
   name: CronName
   type: "cron"
   status: "pending" | "will_start" | "running" | "finished" | "blocked" | "errored"
@@ -43,7 +45,7 @@ interface IInternalJobsCron {
 }
 
 interface IInternalJobsCronTask {
-  _id: string
+  _id: ObjectId
   name: CronName
   type: "cron_task"
   status: "pending" | "will_start" | "running" | "finished" | "blocked" | "errored"
@@ -57,4 +59,4 @@ interface IInternalJobsCronTask {
 
 type IInternalJobs = IInternalJobsSimple | IInternalJobsCron | IInternalJobsCronTask
 
-export type { CronName, IInternalJobs, IInternalJobsCron, IInternalJobsSimple, IInternalJobsCronTask }
+export type { CronName, IInternalJobs, IInternalJobsCron, IInternalJobsCronTask, IInternalJobsSimple }
