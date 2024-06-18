@@ -25,7 +25,6 @@ export const ZDelegation = z
     siret_code: z.string().describe("SIRET de l'établissement"),
     email: z.string().describe("Email gestionnaire de l'établissement"),
     cfa_read_company_detail_at: z.date().nullish().describe("Date de consultation de l'offre"),
-    address: z.string().nullish().describe("Adresse de l'établissement formateur"),
   })
   .strict()
   .openapi("Delegation")

@@ -244,20 +244,19 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       etablissement_formateur_siret: 1,
       etablissement_gestionnaire_id: 1,
       etablissement_formateur_id: 1,
-      etablissement_formateur_adresse: 1,
     }
   )
 
   await Promise.all(
     etablissementCatalogueIds.map(async (etablissementId) => {
       const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
-      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email, etablissement_formateur_adresse } = formation ?? {}
+      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formation ?? {}
       if (!email || !siret_code) {
         // This shouldn't happen considering the query filter
         throw Boom.internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
       }
 
-      delegations.push({ siret_code, email, address: etablissement_formateur_adresse })
+      delegations.push({ siret_code, email })
 
       if (shouldSentMailToCfa) {
         await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
