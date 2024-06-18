@@ -17,6 +17,7 @@ import etablissementModel from "./etablissement.model"
 import formationModel from "./formation.model"
 import geolocationsModel from "./geolocations.model"
 import internalJobModel from "./internalJob.model"
+import jobsModel from "./jobs.model"
 import lbaCompanyModel from "./lbaCompany.model"
 import lbaCompanyLegacyModel from "./lbaCompanyLegacy.model"
 import opcoModel from "./opco.model"
@@ -50,6 +51,7 @@ const modelDescriptorMap = {
   [formationModel.collectionName]: formationModel,
   [geolocationsModel.collectionName]: geolocationsModel,
   [internalJobModel.collectionName]: internalJobModel,
+  [jobsModel.collectionName]: jobsModel,
   [lbaCompanyModel.collectionName]: lbaCompanyModel,
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,

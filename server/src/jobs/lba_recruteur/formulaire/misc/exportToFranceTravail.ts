@@ -6,8 +6,6 @@ import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models"
 
-import { db } from "@/common/mongodb"
-
 import { sendCsvToFranceTravail } from "../../../../common/apis/FranceTravail"
 import { logger } from "../../../../common/logger"
 import { getDepartmentByZipCode } from "../../../../common/territoires"
@@ -176,8 +174,7 @@ export const exportToFranceTravail = async (): Promise<void> => {
     const threshold = dayjs().subtract(30, "days").toDate()
 
     // Retrieve only active offers
-    const offres: any[] = await db
-      .collection("jobs")
+    const offres: any[] = await getDbCollection("jobs")
       .find({
         job_status: JOB_STATUS.ACTIVE,
         recruiterStatus: RECRUITER_STATUS.ACTIF,
