@@ -2974,13 +2974,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "example": "0101010101",
             "type": "string",
           },
-          "caller": {
-            "description": "L'identification de la source d'émission de la candidature (pour widget uniquement)",
-            "type": [
-              "string",
-              "null",
-            ],
-          },
           "company_siret": {
             "description": "Le siret de l'entreprise. Fourni par La bonne alternance. ",
             "example": "00004993900000",
@@ -3102,13 +3095,6 @@ Limite : 5 appel(s) / 5 seconde(s)
                             "description": "Le numéro de téléphone du candidat.",
                             "example": "0101010101",
                             "type": "string",
-                          },
-                          "caller": {
-                            "description": "L'identification de la source d'émission de la candidature (pour widget uniquement)",
-                            "type": [
-                              "string",
-                              "null",
-                            ],
                           },
                           "job_id": {
                             "description": "Identifiant unique de l'offre LBA",

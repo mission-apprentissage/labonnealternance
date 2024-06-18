@@ -10,7 +10,6 @@ const ZNewApplicationV2NEWCompanySiret = ZApplication.pick({
   applicant_email: true,
   applicant_phone: true,
   company_siret: true,
-  caller: true,
 })
   .extend({
     message: ZApplication.shape.applicant_message_to_company.optional(),
@@ -22,7 +21,7 @@ const ZNewApplicationV2NEWCompanySiret = ZApplication.pick({
   })
   .openapi("V2 - Application")
 
-const ZNewApplicationV2NEWJobId = ZApplication.pick({ applicant_first_name: true, applicant_last_name: true, applicant_email: true, applicant_phone: true, caller: true })
+const ZNewApplicationV2NEWJobId = ZApplication.pick({ applicant_first_name: true, applicant_last_name: true, applicant_email: true, applicant_phone: true })
   .extend({
     message: ZApplication.shape.applicant_message_to_company.optional(),
     applicant_file_name: ZApplication.shape.applicant_attachment_name,
@@ -36,6 +35,13 @@ const ZNewApplicationV2NEWJobId = ZApplication.pick({ applicant_first_name: true
     }),
   })
   .openapi("V2 - Application")
+
+const ZNewApplicationV2NEWCompanySiretPrivate = ZNewApplicationV2NEWCompanySiret.extend({
+  caller: z.string().nullish().describe("L'identification de la source d'émission de la candidature (pour widget uniquement)"),
+})
+const ZNewApplicationV2NEWJobIdPrivate = ZNewApplicationV2NEWJobId.extend({
+  caller: z.string().nullish().describe("L'identification de la source d'émission de la candidature (pour widget uniquement)"),
+})
 
 export type INewApplicationV2NEWCompanySiret = z.output<typeof ZNewApplicationV2NEWCompanySiret>
 export type INewApplicationV2NEWJobId = z.output<typeof ZNewApplicationV2NEWJobId>
@@ -62,7 +68,7 @@ export const zApplicationRoutesV2 = {
     "/_private/application": {
       path: "/_private/application",
       method: "post",
-      body: z.union([ZNewApplicationV2NEWCompanySiret, ZNewApplicationV2NEWJobId]),
+      body: z.union([ZNewApplicationV2NEWCompanySiretPrivate, ZNewApplicationV2NEWJobIdPrivate]),
       response: {
         "200": z.object({}),
       },
