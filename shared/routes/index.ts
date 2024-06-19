@@ -183,8 +183,6 @@ export type IRequestFetchOptions = {
   headers?: Record<string, string>
 }
 
-export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never | EmptyObject> extends EmptyObject
-  ? EmptyObject
-  : ConditionalExcept<IRequestRaw<S>, never | EmptyObject>
+export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never>
 
 export type IApiVersion = "V1" | "V2"
