@@ -61,7 +61,7 @@ const anonymize = async () => {
   return { userWithAccountCount, recruiterCount }
 }
 
-export async function anonimizeUserRecruteurs() {
+export async function anonimizeUsers() {
   const subject = "ANONYMISATION DES USERS et RECRUITERS"
   try {
     logger.info(" -- Anonymisation des users de plus de 2 ans -- ")

@@ -32,7 +32,7 @@ const fixLbaCompanies = async () => {
       }
     } catch (err) {
       errorCount++
-      console.log(err)
+      console.error(err)
       break
     }
   }
@@ -86,7 +86,7 @@ const fixRecruiters = async () => {
       }
     } catch (err) {
       errorCount++
-      console.log(err)
+      console.error(err)
       break
     }
   }
@@ -113,7 +113,7 @@ const fixRecruiters = async () => {
       }
     } catch (err) {
       errorCount++
-      console.log(err)
+      console.error(err)
       break
     }
   }

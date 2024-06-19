@@ -1,15 +1,20 @@
 import { Box, Button, FormControl, FormLabel, HStack, Input, VStack, useToast } from "@chakra-ui/react"
 import { FormikProvider, useFormik } from "formik"
-import { getLastStatusEvent } from "shared"
-import { AccessStatus, IRoleManagementEvent, IRoleManagementJson } from "shared/models/roleManagement.model"
-import { IUserWithAccountJson } from "shared/models/userWithAccount.model"
-import * as Yup from "yup"
+import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusEvent, parseEnum } from "shared"
+import { OPCOS } from "shared/constants"
+import { AUTHTYPE } from "shared/constants/recruteur"
+import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFields } from "shared/models/userWithAccount.model"
+import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
-import { createAdminUser, updateEntrepriseAdmin } from "@/utils/api"
-import { apiDelete } from "@/utils/api.utils"
+import { createSuperUser, updateEntrepriseAdmin } from "@/utils/api"
+import { apiDelete, ApiError } from "@/utils/api.utils"
 
+import { CustomFormControl } from "../../CustomFormControl"
 import CustomInput from "../../CustomInput"
+import { CustomSelect } from "../../CustomSelect"
+
+const { OPCO, ADMIN } = AUTHTYPE
 
 export const AdminUserForm = ({
   user,
@@ -20,97 +25,58 @@ export const AdminUserForm = ({
 }: {
   user?: IUserWithAccountJson
   role?: IRoleManagementJson
-  onCreate?: (result: void, error?: any) => void
+  onCreate?: (_id: string) => void
   onDelete?: () => void
   onUpdate?: () => void
 }) => {
   const toast = useToast()
   const { activate: activateUser, deactivate: deactivateUser } = useUserPermissionsActions(user?._id.toString())
-  const formik = useFormik({
-    initialValues: {
-      last_name: user?.last_name || "",
-      first_name: user?.first_name || "",
-      email: user?.email || "",
-      phone: user?.phone || "Non renseigné",
-    },
-    validationSchema: Yup.object().shape({
-      last_name: Yup.string().required("Votre nom est obligatoire"),
-      first_name: Yup.string().required("Votre prénom est obligatoire"),
-      email: Yup.string().email("Format d'email invalide").required("Votre email est obligatoire"),
-      phone: Yup.string(),
-    }),
-    enableReinitialize: true,
-    onSubmit: async (values, { setSubmitting }) => {
-      let result
-      let error
 
-      try {
-        if (user) {
-          result = await updateEntrepriseAdmin(user._id.toString(), values)
-          if (result?.ok) {
-            toast({
-              title: "Utilisateur mis à jour",
-              status: "success",
-              isClosable: true,
-            })
-          } else {
-            toast({
-              title: "Erreur lors de la mise à jour de l'utilisateur.",
-              status: "error",
-              isClosable: true,
-              description: " Merci de réessayer plus tard",
-            })
-          }
-          onUpdate?.()
-        } else {
-          result = await createAdminUser(values).catch((err) => {
-            if (err.statusCode === 409) {
-              return { error: "Cet utilisateur existe déjà" }
-            }
+  const errorHandler = (error: any) => {
+    if (error && error instanceof ApiError && error.context?.statusCode >= 400) {
+      error = error.context.message
+    }
+    toast({
+      title: error + "",
+      status: "error",
+      isClosable: true,
+    })
+  }
+
+  const onSubmit = async (values: INewSuperUser) => {
+    if (user) {
+      const { email, first_name, last_name, phone = "" } = values
+      updateEntrepriseAdmin(user._id.toString(), { email, first_name, last_name, phone })
+        .then(() => {
+          toast({
+            title: "Utilisateur mis à jour",
+            status: "success",
+            isClosable: true,
           })
-          if (result?._id) {
-            toast({
-              title: "Utilisateur créé",
-              status: "success",
-              isClosable: true,
-            })
-            onCreate?.(result)
-          } else if (result?.error) {
-            error = toast({
-              title: result.error,
-              status: "error",
-              isClosable: true,
-            })
-          } else {
-            error = "Erreur lors de la création de l'utilisateur."
-            toast({
-              title: error,
-              status: "error",
-              isClosable: true,
-              description: " Merci de réessayer plus tard",
-            })
-          }
-        }
-      } catch (e) {
-        error = e
-        console.error(e)
-        const response = await (e?.json ?? {})
-        const message = response?.message ?? e?.message
-        toast({
-          title: message,
-          status: "error",
-          isClosable: true,
+          onUpdate?.()
         })
-      }
-      setSubmitting(false)
-    },
-  })
-  const { values, dirty, handleSubmit } = formik
+        .catch(errorHandler)
+    } else {
+      const { email, first_name, last_name, phone = "", type } = values
+      const commonFields = { email, first_name, last_name, phone, type }
+      const sentFields = { ...commonFields, ...(type === OPCO ? { opco: values.opco } : {}) }
+      createSuperUser(sentFields)
+        .then((user) => {
+          toast({
+            title: "Utilisateur créé",
+            status: "success",
+            isClosable: true,
+          })
+          onCreate?.(user._id.toString())
+        })
+        .catch(errorHandler)
+    }
+  }
 
   const onDeleteClicked = async (event) => {
     event.preventDefault()
     if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
-      const result = (await apiDelete("/admin/users/:userId", { params: { userId: user._id.toString() }, querystring: {} })) as any
+      const result = await apiDelete("/admin/users/:userId", { params: { userId: user._id.toString() }, querystring: {} })
       if (result?.ok) {
         toast({
           title: "Utilisateur supprimé",
@@ -137,7 +103,7 @@ export const AdminUserForm = ({
     <>
       {user && (
         <>
-          <HStack mb={4} alignItems="baseline">
+          <HStack mt={4} mb={4} alignItems="baseline">
             <Box w="300px">Type de compte </Box>
             <Box>ADMIN</Box>
           </HStack>
@@ -170,27 +136,7 @@ export const AdminUserForm = ({
           </HStack>
         </>
       )}
-      <FormikProvider value={formik}>
-        <form onSubmit={handleSubmit}>
-          <VStack gap={2} alignItems="baseline" my={8}>
-            {user && (
-              <FormControl py={2}>
-                <FormLabel>Identifiant</FormLabel>
-                <Input type="text" id="id" name="id" value={user._id.toString()} disabled />
-              </FormControl>
-            )}
-            <CustomInput required={true} name="first_name" label="Prénom" type="text" value={values.first_name} />
-            <CustomInput required={true} name="last_name" label="Nom" type="text" value={values.last_name} />
-            <CustomInput required={true} name="email" label="Email" type="email" value={values.email} />
-            <CustomInput required={false} name="phone" label="Téléphone" type="phone" value={values.phone} />
-            <Box paddingTop={10}>
-              <Button type="submit" variant="primary" mr={5} isDisabled={!dirty}>
-                {user ? "Enregistrer" : "Créer l'utilisateur"}
-              </Button>
-            </Box>
-          </VStack>
-        </form>
-      </FormikProvider>
+      <UserFieldsForm user={user} onSubmit={onSubmit} type={parseEnum({ OPCO, ADMIN }, role?.authorized_type)} opco={parseEnum(OPCOS, role?.authorized_id)} />
     </>
   )
 }
@@ -208,5 +154,81 @@ const DisableUserButton = ({ onClick }) => {
     <Button variant="primary-red" onClick={onClick}>
       Désactiver le compte
     </Button>
+  )
+}
+
+const UserFieldsForm = ({
+  user,
+  opco,
+  type,
+  onSubmit,
+}: {
+  user?: IUserWithAccountJson
+  opco?: OPCOS
+  type?: typeof AUTHTYPE.ADMIN | typeof AUTHTYPE.OPCO
+  onSubmit: (values: INewSuperUser) => void
+}) => {
+  const zodSchema = user ? ZUserWithAccountFields : ZNewSuperUser
+  const formik = useFormik({
+    initialValues: {
+      last_name: user?.last_name ?? "",
+      first_name: user?.first_name ?? "",
+      email: user?.email ?? "",
+      phone: user?.phone ?? "",
+      type: type ?? AUTHTYPE.OPCO,
+      opco,
+    },
+    validationSchema: toFormikValidationSchema(zodSchema),
+    enableReinitialize: true,
+    onSubmit,
+  })
+  const { values, dirty, handleSubmit, isValid } = formik
+
+  return (
+    <FormikProvider value={formik}>
+      <form onSubmit={handleSubmit}>
+        <VStack gap={2} alignItems="baseline" my={8}>
+          {user && (
+            <FormControl py={2}>
+              <FormLabel>Identifiant</FormLabel>
+              <Input type="text" id="id" name="id" value={user._id.toString()} disabled />
+            </FormControl>
+          )}
+          <CustomFormControl name="type" label="Type de compte">
+            <CustomSelect
+              name="type"
+              possibleValues={[AUTHTYPE.OPCO, AUTHTYPE.ADMIN]}
+              value={values.type}
+              onChange={(newValue) => formik?.setFieldValue("type", newValue, true)}
+              selectProps={{
+                isDisabled: Boolean(user),
+              }}
+            />
+          </CustomFormControl>
+          {values.type === AUTHTYPE.OPCO && (
+            <CustomFormControl name="opco" label="OPCO">
+              <CustomSelect
+                name="opco"
+                possibleValues={Object.values(OPCOS)}
+                value={values.opco}
+                onChange={(newValue) => formik?.setFieldValue("opco", newValue, true)}
+                selectProps={{
+                  isDisabled: Boolean(user),
+                }}
+              />
+            </CustomFormControl>
+          )}
+          <CustomInput required={true} name="first_name" label="Prénom" type="text" value={values.first_name ?? ""} />
+          <CustomInput required={true} name="last_name" label="Nom" type="text" value={values.last_name ?? ""} />
+          <CustomInput required={true} name="email" label="Email" type="email" value={values.email ?? ""} />
+          <CustomInput required={false} name="phone" label="Téléphone" type="phone" value={values.phone ?? ""} />
+          <Box paddingTop={10}>
+            <Button type="submit" variant="primary" mr={5} isDisabled={!dirty || !isValid}>
+              {user ? "Enregistrer" : "Créer l'utilisateur"}
+            </Button>
+          </Box>
+        </VStack>
+      </form>
+    </FormikProvider>
   )
 }

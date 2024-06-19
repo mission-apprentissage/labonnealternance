@@ -1,5 +1,6 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
@@ -10,7 +11,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { stopSession } from "@/common/utils/session.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { modifyPermissionToUser, roleToUserType } from "@/services/roleManagement.service"
-import { activateUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
+import { activateUser, createSuperUser, getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
@@ -26,7 +27,6 @@ import {
 import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "../../services/user.service"
 import {
-  createAdminUser,
   getAdminUsers,
   getUserRecruteurById,
   getUsersForAdmin,
@@ -72,7 +72,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/admin/users"],
       onRequest: [server.auth(zRoutes.get["/admin/users"])],
     },
-    async (req, res) => {
+    async (_req, res) => {
       const users = await getAdminUsers()
       return res.status(200).send({ users })
     }
@@ -88,7 +88,7 @@ export default (server: Server) => {
       const { userId } = req.params
       const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(userId) })
       if (!user) throw Boom.notFound(`user with id=${userId} not found`)
-      const role = await getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(userId), authorized_type: AccessEntityType.ADMIN })
+      const role = await getDbCollection("rolemanagements").findOne({ user_id: new ObjectId(userId), authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] } })
       return res.status(200).send({ ...user, role: role ?? undefined })
     }
   )
@@ -100,12 +100,11 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/admin/users"])],
     },
     async (req, res) => {
-      const { origin, ...userFields } = req.body
+      const userFields = req.body
       const userFromRequest = getUserFromRequest(req, zRoutes.post["/admin/users"]).value
-      const user = await createAdminUser(userFields, {
-        origin: origin ?? "",
-        reason: "création par l'interface admin",
+      const user = await createSuperUser(userFields, {
         grantedBy: userFromRequest._id.toString(),
+        origin: "création par l'interface admin",
       })
       return res.status(200).send({ _id: user._id })
     }
@@ -122,7 +121,7 @@ export default (server: Server) => {
       const { opco, ...userFields } = req.body
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
-        return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
+        throw Boom.badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
       }
       if (opco) {
         const entreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updateAt: new Date() } })

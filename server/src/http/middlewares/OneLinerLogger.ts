@@ -26,7 +26,7 @@ export class OneLinerLogger {
     }
     const leftArgs = [new Date().toISOString(), level.toUpperCase()]
     leftArgs.push(this.path.length ? "_." + this.path.join(".") : "global")
-    console.log(leftArgs.map((str) => `[${str}]`).join(""), ...printedArgs)
+    console.info(leftArgs.map((str) => `[${str}]`).join(""), ...printedArgs)
   }
   info(...args) {
     this.log("info", args)

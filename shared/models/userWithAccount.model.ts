@@ -24,6 +24,8 @@ export const ZUserStatusEvent = z
     date: z.date(),
   })
   .strict()
+export type IUserStatusEvent = z.output<typeof ZUserStatusEvent>
+export type IUserStatusEventJson = Jsonify<z.input<typeof ZUserStatusEvent>>
 
 const collectionName = "userswithaccounts" as const
 
@@ -41,12 +43,8 @@ export const ZUserWithAccount = z
     updatedAt: z.date(),
   })
   .strict()
-
 export type IUserWithAccount = z.output<typeof ZUserWithAccount>
 export type IUserWithAccountJson = Jsonify<z.input<typeof ZUserWithAccount>>
-
-export type IUserStatusEvent = z.output<typeof ZUserStatusEvent>
-export type IUserStatusEventJson = Jsonify<z.input<typeof ZUserStatusEvent>>
 
 export default {
   zod: ZUserWithAccount,

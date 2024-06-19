@@ -8,7 +8,7 @@ import { getLoggerWithContext } from "../common/logger"
 import anonymizeOldAppointments from "./anonymization/anonumizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
-import { anonimizeUserRecruteurs } from "./anonymization/anonymizeUserRecruteurs"
+import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
@@ -24,11 +24,9 @@ import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
 import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
-import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
-import { exportToFranceTravail } from "./lba_recruteur/formulaire/misc/exportToFranceTravail"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
@@ -42,6 +40,8 @@ import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
+import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
 import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
@@ -89,10 +89,6 @@ export const CronsMap = {
   "Send CSV offers to France Travail": {
     cron_string: "30 5 * * *",
     handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" }, productionOnly: true }),
-  },
-  "Check companies validation state": {
-    cron_string: "30 6 * * *",
-    handler: () => addJob({ name: "user:validate", payload: { threshold: "1" } }),
   },
   "Mise à jour des recruteurs en erreur": {
     cron_string: "10 0 * * *",
@@ -202,6 +198,10 @@ export const CronsMap = {
     cron_string: "30 3 * * *",
     handler: () => addJob({ name: "garbage-collector:run", payload: {} }),
   },
+  "export des offres LBA sur S3": {
+    cron_string: "30 6 * * 1",
+    handler: () => addJob({ name: "lbajobs:export:s3", payload: {}, productionOnly: true }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -222,6 +222,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
     switch (job.name) {
       case "recreate:indexes":
         return recreateIndexes()
+      case "lbajobs:export:s3":
+        return exportLbaJobsToS3()
       case "sync:etablissement:dates":
         return syncEtablissementDates()
       case "remove:duplicates:etablissements":
@@ -244,27 +246,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateAddressDetailOnRecruitersCollection()
       case "import:referentielrome":
         return importReferentielRome()
-      case "user:create": {
-        const { first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope } = job.payload
-        return createUserFromCLI(
-          {
-            first_name,
-            last_name,
-            establishment_siret,
-            establishment_raison_sociale,
-            phone,
-            address,
-            email,
-            scope,
-          },
-          {
-            options: {
-              Type: job.payload.type,
-              Email_valide: job.payload.email_valide,
-            },
-          }
-        )
-      }
       case "api:user:create": {
         const { nom, prenom, email, organization, scope } = job.payload
         return createApiUser(nom, prenom, email, organization, scope)
@@ -328,7 +309,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "applications:anonymize":
         return anonymizeOldApplications()
       case "user-recruteurs:anonymize":
-        return anonimizeUserRecruteurs()
+        return anonimizeUsers()
       case "companies:update":
         return updateLbaCompanies(job.payload)
       case "geo-locations:update":
@@ -373,7 +354,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "migrations:status": {
         const pendingMigrations = await statusMigration()
-        console.log(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
+        console.info(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
         return
       }
       case "migrations:create":

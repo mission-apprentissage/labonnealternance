@@ -2,6 +2,8 @@ import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS } from "shared/constants/recruteur"
 import { ComputedUserAccess, IUserRecruteurPublic } from "shared/models"
+import { ICFA } from "shared/models/cfa.model"
+import { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { parseEnum, parseEnumOrError } from "shared/utils"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -173,4 +175,25 @@ export const getComputedUserAccess = (userId: string, grantedRoles: IRoleManagem
     }),
   }
   return userAccess
+}
+
+export const getOrganizationFromRole = async (role: IRoleManagement): Promise<ICFA | IEntreprise | null> => {
+  switch (role.authorized_type) {
+    case AccessEntityType.CFA: {
+      const cfaOpt = await Cfa.findOne({ _id: role.authorized_id })
+      if (!cfaOpt) {
+        throw new Error(`inattendu: impossible de trouver le cfa pour le role id=${role._id}`)
+      }
+      return cfaOpt
+    }
+    case AccessEntityType.ENTREPRISE: {
+      const entrepriseOpt = await Entreprise.findOne({ _id: role.authorized_id })
+      if (!entrepriseOpt) {
+        throw new Error(`inattendu: impossible de trouver l'entreprise pour le role id=${role._id}`)
+      }
+      return entrepriseOpt
+    }
+    default:
+      return null
+  }
 }

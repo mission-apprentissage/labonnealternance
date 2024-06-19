@@ -78,7 +78,7 @@ const getFtAccessToken = async (access: "OFFRE" | "ROME" | "ROMEV4"): Promise<FT
     tokens[access] = newTokenObject
     return newTokenObject
   } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    logger.error("error lors de la récupération d'un token pour l'API FT", JSON.stringify(error))
     throw Boom.internal("impossible d'obtenir un token pour l'API france travail")
   }
 }

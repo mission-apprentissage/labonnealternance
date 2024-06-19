@@ -1,9 +1,13 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
+import { INewSuperUser } from "shared"
+import { ADMIN, OPCO } from "shared/constants"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
-import { getLastStatusEvent } from "shared/utils"
+import { assertUnreachable, getLastStatusEvent } from "shared/utils"
+
+import { createAdminUser, createOpcoUser } from "@/services/userRecruteur.service"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
@@ -31,8 +35,8 @@ export const createUser2IfNotExist = async (
     }
     status.push({
       date: new Date(),
-      reason: "creation de l'utilisateur",
-      status: UserEventType.ACTIF,
+      reason: "validation de l'email à la création",
+      status: UserEventType.VALIDATION_EMAIL,
       validation_type: VALIDATION_UTILISATEUR.MANUAL,
       granted_by: grantedBy,
     })
@@ -52,7 +56,6 @@ export const createUser2IfNotExist = async (
     await getDbCollection("userswithaccounts").insertOne(userFields)
     user = userFields
   }
-  return user
 }
 
 export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]): Promise<IUserWithAccount> => {
@@ -106,7 +109,7 @@ export const activateUser = async (user: IUserWithAccount, granted_by: string): 
 export const getUserWithAccountByEmail = async (email: string): Promise<IUserWithAccount | null> =>
   getDbCollection("userswithaccounts").findOne({ email: email.toLocaleLowerCase() })
 
-export const emailHasActiveRole = async (email: string) => {
+export const emailHasActiveRole = async (email: string): Promise<boolean> => {
   const userOpt = await getUserWithAccountByEmail(email)
   if (!userOpt) return
   const roles = await getDbCollection("rolemanagements").find({ user_id: userOpt._id }).toArray()
@@ -123,3 +126,22 @@ export const isUserEmailChecked = (user: IUserWithAccount): boolean => user.stat
 const activationStatus = [UserEventType.ACTIF, UserEventType.DESACTIVE]
 export const isUserDisabled = (user: IUserWithAccount): boolean =>
   getLastStatusEvent(user.status.filter((event) => activationStatus.includes(event.status)))?.status === UserEventType.DESACTIVE
+
+export const createSuperUser = async (userFields: INewSuperUser, { grantedBy, origin }: { grantedBy: string; origin: string }) => {
+  const { email, type } = userFields
+  if (await emailHasActiveRole(email)) {
+    throw Boom.badRequest(`User ${email} already have an active role`)
+  }
+  const reason = ""
+
+  if (type === ADMIN) {
+    const user = await createAdminUser(userFields, { grantedBy, origin, reason })
+    return user
+  } else if (type === OPCO) {
+    const { opco } = userFields
+    const user = await createOpcoUser(userFields, opco, { grantedBy, origin, reason })
+    return user
+  } else {
+    assertUnreachable(type)
+  }
+}

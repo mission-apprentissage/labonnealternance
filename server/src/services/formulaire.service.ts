@@ -1,7 +1,5 @@
 import Boom from "boom"
-import type { Filter } from "mongodb"
-import { ObjectId } from "mongodb"
-import type { UpdateQuery } from "mongoose"
+import { Filter, ObjectId, UpdateFilter } from "mongodb"
 import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
@@ -17,7 +15,7 @@ import config from "../config"
 
 import { getUser2ManagingOffer } from "./application.service"
 import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.service"
-import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
+import { getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
@@ -230,40 +228,40 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       shouldSentMailToCfa = true
     }
   }
-  const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } }, { _id: 1 })
   const delegations: IDelegation[] = []
-  const promises = etablissements.map(async (etablissement) => {
-    const formations = await getCatalogueFormations(
-      {
-        $or: [
-          {
-            etablissement_gestionnaire_id: etablissement._id,
-          },
-          {
-            etablissement_formateur_id: etablissement._id,
-          },
-        ],
-        etablissement_gestionnaire_courriel: { $nin: [null, ""] },
-        catalogue_published: true,
-      },
-      { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1 }
-    )
 
-    const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formations[0] ?? {}
+  const formations = await getCatalogueFormations(
+    {
+      $or: [
+        {
+          etablissement_gestionnaire_id: { $in: etablissementCatalogueIds },
+        },
+        {
+          etablissement_formateur_id: { $in: etablissementCatalogueIds },
+        },
+      ],
+      etablissement_gestionnaire_courriel: { $nin: [null, ""] },
+      catalogue_published: true,
+    },
+    { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1, etablissement_gestionnaire_id: 1, etablissement_formateur_id: 1 }
+  )
 
-    if (!email || !siret_code) {
-      // This shouldn't happen considering the query filter
-      throw Boom.internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
-    }
+  await Promise.all(
+    etablissementCatalogueIds.map(async (etablissementId) => {
+      const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
+      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formation ?? {}
+      if (!email || !siret_code) {
+        // This shouldn't happen considering the query filter
+        throw Boom.internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
+      }
 
-    delegations.push({ siret_code, email })
+      delegations.push({ siret_code, email })
 
-    if (shouldSentMailToCfa) {
-      await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
-    }
-  })
-
-  await Promise.all(promises)
+      if (shouldSentMailToCfa) {
+        await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
+      }
+    })
+  )
 
   offre.delegations = offre.delegations?.concat(delegations) ?? delegations
   offre.job_delegation_count = offre.delegations.length
@@ -333,7 +331,7 @@ export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["es
 /**
  * @description Update existing formulaire and return updated version
  */
-export const updateFormulaire = async (establishment_id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>): Promise<IRecruiter> => {
+export const updateFormulaire = async (establishment_id: IRecruiter["establishment_id"], payload: UpdateFilter<IRecruiter>): Promise<IRecruiter> => {
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ establishment_id }, { $set: { ...payload, updatedAt: new Date() } }, { returnDocument: "after" })
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
@@ -425,7 +423,7 @@ export async function getOffreWithRomeDetail(id: string | ObjectId) {
 /**
  * Create job offer on existing formulaire
  */
-export async function createOffre(establishment_id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+export async function createOffre(establishment_id: IRecruiter["establishment_id"], payload: UpdateFilter<IJob>): Promise<IRecruiter> {
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { establishment_id },
     // @ts-ignore TODO: fix
@@ -446,7 +444,7 @@ export async function createOffre(establishment_id: IRecruiter["establishment_id
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+export async function updateOffre(id: string | ObjectId, payload: UpdateFilter<IJob>): Promise<IRecruiter> {
   const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
     { "jobs._id": id },
     {
@@ -468,7 +466,7 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const patchOffre = async (id: IJob["_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> => {
+export const patchOffre = async (id: IJob["_id"], payload: UpdateFilter<IJob>): Promise<IRecruiter> => {
   const fields = {}
   for (const key in payload) {
     fields[`jobs.$.${key}`] = payload[key]

@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
-import { ZLbaItemFormation, ZLbaItemFormationResult, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemFtJob } from "../models/lbaItem.model"
+import { ZLbaItemFormation, ZLbaItemFormation2, ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import {
@@ -49,13 +49,7 @@ export const zFormationsRoutesV2 = {
         .passthrough(),
       headers: zRefererHeaders,
       response: {
-        "200": ZLbaItemFormationResult,
-        "400": z.union([ZResError, ZLbacError]).openapi({
-          description: "Bad Request",
-        }),
-        "500": z.union([ZResError, ZLbacError]).openapi({
-          description: "Internal Server Error",
-        }),
+        "200": z.array(ZLbaItemFormation2),
       },
       securityScheme: {
         auth: "api-key",
@@ -98,13 +92,7 @@ export const zFormationsRoutesV2 = {
         .passthrough(),
       headers: zRefererHeaders,
       response: {
-        "200": ZLbaItemFormationResult,
-        "400": z.union([ZResError, ZLbacError]).openapi({
-          description: "Bad Request",
-        }),
-        "500": z.union([ZResError, ZLbacError]).openapi({
-          description: "Internal Server Error",
-        }),
+        "200": z.array(ZLbaItemFormation2),
       },
       securityScheme: {
         auth: "api-key",
@@ -133,10 +121,7 @@ export const zFormationsRoutesV2 = {
         })
         .strict(),
       response: {
-        "200": ZLbaItemFormationResult,
-        "400": z.union([ZResError, ZLbacError]),
-        "404": z.union([ZResError, ZLbacError]),
-        "500": z.union([ZResError, ZLbacError]),
+        "200": ZLbaItemFormation2,
       },
       securityScheme: {
         auth: "api-key",
@@ -198,13 +183,7 @@ export const zFormationsRoutesV2 = {
         .passthrough(),
       headers: zRefererHeaders,
       response: {
-        "200": ZLbaItemFormationResult,
-        "400": z.union([ZResError, ZLbacError]).openapi({
-          description: "Bad Request",
-        }),
-        "500": z.union([ZResError, ZLbacError]).openapi({
-          description: "Internal Server Error",
-        }),
+        "200": z.array(ZLbaItemFormation2),
       },
       securityScheme: {
         auth: "api-key",

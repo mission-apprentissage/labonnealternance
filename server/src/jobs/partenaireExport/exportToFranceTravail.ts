@@ -24,7 +24,7 @@ const splitter = (str) => str.split(regex).filter(String)
  * @returns {Promise<object>}
  */
 const formatToPe = async (offre) => {
-  //TODO VOIR NECESSITE
+  //Récupération de l'appellation dans le rome_detail pour identifier le code OGR
   const appellation = offre.rome_detail.appellations.find((v) => v.libelle === offre.rome_appellation_label)
   const adresse = offre.address_detail
   const [latitude, longitude] = offre.geo_coordinates.split(",")

@@ -8,6 +8,7 @@ import { authProvider, withAuth } from "@/components/espace_pro/withAuth"
 import { apiGet } from "@/utils/api.utils"
 
 const AdminUserView = ({ userId }: { userId: string }) => {
+  const router = useRouter()
   const {
     data: user,
     isLoading,
@@ -25,7 +26,7 @@ const AdminUserView = ({ userId }: { userId: string }) => {
     return <LoadingEmptySpace />
   }
 
-  return <AdminUserForm user={user} role={user.role} onUpdate={refetchUser} onDelete={refetchUser} />
+  return <AdminUserForm user={user} role={user.role} onUpdate={refetchUser} onDelete={() => router.push("/espace-pro/admin/utilisateurs")} />
 }
 
 function AdminUserViewPage() {
@@ -33,7 +34,7 @@ function AdminUserViewPage() {
   const { userId } = router.query as { userId: string }
 
   return (
-    <Layout footer={false}>
+    <Layout displayNavigationMenu={false} footer={false}>
       <AdminUserView userId={userId} />
     </Layout>
   )
@@ -41,4 +42,4 @@ function AdminUserViewPage() {
 
 export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
 
-export default authProvider(withAuth(AdminUserViewPage, "adminLbaR"))
+export default authProvider(withAuth(AdminUserViewPage, "admin"))

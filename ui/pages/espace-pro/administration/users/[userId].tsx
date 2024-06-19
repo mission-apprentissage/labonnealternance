@@ -22,7 +22,7 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IUserStatusValidation } from "shared"
-import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
@@ -151,11 +151,11 @@ function DetailEntreprise() {
             </Breadcrumb>
           </Box>
           <Box borderBottom="1px solid #E3E3FD" mb={10}>
+            <Heading fontSize="32px" noOfLines={2}>
+              {establishmentLabel}
+            </Heading>
             <Flex align="center" justify="space-between" mb={5}>
               <Flex align="center" justify="flex-start" maxW="50%">
-                <Heading fontSize="32px" noOfLines={2}>
-                  {establishmentLabel}
-                </Heading>
                 <Box ml={5}>{getUserBadge(lastUserState)}</Box>
               </Flex>
               <Stack direction={["column", "column", "column", "row"]} spacing="10px">
@@ -265,7 +265,7 @@ function DetailEntreprise() {
                       </Box>
                     </Box>
                     <Box>
-                      <InformationLegaleEntreprise {...userRecruteur} />
+                      <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
                     </Box>
                   </SimpleGrid>
                   {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
@@ -286,9 +286,13 @@ function DetailEntreprise() {
 function DetailEntreprisePage() {
   const router = useRouter()
   const { userId } = router.query
-  return <Layout footer={false}>{userId && <DetailEntreprise />}</Layout>
+  return (
+    <Layout displayNavigationMenu={false} footer={false}>
+      {userId && <DetailEntreprise />}
+    </Layout>
+  )
 }
 
 export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
 
-export default authProvider(withAuth(DetailEntreprisePage, "adminLbaR"))
+export default authProvider(withAuth(DetailEntreprisePage, "admin"))

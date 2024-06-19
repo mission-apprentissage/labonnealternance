@@ -249,4 +249,5 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
   await getDbCollection("optouts").deleteMany({})
+  // TODO recruteur LBA update event deleteMany ??
 }

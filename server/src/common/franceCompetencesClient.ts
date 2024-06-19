@@ -46,6 +46,7 @@ const mappingOpcoNames: Record<string, OPCOS> = {
   AKTO: OPCOS.AKTO,
   "OPCO EP": OPCOS.EP,
   "UNIFORMATION COHESION SOCIALE": OPCOS.UNIFORMATION,
+  "OPCO MOBILITES": OPCOS.MOBILITE,
 }
 
 export const FCOpcoToOpcoEnum = (fcOpco: string): OPCOS => {

@@ -269,7 +269,7 @@ export const sendApplicationV2 = async ({
 
   const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.email)?.toLowerCase()
   if (!recruteurEmail) {
-    sentryCaptureException(`Aucun email trouver pour l'offre trouvé. ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
+    sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
     throw Boom.internal(BusinessErrorCodes.INTERNAL_EMAIL)
   }
   try {

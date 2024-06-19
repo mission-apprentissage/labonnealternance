@@ -167,6 +167,12 @@ program.command("recreate:indexes").description("Recreate MongoDB indexes").opti
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
+  .command("lbajobs:export:s3")
+  .description("Export LBA jobs to JSON files on S3")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("lbajobs:export:s3"))
+
+program
   .command("anonymize-individual")
   .description("Anonymize elements based on id")
   .requiredOption("-c, --collection <string>", " <collection> est la collection sur laquelle s'applique la modification")
@@ -228,24 +234,6 @@ program
   .action(createJobAction("migration:remove-delegated-from-jobs"))
 
 /********************/
-
-//yarn cli create-user --first_name a --last_name b --email ab@fr.fr --scope beta --establishment_raison_sociale beta --type ADMIN
-program
-  .command("create-user")
-  .description("Permet de créer un accès utilisateur à l'espace partenaire")
-  .requiredOption("--first_name <string>", "prenom de l'utilisateur")
-  .requiredOption("--last_name <string>", "nom de l'utilisateur")
-  .requiredOption("--email <string>", "email de l'utilisateur")
-  .requiredOption("--scope <string>", "scope")
-  .requiredOption("--establishment_raison_sociale <string>", " raison sociale de l'établissement")
-  .option("--establishment_siret <string>", "siret de l'établissement")
-  .option("--phone <string>", "telephone de l'utilisateur")
-  .option("--address <string>", "adresse de l'utilisateur")
-  .option("-a, --admin", "utilisateur administrateur", false)
-  .requiredOption("-t ,--type <string>", "type d'utilisateur")
-  .requiredOption("-e, --email_valide", "email valide", true)
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("user:create"))
 
 program
   .command("create-api-user")

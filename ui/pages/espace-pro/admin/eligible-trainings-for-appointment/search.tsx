@@ -95,4 +95,4 @@ function SearchPage() {
 
 export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
 
-export default authProvider(withAuth(SearchPage, "adminRva"))
+export default authProvider(withAuth(SearchPage, "admin"))

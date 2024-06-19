@@ -36,7 +36,7 @@ export const updateAddressDetailOnRecruitersCollection = async () => {
           return
         }
       } else {
-        console.log(error.response)
+        console.error(error.response)
       }
     }
   })

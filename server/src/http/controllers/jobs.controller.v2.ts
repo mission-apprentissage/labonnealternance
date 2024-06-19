@@ -6,6 +6,9 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { Appellation } from "@/services/rome.service.types"
 
+import { getFileSignedURL } from "../../common/utils/awsUtils"
+import { trackApiCall } from "../../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
 import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
@@ -444,6 +447,43 @@ export default (server: Server) => {
       const { id } = req.params
       await addOffreDetailView(id)
       return res.send({})
+    }
+  )
+
+  server.get(
+    "/jobs/export",
+    {
+      schema: zRoutes.get["/jobs/export"],
+      onRequest: server.auth(zRoutes.get["/jobs/export"]),
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "1s",
+        },
+      },
+    },
+    async (req, res) => {
+      const user = getUserFromRequest(req, zRoutes.get["/jobs/export"]).value
+      const { source } = req.query
+      if (source === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+        try {
+          const url = await getFileSignedURL({ key: `${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}.json` })
+          trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/jobs/export"].path}/${source}`, response: "OK" })
+          return res.send(url)
+        } catch (error) {
+          sentryCaptureException(error)
+          throw Boom.internal("Une erreur est survenue lors de la génération du lien de téléchargement.")
+        }
+      } else {
+        try {
+          const url = await getFileSignedURL({ key: `${LBA_ITEM_TYPE.RECRUTEURS_LBA}.json` })
+          trackApiCall({ caller: user._id.toString(), api_path: `${zRoutes.get["/jobs/export"].path}/${source}`, response: "OK" })
+          return res.send(url)
+        } catch (error) {
+          sentryCaptureException(error)
+          throw Boom.internal("Une erreur est survenue lors de la génération du lien de téléchargement.")
+        }
+      }
     }
   )
 }

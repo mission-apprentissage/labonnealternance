@@ -2,6 +2,7 @@ import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Fle
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
+import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
@@ -80,7 +81,7 @@ function Compte() {
 
   return (
     <AnimationContainer>
-      <Layout footer={false}>
+      <Layout displayNavigationMenu={false} footer={false}>
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>
             <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
@@ -154,7 +155,7 @@ function Compte() {
                       </Box>
                     </Box>
                     <Box>
-                      <InformationLegaleEntreprise {...data} />
+                      <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} />
                     </Box>
                   </SimpleGrid>
                 </>

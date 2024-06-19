@@ -76,7 +76,7 @@ const reasons = [
   },
   {
     key: EReasonsKey.DEBOUCHE,
-    title: "Devenir des élèves en sortie de formation",
+    title: "Situation des élèves en sortie de formation",
     checked: false,
   },
   {
