@@ -29,6 +29,6 @@
     "@types/boom": "^7.3.3",
     "eslint-plugin-zod": "^1.4.0",
     "mongodb": "^6.7.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.5"
   }
 }

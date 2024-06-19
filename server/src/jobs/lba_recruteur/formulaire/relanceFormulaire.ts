@@ -1,6 +1,6 @@
 import Boom from "boom"
-import { ObjectId } from "bson"
 import { groupBy } from "lodash-es"
+import { ObjectId } from "mongodb"
 import { JOB_STATUS } from "shared/models"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"

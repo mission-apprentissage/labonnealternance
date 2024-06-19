@@ -1,4 +1,4 @@
-import { ObjectId } from "bson"
+import { ObjectId } from "mongodb"
 import { IUnsubscribedLbaCompany, zRoutes } from "shared"
 import { IUnsubscribeQueryResponse } from "shared/models/unsubscribeLbaCompany.model"
 

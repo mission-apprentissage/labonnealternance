@@ -2,9 +2,9 @@ import querystring from "node:querystring"
 
 import axios, { AxiosInstance } from "axios"
 import Boom from "boom"
-import { ObjectId } from "bson"
 import { got } from "got"
 import { sortBy } from "lodash-es"
+import { ObjectId } from "mongodb"
 import { compose } from "oleoduc"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"

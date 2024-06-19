@@ -1,4 +1,4 @@
-import { ObjectId } from "bson"
+import { ObjectId } from "mongodb"
 import { IFormationCatalogue, zRoutes } from "shared/index"
 
 import { logger } from "@/common/logger"

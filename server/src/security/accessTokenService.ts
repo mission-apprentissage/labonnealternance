@@ -1,6 +1,6 @@
 import Boom from "boom"
-import { ObjectId } from "bson"
 import jwt from "jsonwebtoken"
+import { ObjectId } from "mongodb"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"

@@ -51,7 +51,7 @@
     "react-table": "^7.8.0",
     "shared": "workspace:*",
     "yup": "^0.32.11",
-    "zod": "3.21.4",
+    "zod": "3.23.8",
     "zod-formik-adapter": "^1.3.0"
   },
   "devDependencies": {
@@ -63,6 +63,6 @@
     "eslint-config-next": "latest",
     "nock": "^13.3.3",
     "type-fest": "^4.18.2",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.5"
   }
 }

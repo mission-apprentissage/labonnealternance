@@ -1,4 +1,4 @@
-import { ObjectId } from "bson"
+import { ObjectId } from "mongodb"
 import { ICFA } from "shared/models/cfa.model"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"

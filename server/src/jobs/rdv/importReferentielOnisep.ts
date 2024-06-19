@@ -3,7 +3,7 @@ import { writeFile } from "node:fs/promises"
 import { pipeline } from "stream/promises"
 
 import axios from "axios"
-import { ObjectId } from "bson"
+import { ObjectId } from "mongodb"
 import { filterData, oleoduc, transformData, writeData } from "oleoduc"
 import { IReferentielOnisep } from "shared/models"
 

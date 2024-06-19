@@ -1,6 +1,6 @@
 import Boom from "boom"
-import { ObjectId } from "bson"
 import Joi from "joi"
+import { ObjectId } from "mongodb"
 import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
 

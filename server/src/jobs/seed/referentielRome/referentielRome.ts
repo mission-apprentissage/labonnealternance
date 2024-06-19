@@ -1,7 +1,7 @@
 import { readFileSync } from "fs"
 
-import { ObjectId } from "bson"
 import iconv from "iconv-lite"
+import { ObjectId } from "mongodb"
 import { IReferentielRome } from "shared/index.js"
 import * as xml2j from "xml2js"
 

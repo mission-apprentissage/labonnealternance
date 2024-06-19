@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { ObjectId } from "bson"
+import { ObjectId } from "mongodb"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"

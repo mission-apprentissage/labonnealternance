@@ -1,8 +1,8 @@
 import { createReadStream } from "fs"
 import path from "path"
 
-import { ObjectId } from "bson"
 import Joi from "joi"
+import { ObjectId } from "mongodb"
 import { filterData, oleoduc, transformData, writeData } from "oleoduc"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"

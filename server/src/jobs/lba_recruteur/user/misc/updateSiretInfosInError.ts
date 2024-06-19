@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { ObjectId } from "bson"
+import { ObjectId } from "mongodb"
 import { JOB_STATUS } from "shared"
 import { CFA, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"

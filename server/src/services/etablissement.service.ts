@@ -2,8 +2,7 @@ import { setTimeout } from "timers/promises"
 
 import { AxiosResponse } from "axios"
 import Boom from "boom"
-import { ObjectId } from "bson"
-import { Filter as MongoDBFilter } from "mongodb"
+import { Filter as MongoDBFilter, ObjectId } from "mongodb"
 import {
   IAdresseV3,
   IBusinessError,
