@@ -218,7 +218,7 @@ export const createAdminUser = async (userProps: IUserWithAccountFields, { grant
   return user
 }
 
-export const updateUserWithAccountFields = async (userId: ObjectIdType, fields: Partial<IUserWithAccountFields>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
+export const updateUserWithAccountFields = async (userId: ObjectId, fields: Partial<IUserWithAccountFields>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
   const { email, first_name, last_name, phone } = fields
   const newEmail = email?.toLocaleLowerCase()
 

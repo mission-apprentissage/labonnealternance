@@ -180,14 +180,14 @@ export const getComputedUserAccess = (userId: string, grantedRoles: IRoleManagem
 export const getOrganizationFromRole = async (role: IRoleManagement): Promise<ICFA | IEntreprise | null> => {
   switch (role.authorized_type) {
     case AccessEntityType.CFA: {
-      const cfaOpt = await Cfa.findOne({ _id: role.authorized_id })
+      const cfaOpt = await getDbCollection("cfas").findOne({ _id: new ObjectId(role.authorized_id) })
       if (!cfaOpt) {
         throw new Error(`inattendu: impossible de trouver le cfa pour le role id=${role._id}`)
       }
       return cfaOpt
     }
     case AccessEntityType.ENTREPRISE: {
-      const entrepriseOpt = await Entreprise.findOne({ _id: role.authorized_id })
+      const entrepriseOpt = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id) })
       if (!entrepriseOpt) {
         throw new Error(`inattendu: impossible de trouver l'entreprise pour le role id=${role._id}`)
       }

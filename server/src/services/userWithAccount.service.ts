@@ -56,6 +56,7 @@ export const createUser2IfNotExist = async (
     await getDbCollection("userswithaccounts").insertOne(userFields)
     user = userFields
   }
+  return user
 }
 
 export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]): Promise<IUserWithAccount> => {
@@ -111,7 +112,7 @@ export const getUserWithAccountByEmail = async (email: string): Promise<IUserWit
 
 export const emailHasActiveRole = async (email: string): Promise<boolean> => {
   const userOpt = await getUserWithAccountByEmail(email)
-  if (!userOpt) return
+  if (!userOpt) return false
   const roles = await getDbCollection("rolemanagements").find({ user_id: userOpt._id }).toArray()
   const activeStatus = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]
   const activeRoles = roles.filter((role) => {
