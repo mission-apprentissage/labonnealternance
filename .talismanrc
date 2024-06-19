@@ -68,7 +68,7 @@ fileignoreconfig:
 - filename: server/src/services/userRecruteur.service.ts
   checksum: fb8fc73f5ac4491b2a7be99ceaebf96c79bffa63fa6b164eed6e2d3d9fe5dae0
 - filename: server/static/templates/mail-bienvenue-entreprise-sans-offre.mjml.ejs
-  checksum: 7faa143002ddac04b361a762916615c2d442023ab3e5a711946144f5cb167fd1
+  checksum: d6846d19af9133503e8f07173d8151bab4393b766c58ecb34e33b5510b43fb64
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
 - filename: server/static/templates/mail-candidature-spontanee.mjml.ejs
