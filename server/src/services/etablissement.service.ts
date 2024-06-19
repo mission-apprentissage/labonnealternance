@@ -535,7 +535,7 @@ export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc?:
   if (opcoFromDB) {
     return opcoFromDB
   }
-  const entreprise = await Entreprise.findOne({ siret }).lean()
+  const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (entreprise) {
     const { opco, idcc } = entreprise
     if (opco) {
@@ -599,7 +599,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: strin
   return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}`, geopoint: { type: "Point", coordinates: [longitude, latitude] as [number, number] } }
 }
 
-const isCfaCreationValid = async (siret: string): Promise<boolean> => {
+export const isCfaCreationValid = async (siret: string): Promise<boolean> => {
   const cfa = await getDbCollection("cfas").findOne({ siret })
   if (!cfa) return true
   const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).toArray()

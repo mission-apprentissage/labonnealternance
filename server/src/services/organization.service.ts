@@ -1,4 +1,5 @@
 import Boom from "boom"
+import { ObjectId } from "bson"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -40,7 +41,7 @@ export const upsertEntrepriseData = async (
   let existingEntreprise = await getDbCollection("entreprises").findOne({ siret })
   if ("error" in siretResponse) {
     if (!existingEntreprise) {
-      existingEntreprise = (await getDbCollection("entreprises").create({ siret, origin, status: [] })).toObject()
+      existingEntreprise = await getDbCollection("entreprises").insertOne({ siret, origin, status: [] })
     }
     if (isInternalError) {
       const statusToUpdate = [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]
@@ -56,18 +57,22 @@ export const upsertEntrepriseData = async (
 
   const { address, address_detail, establishment_enseigne, geo_coordinates, establishment_raison_sociale } = siretResponse
 
-  const entrepriseFields: Omit<IEntreprise, "_id" | "createdAt" | "updatedAt" | "status" | "origin" | "siret" | "opco" | "idcc"> = {
+  const now = new Date()
+  const entrepriseFields: Omit<IEntreprise, "status" | "origin" | "siret" | "opco" | "idcc"> = {
     address,
     address_detail,
     enseigne: establishment_enseigne,
     geo_coordinates,
     raison_sociale: establishment_raison_sociale,
+    _id: new ObjectId(),
+    createdAt: now,
+    updatedAt: now,
   }
   let savedEntreprise: IEntreprise
   if (existingEntreprise) {
     savedEntreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: entrepriseFields }, { returnDocument: "after" })
   } else {
-    savedEntreprise = (await getDbCollection("entreprises").create({ ...entrepriseFields, siret, origin })).toObject()
+    savedEntreprise = await getDbCollection("entreprises").insertOne({ ...entrepriseFields, siret, origin })
   }
   await setEntrepriseValid(savedEntreprise._id)
 

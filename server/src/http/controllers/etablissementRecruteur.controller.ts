@@ -79,7 +79,7 @@ export default (server: Server) => {
       }
 
       if (skipUpdate) {
-        const entrepriseOpt = await Entreprise.findOne({ siret }).lean()
+        const entrepriseOpt = await getDbCollection("entreprises").findOne({ siret })
         if (entrepriseOpt) {
           return res.status(200).send(entrepriseOpt)
         }
