@@ -17,7 +17,6 @@ import { localOrigin } from "@/common/utils/isOriginLocal"
 import config from "../config"
 import { initBrevoWebhooks } from "../services/brevo.service"
 
-import adminAppointmentRoute from "./controllers/admin/appointment.controller"
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligibleTrainingsForAppointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
 import formationsRoute from "./controllers/admin/formations.controller"
@@ -142,7 +141,6 @@ export async function bind(app: Server) {
       /**
        * LBA-Organisme de formation
        */
-      adminAppointmentRoute(typedSubApp)
       adminEtablissementRoute(typedSubApp)
       formationsRoute(typedSubApp)
       eligibleTrainingsForAppointmentRoute(typedSubApp)
