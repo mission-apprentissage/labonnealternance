@@ -1,8 +1,8 @@
 import Boom from "boom"
-import { ILbaCompany, ILbaCompanyForContactUpdate } from "shared"
+import { ObjectId } from "bson"
+import { ERecruteurLbaUpdateEventType, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { LbaCompany } from "../common/model/index"
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -366,9 +366,10 @@ export const getCompanyFromSiret = async ({
  * @returns {Promise<ILbaCompany | string>}
  */
 export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email?: string; phone?: string }) => {
+  const now = new Date()
   try {
     const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret })
-    const fieldUpdates: IRecruteurLbaUpdateEventNew[] = []
+    const fieldUpdates: IRecruteurLbaUpdateEvent[] = []
 
     if (!lbaCompany) {
       throw Boom.badRequest()
@@ -383,51 +384,54 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
     }
     if (lbaCompany.email !== email) {
       if (!email) {
-        fieldUpdates.push(
-          new RecruteurLbaUpdateEvent({
-            siret,
-            value: "",
-            event: ERecruteurLbaUpdateEventType.DELETE_EMAIL,
-          })
-        )
+        fieldUpdates.push({
+          _id: new ObjectId(),
+          created_at: now,
+          siret,
+          value: "",
+          event: ERecruteurLbaUpdateEventType.DELETE_EMAIL,
+        })
+
         lbaCompany.email = ""
       } else {
-        fieldUpdates.push(
-          new RecruteurLbaUpdateEvent({
-            siret,
-            value: email,
-            event: ERecruteurLbaUpdateEventType.UPDATE_EMAIL,
-          })
-        )
+        fieldUpdates.push({
+          _id: new ObjectId(),
+          created_at: now,
+          siret,
+          value: email,
+          event: ERecruteurLbaUpdateEventType.UPDATE_EMAIL,
+        })
         lbaCompany.email = email
       }
     }
 
     if (lbaCompany.phone !== phone) {
       if (!phone) {
-        fieldUpdates.push(
-          new RecruteurLbaUpdateEvent({
-            siret,
-            value: "",
-            event: ERecruteurLbaUpdateEventType.DELETE_PHONE,
-          })
-        )
+        fieldUpdates.push({
+          _id: new ObjectId(),
+          created_at: now,
+          siret,
+          value: "",
+          event: ERecruteurLbaUpdateEventType.DELETE_PHONE,
+        })
+
         lbaCompany.phone = ""
       } else {
-        fieldUpdates.push(
-          new RecruteurLbaUpdateEvent({
-            siret,
-            value: phone,
-            event: ERecruteurLbaUpdateEventType.UPDATE_PHONE,
-          })
-        )
+        fieldUpdates.push({
+          _id: new ObjectId(),
+          created_at: now,
+          siret,
+          value: phone,
+          event: ERecruteurLbaUpdateEventType.UPDATE_PHONE,
+        })
+
         lbaCompany.phone = phone
       }
     }
     await Promise.all([
-      db.collection("bonnesboites").updateOne({ _id: lbaCompany._id }, { $set: { phone: lbaCompany.phone, email: lbaCompany.email, last_update_at: new Date() } }),
+      getDbCollection("bonnesboites").updateOne({ _id: lbaCompany._id }, { $set: { phone: lbaCompany.phone, email: lbaCompany.email, last_update_at: new Date() } }),
       ...fieldUpdates.map(async (update) => {
-        db.collection("recruteurlbaupdateevents").insertOne(update)
+        getDbCollection("recruteurlbaupdateevents").insertOne(update)
       }),
     ])
     return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }
@@ -439,7 +443,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
 
 export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promise<ILbaCompanyForContactUpdate> => {
   try {
-    const lbaCompany = await LbaCompany.findOne({ siret })
+    const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret })
 
     if (lbaCompany) {
       return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }

@@ -39,6 +39,14 @@ export const ZLbaCompany = z
 
 export type ILbaCompany = z.output<typeof ZLbaCompany>
 
+export const ZLbaCompanyForContactUpdate = ZLbaCompany.pick({
+  siret: true,
+  email: true,
+  phone: true,
+  enseigne: true,
+})
+export type ILbaCompanyForContactUpdate = z.output<typeof ZLbaCompanyForContactUpdate>
+
 export default {
   zod: ZLbaCompany,
   indexes: [
@@ -49,10 +57,3 @@ export default {
   ],
   collectionName,
 } as const satisfies IModelDescriptor
-
-export const ZLbaCompanyForContactUpdate = ZLbaCompany.pick({
-  siret: true,
-  email: true,
-  phone: true,
-  enseigne: true,
-})

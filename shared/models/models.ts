@@ -23,6 +23,7 @@ import lbaCompanyLegacyModel from "./lbaCompanyLegacy.model"
 import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
 import recruiterModel from "./recruiter.model"
+import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model"
 import referentielOnisepModel from "./referentielOnisep.model"
 import referentielOpcoModel from "./referentielOpco.model"
 import roleManagementModel from "./roleManagement.model"
@@ -57,6 +58,7 @@ const modelDescriptorMap = {
   [opcoModel.collectionName]: opcoModel,
   [optoutModel.collectionName]: optoutModel,
   [recruiterModel.collectionName]: recruiterModel,
+  [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielOpcoModel.collectionName]: referentielOpcoModel,
   [romeModel.collectionName]: romeModel,
