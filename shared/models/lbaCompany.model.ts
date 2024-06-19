@@ -49,3 +49,10 @@ export default {
   ],
   collectionName,
 } as const satisfies IModelDescriptor
+
+export const ZLbaCompanyForContactUpdate = ZLbaCompany.pick({
+  siret: true,
+  email: true,
+  phone: true,
+  enseigne: true,
+})
