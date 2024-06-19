@@ -1,7 +1,6 @@
 import { captureException } from "@sentry/node"
-// import { Collection, CollectionInfo, MongoClient, MongoServerError } from "mongodb" // to uncomment when migrated to V7
 import { isEqual } from "lodash-es"
-import { Collection, MongoClient } from "mongodb"
+import { Collection, CollectionInfo, MongoClient, MongoServerError } from "mongodb" // to uncomment when migrated to V7
 import { IModelDescriptor } from "shared/models/common"
 import { CollectionName, IDocument, modelDescriptors } from "shared/models/models"
 import { zodToMongoSchema } from "zod-mongodb-schema"
@@ -91,12 +90,9 @@ const createCollectionIfDoesNotExist = async (collectionName: string) => {
     try {
       await db.createCollection(collectionName)
     } catch (err) {
-      /**
-       * KBA : to uncomment when migrated to V7
-       */
-      // if ((err as MongoServerError).codeName !== "NamespaceExists") {
-      //   throw err
-      // }
+      if ((err as MongoServerError).codeName !== "NamespaceExists") {
+        throw err
+      }
     }
   }
 }
@@ -107,12 +103,7 @@ const createCollectionIfDoesNotExist = async (collectionName: string) => {
  * @param {*} collectionName
  * @returns
  */
-
-/**
- * KBA : to uncomment when migrated to V7
- */
-// export const collectionExistInDb = (collectionsInDb: CollectionInfo[], collectionName: string) => collectionsInDb.map(({ name }: { name: string }) => name).includes(collectionName)
-export const collectionExistInDb = (collectionsInDb, collectionName: string) => collectionsInDb.map(({ name }: { name: string }) => name).includes(collectionName)
+export const collectionExistInDb = (collectionsInDb: CollectionInfo[], collectionName: string) => collectionsInDb.map(({ name }: { name: string }) => name).includes(collectionName)
 
 /**
  * Config de la validation
