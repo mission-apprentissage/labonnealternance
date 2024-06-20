@@ -47,16 +47,17 @@ function generateOpenApiRequest(route: IRouteSchema): RouteConfig["request"] {
   return requestParams
 }
 
+const authorizedSchemes = ["api-key", "api-apprentissage"]
 function getSecurityRequirementObject(route: IRouteSchema): SecurityRequirementObject[] {
   if (route.securityScheme === null) {
     return []
   }
 
-  if (route.securityScheme.auth !== "api-key") {
+  if (!authorizedSchemes.includes(route.securityScheme.auth)) {
     throw new Error("getSecurityRequirementObject: securityScheme not supported")
   }
 
-  return [{ "api-key": [] }]
+  return [{ [route.securityScheme.auth]: [] }]
 }
 
 function addOpenApiOperation(path: string, method: "get" | "put" | "post" | "delete", route: IRouteSchema, registry: OpenAPIRegistry) {
