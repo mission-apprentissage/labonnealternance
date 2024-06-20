@@ -458,7 +458,7 @@ const offreOrCompanyToCompanyFields = (LbaJob: ILbaJob): Partial<IApplication> =
     const application: Partial<IApplication> = {
       company_siret: establishment_siret,
       company_name: establishment_enseigne || establishment_raison_sociale || "Enseigne inconnue",
-      company_naf: naf_label ?? undefined,
+      company_naf: naf_label ?? "",
       job_title: rome_appellation_label ?? rome_label ?? undefined,
       company_address: is_delegated ? null : address,
       job_id: job._id.toString(),
