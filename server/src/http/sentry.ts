@@ -28,7 +28,6 @@ function getOptions() {
 
 export function initSentryProcessor(): void {
   Sentry.init(getOptions() as any)
-  registerMongoosePlugin()
 }
 
 export async function closeSentry(): Promise<void> {
