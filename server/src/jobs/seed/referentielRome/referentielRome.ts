@@ -2,14 +2,14 @@ import { readFileSync } from "fs"
 
 import iconv from "iconv-lite"
 import { ObjectId } from "mongodb"
-import { IReferentielRome } from "shared/index.js"
+import { IReferentielRome } from "shared/index"
 import * as xml2j from "xml2js"
 
-import { logger } from "@/common/logger.js"
-import { getDbCollection } from "@/common/utils/mongodbUtils.js"
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import __dirname from "../../../common/dirname.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
+import __dirname from "../../../common/dirname"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
 
 const getGenericItem = (genericItem: { libelle: string; items: { item: any | any[] } }) => {
   const tempsItems = !(genericItem.items.item instanceof Array) ? [genericItem.items.item] : genericItem.items.item

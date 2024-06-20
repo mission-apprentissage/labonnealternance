@@ -1,7 +1,6 @@
-import { describe, expect, it } from "vitest"
-
 import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
+import { describe, expect, it } from "vitest"
 
 import config from "../../../src/config"
 

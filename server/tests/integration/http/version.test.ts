@@ -1,10 +1,9 @@
 import assert from "assert"
 
-import isSemver from "is-semver"
-import { describe, expect, it } from "vitest"
-
 import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
+import isSemver from "is-semver"
+import { describe, expect, it } from "vitest"
 
 describe("version", () => {
   useMongo()

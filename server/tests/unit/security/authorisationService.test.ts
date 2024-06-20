@@ -1,3 +1,5 @@
+import { useMongo } from "@tests/utils/mongo.utils"
+import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.utils"
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -7,8 +9,6 @@ import { describe, expect, it } from "vitest"
 
 import { AccessUser2, AccessUserCredential, AccessUserToken } from "@/security/authenticationService"
 import { authorizationMiddleware } from "@/security/authorisationService"
-import { useMongo } from "@tests/utils/mongo.utils"
-import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.utils"
 
 type MockedRequest = Pick<FastifyRequest, "params" | "query">
 const emptyRequest: MockedRequest = { params: {}, query: {} }
