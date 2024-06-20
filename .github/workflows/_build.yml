@@ -73,7 +73,7 @@ jobs:
   deploy:
     concurrency:
       group: "deploy-${{ github.workflow }}-${{ github.ref }}"
-    needs: ["release"]
+    needs: ["build"]
     name: Deploy ${{ inputs.version }} on ${{ inputs.environment }}
     uses: "./.github/workflows/_deploy.yml"
     with:
