@@ -27,7 +27,7 @@ import {
   provideOffre,
 } from "../../services/formulaire.service"
 import { getFtJobFromIdV2 } from "../../services/ftjob.service"
-import { getJobsQuery } from "../../services/jobOpportunity.service"
+import { getJobsQueryV2 } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../services/lbacompany.service"
 import { addOffreDetailView, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
@@ -345,7 +345,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
-      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: false })
+      const result = await getJobsQueryV2({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: false })
 
       if ("error" in result) {
         return res.status(500).send(result)
@@ -363,7 +363,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
-      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: true })
+      const result = await getJobsQueryV2({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: true })
 
       if ("error" in result) {
         return res.status(500).send(result)
