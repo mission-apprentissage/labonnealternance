@@ -330,6 +330,7 @@ export const sendApplicationV2 = async ({
         errorTitle: "error_sending_application",
       })
     }
+    throw Boom.badRequest(BusinessErrorCodes.UNKNOWN)
   }
 }
 
