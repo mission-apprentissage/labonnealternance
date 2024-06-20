@@ -3,7 +3,7 @@ import { oleoduc, transformData, writeData } from "oleoduc"
 import { db } from "@/common/mongodb"
 import { checkIsDiffusible } from "@/services/etablissement.service"
 
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
+import { LbaCompany } from "../../common/model"
 import { logMessage } from "../../common/utils/logMessage"
 
 import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./lbaCompaniesUtils"
@@ -123,7 +123,7 @@ export const removeSAVECompanies = async () => {
     ),
     writeData(async (company) => {
       // Ce bloc ne sera utile qu'une seule fois.
-      const unsubed = await UnsubscribedLbaCompany.findOne({ siret: company.siret })
+      const unsubed = await db.collection("unsubscribedbonnesboites").findOne({ siret: company.siret })
       if (!unsubed) {
         const toUnsub = {
           siret: company.siret,
