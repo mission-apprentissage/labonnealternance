@@ -49,6 +49,10 @@ function deploy() {
   "${SCRIPT_DIR}/deploy-app.sh" "$@"
 }
 
+function build:image() {
+  "${SCRIPT_DIR}/build-images.sh" "$@"
+}
+
 function preview:build() {
   "${SCRIPT_DIR}/build-images.sh" "$@"
 }

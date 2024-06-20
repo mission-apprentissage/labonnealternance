@@ -3981,7 +3981,7 @@ Limite : 7 appel(s) / 1 seconde(s)
         },
         "security": [
           {
-            "api-key": [],
+            "api-apprentissage": [],
           },
         ],
         "tags": [
@@ -5484,7 +5484,7 @@ Limite : 5 appel(s) / 1 seconde(s)
         },
         "security": [
           {
-            "api-key": [],
+            "api-apprentissage": [],
           },
         ],
         "tags": [

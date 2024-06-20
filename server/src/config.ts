@@ -44,6 +44,9 @@ const config = {
       jwtSecret: env.get("LBA_AUTH_USER_JWT_SECRET").required().asString(),
       expiresIn: env.get("LBA_AUTH_USER_JWT_SECRET_EXPIRES").required().asString(),
     },
+    apiApprentissage: {
+      publicKey: env.get("LBA_API_APPRENTISSAGE_PUBLIC_KEY").required().asString(),
+    },
     session: {
       cookieName: "lba_session",
       cookie: {
