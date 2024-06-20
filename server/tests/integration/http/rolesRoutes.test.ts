@@ -17,7 +17,7 @@ describe("rolesRoutes", () => {
 
   it("Vérifie qu'on peut se connecter à une route d'admin en tant qu'administrateur", async () => {
     const bearerToken = await createAndLogUser(httpClient, "userAdmin", { type: "ADMIN" })
-    const response = await httpClient().inject({ method: "GET", path: "/api/admin/appointments/details", headers: bearerToken })
+    const response = await httpClient().inject({ method: "GET", path: "/api/admin/formations?search_item=test", headers: bearerToken })
     expect(response.statusCode).toBe(200)
   })
 
