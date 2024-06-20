@@ -147,6 +147,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: server/src/common/utils/awsUtils.ts
   checksum: 0acc085847288b9f2d5235f118e29199a168b368c33a7e37ab7dfc7e143fb507
+- filename: .github/workflows/_build.yml
+  checksum: 49e04fdfb075aeef29b4a7054d6344a651d00b8e66340e7ed5f3b2cf45e449c3
 scopeconfig:
 - scope: node
 custom_patterns:

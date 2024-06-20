@@ -42,7 +42,33 @@ on:
         required: true
 
 jobs:
+  version:
+    name: Get Version
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.get-version.outputs.VERSION }}
+    steps:
+      - name: Checkout project
+        if: ${{ inputs.app_version == 'latest' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Get Version
+        id: get-version
+        shell: bash
+        run: |
+          if [[ "${APP_VERSION}" == "latest" ]]; then
+            echo "VERSION=$(git describe --tags --abbrev=0 --candidates 100 --always | cut -c 2-)" >> "$GITHUB_OUTPUT"
+          else
+            echo "VERSION=${APP_VERSION}" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          APP_VERSION: ${{ inputs.app_version }}
+
   deploy:
+    needs: version
     name: Deploy ${{ inputs.app_version }} on ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
