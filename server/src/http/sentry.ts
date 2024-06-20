@@ -2,6 +2,7 @@ import fastifySentryPlugin from "@immobiliarelabs/fastify-sentry"
 import { ExtraErrorData } from "@sentry/integrations"
 import * as Sentry from "@sentry/node"
 import { FastifyRequest } from "fastify"
+import { assertUnreachable } from "shared/utils"
 
 import { mongooseInstance } from "@/common/mongodb"
 import { startSentryPerfRecording } from "@/common/utils/sentryUtils"
@@ -39,7 +40,9 @@ function extractUserData(request: FastifyRequest) {
     }
   }
 
-  if (user.type === "ICredential") {
+  const userType = user.type
+
+  if (userType === "ICredential") {
     return {
       segment: "api-key",
       id: user.value._id.toString(),
@@ -47,7 +50,7 @@ function extractUserData(request: FastifyRequest) {
     }
   }
 
-  if (user.type === "IAccessToken") {
+  if (userType === "IAccessToken") {
     const identity = user.value.identity
     return {
       segment: "access-token",
@@ -55,12 +58,20 @@ function extractUserData(request: FastifyRequest) {
       email: identity.email,
     }
   }
-
-  return {
-    segment: "session",
-    id: user.value._id.toString(),
-    email: user.value.email,
+  if (userType === "IUser2") {
+    return {
+      segment: "session",
+      id: user.value._id.toString(),
+      email: user.value.email,
+    }
   }
+  if (userType === "IApiApprentissage") {
+    return {
+      segment: "api-apprentissage",
+      email: user.value.email,
+    }
+  }
+  assertUnreachable(userType)
 }
 
 export function initSentryFastify(app: Server) {

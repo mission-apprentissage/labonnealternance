@@ -113,14 +113,6 @@ const neededFieldsFromCatalogue = {
 export const getFormationById = (id: string) => FormationCatalogue.findById(id)
 
 /**
- * @description Get formations by idRcoFormations.
- * @param {String[]} idRcoFormations
- * @returns {Promise<Object[]>}
- */
-export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: { cleMinistereEducatifs: string[] }) =>
-  FormationCatalogue.find({ cle_ministere_educatif: { $in: cleMinistereEducatifs } }).lean()
-
-/**
  * @description Get formations from the formation catalogue collection.
  * @param {Object} query - Mongo query
  * @param {Object} select

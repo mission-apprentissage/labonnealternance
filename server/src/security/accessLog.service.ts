@@ -53,6 +53,11 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
         acl.user_email = req.user.value.email
         break
       }
+      case "IApiApprentissage": {
+        acl.user_type = req.user.type
+        acl.user_email = req.user.value.email
+        break
+      }
       default: {
         assertUnreachable(req.user)
         break

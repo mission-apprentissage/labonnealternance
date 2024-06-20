@@ -357,6 +357,11 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
       throw Boom.forbidden("non autorisé")
     }
+  } else if (userType === "IApiApprentissage") {
+    if (schema.securityScheme.access !== null) {
+      throw Boom.forbidden("access non autorisé")
+    }
+    // dans le futur, la gestion de droits du client api apprentissage sera ici
   } else {
     assertUnreachable(userType)
   }
