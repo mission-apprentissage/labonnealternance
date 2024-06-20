@@ -2,7 +2,10 @@ import Boom from "boom"
 import jwt from "jsonwebtoken"
 import { z } from "zod"
 
+import { logger } from "@/common/logger"
 import config from "@/config"
+
+const { JsonWebTokenError, TokenExpiredError } = jwt
 
 const jwtPublicKey = config.auth.apiApprentissage.publicKey
 
@@ -18,14 +21,24 @@ export const parseApiApprentissageToken = (jwtToken: string): ApiApprentissageTo
       complete: true,
       algorithms: ["ES512"],
     })
-    const apiData = ZApiApprentissageTokenData.parse(payload)
-    return apiData
-  } catch (err: any) {
-    const errorStr = err + ""
-    if (errorStr === "TokenExpiredError: jwt expired") {
+    const parseResult = ZApiApprentissageTokenData.safeParse(payload)
+    if (!parseResult.success) {
+      throw Boom.forbidden("bad token format")
+    }
+    return parseResult.data
+  } catch (err: unknown) {
+    if (err instanceof TokenExpiredError) {
       throw Boom.forbidden("JWT expired")
     }
-    console.warn("invalid jwt token", jwtToken, err)
-    throw Boom.forbidden()
+    if (err instanceof JsonWebTokenError) {
+      logger.warn("invalid jwt token", jwtToken, err)
+      throw Boom.forbidden()
+    }
+    if (err instanceof Error && Boom.isBoom(err)) {
+      throw err
+    }
+    const e = Boom.internal()
+    e.cause = err
+    throw e
   }
 }
