@@ -1,5 +1,4 @@
 import axios from "axios"
-import Boom from "boom"
 import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 
 import { isOriginLocal } from "../common/utils/isOriginLocal"
@@ -25,20 +24,26 @@ const getFirstCertificationFromAPIApprentissage = async (rncp: string): Promise<
   }
 }
 
+const getRomesFromCertification = (certification: CertificationAPIApprentissage) => {
+  return certification.domaines.rome.rncp.map((x) => x.code).join(",")
+}
 const getRomesFromRncp = async (rncp: string): Promise<string | null> => {
   let certification = await getFirstCertificationFromAPIApprentissage(rncp)
-  if (!certification) return null
-
+  if (!certification) {
+    return null
+  }
   if (certification.periode_validite.rncp.actif) {
-    return certification.domaines.rome.rncp.map((x) => x.code).join(",")
+    return getRomesFromCertification(certification)
   } else {
     const latestRNCP = certification.continuite.rncp.findLast((rncp) => rncp.actif === true)
     if (!latestRNCP) {
-      throw Boom.internal(`le code RNCP ${rncp} n'a aucune continuité`)
+      return getRomesFromCertification(certification)
     }
     certification = await getFirstCertificationFromAPIApprentissage(latestRNCP.code)
-    if (!certification) return null
-    return certification.domaines.rome.rncp.map((x) => x.code).join(",")
+    if (!certification) {
+      return null
+    }
+    return getRomesFromCertification(certification)
   }
 }
 
