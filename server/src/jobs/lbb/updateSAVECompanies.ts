@@ -121,6 +121,28 @@ export const removeSAVECompanies = async () => {
       { parallel: 8 }
     ),
     writeData(async (company) => {
+      // Ce bloc ne sera utile qu'une seule fois.
+      const unsubed = await getDbCollection("unsubscribedbonnesboites").findOne({ siret: company.siret })
+      if (!unsubed) {
+        const toUnsub = {
+          siret: company.siret,
+          raison_sociale: "",
+          enseigne: "Suppression via script SAVE",
+          naf_code: "",
+          naf_label: "",
+          rome_codes: [],
+          insee_city_code: "",
+          zip_code: "",
+          city: "",
+          company_size: "",
+          created_at: new Date(),
+          last_update_at: new Date(),
+          unsubscribe_date: new Date(),
+          unsubscribe_reason: "Autre",
+        }
+        await getDbCollection("unsubscribedbonnesboites").insertOne(toUnsub)
+      }
+
       await getDbCollection("bonnesboites").deleteOne({ siret: company.siret })
     })
   )
