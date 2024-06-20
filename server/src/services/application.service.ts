@@ -54,6 +54,7 @@ const images: object = {
     check: `${imagePath}icone_check.png`,
     enveloppe: `${imagePath}icone_enveloppe.png`,
     bin: `${imagePath}icone_bin.png`,
+    recuCandidature: `${imagePath}recu-candidature.png`,
   },
 }
 
