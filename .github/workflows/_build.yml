@@ -15,7 +15,7 @@ on:
           - pentest
 
 jobs:
-  release:
+  build:
     concurrency:
       group: "build-${{ github.workflow }}-${{ github.ref }}"
     permissions: write-all
