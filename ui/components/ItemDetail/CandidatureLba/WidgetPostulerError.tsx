@@ -1,14 +1,16 @@
+import { BusinessErrorCodes } from "@/../shared/constants/errorCodes"
 import { Box } from "@chakra-ui/react"
 import React from "react"
 
 const WidgetPostulerError = ({ hasError }) => {
   const getErrorText = () => {
     switch (hasError) {
+      case "Société non trouvée":
       case "item_not_found": {
         return "L'offre n'est plus disponible"
       }
-      case "missing_email": {
-        return "Nous ne disposons pas des informations permettant de postuler en ligne."
+      case BusinessErrorCodes.INTERNAL_EMAIL: {
+        return "Les informations de contact disponibles ne permettent pas de postuler auprès de cette société."
       }
       case "missing_caller_parameter": {
         return "La source de l'appel au service est manquante (caller)."

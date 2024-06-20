@@ -24,29 +24,25 @@ const WidgetPostuler = () => {
   const fetchPostulerItem = async (parameters) => {
     let item = null
 
-    switch (parameters.type) {
-      case LBA_ITEM_TYPE_OLD.MATCHA: {
-        item = await fetchLbaJobDetails({ id: parameters.itemId })
-        break
+    try {
+      switch (parameters.type) {
+        case LBA_ITEM_TYPE_OLD.MATCHA: {
+          item = await fetchLbaJobDetails({ id: parameters.itemId })
+          break
+        }
+        case LBA_ITEM_TYPE_OLD.LBA: {
+          item = await fetchLbaCompanyDetails({ id: parameters.itemId })
+          break
+        }
+        default: {
+          assertUnreachable("shouldNotHappen" as never)
+          break
+        }
       }
-      case LBA_ITEM_TYPE_OLD.LBA: {
-        item = await fetchLbaCompanyDetails({ id: parameters.itemId })
-        break
-      }
-      default: {
-        assertUnreachable("shouldNotHappen" as never)
-        break
-      }
-    }
-
-    if (item) {
-      if (!item?.contact?.email || !item?.contact?.iv) {
-        setHasError("missing_email")
-      } else {
-        setItem(item)
-      }
-    } else {
-      setHasError("item_not_found")
+      setCaller(parameters.caller)
+      setItem(item)
+    } catch (err) {
+      setHasError(err.message)
     }
 
     setIsLoading(false)
@@ -55,6 +51,7 @@ const WidgetPostuler = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [hasError, setHasError] = useState(null)
   const [item, setItem] = useState(null)
+  const [caller, setCaller] = useState(null)
 
   return hasError ? (
     <WidgetPostulerError hasError={hasError} />
@@ -64,7 +61,7 @@ const WidgetPostuler = () => {
       Veuillez patienter
     </Flex>
   ) : (
-    <WidgetCandidatureLba item={item} />
+    <WidgetCandidatureLba item={item} caller={caller} />
   )
 }
 
