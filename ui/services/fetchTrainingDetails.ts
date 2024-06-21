@@ -1,7 +1,9 @@
-import { ILbaItemFormation2 } from "shared"
-import { Jsonify } from "type-fest"
+import { zRoutes } from "shared"
+import { z } from "zod"
 
 import { apiGet } from "@/utils/api.utils"
+
+const zodSchema = zRoutes.get["/v1/formations/formation/:id"].response["200"]
 
 export const fetchTrainingDetails = async (training): Promise<Jsonify<ILbaItemFormation2> & { detailsLoaded: true }> => {
   const response = await apiGet("/v1/formations/formation/:id", { params: { id: training.id }, querystring: {} })
