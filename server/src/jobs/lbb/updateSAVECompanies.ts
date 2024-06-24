@@ -1,5 +1,6 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
 
+import { db } from "@/common/mongodb"
 import { checkIsDiffusible } from "@/services/etablissement.service"
 
 import { LbaCompany } from "../../common/model"
@@ -121,7 +122,29 @@ export const removeSAVECompanies = async () => {
       { parallel: 8 }
     ),
     writeData(async (company) => {
-      await LbaCompany.deleteOne({ siret: company.siret })
+      // Ce bloc ne sera utile qu'une seule fois.
+      const unsubed = await db.collection("unsubscribedbonnesboites").findOne({ siret: company.siret })
+      if (!unsubed) {
+        const toUnsub = {
+          siret: company.siret,
+          raison_sociale: "",
+          enseigne: "Suppression via script SAVE",
+          naf_code: "",
+          naf_label: "",
+          rome_codes: [],
+          insee_city_code: "",
+          zip_code: "",
+          city: "",
+          company_size: "",
+          created_at: new Date(),
+          last_update_at: new Date(),
+          unsubscribe_date: new Date(),
+          unsubscribe_reason: "Autre",
+        }
+        await db.collection("unsubscribedbonnesboites").insertOne(toUnsub)
+      }
+
+      await db.collection("bonnesboites").deleteOne({ siret: company.siret })
     })
   )
 

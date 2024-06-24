@@ -70,7 +70,7 @@ const Header = () => {
                     <>
                       <MenuItem onClick={() => router.push("/espace-pro/administration/users")}>Gestion des recruteurs</MenuItem>
                       <MenuItem onClick={() => router.push("/espace-pro/admin/utilisateurs")}>Gestion des administrateurs</MenuItem>
-                      <MenuItem onClick={() => router.push("/espace-pro/admin")}>Rendez-vous Apprentissage</MenuItem>
+                      <MenuItem onClick={() => router.push("/espace-pro/admin/eligible-trainings-for-appointment/search")}>Rendez-vous Apprentissage</MenuItem>
                       <MenuItem onClick={() => router.push("/espace-pro/administration/gestionEntreprises")}>Entreprises de l'algorithme</MenuItem>
                       <MenuDivider />
                     </>
