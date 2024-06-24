@@ -56,7 +56,7 @@ fileignoreconfig:
 - filename: server/src/jobs/database/obfuscateCollections.ts
   checksum: b2187fd541ab53581f3313f43dc9aa60dabce658ae848e63b9a85c2e42a953fd
 - filename: server/src/jobs/job.actions.ts
-  checksum: 40c0dfd4f33ec0f09d736e3e7554b0edee132165e1eb00440e196edf49e0c647
+  checksum: 4db1a4c6047165e8032efd563cf594e6169b7065e04f1333df22ddad56343431
 - filename: server/src/jobs/lba_recruteur/api/createApiUser.ts
   checksum: 8e4712bae8747c1f0f2ba8b4ac3f3af118772136c16b6318b14a2d8b7e277dc6
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts

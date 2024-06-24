@@ -1,4 +1,4 @@
-import type { Filter, FindOptions, MatchKeysAndValues, ObjectId } from "mongodb"
+import { Filter, FindOptions, MatchKeysAndValues, ObjectId } from "mongodb"
 
 import { IInternalJobs, IInternalJobsCron, IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/internalJobs.types"
 
@@ -7,7 +7,8 @@ import { getDbCollection } from "../common/utils/mongodbUtils"
 type CreateJobSimpleParams = Pick<IInternalJobsSimple, "name" | "payload" | "scheduled_for" | "sync">
 
 export const createJobSimple = async ({ name, payload, scheduled_for = new Date(), sync = false }: CreateJobSimpleParams): Promise<IInternalJobsSimple> => {
-  const job: Omit<IInternalJobsSimple, "_id"> = {
+  const job: IInternalJobsSimple = {
+    _id: new ObjectId(),
     name,
     type: "simple",
     status: sync ? "will_start" : "pending",
@@ -17,14 +18,15 @@ export const createJobSimple = async ({ name, payload, scheduled_for = new Date(
     scheduled_for,
     sync,
   }
-  const { insertedId: _id } = await getDbCollection("internalJobs").insertOne(job)
-  return { ...job, _id } as IInternalJobsSimple
+  await getDbCollection("internalJobs").insertOne(job)
+  return job
 }
 
 type CreateJobCronParams = Pick<IInternalJobsCron, "name" | "cron_string" | "scheduled_for" | "sync">
 
 export const createJobCron = async ({ name, cron_string, scheduled_for = new Date(), sync = false }: CreateJobCronParams): Promise<IInternalJobsCron> => {
-  const job: Omit<IInternalJobsCron, "_id"> = {
+  const job: IInternalJobsCron = {
+    _id: new ObjectId(),
     name,
     type: "cron",
     status: sync ? "will_start" : "pending",
@@ -34,14 +36,15 @@ export const createJobCron = async ({ name, cron_string, scheduled_for = new Dat
     scheduled_for,
     sync,
   }
-  const { insertedId: _id } = await getDbCollection("internalJobs").insertOne(job)
-  return { ...job, _id }
+  await getDbCollection("internalJobs").insertOne(job)
+  return job
 }
 
 type CreateJobCronTaskParams = Pick<IInternalJobsCron, "name" | "scheduled_for">
 
 export const createJobCronTask = async ({ name, scheduled_for }: CreateJobCronTaskParams): Promise<IInternalJobsCronTask> => {
-  const job: Omit<IInternalJobsCronTask, "_id"> = {
+  const job: IInternalJobsCronTask = {
+    _id: new ObjectId(),
     name,
     type: "cron_task",
     status: "pending",
@@ -50,8 +53,8 @@ export const createJobCronTask = async ({ name, scheduled_for }: CreateJobCronTa
     scheduled_for,
     sync: false,
   }
-  const { insertedId: _id } = await getDbCollection("internalJobs").insertOne(job)
-  return { ...job, _id }
+  await getDbCollection("internalJobs").insertOne(job)
+  return job
 }
 
 export const findJob = async (filter: Filter<IInternalJobs>, options?: FindOptions<IInternalJobs>): Promise<IInternalJobs | null> => {
