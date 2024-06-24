@@ -5,7 +5,6 @@
 
 // @ts-nocheck
 import fastifySentryPlugin from "@immobiliarelabs/fastify-sentry"
-import { ExtraErrorData } from "@sentry/integrations"
 import * as Sentry from "@sentry/node"
 import { FastifyRequest } from "fastify"
 import { assertUnreachable } from "shared/utils"
@@ -14,7 +13,7 @@ import config from "@/config"
 
 import { Server } from "./server"
 
-function getOptions() {
+function getOptions(): Sentry.NodeOptions {
   return {
     dsn: config.serverSentryDsn,
     tracesSampleRate: config.env === "production" ? 0.1 : 1.0,
@@ -22,12 +21,17 @@ function getOptions() {
     environment: config.env,
     release: config.version,
     enabled: config.env !== "local",
-    integrations: [new Sentry.Integrations.Http({ tracing: true }), new Sentry.Integrations.Mongo({ useMongoose: true }), new ExtraErrorData({ depth: 8 })],
+    integrations: [
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Sentry.Integrations.Mongo({ useMongoose: false }),
+      Sentry.extraErrorDataIntegration({ depth: 16 }),
+      Sentry.captureConsoleIntegration({ levels: ["error"] }),
+    ],
   }
 }
 
 export function initSentryProcessor(): void {
-  Sentry.init(getOptions() as any)
+  Sentry.init(getOptions())
 }
 
 export async function closeSentry(): Promise<void> {
