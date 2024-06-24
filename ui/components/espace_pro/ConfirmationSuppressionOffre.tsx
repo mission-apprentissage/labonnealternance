@@ -1,58 +1,52 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  Text,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react"
-import { useState } from "react"
+import { Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, Text, useToast } from "@chakra-ui/react"
+import { FormikProvider, useFormik } from "formik"
 import { useQueryClient } from "react-query"
 import { JOB_STATUS } from "shared"
+import { z } from "zod"
+import { toFormikValidationSchema } from "zod-formik-adapter"
 
-import { ArrowRightLine, Close } from "../../theme/components/icons"
+import { Close } from "../../theme/components/icons"
 import { cancelOffreFromAdmin } from "../../utils/api"
 
+import { CustomFormControl } from "./CustomFormControl"
+import CustomInput from "./CustomInput"
+import { CustomSelect } from "./CustomSelect"
+
+const zodSchema = z.object({
+  motif: z.string().nonempty(),
+  autreMotif: z.string().optional(),
+})
+
+const motifsPourvus = ["J'ai pourvu l'offre avec La bonne alternance", "J'ai pourvu l'offre sans l'aide de La bonne alternance"]
+const motifAutre = "Autre"
+const autreMotifs = [
+  "Je ne suis plus en recherche",
+  "Je ne reçois pas de candidature",
+  "Je n’ai pas pu personnaliser mon offre",
+  "Les candidatures reçues ne sont pas assez qualifiées",
+  motifAutre,
+]
+
+const motifs = [...motifsPourvus, ...autreMotifs]
+
 export default function ConfirmationSuppressionOffre(props) {
-  const [job_status_comment, SetjobStatusComment] = useState("")
-  const extraOption = useDisclosure()
-  const reason = useDisclosure()
   const toast = useToast()
   const client = useQueryClient()
 
-  const { isOpen, onClose, offre } = props
-
   const resetState = () => {
-    SetjobStatusComment("")
-    reason.onClose()
-    extraOption.onClose()
     onClose()
   }
 
-  const handleReasonSelect = (reason) => {
-    if (reason === "Autre") {
-      SetjobStatusComment("")
-      extraOption.onOpen()
-    } else {
-      SetjobStatusComment(reason)
-    }
-  }
-
-  const cancelOffer = (job_status: JOB_STATUS.POURVUE | JOB_STATUS.ANNULEE) => {
-    cancelOffreFromAdmin(offre._id, { job_status, job_status_comment: job_status_comment ?? undefined })
+  const onSubmit = (values: z.output<typeof zodSchema>) => {
+    const { motif, autreMotif } = values
+    const estPouvue = motifsPourvus.includes(motif)
+    const jobStatus = estPouvue ? JOB_STATUS.POURVUE : JOB_STATUS.ANNULEE
+    const motifFinal = (motif === motifAutre ? autreMotif || motif : motif) || undefined
+    cancelOffreFromAdmin(offre._id, { job_status: jobStatus, job_status_comment: motifFinal })
       .then(() => {
         toast({
-          title: `Offre ${job_status}`,
+          title: `Offre supprimée.`,
+          description: "Votre offre a bien été mise à jour.",
           position: "top-right",
           status: "success",
           duration: 2000,
@@ -63,70 +57,62 @@ export default function ConfirmationSuppressionOffre(props) {
       .finally(() => client.invalidateQueries("offre-liste"))
   }
 
+  const formik = useFormik({
+    initialValues: {
+      motif: "",
+      autreMotif: "",
+    },
+    validationSchema: toFormikValidationSchema(zodSchema),
+    enableReinitialize: true,
+    onSubmit,
+  })
+
+  const { isOpen, onClose, offre } = props
+
   return (
     <Modal closeOnOverlayClick={false} blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0}>
+      <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0} width="532px" minWidth={[0, 532]}>
         <Button display={"flex"} alignSelf={"flex-end"} color="bluefrance.500" fontSize={"epsilon"} onClick={resetState} variant="unstyled" p={6} fontWeight={400}>
-          fermer
+          Fermer
           <Text as={"span"} ml={2}>
             <Close boxSize={4} />
           </Text>
         </Button>
         <ModalHeader>
-          <Heading as="h2" fontSize="1.5rem">
-            <Flex>
-              <Text as={"span"}>
-                <ArrowRightLine boxSize={26} />
-              </Text>
-              <Text as={"span"} ml={4}>
-                l'offre a-t-elle été pourvue ?
-              </Text>
-            </Flex>
+          <Heading as="h2" fontSize="24px" lineHeight="32px">
+            Êtes-vous certain de vouloir supprimer votre offre ?
           </Heading>
         </ModalHeader>
-        <ModalBody pb={6}></ModalBody>
-
-        {!reason.isOpen && (
-          <ModalFooter>
-            <Button variant="secondary" mr={3} onClick={() => reason.onOpen()}>
-              Non
-            </Button>
-            <Button variant="primary" onClick={() => cancelOffer(JOB_STATUS.POURVUE)}>
-              Oui
-            </Button>
-          </ModalFooter>
-        )}
-        {reason.isOpen && !extraOption.isOpen && (
-          <ModalFooter alignItems="flex-end">
-            <FormControl isRequired>
-              <FormLabel>Raison de l'annulation</FormLabel>
-              <Select variant="outline" placeholder="Selectionner une option" onChange={(v) => handleReasonSelect(v.target.value)}>
-                <option value="Je ne suis plus à la recherche">Je ne suis plus à la recherche</option>
-                <option value="Je ne reçois pas de candidature">Je ne reçois pas de candidature</option>
-                <option value="Les candidatures reçues ne sont pas assez qualifiées">Les candidatures reçues ne sont pas assez qualifiées</option>
-                <option value="Autre">Autre</option>
-              </Select>
-            </FormControl>
-            <Button variant="secondary" ml={3} onClick={() => cancelOffer(JOB_STATUS.ANNULEE)} isDisabled={job_status_comment.length < 3}>
-              Enregistrer
-            </Button>
-          </ModalFooter>
-        )}
-
-        {extraOption.isOpen && (
-          <ModalBody>
-            <FormLabel>Raison de l'annulation</FormLabel>
-            <FormControl isRequired>
-              <Input onChange={(e) => SetjobStatusComment(e.target.value)} isRequired minLength={3} />
-            </FormControl>
-            <Flex justify="flex-end">
-              <Button variant="secondary" mt={3} onClick={() => cancelOffer(JOB_STATUS.ANNULEE)} isDisabled={job_status_comment.length < 3}>
-                Enregistrer
-              </Button>
-            </Flex>
-          </ModalBody>
-        )}
+        <ModalBody pb={6}>
+          <Text mb={4} color="#3A3A3A" fontSize="16px" lineHeight="24px">
+            Celle-ci sera définitivement supprimée. Vous ne recevrez plus de candidatures.
+          </Text>
+          <FormikProvider value={formik}>
+            <form onSubmit={formik.handleSubmit}>
+              <CustomFormControl label="Motif de la suppression (obligatoire)" required name="motif">
+                <CustomSelect
+                  name="motif"
+                  possibleValues={motifs}
+                  value={formik.values.motif || ""}
+                  selectProps={{
+                    isRequired: true,
+                  }}
+                  onChange={(newValue) => formik.setFieldValue("motif", newValue, true)}
+                />
+              </CustomFormControl>
+              {formik.values.motif === motifAutre && <CustomInput label="Précisez votre motif (facultatif)" name="autreMotif" required={false} />}
+              <Flex justifyContent="flex-end" mt={8}>
+                <Button variant="secondary" ml={3} onClick={() => resetState()}>
+                  Annuler
+                </Button>
+                <Button type="submit" variant="primary" ml={3} isDisabled={!formik.dirty || !formik.isValid}>
+                  Confirmer la suppression
+                </Button>
+              </Flex>
+            </form>
+          </FormikProvider>
+        </ModalBody>
       </ModalContent>
     </Modal>
   )
