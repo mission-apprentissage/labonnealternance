@@ -1,5 +1,4 @@
 import cronParser from "cron-parser"
-import mongoose from "mongoose"
 
 import { IInternalJobsCron } from "@/common/model/internalJobs.types"
 import config from "@/config"
@@ -68,7 +67,7 @@ export async function cronsScheduler(): Promise<void> {
       scheduled_for: next.toDate(),
     })
 
-    await updateJob(new mongoose.Types.ObjectId(cron._id), {
+    await updateJob(cron._id, {
       scheduled_for: next.toDate(),
     })
   }
