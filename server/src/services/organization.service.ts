@@ -22,7 +22,7 @@ export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco
   if (!entreprise) {
     throw new Error("inattendu: aucune entreprise trouvée. Merci d'appeler cette méthode une fois l'entreprise créée")
   }
-  await getDbCollection("entreprises").findOneAndUpdate({ siret }, { opco, idcc })
+  await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, idcc } })
 }
 
 /**
@@ -80,7 +80,7 @@ export const upsertEntrepriseData = async (
   }
   await setEntrepriseValid(savedEntreprise._id)
 
-  await getDbCollection("recruiters").updateMany({ establishment_siret: siret }, siretResponse)
+  await getDbCollection("recruiters").updateMany({ establishment_siret: siret }, { $set: siretResponse })
   if (getLastStatusEvent(existingEntreprise?.status)?.status === EntrepriseStatus.ERROR) {
     const recruiters = await getDbCollection("recruiters").find({ establishment_siret: siret }).toArray()
     const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: savedEntreprise._id.toString() }).toArray()
