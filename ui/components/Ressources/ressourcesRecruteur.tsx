@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Center, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { Box, Center, Flex, Grid, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import NextLink from "next/link"
 
 import { CardForLink } from "./CardForLink"
@@ -13,7 +13,7 @@ const RessourcesRecruteur = () => {
         Testez vos connaissances
       </Flex>
       <Text mb={6}>Entraînez-vous avec notre premier parcours de mise en situation à destination des recruteurs :</Text>
-      <div style={{ width: 436 }}>
+      <Grid my={6} templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
         <CardForLink
           imageUrl="/images/serrage-main.svg"
           link="https://dinum.didask.com/fr/courses/lalternance-pour-les-recruteurs?panel=content"
@@ -21,7 +21,7 @@ const RessourcesRecruteur = () => {
           linkTitle="Découvrez les étapes clés pour réussir son intégration"
           linkAriaLabel="Etapes pour accueillir un alternant - nouvelle fenêtre"
         />
-      </div>
+      </Grid>
       <Flex as="h2" fontSize={32} fontWeight={700} my={8}>
         <Image src="/images/pages_ressources/conseils et astuces.svg" alt="" mr={4} aria-hidden="true" />
         Liens utiles
