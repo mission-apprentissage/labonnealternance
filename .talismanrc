@@ -72,7 +72,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-bienvenue-entreprise-sans-offre.mjml.ejs
   checksum: 24b40449c12fab273c39600ad06504114ea22b9c484eb95aa11f5ce804590519
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
-  checksum: ea049e01e9de1b185cdf4d89105d9ff47697717e89f7d42a222ad11080ab3f5a
+  checksum: a26601fcabf793cd78599d3d569d03d354bc5fa431c0eff1f563ad4d0457938a
 - filename: server/tests/integration/http/formationV1.test.ts
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
