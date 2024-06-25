@@ -33,13 +33,6 @@ export const createUser2IfNotExist = async (
         granted_by: grantedBy,
       })
     }
-    status.push({
-      date: new Date(),
-      reason: "validation de l'email à la création",
-      status: UserEventType.VALIDATION_EMAIL,
-      validation_type: VALIDATION_UTILISATEUR.MANUAL,
-      granted_by: grantedBy,
-    })
     const now = new Date()
     const userFields: IUserWithAccount = {
       _id: id,
