@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto"
+
 import Boom from "boom"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
 import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
@@ -305,12 +307,20 @@ export const getFormulaireWithRomeDetail = async (query: Filter<IRecruiter>): Pr
  * @returns {Promise<IRecruiter>}
  */
 export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" | "establishment_id" | "createdAt" | "updatedAt">>, managedBy: string): Promise<IRecruiter> => {
-  const recruiter = await getDbCollection("recruiters").insertOne(
-    // @ts-ignore todo: fix establishment_id
-    { ...payload, managed_by: managedBy, _id: new ObjectId(), createdAt: new Date(), updatedAt: new Date() },
-    { returnDocument: "after" }
-  )
-  // @ts-ignore todo: fix
+  const recruiter: IRecruiter = {
+    ...payload,
+    managed_by: managedBy,
+    _id: new ObjectId(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    establishment_id: randomUUID(),
+    status: RECRUITER_STATUS.ACTIF,
+    email: payload.email as string,
+    establishment_siret: payload.establishment_siret as string,
+    is_delegated: payload.is_delegated ?? (false as boolean),
+    jobs: [],
+  }
+  await getDbCollection("recruiters").insertOne(recruiter)
   return recruiter
 }
 
