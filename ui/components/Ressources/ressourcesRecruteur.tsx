@@ -16,9 +16,10 @@ const RessourcesRecruteur = () => {
       <div style={{ width: 436 }}>
         <CardForLink
           imageUrl="/images/serrage-main.svg"
-          link=""
+          link="https://dinum.didask.com/fr/courses/lalternance-pour-les-recruteurs?panel=content"
           text="Vous vous apprêtez à accueillir un·e alternant·e ?"
           linkTitle="Découvrez les étapes clés pour réussir son intégration"
+          linkAriaLabel="Etapes pour accueillir un alternant - nouvelle fenêtre"
         />
       </div>
       <Flex as="h2" fontSize={32} fontWeight={700} my={8}>
@@ -108,7 +109,12 @@ const RessourcesRecruteur = () => {
           </Link>{" "}
           doit être signé et transmis à votre OPCO <b>au plus tard 5 jours après le démarrage du contrat</b>. Gagnez du temps ! Optimisez la création de vos contrats
           d’apprentissage avec le service{" "}
-          <Link href="https://celia.emploi.gouv.fr/" aria-label="Accéder au service de cerfa dématérialisé - nouvelle fenêtre" isExternal variant="basicUnderlinedBlue">
+          <Link
+            href="https://contrat.apprentissage.beta.gouv.fr/"
+            aria-label="Accéder au service de cerfa dématérialisé - nouvelle fenêtre"
+            isExternal
+            variant="basicUnderlinedBlue"
+          >
             CERFA dématérialisé
           </Link>
         </ListItem>
