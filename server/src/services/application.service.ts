@@ -409,7 +409,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   // get the related recruiters to fetch it's establishment_id
   let user: IUserWithAccount | undefined
   if (application.job_id) {
-    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": application.job_id })
+    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(application.job_id) })
     if (recruiter) {
       user = await getUser2ManagingOffer(getJobFromRecruiter(recruiter, application.job_id))
     }
