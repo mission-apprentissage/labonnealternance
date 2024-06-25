@@ -54,6 +54,7 @@ export default {
     [{ opco: 1 }, {}],
     [{ opco_short_name: 1 }, {}],
     [{ opco_url: 1 }, {}],
+    [{ geopoint: "2dsphere" }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

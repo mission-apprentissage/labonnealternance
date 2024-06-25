@@ -219,6 +219,7 @@ export default {
     [{ id_certifinfo: 1 }, {}],
     [{ tags: 1 }, {}],
     [{ catalogue_published: 1 }, {}],
+    [{ lieu_formation_geopoint: "2dsphere" }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
