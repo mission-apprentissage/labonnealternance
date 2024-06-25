@@ -70,9 +70,9 @@ fileignoreconfig:
 - filename: server/src/services/userRecruteur.service.ts
   checksum: fb8fc73f5ac4491b2a7be99ceaebf96c79bffa63fa6b164eed6e2d3d9fe5dae0
 - filename: server/static/templates/mail-bienvenue-entreprise-sans-offre.mjml.ejs
-  checksum: 1a3bfcc1fba9c8f37c2f96c20e132fd24cca9f69f3cb866c5b374659a1664748
+  checksum: 24b40449c12fab273c39600ad06504114ea22b9c484eb95aa11f5ce804590519
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
-  checksum: b4aefb02d5d1f4df2893bedf5432a53eb5324e3e312a0593bee08bb39a3fba67
+  checksum: ea049e01e9de1b185cdf4d89105d9ff47697717e89f7d42a222ad11080ab3f5a
 - filename: server/tests/integration/http/formationV1.test.ts
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
