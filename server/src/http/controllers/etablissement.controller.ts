@@ -136,7 +136,7 @@ export default (server: Server) => {
           eligibleTrainingsForAppointmentService.findOneAndUpdate(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
-              referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.AFFELNET.name])],
+              $set: { referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.AFFELNET.name])] },
             }
           )
         ),
@@ -236,7 +236,7 @@ export default (server: Server) => {
           eligibleTrainingsForAppointmentService.findOneAndUpdate(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
-              referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])],
+              $set: { referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])] },
             }
           )
         ),

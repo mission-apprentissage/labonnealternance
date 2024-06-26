@@ -50,7 +50,7 @@ export const disableEligibleTraininForAppointmentWithEmail = async (disabledEmai
 
   await Promise.all(
     eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
-      await getDbCollection("eligible_trainings_for_appointments").updateOne({ _id: eligibleTrainingsForAppointment._id }, { referrers: [], lieu_formation_email: "" })
+      await getDbCollection("eligible_trainings_for_appointments").updateOne({ _id: eligibleTrainingsForAppointment._id }, { $set: { referrers: [], lieu_formation_email: "" } })
 
       logger.info('Eligible training disabled for "hard_bounce" reason', {
         eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,

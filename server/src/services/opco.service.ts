@@ -23,7 +23,7 @@ export const getOpcoBySirenFromDB = async (siren: string) => {
  * @param {IOpco} opcoData
  * @returns {Promise<IOpco>}
  */
-export const saveOpco = async (opcoData: Omit<IOpco, "_id">) => getDbCollection("opcos").findOneAndUpdate({ siren: opcoData.siren }, opcoData, { upsert: true })
+export const saveOpco = async (opcoData: Omit<IOpco, "_id">) => getDbCollection("opcos").findOneAndUpdate({ siren: opcoData.siren }, { $set: opcoData }, { upsert: true })
 
 /**
  * @description retourne le nom court d'un opco en paramètre

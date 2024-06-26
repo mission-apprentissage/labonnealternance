@@ -4,7 +4,6 @@ import { zRoutes } from "shared/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
 
 /**
@@ -54,7 +53,7 @@ export default (server: Server) => {
           }
         }
       }
-      const result = await eligibleTrainingsForAppointmentService.updateParameter(new ObjectId(params.id), body)
+      const result = await getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate(new ObjectId(params.id), { $set: { body } }, { returnDocument: "after" })
 
       res.send(result)
     }

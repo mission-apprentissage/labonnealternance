@@ -89,9 +89,11 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
     await getDbCollection("emailblacklists").findOneAndUpdate(
       { email },
       {
-        email,
-        blacklisting_origin: blacklistingOrigin,
-        $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
+        $set: {
+          email,
+          blacklisting_origin: blacklistingOrigin,
+          $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
+        },
       },
       { upsert: true }
     )
