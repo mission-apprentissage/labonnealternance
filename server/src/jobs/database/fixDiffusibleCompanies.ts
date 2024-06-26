@@ -54,7 +54,7 @@ const deactivateRecruiter = async (recruiter: IRecruiter) => {
     job.job_status = JOB_STATUS.ACTIVE ? JOB_STATUS.ANNULEE : job.job_status
   }
 
-  await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updateAt: new Date() } })
+  await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } })
 }
 
 const deactivateEntreprise = async (entreprise: IEntreprise) => {

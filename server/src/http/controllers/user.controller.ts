@@ -124,7 +124,7 @@ export default (server: Server) => {
         throw Boom.badRequest("L'email est déjà utilisé", { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS })
       }
       if (opco) {
-        const entreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updateAt: new Date() } }, { returnDocument: "after" })
+        const entreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } }, { returnDocument: "after" })
         if (!entreprise) {
           throw Boom.badRequest(`pas d'entreprise ayant le siret ${siret}`)
         }
