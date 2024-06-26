@@ -36,10 +36,12 @@ services:
       - certs:/etc/nginx/certs:rw
       - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
     environment:
       - DEFAULT_EMAIL=misson.apprentissage.devops@gmail.com
-    volumes_from:
-      - reverse_proxy
 
   mongodb:
     <<: *default
