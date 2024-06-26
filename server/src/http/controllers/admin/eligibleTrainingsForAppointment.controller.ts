@@ -1,5 +1,4 @@
 import Boom from "boom"
-import { ObjectId } from "mongodb"
 import { zRoutes } from "shared/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -53,7 +52,7 @@ export default (server: Server) => {
           }
         }
       }
-      const result = await getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate(new ObjectId(params.id), { $set: { body } }, { returnDocument: "after" })
+      const result = await getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: params.id }, { $set: { ...body } }, { returnDocument: "after" })
 
       res.send(result)
     }
