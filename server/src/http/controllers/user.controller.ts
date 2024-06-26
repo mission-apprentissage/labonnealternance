@@ -176,18 +176,17 @@ export default (server: Server) => {
         throw Boom.badRequest("user not found")
       }
       const type = roleToUserType(role)
+
       if (!type) {
         throw Boom.internal("user type not found")
       }
+
       let organization: ICFA | IEntreprise | null = null
-      if (type === CFA) {
-        organization = await getDbCollection("cfas").findOne({ _id: new ObjectId(role.authorized_id) })
-      }
-      if (type === ENTREPRISE) {
-        organization = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id.toString()) })
-      }
-      if (!organization) {
-        throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
+      if (type === CFA || type === ENTREPRISE) {
+        organization = await getDbCollection(type === CFA ? "cfas" : "entreprises").findOne({ _id: new ObjectId(role.authorized_id) })
+        if (!organization) {
+          throw Boom.internal(`inattendu : impossible de trouver l'organization avec id=${role.authorized_id}`)
+        }
       }
 
       let jobs: IJob[] = []
@@ -204,6 +203,7 @@ export default (server: Server) => {
         user_id: requestUser._id,
         authorized_type: { $in: [AccessEntityType.ADMIN, AccessEntityType.OPCO] },
       })
+
       if (opcoOrAdminRole && getLastStatusEvent(opcoOrAdminRole.status)?.status === AccessStatus.GRANTED) {
         const userIds = userRecruteur.status.flatMap(({ user }) => (user ? [user] : []))
         const users = await getUsersFromIds(userIds)
