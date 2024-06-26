@@ -76,8 +76,10 @@ const obfuscateLbaCompanies = async () => {
   await getDbCollection("bonnesboites").updateMany(
     {},
     {
-      email: fakeEmail,
-      phone: "0601010106",
+      $set: {
+        email: fakeEmail,
+        phone: "0601010106",
+      },
     }
   )
 }
@@ -113,10 +115,12 @@ const obfuscateFormations = async () => {
   await getDbCollection("formationcatalogues").updateMany(
     {},
     {
-      email: fakeEmail,
-      etablissement_gestionnaire_courriel: fakeEmail,
-      etablissement_formateur_courriel: fakeEmail,
-      num_tel: "0601010106",
+      $set: {
+        email: fakeEmail,
+        etablissement_gestionnaire_courriel: fakeEmail,
+        etablissement_formateur_courriel: fakeEmail,
+        num_tel: "0601010106",
+      },
     }
   )
 }
