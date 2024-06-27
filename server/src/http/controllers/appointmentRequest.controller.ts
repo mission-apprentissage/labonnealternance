@@ -288,7 +288,7 @@ export default (server: Server) => {
           },
         })
       }
-      await appointmentService.updateAppointment(appointment_id, { cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
+      await appointmentService.updateAppointment(appointment_id, { $set: { cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } })
       res.status(200).send({ appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
     }
   )
