@@ -2,15 +2,14 @@ import fs from "fs"
 import path from "path"
 
 import { compose, oleoduc, writeData } from "oleoduc"
-import { ILbaCompany, ZGeoLocation } from "shared/models"
-
-import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
+import { ILbaCompany /*, ZGeoLocation*/ } from "shared/models"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
 import { EmailBlacklist, GeoLocation, Opco, LbaCompany } from "../../common/model/index"
 import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
-import geoData from "../../common/utils/geoData"
+// import geoData from "../../common/utils/geoData"
+import { convertStringCoordinatesToGeoPoint } from "../../common/utils/geolib"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { streamJsonArray } from "../../common/utils/streamUtils"
 import config from "../../config"
@@ -163,31 +162,31 @@ const getGeoLocationForCompany = async (company) => {
   const geoKey = `${company.street_number} ${company.street_name} ${company.zip_code}`.trim().toUpperCase()
 
   // a t on déjà une geoloc pour cette adresse
-  let result = await GeoLocation.findOne({ address: geoKey })
+  const result = await GeoLocation.findOne({ address: geoKey })
 
   // si pas de geoloc on en recherche une avec la ban
-  if (!result) {
-    // @ts-expect-error: TODO
-    result = await geoData.getFirstMatchUpdates(company)
+  // if (!result) {
+  //   // @ts-expect-error: TODO
+  //   result = await geoData.getFirstMatchUpdates(company)
 
-    if (!result) {
-      return null
-    } else {
-      const geoLocation = new GeoLocation({
-        // @ts-expect-error: TODO
-        address: geoKey,
-        ...result,
-      })
-      try {
-        // on enregistre la geoloc trouvée
-        if (ZGeoLocation.safeParse(geoLocation).success) {
-          await geoLocation.save()
-        }
-      } catch (err) {
-        //ignore duplicate error
-      }
-    }
-  }
+  //   if (!result) {
+  //     return null
+  //   } else {
+  //     const geoLocation = new GeoLocation({
+  //       // @ts-expect-error: TODO
+  //       address: geoKey,
+  //       ...result,
+  //     })
+  //     try {
+  //       // on enregistre la geoloc trouvée
+  //       if (ZGeoLocation.safeParse(geoLocation).success) {
+  //         await geoLocation.save()
+  //       }
+  //     } catch (err) {
+  //       //ignore duplicate error
+  //     }
+  //   }
+  // }
 
   // retour de la geoloc trouvée
   return result
