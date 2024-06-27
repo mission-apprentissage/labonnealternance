@@ -437,7 +437,9 @@ export default (server: Server) => {
             etablissement_formateur_siret: etablissement.formateur_siret,
           },
           {
-            referrers: [],
+            $set: {
+              referrers: [],
+            },
           }
         )
       }

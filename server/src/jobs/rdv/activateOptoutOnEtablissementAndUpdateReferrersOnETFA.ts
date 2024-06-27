@@ -39,7 +39,9 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             lieu_formation_email: { $nin: [null, ""] },
           },
           {
-            referrers: [referrers.JEUNE_1_SOLUTION.name, referrers.LBA.name],
+            $set: {
+              referrers: [referrers.JEUNE_1_SOLUTION.name, referrers.LBA.name],
+            },
           }
         ),
         getDbCollection("etablissements").findOneAndUpdate(

@@ -113,7 +113,7 @@ export const findApplicationByMessageId = async ({ messageId, email }: { message
   getDbCollection("applications").findOne({ company_email: email, to_company_message_id: messageId })
 
 export const removeEmailFromLbaCompanies = async (email: string) => {
-  return await getDbCollection("bonnesboites").updateMany({ email }, { email: "" })
+  return await getDbCollection("bonnesboites").updateMany({ email }, { $set: { email: "" } })
 }
 
 /**
