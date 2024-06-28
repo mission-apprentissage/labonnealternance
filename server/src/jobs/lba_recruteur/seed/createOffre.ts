@@ -9,7 +9,7 @@ export const createOffreCollection = async () => {
     {
       $project: {
         // champs générés ou supprimés
-        jobId: "$jobs._id",
+        jobId: { $toString: "$jobs._id" },
         recruiterId: "$_id",
         recruiterStatus: "$status",
         _id: 0,
