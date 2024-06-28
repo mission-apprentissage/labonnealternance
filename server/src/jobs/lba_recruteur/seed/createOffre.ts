@@ -49,7 +49,6 @@ export const createOffreCollection = async () => {
           establishment_id: 1,
           establishment_enseigne: 1,
           establishment_siret: 1,
-          address_detail: 1,
           address: 1,
           geo_coordinates: 1,
           is_delegated: 1,
