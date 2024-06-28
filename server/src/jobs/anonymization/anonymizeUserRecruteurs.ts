@@ -11,51 +11,55 @@ const anonymize = async () => {
   const usersToAnonymize = await getDbCollection("userswithaccounts").find(userWithAccountQuery).toArray()
   const userIds = usersToAnonymize.map(({ _id }) => _id)
   const recruiterQuery = { "jobs.managed_by": { $in: userIds } }
-  await getDbCollection("userswithaccounts").aggregate([
-    {
-      $match: userWithAccountQuery,
-    },
-    {
-      $project: {
-        last_action_date: 1,
-        origin: 1,
-        status: 1,
+  await getDbCollection("userswithaccounts")
+    .aggregate([
+      {
+        $match: userWithAccountQuery,
       },
-    },
-    {
-      $merge: "anonymizeduserswithaccounts",
-    },
-  ])
-  await getDbCollection("recruiters").aggregate([
-    {
-      $match: recruiterQuery,
-    },
-    {
-      $project: {
-        establishment_id: 1,
-        establishment_raison_sociale: 1,
-        establishment_enseigne: 1,
-        establishment_siret: 1,
-        address_detail: 1,
-        address: 1,
-        geo_coordinates: 1,
-        is_delegated: 1,
-        cfa_delegated_siret: 1,
-        jobs: 1,
-        origin: 1,
-        opco: 1,
-        idcc: 1,
-        status: 1,
-        naf_code: 1,
-        naf_label: 1,
-        establishment_size: 1,
-        establishment_creation_date: 1,
+      {
+        $project: {
+          last_action_date: 1,
+          origin: 1,
+          status: 1,
+        },
       },
-    },
-    {
-      $merge: "anonymizedrecruiteurs",
-    },
-  ])
+      {
+        $merge: "anonymizeduserswithaccounts",
+      },
+    ])
+    .toArray()
+  await getDbCollection("recruiters")
+    .aggregate([
+      {
+        $match: recruiterQuery,
+      },
+      {
+        $project: {
+          establishment_id: 1,
+          establishment_raison_sociale: 1,
+          establishment_enseigne: 1,
+          establishment_siret: 1,
+          address_detail: 1,
+          address: 1,
+          geo_coordinates: 1,
+          is_delegated: 1,
+          cfa_delegated_siret: 1,
+          jobs: 1,
+          origin: 1,
+          opco: 1,
+          idcc: 1,
+          status: 1,
+          naf_code: 1,
+          naf_label: 1,
+          establishment_size: 1,
+          establishment_creation_date: 1,
+        },
+      },
+      {
+        $merge: "anonymizedrecruiteurs",
+      },
+    ])
+    .toArray()
   const { deletedCount: recruiterCount } = await getDbCollection("recruiters").deleteMany(recruiterQuery)
   const { deletedCount: userWithAccountCount } = await getDbCollection("userswithaccounts").deleteMany(userWithAccountQuery)
   return { userWithAccountCount, recruiterCount }
