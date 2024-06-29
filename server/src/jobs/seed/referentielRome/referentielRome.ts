@@ -1,13 +1,15 @@
 import { readFileSync } from "fs"
 
 import iconv from "iconv-lite"
+import { ObjectId } from "mongodb"
+import { IReferentielRome } from "shared/index"
 import * as xml2j from "xml2js"
 
-import { logger } from "@/common/logger.js"
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import __dirname from "../../../common/dirname.js"
-import { ReferentielRome } from "../../../common/model/index.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
+import __dirname from "../../../common/dirname"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
 
 const getGenericItem = (genericItem: { libelle: string; items: { item: any | any[] } }) => {
   const tempsItems = !(genericItem.items.item instanceof Array) ? [genericItem.items.item] : genericItem.items.item
@@ -124,11 +126,16 @@ export const importReferentielRome = async () => {
 
   if (data.fiches_metier.fiche_metier.length > 500) {
     logger.info("Suppression du référentiel courant")
-    await ReferentielRome.deleteMany({})
+    await getDbCollection("referentielromes").deleteMany({})
 
     await asyncForEach(data.fiches_metier.fiche_metier, async (ficheMetier: any) => {
       const fiche = formatRawData(ficheMetier)
-      await ReferentielRome.create(fiche)
+      // @ts-expect-error TODO lors du prochain import
+      const savedFiche: IReferentielRome = {
+        ...fiche,
+        _id: new ObjectId(),
+      }
+      await getDbCollection("referentielromes").insertOne(savedFiche)
     })
   } else {
     logger.info("Liste des ROMEs anormalement petite. Processus interrompu.")

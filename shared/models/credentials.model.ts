@@ -1,6 +1,8 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "credentials" as const
 
 export const ZCredential = z
   .object({
@@ -18,3 +20,9 @@ export const ZCredential = z
   .strict()
 
 export type ICredential = z.output<typeof ZCredential>
+
+export default {
+  zod: ZCredential,
+  indexes: [[{ api_key: 1 }, { unique: true }]],
+  collectionName,
+} as const satisfies IModelDescriptor

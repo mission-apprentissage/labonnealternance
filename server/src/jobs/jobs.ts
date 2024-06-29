@@ -1,5 +1,6 @@
-import { createMongoDBIndexes } from "@/common/model"
-import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { ObjectId } from "mongodb"
+
+import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 
 import { getLoggerWithContext } from "../common/logger"
@@ -11,9 +12,8 @@ import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
-import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
-import { fixRDVACollections } from "./database/temp/fixRDVACollections"
-import { validateModels } from "./database/validateModels"
+import { recreateIndexes } from "./database/recreateIndexes"
+import { validateModels } from "./database/schemaValidation"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
@@ -27,9 +27,7 @@ import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
-import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
-import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire/misc/sendDelegationEmailWithSecuredToken"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
@@ -55,13 +53,11 @@ import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissemen
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
-import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { importFichesRomeV4 } from "./seed/ficheMetierRomev4/ficheMetierRomev4"
 import { importReferentielRome } from "./seed/referentielRome/referentielRome"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -224,6 +220,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "recreate:indexes":
+        return recreateIndexes()
       case "lbajobs:export:s3":
         return exportLbaJobsToS3()
       case "sync:etablissement:dates":
@@ -234,12 +232,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return runGarbageCollector()
       case "anonymize:appointments":
         return anonymizeOldAppointments()
-      case "recruiters:delegations": // Temporaire, doit tourner une fois en production
-        return resendDelegationEmailWithAccessToken()
       case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
         return fixDuplicateUsers()
-      case "migration:correctionRDVA": // Temporaire, doit tourner une fois en recette et production
-        return fixRDVACollections()
       case "control:applications":
         return controlApplications()
       case "control:appointments":
@@ -250,14 +244,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return repiseGeocoordinates()
       case "recruiters:get-missing-address-detail":
         return updateAddressDetailOnRecruitersCollection()
-      case "import:ficheromev4":
-        return importFichesRomeV4()
       case "import:referentielrome":
         return importReferentielRome()
-      case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
-        return removeVersionKeyFromAllCollections()
-      case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
-        return removeIsDelegatedFromJobs()
       case "api:user:create": {
         const { nom, prenom, email, organization, scope } = job.payload
         return createApiUser(nom, prenom, email, organization, scope)
@@ -350,16 +338,9 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
       }
-      case "prdv:emails:resend": {
-        const { fromDate } = job.payload
-        return repriseEmailRdvs({ fromDateStr: fromDate })
-      }
-      ///////
-      case "mongodb:indexes:create":
-        return createMongoDBIndexes()
       case "anonymize-individual": {
         const { collection, id } = job.payload
-        return anonymizeIndividual({ collection, id })
+        return anonymizeIndividual({ collection, id: new ObjectId(id) })
       }
       case "db:validate":
         return validateModels()

@@ -1,10 +1,10 @@
-import { ZApiCallNew } from "shared/models"
+import { ObjectId } from "mongodb"
+import { IApiCall } from "shared/models"
 
-import { ApiCalls } from "../model/index"
-
+import { getDbCollection } from "./mongodbUtils"
 import { sentryCaptureException } from "./sentryUtils"
 
-const trackApiCall = async ({
+export const trackApiCall = async ({
   caller,
   api_path,
   training_count = 0,
@@ -20,7 +20,9 @@ const trackApiCall = async ({
   result_count?: number
 }) => {
   try {
-    const apiCallParams = {
+    const apiCallParams: IApiCall = {
+      _id: new ObjectId(),
+      created_at: new Date(),
       caller,
       api_path,
       training_count,
@@ -29,11 +31,8 @@ const trackApiCall = async ({
       response,
     }
 
-    const apiCall = new ApiCalls(ZApiCallNew.parse(apiCallParams))
-    await apiCall.save()
+    await getDbCollection("apicalls").insertOne(apiCallParams)
   } catch (err) {
     sentryCaptureException(err)
   }
 }
-
-export { trackApiCall }

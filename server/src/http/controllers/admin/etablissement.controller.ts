@@ -1,7 +1,9 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { zRoutes } from "shared/index"
 
-import { Etablissement } from "../../../common/model/index"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { Server } from "../../server"
 
 /**
@@ -18,7 +20,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/admin/etablissements/siret-formateur/:siret"])],
     },
     async ({ params }, res) => {
-      const etablissement = await Etablissement.findOne({ formateur_siret: params.siret }).lean()
+      const etablissement = await getDbCollection("etablissements").findOne({ formateur_siret: params.siret })
 
       if (!etablissement) {
         throw Boom.notFound()
@@ -38,7 +40,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/admin/etablissements/:id"])],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id).lean()
+      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
         throw Boom.notFound()
@@ -58,13 +60,13 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.patch["/admin/etablissements/:id"])],
     },
     async ({ body, params }, res) => {
-      const etablissement = await Etablissement.findById(params.id)
+      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(params.id.toString()) })
 
       if (!etablissement) {
         throw Boom.notFound()
       }
 
-      const result = await Etablissement.findByIdAndUpdate(params.id, body).lean()
+      const result = await getDbCollection("etablissements").findOneAndUpdate({ _id: new ObjectId(params.id.toString()) }, { $set: body }, { returnDocument: "after" })
 
       if (!result) {
         throw Boom.notFound()

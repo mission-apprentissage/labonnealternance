@@ -2,10 +2,13 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZPointGeometry } from "./address.model"
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "bonnesboites" as const
 
 export const ZLbaCompany = z
   .object({
+    _id: zObjectId,
     siret: z.string().describe("Le Siret de la société"),
     recruitment_potential: z.number().describe("Le score de recrutement de la société"),
     raison_sociale: z.string().nullable().describe("Raison sociale de l'entreprise"),
@@ -30,22 +33,11 @@ export const ZLbaCompany = z
     created_at: z.date().describe("La date création de la demande"),
     last_update_at: z.date().describe("Date de dernières mise à jour"),
     distance: z.number().nullish().describe("Distance de la société au centre de recherche en km"),
-    _id: zObjectId,
   })
   .strict()
   .openapi("LbaCompany")
 
-export const ZLbaCompanyNew = ZLbaCompany.omit({
-  _id: true,
-  created_at: true,
-  last_update_at: true,
-}).strict()
-
-export const ZLbaLegacyCompany = ZLbaCompany.pick({
-  siret: true,
-  email: true,
-  _id: true,
-}).strict()
+export type ILbaCompany = z.output<typeof ZLbaCompany>
 
 export const ZLbaCompanyForContactUpdate = ZLbaCompany.pick({
   siret: true,
@@ -53,6 +45,16 @@ export const ZLbaCompanyForContactUpdate = ZLbaCompany.pick({
   phone: true,
   enseigne: true,
 })
-
-export type ILbaCompany = z.output<typeof ZLbaCompany>
 export type ILbaCompanyForContactUpdate = z.output<typeof ZLbaCompanyForContactUpdate>
+
+export default {
+  zod: ZLbaCompany,
+  indexes: [
+    [{ siret: 1 }, {}],
+    [{ opco: 1 }, {}],
+    [{ opco_short_name: 1 }, {}],
+    [{ opco_url: 1 }, {}],
+    [{ geopoint: "2dsphere" }, {}],
+  ],
+  collectionName,
+} as const satisfies IModelDescriptor

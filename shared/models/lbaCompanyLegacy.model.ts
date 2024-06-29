@@ -1,0 +1,22 @@
+import { z } from "zod"
+import { zObjectId } from "zod-mongodb-schema"
+
+import { IModelDescriptor } from "./common"
+
+const collectionName = "bonnesboiteslegacies" as const
+
+export const ZLbaCompanyLegacy = z
+  .object({
+    _id: zObjectId,
+    siret: z.string().describe("Le Siret de la société"),
+    email: z.string().nullable().describe("Adresse email de contact"),
+  })
+  .strict()
+
+export type ILbaCompanyLegacy = z.output<typeof ZLbaCompanyLegacy>
+
+export default {
+  zod: ZLbaCompanyLegacy,
+  indexes: [[{ siret: 1 }, {}]],
+  collectionName,
+} as const satisfies IModelDescriptor

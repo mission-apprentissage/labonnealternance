@@ -1,13 +1,14 @@
 import Boom from "boom"
 import { groupBy } from "lodash-es"
+import { ObjectId } from "mongodb"
 import { JOB_STATUS } from "shared/models"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../../../common/logger"
-import { Recruiter, UserWithAccount } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"
@@ -16,10 +17,12 @@ import dayjs from "../../../services/dayjs.service"
 import mailer, { sanitizeForEmail } from "../../../services/mailer.service"
 
 export const relanceFormulaire = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
-  const recruiters = await Recruiter.find({
-    $nor: [{ jobs: { $exists: false } }, { jobs: { $size: 0 } }],
-    "jobs.job_status": JOB_STATUS.ACTIVE,
-  }).lean()
+  const recruiters = await getDbCollection("recruiters")
+    .find({
+      $nor: [{ jobs: { $exists: false } }, { jobs: { $size: 0 } }],
+      "jobs.job_status": JOB_STATUS.ACTIVE,
+    })
+    .toArray()
 
   const jobsWithRecruteurs = recruiters.flatMap((recruiter) => {
     return recruiter.jobs.flatMap((job) => {
@@ -54,7 +57,7 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
       if (!managed_by) {
         throw Boom.internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
       }
-      const contactUser = await UserWithAccount.findOne({ _id: managed_by }).lean()
+      const contactUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
       if (!contactUser) {
         throw Boom.internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
       }

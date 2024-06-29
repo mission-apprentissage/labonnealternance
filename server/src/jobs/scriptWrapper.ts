@@ -4,7 +4,7 @@ import { isEmpty } from "lodash-es"
 import prettyMilliseconds from "pretty-ms"
 
 import { getLoggerWithContext } from "../common/logger"
-import { closeMongoConnection } from "../common/mongodb"
+import { closeMongodbConnection } from "../common/utils/mongodbUtils"
 import config from "../config"
 
 const logger = getLoggerWithContext("script")
@@ -55,7 +55,7 @@ const exit = async (scriptError?: any) => {
 
   setTimeout(() => {
     //Waiting logger to flush all logs (MongoDB)
-    closeMongoConnection().catch((e) => {
+    closeMongodbConnection().catch((e) => {
       console.error(e)
       process.exitCode = 1
     })

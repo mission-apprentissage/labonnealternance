@@ -1,4 +1,7 @@
+import { useMongo } from "@tests/utils/mongo.utils"
+import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.utils"
 import { FastifyRequest } from "fastify"
+import { ObjectId } from "mongodb"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { AccessRessouces } from "shared/security/permissions"
@@ -6,8 +9,6 @@ import { describe, expect, it } from "vitest"
 
 import { AccessUser2, AccessUserCredential, AccessUserToken } from "@/security/authenticationService"
 import { authorizationMiddleware } from "@/security/authorisationService"
-import { useMongo } from "@tests/utils/mongo.utils"
-import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.utils"
 
 type MockedRequest = Pick<FastifyRequest, "params" | "query">
 const emptyRequest: MockedRequest = { params: {}, query: {} }
@@ -62,7 +63,7 @@ const givenATokenUser = (): AccessUserToken => {
 //   }
 // }
 
-const givenARequest = ({ user, resourceId }: { user: AccessUserToken | AccessUserCredential | AccessUser2; resourceId?: string }) => {
+const givenARequest = ({ user, resourceId }: { user: AccessUserToken | AccessUserCredential | AccessUser2; resourceId?: ObjectId }) => {
   return {
     ...emptyRequest,
     user,
@@ -110,12 +111,12 @@ describe("authorisationService", async () => {
     describe.each<ResourceType>(everyResourceType)("given an accessed resource of type %s", (resourceType) => {
       it("should always allow a token user because authorization has been dealt with in the authentication layer", async () => {
         await expect(
-          authorizationMiddleware(givenARoute({ authStrategy: "access-token", resourceType }), givenARequest({ user: givenATokenUser(), resourceId: "resourceId" }))
+          authorizationMiddleware(givenARoute({ authStrategy: "access-token", resourceType }), givenARequest({ user: givenATokenUser(), resourceId: new ObjectId() }))
         ).resolves.toBe(undefined)
       })
       it("should always allow an admin user", async () => {
         await expect(
-          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType }), givenARequest({ user: givenAnAdminUser(), resourceId: "resourceId" }))
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType }), givenARequest({ user: givenAnAdminUser(), resourceId: new ObjectId() }))
         ).resolves.toBe(undefined)
       })
     })
@@ -123,10 +124,7 @@ describe("authorisationService", async () => {
       it("an entreprise user should have access to its user", async () => {
         const user = entrepriseUserA.user
         await expect(
-          authorizationMiddleware(
-            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
-            givenARequest({ user: givenACookieUser(user), resourceId: user._id.toString() })
-          )
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "user" }), givenARequest({ user: givenACookieUser(user), resourceId: user._id }))
         ).resolves.toBe(undefined)
       })
       it("an entreprise user should NOT have access to another user", async () => {
@@ -135,26 +133,20 @@ describe("authorisationService", async () => {
         await expect(
           authorizationMiddleware(
             givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
-            givenARequest({ user: givenACookieUser(user), resourceId: accessedUser._id.toString() })
+            givenARequest({ user: givenACookieUser(user), resourceId: accessedUser._id })
           )
         ).rejects.toThrow("non autorisé")
       })
       it("a cfa user should have access to its user", async () => {
         const user = cfaUserA.user
         await expect(
-          authorizationMiddleware(
-            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
-            givenARequest({ user: givenACookieUser(user), resourceId: user._id.toString() })
-          )
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "user" }), givenARequest({ user: givenACookieUser(user), resourceId: user._id }))
         ).resolves.toBe(undefined)
       })
       it("an opco user should have access to its user", async () => {
         const user = opcoUserA.user
         await expect(
-          authorizationMiddleware(
-            givenARoute({ authStrategy: "cookie-session", resourceType: "user" }),
-            givenARequest({ user: givenACookieUser(user), resourceId: user._id.toString() })
-          )
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "user" }), givenARequest({ user: givenACookieUser(user), resourceId: user._id }))
         ).resolves.toBe(undefined)
       })
     })
@@ -163,10 +155,7 @@ describe("authorisationService", async () => {
         const { user, recruiter } = entrepriseUserA
         const [job] = recruiter.jobs
         await expect(
-          authorizationMiddleware(
-            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
-            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
-          )
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).resolves.toBe(undefined)
       })
       it("an entreprise user should NOT have access to another entreprise's jobs", async () => {
@@ -174,20 +163,14 @@ describe("authorisationService", async () => {
         const { recruiter } = entrepriseUserB
         const [job] = recruiter.jobs
         await expect(
-          authorizationMiddleware(
-            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
-            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
-          )
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).rejects.toThrow("non autorisé")
       })
       it("a cfa user should have access to its jobs", async () => {
         const { user, recruiter } = cfaUserA
         const [job] = recruiter.jobs
         await expect(
-          authorizationMiddleware(
-            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
-            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
-          )
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).resolves.toBe(undefined)
       })
       it("a cfa user should NOT have access to another cfa's job", async () => {
@@ -195,10 +178,7 @@ describe("authorisationService", async () => {
         const { recruiter } = cfaUserB
         const [job] = recruiter.jobs
         await expect(
-          authorizationMiddleware(
-            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
-            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
-          )
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).rejects.toThrow("non autorisé")
       })
       it("a cfa user should NOT have access to another entreprise job", async () => {
@@ -206,10 +186,7 @@ describe("authorisationService", async () => {
         const { recruiter } = entrepriseUserA
         const [job] = recruiter.jobs
         await expect(
-          authorizationMiddleware(
-            givenARoute({ authStrategy: "cookie-session", resourceType: "job" }),
-            givenARequest({ user: givenACookieUser(user), resourceId: job._id.toString() })
-          )
+          authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).rejects.toThrow("non autorisé")
       })
     })

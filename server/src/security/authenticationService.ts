@@ -8,12 +8,12 @@ import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { Role, UserWithType } from "shared/security/permissions"
 
-import { Credential } from "@/common/model"
 import config from "@/config"
 import { getSession } from "@/services/sessions.service"
 import { updateLastConnectionDate } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import { controlUserState } from "../services/login.service"
 
 import { ApiApprentissageTokenData, parseApiApprentissageToken } from "./accessApiApprentissageService"
@@ -93,7 +93,7 @@ async function authApiKey(req: FastifyRequest): Promise<AccessUserCredential | n
     return null
   }
 
-  const user = await Credential.findOne({ api_key: token, actif: true }).lean()
+  const user = await getDbCollection("credentials").findOne({ api_key: token, actif: true })
 
   return user ? { type: "ICredential", value: user } : null
 }

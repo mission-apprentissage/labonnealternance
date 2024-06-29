@@ -2,8 +2,8 @@ import { writeFileSync } from "fs"
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { db } from "../../common/mongodb"
 import { uploadFileToS3 } from "../../common/utils/awsUtils"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 interface IGeneratorParams {
   collection: "jobs" | "bonnesboites"
@@ -14,7 +14,7 @@ interface IGeneratorParams {
 
 async function generateJsonExport({ collection, query, projection, fileName }: IGeneratorParams): Promise<string> {
   const filePath = new URL(`./${fileName}.json`, import.meta.url)
-  const data = await db.collection(collection).find(query).project(projection).toArray()
+  const data = await getDbCollection(collection).find(query).project(projection).toArray()
   writeFileSync(filePath, JSON.stringify(data, null, 4))
   return filePath.pathname
 }

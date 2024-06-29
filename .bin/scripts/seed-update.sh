@@ -32,13 +32,13 @@ trap delete_cleartext EXIT
 
 ansible-vault view --vault-password-file="$ROOT_DIR/.bin/scripts/get-vault-password-client.sh" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 
-docker compose -f "$ROOT_DIR/docker-compose.yml" up mongodb -d
+/opt/app/tools/docker-compose.sh -f "$ROOT_DIR/docker-compose.yml" up mongodb -d
 mkdir -p "$ROOT_DIR/.infra/files/mongodb"
 
 yarn build:dev
 yarn cli migrations:up
-yarn cli mongodb:indexes:create
+yarn cli recreate:indexes
 
-docker compose -f "$ROOT_DIR/docker-compose.yml" exec -it mongodb mongodump --uri "$TARGET_DB" --gzip --archive > "$SEED_GZ" 
+/opt/app/tools/docker-compose.sh -f "$ROOT_DIR/docker-compose.yml" exec -it mongodb mongodump --uri "$TARGET_DB" --gzip --archive > "$SEED_GZ" 
 rm -f "$SEED_GPG"
 gpg  -c --cipher-algo twofish --batch --passphrase-file "$PASSPHRASE" -o "$SEED_GPG" "$SEED_GZ"

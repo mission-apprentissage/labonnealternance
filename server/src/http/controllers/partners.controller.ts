@@ -25,7 +25,7 @@ export default (server: Server) => {
           },
           referrers: { $in: [referrers.PARCOURSUP.name] },
         },
-        { parcoursup_id: 1 }
+        { projection: { parcoursup_id: 1 } }
       )
 
       return res.send({ ids: ids.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.parcoursup_id) })
