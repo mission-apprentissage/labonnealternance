@@ -787,7 +787,7 @@ const notifyHardbounceToApplicant = async ({ application }: { application: IAppl
     to: application.applicant_email,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
-    data: { ...sanitizeApplicationForEmail(application.toObject()), ...images },
+    data: { ...sanitizeApplicationForEmail(application), ...images },
   })
 }
 

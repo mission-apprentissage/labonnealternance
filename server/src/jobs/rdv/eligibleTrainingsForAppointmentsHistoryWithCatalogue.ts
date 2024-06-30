@@ -25,7 +25,7 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
   stats.AncientElligibleTrainingCount = await getDbCollection("eligible_trainings_for_appointments").countDocuments()
 
   await oleoduc(
-    getDbCollection("eligible_trainings_for_appointments").find({}),
+    getDbCollection("eligible_trainings_for_appointments").find({}).stream(),
     writeData(
       async (formation) => {
         const exist = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
