@@ -114,7 +114,6 @@ jobs:
           category: Docker UI
 
   deploy:
-    if: false
     concurrency:
       group: "deploy-${{ github.workflow }}-${{ github.ref }}"
     needs: ["release"]
