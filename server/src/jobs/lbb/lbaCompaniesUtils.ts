@@ -152,36 +152,7 @@ const getNotBlacklistedEmail = async (email) => {
 
 const getGeoLocationForCompany = async (company) => {
   const geoKey = `${company.street_number} ${company.street_name} ${company.zip_code}`.trim().toUpperCase()
-
-  // a t on déjà une geoloc pour cette adresse
-  const result = await getDbCollection("geolocations").findOne({ address: geoKey })
-
-  // si pas de geoloc on en recherche une avec la ban
-  // if (!result) {
-  //   // @ts-expect-error: TODO
-  //   result = await geoData.getFirstMatchUpdates(company)
-
-  //   if (!result) {
-  //     return null
-  //   } else {
-  //     const geoLocation = new GeoLocation({
-  //       // @ts-expect-error: TODO
-  //       address: geoKey,
-  //       ...result,
-  //     })
-  //     try {
-  //       // on enregistre la geoloc trouvée
-  //       if (ZGeoLocation.safeParse(geoLocation).success) {
-  //         await geoLocation.save()
-  //       }
-  //     } catch (err) {
-  //       //ignore duplicate error
-  //     }
-  //   }
-  // }
-
-  // retour de la geoloc trouvée
-  return result
+  return await getDbCollection("geolocations").findOne({ address: geoKey })
 }
 
 const getOpcoForCompany = async (lbaCompany) => {
