@@ -8,7 +8,6 @@ import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils"
-import { insertSAVECompanies, removeSAVECompanies, updateSAVECompanies } from "./updateSAVECompanies"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
 const MIN_COMPANY_THRESHOLD = 200000
@@ -82,20 +81,18 @@ const processCompanies = async () => {
 export default async function updateLbaCompanies({
   UseAlgoFile = false,
   ClearMongo = false,
-  UseSave = false,
   ForceRecreate = false,
   SourceFile = null,
 }: {
   UseAlgoFile?: boolean
   ClearMongo?: boolean
-  UseSave?: boolean
   ForceRecreate?: boolean
   SourceFile?: string | null
 }) {
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
-    console.info("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - UseSave : ", UseSave, " - ForceRecreate : ", ForceRecreate)
+    console.info("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - ForceRecreate : ", ForceRecreate)
 
     if (UseAlgoFile) {
       if (!ForceRecreate) {
@@ -124,12 +121,6 @@ export default async function updateLbaCompanies({
 
     if (UseAlgoFile) {
       await processCompanies()
-    }
-
-    if (UseSave) {
-      await insertSAVECompanies()
-      await updateSAVECompanies()
-      await removeSAVECompanies()
     }
 
     logMessage("info", `End updating lbb db`)
