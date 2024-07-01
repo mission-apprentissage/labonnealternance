@@ -496,6 +496,8 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
     last_update_at: now,
     to_applicant_message_id: null,
     to_company_message_id: null,
+    company_recruitment_intention: null,
+    company_feedback: null,
   }
   await getDbCollection("applications").insertOne(application)
   return application
