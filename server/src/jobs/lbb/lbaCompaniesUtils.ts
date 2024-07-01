@@ -75,20 +75,9 @@ export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
   await downloadFile({ from: sourceFile || s3File, to: PREDICTION_FILE })
 }
 
-export const downloadSAVEFile = async ({ key }) => {
-  logger.info(`Downloading SAVE file ${key} from S3 Bucket...`)
-
-  await downloadFile({ from: key, to: path.join(currentDirname, `./assets/${key}`) })
-}
-
 export const downloadFile = async ({ from, to }) => {
   await createAssetsFolder()
   await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(to))
-}
-
-export const streamSAVECompanies = async ({ key }) => {
-  const response = fs.createReadStream(path.join(currentDirname, `./assets/${key}`))
-  return compose(response, streamJsonArray())
 }
 
 export const readCompaniesFromJson = async () => {

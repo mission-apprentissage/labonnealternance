@@ -447,7 +447,6 @@ program
   .description("Met à jour la liste des sociétés bonnes alternances")
   .option("-use-algo-file, [UseAlgoFile]", "télécharge et traite le fichier issu de l'algo", false)
   .option("-clear-mongo, [ClearMongo]", "vide la collection des bonnes alternances", false)
-  .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
   .option("-source-file, [SourceFile]", "fichier source alternatif")
   .option("-q, --queued", "Run job asynchronously", false)
