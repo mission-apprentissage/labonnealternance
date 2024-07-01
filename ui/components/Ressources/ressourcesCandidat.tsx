@@ -11,6 +11,7 @@ const RessourcesCandidat = () => {
       <Flex as="h2" fontSize={32} fontWeight={700} mt={6} mb={4}>
         Testez vos connaissances
       </Flex>
+      <Text>Entraînez-vous avec nos 4 parcours de mise en situation :</Text>
       <MisesEnSituation target="candidat" />
       <Flex as="h2" fontSize={32} fontWeight={700} mt={8}>
         <Image src="/images/pages_ressources/conseils et astuces.svg" mr={4} alt="" aria-hidden="true" />

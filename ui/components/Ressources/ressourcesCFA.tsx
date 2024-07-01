@@ -14,6 +14,7 @@ const RessourcesCFA = () => {
         <Flex as="h2" fontSize={32} fontWeight={700} mt={6} mb={4}>
           Liens utiles pour accompagner vos candidats
         </Flex>
+        <Text>Proposez-leur de s’entraîner avec nos 3 parcours de mise en situation :</Text>
         <MisesEnSituation target="cfa" />
         Partagez-leurs des conseils et astuces pour les aider dans leurs démarches de recherche de formation et d’emploi en alternance :
         <ConseilsEtAstuces />
