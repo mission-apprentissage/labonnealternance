@@ -1,8 +1,8 @@
 import Boom from "boom"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
-import type { EnforceDocument } from "mongoose"
-import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, ZApplication, assertUnreachable } from "shared"
+import { ObjectId } from "mongodb"
+import { IApplication, IJob, ILbaCompany, INewApplicationV2, IRecruiter, JOB_STATUS, assertUnreachable } from "shared"
 import { ApplicantIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
@@ -13,10 +13,10 @@ import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "sha
 import { z } from "zod"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 import { logger } from "../common/logger"
-import { Application, EmailBlacklist, LbaCompany, Recruiter, UserWithAccount } from "../common/model"
 import { manageApiError } from "../common/utils/errorManager"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -62,19 +62,19 @@ type ILbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA; job: ILbaCompany; recruiter
 /**
  * @description Get applications by job id
  */
-export const getApplicationsByJobId = (job_id: IApplication["job_id"]) => Application.find({ job_id }).lean()
+export const getApplicationsByJobId = (job_id: IApplication["job_id"]) => getDbCollection("applications").find({ job_id }).toArray()
 
 /**
  * @description Get applications count by job id
  */
-export const getApplicationCount = (job_id: IApplication["job_id"]) => Application.count({ job_id }).lean()
+export const getApplicationCount = (job_id: IApplication["job_id"]) => getDbCollection("applications").countDocuments({ job_id })
 
 /**
  * @description Check if an email if blacklisted.
  * @param {string} email - Email
  * @return {Promise<boolean>}
  */
-export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await EmailBlacklist.countDocuments({ email }))
+export const isEmailBlacklisted = async (email: string): Promise<boolean> => Boolean(await getDbCollection("emailblacklists").countDocuments({ email }))
 
 /**
  * @description Add an email address to the blacklist collection.
@@ -86,12 +86,14 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
   try {
     z.string().email().parse(email)
 
-    await EmailBlacklist.findOneAndUpdate(
+    await getDbCollection("emailblacklists").findOneAndUpdate(
       { email },
       {
-        email,
-        blacklisting_origin: blacklistingOrigin,
-        $setOnInsert: { created_at: new Date() },
+        $set: {
+          email,
+          blacklisting_origin: blacklistingOrigin,
+          $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
+        },
       },
       { upsert: true }
     )
@@ -108,10 +110,10 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
  * @returns {Promise<IApplication>}
  */
 export const findApplicationByMessageId = async ({ messageId, email }: { messageId: string; email: string }) =>
-  Application.findOne({ company_email: email, to_company_message_id: messageId })
+  getDbCollection("applications").findOne({ company_email: email, to_company_message_id: messageId })
 
 export const removeEmailFromLbaCompanies = async (email: string) => {
-  return await LbaCompany.updateMany({ email }, { email: "" })
+  return await getDbCollection("bonnesboites").updateMany({ email }, { $set: { email: "" } })
 }
 
 /**
@@ -153,14 +155,14 @@ export const sendApplication = async ({
       if (!recruteurEmail) {
         return { error: "email du recruteur manquant" }
       }
-      const application = newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
+      const application = await newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
       const fileContent = newApplication.applicant_file_content
 
       const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, offreOrError)
       const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
       const searched_for_job_label = newApplication.searched_for_job_label || ""
 
-      const buildTopic = (company_type: INewApplicationV2["company_type"], aJobTitle: string) => {
+      const buildTopic = (company_type: INewApplicationV2["company_type"], aJobTitle?: string | null) => {
         if (company_type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
           return `Candidature en alternance - ${aJobTitle}`
         } else {
@@ -174,7 +176,7 @@ export const sendApplication = async ({
         subject: buildTopic(newApplication.company_type, application.job_title),
         template: getEmailTemplate("mail-candidature"),
         data: {
-          ...sanitizeApplicationForEmail(application.toObject()),
+          ...sanitizeApplicationForEmail(application),
           ...images,
           ...recruiterEmailUrls,
           searched_for_job_label: sanitizeForEmail(searched_for_job_label),
@@ -192,7 +194,7 @@ export const sendApplication = async ({
         to: application.applicant_email,
         subject: `Votre candidature chez ${application.company_name}`,
         template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-matcha" : "mail-candidat"),
-        data: { ...sanitizeApplicationForEmail(application.toObject()), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
+        data: { ...sanitizeApplicationForEmail(application), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
         attachments: [
           {
             filename: application.applicant_attachment_name,
@@ -201,15 +203,13 @@ export const sendApplication = async ({
         ],
       })
 
-      application.to_applicant_message_id = emailCandidat.messageId
+      await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_applicant_message_id: emailCandidat.messageId } })
       if (emailCompany?.accepted?.length) {
-        application.to_company_message_id = emailCompany.messageId
+        await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_company_message_id: emailCompany.messageId } })
       } else {
         logger.info(`Application email rejected. applicant_email=${application.applicant_email} company_email=${application.company_email}`)
         throw new Error("Application email rejected")
       }
-
-      await application.save()
 
       return { result: "ok", message: "messages sent" }
     } catch (err) {
@@ -245,7 +245,8 @@ export const sendApplicationV2 = async ({
   }
 
   if ("company_siret" in newApplication) {
-    const LbaRecruteur = await LbaCompany.findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } }).lean() // email can be null in collection
+    // email can be null in collection
+    const LbaRecruteur = await getDbCollection("bonnesboites").findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } })
     if (!LbaRecruteur) {
       throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
     }
@@ -274,7 +275,7 @@ export const sendApplicationV2 = async ({
     throw Boom.internal(BusinessErrorCodes.INTERNAL_EMAIL)
   }
   try {
-    const application = newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
+    const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, lbaJob)
     const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
 
@@ -284,7 +285,7 @@ export const sendApplicationV2 = async ({
         subject: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? `Candidature spontanée en alternance ${application.company_name}` : `Candidature en alternance - ${application.job_title}`,
         template: getEmailTemplate("mail-candidature"),
         data: {
-          ...sanitizeApplicationForEmail(application.toObject()),
+          ...sanitizeApplicationForEmail(application),
           ...images,
           ...recruiterEmailUrls,
           urlOfDetail,
@@ -301,7 +302,7 @@ export const sendApplicationV2 = async ({
         to: application.applicant_email,
         subject: `Votre candidature chez ${application.company_name}`,
         template: getEmailTemplate(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "mail-candidat-matcha" : "mail-candidat"),
-        data: { ...sanitizeApplicationForEmail(application.toObject()), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
+        data: { ...sanitizeApplicationForEmail(application), ...images, publicUrl, urlOfDetail, urlOfDetailNoUtm },
         attachments: [
           {
             filename: application.applicant_attachment_name,
@@ -311,15 +312,13 @@ export const sendApplicationV2 = async ({
       }),
     ])
 
-    application.to_applicant_message_id = emailCandidat.messageId
+    await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_applicant_message_id: emailCandidat.messageId } })
     if (emailCompany?.accepted?.length) {
-      application.to_company_message_id = emailCompany.messageId
+      await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_company_message_id: emailCompany.messageId } })
     } else {
       logger.info(`Application email rejected. applicant_email=${application.applicant_email} company_email=${application.company_email}`)
       throw Boom.internal("Email entreprise destinataire rejeté.")
     }
-
-    await application.save()
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {
@@ -330,6 +329,7 @@ export const sendApplicationV2 = async ({
         errorTitle: "error_sending_application",
       })
     }
+    throw Boom.badRequest(BusinessErrorCodes.UNKNOWN)
   }
 }
 
@@ -392,7 +392,7 @@ const buildReplyLink = (application: IApplication, intention: ApplicantIntention
 export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id">): Promise<IUserWithAccount> => {
   const { managed_by } = job
   if (managed_by) {
-    const user = await UserWithAccount.findOne({ _id: managed_by }).lean()
+    const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
     if (!user) {
       throw new Error(`could not find offer manager with id=${managed_by}`)
     }
@@ -411,7 +411,7 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   // get the related recruiters to fetch it's establishment_id
   let user: IUserWithAccount | undefined
   if (application.job_id) {
-    const recruiter = await Recruiter.findOne({ "jobs._id": application.job_id }).lean()
+    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(application.job_id) })
     if (recruiter) {
       user = await getUser2ManagingOffer(getJobFromRecruiter(recruiter, application.job_id))
     }
@@ -438,12 +438,12 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   return urls
 }
 
-const offreOrCompanyToCompanyFields = (LbaJob: ILbaJob): Partial<IApplication> => {
+const offreOrCompanyToCompanyFields = (LbaJob: ILbaJob) => {
   const { type } = LbaJob
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     const { job } = LbaJob
     const { siret, enseigne, naf_label } = job
-    const application: Partial<IApplication> = {
+    const application = {
       company_siret: siret,
       company_name: enseigne,
       company_naf: naf_label,
@@ -455,10 +455,10 @@ const offreOrCompanyToCompanyFields = (LbaJob: ILbaJob): Partial<IApplication> =
     const { job, recruiter } = LbaJob
     const { address, is_delegated, establishment_siret, establishment_enseigne, establishment_raison_sociale, naf_label } = recruiter
     const { rome_appellation_label, rome_label } = job
-    const application: Partial<IApplication> = {
+    const application = {
       company_siret: establishment_siret,
       company_name: establishment_enseigne || establishment_raison_sociale || "Enseigne inconnue",
-      company_naf: naf_label ?? undefined,
+      company_naf: naf_label ?? "",
       job_title: rome_appellation_label ?? rome_label ?? undefined,
       company_address: is_delegated ? null : address,
       job_id: job._id.toString(),
@@ -469,7 +469,7 @@ const offreOrCompanyToCompanyFields = (LbaJob: ILbaJob): Partial<IApplication> =
   }
 }
 
-const cleanApplicantFields = (newApplication: INewApplicationV2): Partial<IApplication> => {
+const cleanApplicantFields = (newApplication: INewApplicationV2) => {
   return {
     applicant_first_name: newApplication.applicant_first_name,
     applicant_last_name: newApplication.applicant_last_name,
@@ -484,27 +484,36 @@ const cleanApplicantFields = (newApplication: INewApplicationV2): Partial<IAppli
 /**
  * @description Initialize application object from query parameters
  */
-const newApplicationToApplicationDocument = (newApplication: INewApplicationV2, offreOrCompany: ILbaJob, recruteurEmail: string) => {
-  const res = new Application({
+const newApplicationToApplicationDocument = async (newApplication: INewApplicationV2, offreOrCompany: ILbaJob, recruteurEmail: string) => {
+  const now = new Date()
+  const application: IApplication = {
     ...offreOrCompanyToCompanyFields(offreOrCompany),
     ...cleanApplicantFields(newApplication),
     company_email: recruteurEmail.toLowerCase(),
     job_origin: newApplication.company_type,
-  })
-  ZApplication.parse(res.toObject())
-  return res
+    _id: new ObjectId(),
+    created_at: now,
+    last_update_at: now,
+    to_applicant_message_id: null,
+    to_company_message_id: null,
+    company_recruitment_intention: null,
+    company_feedback: null,
+  }
+  await getDbCollection("applications").insertOne(application)
+  return application
 }
 
 /**
  * @description Initialize application object from query parameters
  */
-const newApplicationToApplicationDocumentV2 = (
+const newApplicationToApplicationDocumentV2 = async (
   newApplication: INewApplicationV2NEWCompanySiret | INewApplicationV2NEWJobId,
   LbaJob: ILbaJob,
   recruteurEmail: string,
   caller?: string
 ) => {
-  const res = new Application({
+  const now = new Date()
+  const application: IApplication = {
     ...offreOrCompanyToCompanyFields(LbaJob),
     applicant_first_name: newApplication.applicant_first_name,
     applicant_last_name: newApplication.applicant_last_name,
@@ -515,9 +524,16 @@ const newApplicationToApplicationDocumentV2 = (
     caller: caller,
     company_email: recruteurEmail.toLowerCase(),
     job_origin: LbaJob.type,
-  })
-  ZApplication.parse(res.toObject())
-  return res
+    _id: new ObjectId(),
+    created_at: now,
+    last_update_at: now,
+    to_applicant_message_id: null,
+    to_company_message_id: null,
+    company_recruitment_intention: null,
+    company_feedback: null,
+  }
+  await getDbCollection("applications").insertOne(application)
+  return application
 }
 
 /**
@@ -551,7 +567,7 @@ export const validateJob = async (application: INewApplicationV2): Promise<ILbaJ
     if (!company_siret) {
       return { error: "company_siret manquant" }
     }
-    const lbaCompany = await LbaCompany.findOne({ siret: company_siret })
+    const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret: company_siret })
     if (!lbaCompany) {
       return { error: "société manquante" }
     }
@@ -584,12 +600,12 @@ async function getApplicationCountForItem(applicantEmail: string, LbaJob: ILbaJo
   const { type, job } = LbaJob
 
   if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    return Application.countDocuments({
+    return getDbCollection("applications").countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       company_siret: job.siret,
     })
   } else if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    return Application.countDocuments({
+    return getDbCollection("applications").countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       job_id: job._id.toString(),
     })
@@ -612,13 +628,13 @@ const checkUserApplicationCount = async (applicantEmail: string, offreOrCompany:
   const { type } = offreOrCompany
 
   const [todayApplicationsCount, itemApplicationCount, callerApplicationCount] = await Promise.all([
-    Application.countDocuments({
+    getDbCollection("applications").countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       created_at: { $gte: start, $lt: end },
     }),
     getApplicationCountForItem(applicantEmail, offreOrCompany),
     caller
-      ? Application.countDocuments({
+      ? getDbCollection("applications").countDocuments({
           caller: caller.toLowerCase(),
           company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? offreOrCompany.job.siret : offreOrCompany.recruiter.establishment_siret,
           created_at: { $gte: start, $lt: end },
@@ -654,13 +670,13 @@ const checkUserApplicationCountV2 = async (applicantEmail: string, LbaJob: ILbaJ
   const { type, job, recruiter } = LbaJob
 
   const [todayApplicationsCount, itemApplicationCount, callerApplicationCount] = await Promise.all([
-    Application.countDocuments({
+    getDbCollection("applications").countDocuments({
       applicant_email: applicantEmail.toLowerCase(),
       created_at: { $gte: start, $lt: end },
     }),
     getApplicationCountForItem(applicantEmail, LbaJob),
     caller
-      ? Application.countDocuments({
+      ? getDbCollection("applications").countDocuments({
           caller,
           company_siret: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.siret : recruiter.establishment_siret,
           created_at: { $gte: start, $lt: end },
@@ -770,19 +786,19 @@ export const sendNotificationForApplicationHardbounce = async ({ application }: 
 /**
  * sends email notification to applicant if it's application hardbounced
  */
-const notifyHardbounceToApplicant = async ({ application }: { application: EnforceDocument<IApplication, any> }): Promise<void> => {
+const notifyHardbounceToApplicant = async ({ application }: { application: IApplication | any }): Promise<void> => {
   await mailer.sendEmail({
     to: application.applicant_email,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
-    data: { ...sanitizeApplicationForEmail(application.toObject()), ...images },
+    data: { ...sanitizeApplicationForEmail(application), ...images },
   })
 }
 
 /**
  * sends email notification to applicant if it's application hardbounced
  */
-const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: EnforceDocument<IApplication, any> }): Promise<void> => {
+const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: IApplication | any }): Promise<void> => {
   await mailer.sendEmail({
     to: config.transactionalEmail,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
@@ -802,19 +818,21 @@ export interface IApplicationCount {
  * @returns {Promise<IApplicationCount[]>} token data
  */
 export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]): Promise<IApplicationCount[]> => {
-  const applicationCountByJob: IApplicationCount[] = await Application.aggregate([
-    {
-      $match: {
-        job_id: { $in: job_ids },
+  const applicationCountByJob = (await getDbCollection("applications")
+    .aggregate([
+      {
+        $match: {
+          job_id: { $in: job_ids },
+        },
       },
-    },
-    {
-      $group: {
-        _id: "$job_id",
-        count: { $sum: 1 },
+      {
+        $group: {
+          _id: "$job_id",
+          count: { $sum: 1 },
+        },
       },
-    },
-  ])
+    ])
+    .toArray()) as IApplicationCount[]
 
   return applicationCountByJob
 }
@@ -825,19 +843,21 @@ export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]
  * @returns {Promise<IApplicationCount[]>} token data
  */
 export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][]): Promise<IApplicationCount[]> => {
-  const applicationCountByCompany: IApplicationCount[] = await Application.aggregate([
-    {
-      $match: {
-        company_siret: { $in: sirets },
+  const applicationCountByCompany = (await getDbCollection("applications")
+    .aggregate([
+      {
+        $match: {
+          company_siret: { $in: sirets },
+        },
       },
-    },
-    {
-      $group: {
-        _id: "$company_siret",
-        count: { $sum: 1 },
+      {
+        $group: {
+          _id: "$company_siret",
+          count: { $sum: 1 },
+        },
       },
-    },
-  ])
+    ])
+    .toArray()) as IApplicationCount[]
 
   return applicationCountByCompany
 }
@@ -868,7 +888,7 @@ export const processApplicationHardbounceEvent = async (payload) => {
 
 export const obfuscateLbaCompanyApplications = async (company_siret: string) => {
   const fakeEmail = "faux_email@faux-domaine-compagnie.com"
-  await Application.updateMany(
+  await getDbCollection("applications").updateMany(
     { job_origin: { $in: [LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA] }, company_siret },
     { $set: { to_company_message_id: fakeEmail, company_email: fakeEmail } }
   )

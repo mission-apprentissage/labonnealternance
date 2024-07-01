@@ -2,9 +2,9 @@ import * as _ from "lodash-es"
 import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { Etablissement } from "../../common/model/index"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
@@ -18,14 +18,16 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
   logger.info("Cron #activateOptOutEtablissementFormations started.")
 
   // Opt-out etablissement to activate
-  const etablissementsToActivate = await Etablissement.find({
-    optout_activation_scheduled_date: {
-      $lte: new Date(),
-    },
-    optout_refusal_date: null,
-    optout_activation_date: null,
-    gestionnaire_email: { $ne: null },
-  })
+  const etablissementsToActivate = await getDbCollection("etablissements")
+    .find({
+      optout_activation_scheduled_date: {
+        $lte: new Date(),
+      },
+      optout_refusal_date: null,
+      optout_activation_date: null,
+      gestionnaire_email: { $ne: null },
+    })
+    .toArray()
 
   // Activate all formations, for all referrers that have a mail
   await Promise.all(
@@ -37,14 +39,16 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             lieu_formation_email: { $nin: [null, ""] },
           },
           {
-            referrers: [referrers.JEUNE_1_SOLUTION.name, referrers.LBA.name],
+            $set: {
+              referrers: [referrers.JEUNE_1_SOLUTION.name, referrers.LBA.name],
+            },
           }
         ),
-        Etablissement.findOneAndUpdate(
+        getDbCollection("etablissements").findOneAndUpdate(
           {
             _id: etablissement._id,
           },
-          { optout_activation_date: new Date() }
+          { $set: { optout_activation_date: new Date() } }
         ),
       ])
 

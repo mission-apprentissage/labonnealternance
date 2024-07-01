@@ -205,7 +205,7 @@ function EditPage() {
         <title>{title}</title>
         <link rel="icon" href="/favicon/favicon.ico" />
       </Head>
-      <Breadcrumb pages={[{ title: "Administration", to: "/espace-pro/admin" }, { title: title }]} />
+      <Breadcrumb pages={[{ title: "Administration", to: "/espace-pro/administration/users" }, { title: title }]} />
       <Heading textStyle="h2" mt={5}>
         {title}
       </Heading>

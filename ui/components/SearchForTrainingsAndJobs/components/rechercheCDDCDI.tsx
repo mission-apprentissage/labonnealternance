@@ -27,7 +27,7 @@ const RechercheCDICDD = () => {
             <Text mb={4} fontWeight={700}>
               Certaines entreprises proposent d’autres types de contrats, soumettez-leur l'idée de vous recruter en alternance.
             </Text>
-            <Link ml="2px" isExternal variant="basicUnderlined" href={buildFtUrl(formValues)}>
+            <Link ml="2px" isExternal variant="basicUnderlined" data-tracking-id="elargir-recherche-cdi-cdd-ft" href={buildFtUrl(formValues)}>
               Voir les offres France Travail <ExternalLinkIcon mb="3px" ml="2px" />
             </Link>
           </Box>

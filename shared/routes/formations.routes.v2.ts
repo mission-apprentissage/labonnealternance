@@ -52,7 +52,7 @@ export const zFormationsRoutesV2 = {
         "200": z.array(ZLbaItemFormation2),
       },
       securityScheme: {
-        auth: "api-key",
+        auth: "api-apprentissage",
         access: null,
         resources: {},
       },

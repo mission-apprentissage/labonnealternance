@@ -1,6 +1,8 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "customemailetfas" as const
 
 export const ZCustomEmailETFA = z
   .object({
@@ -11,3 +13,9 @@ export const ZCustomEmailETFA = z
   .strict()
 
 export type ICustomEmailETFA = z.output<typeof ZCustomEmailETFA>
+
+export default {
+  zod: ZCustomEmailETFA,
+  indexes: [[{ cle_ministere_educatif: 1 }, {}]],
+  collectionName,
+} as const satisfies IModelDescriptor

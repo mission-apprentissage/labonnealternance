@@ -220,7 +220,7 @@ export const zJobsRoutesV2 = {
         "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
       securityScheme: {
-        auth: "api-key",
+        auth: "api-apprentissage",
         access: null,
         resources: {},
       },

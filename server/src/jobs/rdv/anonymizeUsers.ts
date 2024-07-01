@@ -1,7 +1,6 @@
 import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-
-import { User } from "../../common/model/index"
 
 /**
  * Anonymize users older than 1 year.
@@ -13,23 +12,26 @@ const anonymizeUsers = async () => {
   lastYear.setFullYear(lastYear.getFullYear() - 1)
   const matchCondition = { last_action_date: { $lte: lastYear } }
 
-  await User.aggregate([
-    {
-      $match: matchCondition,
-    },
-    {
-      $project: {
-        role: 1,
-        type: 1,
-        last_action_date: 1,
+  await getDbCollection("users")
+    .aggregate([
+      {
+        $match: matchCondition,
       },
-    },
-    {
-      $merge: "anonymized_users",
-    },
-  ])
+      {
+        $project: {
+          role: 1,
+          type: 1,
+          last_action_date: 1,
+        },
+      },
+      {
+        // @ts-ignore
+        $merge: "anonymized_users",
+      },
+    ])
+    .toArray()
 
-  const res = await User.deleteMany(matchCondition)
+  const res = await getDbCollection("users").deleteMany(matchCondition)
 
   return res.deletedCount
 }

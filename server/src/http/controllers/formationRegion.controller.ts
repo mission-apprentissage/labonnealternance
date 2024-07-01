@@ -17,8 +17,6 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/v1/formationsParRegion"],
       config,
-      // TODO: AttachValidation Error ?
-      attachValidation: true,
     },
     async (req, res) => {
       const { romes, romeDomain, caller, departement, region, diploma, options } = req.query

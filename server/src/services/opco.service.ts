@@ -1,9 +1,9 @@
 import memoize from "memoizee"
 import { OPCOS } from "shared/constants/recruteur"
 import { IReferentielOpco, ZReferentielOpcoInsert } from "shared/models"
+import { IOpco } from "shared/models/opco.model"
 
-import { Opco } from "../common/model/index"
-import { IOpco } from "../common/model/schema/opco/opco.types"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
 
@@ -11,7 +11,7 @@ import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
  * @description get opco from database collection OPCOS
  */
 export const getOpcoBySirenFromDB = async (siren: string) => {
-  const opcoFromDB = await Opco.findOne({ siren })
+  const opcoFromDB = await getDbCollection("opcos").findOne({ siren })
   if (opcoFromDB) {
     const { opco, idcc } = opcoFromDB
     return { opco, idcc }
@@ -19,11 +19,11 @@ export const getOpcoBySirenFromDB = async (siren: string) => {
 }
 
 /**
- * @description tente d'ajouter un opco en base et retourne une string indiquant le résultat
+ * @description ajoute un opco en base s'il n'existe pas déjà sinon le mets à jour
  * @param {IOpco} opcoData
  * @returns {Promise<IOpco>}
  */
-export const saveOpco = async (opcoData: IOpco) => Opco.findOneAndUpdate({ siren: opcoData.siren }, opcoData, { upsert: true })
+export const saveOpco = async (opcoData: Omit<IOpco, "_id">) => getDbCollection("opcos").findOneAndUpdate({ siren: opcoData.siren }, { $set: opcoData }, { upsert: true })
 
 /**
  * @description retourne le nom court d'un opco en paramètre
@@ -73,7 +73,7 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
     searchForOpcoParams.opco = OPCOS[opco.toUpperCase()]
   }
 
-  const foundInMongoOpcos = await Opco.find(searchForOpcoParams)
+  const foundInMongoOpcos = await getDbCollection("opcos").find(searchForOpcoParams).toArray()
 
   let opcoFilteredSirens: any[] = []
 

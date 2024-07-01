@@ -1,9 +1,11 @@
+import { ObjectId } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { referrers } from "shared/constants/referers"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
-import { create, findOne, getEmailForRdv, updateParameter } from "../../services/eligibleTrainingsForAppointment.service"
+import { create, getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
 const hasDateProperty = (etablissements, propertyName) => {
@@ -18,31 +20,39 @@ export const syncEtablissementsAndFormations = async () => {
   logger.info("Cron #syncEtablissementsAndFormations started.")
 
   await oleoduc(
-    FormationCatalogue.find({
-      cle_ministere_educatif: { $ne: null },
-    }).cursor(),
+    getDbCollection("formationcatalogues")
+      .find({
+        cle_ministere_educatif: { $ne: null },
+      })
+      .stream(),
     writeData(
       async (formation) => {
         const [eligibleTrainingsForAppointment, etablissements, existInReferentielOnisep] = await Promise.all([
-          findOne({
-            cle_ministere_educatif: formation.cle_ministere_educatif,
-          })
-            .select({ lieu_formation_email: 1, is_lieu_formation_email_customized: 1 })
-            .lean(),
-          Etablissement.find({
-            gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-          })
-            .select({
-              premium_affelnet_activation_date: 1,
-              optout_refusal_date: 1,
-              optout_activation_date: 1,
-              premium_refusal_date: 1,
-              premium_activation_date: 1,
-              premium_affelnet_refusal_date: 1,
-              gestionnaire_email: 1,
-            })
-            .lean(),
-          ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
+          getDbCollection("eligible_trainings_for_appointments").findOne(
+            {
+              cle_ministere_educatif: formation.cle_ministere_educatif,
+            },
+            { projection: { lieu_formation_email: 1, is_lieu_formation_email_customized: 1 } }
+          ),
+          getDbCollection("etablissements")
+            .find(
+              {
+                gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+              },
+              {
+                projection: {
+                  premium_affelnet_activation_date: 1,
+                  optout_refusal_date: 1,
+                  optout_activation_date: 1,
+                  premium_refusal_date: 1,
+                  premium_activation_date: 1,
+                  premium_affelnet_refusal_date: 1,
+                  gestionnaire_email: 1,
+                },
+              }
+            )
+            .toArray(),
+          getDbCollection("referentieloniseps").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }),
         ])
 
         const hasPremiumAffelnetActivation = hasDateProperty(etablissements, "premium_affelnet_activation_date")
@@ -88,25 +98,27 @@ export const syncEtablissementsAndFormations = async () => {
             })
           }
 
-          await updateParameter(eligibleTrainingsForAppointment._id, {
-            training_id_catalogue: formation._id,
-            lieu_formation_email: emailRdv,
-            parcoursup_id: formation.parcoursup_id,
-            parcoursup_visible: formation.parcoursup_visible,
-            affelnet_visible: formation.affelnet_visible,
-            training_code_formation_diplome: formation.cfd,
-            etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
-            training_intitule_long: formation.intitule_long,
-            referrers: referrersToActivate,
-            is_catalogue_published: formation.published,
-            last_catalogue_sync_date: new Date(),
-            lieu_formation_street: formation.lieu_formation_adresse,
-            lieu_formation_city: formation.localite,
-            lieu_formation_zip_code: formation.code_postal,
-            etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-            etablissement_formateur_street: formation.etablissement_formateur_adresse,
-            departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
-            etablissement_formateur_city: formation.etablissement_formateur_localite,
+          await getDbCollection("eligible_trainings_for_appointments").updateOne(eligibleTrainingsForAppointment._id, {
+            $set: {
+              training_id_catalogue: formation._id,
+              lieu_formation_email: emailRdv,
+              parcoursup_id: formation.parcoursup_id,
+              parcoursup_visible: formation.parcoursup_visible,
+              affelnet_visible: formation.affelnet_visible,
+              training_code_formation_diplome: formation.cfd,
+              etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
+              training_intitule_long: formation.intitule_long,
+              referrers: referrersToActivate,
+              is_catalogue_published: formation.published,
+              last_catalogue_sync_date: new Date(),
+              lieu_formation_street: formation.lieu_formation_adresse,
+              lieu_formation_city: formation.localite,
+              lieu_formation_zip_code: formation.code_postal,
+              etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
+              etablissement_formateur_street: formation.etablissement_formateur_adresse,
+              departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
+              etablissement_formateur_city: formation.etablissement_formateur_localite,
+            },
           })
         } else {
           const emailRdv = await getEmailForRdv({
@@ -119,6 +131,10 @@ export const syncEtablissementsAndFormations = async () => {
           if (!emailRdv) return
 
           await create({
+            _id: new ObjectId(),
+            created_at: new Date(),
+            last_catalogue_sync_date: new Date(),
+            rco_formation_id: formation.id_rco_formation,
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
@@ -149,17 +165,19 @@ export const syncEtablissementsAndFormations = async () => {
           )
         }
 
-        await Etablissement.updateMany(
+        await getDbCollection("etablissements").updateMany(
           { $and: [{ formateur_siret: formation.etablissement_formateur_siret, gestionnaire_siret: formation.etablissement_gestionnaire_siret }] },
           {
-            gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            gestionnaire_email: gestionnaireEmail,
-            raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-            formateur_siret: formation.etablissement_formateur_siret,
-            formateur_address: formation.etablissement_formateur_adresse,
-            formateur_zip_code: formation.etablissement_formateur_code_postal,
-            formateur_city: formation.etablissement_formateur_localite,
-            last_catalogue_sync_date: new Date(),
+            $set: {
+              gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+              gestionnaire_email: gestionnaireEmail,
+              raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
+              formateur_siret: formation.etablissement_formateur_siret,
+              formateur_address: formation.etablissement_formateur_adresse,
+              formateur_zip_code: formation.etablissement_formateur_code_postal,
+              formateur_city: formation.etablissement_formateur_localite,
+              last_catalogue_sync_date: new Date(),
+            },
           },
           {
             upsert: true,

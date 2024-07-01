@@ -1,7 +1,8 @@
 import { oleoduc, writeData } from "oleoduc"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { Opco } from "../../common/model/index"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service"
@@ -75,7 +76,7 @@ export default async function updateOpcoCompanies({
 
     if (ClearMongo) {
       logMessage("info", `Clearing opcos db...`)
-      await Opco.deleteMany({})
+      await getDbCollection("opcos").deleteMany({})
     }
 
     await oleoduc(
@@ -83,7 +84,7 @@ export default async function updateOpcoCompanies({
       writeData(async (company) => {
         const siren = company.siret.toString().padStart(14, "0").substring(0, 9)
 
-        if ((await Opco.countDocuments({ siren })) === 0 && !sirenWithoutOpco.has(siren)) {
+        if ((await getDbCollection("opcos").countDocuments({ siren })) === 0 && !sirenWithoutOpco.has(siren)) {
           sirenSet.add(siren)
         }
         if (sirenSet.size > 0 && sirenSet.size % CFADOCK_FILTER_LIMIT === 0) {

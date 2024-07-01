@@ -26,7 +26,7 @@ const getItemDetails = async ({ selectedItem, trainings, jobs, setTrainingsAndSe
     case LBA_ITEM_TYPE_OLD.FORMATION: {
       const trainingWithDetails = await fetchTrainingDetails(selectedItem)
       const updatedTrainings = trainings.map((v) => {
-        if (v.id === trainingWithDetails.training.cleMinistereEducatif) {
+        if (v.id === trainingWithDetails.id) {
           trainingWithDetails.place.distance = v.place.distance
           return trainingWithDetails
         }

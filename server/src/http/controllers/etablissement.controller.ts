@@ -1,12 +1,13 @@
 import Boom from "boom"
 import * as _ from "lodash-es"
+import { ObjectId } from "mongodb"
 import { zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
 
-import { Etablissement } from "../../common/model/index"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
@@ -41,7 +42,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/etablissements/:id"])],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
+      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) }, { projection: etablissementProjection })
 
       if (!etablissement) {
         throw Boom.notFound()
@@ -61,7 +62,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/affelnet/accept"])],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id)
+      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -82,12 +83,12 @@ export default (server: Server) => {
           etablissement_formateur_siret: etablissement.formateur_siret,
           affelnet_visible: true,
         }),
-        Etablissement.findOneAndUpdate(
+        getDbCollection("etablissements").findOneAndUpdate(
           { _id: etablissement._id },
           {
-            premium_affelnet_activation_date: dayjs().toDate(),
+            $set: { premium_affelnet_activation_date: dayjs().toDate() },
           },
-          { new: true }
+          { returnDocument: "after" }
         ),
       ])
 
@@ -130,12 +131,12 @@ export default (server: Server) => {
       )
 
       const [resultAffelnet] = await Promise.all([
-        Etablissement.findById(req.params.id, etablissementProjection).lean(),
+        await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) }, { projection: etablissementProjection }),
         ...eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) =>
-          eligibleTrainingsForAppointmentService.update(
+          eligibleTrainingsForAppointmentService.findOneAndUpdate(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
-              referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.AFFELNET.name])],
+              $set: { referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.AFFELNET.name])] },
             }
           )
         ),
@@ -157,7 +158,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/accept"])],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id).lean()
+      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) })
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -181,12 +182,12 @@ export default (server: Server) => {
           },
           parcoursup_visible: true,
         }),
-        Etablissement.findOneAndUpdate(
+        getDbCollection("etablissements").findOneAndUpdate(
           { _id: etablissement._id },
           {
-            premium_activation_date: dayjs().toDate(),
+            $set: { premium_activation_date: dayjs().toDate() },
           },
-          { new: true }
+          { returnDocument: "after" }
         ),
       ])
 
@@ -230,12 +231,12 @@ export default (server: Server) => {
       )
 
       const [result] = await Promise.all([
-        Etablissement.findById(req.params.id).lean(),
+        await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) }),
         ...eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) =>
-          eligibleTrainingsForAppointmentService.update(
+          eligibleTrainingsForAppointmentService.findOneAndUpdate(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
-              referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])],
+              $set: { referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])] },
             }
           )
         ),
@@ -257,7 +258,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/affelnet/refuse"])],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id)
+      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -298,14 +299,14 @@ export default (server: Server) => {
         },
       })
 
-      await Etablissement.findOneAndUpdate(
+      await await getDbCollection("etablissements").findOneAndUpdate(
         { _id: etablissement._id },
         {
-          premium_affelnet_refusal_date: dayjs().toDate(),
+          projection: { premium_affelnet_refusal_date: dayjs().toDate() },
         }
       )
 
-      const etablissementAffelnetUpdated = await Etablissement.findById(req.params.id, etablissementProjection).lean()
+      const etablissementAffelnetUpdated = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) }, { projection: etablissementProjection })
       if (!etablissementAffelnetUpdated) {
         throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
       }
@@ -323,7 +324,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/premium/refuse"])],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id)
+      const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -364,14 +365,17 @@ export default (server: Server) => {
         },
       })
 
-      await Etablissement.findOneAndUpdate(
+      await getDbCollection("etablissements").findOneAndUpdate(
         { _id: etablissement._id },
         {
-          premium_refusal_date: dayjs().toDate(),
+          $set: { premium_refusal_date: dayjs().toDate() },
         }
       )
 
-      const etablissementParcoursupUpdated = await Etablissement.findById(req.params.id, etablissementProjection).lean()
+      const etablissementParcoursupUpdated = await getDbCollection("etablissements").findOne(
+        { _id: new ObjectId(req.params.id.toString()) },
+        { projection: etablissementProjection }
+      )
       if (!etablissementParcoursupUpdated) {
         throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
       }
@@ -389,7 +393,10 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/etablissements/:id/opt-out/unsubscribe"])],
     },
     async (req, res) => {
-      let etablissement = await Etablissement.findById(req.params.id, { ...etablissementProjection, gestionnaire_email: 1 }).lean()
+      let etablissement = await getDbCollection("etablissements").findOne(
+        { _id: new ObjectId(req.params.id.toString()) },
+        { projection: { ...etablissementProjection, gestionnaire_email: 1 } }
+      )
 
       if (!etablissement || etablissement.optout_refusal_date) {
         throw Boom.notFound()
@@ -421,7 +428,7 @@ export default (server: Server) => {
 
       // If opt-out is already running but user unsubscribe, disable all formations
       /**
-       * WARNING KBA 2024-02-12 : ALL REFERRERS ARE REMOVE AND ITS BAD IF PREMIUM IS AVAILABLE
+       * WARNING KBA 2024-02-12 : ALL REFERRERS ARE REMOVED AND ITS BAD IF PREMIUM IS AVAILABLE
        */
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
         // Disable all formations
@@ -430,14 +437,19 @@ export default (server: Server) => {
             etablissement_formateur_siret: etablissement.formateur_siret,
           },
           {
-            referrers: [],
+            $set: {
+              referrers: [],
+            },
           }
         )
       }
 
-      await Etablissement.findByIdAndUpdate(req.params.id, {
-        optout_refusal_date: dayjs().toDate(),
-      })
+      await getDbCollection("etablissements").findOneAndUpdate(
+        { _id: new ObjectId(req.params.id.toString()) },
+        {
+          $set: { optout_refusal_date: dayjs().toDate() },
+        }
+      )
 
       if (!etablissement.gestionnaire_email) {
         throw Boom.badRequest("Gestionnaire email not found")
@@ -462,7 +474,7 @@ export default (server: Server) => {
         },
       })
 
-      etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
+      etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) }, { projection: etablissementProjection })
       if (!etablissement) {
         throw new Error(`unexpected: could not find appointment with id=${req.params.id}`)
       }

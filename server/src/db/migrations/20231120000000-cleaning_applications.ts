@@ -7,7 +7,6 @@ export const up = async (db: Db) => {
     { company_naf: null },
     { $set: { company_naf: "" } },
     {
-      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
       bypassDocumentValidation: true,
     }
   )
@@ -16,7 +15,6 @@ export const up = async (db: Db) => {
     { job_title: null },
     { $set: { job_title: "" } },
     {
-      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
       bypassDocumentValidation: true,
     }
   )

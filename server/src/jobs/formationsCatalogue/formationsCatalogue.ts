@@ -1,10 +1,11 @@
+import { ObjectId } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import { zFormationCatalogueSchemaNew } from "shared/models"
 
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { FormationCatalogue } from "../../common/model/index"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.service"
@@ -29,7 +30,7 @@ const importFormations = async () => {
           formation.lieu_formation_geopoint = convertStringCoordinatesToGeoPoint(formation.lieu_formation_geo_coordonnees)
           const parsedFormation = zFormationCatalogueSchemaNew.parse(formation)
 
-          await FormationCatalogue.collection.insertOne(parsedFormation)
+          await getDbCollection("formationcatalogues").insertOne({ _id: new ObjectId(), ...parsedFormation })
           stats.created++
         } catch (e) {
           logger.error("Erreur enregistrement de formation", e)
@@ -62,7 +63,7 @@ export const importCatalogueFormationJob = async () => {
       return
     }
 
-    await FormationCatalogue.deleteMany({})
+    await getDbCollection("formationcatalogues").deleteMany({})
 
     const stats = await importFormations()
 

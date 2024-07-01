@@ -1,36 +1,37 @@
-import { FilterQuery, FindOneOptions, ObjectId } from "mongodb"
+import { Filter, FindOptions, ObjectId } from "mongodb"
 import { ISession } from "shared"
 
 import config from "@/config"
 
-import { Session } from "../common/model/index"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
 type TCreateSession = Pick<ISession, "token">
 
 export const createSession = async (data: TCreateSession) => {
   const now = new Date()
 
-  const sessionObj = new Session({
+  const sessionObj: ISession = {
     ...data,
+    _id: new ObjectId(),
     updated_at: now,
     created_at: now,
     expires_at: new Date(now.getTime() + config.auth.session.cookie.maxAge),
-  })
-  await sessionObj.save()
+  }
+  const { insertedId } = await getDbCollection("sessions").insertOne(sessionObj)
 
-  const session = await getSession({ _id: sessionObj._id })
+  const session = await getSession({ _id: insertedId })
 
   return session
 }
 
-export const getSession = async (filter: FilterQuery<ISession>, options?: FindOneOptions<unknown>): Promise<ISession | null> => {
-  return Session.findOne(filter, options)
+export const getSession = async (filter: Filter<ISession>, options?: FindOptions): Promise<ISession | null> => {
+  return getDbCollection("sessions").findOne(filter, options)
 }
 
 export const deleteSession = async (token: string) => {
-  await Session.deleteMany({ token })
+  await getDbCollection("sessions").deleteMany({ token })
 }
 
 export const updateSession = async (_id: ObjectId, data: Partial<ISession>) => {
-  return Session.updateOne({ _id }, { $set: { ...data, updated_at: new Date() } })
+  return getDbCollection("sessions").updateOne({ _id }, { $set: { ...data, updated_at: new Date() } })
 }

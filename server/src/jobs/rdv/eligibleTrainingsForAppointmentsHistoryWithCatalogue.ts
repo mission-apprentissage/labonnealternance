@@ -1,7 +1,8 @@
 import { oleoduc, writeData } from "oleoduc"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, FormationCatalogue } from "../../common/model/index"
 
 /**
  * @description Check if a training is still available for appointments again it's presence in the training catalogue
@@ -10,7 +11,7 @@ import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory
 export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => {
   logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue started.")
 
-  const control = await FormationCatalogue.countDocuments()
+  const control = await getDbCollection("formationcatalogues").countDocuments()
 
   if (control === 0) {
     return
@@ -21,26 +22,26 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
     NewElligibleTrainingCount: 0,
   }
 
-  stats.AncientElligibleTrainingCount = await EligibleTrainingsForAppointment.countDocuments()
+  stats.AncientElligibleTrainingCount = await getDbCollection("eligible_trainings_for_appointments").countDocuments()
 
   await oleoduc(
-    EligibleTrainingsForAppointment.find({}).lean().cursor(),
+    getDbCollection("eligible_trainings_for_appointments").find({}).stream(),
     writeData(
       async (formation) => {
-        const exist = await FormationCatalogue.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
+        const exist = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
 
         formation._id = undefined
 
         if (!exist) {
-          await eligibleTrainingsForAppointmentHistory.create({ ...formation, email_rdv: undefined, historization_date: new Date() })
-          await EligibleTrainingsForAppointment.findOneAndRemove({ cle_ministere_educatif: formation.cle_ministere_educatif })
+          await getDbCollection("eligible_trainings_for_appointments_history").insertOne({ ...formation, email_rdv: undefined, historization_date: new Date() })
+          await getDbCollection("eligible_trainings_for_appointments").deleteOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
         }
       },
       { parallel: 20 }
     )
   )
 
-  stats.NewElligibleTrainingCount = await EligibleTrainingsForAppointment.countDocuments()
+  stats.NewElligibleTrainingCount = await getDbCollection("eligible_trainings_for_appointments").countDocuments()
 
   logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue done.")
 

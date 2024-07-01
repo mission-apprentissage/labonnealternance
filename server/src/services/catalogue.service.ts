@@ -4,12 +4,13 @@ import axios, { AxiosInstance } from "axios"
 import Boom from "boom"
 import { got } from "got"
 import { sortBy } from "lodash-es"
+import { ObjectId } from "mongodb"
 import { compose } from "oleoduc"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 import { logger } from "../common/logger"
-import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
 import { getDistanceInKm } from "../common/utils/geolib"
 import { fetchStream } from "../common/utils/httpUtils"
 import { isValidEmail } from "../common/utils/isValidEmail"
@@ -110,15 +111,7 @@ const neededFieldsFromCatalogue = {
  * @param {String} id
  * @returns {Promise<Object>}
  */
-export const getFormationById = (id: string) => FormationCatalogue.findById(id)
-
-/**
- * @description Get formations by idRcoFormations.
- * @param {String[]} idRcoFormations
- * @returns {Promise<Object[]>}
- */
-export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: { cleMinistereEducatifs: string[] }) =>
-  FormationCatalogue.find({ cle_ministere_educatif: { $in: cleMinistereEducatifs } }).lean()
+export const getFormationById = (id: string) => getDbCollection("formationcatalogues").findOne({ _id: new ObjectId(id) })
 
 /**
  * @description Get formations from the formation catalogue collection.
@@ -126,7 +119,7 @@ export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: {
  * @param {Object} select
  * @returns {Promise<Object>}
  */
-export const getCatalogueFormations = (query: object, select?: object) => FormationCatalogue.find(query, select).lean()
+export const getCatalogueFormations = (query: object, select?: object) => getDbCollection("formationcatalogues").find(query, select).toArray()
 
 /**
  * @description Get formations count through the CARIF OREF catalogue API.
@@ -205,7 +198,9 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
     ]
   })
   etablissementsRefined = sortBy(etablissementsRefined, "distance_en_km")
-  const unsubscribedEtablissements = await UnsubscribeOF.find({ catalogue_id: { $in: etablissementsRefined.map((etablissement) => etablissement._id) } })
+  const unsubscribedEtablissements = await getDbCollection("unsubscribedofs")
+    .find({ catalogue_id: { $in: etablissementsRefined.map((etablissement) => etablissement._id) } })
+    .toArray()
   const unsubscribedIds = unsubscribedEtablissements.map((unsubscribeOF) => unsubscribeOF.catalogue_id)
   etablissementsRefined = etablissementsRefined.filter((etablissement) => !unsubscribedIds.includes(etablissement._id))
   return etablissementsRefined
@@ -313,7 +308,7 @@ export const getRomesFromCatalogue = async ({
   if (cfd) query.cfd = cfd
   if (siret) query.etablissement_formateur_siret = siret
 
-  const formationsFromDb = await FormationCatalogue.find(query).lean()
+  const formationsFromDb = await getDbCollection("formationcatalogues").find(query)
 
   const romes: Set<string> = new Set()
 

@@ -1,5 +1,6 @@
 import Boom from "boom"
 import jwt from "jsonwebtoken"
+import { ObjectId } from "mongodb"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
 import { IUserRecruteur } from "shared/models"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -8,7 +9,7 @@ import { assertUnreachable } from "shared/utils"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, z } from "zod"
 
-import { UserWithAccount } from "@/common/model"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
@@ -225,7 +226,7 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
 ): Promise<IAccessToken<Schema>> {
   const token = verifyJwtToken(jwtToken) as IAccessToken<Schema>
   if (token.identity.type === "IUserRecruteur") {
-    const user = await UserWithAccount.findOne({ _id: token.identity._id }).lean()
+    const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(token.identity._id) })
 
     if (!user) throw Boom.forbidden()
 

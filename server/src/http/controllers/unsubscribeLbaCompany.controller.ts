@@ -1,12 +1,13 @@
-import { zRoutes } from "shared"
+import { ObjectId } from "mongodb"
+import { IUnsubscribedLbaCompany, zRoutes } from "shared"
 import { IUnsubscribeQueryResponse } from "shared/models/unsubscribeLbaCompany.model"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { obfuscateLbaCompanyApplications } from "@/services/application.service"
 import { buildLbaCompanyAddress } from "@/services/lbacompany.service"
 
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model"
 import config from "../../config"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
 import mailer from "../../services/mailer.service"
@@ -44,7 +45,7 @@ export default function (server: Server) {
         }
       }
 
-      const lbaCompaniesToUnsubscribe = await LbaCompany.find(criteria).limit(ARBITRARY_COMPANY_LIMIT).lean()
+      const lbaCompaniesToUnsubscribe = await getDbCollection("bonnesboites").find(criteria).limit(ARBITRARY_COMPANY_LIMIT).toArray()
 
       if (!lbaCompaniesToUnsubscribe.length) {
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU }
@@ -54,10 +55,11 @@ export default function (server: Server) {
         })
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES, companies }
       } else {
+        const now = new Date()
         await asyncForEach(lbaCompaniesToUnsubscribe, async (company) => {
           const { siret, raison_sociale, enseigne, naf_code, naf_label, rome_codes, insee_city_code, zip_code, city, company_size, created_at, last_update_at } = company
-
-          const unsubscribedLbaCompany = new UnsubscribedLbaCompany({
+          const unsubscribedLbaCompany: IUnsubscribedLbaCompany = {
+            _id: new ObjectId(),
             siret,
             raison_sociale,
             enseigne,
@@ -71,13 +73,14 @@ export default function (server: Server) {
             created_at,
             last_update_at,
             unsubscribe_reason: reason,
-          })
+            unsubscribe_date: now,
+          }
 
-          await unsubscribedLbaCompany.save()
+          await getDbCollection("unsubscribedbonnesboites").insertOne(unsubscribedLbaCompany)
 
-          const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret })
+          const lbaCompanyToUnsubscribe = await getDbCollection("bonnesboites").findOne({ siret })
           if (lbaCompanyToUnsubscribe) {
-            await lbaCompanyToUnsubscribe.remove()
+            await getDbCollection("bonnesboites").deleteOne({ _id: lbaCompanyToUnsubscribe._id })
           }
 
           if (reason === "OPPOSITION") {

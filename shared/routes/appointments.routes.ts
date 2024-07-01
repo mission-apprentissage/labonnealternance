@@ -101,46 +101,6 @@ export type IAppointmentRequestContextCreateFormUnavailableResponseSchema = z.ou
 
 export const zAppointmentsRoute = {
   get: {
-    "/admin/appointments/details": {
-      method: "get",
-      path: "/admin/appointments/details",
-      response: {
-        "200": z
-          .object({
-            appointments: z.array(
-              z
-                .object({
-                  created_at: z.date(),
-                  applicant_message_to_cfa: z.string().nullable(),
-                  appointment_origin: z.string(),
-                  cfa_recipient_email: z.string(),
-                  formation: z
-                    .object({
-                      etablissement_gestionnaire_entreprise_raison_sociale: z.string().nullable(),
-                      etablissement_formateur_siret: z.string().nullable(),
-                      intitule_long: z.string().nullable(),
-                    })
-                    .strict(),
-                  candidat: z
-                    .object({
-                      firstname: z.string(),
-                      lastname: z.string(),
-                      email: z.string(),
-                      phone: z.string(),
-                    })
-                    .strict(),
-                })
-                .nullish()
-            ),
-          })
-          .strict(),
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "admin",
-        resources: {},
-      },
-    },
     "/appointment-request/context/short-recap": {
       method: "get",
       path: "/appointment-request/context/short-recap",

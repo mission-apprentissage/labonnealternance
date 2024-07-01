@@ -1,0 +1,86 @@
+name: Manual Image Build
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version to build (use beta or rc)
+        type: string
+        required: true
+      environment:
+        description: The environment to deploy to
+        type: choice
+        required: true
+        options:
+          - recette
+          - pentest
+
+jobs:
+  build:
+    concurrency:
+      group: "build-${{ github.workflow }}-${{ github.ref }}"
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+            .yarn/install-state.gz
+            .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64
+          install: true
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v2
+
+      - name: Retrieve previous version
+        id: get-prev-version
+        run: echo "VERSION=$(git describe --tags --abbrev=0 | cut -c2-)" >> "$GITHUB_OUTPUT"
+
+      - name: bump and release
+        run: .bin/mna-lba build:image "${{ inputs.version }}" push "${{ inputs.environment }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
+
+  deploy:
+    concurrency:
+      group: "deploy-${{ github.workflow }}-${{ github.ref }}"
+    needs: ["build"]
+    name: Deploy ${{ inputs.version }} on ${{ inputs.environment }}
+    uses: "./.github/workflows/_deploy.yml"
+    with:
+      environment: ${{ inputs.environment }}
+      app_version: ${{ inputs.version  }}
+    secrets:
+      DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+      DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      VAULT_PWD: ${{ secrets.VAULT_PWD }}

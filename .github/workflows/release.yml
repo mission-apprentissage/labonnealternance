@@ -129,6 +129,7 @@ jobs:
       VAULT_PWD: ${{ secrets.VAULT_PWD }}
 
   deploy-pentest:
+    if: false
     concurrency:
       group: "deploy-pentest-${{ github.workflow }}-${{ github.ref }}"
     needs: ["release"]

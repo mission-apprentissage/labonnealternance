@@ -1,9 +1,11 @@
+import { ObjectId } from "mongodb"
 import { oleoduc, transformData, writeData } from "oleoduc"
+import { IUnsubscribedLbaCompany } from "shared"
 
 import { checkIsDiffusible } from "@/services/etablissement.service"
 
-import { LbaCompany } from "../../common/model"
 import { logMessage } from "../../common/utils/logMessage"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./lbaCompaniesUtils"
 
@@ -24,7 +26,7 @@ export const updateSAVECompanies = async () => {
     ),
     writeData(async (company) => {
       try {
-        const lbaCompany = await LbaCompany.findOne({ siret: company.siret })
+        const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret: company.siret })
 
         if (lbaCompany) {
           if (company.raison_sociale) {
@@ -50,9 +52,9 @@ export const updateSAVECompanies = async () => {
           }
 
           if (lbaCompany.rome_codes?.length && (await checkIsDiffusible(lbaCompany.siret))) {
-            await lbaCompany.save()
+            await getDbCollection("bonnesboites").updateOne({ _id: lbaCompany._id }, lbaCompany)
           } else {
-            await lbaCompany.remove()
+            await getDbCollection("bonnesboites").deleteOne({ _id: lbaCompany._id })
           }
         }
         //else company no more in collection => doing nothing
@@ -87,13 +89,13 @@ export const insertSAVECompanies = async () => {
         return null
       }
 
+      // est-ce que la fonction doit retourner les dates ou sont-elles présentes dans le rawCompany ? il manque le typage de la source
       const company = await getCompanyMissingData(rawCompany)
       if (company) {
         try {
-          let lbaCompany = await LbaCompany.findOne({ siret: company.siret })
+          const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret: company.siret })
           if (!lbaCompany) {
-            lbaCompany = new LbaCompany(company)
-            await lbaCompany.save()
+            await getDbCollection("bonnesboites").insertOne(company)
           }
         } catch (err) {
           logMessage("error", err)
@@ -121,7 +123,31 @@ export const removeSAVECompanies = async () => {
       { parallel: 8 }
     ),
     writeData(async (company) => {
-      await LbaCompany.deleteOne({ siret: company.siret })
+      // Ce bloc ne sera utile qu'une seule fois.
+      const unsubed = await getDbCollection("unsubscribedbonnesboites").findOne({ siret: company.siret })
+      const now = new Date()
+      if (!unsubed) {
+        const toUnsub: IUnsubscribedLbaCompany = {
+          _id: new ObjectId(),
+          siret: company.siret,
+          raison_sociale: "",
+          enseigne: "Suppression via script SAVE",
+          naf_code: "",
+          naf_label: "",
+          rome_codes: [],
+          insee_city_code: "",
+          zip_code: "",
+          city: "",
+          company_size: "",
+          created_at: now,
+          last_update_at: now,
+          unsubscribe_date: now,
+          unsubscribe_reason: "Autre",
+        }
+        await getDbCollection("unsubscribedbonnesboites").insertOne(toUnsub)
+      }
+
+      await getDbCollection("bonnesboites").deleteOne({ siret: company.siret })
     })
   )
 

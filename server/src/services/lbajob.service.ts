@@ -1,11 +1,10 @@
 import Boom from "boom"
-import pkg from "mongodb"
+import { ObjectId } from "mongodb"
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { Cfa, Recruiter } from "@/common/model"
-import { ObjectIdType, db } from "@/common/mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
@@ -19,8 +18,6 @@ import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
-
-const { ObjectId } = pkg
 
 const JOB_SEARCH_LIMIT = 250
 const FRANCE_LATITUDE = 46.227638
@@ -95,7 +92,9 @@ export const getJobs = async ({
     },
   })
 
-  const recruiters: IRecruiter[] = await Recruiter.aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
+  const recruiters: IRecruiter[] = (await getDbCollection("recruiters")
+    .aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
+    .toArray()) as IRecruiter[]
 
   const recruitersWithJobs = await Promise.all(
     recruiters.map(async (recruiter) => {
@@ -105,7 +104,7 @@ export const getJobs = async ({
       }
 
       if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
-        const cfa = await Cfa.findOne({ siret: recruiter.cfa_delegated_siret })
+        const cfa = await getDbCollection("cfas").findOne({ siret: recruiter.cfa_delegated_siret })
         const cfaUser = await getUser2ManagingOffer(firstJob)
         recruiter.phone = cfaUser.phone
         recruiter.email = cfaUser.email
@@ -224,7 +223,7 @@ function transformLbaJobs({ jobs, applicationCountByJob, isMinimalData }: { jobs
 /**
  * @description Retourne une offre LBA identifiée par son id
  */
-export const getLbaJobById = async ({ id, caller }: { id: ObjectIdType; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
+export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 
@@ -454,13 +453,14 @@ function sortLbaJobs(jobs: { results: ILbaItemLbaJob[] }) {
  */
 export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
   try {
-    await db.collection("recruiters").updateOne(
+    await getDbCollection("recruiters").updateOne(
       { "jobs._id": jobId },
       {
         $inc: {
-          "jobs.$.stats_detail_view": 1,
+          "jobs.$[elem].stats_detail_view": 1,
         },
-      }
+      },
+      { arrayFilters: [{ "elem._id": jobId }] }
     )
   } catch (err) {
     sentryCaptureException(err)
@@ -473,7 +473,7 @@ export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
 export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
   const ids = jobIds.map((id) => new ObjectId(id))
   try {
-    await db.collection("recruiters").updateMany(
+    await getDbCollection("recruiters").updateMany(
       { "jobs._id": { $in: ids } },
       {
         $inc: {

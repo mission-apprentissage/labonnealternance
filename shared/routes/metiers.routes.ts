@@ -1,5 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/metiers.model"
+import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/diplomesMetiers.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
 
 import { IRoutesDef } from "./common.routes"

@@ -5,7 +5,7 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Entreprise, Recruiter } from "@/common/model"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
@@ -79,7 +79,7 @@ export default (server: Server) => {
       }
 
       if (skipUpdate) {
-        const entrepriseOpt = await Entreprise.findOne({ siret }).lean()
+        const entrepriseOpt = await getDbCollection("entreprises").findOne({ siret })
         if (entrepriseOpt) {
           return res.status(200).send(entrepriseOpt)
         }
@@ -167,7 +167,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { cfaId } = req.params
-      const cfa = await Cfa.findOne({ _id: cfaId }).lean()
+      const cfa = await getDbCollection("cfas").findOne({ _id: cfaId })
       if (!cfa) {
         throw Boom.notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
       }
@@ -175,7 +175,9 @@ export default (server: Server) => {
       if (!cfa_delegated_siret) {
         throw Boom.internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
       }
-      const entreprises = await Recruiter.find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret }).lean()
+      const entreprises = await getDbCollection("recruiters")
+        .find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret })
+        .toArray()
       return res.status(200).send(entreprises)
     }
   )
@@ -337,7 +339,7 @@ export default (server: Server) => {
         throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
-        await validateUserWithAccountEmail(user._id.toString())
+        await validateUserWithAccountEmail(user._id)
       }
       const mainRole = await getMainRoleManagement(user._id, true)
       if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {

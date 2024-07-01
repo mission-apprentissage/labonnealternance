@@ -2,7 +2,7 @@ import { smtpClient } from "../api/smtpClient"
 import { containsText } from "../utils/containText"
 
 const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
-const ALGO_COMPANY_SIRET = "10200000700876"
+const ALGO_COMPANY_SIRET = "11000002300017"
 
 export const FlowAdminPage = {
   adminAuth: {

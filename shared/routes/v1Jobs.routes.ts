@@ -3,7 +3,14 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
-import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
+import {
+  ZLbaItemFtJob,
+  ZLbaItemFtJobReturnedByAPI,
+  ZLbaItemLbaCompany,
+  ZLbaItemLbaCompanyReturnedByAPI,
+  ZLbaItemLbaJob,
+  ZLbaItemLbaJobReturnedByAPI,
+} from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 import { rateLimitDescription } from "../utils/rateLimitDescription"
 
@@ -301,11 +308,7 @@ export const zV1JobsRoutes = {
         .passthrough(),
       headers: zRefererHeaders,
       response: {
-        "200": z
-          .object({
-            lbaCompanies: z.array(ZLbaItemLbaCompany),
-          })
-          .strict(),
+        "200": ZLbaItemLbaCompanyReturnedByAPI,
         "400": z.union([ZResError, ZLbacError, ZApiError]),
         "404": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),
@@ -336,11 +339,7 @@ export const zV1JobsRoutes = {
         .passthrough(),
       headers: zRefererHeaders,
       response: {
-        "200": z
-          .object({
-            matchas: z.array(ZLbaItemLbaJob),
-          })
-          .strict(),
+        "200": ZLbaItemLbaJobReturnedByAPI,
         //"419": le code correspondant a disparu. ticket bug ouvert
         "400": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),
@@ -367,11 +366,7 @@ export const zV1JobsRoutes = {
         .passthrough(),
       headers: zRefererHeaders,
       response: {
-        "200": z
-          .object({
-            peJobs: z.array(ZLbaItemFtJob),
-          })
-          .strict(),
+        "200": ZLbaItemFtJobReturnedByAPI,
         "400": z.union([ZResError, ZLbacError, ZApiError]),
         "404": z.union([ZResError, ZLbacError, ZApiError]),
         "500": z.union([ZResError, ZLbacError, ZApiError]),

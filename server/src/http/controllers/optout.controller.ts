@@ -1,9 +1,9 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 
-import { Optout } from "../../common/model/index"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -19,7 +19,7 @@ export default (server: Server) => {
         throw Boom.forbidden()
       }
 
-      const user = await Optout.findOne({ siret: userIdentity.siret, "contacts.email": userIdentity.email }).lean()
+      const user = await getDbCollection("optouts").findOne({ siret: userIdentity.siret, "contacts.email": userIdentity.email })
 
       if (!user) {
         return res.status(400).send({ error: true, reason: "USER_NOT_FOUND" })

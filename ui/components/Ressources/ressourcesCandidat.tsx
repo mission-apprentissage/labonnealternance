@@ -37,7 +37,20 @@ const RessourcesCandidat = () => {
               <List>
                 <ListItem mb={2}>
                   <Link
-                    href="/ressources/Tableau de suivi des candidatures - La bonne alternance - Excel.xlsx"
+                    href="/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"
+                    isExternal
+                    data-tracking-id="telecharger-fichier-suivi-candid"
+                    variant="basicUnderlinedBlue"
+                  >
+                    <Flex>
+                      <Image src="/images/icons/download_ico.svg" mr={1} alt="" aria-hidden="true" />
+                      Tableau de suivi à imprimer - PDF
+                    </Flex>
+                  </Link>
+                </ListItem>
+                <ListItem mb={2}>
+                  <Link
+                    href="/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"
                     isExternal
                     data-tracking-id="telecharger-fichier-suivi-candid"
                     variant="basicUnderlinedBlue"
@@ -50,7 +63,7 @@ const RessourcesCandidat = () => {
                 </ListItem>
                 <ListItem mb={2}>
                   <Link
-                    href="/ressources/Tableau de suivi des candidatures - La bonne alternance - Numbers.numbers"
+                    href="/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"
                     isExternal
                     data-tracking-id="telecharger-fichier-suivi-candid"
                     variant="basicUnderlinedBlue"
@@ -63,7 +76,7 @@ const RessourcesCandidat = () => {
                 </ListItem>
                 <ListItem>
                   <Link
-                    href="/ressources/Tableau de suivi des candidatures - La bonne alternance - LibreOffice.ods"
+                    href="/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"
                     isExternal
                     data-tracking-id="telecharger-fichier-suivi-candid"
                     variant="basicUnderlinedBlue"
