@@ -16,7 +16,7 @@ const RessourcesRecruteur = () => {
       <Grid my={6} templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
         <CardForLink
           imageUrl="/images/serrage-main.svg"
-          link="https://dinum.didask.com/fr/courses/lalternance-pour-les-recruteurs?panel=content"
+          link="https://dinum.didask.com/courses/lalternance-pour-les-recruteurs/65b8129d2ff4dca088d2bfce"
           text="Vous vous apprêtez à accueillir un·e alternant·e ?"
           linkTitle="Découvrez les étapes clés pour réussir son intégration"
           linkAriaLabel="Etapes pour accueillir un alternant - nouvelle fenêtre"
