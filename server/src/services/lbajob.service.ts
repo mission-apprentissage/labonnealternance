@@ -12,7 +12,7 @@ import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
-import { IApplicationCount, getApplicationByJobCount, getUser2ManagingOffer } from "./application.service"
+import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
 import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
@@ -103,16 +103,7 @@ export const getJobs = async ({
         return recruiter
       }
 
-      if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
-        const cfa = await getDbCollection("cfas").findOne({ siret: recruiter.cfa_delegated_siret })
-        const cfaUser = await getUser2ManagingOffer(firstJob)
-        recruiter.phone = cfaUser.phone
-        recruiter.email = cfaUser.email
-        recruiter.last_name = cfaUser.last_name
-        recruiter.first_name = cfaUser.first_name
-        recruiter.establishment_raison_sociale = cfa?.raison_sociale
-        recruiter.address = cfa?.address
-      }
+      await replaceRecruiterFieldsWithCfaFields(recruiter)
 
       const jobs: any[] = []
       recruiter.jobs.forEach((job) => {
@@ -484,5 +475,30 @@ export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
     )
   } catch (err) {
     sentryCaptureException(err)
+  }
+}
+
+export const replaceRecruiterFieldsWithCfaFields = async (recruiter: IRecruiter) => {
+  if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
+    const cfa = await getDbCollection("cfas").findOne({ siret: recruiter.cfa_delegated_siret })
+    if (!cfa) {
+      throw Boom.internal(`inattendu: cfa introuvable avec le siret ${recruiter.cfa_delegated_siret}`)
+    }
+    const { managed_by } = recruiter
+    if (!managed_by) {
+      throw Boom.internal(`managed_by est manquant pour le recruiter avec id=${recruiter._id}`)
+    }
+    const cfaUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
+    if (!cfaUser) {
+      throw Boom.internal(`le user cfa est introuvable pour le recruiter avec id=${recruiter._id}`)
+    }
+    recruiter.phone = cfaUser.phone
+    recruiter.email = cfaUser.email
+    recruiter.last_name = cfaUser.last_name
+    recruiter.first_name = cfaUser.first_name
+    recruiter.establishment_raison_sociale = cfa.raison_sociale
+    recruiter.establishment_enseigne = cfa.enseigne
+    recruiter.establishment_siret = cfa.siret
+    recruiter.address = cfa.address
   }
 }
