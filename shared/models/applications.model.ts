@@ -228,6 +228,17 @@ export type IApplication = z.output<typeof ZApplication>
 
 export default {
   zod: ZApplication,
-  indexes: [],
+  indexes: [
+    [{ applicant_email: 1 }, {}],
+    [{ applicant_first_name: 1 }, {}],
+    [{ applicant_last_name: 1 }, {}],
+    [{ applicant_phone: 1 }, {}],
+    [{ company_recruitment_intention: 1 }, {}],
+    [{ company_siret: 1 }, {}],
+    [{ company_email: 1 }, {}],
+    [{ company_name: 1 }, {}],
+    [{ company_naf: 1 }, {}],
+    [{ job_origin: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor
