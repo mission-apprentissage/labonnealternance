@@ -2,7 +2,6 @@ import { oleoduc, transformData, writeData } from "oleoduc"
 import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { checkIsDiffusible } from "@/services/etablissement.service"
 
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -36,10 +35,6 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
 
   if (!rawCompany.enseigne) {
     logMessage("error", `Error processing company. Company ${rawCompany.siret} has no name`)
-    return null
-  }
-
-  if (await !checkIsDiffusible(rawCompany.siret)) {
     return null
   }
 
