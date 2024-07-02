@@ -57,9 +57,8 @@ const createToGeolocateFile = (addressesToGeolocate, sourceFileCount) => {
 }
 
 const saveGeoData = async (geoData) => {
-  geoData._id = new ObjectId()
   if (ZGeoLocation.safeParse(geoData).success) {
-    await getDbCollection("geolocations").findOneAndUpdate({ address: geoData.address }, { $set: geoData }, { upsert: true })
+    await getDbCollection("geolocations").findOneAndUpdate({ address: geoData.address }, { $set: geoData, $setOnInsert: { _id: new ObjectId() } }, { upsert: true })
   }
 }
 
