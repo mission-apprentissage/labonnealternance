@@ -1,5 +1,4 @@
 import Boom from "boom"
-import Joi from "joi"
 import { ObjectId } from "mongodb"
 import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
@@ -18,13 +17,6 @@ import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 import { getReferrerByKeyName } from "../../services/referrers.service"
 import * as users from "../../services/user.service"
 import { Server } from "../server"
-
-const appointmentReplySchema = Joi.object({
-  appointment_id: Joi.string().required(),
-  cfa_intention_to_applicant: Joi.string().required(),
-  cfa_message_to_applicant_date: Joi.date().required(),
-  cfa_message_to_applicant: Joi.string().allow("").optional(),
-})
 
 export default (server: Server) => {
   server.post(
@@ -248,10 +240,9 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/appointment-request/reply"])],
     },
     async (req, res) => {
-      await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
-      const { appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } = req.body
+      const { appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant } = req.body
 
-      const appointment = await getDbCollection("appointments").findOne({ _id: new ObjectId(appointment_id) })
+      const appointment = await getDbCollection("appointments").findOne({ _id: appointment_id })
 
       if (!appointment) throw Boom.notFound()
 
@@ -288,8 +279,17 @@ export default (server: Server) => {
           },
         })
       }
-      await appointmentService.updateAppointment(appointment_id, { $set: { cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } })
-      res.status(200).send({ appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
+      const cfa_message_to_applicant_date = new Date()
+      await getDbCollection("appointments").findOneAndUpdate(
+        { _id: appointment_id },
+        { $set: { cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } }
+      )
+      res.status(200).send({
+        appointment_id: appointment_id.toString(),
+        cfa_intention_to_applicant,
+        cfa_message_to_applicant,
+        cfa_message_to_applicant_date: cfa_message_to_applicant_date.toISOString(),
+      })
     }
   )
 }

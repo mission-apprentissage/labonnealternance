@@ -26,9 +26,7 @@ const findOne = (conditions: Filter<IAppointment>) => getDbCollection("appointme
 
 const findOneAndUpdate = (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").findOneAndUpdate(conditions, values, { returnDocument: "after" })
 
-const updateAppointment = (id: string, values) => getDbCollection("appointments").findOneAndUpdate({ _id: new ObjectId(id) }, values, { returnDocument: "after" })
-
-export { createAppointment, find, findById, findOne, findOneAndUpdate, updateAppointment }
+export { createAppointment, find, findById, findOne, findOneAndUpdate }
 
 const getMailData = (candidate: IUser, appointment: IAppointment, eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment, referrerObj: ReferrerObject) => {
   const mailData = {
