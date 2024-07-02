@@ -32,6 +32,8 @@ services:
     <<: *default
     image: nginxproxy/acme-companion
     container_name: nginx-proxy-acme
+    depends_on:
+      - reverse_proxy
     volumes:
       - certs:/etc/nginx/certs:rw
       - acme:/etc/acme.sh
