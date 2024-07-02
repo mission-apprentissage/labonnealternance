@@ -4,7 +4,7 @@ module.exports = {
     "import/no-extraneous-dependencies": [
       "error",
       {
-        devDependencies: ["cypress/e2e/*.cy.ts"],
+        devDependencies: ["cypress/e2e/**/*.cy.ts"],
         optionalDependencies: false,
       },
     ],

@@ -7,12 +7,12 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from "@/services/appLinks.service"
 
 import { logger } from "../../../common/logger"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"
-import { createCancelJobLink, createProvidedJobLink } from "../../../services/appLinks.service"
 import dayjs from "../../../services/dayjs.service"
 import mailer, { sanitizeForEmail } from "../../../services/mailer.service"
 
@@ -69,6 +69,7 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
           },
           last_name: sanitizeForEmail(contactUser.last_name),
@@ -84,7 +85,7 @@ export const relanceFormulaire = async (threshold: number /* number of days to e
             pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString()),
           })),
           threshold,
-          url: `${config.publicUrl}/espace-pro/authentification`,
+          connectionUrl: createAuthMagicLink(userWithAccountToUserForToken(contactUser)),
         },
       })
     } catch (err) {
