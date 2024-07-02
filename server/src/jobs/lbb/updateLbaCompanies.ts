@@ -33,6 +33,9 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
     rawCompany.enseigne = rawCompany.raison_sociale
   }
 
+  rawCompany.phone = rawCompany.phone ? rawCompany.phone.toString().padStart(10, "0") : null
+  rawCompany.zip_code = rawCompany.zip_code ? rawCompany.zip_code.toString().padStart(5, "0") : null
+
   if (!rawCompany.enseigne) {
     logMessage("error", `Error processing company. Company ${rawCompany.siret} has no name`)
     return null
@@ -47,6 +50,7 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
       },
     }
   )
+
   if (unsubscribedLbaCompany) {
     return null
   }

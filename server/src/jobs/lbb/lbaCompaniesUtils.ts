@@ -125,8 +125,8 @@ export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | n
 
     if (opcoData) {
       company.opco = opcoData.opco
-      company.opco_url = opcoData.url as string
-      company.opco_short_name = opcoData.opco_short_name as string
+      company.opco_url = (opcoData.url as string) || null
+      company.opco_short_name = (opcoData.opco_short_name as string) || null
     }
   }
 
