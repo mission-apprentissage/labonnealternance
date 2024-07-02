@@ -470,12 +470,6 @@ program
   .action(createJobAction("opcos:update"))
 
 program
-  .command("update-save-files")
-  .description("Procède à la mise à jour sur le S3 des fichiers SAVE")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("save:update"))
-
-program
   .command("update-domaines-metiers")
   .description("Procède à l'import du fichier domaines metiers")
   .option("-q, --queued", "Run job asynchronously", false)
