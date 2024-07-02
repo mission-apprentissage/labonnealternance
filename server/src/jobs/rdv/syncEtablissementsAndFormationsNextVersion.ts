@@ -1,10 +1,11 @@
+// @ts-ignore
 import { oleoduc, writeData } from "oleoduc"
 import { IEligibleTrainingsForAppointment, IEtablissement } from "shared"
 import { referrers } from "shared/constants/referers"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../common/logger"
-import { Etablissement, FormationCatalogue, ReferentielOnisep } from "../../common/model/index"
-import { db } from "../../common/mongodb"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { isValidEmail } from "../../common/utils/isValidEmail"
 import { isEmailBlacklisted } from "../../services/application.service"
@@ -13,7 +14,7 @@ import { getMostFrequentEmailByGestionnaireSiret } from "../../services/formatio
 import { removeDuplicateEtablissements } from "./removeDuplicateEtablissements"
 
 const prepareETFA = async () => {
-  await FormationCatalogue.aggregate([
+  await getDbCollection("formationcatalogues").aggregate([
     {
       $project: {
         training_id_catalogue: "$_id",
@@ -65,18 +66,17 @@ const prepareETFA = async () => {
 }
 
 const updateLieuFormationEmail = async () => {
-  const etfa: IEligibleTrainingsForAppointment[] = await db
-    .collection("eligible_trainings_for_appointments")
+  const etfa = (await getDbCollection("eligible_trainings_for_appointments")
     .find({})
     .project({ etablissement_gestionnaire_siret: 1, lieu_formation_email: 1 })
-    .toArray()
+    .toArray()) as IEligibleTrainingsForAppointment[]
   await Promise.all(
     etfa.map(async (formation) => {
       if (!formation.etablissement_gestionnaire_siret) return
       if (!formation.lieu_formation_email) {
         const email = await getMostFrequentEmailByGestionnaireSiret(formation.etablissement_gestionnaire_siret, "email")
         if (!email) return
-        await db.collection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: formation._id }, { $set: { lieu_formation_email: email } })
+        await getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: formation._id }, { $set: { lieu_formation_email: email } })
         return
       }
       if (isValidEmail(formation.lieu_formation_email) && !(await isEmailBlacklisted(formation.lieu_formation_email))) {
@@ -84,7 +84,7 @@ const updateLieuFormationEmail = async () => {
       } else {
         const email = await getMostFrequentEmailByGestionnaireSiret(formation.etablissement_gestionnaire_siret, "email")
         if (!email) return
-        await db.collection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: formation._id }, { $set: { lieu_formation_email: email } })
+        await getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: formation._id }, { $set: { lieu_formation_email: email } })
         return
       }
     })
@@ -99,20 +99,22 @@ const addReferrersToETFA = async () => {
   //   .toArray()
 
   oleoduc(
-    db
-      .collection("eligible_trainings_for_appointments")
+    getDbCollection("eligible_trainings_for_appointments")
       .find({ lieu_formation_email: { $ne: null } })
       .project({ cle_ministere_educatif: 1, etablissement_gestionnaire_siret: 1, parcoursup_visible: 1 }),
     writeData(
       async (formation) => {
         const [etablissements, existInReferentielOnisep] = await Promise.all([
-          Etablissement.find({
-            gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            $and: [{ optout_activation_date: { $exists: true, $ne: null } }, { premium_activation_date: { $exists: true, $ne: null } }],
-          })
-            .select({ optout_activation_date: 1, premium_activation_date: 1 })
-            .lean(),
-          ReferentielOnisep.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }).lean(),
+          getDbCollection("etablissements")
+            .find(
+              {
+                gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+                $and: [{ optout_activation_date: { $exists: true, $ne: null } }, { premium_activation_date: { $exists: true, $ne: null } }],
+              },
+              { projection: { optout_activation_date: 1, premium_activation_date: 1 } }
+            )
+            .toArray(),
+          getDbCollection("referentieloniseps").findOne({ cle_ministere_educatif: formation.cle_ministere_educatif }),
         ])
         const hasOptOutActivation = etablissements.some((etab) => etab.optout_activation_date !== null && etab.optout_activation_date !== undefined)
         const hasPremiumActivation = etablissements.some((etab) => etab.premium_activation_date !== null && etab.premium_activation_date !== undefined)
@@ -132,7 +134,7 @@ const addReferrersToETFA = async () => {
           referrersToActivate.push(referrers.PARCOURSUP.name)
         }
         try {
-          await db.collection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: formation._id }, { $set: { referrers: referrersToActivate } })
+          await getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: formation._id }, { $set: { referrers: referrersToActivate } })
         } catch (err) {
           console.error(err)
         }
@@ -146,8 +148,7 @@ const addReferrersToETFA = async () => {
 
 const createMissingEtablissement = async () => {
   try {
-    await db
-      .collection("eligible_trainings_for_appointments")
+    await getDbCollection("eligible_trainings_for_appointments")
       .aggregate([
         {
           $lookup: {
@@ -194,11 +195,11 @@ const createMissingEtablissement = async () => {
 }
 
 const updateGestionnaireEmailEtablissement = async () => {
-  const etablissements: IEtablissement[] = await Etablissement.find({ gestionnaire_email: null }).lean()
+  const etablissements: IEtablissement[] = await getDbCollection("etablissements").find({ gestionnaire_email: null }).toArray()
   await asyncForEach(etablissements, async (etab) => {
     if (!etab.gestionnaire_siret) return
     const email = await getMostFrequentEmailByGestionnaireSiret(etab.gestionnaire_siret, "etablissement_gestionnaire_courriel")
-    await Etablissement.findByIdAndUpdate(etab._id, { $set: { gestionnaire_email: email, last_catalogue_sync_date: new Date() } })
+    await getDbCollection("etablissements").updateOne({ _id: etab._id }, { $set: { gestionnaire_email: email, last_catalogue_sync_date: new Date() } })
   })
 }
 

@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 
 export const ZMail = z
   .object({
@@ -12,6 +12,8 @@ export const ZMail = z
   .strict()
 
 export type IMail = z.output<typeof ZMail>
+
+const collectionName = "optouts" as const
 
 export const ZOptout = z
   .object({
@@ -44,3 +46,9 @@ export const ZOptout = z
   .strict()
 
 export type IOptout = z.output<typeof ZOptout>
+
+export default {
+  zod: ZOptout,
+  indexes: [],
+  collectionName,
+} as const satisfies IModelDescriptor

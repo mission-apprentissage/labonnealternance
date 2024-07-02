@@ -4,7 +4,7 @@ import { ADMIN, OPCO, OPCOS, VALIDATION_UTILISATEUR } from "../constants/recrute
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 import { enumToZod } from "./enumToZod"
 
 export enum UserEventType {
@@ -26,6 +26,8 @@ export const ZUserStatusEvent = z
   .strict()
 export type IUserStatusEvent = z.output<typeof ZUserStatusEvent>
 export type IUserStatusEventJson = Jsonify<z.input<typeof ZUserStatusEvent>>
+
+const collectionName = "userswithaccounts" as const
 
 export const ZUserWithAccount = z
   .object({
@@ -62,3 +64,13 @@ export const ZNewSuperUser = z.union([
   }),
 ])
 export type INewSuperUser = z.output<typeof ZNewSuperUser>
+
+export default {
+  zod: ZUserWithAccount,
+  indexes: [
+    [{ email: 1 }, { unique: true }],
+    [{ last_action_date: 1 }, {}],
+    [{ "status.status": 1 }, {}],
+  ],
+  collectionName,
+} as const satisfies IModelDescriptor

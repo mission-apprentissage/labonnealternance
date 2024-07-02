@@ -3,7 +3,9 @@ import { Jsonify } from "type-fest"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress } from "./address.model"
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "cfas" as const
 
 export const zCFA = z
   .object({
@@ -22,3 +24,9 @@ export const zCFA = z
 
 export type ICFA = z.output<typeof zCFA>
 export type ICFAJson = Jsonify<z.input<typeof zCFA>>
+
+export default {
+  zod: zCFA,
+  indexes: [],
+  collectionName,
+} as const satisfies IModelDescriptor

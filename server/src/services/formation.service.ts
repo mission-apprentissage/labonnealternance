@@ -4,7 +4,8 @@ import { chain } from "lodash-es"
 import { assertUnreachable, type IFormationCatalogue, type ILbaItemFormation2 } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { FormationCatalogue } from "../common/model/index"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { IApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { isValidEmail } from "../common/utils/isValidEmail"
@@ -135,7 +136,7 @@ const getFormations = async ({
         query,
       },
     })
-    formations = await FormationCatalogue.aggregate(stages)
+    formations = await getDbCollection("formationcatalogues").aggregate(stages).toArray()
   } else {
     stages.unshift({
       $match: query,
@@ -146,7 +147,7 @@ const getFormations = async ({
       },
     })
 
-    formations = await FormationCatalogue.aggregate(stages)
+    formations = await getDbCollection("formationcatalogues").aggregate(stages).toArray()
   }
 
   return formations
@@ -226,7 +227,7 @@ const getRegionFormations = async ({
     },
   })
 
-  const formations: any[] = await FormationCatalogue.aggregate(stages)
+  const formations: any[] = await getDbCollection("formationcatalogues").aggregate(stages).toArray()
   if (formations.length === 0 && !caller) {
     await notifyToSlack({ subject: "FORMATION", message: `Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.` })
   }
@@ -756,7 +757,7 @@ export const getFormationsV2 = async ({
  * Retourne une formation identifiée par son id
  */
 export const getFormationQuery = async ({ id }: { id: string }): Promise<{ results: ILbaItemFormation[] }> => {
-  const formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id }).lean()
+  const formation = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif: id })
   const formations = formation ? [transformFormation(formation)] : []
   return { results: formations }
 }
@@ -765,7 +766,7 @@ export const getFormationQuery = async ({ id }: { id: string }): Promise<{ resul
  * Retourne une formation identifiée par son id
  */
 export const getFormationv2 = async ({ id }: { id: string }): Promise<ILbaItemFormation2 | null> => {
-  const formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id }).lean()
+  const formation = await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif: id })
   if (!formation) {
     return null
   }
@@ -919,21 +920,25 @@ export const getMostFrequentEmailByGestionnaireSiret = async (
   let formations
 
   if (type === "email") {
-    formations = await FormationCatalogue.find(
-      {
-        email: { $ne: null },
-        etablissement_gestionnaire_siret,
-      },
-      { email: 1 }
-    ).lean()
+    formations = await getDbCollection("formationcatalogues")
+      .find(
+        {
+          email: { $ne: null },
+          etablissement_gestionnaire_siret,
+        },
+        { projection: { email: 1 } }
+      )
+      .toArray()
   } else {
-    formations = await FormationCatalogue.find(
-      {
-        etablissement_gestionnaire_courriel: { $ne: null },
-        etablissement_gestionnaire_siret,
-      },
-      { etablissement_gestionnaire_courriel: 1 }
-    ).lean()
+    formations = await getDbCollection("formationcatalogues")
+      .find(
+        {
+          etablissement_gestionnaire_courriel: { $ne: null },
+          etablissement_gestionnaire_siret,
+        },
+        { projection: { etablissement_gestionnaire_courriel: 1 } }
+      )
+      .toArray()
   }
 
   const mostFrequentEmail = chain(formations)

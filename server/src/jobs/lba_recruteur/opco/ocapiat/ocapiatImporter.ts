@@ -2,11 +2,13 @@ import { createReadStream } from "fs"
 import path from "path"
 
 import Joi from "joi"
+import { ObjectId } from "mongodb"
 import { filterData, oleoduc, transformData, writeData } from "oleoduc"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../../../common/dirname"
 import { logger } from "../../../../common/logger"
-import { ReferentielOpco } from "../../../../common/model/index"
 import { fileDownloader, parseCsv } from "../../../../common/utils/fileUtils"
 import config from "../../../../config"
 import { runScript } from "../../../scriptWrapper"
@@ -16,7 +18,7 @@ const importer = async (filePath, remoteFileName, opco_label) => {
   await fileDownloader(filePath, remoteFileName, config.ftp.ocapiat)
 
   logger.info(`Deleting collection entries for ${opco_label}...`)
-  await ReferentielOpco.deleteMany({ opco_label })
+  await getDbCollection("referentielopcos").deleteMany({ opco_label })
 
   logger.info("Importing Data...")
 
@@ -54,7 +56,7 @@ const importer = async (filePath, remoteFileName, opco_label) => {
     }),
     writeData(
       async ({ siret_code, emails }) => {
-        await ReferentielOpco.create({ opco_label, siret_code, emails })
+        await getDbCollection("referentielopcos").insertOne({ _id: new ObjectId(), opco_label, siret_code, emails })
       },
       { parallel: 500 }
     )

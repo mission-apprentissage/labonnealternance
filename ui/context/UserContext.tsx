@@ -68,7 +68,7 @@ export const UserContext = ({
       }
     }
     emitter.on("http:error", handler)
-    return () => emitter.off("http:error", handler)
+    return () => emitter.removeListener("http:error", handler)
   }, [])
 
   if (isLoading) {

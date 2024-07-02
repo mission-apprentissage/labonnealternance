@@ -9,7 +9,6 @@ export const up = async (db: Db) => {
       $unset: { "jobs.$[].rome_detail": 1 },
     },
     {
-      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
       bypassDocumentValidation: true,
     }
   )

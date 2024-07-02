@@ -1,10 +1,9 @@
+import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.utils"
 import { zRoutes } from "shared"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { describe, expect, it } from "vitest"
-
-import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.utils"
 
 import {
   IUserWithAccountForAccessToken as IUserWithAccountForAccessToken,

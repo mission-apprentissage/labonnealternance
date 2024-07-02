@@ -4,7 +4,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZJobType } from "./job.model"
-import { ZReferentielRome } from "./rome.model"
+import { ZReferentielRomeForJob } from "./rome.model"
 
 const ZLbaItemPlace = z
   .object({
@@ -235,7 +235,7 @@ const ZLbaItemJob = z
     contractDescription: z.string().nullish(), // pe -> typeContratLibelle
     duration: z.string().nullish(), // pe -> dureeTravailLibelle
     jobStartDate: z.date().nullish(), // matcha -> offres.date_debut_apprentissage
-    romeDetails: ZReferentielRome.nullish(), // matcha -> offres.rome_detail -> détail du code ROME
+    romeDetails: ZReferentielRomeForJob.nullish(), // matcha -> offres.rome_detail -> détail du code ROME
     rythmeAlternance: z.string().nullish(), // matcha -> offres.rythme_alternance
     elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
     dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat
@@ -480,6 +480,8 @@ export const ZLbaItemLbaJob = z
   .openapi("LbaJob")
 
 export type ILbaItemLbaJob = z.output<typeof ZLbaItemLbaJob>
+export const ZLbaItemLbaJobReturnedByAPI = z.object({ matchas: z.array(ZLbaItemLbaJob) })
+export type ILbaItemLbaJobReturnedByAPI = z.output<typeof ZLbaItemLbaJobReturnedByAPI>
 
 export const ZLbaItemLbaCompany = z
   .object({
@@ -500,6 +502,8 @@ export const ZLbaItemLbaCompany = z
   .openapi("LbaCompany")
 
 export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
+export const ZLbaItemLbaCompanyReturnedByAPI = z.object({ lbaCompanies: z.array(ZLbaItemLbaCompany) })
+export type ILbaItemLbaCompanyReturnedByAPI = z.output<typeof ZLbaItemLbaCompanyReturnedByAPI>
 
 export const ZLbaItemFtJob = z
   .object({
@@ -520,6 +524,8 @@ export const ZLbaItemFtJob = z
   .openapi("PeJob")
 
 export type ILbaItemFtJob = z.output<typeof ZLbaItemFtJob>
+export const ZLbaItemFtJobReturnedByAPI = z.object({ peJobs: z.array(ZLbaItemFtJob) })
+export type ILbaItemFtJobReturnedByAPI = z.output<typeof ZLbaItemFtJobReturnedByAPI>
 
 export const ZLbaItemFormationResult = z
   .object({
@@ -530,3 +536,4 @@ export const ZLbaItemFormationResult = z
     description:
       "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
   })
+export type ILbaItemFormationResult = z.output<typeof ZLbaItemFormationResult>

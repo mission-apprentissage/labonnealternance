@@ -4,11 +4,13 @@ import path from "path"
 import axios from "axios"
 import FormData from "form-data"
 import fsExtra from "fs-extra"
+import { ObjectId } from "mongodb"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
-import { ZGeoLocationNew } from "shared/models"
+import { ZGeoLocation } from "shared/models"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import __dirname from "../../common/dirname"
-import { GeoLocation } from "../../common/model/index"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
@@ -55,14 +57,13 @@ const createToGeolocateFile = (addressesToGeolocate, sourceFileCount) => {
 }
 
 const saveGeoData = async (geoData) => {
-  if (ZGeoLocationNew.safeParse(geoData).success) {
-    const geoLocation = new GeoLocation(geoData)
-
-    if ((await GeoLocation.countDocuments({ address: geoLocation.address })) === 0) {
+  geoData._id = new ObjectId()
+  if (ZGeoLocation.safeParse(geoData).success) {
+    if ((await getDbCollection("geolocations").countDocuments({ address: geoData.address })) === 0) {
       try {
-        await geoLocation.save()
+        await getDbCollection("geolocations").insertOne(geoData)
       } catch (err) {
-        console.error("error saving geoloc probably from duplicate restriction: ", geoLocation.address)
+        console.error("error saving geoloc probably from duplicate restriction: ", geoData.address)
       }
     }
   }

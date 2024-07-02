@@ -1,5 +1,5 @@
 import { logger } from "../../common/logger"
-import { Appointment } from "../../common/model/index"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymizeAppointments = async () => {
@@ -8,29 +8,31 @@ const anonymizeAppointments = async () => {
   const lastYear = new Date()
   lastYear.setFullYear(lastYear.getFullYear() - 1)
 
-  await Appointment.aggregate([
-    {
-      $match: { created_at: { $lte: lastYear } },
-    },
-    {
-      $project: {
-        applicant_id: 1,
-        cfa_intention_to_applicant: 1,
-        cfa_message_to_applicant_date: 1,
-        cfa_gestionnaire_siret: 1,
-        cfa_formateur_siret: 1,
-        cfa_read_appointment_details_date: 1,
-        appointment_origin: 1,
-        cle_ministere_educatif: 1,
-        created_at: 1,
+  await getDbCollection("appointments")
+    .aggregate([
+      {
+        $match: { created_at: { $lte: lastYear } },
       },
-    },
-    {
-      $merge: "anonymizedappointments",
-    },
-  ])
+      {
+        $project: {
+          applicant_id: 1,
+          cfa_intention_to_applicant: 1,
+          cfa_message_to_applicant_date: 1,
+          cfa_gestionnaire_siret: 1,
+          cfa_formateur_siret: 1,
+          cfa_read_appointment_details_date: 1,
+          appointment_origin: 1,
+          cle_ministere_educatif: 1,
+          created_at: 1,
+        },
+      },
+      {
+        $merge: "anonymizedappointments",
+      },
+    ])
+    .toArray()
 
-  const res = await Appointment.deleteMany({ created_at: { $lte: lastYear } })
+  const res = await getDbCollection("appointments").deleteMany({ created_at: { $lte: lastYear } })
 
   return res.deletedCount
 }

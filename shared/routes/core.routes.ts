@@ -4,12 +4,10 @@ import { IRoutesDef, ZResError } from "./common.routes"
 
 const zResponse = z
   .object({
+    name: z.string(),
+    version: z.string(),
     env: z.enum(["local", "recette", "pentest", "production", "preview"]),
-    healthcheck: z
-      .object({
-        mongodb: z.boolean(),
-      })
-      .strict(),
+    mongo: z.boolean(),
   })
   .strict()
 

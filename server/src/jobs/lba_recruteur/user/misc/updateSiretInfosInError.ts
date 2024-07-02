@@ -1,11 +1,12 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { JOB_STATUS } from "shared"
 import { CFA, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { upsertEntrepriseData } from "@/services/organization.service"
 import { setEntrepriseInError } from "@/services/userRecruteur.service"
 
@@ -18,9 +19,11 @@ import { EntrepriseData, getEntrepriseDataFromSiret } from "../../../../services
 import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
 
 const updateEntreprisesInfosInError = async () => {
-  const entreprises = await Entreprise.find({
-    $expr: { $in: [{ $arrayElemAt: ["$status.status", -1] }, [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]] },
-  }).lean()
+  const entreprises = await getDbCollection("entreprises")
+    .find({
+      $expr: { $in: [{ $arrayElemAt: ["$status.status", -1] }, [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]] },
+    })
+    .toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des entreprises en erreur: ${entreprises.length} entreprises à mettre à jour...`)
   await asyncForEach(entreprises, async (entreprise) => {
@@ -51,9 +54,11 @@ const updateEntreprisesInfosInError = async () => {
   return stats
 }
 const updateRecruteursSiretInfosInError = async () => {
-  const recruteurs = await Recruiter.find({
-    status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
-  }).lean()
+  const recruteurs = await getDbCollection("recruiters")
+    .find({
+      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+    })
+    .toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(recruteurs, async (recruteur) => {
@@ -76,15 +81,15 @@ const updateRecruteursSiretInfosInError = async () => {
         if (!managed_by) {
           throw Boom.internal(`inattendu : managed_by vide`)
         }
-        const managingUser = await UserWithAccount.findOne({ _id: managed_by.toString() })
+        const managingUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
         if (!managingUser) {
           throw Boom.internal(`inattendu : managingUser non trouvé pour _id=${managed_by}`)
         }
-        const cfa = await Cfa.findOne({ siret: cfa_delegated_siret }).lean()
+        const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
         if (!cfa) {
           throw Boom.internal(`could not find cfa with siret=${cfa_delegated_siret}`)
         }
-        const role = await RoleManagement.findOne({ user_id: managingUser._id, authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() }).lean()
+        const role = await getDbCollection("rolemanagements").findOne({ user_id: managingUser._id, authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() })
         if (!role) {
           throw Boom.internal(`could not find role with user_id=${managingUser._id} and authorized_id=${cfa._id}`)
         }

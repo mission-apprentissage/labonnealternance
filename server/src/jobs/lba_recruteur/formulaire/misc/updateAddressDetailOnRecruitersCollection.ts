@@ -1,11 +1,12 @@
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { logger } from "../../../../common/logger"
-import { Recruiter } from "../../../../common/model/index"
 import { asyncForEach, delay } from "../../../../common/utils/asyncUtils"
 import { getEtablissementFromGouv } from "../../../../services/etablissement.service"
 
 export const updateAddressDetailOnRecruitersCollection = async () => {
   logger.info("Start update user adresse detail")
-  const etablissements = await Recruiter.find({ address_detail: null })
+  const etablissements = await getDbCollection("recruiters").find({ address_detail: null }).toArray()
 
   logger.info(`${etablissements.length} entries to update...`)
 
@@ -21,7 +22,7 @@ export const updateAddressDetailOnRecruitersCollection = async () => {
 
       etb.address_detail = etablissement?.data.adresse
 
-      await etb.save()
+      await getDbCollection("recruiters").updateOne({ _id: etb._id }, { $set: { ...etb } })
     } catch (error: any) {
       const { errors } = error.response.data
 
@@ -30,8 +31,8 @@ export const updateAddressDetailOnRecruitersCollection = async () => {
           errors.includes("Le numéro de siret n'est pas correctement formatté") ||
           errors.includes("Le siret ou siren indiqué n'existe pas, n'est pas connu ou ne comporte aucune information pour cet appel")
         ) {
-          console.warn(`Invalid siret DELETED : ${etb.establishment_siret}`)
-          await Recruiter.findByIdAndDelete(etb._id)
+          console.log(`Invalid siret DELETED : ${etb.establishment_siret}`)
+          await getDbCollection("recruiters").deleteOne({ _id: etb._id })
           return
         }
       } else {
