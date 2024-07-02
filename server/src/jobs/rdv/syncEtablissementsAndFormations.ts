@@ -98,28 +98,31 @@ export const syncEtablissementsAndFormations = async () => {
             })
           }
 
-          await getDbCollection("eligible_trainings_for_appointments").updateOne(eligibleTrainingsForAppointment._id, {
-            $set: {
-              training_id_catalogue: formation._id,
-              lieu_formation_email: emailRdv,
-              parcoursup_id: formation.parcoursup_id,
-              parcoursup_visible: formation.parcoursup_visible,
-              affelnet_visible: formation.affelnet_visible,
-              training_code_formation_diplome: formation.cfd,
-              etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
-              training_intitule_long: formation.intitule_long,
-              referrers: referrersToActivate,
-              is_catalogue_published: formation.published,
-              last_catalogue_sync_date: new Date(),
-              lieu_formation_street: formation.lieu_formation_adresse,
-              lieu_formation_city: formation.localite,
-              lieu_formation_zip_code: formation.code_postal,
-              etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-              etablissement_formateur_street: formation.etablissement_formateur_adresse,
-              departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
-              etablissement_formateur_city: formation.etablissement_formateur_localite,
-            },
-          })
+          await getDbCollection("eligible_trainings_for_appointments").updateOne(
+            { _id: eligibleTrainingsForAppointment._id },
+            {
+              $set: {
+                training_id_catalogue: formation._id,
+                lieu_formation_email: emailRdv,
+                parcoursup_id: formation.parcoursup_id,
+                parcoursup_visible: formation.parcoursup_visible,
+                affelnet_visible: formation.affelnet_visible,
+                training_code_formation_diplome: formation.cfd,
+                etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
+                training_intitule_long: formation.intitule_long,
+                referrers: referrersToActivate,
+                is_catalogue_published: formation.published,
+                last_catalogue_sync_date: new Date(),
+                lieu_formation_street: formation.lieu_formation_adresse,
+                lieu_formation_city: formation.localite,
+                lieu_formation_zip_code: formation.code_postal,
+                etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
+                etablissement_formateur_street: formation.etablissement_formateur_adresse,
+                departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
+                etablissement_formateur_city: formation.etablissement_formateur_localite,
+              },
+            }
+          )
         } else {
           const emailRdv = await getEmailForRdv({
             email: formation.email,
@@ -130,10 +133,12 @@ export const syncEtablissementsAndFormations = async () => {
           // if no email, don't create the record
           if (!emailRdv) return
 
+          const now = new Date()
+
           await create({
             _id: new ObjectId(),
-            created_at: new Date(),
-            last_catalogue_sync_date: new Date(),
+            created_at: now,
+            last_catalogue_sync_date: now,
             rco_formation_id: formation.id_rco_formation,
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
