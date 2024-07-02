@@ -80,7 +80,23 @@ export const upsertEntrepriseData = async (
   }
   await setEntrepriseValid(savedEntreprise._id)
 
-  await getDbCollection("recruiters").updateMany({ establishment_siret: siret }, { $set: siretResponse })
+  await getDbCollection("recruiters").updateMany(
+    { establishment_siret: siret },
+    {
+      $set: {
+        address,
+        address_detail,
+        establishment_enseigne,
+        geo_coordinates,
+        establishment_raison_sociale,
+        establishment_creation_date: siretResponse.establishment_creation_date,
+        establishment_size: siretResponse.establishment_size,
+        naf_code: siretResponse.naf_code,
+        naf_label: siretResponse.naf_label,
+        updatedAt: new Date(),
+      },
+    }
+  )
   if (getLastStatusEvent(existingEntreprise?.status)?.status === EntrepriseStatus.ERROR) {
     const recruiters = await getDbCollection("recruiters").find({ establishment_siret: siret }).toArray()
     const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: savedEntreprise._id.toString() }).toArray()
