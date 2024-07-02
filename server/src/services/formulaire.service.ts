@@ -20,6 +20,7 @@ import { createCfaUnsubscribeToken, createViewDelegationLink } from "./appLinks.
 import { getCatalogueFormations } from "./catalogue.service"
 import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
+import { replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
@@ -80,23 +81,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
     return null
   }
   recruiterOpt.jobs = [job]
-  if (recruiterOpt.is_delegated && recruiterOpt.address) {
-    const { cfa_delegated_siret } = recruiterOpt
-    if (cfa_delegated_siret) {
-      const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
-      if (cfa) {
-        const cfaUser = await getUser2ManagingOffer(getJobFromRecruiter(recruiterOpt, id.toString()))
-
-        recruiterOpt.phone = cfaUser.phone
-        recruiterOpt.email = cfaUser.email
-        recruiterOpt.last_name = cfaUser.last_name
-        recruiterOpt.first_name = cfaUser.first_name
-        recruiterOpt.establishment_raison_sociale = cfa.raison_sociale
-        recruiterOpt.address = cfa.address
-        return { recruiter: recruiterOpt, job }
-      }
-    }
-  }
+  await replaceRecruiterFieldsWithCfaFields(recruiterOpt)
   return { recruiter: recruiterOpt, job }
 }
 
