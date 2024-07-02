@@ -131,9 +131,9 @@ export default (server: Server) => {
       )
 
       const [resultAffelnet] = await Promise.all([
-        await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id.toString()) }, { projection: etablissementProjection }),
+        await getDbCollection("etablissements").findOne({ _id: req.params.id }, { projection: etablissementProjection }),
         ...eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) =>
-          eligibleTrainingsForAppointmentService.findOneAndUpdate(
+          getDbCollection("eligible_trainings_for_appointments").updateOne(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
               $set: { referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.AFFELNET.name])] },
