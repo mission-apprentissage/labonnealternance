@@ -87,6 +87,7 @@ export default (server: Server) => {
           applicant_reasons: applicantReasons,
           appointment_origin: referrerObj.name,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
+          cfa_read_appointment_details_date: null,
         }),
         getDbCollection("etablissements").findOne({
           formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
