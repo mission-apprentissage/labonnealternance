@@ -102,7 +102,7 @@ export const syncEtablissementsAndFormations = async () => {
             { _id: eligibleTrainingsForAppointment._id },
             {
               $set: {
-                training_id_catalogue: formation._id,
+                training_id_catalogue: formation._id.toString(),
                 lieu_formation_email: emailRdv,
                 parcoursup_id: formation.parcoursup_id,
                 parcoursup_visible: formation.parcoursup_visible,
@@ -140,7 +140,7 @@ export const syncEtablissementsAndFormations = async () => {
             created_at: now,
             last_catalogue_sync_date: now,
             rco_formation_id: formation.id_rco_formation,
-            training_id_catalogue: formation._id,
+            training_id_catalogue: formation._id.toString(),
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
             parcoursup_visible: formation.parcoursup_visible,
