@@ -18,13 +18,13 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
   const { user } = useAuth()
   const entrepriseQuery = useQuery(["get-entreprise", siret], () => getEntrepriseInformation(siret, { skipUpdate: true }), { enabled: Boolean(siret && type === ENTREPRISE) })
   const cfaQuery = useQuery(["get-cfa-infos", siret], () => getCfaInformation(siret), { enabled: Boolean(siret && type === CFA) })
-  const { isLoading, data } = type === ENTREPRISE ? entrepriseQuery : cfaQuery
+  const { isLoading } = type === ENTREPRISE ? entrepriseQuery : cfaQuery
 
   if (isLoading) return null
 
-  const entreprise = type === ENTREPRISE && "data" in data && "siret" in data.data && data.data
+  const entreprise = type === ENTREPRISE && "data" in entrepriseQuery.data && "siret" in entrepriseQuery.data.data && entrepriseQuery.data.data
   const finalOpco = opco ?? parseEnum(OPCOS, entreprise?.opco)
-  const cfa = type === CFA && "establishment_siret" in data && data
+  const cfa = type === CFA && "data" in cfaQuery.data && "establishment_siret" in cfaQuery.data.data && cfaQuery.data.data
   const raisonSociale = entreprise?.raison_sociale ?? cfa?.establishment_raison_sociale
 
   return (
