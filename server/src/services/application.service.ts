@@ -54,6 +54,7 @@ const images: object = {
     check: `${imagePath}icone_check.png`,
     enveloppe: `${imagePath}icone_enveloppe.png`,
     bin: `${imagePath}icone_bin.png`,
+    recuCandidature: `${imagePath}recu-candidature.png`,
   },
 }
 
@@ -283,7 +284,7 @@ export const sendApplicationV2 = async ({
       mailer.sendEmail({
         to: application.company_email,
         subject: type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? `Candidature spontanée en alternance ${application.company_name}` : `Candidature en alternance - ${application.job_title}`,
-        template: getEmailTemplate("mail-candidature"),
+        template: getEmailTemplate(type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "mail-candidature-spontanee" : "mail-candidature"),
         data: {
           ...sanitizeApplicationForEmail(application),
           ...images,
@@ -416,9 +417,9 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
       user = await getUser2ManagingOffer(getJobFromRecruiter(recruiter, application.job_id))
     }
   }
-
   const userForToken = buildUserForToken(application, user)
   const urls = {
+    jobUrl: "",
     meetCandidateUrl: buildReplyLink(application, ApplicantIntention.ENTRETIEN, userForToken),
     waitCandidateUrl: buildReplyLink(application, ApplicantIntention.NESAISPAS, userForToken),
     refuseCandidateUrl: buildReplyLink(application, ApplicantIntention.REFUS, userForToken),
@@ -433,6 +434,9 @@ const buildRecruiterEmailUrls = async (application: IApplication) => {
   if (application.job_id && user) {
     urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id, utmRecruiterData)
     urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id, utmRecruiterData)
+  }
+  if (application.job_id) {
+    urls.jobUrl = `${config.publicUrl}/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${application.job_id}${utmRecruiterData}`
   }
 
   return urls

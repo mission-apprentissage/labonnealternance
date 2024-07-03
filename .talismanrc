@@ -26,7 +26,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 646eab49f6ff33a2d4d2dc9892ae14ca7871404c81459fc4832b1fb12abbe1c9
 - filename: .infra/files/scripts/seed.sh
-  checksum: 95122f596aaf41a82615adc5e6a824a25e123d3b3a5aef1e424405a10c1e6429
+  checksum: b1361c237cee243b74fc9e66fd59af80c538d6884b8f94c3659d25cdc2b873c2
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
@@ -52,7 +52,7 @@ fileignoreconfig:
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
 - filename: server/src/http/sentry.ts
-  checksum: 8ddfde7f7badf7aaedff6d91b8805c236775e9ce422b20e934f2a2f31ea930fa
+  checksum: 4e555f9ed2542b3852a3d8e27cf7805375b78dbd724b20f337be186f754144c0
 - filename: server/src/jobs/database/obfuscateCollections.ts
   checksum: e00973a1dcdd3af56c176f07d642b18956d21c2034ca49f1b0e3d670ed09782b
 - filename: server/src/jobs/job.actions.ts
@@ -134,7 +134,9 @@ fileignoreconfig:
 - filename: ui/components/Ressources/conseilsEtAstuces.tsx
   checksum: b9f16607c1fb319c2940223e7e9ce5acc48b8b5a5b519e2bb79210e3f0feaf17
 - filename: ui/components/Ressources/misesEnSituation.tsx
-  checksum: 40d3b51d46662db192ae3b8a5ecd5090445008dd7842425f34f7f4058482f3d0
+  checksum: 5730ed3668f818b36384d28402889e6489c3ac15b4ae2213493a3b91cf8e4f31
+- filename: ui/components/Ressources/ressourcesRecruteur.tsx
+  checksum: f08a2cc9fa85ea184ed2b6f93b1b423c2774fc9bb18447249c80134c428194dd
 - filename: ui/components/SearchForTrainingsAndJobs/services/handleSessionStorage.ts
   checksum: c3c1aceede1040a9001bdc27cebbec7b3aeb0bb251b8b4264bb9d33da074af60
 - filename: ui/components/espace_pro/Admin/utilisateurs/UserList.tsx
