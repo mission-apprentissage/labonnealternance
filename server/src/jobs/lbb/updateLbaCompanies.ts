@@ -41,7 +41,7 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
     return null
   }
 
-  const unsubscribedLbaCompany = await getDbCollection("unsubscribedbonnesboites").findOne(
+  const unsubscribedLbaCompany = await getDbCollection("unsubscribedrecruteurslba").findOne(
     { siret: rawCompany.siret },
     {
       projection: {

@@ -76,7 +76,7 @@ export default function (server: Server) {
             unsubscribe_date: now,
           }
 
-          await getDbCollection("unsubscribedbonnesboites").insertOne(unsubscribedLbaCompany)
+          await getDbCollection("unsubscribedrecruteurslba").insertOne(unsubscribedLbaCompany)
 
           const lbaCompanyToUnsubscribe = await getDbCollection("recruteurslba").findOne({ siret })
           if (lbaCompanyToUnsubscribe) {
