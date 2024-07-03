@@ -1,7 +1,7 @@
 import { PassThrough, pipeline } from "node:stream"
 
 import axios from "axios"
-import { ObjectId } from "bson"
+import { ObjectId } from "mongodb"
 import * as xml2j from "xml2js"
 
 import { logger } from "@/common/logger"
