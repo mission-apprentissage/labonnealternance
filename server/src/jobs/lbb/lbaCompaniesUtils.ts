@@ -44,7 +44,7 @@ export const removePredictionFile = async () => {
 export const checkIfAlgoFileIsNew = async (reason: string) => {
   const algoFileLastModificationDate = await getS3FileLastUpdate({ key: s3File })
   // projection to be added, not working when migrated to mongoDB
-  const currentDbCreatedDate = ((await getDbCollection("bonnesboites").findOne({})) as ILbaCompany).created_at
+  const currentDbCreatedDate = ((await getDbCollection("recruteurslba").findOne({})) as ILbaCompany).created_at
 
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
     await notifyToSlack({

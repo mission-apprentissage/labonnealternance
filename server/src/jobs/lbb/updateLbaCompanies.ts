@@ -67,7 +67,7 @@ const processCompanies = async () => {
       try {
         if (lbaCompany) {
           const parsedCompany = ZLbaCompany.parse(lbaCompany)
-          await getDbCollection("bonnesboites").insertOne(parsedCompany)
+          await getDbCollection("recruteurslba").insertOne(parsedCompany)
         }
       } catch (err) {
         logMessage("error", err)
@@ -113,8 +113,8 @@ export default async function updateLbaCompanies({
     }
 
     if (ClearMongo) {
-      logMessage("info", `Clearing bonnesboites db...`)
-      await getDbCollection("bonnesboites").deleteMany({})
+      logMessage("info", `Clearing recruteurslba db...`)
+      await getDbCollection("recruteurslba").deleteMany({})
     }
 
     if (UseAlgoFile) {

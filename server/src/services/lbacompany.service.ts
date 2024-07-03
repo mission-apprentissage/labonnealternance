@@ -203,7 +203,7 @@ const getCompanies = async ({
     let companies: ILbaCompany[] = []
 
     if (latitude && longitude) {
-      companies = (await getDbCollection("bonnesboites")
+      companies = (await getDbCollection("recruteurslba")
         .aggregate([
           {
             $geoNear: {
@@ -219,7 +219,7 @@ const getCompanies = async ({
         ])
         .toArray()) as ILbaCompany[]
     } else {
-      companies = (await getDbCollection("bonnesboites")
+      companies = (await getDbCollection("recruteurslba")
         .aggregate([
           {
             $match: query,
@@ -322,7 +322,7 @@ export const getCompanyFromSiret = async ({
     }
 > => {
   try {
-    const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret })
+    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
 
     if (lbaCompany) {
       const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.siret])
@@ -368,7 +368,7 @@ export const getCompanyFromSiret = async ({
 export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email?: string; phone?: string }) => {
   const now = new Date()
   try {
-    const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret })
+    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
     const fieldUpdates: IRecruteurLbaUpdateEvent[] = []
 
     if (!lbaCompany) {
@@ -376,11 +376,11 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
     }
 
     if (email !== undefined) {
-      await getDbCollection("bonnesboites").findOneAndUpdate({ siret }, { $set: { email } })
+      await getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { email } })
     }
 
     if (phone !== undefined) {
-      await getDbCollection("bonnesboites").findOneAndUpdate({ siret }, { $set: { phone } })
+      await getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { phone } })
     }
     if (lbaCompany.email !== email) {
       if (!email) {
@@ -429,7 +429,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       }
     }
     await Promise.all([
-      getDbCollection("bonnesboites").updateOne({ _id: lbaCompany._id }, { $set: { phone: lbaCompany.phone, email: lbaCompany.email, last_update_at: new Date() } }),
+      getDbCollection("recruteurslba").updateOne({ _id: lbaCompany._id }, { $set: { phone: lbaCompany.phone, email: lbaCompany.email, last_update_at: new Date() } }),
       ...fieldUpdates.map(async (update) => {
         getDbCollection("recruteurlbaupdateevents").insertOne(update)
       }),
@@ -443,7 +443,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
 
 export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promise<ILbaCompanyForContactUpdate> => {
   try {
-    const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret })
+    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
 
     if (lbaCompany) {
       return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }

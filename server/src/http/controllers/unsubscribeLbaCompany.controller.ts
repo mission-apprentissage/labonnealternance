@@ -45,7 +45,7 @@ export default function (server: Server) {
         }
       }
 
-      const lbaCompaniesToUnsubscribe = await getDbCollection("bonnesboites").find(criteria).limit(ARBITRARY_COMPANY_LIMIT).toArray()
+      const lbaCompaniesToUnsubscribe = await getDbCollection("recruteurslba").find(criteria).limit(ARBITRARY_COMPANY_LIMIT).toArray()
 
       if (!lbaCompaniesToUnsubscribe.length) {
         result = { result: UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU }
@@ -78,9 +78,9 @@ export default function (server: Server) {
 
           await getDbCollection("unsubscribedbonnesboites").insertOne(unsubscribedLbaCompany)
 
-          const lbaCompanyToUnsubscribe = await getDbCollection("bonnesboites").findOne({ siret })
+          const lbaCompanyToUnsubscribe = await getDbCollection("recruteurslba").findOne({ siret })
           if (lbaCompanyToUnsubscribe) {
-            await getDbCollection("bonnesboites").deleteOne({ _id: lbaCompanyToUnsubscribe._id })
+            await getDbCollection("recruteurslba").deleteOne({ _id: lbaCompanyToUnsubscribe._id })
           }
 
           if (reason === "OPPOSITION") {
