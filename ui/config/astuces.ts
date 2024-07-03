@@ -126,7 +126,7 @@ export const astuces = [
     id: "EMP_COACHING_ANAF",
     theme: "Emploi",
     message: "Bénéficiez d'un coaching individuel afin d'optimiser votre candidature !",
-    lien: "https://tdf-apprenti.fr/",
+    lien: "https://autourdesapprentis.fr/pages/inscription-profil",
   },
   {
     id: "FOR_LABEL",
