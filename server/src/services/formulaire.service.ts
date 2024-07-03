@@ -230,7 +230,12 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       etablissement_gestionnaire_courriel: { $nin: [null, ""] },
       catalogue_published: true,
     },
-    { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1, etablissement_gestionnaire_id: 1, etablissement_formateur_id: 1 }
+    {
+      etablissement_gestionnaire_courriel: 1,
+      etablissement_formateur_siret: 1,
+      etablissement_gestionnaire_id: 1,
+      etablissement_formateur_id: 1,
+    }
   )
 
   await Promise.all(
@@ -683,6 +688,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
     data: {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
       nom: sanitizeForEmail(is_delegated ? contactCFA?.last_name : last_name),
       prenom: sanitizeForEmail(is_delegated ? contactCFA?.first_name : first_name),

@@ -23,7 +23,7 @@ function getOptions(): Sentry.NodeOptions {
     enabled: config.env !== "local",
     integrations: [
       new Sentry.Integrations.Http({ tracing: true }),
-      new Sentry.Integrations.Mongo({ useMongoose: false }),
+      new Sentry.Integrations.Mongo({ useMongoose: false, describeOperations: true }),
       Sentry.extraErrorDataIntegration({ depth: 16 }),
       Sentry.captureConsoleIntegration({ levels: ["error"] }),
     ],

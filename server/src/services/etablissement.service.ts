@@ -856,6 +856,7 @@ export const sendEmailConfirmationEntreprise = async (
       data: {
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
         },
         nom: sanitizeForEmail(user.last_name),
         prenom: sanitizeForEmail(user.first_name),
@@ -866,6 +867,7 @@ export const sendEmailConfirmationEntreprise = async (
           job_type: offre.job_type,
           job_level_label: offre.job_level_label,
           job_start_date: dayjs(offre.job_start_date).format("DD/MM/YY"),
+          delegations: offre.delegations,
         },
         isUserAwaiting,
       },

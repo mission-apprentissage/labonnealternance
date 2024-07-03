@@ -354,10 +354,16 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   if (!organization) {
     throw Boom.internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }
+  const recruiter = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString() })
+  if (!recruiter) {
+    throw Boom.internal(`inattendu : pas de recruiter pour user id=${user._id} et role id=${role._id}`)
+  }
+  const hasJobs = Boolean(recruiter.jobs.length)
+
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
-    template: getStaticFilePath("./templates/mail-bienvenue.mjml.ejs"),
+    template: getStaticFilePath(!hasJobs && !isCfa ? "./templates/mail-bienvenue-entreprise-sans-offre.mjml.ejs" : "./templates/mail-bienvenue.mjml.ejs"),
     data: {
       images: {
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
