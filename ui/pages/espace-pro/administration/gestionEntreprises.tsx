@@ -1,10 +1,14 @@
 import { CheckIcon } from "@chakra-ui/icons"
-import { Box, Button, Flex, Spinner, Alert, AlertIcon, Text } from "@chakra-ui/react"
+import { Alert, AlertIcon, Box, Button, Flex, Spinner, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useState } from "react"
+import { useMutation, useQuery } from "react-query"
+import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import * as Yup from "yup"
+import { z } from "zod"
+import { toFormikValidationSchema } from "zod-formik-adapter"
 
-import { phoneValidation, SIRETValidation } from "@/common/validation/fieldValidations"
+import { phoneValidation } from "@/common/validation/fieldValidations"
 import { Breadcrumb } from "@/components/espace_pro/common/components/Breadcrumb"
 import { EAdminPages } from "@/components/espace_pro/Layout/NavigationAdmin"
 import { getCompanyContactInfo, putCompanyContactInfo } from "@/utils/api"
@@ -13,51 +17,29 @@ import { CustomInput, Layout } from "../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../components/espace_pro/withAuth"
 import { SearchLine } from "../../../theme/components/icons"
 
-const pageTitle = "Entreprises de l'algorithme"
-const noCompany: { siret?: string; phone?: string; email?: string; enseigne?: string } = {}
-
-function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoading, setIsSuccess }) {
-  const submitSearchForSiret = async ({ siret }: { siret: string }, { setFieldError }) => {
+function FormulaireRechercheEntreprise({ onSiretChange }: { onSiretChange: (newSiret: string) => void }) {
+  const submitSearchForSiret = async ({ siret }: { siret: string }) => {
     const formattedSiret = siret.replace(/[^0-9]/g, "")
-
-    // reset des states
-    setIsSuccess(false)
-    setCurrentCompany(null)
-    setIsLoading(true)
-
-    try {
-      setCurrentCompany(await getCompanyContactInfo(formattedSiret))
-    } catch (err: any) {
-      setFieldError("siret", err.message)
-      setCurrentCompany(noCompany)
-    } finally {
-      setIsLoading(false)
-    }
+    onSiretChange(formattedSiret)
   }
 
   return (
     <Formik
       validateOnMount
       initialValues={{ siret: undefined }}
-      validationSchema={Yup.object().shape({
-        siret: SIRETValidation().required("champ obligatoire"),
-      })}
+      validationSchema={toFormikValidationSchema(
+        z.object({
+          siret: extensions.siret,
+        })
+      )}
       onSubmit={submitSearchForSiret}
     >
-      {({ values, isValid }) => {
+      {({ values, isValid, dirty }) => {
         return (
           <Form>
             <CustomInput required={true} name="siret" label="SIRET de l'établissement" type="text" value={values.siret} />
             <Flex justify="flex-start">
-              <Button
-                type="submit"
-                variant="form"
-                data-testid="search_for_algo_company"
-                leftIcon={<SearchLine width={5} />}
-                isActive={isValid}
-                isDisabled={!isValid || isLoading}
-                isLoading={isLoading}
-              >
+              <Button type="submit" variant="form" data-testid="search_for_algo_company" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || !dirty}>
                 Chercher
               </Button>
             </Flex>
@@ -68,26 +50,48 @@ function FormulaireRechercheEntreprise({ setCurrentCompany, isLoading, setIsLoad
   )
 }
 
-function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, isLoading, setIsLoading, setIsSuccess }) {
-  const [error, setError] = useState("")
+function FormulaireModificationEntreprise({ siret }: { siret: string }) {
+  const { isLoading, data, error: readError } = useQuery(["getCompany", siret], () => getCompanyContactInfo(siret), { enabled: Boolean(siret), retry: false })
+  const [hasUpdated, setHasUpdated] = useState(false)
+  const updateEntreprise = useMutation("updateEntreprise", (values: { phone: string; email: string }) => putCompanyContactInfo({ ...values, siret }), {
+    onSuccess: () => {
+      setHasUpdated(true)
+    },
+    onError: () => {
+      setHasUpdated(false)
+    },
+  })
+  const { error: updateError } = updateEntreprise
 
-  const submitUpdateForSiret = async ({ phone, email }: { phone: string; email: string }) => {
-    setIsSuccess(false)
-    const formattedSiret = currentCompany.siret.replace(/[^0-9]/g, "")
-
-    setIsLoading(true)
-
-    try {
-      setCurrentCompany(await putCompanyContactInfo({ siret: formattedSiret, phone, email }))
-      setIsSuccess(true)
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setIsLoading(false)
-    }
+  if (isLoading) {
+    return <Spinner size="lg" my={5} />
   }
+  if (!siret) {
+    return null
+  }
+  if (readError) {
+    return (
+      <Alert>
+        <AlertIcon />
+        {readError + ""}
+      </Alert>
+    )
+  }
+
+  const currentCompany = data
+
   return (
     <>
+      {hasUpdated && (
+        <Flex borderColor="#18753C" my={4} borderWidth="1px">
+          <Box textAlign="center" mr={3} width="32px" height="32px" backgroundColor="#18753C">
+            <CheckIcon mt={1} padding={1} width="20px" height="20px" sx={{ borderRadius: "10px" }} background="white" color="#18753C" />
+          </Box>
+          <Text mt={1} data-testid="algo_company_updated_ok" color="#3A3A3A">
+            Le SIRET {currentCompany.siret} a été mis à jour avec succès.
+          </Text>
+        </Flex>
+      )}
       <Text my={6}>Mise à jour des coordonnées pour l’entreprise :</Text>
 
       <Box p={5} pt={6} mb={6} borderColor="bluefrance.500" borderWidth="1px">
@@ -98,9 +102,9 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
             email: Yup.string().email("Insérez un email valide"),
             phone: phoneValidation(),
           })}
-          onSubmit={submitUpdateForSiret}
+          onSubmit={(values) => updateEntreprise.mutate(values)}
         >
-          {({ values, isValid }) => {
+          {({ values, isValid, dirty }) => {
             return (
               <Form>
                 <Text fontWeight={700} mb={2} fontSize="22px">
@@ -111,14 +115,14 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
                 </Text>
                 <CustomInput required={false} name="phone" label="Nouveau numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                 <CustomInput required={false} name="email" label="Nouvel email de contact" type="email" value={values.email} />
-                {error && (
+                {updateError && (
                   <Alert>
                     <AlertIcon />
-                    {error}
+                    {updateError + ""}
                   </Alert>
                 )}
                 <Flex justify="flex-start">
-                  <Button type="submit" data-testid="update_algo_company" variant="form" isActive={isValid} isDisabled={!isValid || isLoading} isLoading={isLoading}>
+                  <Button type="submit" data-testid="update_algo_company" variant="form" isActive={isValid} isDisabled={!isValid || !dirty} isLoading={updateEntreprise.isLoading}>
                     Enregistrer les modifications
                   </Button>
                 </Flex>
@@ -132,43 +136,18 @@ function FormulaireModificationEntreprise({ currentCompany, setCurrentCompany, i
 }
 
 function GestionEntreprises() {
-  const [currentCompany, setCurrentCompany] = useState(noCompany)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
+  const [siret, setSiret] = useState<string>("")
 
   return (
     <Layout displayNavigationMenu={false} adminPage={EAdminPages.ENTREPRISES_ALGO} footer={false}>
       <Box pt={5}>
-        <Breadcrumb pages={[{ title: "Acceuil", to: "/espace-pro/administration/users" }, { title: pageTitle }]} />
-
+        <Breadcrumb pages={[{ title: "Acceuil", to: "/espace-pro/administration/users" }, { title: "Entreprises de l'algorithme" }]} />
         <Box mt={6} px={4}>
           <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">
             Entreprises de l'algorithme
           </Text>
-
-          {isSuccess && (
-            <Flex borderColor="#18753C" my={4} borderWidth="1px">
-              <Box textAlign="center" mr={3} width="32px" height="32px" backgroundColor="#18753C">
-                <CheckIcon mt={1} padding={1} width="20px" height="20px" sx={{ borderRadius: "10px" }} background="white" color="#18753C" />
-              </Box>
-              <Text mt={1} data-testid="algo_company_updated_ok" color="#3A3A3A">
-                Le SIRET {currentCompany.siret} a été mis à jour avec succès.
-              </Text>
-            </Flex>
-          )}
-
-          <FormulaireRechercheEntreprise setCurrentCompany={setCurrentCompany} isLoading={isLoading} setIsLoading={setIsLoading} setIsSuccess={setIsSuccess} />
-
-          {isLoading && <Spinner size="lg" my={5} />}
-          {!isLoading && currentCompany?.siret && (
-            <FormulaireModificationEntreprise
-              currentCompany={currentCompany}
-              setCurrentCompany={setCurrentCompany}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-              setIsSuccess={setIsSuccess}
-            />
-          )}
+          <FormulaireRechercheEntreprise onSiretChange={setSiret} />
+          <FormulaireModificationEntreprise siret={siret} />
         </Box>
       </Box>
     </Layout>
