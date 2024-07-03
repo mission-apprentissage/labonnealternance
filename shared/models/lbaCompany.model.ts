@@ -10,7 +10,7 @@ export const ZLbaCompany = z
   .object({
     _id: zObjectId,
     siret: z.string().describe("Le Siret de la société"),
-    recruitment_potential: z.number().describe("Le score de recrutement de la société"),
+    recruitment_potential: z.number().nullish().describe("Le score de recrutement de la société"),
     raison_sociale: z.string().nullable().describe("Raison sociale de l'entreprise"),
     enseigne: z.string().describe("Enseigne de l'entreprise"),
     naf_code: z.string().describe("Code NAF de l'entreprise"),

@@ -2,13 +2,11 @@ import { oleoduc, transformData, writeData } from "oleoduc"
 import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { checkIsDiffusible } from "@/services/etablissement.service"
 
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils"
-import { insertSAVECompanies, removeSAVECompanies, updateSAVECompanies } from "./updateSAVECompanies"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
 const MIN_COMPANY_THRESHOLD = 200000
@@ -35,12 +33,11 @@ const prepareCompany = async (rawCompany): Promise<ILbaCompany | null> => {
     rawCompany.enseigne = rawCompany.raison_sociale
   }
 
+  rawCompany.phone = rawCompany.phone ? rawCompany.phone.toString().padStart(10, "0") : null
+  rawCompany.zip_code = rawCompany.zip_code ? rawCompany.zip_code.toString().padStart(5, "0") : null
+
   if (!rawCompany.enseigne) {
     logMessage("error", `Error processing company. Company ${rawCompany.siret} has no name`)
-    return null
-  }
-
-  if (await !checkIsDiffusible(rawCompany.siret)) {
     return null
   }
 
@@ -82,20 +79,18 @@ const processCompanies = async () => {
 export default async function updateLbaCompanies({
   UseAlgoFile = false,
   ClearMongo = false,
-  UseSave = false,
   ForceRecreate = false,
   SourceFile = null,
 }: {
   UseAlgoFile?: boolean
   ClearMongo?: boolean
-  UseSave?: boolean
   ForceRecreate?: boolean
   SourceFile?: string | null
 }) {
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
-    console.info("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - UseSave : ", UseSave, " - ForceRecreate : ", ForceRecreate)
+    console.info("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - ForceRecreate : ", ForceRecreate)
 
     if (UseAlgoFile) {
       if (!ForceRecreate) {
@@ -124,12 +119,6 @@ export default async function updateLbaCompanies({
 
     if (UseAlgoFile) {
       await processCompanies()
-    }
-
-    if (UseSave) {
-      await insertSAVECompanies()
-      await updateSAVECompanies()
-      await removeSAVECompanies()
     }
 
     logMessage("info", `End updating lbb db`)

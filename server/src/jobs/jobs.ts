@@ -35,7 +35,6 @@ import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/const
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
 import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
-import buildSAVE from "./lbb/buildSAVE"
 import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
@@ -173,7 +172,7 @@ export const CronsMap = {
   },
   "Mise à jour des sociétés issues de l'algo": {
     cron_string: "0 5 * * 7",
-    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true } }),
+    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true } }),
   },
   "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
     cron_string: "5 1 * * *",
@@ -319,8 +318,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateOpcoCompanies(job.payload)
       case "domaines-metiers:update":
         return updateDomainesMetiers()
-      case "save:update":
-        return buildSAVE()
       case "domaines-metiers:file:update": {
         const { filename, key } = job.payload
         return updateDomainesMetiersFile({ filename, key })
