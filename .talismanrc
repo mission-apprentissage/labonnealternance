@@ -26,7 +26,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 646eab49f6ff33a2d4d2dc9892ae14ca7871404c81459fc4832b1fb12abbe1c9
 - filename: .infra/files/scripts/seed.sh
-  checksum: 95122f596aaf41a82615adc5e6a824a25e123d3b3a5aef1e424405a10c1e6429
+  checksum: b1361c237cee243b74fc9e66fd59af80c538d6884b8f94c3659d25cdc2b873c2
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
@@ -61,6 +61,8 @@ fileignoreconfig:
   checksum: 8e4712bae8747c1f0f2ba8b4ac3f3af118772136c16b6318b14a2d8b7e277dc6
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
+- filename: server/src/jobs/offrePartenaire/importHelloWork.ts
+  checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
 - filename: server/src/security/accessApiApprentissageService.ts
   checksum: 2f0bf2a0a20e071cbcaec67eebed21acd0de40b7d7a1e8178484ebc14f024ca5
 - filename: server/src/security/accessTokenService.ts

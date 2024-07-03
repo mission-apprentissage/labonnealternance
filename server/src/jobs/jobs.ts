@@ -39,6 +39,7 @@ import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { importHelloWork } from "./offrePartenaire/importHelloWork"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -362,6 +363,9 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "crons:scheduler":
         return cronsScheduler()
+
+      case "import-hellowork":
+        return importHelloWork()
 
       default: {
         logger.warn(`Job not found ${job.name}`)

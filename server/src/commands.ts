@@ -532,6 +532,13 @@ program
   .option("-parallelism, [parallelism]", "Number of threads", "10")
   .action(createJobAction("referentiel-opco:constructys:import"))
 
+program
+  .command("import-hellowork")
+  .description("Importe les offres hellowork")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .option("-parallelism, [parallelism]", "Number of threads", "10")
+  .action(createJobAction("import-hellowork"))
+
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }
