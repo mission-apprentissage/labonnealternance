@@ -57,15 +57,8 @@ const createToGeolocateFile = (addressesToGeolocate, sourceFileCount) => {
 }
 
 const saveGeoData = async (geoData) => {
-  geoData._id = new ObjectId()
   if (ZGeoLocation.safeParse(geoData).success) {
-    if ((await getDbCollection("geolocations").countDocuments({ address: geoData.address })) === 0) {
-      try {
-        await getDbCollection("geolocations").insertOne(geoData)
-      } catch (err) {
-        console.error("error saving geoloc probably from duplicate restriction: ", geoData.address)
-      }
-    }
+    await getDbCollection("geolocations").findOneAndUpdate({ address: geoData.address }, { $set: geoData, $setOnInsert: { _id: new ObjectId() } }, { upsert: true })
   }
 }
 

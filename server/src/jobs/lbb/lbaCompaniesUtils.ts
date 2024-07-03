@@ -16,9 +16,6 @@ import { notifyToSlack } from "../../common/utils/slackUtils"
 import { streamJsonArray } from "../../common/utils/streamUtils"
 import config from "../../config"
 
-import initNafMap from "./initNafMap"
-import initNafScoreMap from "./initNafScoreMap"
-
 const currentDirname = __dirname(import.meta.url)
 
 const PREDICTION_FILE = path.join(currentDirname, "./assets/bonnesboites.json")
@@ -75,20 +72,9 @@ export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
   await downloadFile({ from: sourceFile || s3File, to: PREDICTION_FILE })
 }
 
-export const downloadSAVEFile = async ({ key }) => {
-  logger.info(`Downloading SAVE file ${key} from S3 Bucket...`)
-
-  await downloadFile({ from: key, to: path.join(currentDirname, `./assets/${key}`) })
-}
-
 export const downloadFile = async ({ from, to }) => {
   await createAssetsFolder()
   await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(to))
-}
-
-export const streamSAVECompanies = async ({ key }) => {
-  const response = fs.createReadStream(path.join(currentDirname, `./assets/${key}`))
-  return compose(response, streamJsonArray())
 }
 
 export const readCompaniesFromJson = async () => {
@@ -117,7 +103,7 @@ export const countCompaniesInFile = async (): Promise<number> => {
 Initialize bonneBoite from data, add missing data from maps,
 */
 export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | null> => {
-  const company = { _id: new ObjectId(), ...rawCompany }
+  const company = { _id: new ObjectId(), created_at: new Date(), last_update_at: new Date(), website: null, opco: null, opco_url: null, opco_short_name: null, ...rawCompany }
   const geo = await getGeoLocationForCompany(company)
   if (!geo) {
     return null
@@ -131,15 +117,7 @@ export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | n
   if (rawCompany.rome_codes) {
     company.rome_codes = rawCompany.rome_codes.map((rome) => rome.rome_code)
   } else {
-    // cas SAVE add, rome_codes à déduire du code naf
-    // filtrage des éléments inexploitables
-    company.rome_codes = await filterRomesFromNafHirings(rawCompany)
-    if (company.rome_codes.length === 0) {
-      return null
-    }
-    if (!rawCompany.naf_label) {
-      company.naf_label = nafMap[rawCompany.naf_code]
-    }
+    return null
   }
 
   if (!company.opco) {
@@ -147,8 +125,8 @@ export const getCompanyMissingData = async (rawCompany): Promise<ILbaCompany | n
 
     if (opcoData) {
       company.opco = opcoData.opco
-      company.opco_url = opcoData.url as string
-      company.opco_short_name = opcoData.opco_short_name as string
+      company.opco_url = (opcoData.url as string) || null
+      company.opco_short_name = (opcoData.opco_short_name as string) || null
     }
   }
 
@@ -163,60 +141,10 @@ const getNotBlacklistedEmail = async (email) => {
 
 const getGeoLocationForCompany = async (company) => {
   const geoKey = `${company.street_number} ${company.street_name} ${company.zip_code}`.trim().toUpperCase()
-
-  // a t on déjà une geoloc pour cette adresse
-  const result = await getDbCollection("geolocations").findOne({ address: geoKey })
-
-  // si pas de geoloc on en recherche une avec la ban
-  // if (!result) {
-  //   // @ts-expect-error: TODO
-  //   result = await geoData.getFirstMatchUpdates(company)
-
-  //   if (!result) {
-  //     return null
-  //   } else {
-  //     const geoLocation = new GeoLocation({
-  //       // @ts-expect-error: TODO
-  //       address: geoKey,
-  //       ...result,
-  //     })
-  //     try {
-  //       // on enregistre la geoloc trouvée
-  //       if (ZGeoLocation.safeParse(geoLocation).success) {
-  //         await geoLocation.save()
-  //       }
-  //     } catch (err) {
-  //       //ignore duplicate error
-  //     }
-  //   }
-  // }
-
-  // retour de la geoloc trouvée
-  return result
+  return await getDbCollection("geolocations").findOne({ address: geoKey })
 }
 
 const getOpcoForCompany = async (lbaCompany) => {
   const siren = lbaCompany.siret.substring(0, 9)
   return await getDbCollection("opcos").findOne({ siren })
-}
-
-let nafScoreMap = {}
-let nafMap = {}
-
-export const initMaps = async () => {
-  nafScoreMap = await initNafScoreMap()
-  nafMap = await initNafMap()
-}
-
-const ARBITRARY_ROME_HIRING_THRESHOLD = 0.025
-const filterRomesFromNafHirings = (lbaCompany) => {
-  const nafRomeHirings = nafScoreMap[lbaCompany.naf_code]
-  let filteredRomes = []
-  if (nafRomeHirings) {
-    filteredRomes = nafRomeHirings.romes.filter((rome) => {
-      return nafRomeHirings[rome] / nafRomeHirings.hirings >= ARBITRARY_ROME_HIRING_THRESHOLD
-    })
-  }
-
-  return filteredRomes
 }
