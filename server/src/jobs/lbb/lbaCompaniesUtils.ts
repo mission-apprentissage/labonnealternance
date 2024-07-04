@@ -18,8 +18,8 @@ import config from "../../config"
 
 const currentDirname = __dirname(import.meta.url)
 
-const PREDICTION_FILE = path.join(currentDirname, "./assets/bonnesboites.json")
-const s3File = config.algoBonnesBoites.s3File
+const PREDICTION_FILE = path.join(currentDirname, "./assets/recruteurslba.json")
+const s3File = config.algoRecuteursLba.s3File
 
 export const createAssetsFolder = async () => {
   const assetsPath = path.join(currentDirname, "./assets")
