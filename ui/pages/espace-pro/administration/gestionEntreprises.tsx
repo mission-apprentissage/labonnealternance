@@ -51,10 +51,11 @@ function FormulaireRechercheEntreprise({ onSiretChange }: { onSiretChange: (newS
 }
 
 function FormulaireModificationEntreprise({ siret }: { siret: string }) {
-  const { isLoading, data, error: readError } = useQuery(["getCompany", siret], () => getCompanyContactInfo(siret), { enabled: Boolean(siret), retry: false })
+  const { isLoading, data, error: readError, refetch } = useQuery(["getCompany", siret], () => getCompanyContactInfo(siret), { enabled: Boolean(siret), retry: false })
   const [hasUpdated, setHasUpdated] = useState(false)
   const updateEntreprise = useMutation("updateEntreprise", (values: { phone: string; email: string }) => putCompanyContactInfo({ ...values, siret }), {
     onSuccess: () => {
+      refetch()
       setHasUpdated(true)
     },
     onError: () => {
