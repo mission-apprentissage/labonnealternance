@@ -27,6 +27,8 @@ import * as Yup from "yup"
 
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { FieldWithValue } from "@/components/espace_pro/FieldWithValue"
+import { OffresTabs } from "@/components/espace_pro/OffresTabs"
 import { useAuth } from "@/context/UserContext"
 
 import { AUTHTYPE } from "../../../../common/contants"
@@ -43,7 +45,7 @@ import {
 import { OpcoSelect } from "../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
 import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
-import { getUser, updateEntrepriseAdmin } from "../../../../utils/api"
+import { getFormulaire, getUser, updateEntrepriseAdmin } from "../../../../utils/api"
 
 function DetailEntreprise() {
   const router = useRouter()
@@ -119,6 +121,10 @@ function DetailEntreprise() {
   }
 
   const { data: userRecruteur, isLoading } = useQuery("user", () => getUser(userId), { cacheTime: 0, enabled: !!userId })
+  const { data: recruiter, isLoading: recruiterLoading } = useQuery(["recruiter", userRecruteur?.establishment_id], {
+    enabled: Boolean(userRecruteur?.establishment_id),
+    queryFn: () => getFormulaire(userRecruteur.establishment_id),
+  })
   // @ts-expect-error: TODO
   const userMutation = useMutation(({ userId, values }) => updateEntrepriseAdmin(userId, values, userRecruteur.establishment_siret), {
     onSuccess: () => {
@@ -126,7 +132,7 @@ function DetailEntreprise() {
     },
   })
 
-  if (isLoading || !userRecruteur || !userId) {
+  if (isLoading || !userRecruteur || !userId || recruiterLoading) {
     return <LoadingEmptySpace />
   }
 
@@ -266,12 +272,24 @@ function DetailEntreprise() {
                     </Box>
                     <Box>
                       <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
+                      <Box my={4}>
+                        <FieldWithValue title="Origine" value={userRecruteur.origin} />
+                      </Box>
                     </Box>
                   </SimpleGrid>
                   {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
-                    <Box mb={12}>
-                      <UserValidationHistory histories={userRecruteur.status} />
-                    </Box>
+                    <>
+                      <hr style={{ marginTop: 24 }} />
+                      <Box my={6}>
+                        <Text fontSize="20px" lineHeight="32px" fontWeight="700" mb={6}>
+                          Offres de recrutement en alternance
+                        </Text>
+                        <OffresTabs recruiter={recruiter} />
+                      </Box>
+                      <Box mb={12}>
+                        <UserValidationHistory histories={userRecruteur.status} />
+                      </Box>
+                    </>
                   )}
                 </>
               )
