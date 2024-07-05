@@ -26,14 +26,14 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
   const { user } = useAuth()
   const confirmationSuppression = useDisclosure()
   const [currentOffre, setCurrentOffre] = useState()
-  const { establishment_raison_sociale, geo_coordinates } = recruiter
-  const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter.jobs ?? []
+
+  const jobs: (IJob & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
 
   if (jobs.length === 0) {
     return null
   }
 
-  const jobsWithGeoCoords = jobs.map((job) => ({ ...job, geo_coordinates }))
+  const jobsWithGeoCoords = jobs.map((job) => ({ ...job, geo_coordinates: recruiter.geo_coordinates }))
 
   const offresTermine = jobsWithGeoCoords.filter((x) => x.job_status === "Annulée")
   const offresTermineNbr = offresTermine.length
@@ -117,7 +117,7 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
                         onClick={() =>
                           router.push({
                             pathname: `/espace-pro/administration/entreprise/${router.query.establishment_id}/offre/${row._id}`,
-                            query: { establishment_raison_sociale },
+                            query: { establishment_raison_sociale: recruiter?.establishment_raison_sociale },
                           })
                         }
                       >
