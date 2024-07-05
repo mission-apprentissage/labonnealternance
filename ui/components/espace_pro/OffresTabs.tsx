@@ -117,7 +117,7 @@ export const OffresTabs = ({ recruiter }: { recruiter: IRecruiterJson }) => {
                         onClick={() =>
                           router.push({
                             pathname: `/espace-pro/administration/entreprise/${router.query.establishment_id}/offre/${row._id}`,
-                            query: { establishment_raison_sociale: recruiter.establishment_raison_sociale },
+                            query: { establishment_raison_sociale: recruiter?.establishment_raison_sociale },
                           })
                         }
                       >
