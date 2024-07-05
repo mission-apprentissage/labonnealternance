@@ -2,12 +2,12 @@ import { z } from "zod"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { NIVEAUX_POUR_LBA, OPCOS, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
-import { LBA_ITEM_TYPE } from "../constants/lbaitem"
+import { JOB_OPPORTUNITY_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 const zJobOpportunityIdentifiant = z.object({
   id: z.union([zObjectId, extensions.siret]),
-  type: z.enum([LBA_ITEM_TYPE.RECRUTEURS_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
+  type: z.enum([JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA, JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_LBA, JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
 })
 
 const zJobOpportunityContract = z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE))
@@ -31,7 +31,7 @@ const zJobOpportunityWorkplace = z.object({
   }),
   domaine: z.object({
     idcc: z.number().nullable(),
-    opco: extensions.buildEnum(OPCOS),
+    opco: extensions.buildEnum(OPCOS).nullable(),
     naf: z.object({
       code: z.string().nullable(),
       label: z.string().nullable(),
@@ -60,9 +60,9 @@ const zJobOpportunityOffer = z.object({
   }),
 })
 
-const zJobOpportunity = z.object({
+export const zJobOpportunity = z.object({
   identifiant: zJobOpportunityIdentifiant,
-  contract: zJobOpportunityContract,
+  contract: zJobOpportunityContract.nullable(),
   jobOffre: zJobOpportunityOffer.nullable(),
   workplace: zJobOpportunityWorkplace,
   apply: zJobOpportunityApply,

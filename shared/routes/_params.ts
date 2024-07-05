@@ -1,5 +1,6 @@
 import { LBA_ITEM_TYPE_OLD } from "../constants/lbaitem"
-import { NIVEAUX_POUR_LBA } from "../constants/recruteur"
+import { NIVEAUX_POUR_LBA, OPCOS } from "../constants/recruteur"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 export const zCallerParam = z
@@ -141,3 +142,23 @@ export const zOpcoUrlParams = z
       description: "filter opportunities on opco url",
     },
   })
+
+const romes = extensions.romeCode()
+const rncp = extensions.rncpCode()
+const insee = extensions.inseeCode()
+
+const zJobOpportunityQuerystringBase = z.object({
+  geolocation: z.object({
+    latitude: extensions.latitude(),
+    longitude: extensions.longitude(),
+  }),
+  radius: z.number().min(0).max(200).optional(),
+  diploma: extensions.buildEnum(NIVEAUX_POUR_LBA),
+  opco: extensions.buildEnum(OPCOS).optional(),
+  opcoUrl: z.string().optional(),
+})
+
+export const zJobOpportunityRome = zJobOpportunityQuerystringBase.extend({ romes }).strict()
+export const zJobOpportunityRncp = zJobOpportunityQuerystringBase.extend({ rncp }).strict()
+export const zJobQuerystringFranceTravailRome = zJobOpportunityQuerystringBase.extend({ romes, insee }).strict()
+export const zJobQuerystringFranceTravailRncp = zJobOpportunityQuerystringBase.extend({ rncp, insee }).strict()

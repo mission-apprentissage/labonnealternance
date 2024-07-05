@@ -1,6 +1,7 @@
-import { LBA_ITEM_TYPE } from "../constants/lbaitem"
+import { JOB_OPPORTUNITY_TYPE, LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
+import { zJobOpportunity } from "../interface/jobOpportunity.types"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
@@ -12,6 +13,10 @@ import {
   zCallerParam,
   zDiplomaParam,
   zInseeParams,
+  zJobOpportunityRncp,
+  zJobOpportunityRome,
+  zJobQuerystringFranceTravailRncp,
+  zJobQuerystringFranceTravailRome,
   ZLatitudeParam,
   ZLongitudeParam,
   zOpcoParams,
@@ -396,6 +401,22 @@ export const zJobsRoutesV2 = {
           max: 1,
           timeWindow: "1s",
         })}`,
+      },
+    },
+    "/jobs/:source": {
+      method: "get",
+      path: "/jobs/:source",
+      params: z.object({
+        source: extensions.buildEnum(JOB_OPPORTUNITY_TYPE),
+      }),
+      querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome, zJobQuerystringFranceTravailRncp, zJobQuerystringFranceTravailRome]),
+      response: {
+        "200": zJobOpportunity,
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
       },
     },
   },

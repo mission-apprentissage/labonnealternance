@@ -1,6 +1,6 @@
 import { capitalize } from "lodash-es"
 
-import { CODE_NAF_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 import { validateSIRET } from "../../validators/siretValidator"
 import { removeUrlsFromText } from "../common"
 import { z } from "../zodWithOpenApi"
@@ -101,4 +101,9 @@ export const extensions = {
     }
     return z.enum([values[0], ...values.slice(1)])
   },
+  romeCode: () => z.string().trim().regex(CODE_ROME_REGEX, "Code ROME invalide"),
+  rncpCode: () => z.string().trim().regex(RNCP_REGEX, "Code RNCP invalide"),
+  latitude: () => z.string().trim().regex(LATITUDE_REGEX, "Latitude invalide"),
+  longitude: () => z.string().trim().regex(LONGITUDE_REGEX, "Longitude invalide"),
+  inseeCode: () => z.string().trim().regex(CODE_INSEE_REGEX, "Code INSEE invalide"),
 }

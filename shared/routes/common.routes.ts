@@ -77,7 +77,7 @@ export type SecurityScheme = {
 
 interface IRouteSchemaCommon {
   path: string
-  querystring?: AnyZodObject
+  querystring?: AnyZodObject | ZodType
   headers?: AnyZodObject
   params?: AnyZodObject
   response: { [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]: ZodType }

@@ -486,4 +486,6 @@ export default (server: Server) => {
       }
     }
   )
+
+  server.get(`/jobs/:source`, { schema: zRoutes.get["/jobs/:source"], onRequest: server.auth(zRoutes.get["/jobs/:source"]) }, async () => {})
 }

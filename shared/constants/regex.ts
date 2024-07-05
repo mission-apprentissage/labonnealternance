@@ -12,6 +12,9 @@ export const RNCP_REGEX_PATTERN = "^(RNCP)?[0-9]{2,5}$"
 export const SIRET_REGEX_PATTERN = "^[0-9]{14}$"
 export const CODE_NAF_REGEX_PATTERN = "^[0-9]{4}[A-Z]$"
 export const UAI_REGEX_PATTERN = "^[0-9]{7}[a-zA-Z]$"
+export const CODE_ROME_PATTERN = "^[A-Z]d{4}$"
+export const LATITUDE_PATTERN = "^[-+]?([1-8]?d(.d+)?|90(.0+)?)$"
+export const LONGITUDE_PATTERN = "^[-+]?((1[0-7]d(.d+)?|180(.0+)?|d{1,2}(.d+)?))$"
 
 // Numero INE (Identifiant National Elève)
 // Le numero INE composé de 11 caractères,
@@ -31,6 +34,10 @@ export const RNCP_REGEX = new RegExp(RNCP_REGEX_PATTERN)
 export const SIRET_REGEX = new RegExp(SIRET_REGEX_PATTERN)
 export const CODE_NAF_REGEX = new RegExp(CODE_NAF_REGEX_PATTERN)
 export const UAI_REGEX = new RegExp(UAI_REGEX_PATTERN)
+export const CODE_ROME_REGEX = new RegExp(CODE_ROME_PATTERN)
+export const LATITUDE_REGEX = new RegExp(LATITUDE_PATTERN)
+export const LONGITUDE_REGEX = new RegExp(LONGITUDE_PATTERN)
+export const CODE_INSEE_REGEX = new RegExp(CODE_INSEE_PATTERN)
 
 export const isValidCFD = (cfd: string) => typeof cfd === "string" && CFD_REGEX.test(cfd)
 export const isValidINE = (ine: string) => typeof ine === "string" && INE_REGEX.test(ine)
