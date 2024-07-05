@@ -94,7 +94,7 @@ const config = {
     password: env.get("LBA_CATALOGUE_ME_PASSWORD").required().asString(),
   },
   algoRecuteursLba: {
-    s3File: env.get("LBA_ALGO_LBB_S3FILE").required().asString(),
+    s3File: env.get("LBA_ALGO_RECRUTEURS_LBA_S3FILE").required().asString(),
   },
   s3: {
     accessKeyId: env.get("LBA_S3_ACCESSKEYID").required().asString(),
