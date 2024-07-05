@@ -33,11 +33,11 @@ import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMi
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
-import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
 import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
+import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { importHelloWork } from "./offrePartenaire/importHelloWork"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -68,7 +68,7 @@ const logger = getLoggerWithContext("script")
 export const CronsMap = {
   "Create offre collection for metabase": {
     cron_string: "55 0 * * *",
-    handler: () => addJob({ name: "metabase:offre:create", payload: {} }),
+    handler: () => addJob({ name: "metabase:jobs:collection", payload: {} }),
   },
   "Cancel lba recruteur expired offers": {
     cron_string: "15 0 * * *",
@@ -262,8 +262,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "formulaire:annulation":
         return annuleFormulaire()
-      case "metabase:offre:create":
-        return createOffreCollection()
+      case "metabase:jobs:collection":
+        return createJobsCollectionForMetabase()
       case "opco:relance":
         return relanceOpco()
       case "pe:offre:export":

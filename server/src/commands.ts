@@ -275,10 +275,10 @@ program
   .action(createJobAction("formulaire:annulation"))
 
 program
-  .command("creer-offre-metabase")
+  .command("metabase:jobs:collection")
   .description("Permet de créer une collection dédiée aux offres pour metabase")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("metabase:offre:create"))
+  .action(createJobAction("metabase:jobs:collection"))
 
 program
   .command("relance-opco")
