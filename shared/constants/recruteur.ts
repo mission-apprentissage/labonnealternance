@@ -92,3 +92,9 @@ export const TRAINING_RYTHM = {
   "2S3S": "2 semaines / 3 semaines",
   "6S6S": "6 semaines / 6 semaines",
 }
+
+export const TRAINING_REMOTE_TYPE = {
+  PRESENTIEL: "Présentiel",
+  TELETRAVAIL: "Télétravail",
+  HYBRID: "Hybride",
+}
