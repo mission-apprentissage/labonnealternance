@@ -9,6 +9,7 @@ import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 
 import { InfoCircle } from "../../theme/components/icons"
 
+import { FieldWithValue } from "./FieldWithValue"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
 
@@ -142,29 +143,6 @@ const OrganizationInfoFields = ({
         />
       )}
     </Stack>
-  )
-}
-
-const FieldWithValue = ({ title, value, tooltip, hideIfEmpty = false }) => {
-  if (hideIfEmpty && !value) {
-    return null
-  }
-  return (
-    <Flex align="center">
-      <Text mr={3} minW="fit-content">
-        {title} :
-      </Text>
-      {value ? (
-        <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-          {value}
-        </Text>
-      ) : (
-        <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-          Non identifié
-        </Text>
-      )}
-      {tooltip && (typeof tooltip === "string" ? <InfoTooltip description={tooltip} /> : tooltip)}
-    </Flex>
   )
 }
 

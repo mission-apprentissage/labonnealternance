@@ -26,9 +26,6 @@ export const updateParameter = (id: ObjectId, params: Partial<IEligibleTrainings
 export const findOneAndUpdate = (conditions: Filter<IEligibleTrainingsForAppointment>, values) =>
   getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate(conditions, { $set: values }, { returnDocument: "after", upsert: true })
 
-export const updateMany = (conditions: Filter<IEligibleTrainingsForAppointment>, values) =>
-  getDbCollection("eligible_trainings_for_appointments").updateMany(conditions, { $set: values })
-
 export const getParameterByCleMinistereEducatif = ({ cleMinistereEducatif }) =>
   getDbCollection("eligible_trainings_for_appointments").findOne({ cle_ministere_educatif: cleMinistereEducatif })
 
