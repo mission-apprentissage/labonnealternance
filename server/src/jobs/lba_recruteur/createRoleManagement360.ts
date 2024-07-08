@@ -60,6 +60,13 @@ export const createRoleManagement360 = async () => {
           ...Object.keys(zCFA.shape).map((field) => [`cfa_${field}`, `$cfa.${field}`]),
         ]),
       },
+      {
+        $addFields: {
+          user_last_status: { $last: "$user_status.status" },
+          role_last_status: { $last: "$role_status.status" },
+          entreprise_last_status: { $last: "$entreprise_status.status" },
+        },
+      },
       { $out: destCollectionName },
     ])
     .toArray()
