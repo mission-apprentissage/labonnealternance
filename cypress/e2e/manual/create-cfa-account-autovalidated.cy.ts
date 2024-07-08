@@ -1,10 +1,10 @@
-import { smtpClient } from "../api/smtpClient"
-import { FlowCreationCfa } from "../pages/FlowCreationCfa"
-import { LoginBar } from "../pages/LoginBar"
-import { generateRandomString } from "../utils/generateRandomString"
+import { smtpClient } from "../../api/smtpClient"
+import { FlowCreationCfa } from "../../pages/FlowCreationCfa"
+import { LoginBar } from "../../pages/LoginBar"
+import { generateRandomString } from "../../utils/generateRandomString"
 
 describe("create-cfa-account-autovalidated", () => {
-  it.skip("test create-cfa-account-autovalidated", () => {
+  it("test create-cfa-account-autovalidated", () => {
     const cfaEmail = `${generateRandomString()}@${Cypress.env("CFA_AUTOVALIDE_EMAIL_DOMAIN")}`
     const cfaSiret = Cypress.env("CFA_AUTOVALIDE_SIRET")
     const firstName = "John"
