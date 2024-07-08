@@ -1,4 +1,4 @@
-import { JOB_OPPORTUNITY_TYPE, LBA_ITEM_TYPE } from "../constants/lbaitem"
+import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zJobOpportunity } from "../interface/jobOpportunity.types"
@@ -403,13 +403,49 @@ export const zJobsRoutesV2 = {
         })}`,
       },
     },
-    "/jobs/:source": {
+    "/jobs/recruteurs_lba": {
       method: "get",
-      path: "/jobs/:source",
-      params: z.object({
-        source: extensions.buildEnum(JOB_OPPORTUNITY_TYPE),
-      }),
-      querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome, zJobQuerystringFranceTravailRncp, zJobQuerystringFranceTravailRome]),
+      path: "/jobs/recruteurs_lba",
+      querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome]),
+      response: {
+        "200": zJobOpportunity,
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
+    "/jobs/offres_emploi_lba": {
+      method: "get",
+      path: "/jobs/offres_emploi_lba",
+      querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome]),
+      response: {
+        "200": zJobOpportunity,
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
+    "/jobs/offres_emploi_partenaires": {
+      method: "get",
+      path: "/jobs/offres_emploi_partenaires",
+      querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome]),
+      response: {
+        "200": zJobOpportunity,
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
+    "/jobs/offres_emploi_france_travail": {
+      method: "get",
+      path: "/jobs/offres_emploi_france_travail",
+      querystring: z.union([zJobQuerystringFranceTravailRncp, zJobQuerystringFranceTravailRome]),
       response: {
         "200": zJobOpportunity,
       },

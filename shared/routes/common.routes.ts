@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from "@asteasolutions/zod-to-openapi"
 import { Jsonify } from "type-fest"
-import { AnyZodObject, ZodType } from "zod"
+import { AnyZodObject, ZodType, ZodUnion } from "zod"
 
 import { z } from "../helpers/zodWithOpenApi"
 import { AccessPermission, AccessRessouces } from "../security/permissions"
@@ -77,7 +77,7 @@ export type SecurityScheme = {
 
 interface IRouteSchemaCommon {
   path: string
-  querystring?: AnyZodObject | ZodType
+  querystring?: AnyZodObject | ZodUnion<Readonly<[AnyZodObject, ...AnyZodObject[]]>>
   headers?: AnyZodObject
   params?: AnyZodObject
   response: { [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]: ZodType }

@@ -1,6 +1,7 @@
 import Boom from "boom"
 import { IJob, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { JOB_OPPORTUNITY_TYPE, LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { IJobOpportunityRomeRncp } from "shared/routes/_params"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -10,6 +11,7 @@ import { getFileSignedURL } from "../../common/utils/awsUtils"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
+import { getRomesFromRncp } from "../../services/certification.service"
 import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
@@ -487,5 +489,33 @@ export default (server: Server) => {
     }
   )
 
-  server.get(`/jobs/:source`, { schema: zRoutes.get["/jobs/:source"], onRequest: server.auth(zRoutes.get["/jobs/:source"]) }, async () => {})
+  server.get(
+    `/jobs/${JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA}`,
+    { schema: zRoutes.get["/jobs/recruteurs_lba"], onRequest: server.auth(zRoutes.get["/jobs/recruteurs_lba"]) },
+    async (req) => {
+      const payload: IJobOpportunityRomeRncp = { ...req.query }
+      if ("rncp" in payload) {
+        payload.romes = await getRomesFromRncp(payload.rncp)
+        if (!payload.romes) {
+          throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
+        }
+      }
+      // const result = await getCompanies({ ...payload, companyLimit: 150, api: "/jobs/recruteurs_lba", romes: payload.romes as string })
+    }
+  )
+  server.get(
+    `/jobs/${JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_LBA}`,
+    { schema: zRoutes.get["/jobs/offres_emploi_lba"], onRequest: server.auth(zRoutes.get["/jobs/offres_emploi_lba"]) },
+    async () => {}
+  )
+  server.get(
+    `/jobs/${JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_PARTENAIRES}`,
+    { schema: zRoutes.get["/jobs/offres_emploi_partenaires"], onRequest: server.auth(zRoutes.get["/jobs/offres_emploi_partenaires"]) },
+    async () => {}
+  )
+  server.get(
+    `/jobs/${JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL}`,
+    { schema: zRoutes.get["/jobs/offres_emploi_france_travail"], onRequest: server.auth(zRoutes.get["/jobs/offres_emploi_france_travail"]) },
+    async () => {}
+  )
 }

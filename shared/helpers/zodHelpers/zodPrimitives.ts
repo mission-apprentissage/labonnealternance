@@ -103,7 +103,17 @@ export const extensions = {
   },
   romeCode: () => z.string().trim().regex(CODE_ROME_REGEX, "Code ROME invalide"),
   rncpCode: () => z.string().trim().regex(RNCP_REGEX, "Code RNCP invalide"),
-  latitude: () => z.string().trim().regex(LATITUDE_REGEX, "Latitude invalide"),
-  longitude: () => z.string().trim().regex(LONGITUDE_REGEX, "Longitude invalide"),
+  latitude: () =>
+    z
+      .string()
+      .trim()
+      .regex(LATITUDE_REGEX, "Latitude invalide")
+      .transform((val) => parseFloat(val)),
+  longitude: () =>
+    z
+      .string()
+      .trim()
+      .regex(LONGITUDE_REGEX, "Longitude invalide")
+      .transform((val) => parseFloat(val)),
   inseeCode: () => z.string().trim().regex(CODE_INSEE_REGEX, "Code INSEE invalide"),
 }

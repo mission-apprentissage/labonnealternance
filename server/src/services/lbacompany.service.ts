@@ -159,10 +159,21 @@ const transformCompanies = ({
   return transformedCompanies
 }
 
+// type IRecruteursLbaSearchParams = {
+//   romes: string
+//   latitude: number
+//   longitude: number
+//   radius: number
+//   opco?: string
+//   opcoUrl?: string
+// }
+
+// export const getRecruteursLbaFromDB = async ({ ...params, radius = 10 }: IRecruteursLbaSearchParams) => {}
+
 /**
  * Retourne des sociétés issues de l'algo matchant les critères en paramètres
  */
-const getCompanies = async ({
+export const getCompanies = async ({
   romes,
   latitude,
   longitude,
