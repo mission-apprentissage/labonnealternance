@@ -33,7 +33,7 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
         formation._id = undefined
 
         if (!exist) {
-          await getDbCollection("eligible_trainings_for_appointments_history").insertOne({ ...formation, email_rdv: undefined, historization_date: new Date() })
+          await getDbCollection("eligible_trainings_for_appointments_histories").insertOne({ ...formation, email_rdv: undefined, historization_date: new Date() })
           await getDbCollection("eligible_trainings_for_appointments").deleteOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
         }
       },
