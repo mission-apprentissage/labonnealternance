@@ -281,7 +281,7 @@ program
   .action(createJobAction("metabase:jobs:collection"))
 
 program
-  .command("creer-role-management-metabase")
+  .command("metabase:role-management:create")
   .description("Crée une collection jointure entre userWithAccounts, roleManagements, cfas et entreprises pour metabase")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("metabase:role-management:create"))
