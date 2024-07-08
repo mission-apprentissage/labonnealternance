@@ -27,6 +27,6 @@ export type ICFAJson = Jsonify<z.input<typeof zCFA>>
 
 export default {
   zod: zCFA,
-  indexes: [],
+  indexes: [[{ siret: 1 }, { unique: true }]],
   collectionName,
 } as const satisfies IModelDescriptor
