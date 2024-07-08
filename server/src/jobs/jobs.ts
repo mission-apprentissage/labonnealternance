@@ -23,6 +23,7 @@ import { addJob, executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
 import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
+import { createRoleManagement360 } from "./lba_recruteur/createRoleManagement360"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
@@ -202,6 +203,10 @@ export const CronsMap = {
     cron_string: "30 6 * * 1",
     handler: () => addJob({ name: "lbajobs:export:s3", payload: {}, productionOnly: true }),
   },
+  "Génération de la collection rolemanagement360": {
+    cron_string: "00 10,13,17 * * *",
+    handler: () => addJob({ name: "metabase:role-management:create", payload: {} }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -264,6 +269,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return annuleFormulaire()
       case "metabase:offre:create":
         return createOffreCollection()
+      case "metabase:role-management:create":
+        return createRoleManagement360()
       case "opco:relance":
         return relanceOpco()
       case "pe:offre:export":
