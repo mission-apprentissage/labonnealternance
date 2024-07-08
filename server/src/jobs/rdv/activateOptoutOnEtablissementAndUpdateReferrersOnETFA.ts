@@ -33,7 +33,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
   await Promise.all(
     etablissementsToActivate.map(async (etablissement) => {
       await Promise.all([
-        eligibleTrainingsForAppointmentService.updateMany(
+        getDbCollection("eligible_trainings_for_appointments").updateMany(
           {
             etablissement_formateur_siret: etablissement.formateur_siret,
             lieu_formation_email: { $nin: [null, ""] },

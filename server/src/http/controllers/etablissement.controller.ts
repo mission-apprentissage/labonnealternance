@@ -432,7 +432,7 @@ export default (server: Server) => {
        */
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
         // Disable all formations
-        await eligibleTrainingsForAppointmentService.updateMany(
+        await getDbCollection("eligible_trainings_for_appointments").updateMany(
           {
             etablissement_formateur_siret: etablissement.formateur_siret,
           },
