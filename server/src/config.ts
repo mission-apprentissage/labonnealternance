@@ -83,7 +83,7 @@ const config = {
   franceTravailIO: {
     baseUrl: "https://api.francetravail.io/partenaire",
     authUrl: "https://entreprise.francetravail.fr/connexion/oauth2/access_token",
-    depotUrl: "https://portail-partenaire.pole-emploi.fr/partenaire/depotcurl",
+    depotUrl: "https://portail-partenaire.francetravail.fr/partenaire/depotcurl ",
   },
   bal: {
     baseUrl: env.get("LBA_BAL_ENV_URL").required().asString(),
