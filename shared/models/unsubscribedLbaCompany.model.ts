@@ -3,7 +3,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { IModelDescriptor } from "./common"
 import { ZLbaCompany } from "./lbaCompany.model"
 
-const collectionName = "unsubscribedbonnesboites" as const
+const collectionName = "unsubscribedrecruteurslba" as const
 
 export const ZUnsubscribedLbaCompany = ZLbaCompany.pick({
   _id: true,

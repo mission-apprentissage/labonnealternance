@@ -342,11 +342,11 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
 
 type IGetAllEmailFromLbaCompanyLegacy = Pick<ILbaCompanyLegacy, "email">
 export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
-  (await getDbCollection("bonnesboiteslegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
+  (await getDbCollection("recruteurslbalegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
 
 type IGetAllEmailFromLbaCompany = Pick<ILbaCompany, "email">
 export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<ILbaCompany>) =>
-  (await getDbCollection("bonnesboites").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
+  (await getDbCollection("recruteurslba").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
 
 function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undefined {
   const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
