@@ -4,7 +4,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
 
-const collectionName = "bonnesboites" as const
+const collectionName = "recruteurslba" as const
 
 export const ZLbaCompany = z
   .object({
