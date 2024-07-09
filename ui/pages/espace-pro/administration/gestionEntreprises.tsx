@@ -53,15 +53,19 @@ function FormulaireRechercheEntreprise({ onSiretChange }: { onSiretChange: (newS
 function FormulaireModificationEntreprise({ siret }: { siret: string }) {
   const { isLoading, data, error: readError, refetch } = useQuery(["getCompany", siret], () => getCompanyContactInfo(siret), { enabled: Boolean(siret), retry: false })
   const [hasUpdated, setHasUpdated] = useState(false)
-  const updateEntreprise = useMutation("updateEntreprise", (values: { phone: string; email: string }) => putCompanyContactInfo({ ...values, siret }), {
-    onSuccess: () => {
-      refetch()
-      setHasUpdated(true)
-    },
-    onError: () => {
-      setHasUpdated(false)
-    },
-  })
+  const updateEntreprise = useMutation(
+    "updateEntreprise",
+    ({ phone, email }: { phone: string; email: string }) => putCompanyContactInfo({ phone: phone ?? "", email: email ?? "", siret }),
+    {
+      onSuccess: () => {
+        refetch()
+        setHasUpdated(true)
+      },
+      onError: () => {
+        setHasUpdated(false)
+      },
+    }
+  )
   const { error: updateError } = updateEntreprise
 
   if (isLoading) {
@@ -100,8 +104,8 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
           validateOnMount
           initialValues={{ phone: currentCompany.phone, email: currentCompany.email }}
           validationSchema={Yup.object().shape({
-            email: Yup.string().email("Insérez un email valide"),
-            phone: phoneValidation(),
+            email: Yup.string().email("Insérez un email valide").nullable(),
+            phone: phoneValidation().nullable(),
           })}
           onSubmit={(values) => updateEntreprise.mutate(values)}
         >
