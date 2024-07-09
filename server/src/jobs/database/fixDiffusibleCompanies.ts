@@ -13,7 +13,7 @@ const FAKE_GEOLOCATION = "0,0"
 
 const fixLbaCompanies = async () => {
   logger.info(`Fixing diffusible lba companies`)
-  const lbaCompanies = getDbCollection("bonnesboites").find({})
+  const lbaCompanies = getDbCollection("recruteurslba").find({})
 
   let count = 0
   let deletedCount = 0
@@ -27,7 +27,7 @@ const fixLbaCompanies = async () => {
       const isDiffusible = await getDiffusionStatus(lbaCompany.siret)
 
       if (isDiffusible !== EDiffusibleStatus.DIFFUSIBLE) {
-        await getDbCollection("bonnesboites").deleteOne({ siret: lbaCompany.siret })
+        await getDbCollection("recruteurslba").deleteOne({ siret: lbaCompany.siret })
         deletedCount++
       }
     } catch (err) {

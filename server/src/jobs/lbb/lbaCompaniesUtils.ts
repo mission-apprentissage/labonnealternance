@@ -18,8 +18,8 @@ import config from "../../config"
 
 const currentDirname = __dirname(import.meta.url)
 
-const PREDICTION_FILE = path.join(currentDirname, "./assets/bonnesboites.json")
-const s3File = config.algoBonnesBoites.s3File
+const PREDICTION_FILE = path.join(currentDirname, "./assets/recruteurslba.json")
+const s3File = config.algoRecuteursLba.s3File
 
 export const createAssetsFolder = async () => {
   const assetsPath = path.join(currentDirname, "./assets")
@@ -44,7 +44,7 @@ export const removePredictionFile = async () => {
 export const checkIfAlgoFileIsNew = async (reason: string) => {
   const algoFileLastModificationDate = await getS3FileLastUpdate({ key: s3File })
   // projection to be added, not working when migrated to mongoDB
-  const currentDbCreatedDate = ((await getDbCollection("bonnesboites").findOne({})) as ILbaCompany).created_at
+  const currentDbCreatedDate = ((await getDbCollection("recruteurslba").findOne({})) as ILbaCompany).created_at
 
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
     await notifyToSlack({

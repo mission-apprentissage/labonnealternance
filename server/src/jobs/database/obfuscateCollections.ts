@@ -73,7 +73,7 @@ const obfuscateAppointments = async () => {
 
 const obfuscateLbaCompanies = async () => {
   logger.info(`obfuscating lbacompanies`)
-  await getDbCollection("bonnesboites").updateMany(
+  await getDbCollection("recruteurslba").updateMany(
     {},
     {
       $set: {
