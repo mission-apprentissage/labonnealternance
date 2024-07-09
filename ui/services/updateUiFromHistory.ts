@@ -3,7 +3,9 @@
  * sans qu'il y ait de changement de page
  */
 
-import { restoreSearchFromSession } from "../components/SearchForTrainingsAndJobs/services/handleSessionStorage"
+import { IContextSearch } from "@/context/SearchResultContextProvider"
+
+import { restoreSearchFromSearchHistoryContext } from "../components/SearchForTrainingsAndJobs/services/handleSessionStorage"
 import { defaultFilters } from "../components/SearchForTrainingsAndJobs/services/utils"
 import { currentSearch, setCurrentSearch } from "../utils/currentPage"
 import { filterLayers } from "../utils/mapTools"
@@ -12,7 +14,6 @@ export const updateUiFromHistory = ({
   url,
   currentPage,
   unSelectItem,
-  selectedItem,
   selectItemFromHistory,
   setCurrentPage,
   visiblePane,
@@ -20,11 +21,26 @@ export const updateUiFromHistory = ({
   showResultMap,
   showResultList,
   showSearchForm,
-  setTrainings,
-  setJobs,
   setActiveFilters,
   activeFilters,
+  searchResultContext,
+}: {
+  url: string
+  currentPage: any
+  unSelectItem: any
+  selectItemFromHistory: any
+  setCurrentPage: any
+  visiblePane: any
+  isFormVisible: any
+  showResultMap: any
+  showResultList: any
+  showSearchForm: any
+  setActiveFilters: any
+  activeFilters: any
+  searchResultContext: IContextSearch
 }) => {
+  const { selectedItem, setTrainings, setJobs } = searchResultContext
+
   // récupération des query parameters donnant des indications sur l'état de l'interface
   let urlParams
   if (url.indexOf("?") >= 0) {
@@ -47,10 +63,12 @@ export const updateUiFromHistory = ({
     }
   }
 
+  console.log("searchTimestamp : ", searchTimestamp, currentSearch)
   // réconciliation entre le store et l'état des résultats de recherche
   if (searchTimestamp && searchTimestamp !== currentSearch) {
     setCurrentSearch(searchTimestamp)
-    restoreSearchFromSession({ searchTimestamp, setTrainings, setJobs })
+    console.log("restoreSarchForSession")
+    restoreSearchFromSearchHistoryContext({ searchResultContext, searchTimestamp, setTrainings, setJobs })
   }
 
   // réconciliation entre le store et l'état des formulaires de recherche
@@ -59,6 +77,9 @@ export const updateUiFromHistory = ({
   }
 
   // réconciliation entre le store et l'état attendu indiqué par les query parameters pour les éléments sélectionnés
+
+  console.log("currentPage / pageFormUrl : ", currentPage, pageFromUrl)
+
   if (currentPage !== pageFromUrl) {
     switch (currentPage) {
       case "fiche": {

@@ -35,8 +35,23 @@ import { searchForTrainingsFunction } from "./services/searchForTrainings"
 const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)
 
-  const { hasSearch, trainings, jobs, setTrainings, setJobs, setInternalJobs, setPartnerJobs, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } =
-    useContext(SearchResultContext)
+  const searchResultContext = useContext(SearchResultContext)
+  const {
+    hasSearch,
+    trainings,
+    jobs,
+    setTrainings,
+    setJobs,
+    setInternalJobs,
+    setPartnerJobs,
+    selectedItem,
+    setSelectedItem,
+    setItemToScrollTo,
+    setExtendedSearch,
+    setHasSearch,
+    searchHistory,
+    setSearchHistory,
+  } = searchResultContext
 
   const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch, showCombinedJob } = useContext(ParameterContext)
 
@@ -57,10 +72,10 @@ const SearchForTrainingsAndJobs = () => {
 
   useEffect(() => {
     const handleRouteChange = (url) => {
+      console.log("URL : ", url)
       updateUiFromHistory({
         url,
         currentPage,
-        selectedItem,
         unSelectItem,
         selectItemFromHistory,
         setCurrentPage,
@@ -69,10 +84,9 @@ const SearchForTrainingsAndJobs = () => {
         showResultMap,
         showResultList,
         showSearchForm,
-        setTrainings,
-        setJobs,
         setActiveFilters,
         activeFilters,
+        searchResultContext,
       })
     }
 
@@ -84,7 +98,7 @@ const SearchForTrainingsAndJobs = () => {
       router.events.off("routeChangeStart", handleRouteChange)
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
-  }, [trainings, jobs])
+  }, [router.query])
 
   useEffect(() => {
     if (shouldExecuteSearch) {
@@ -212,7 +226,28 @@ const SearchForTrainingsAndJobs = () => {
       setJobs,
       setInternalJobs,
       setPartnerJobs,
+      searchHistory,
+      setSearchHistory,
+      searchResultContext,
     })
+    /*
+    hasSearch,
+    trainings,
+    jobs,
+    selectedItem,    
+    setItemToScrollTo,
+    setExtendedSearch,
+
+    ---- de contexte
+    setSelectedItem,
+    setPartnerJobs,
+    setInternalJobs,
+    setJobs,
+    setTrainings,
+    setHasSearch,
+    searchHistory,
+    setSearchHistory,
+    */
 
     setIsFormVisible(false)
   }
@@ -224,14 +259,13 @@ const SearchForTrainingsAndJobs = () => {
       setIsTrainingSearchLoading,
       setTrainingSearchError,
       clearTrainings,
-      setTrainings,
-      setHasSearch,
       setIsFormVisible,
       setTrainingMarkers,
       factorTrainingsForMap,
       widgetParameters,
       followUpItem,
       selectFollowUpItem,
+      searchResultContext,
     })
   }
 
@@ -240,32 +274,30 @@ const SearchForTrainingsAndJobs = () => {
       values,
       searchTimestamp,
       setIsJobSearchLoading,
-      setHasSearch,
       setJobSearchError,
       widgetParameters,
       scopeContext,
-      setInternalJobs,
       followUpItem,
       selectFollowUpItem,
       opcoFilter,
       opcoUrlFilter,
       showCombinedJob,
+      searchResultContext,
     })
 
     searchForPartnerJobsFunction({
       values,
       searchTimestamp,
       setIsPartnerJobSearchLoading,
-      setHasSearch,
       setPartnerJobSearchError,
       computeMissingPositionAndDistance,
       widgetParameters,
       scopeContext,
-      setPartnerJobs,
       followUpItem,
       selectFollowUpItem,
       opcoFilter,
       opcoUrlFilter,
+      searchResultContext,
     })
   }
 

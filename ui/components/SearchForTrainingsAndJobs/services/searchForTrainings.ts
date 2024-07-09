@@ -1,7 +1,7 @@
 import { apiGet } from "../../../utils/api.utils"
 import { logError } from "../../../utils/tools"
 
-import { storeTrainingsInSession } from "./handleSessionStorage"
+import { storeSearchResultInContext } from "./handleSessionStorage"
 import { getRomeFromParameters, trainingErrorText, trainingsApi } from "./utils"
 
 export const searchForTrainingsFunction = async ({
@@ -10,19 +10,19 @@ export const searchForTrainingsFunction = async ({
   setIsTrainingSearchLoading,
   setTrainingSearchError,
   clearTrainings,
-  setTrainings,
-  setHasSearch,
   setIsFormVisible,
   setTrainingMarkers,
   factorTrainingsForMap,
   widgetParameters,
   followUpItem,
   selectFollowUpItem,
+  searchResultContext,
 }) => {
   setIsTrainingSearchLoading(true)
   setTrainingSearchError("")
   clearTrainings()
   try {
+    const { setHasSearch, setTrainings } = searchResultContext
     const hasLocation = values?.location?.value ? true : false
     const romes = getRomeFromParameters({ values, widgetParameters })
 
@@ -47,7 +47,7 @@ export const searchForTrainingsFunction = async ({
     const response = await apiGet(trainingsApi, { querystring })
 
     setTrainings(response.results)
-    storeTrainingsInSession({ trainings: response.results, searchTimestamp })
+    storeSearchResultInContext({ searchResultContext, results: { trainings: response.results }, searchTimestamp })
     setHasSearch(true)
     setIsFormVisible(false)
 
@@ -69,6 +69,7 @@ export const searchForTrainingsFunction = async ({
       }
     }
   } catch (err) {
+    console.error(err)
     console.error(`Erreur interne lors de la recherche de formations (${err.response ? err.response?.status : ""} : ${err?.response?.data ? err.response.data?.error : ""})`)
     logError("Training search error", err)
     setTrainingSearchError(trainingErrorText)

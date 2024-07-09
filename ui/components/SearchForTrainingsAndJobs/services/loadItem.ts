@@ -19,16 +19,13 @@ import {
 } from "../../../utils/mapTools"
 import { logError } from "../../../utils/tools"
 
-import { storeTrainingsInSession } from "./handleSessionStorage"
+import { storeSearchResultInContext } from "./handleSessionStorage"
 import { searchForJobsFunction, searchForPartnerJobsFunction } from "./searchForJobs"
 import { notFoundErrorText, partialJobSearchErrorText, trainingErrorText } from "./utils"
 
 export const loadItem = async ({
   item,
-  setTrainings,
-  setHasSearch,
   setIsFormVisible,
-  setSelectedItem,
   setCurrentPage,
   setTrainingSearchError,
   setIsTrainingSearchLoading,
@@ -36,11 +33,11 @@ export const loadItem = async ({
   setIsPartnerJobSearchLoading,
   setJobSearchError,
   setPartnerJobSearchError,
-  setJobs,
-  setInternalJobs,
-  setPartnerJobs,
+  searchResultContext,
 }) => {
   try {
+    const { setHasSearch, setTrainings, setSelectedItem, setJobs } = searchResultContext
+
     setHasSearch(true)
     setIsFormVisible(false)
 
@@ -51,7 +48,7 @@ export const loadItem = async ({
       const searchTimestamp = new Date().getTime()
 
       setTrainings([training])
-      storeTrainingsInSession({ trainings: [training], searchTimestamp })
+      storeSearchResultInContext({ searchResultContext, results: { trainings: [training] }, searchTimestamp })
 
       setTrainingMarkers({ trainingList: factorTrainingsForMap([training]) })
       setSelectedItem(training)
@@ -81,10 +78,10 @@ export const loadItem = async ({
           isTraining: true,
           isJob: true,
         },
-        setHasSearch,
         setJobSearchError,
-        setInternalJobs,
+        searchResultContext,
       })
+
       searchForPartnerJobsFunction({
         values,
         searchTimestamp,
@@ -93,10 +90,9 @@ export const loadItem = async ({
           isTraining: true,
           isJob: true,
         },
-        setHasSearch,
         setPartnerJobSearchError,
         computeMissingPositionAndDistance,
-        setPartnerJobs,
+        searchResultContext,
       })
     } else {
       const results = {
