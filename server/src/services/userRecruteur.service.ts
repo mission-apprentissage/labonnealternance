@@ -349,16 +349,13 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   if (isCfa) {
     organization = await getDbCollection("cfas").findOne({ _id: new ObjectId(role.authorized_id) })
   } else {
-    organization = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id.toString()) })
+    organization = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id) })
   }
   if (!organization) {
     throw Boom.internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }
   const recruiter = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString() })
-  if (!recruiter) {
-    throw Boom.internal(`inattendu : pas de recruiter pour user id=${user._id} et role id=${role._id}`)
-  }
-  const hasJobs = Boolean(recruiter.jobs.length)
+  const hasJobs = Boolean(recruiter?.jobs.length)
 
   await mailer.sendEmail({
     to: email,

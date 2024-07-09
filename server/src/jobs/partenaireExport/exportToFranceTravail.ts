@@ -210,13 +210,14 @@ export const exportToFranceTravail = async (): Promise<void> => {
     await sendCsvToFranceTravail(path.resolve(csvPath.pathname))
 
     await notifyToSlack({
-      subject: "EXPORT FRANCE TRAVAIL OK",
+      subject: "EXPORT FRANCE TRAVAIL",
       message: `${buffer.length} offres transmises à France Travail`,
     })
   } catch (err) {
     await notifyToSlack({
-      subject: "EXPORT FRANCE TRAVAIL KO",
+      subject: "EXPORT FRANCE TRAVAIL",
       message: `Echec de l'export des offres France Travail. ${err}`,
+      error: true,
     })
     throw err
   }

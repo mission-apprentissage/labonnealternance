@@ -1,7 +1,7 @@
 import { IModelDescriptor } from "./common"
 import { ZEligibleTrainingsForAppointmentSchema } from "./elligibleTraining.model"
 
-const collectionName = "eligible_trainings_for_appointments_history" as const
+const collectionName = "eligible_trainings_for_appointments_histories" as const
 
 export default {
   zod: ZEligibleTrainingsForAppointmentSchema,

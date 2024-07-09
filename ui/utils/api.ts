@@ -98,7 +98,23 @@ export const sendValidationLink = async (userId: string, token: string) =>
  * Etablissement API
  */
 export const getEntreprisesManagedByCfa = (cfaId: string) => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
-export const getCfaInformation = async (siret: string) => apiGet("/etablissement/cfa/:siret", { params: { siret } })
+export const getCfaInformation = async (siret: string) => {
+  try {
+    const data = await apiGet("/etablissement/cfa/:siret", { params: { siret } })
+    return { statusCode: 200, data, error: false }
+  } catch (error) {
+    if (error instanceof ApiError && error.context?.statusCode >= 400) {
+      const { errorData, statusCode, message } = error.context
+      if (error.context.statusCode >= 500) {
+        captureException(error)
+      }
+      return { statusCode, message, data: errorData, error: true }
+    } else {
+      captureException(error)
+      return { statusCode: 500, message: "unkown error", error: true }
+    }
+  }
+}
 export const validateCfaCreation = async (siret: string) => apiGet("/etablissement/cfa/:siret/validate-creation", { params: { siret } })
 
 export const getEntrepriseInformation = async (

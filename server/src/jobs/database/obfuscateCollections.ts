@@ -92,7 +92,7 @@ const obfuscateElligibleTrainingsForAppointment = async () => {
       $set: { lieu_formation_email: fakeEmail },
     }
   )
-  await getDbCollection("eligible_trainings_for_appointments_history").updateMany(
+  await getDbCollection("eligible_trainings_for_appointments_histories").updateMany(
     {},
     {
       $set: { lieu_formation_email: fakeEmail },

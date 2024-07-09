@@ -23,6 +23,7 @@ import { addJob, executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
 import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
+import { createRoleManagement360 } from "./lba_recruteur/createRoleManagement360"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
@@ -33,11 +34,11 @@ import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMi
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
-import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
 import updateGeoLocations from "./lbb/updateGeoLocations"
 import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
+import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { importHelloWork } from "./offrePartenaire/importHelloWork"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -68,7 +69,7 @@ const logger = getLoggerWithContext("script")
 export const CronsMap = {
   "Create offre collection for metabase": {
     cron_string: "55 0 * * *",
-    handler: () => addJob({ name: "metabase:offre:create", payload: {} }),
+    handler: () => addJob({ name: "metabase:jobs:collection", payload: {} }),
   },
   "Cancel lba recruteur expired offers": {
     cron_string: "15 0 * * *",
@@ -202,6 +203,10 @@ export const CronsMap = {
     cron_string: "30 6 * * 1",
     handler: () => addJob({ name: "lbajobs:export:s3", payload: {}, productionOnly: true }),
   },
+  "Génération de la collection rolemanagement360": {
+    cron_string: "00 10,13,17 * * *",
+    handler: () => addJob({ name: "metabase:role-management:create", payload: {} }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -262,8 +267,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "formulaire:annulation":
         return annuleFormulaire()
-      case "metabase:offre:create":
-        return createOffreCollection()
+      case "metabase:role-management:create":
+        return createRoleManagement360()
+      case "metabase:jobs:collection":
+        return createJobsCollectionForMetabase()
       case "opco:relance":
         return relanceOpco()
       case "pe:offre:export":

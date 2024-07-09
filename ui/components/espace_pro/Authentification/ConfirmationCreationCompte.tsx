@@ -12,7 +12,7 @@ export default function ConfirmationCreationCompte() {
     <AuthentificationLayout>
       <Box px={["6", "8"]} pt={["6w", "12w"]}>
         <Heading fontSize={["32px", "40px"]} as="h1">
-          Vérifier votre messagerie
+          Vérifiez votre messagerie
         </Heading>
         <Box fontSize={["16px", "22px"]}>
           <Text>

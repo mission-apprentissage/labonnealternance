@@ -1,9 +1,11 @@
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { logger } from "../../../common/logger"
+import { logger } from "../../common/logger"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 
-export const createOffreCollection = async () => {
-  logger.info("Creating offres collections...")
+export const createJobsCollectionForMetabase = async () => {
+  const initialCount = await getDbCollection("jobs").estimatedDocumentCount({})
+  logger.info(`Old count: ${initialCount}`)
   await getDbCollection("recruiters")
     .aggregate([
       { $unwind: "$jobs" },
@@ -50,6 +52,7 @@ export const createOffreCollection = async () => {
           establishment_enseigne: 1,
           establishment_siret: 1,
           address: 1,
+          address_detail: 1,
           geo_coordinates: 1,
           is_delegated: 1,
           cfa_delegated_siret: 1,
@@ -69,4 +72,10 @@ export const createOffreCollection = async () => {
       { $out: "jobs" },
     ])
     .toArray()
+  const newCount = await getDbCollection("jobs").estimatedDocumentCount({})
+  logger.info(`New count: ${newCount}`)
+  await notifyToSlack({
+    subject: "JOBS METABASE COLLECTION",
+    message: `${newCount - initialCount} nouveaux jobs ajoutés. (ancien compte: ${initialCount}/nouveau compte: ${newCount})`,
+  })
 }
