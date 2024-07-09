@@ -281,6 +281,12 @@ program
   .action(createJobAction("metabase:jobs:collection"))
 
 program
+  .command("metabase:role-management:create")
+  .description("Crée une collection jointure entre userWithAccounts, roleManagements, cfas et entreprises pour metabase")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("metabase:role-management:create"))
+
+program
   .command("relance-opco")
   .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
   .option("-q, --queued", "Run job asynchronously", false)

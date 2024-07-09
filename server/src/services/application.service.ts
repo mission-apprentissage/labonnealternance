@@ -807,7 +807,7 @@ const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: I
     to: config.transactionalEmail,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-matcha-hardbounce"),
-    data: { ...sanitizeApplicationForEmail(application.toObject()), ...images },
+    data: { ...sanitizeApplicationForEmail(application), ...images },
   })
 }
 
