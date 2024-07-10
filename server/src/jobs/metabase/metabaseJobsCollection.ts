@@ -10,14 +10,26 @@ export const createJobsCollectionForMetabase = async () => {
     .aggregate([
       { $unwind: "$jobs" },
       {
+        $lookup: {
+          from: "referentielromes",
+          localField: "jobs.rome_code.0",
+          foreignField: "rome.code_rome",
+          as: "referentielrome",
+        },
+      },
+      { $unwind: { path: "$referentielrome", preserveNullAndEmptyArrays: true } },
+      {
+        $set: { "jobs.rome_detail": "$referentielrome" },
+      },
+      {
         $project: {
-          // champs générés ou supprimés
+          // Champs générés ou supprimés
           jobId: { $toString: "$jobs._id" },
           recruiterId: "$_id",
           recruiterStatus: "$status",
           _id: 0,
 
-          // champs de recruiters.jobs
+          // Champs de recruiters.jobs
           rome_label: "$jobs.rome_label",
           rome_appellation_label: "$jobs.rome_appellation_label",
           job_level_label: "$jobs.job_level_label",
@@ -45,8 +57,9 @@ export const createJobsCollectionForMetabase = async () => {
           custom_geo_coordinates: "$jobs.custom_geo_coordinates",
           stats_detail_view: "$jobs.stats_detail_view",
           stats_search_view: "$jobs.stats_search_view",
+          rome_detail: "$jobs.rome_detail",
 
-          // champs de recruiters
+          // Champs de recruiters
           establishment_raison_sociale: 1,
           establishment_id: 1,
           establishment_enseigne: 1,
@@ -69,9 +82,15 @@ export const createJobsCollectionForMetabase = async () => {
           establishment_creation_date: 1,
         },
       },
+      {
+        $project: {
+          "rome_detail._id": 0,
+        },
+      },
       { $out: "jobs" },
     ])
     .toArray()
+
   const newCount = await getDbCollection("jobs").estimatedDocumentCount({})
   logger.info(`New count: ${newCount}`)
   await notifyToSlack({
