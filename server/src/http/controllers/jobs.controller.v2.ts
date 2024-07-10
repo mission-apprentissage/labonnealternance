@@ -500,7 +500,8 @@ export default (server: Server) => {
           throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
         }
       }
-      // const result = await getCompanies({ ...payload, companyLimit: 150, api: "/jobs/recruteurs_lba", romes: payload.romes as string })
+      // const result = await getRecruteursLbaFromDB(payload)
+      // format and return
     }
   )
   server.get(

@@ -143,7 +143,7 @@ export const zOpcoUrlParams = z
     },
   })
 
-const romes = extensions.romeCode()
+const romes = z.array(extensions.romeCode())
 const rncp = extensions.rncpCode()
 const insee = extensions.inseeCode()
 
