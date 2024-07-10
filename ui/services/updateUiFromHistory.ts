@@ -39,7 +39,7 @@ export const updateUiFromHistory = ({
   activeFilters: any
   searchResultContext: IContextSearch
 }) => {
-  const { selectedItem, setTrainings, setJobs } = searchResultContext
+  const { selectedItem } = searchResultContext
 
   // récupération des query parameters donnant des indications sur l'état de l'interface
   let urlParams
@@ -68,7 +68,7 @@ export const updateUiFromHistory = ({
   if (searchTimestamp && searchTimestamp !== currentSearch) {
     setCurrentSearch(searchTimestamp)
     console.log("restoreSarchForSession")
-    restoreSearchFromSearchHistoryContext({ searchResultContext, searchTimestamp, setTrainings, setJobs })
+    restoreSearchFromSearchHistoryContext({ searchResultContext, searchTimestamp })
   }
 
   // réconciliation entre le store et l'état des formulaires de recherche

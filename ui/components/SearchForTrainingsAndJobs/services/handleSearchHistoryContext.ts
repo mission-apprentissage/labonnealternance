@@ -45,18 +45,8 @@ export const storeSearchResultInContext = ({
   setSearchHistory(searchHistory)
 }
 
-export const restoreSearchFromSearchHistoryContext = ({
-  searchResultContext,
-  searchTimestamp,
-  setTrainings,
-  setJobs,
-}: {
-  searchResultContext: IContextSearch
-  searchTimestamp: number
-  setTrainings: any
-  setJobs: any
-}): void => {
-  const { searchHistory } = searchResultContext
+export const restoreSearchFromSearchHistoryContext = ({ searchResultContext, searchTimestamp }: { searchResultContext: IContextSearch; searchTimestamp: number }): void => {
+  const { searchHistory, setJobs, setTrainings } = searchResultContext
   const search = searchHistory.find((log) => {
     console.log(log.index, " / ", searchTimestamp, "----- ", log)
     return log.index == searchTimestamp

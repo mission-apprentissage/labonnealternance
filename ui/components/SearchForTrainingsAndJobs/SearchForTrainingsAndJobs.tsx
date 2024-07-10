@@ -36,22 +36,7 @@ const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)
 
   const searchResultContext = useContext(SearchResultContext)
-  const {
-    hasSearch,
-    trainings,
-    jobs,
-    setTrainings,
-    setJobs,
-    setInternalJobs,
-    setPartnerJobs,
-    selectedItem,
-    setSelectedItem,
-    setItemToScrollTo,
-    setExtendedSearch,
-    setHasSearch,
-    searchHistory,
-    setSearchHistory,
-  } = searchResultContext
+  const { hasSearch, trainings, jobs, setTrainings, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } = searchResultContext
 
   const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch, showCombinedJob } = useContext(ParameterContext)
 
@@ -212,10 +197,7 @@ const SearchForTrainingsAndJobs = () => {
 
     loadItem({
       item,
-      setTrainings,
-      setHasSearch,
       setIsFormVisible,
-      setSelectedItem,
       setCurrentPage,
       setTrainingSearchError,
       setIsTrainingSearchLoading,
@@ -223,32 +205,8 @@ const SearchForTrainingsAndJobs = () => {
       setIsPartnerJobSearchLoading,
       setJobSearchError,
       setPartnerJobSearchError,
-      setJobs,
-      setInternalJobs,
-      setPartnerJobs,
-      searchHistory,
-      setSearchHistory,
       searchResultContext,
     })
-    /*
-    hasSearch,
-    trainings,
-    jobs,
-    selectedItem,    
-    setItemToScrollTo,
-    setExtendedSearch,
-
-    ---- de contexte
-    setSelectedItem,
-    setPartnerJobs,
-    setInternalJobs,
-    setJobs,
-    setTrainings,
-    setHasSearch,
-    searchHistory,
-    setSearchHistory,
-    */
-
     setIsFormVisible(false)
   }
 
