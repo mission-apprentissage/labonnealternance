@@ -189,7 +189,7 @@ const SearchForTrainingsAndJobs = () => {
     setCurrentSearch(searchTimestamp)
   }
 
-  const handleItemLoad = async (item) => {
+  const handleItemLoad = async ({ item, router, scopeContext, displayMap }) => {
     setShouldShowWelcomeMessage(false)
 
     setHasSearch(false)
@@ -206,6 +206,9 @@ const SearchForTrainingsAndJobs = () => {
       setJobSearchError,
       setPartnerJobSearchError,
       searchResultContext,
+      router,
+      scopeContext,
+      displayMap,
     })
     setIsFormVisible(false)
   }

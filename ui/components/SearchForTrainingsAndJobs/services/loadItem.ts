@@ -5,6 +5,7 @@ import fetchFtJobDetails from "@/services/fetchFtJobDetails"
 import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
 import { fetchTrainingDetails } from "@/services/fetchTrainingDetails"
+import pushHistory from "@/utils/pushHistory"
 
 import {
   flyToMarker,
@@ -34,6 +35,9 @@ export const loadItem = async ({
   setJobSearchError,
   setPartnerJobSearchError,
   searchResultContext,
+  router,
+  scopeContext,
+  displayMap,
 }) => {
   try {
     const { setHasSearch, setTrainings, setSelectedItem, setJobs } = searchResultContext
@@ -43,17 +47,19 @@ export const loadItem = async ({
 
     let itemMarker = null
 
+    const searchTimestamp = new Date().getTime()
+
+    let loadedItem = null
+
     if (item.type === "training") {
-      const training = await fetchTrainingDetails({ id: item.itemId })
-      const searchTimestamp = new Date().getTime()
+      loadedItem = await fetchTrainingDetails({ id: item.itemId })
 
-      setTrainings([training])
-      storeSearchResultInContext({ searchResultContext, results: { trainings: [training] }, searchTimestamp })
-
-      setTrainingMarkers({ trainingList: factorTrainingsForMap([training]) })
-      setSelectedItem(training)
-      setSelectedMarker(training)
-      itemMarker = training
+      setTrainings([loadedItem])
+      storeSearchResultInContext({ searchResultContext, results: { trainings: [loadedItem] }, searchTimestamp })
+      setTrainingMarkers({ trainingList: factorTrainingsForMap([loadedItem]) })
+      setSelectedItem(loadedItem)
+      setSelectedMarker(loadedItem)
+      itemMarker = loadedItem
 
       // lancement d'une recherche d'emploi autour de la formation chargée
       const values = {
@@ -101,8 +107,6 @@ export const loadItem = async ({
         matchas: null,
       }
 
-      let loadedItem = null
-
       try {
         switch (item.type) {
           case LBA_ITEM_TYPE_OLD.PEJOB: {
@@ -142,6 +146,7 @@ export const loadItem = async ({
 
         setSelectedItem(loadedItem)
         setSelectedMarker(loadedItem)
+        storeSearchResultInContext({ searchResultContext, results: { jobs: results }, searchTimestamp })
         itemMarker = loadedItem
       } catch (directElementLoadError) {
         setJobSearchError(directElementLoadError.isNotFoundError() ? notFoundErrorText : partialJobSearchErrorText)
@@ -152,6 +157,18 @@ export const loadItem = async ({
       flyToMarker(itemMarker, 12)
     }
     setCurrentPage("fiche")
+
+    pushHistory({
+      router,
+      scopeContext,
+      item: loadedItem,
+      page: "fiche",
+      display: "list",
+      searchParameters: null,
+      searchTimestamp,
+      isReplace: true,
+      displayMap,
+    })
   } catch (err) {
     console.error(`Erreur interne lors du chargement d'un élément (${err.response ? err.response.status : ""} : ${err?.response?.data ? err.response.data.error : ""})`)
     logError("Training search error", err)
