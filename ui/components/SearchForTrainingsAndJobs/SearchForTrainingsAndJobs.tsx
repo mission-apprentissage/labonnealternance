@@ -57,7 +57,6 @@ const SearchForTrainingsAndJobs = () => {
 
   useEffect(() => {
     const handleRouteChange = (url) => {
-      console.log("URL : ", url)
       updateUiFromHistory({
         url,
         currentPage,

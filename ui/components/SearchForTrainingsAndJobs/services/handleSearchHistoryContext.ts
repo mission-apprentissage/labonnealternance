@@ -44,7 +44,7 @@ export const storeSearchResultInContext = ({
     searchHistory.shift()
   }
 
-  console.log("searchHIstor ", searchHistory)
+  console.log("searchHIstory ", searchHistory)
   setSearchHistory(searchHistory)
 }
 
@@ -59,11 +59,8 @@ export const restoreSearchFromSearchHistoryContext = ({
 }): void => {
   const { searchHistory, setJobs, setTrainings } = searchResultContext
   const search = searchHistory.find((log) => {
-    console.log(log.index, " / ", searchTimestamp, "----- ", log)
     return log.index == searchTimestamp
   })
-
-  console.log("RESTORE FROM SEARCH HISTORY CONTEXT : ", search, searchHistory, searchTimestamp)
 
   if (search?.jobs) {
     setJobs(search.jobs)
@@ -78,7 +75,6 @@ export const restoreSearchFromSearchHistoryContext = ({
 
   if (search?.formValues) {
     console.log("search formvalues", search.formValues)
-
     displayContext.setFormValues(search.formValues)
   }
 }

@@ -56,18 +56,13 @@ export const updateUiFromHistory = ({
     }
   }
 
-  console.log("searchTimestamp : ", searchTimestamp, currentSearch)
   // réconciliation entre le store et l'état des résultats de recherche
   if (searchTimestamp && searchTimestamp !== currentSearch) {
     setCurrentSearch(searchTimestamp)
-    console.log("restoreSarchForSession")
     restoreSearchFromSearchHistoryContext({ searchResultContext, searchTimestamp, displayContext })
   }
 
   // réconciliation entre le store et l'état attendu indiqué par les query parameters pour les éléments sélectionnés
-
-  console.log("currentPage / pageFormUrl : ", currentPage, pageFromUrl)
-
   if (currentPage !== pageFromUrl) {
     switch (currentPage) {
       case "fiche": {
