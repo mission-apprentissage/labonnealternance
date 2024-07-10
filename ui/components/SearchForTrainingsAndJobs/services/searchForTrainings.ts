@@ -1,7 +1,7 @@
 import { apiGet } from "../../../utils/api.utils"
 import { logError } from "../../../utils/tools"
 
-import { storeSearchResultInContext } from "./handleSessionStorage"
+import { storeSearchResultInContext } from "./handleSearchHistoryContext"
 import { getRomeFromParameters, trainingErrorText, trainingsApi } from "./utils"
 
 export const searchForTrainingsFunction = async ({

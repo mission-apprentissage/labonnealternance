@@ -19,7 +19,7 @@ import {
 } from "../../../utils/mapTools"
 import { logError } from "../../../utils/tools"
 
-import { storeSearchResultInContext } from "./handleSessionStorage"
+import { storeSearchResultInContext } from "./handleSearchHistoryContext"
 import { searchForJobsFunction, searchForPartnerJobsFunction } from "./searchForJobs"
 import { notFoundErrorText, partialJobSearchErrorText, trainingErrorText } from "./utils"
 

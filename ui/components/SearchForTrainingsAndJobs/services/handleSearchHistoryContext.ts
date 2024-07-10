@@ -14,8 +14,6 @@ export const storeSearchResultInContext = ({
   results: { trainings?: ILbaItemTraining2[]; jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null } }
   searchTimestamp: number
 }): void => {
-  console.log("STORE RESULT IN SESSION")
-
   const { searchHistory, setSearchHistory } = searchResultContext
 
   const indexToReplace = searchHistory.findIndex((log) => searchTimestamp === log.index)

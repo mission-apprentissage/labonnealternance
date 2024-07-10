@@ -4,7 +4,7 @@ import { factorInternalJobsForMap, factorPartnerJobsForMap, layerType, setJobMar
 
 import { logError } from "../../../utils/tools"
 
-import { storeSearchResultInContext } from "./handleSessionStorage"
+import { storeSearchResultInContext } from "./handleSearchHistoryContext"
 import { getRomeFromParameters, minimalDataJobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
 
 export const searchForJobsFunction = async ({

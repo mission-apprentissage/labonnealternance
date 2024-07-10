@@ -5,7 +5,7 @@
 
 import { IContextSearch } from "@/context/SearchResultContextProvider"
 
-import { restoreSearchFromSearchHistoryContext } from "../components/SearchForTrainingsAndJobs/services/handleSessionStorage"
+import { restoreSearchFromSearchHistoryContext } from "../components/SearchForTrainingsAndJobs/services/handleSearchHistoryContext"
 import { defaultFilters } from "../components/SearchForTrainingsAndJobs/services/utils"
 import { currentSearch, setCurrentSearch } from "../utils/currentPage"
 import { filterLayers } from "../utils/mapTools"
