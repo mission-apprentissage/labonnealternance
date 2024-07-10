@@ -125,7 +125,7 @@ export const loadItem = async ({
           }
           case LBA_ITEM_TYPE_OLD.LBA: {
             const lbaCompany = await fetchLbaCompanyDetails({ id: item.itemId })
-            results.matchas = [lbaCompany]
+            results.lbaCompanies = [lbaCompany]
             loadedItem = lbaCompany
             break
           }
