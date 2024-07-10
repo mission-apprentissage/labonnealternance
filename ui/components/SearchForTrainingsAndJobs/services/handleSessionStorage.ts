@@ -1,43 +1,70 @@
+import { ILbaItemTraining2 } from "@/../shared"
+
+import { IContextSearch, IContextSearchHistory } from "@/context/SearchResultContextProvider"
+
 import { factorInternalJobsForMap, factorPartnerJobsForMap, factorTrainingsForMap, layerType, setJobMarkers, setTrainingMarkers } from "../../../utils/mapTools"
 
-export const storeTrainingsInSession = ({ trainings, searchTimestamp }) => {
-  try {
-    trimSessionStorage()
-    const search = JSON.parse(sessionStorage.getItem(searchTimestamp))
-    sessionStorage.setItem(searchTimestamp, JSON.stringify({ trainings, ...search }))
-  } catch (err) {
-    console.error("sessionStorage error : ", err)
-  }
-}
+const SEARCH_HISTORY_LIMIT = 20
+export const storeSearchResultInContext = ({
+  searchResultContext,
+  results,
+  searchTimestamp,
+}: {
+  searchResultContext: IContextSearch
+  results: { trainings?: ILbaItemTraining2[]; jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null } }
+  searchTimestamp: number
+}): void => {
+  console.log("STORE RESULT IN SESSION")
 
-export const storeJobsInSession = ({ jobs, searchTimestamp }) => {
-  try {
-    //TODO ICI amender l'existant
-    trimSessionStorage()
-    const search = JSON.parse(sessionStorage.getItem(searchTimestamp))
-    sessionStorage.setItem(searchTimestamp, JSON.stringify({ jobs, ...search }))
-  } catch (err) {
-    console.error("sessionStorage error : ", err)
-  }
-}
+  const { searchHistory, setSearchHistory } = searchResultContext
 
-const trimSessionStorage = () => {
-  let oldest = 0
+  const indexToReplace = searchHistory.findIndex((log) => searchTimestamp === log.index)
+  let search: IContextSearchHistory = indexToReplace >= 0 ? searchHistory[indexToReplace] : { index: searchTimestamp, searchParameters: null }
 
-  for (let i = 0, l = sessionStorage.length; i < l; ++i) {
-    const currentKey = parseInt(sessionStorage.key(i))
-    if (!oldest || currentKey < oldest) {
-      oldest = currentKey
+  const jobsToAdd = search.jobs ?? {}
+  let jobs
+  if (results.jobs) {
+    jobs = {
+      ...jobsToAdd,
+      ...results.jobs,
     }
   }
 
-  if (oldest) {
-    sessionStorage.removeItem(`${oldest}`)
+  search = {
+    ...search,
+    ...results,
+    jobs,
+    index: searchTimestamp,
   }
+
+  searchHistory[indexToReplace >= 0 ? indexToReplace : searchHistory.length] = search
+
+  if (searchHistory.length > SEARCH_HISTORY_LIMIT) {
+    searchHistory.shift()
+  }
+
+  console.log("searchHIstor ", searchHistory)
+  setSearchHistory(searchHistory)
 }
 
-export const restoreSearchFromSession = ({ searchTimestamp, setTrainings, setJobs }) => {
-  const search = JSON.parse(sessionStorage.getItem(searchTimestamp))
+export const restoreSearchFromSearchHistoryContext = ({
+  searchResultContext,
+  searchTimestamp,
+  setTrainings,
+  setJobs,
+}: {
+  searchResultContext: IContextSearch
+  searchTimestamp: number
+  setTrainings: any
+  setJobs: any
+}): void => {
+  const { searchHistory } = searchResultContext
+  const search = searchHistory.find((log) => {
+    console.log(log.index, " / ", searchTimestamp, "----- ", log)
+    return log.index == searchTimestamp
+  })
+
+  console.log("RESTORE FROM SEARCH HISTORY CONTEXT : ", search, searchHistory, searchTimestamp)
 
   if (search?.jobs) {
     setJobs(search.jobs)
