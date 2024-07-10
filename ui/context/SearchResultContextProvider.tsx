@@ -1,4 +1,4 @@
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemTraining } from "@/../shared"
+import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemTraining, ILbaItemTraining2 } from "@/../shared"
 import React, { createContext, useReducer } from "react"
 
 const initialState = {
@@ -72,6 +72,13 @@ const reducer = (state, action) => {
   }
 }
 
+export type IContextSearchHistory = {
+  index: number
+  trainings?: ILbaItemTraining2[]
+  jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }
+  searchParameters: any
+}
+
 export type IContextSearch = {
   trainings: any[]
   setTrainings: (b: any[]) => void
@@ -91,10 +98,8 @@ export type IContextSearch = {
   setSelectedMapPopupItem: (b: object) => void
   setTrainingsAndSelectedItem: (trainings: ILbaItemTraining[], selectedItem: ILbaItemTraining) => void
   setJobsAndSelectedItem: (jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }, selectedItem: ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob) => void
-  searchHistory: { index: number; trainings: ILbaItemTraining[] | null; jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null } | null; searchParameters: any }[]
-  setSearchHistory: (
-    searchHistory: { index: number; trainings: ILbaItemTraining[] | null; jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null } | null; searchParameters: any }[]
-  ) => void
+  searchHistory: IContextSearchHistory[]
+  setSearchHistory: (searchHistory: IContextSearchHistory[]) => void
 }
 // @ts-expect-error: TODO
 export const SearchResultContext = createContext<IContextSearch>()
