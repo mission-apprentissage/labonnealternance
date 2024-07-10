@@ -40,8 +40,8 @@ const SearchForTrainingsAndJobs = () => {
 
   const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch, showCombinedJob } = useContext(ParameterContext)
 
-  const { activeFilters, setActiveFilters, formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } =
-    useContext(DisplayContext)
+  const displayContext = useContext(DisplayContext)
+  const { formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } = displayContext
 
   const [searchRadius, setSearchRadius] = useState(30)
   const [isTrainingSearchLoading, setIsTrainingSearchLoading] = useState(hasSearch ? false : true)
@@ -64,13 +64,10 @@ const SearchForTrainingsAndJobs = () => {
         unSelectItem,
         selectItemFromHistory,
         setCurrentPage,
-        visiblePane,
-        isFormVisible,
         showResultMap,
         showResultList,
         showSearchForm,
-        setActiveFilters,
-        activeFilters,
+        displayContext,
         searchResultContext,
       })
     }

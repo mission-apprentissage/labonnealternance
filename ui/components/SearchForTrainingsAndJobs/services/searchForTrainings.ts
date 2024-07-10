@@ -47,7 +47,7 @@ export const searchForTrainingsFunction = async ({
     const response = await apiGet(trainingsApi, { querystring })
 
     setTrainings(response.results)
-    storeSearchResultInContext({ searchResultContext, results: { trainings: response.results }, searchTimestamp })
+    storeSearchResultInContext({ searchResultContext, results: { trainings: response.results }, searchTimestamp, formValues: values })
     setHasSearch(true)
     setIsFormVisible(false)
 

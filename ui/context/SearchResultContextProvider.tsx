@@ -76,7 +76,7 @@ export type IContextSearchHistory = {
   index: number
   trainings?: ILbaItemTraining2[]
   jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }
-  searchParameters: any
+  formValues?: any
 }
 
 export type IContextSearch = {

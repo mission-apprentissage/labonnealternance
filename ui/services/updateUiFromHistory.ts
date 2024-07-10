@@ -16,13 +16,10 @@ export const updateUiFromHistory = ({
   unSelectItem,
   selectItemFromHistory,
   setCurrentPage,
-  visiblePane,
-  isFormVisible,
   showResultMap,
   showResultList,
   showSearchForm,
-  setActiveFilters,
-  activeFilters,
+  displayContext,
   searchResultContext,
 }: {
   url: string
@@ -30,16 +27,14 @@ export const updateUiFromHistory = ({
   unSelectItem: any
   selectItemFromHistory: any
   setCurrentPage: any
-  visiblePane: any
-  isFormVisible: any
   showResultMap: any
   showResultList: any
   showSearchForm: any
-  setActiveFilters: any
-  activeFilters: any
+  displayContext: any
   searchResultContext: IContextSearch
 }) => {
   const { selectedItem } = searchResultContext
+  const { activeFilters, setActiveFilters, visiblePane, isFormVisible } = displayContext
 
   // récupération des query parameters donnant des indications sur l'état de l'interface
   let urlParams
@@ -51,8 +46,6 @@ export const updateUiFromHistory = ({
   const display = urlParams ? urlParams.get("display") : ""
   const itemId = urlParams ? urlParams.get("itemId") : ""
   const searchTimestamp = urlParams ? urlParams.get("s") : ""
-  const jobName = urlParams ? urlParams.get("job_name") : ""
-  const address = urlParams ? urlParams.get("address") : ""
 
   if (!activeFilters) {
     setActiveFilters(defaultFilters) // restauration des onglets à all pour assurer la présence de marker dans le dom
@@ -68,12 +61,7 @@ export const updateUiFromHistory = ({
   if (searchTimestamp && searchTimestamp !== currentSearch) {
     setCurrentSearch(searchTimestamp)
     console.log("restoreSarchForSession")
-    restoreSearchFromSearchHistoryContext({ searchResultContext, searchTimestamp })
-  }
-
-  // réconciliation entre le store et l'état des formulaires de recherche
-  if (jobName || address) {
-    // TODO: à faire
+    restoreSearchFromSearchHistoryContext({ searchResultContext, searchTimestamp, displayContext })
   }
 
   // réconciliation entre le store et l'état attendu indiqué par les query parameters pour les éléments sélectionnés

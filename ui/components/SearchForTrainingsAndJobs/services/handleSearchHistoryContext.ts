@@ -9,10 +9,12 @@ export const storeSearchResultInContext = ({
   searchResultContext,
   results,
   searchTimestamp,
+  formValues,
 }: {
   searchResultContext: IContextSearch
   results: { trainings?: ILbaItemTraining2[]; jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null } }
   searchTimestamp: number
+  formValues?: any
 }): void => {
   const { searchHistory, setSearchHistory } = searchResultContext
 
@@ -32,6 +34,7 @@ export const storeSearchResultInContext = ({
     ...search,
     ...results,
     jobs,
+    formValues,
     index: searchTimestamp,
   }
 
@@ -45,7 +48,15 @@ export const storeSearchResultInContext = ({
   setSearchHistory(searchHistory)
 }
 
-export const restoreSearchFromSearchHistoryContext = ({ searchResultContext, searchTimestamp }: { searchResultContext: IContextSearch; searchTimestamp: number }): void => {
+export const restoreSearchFromSearchHistoryContext = ({
+  searchResultContext,
+  searchTimestamp,
+  displayContext,
+}: {
+  searchResultContext: IContextSearch
+  searchTimestamp: number
+  displayContext: any
+}): void => {
   const { searchHistory, setJobs, setTrainings } = searchResultContext
   const search = searchHistory.find((log) => {
     console.log(log.index, " / ", searchTimestamp, "----- ", log)
@@ -63,5 +74,11 @@ export const restoreSearchFromSearchHistoryContext = ({ searchResultContext, sea
   if (search?.trainings) {
     setTrainings(search.trainings)
     setTrainingMarkers({ trainingList: factorTrainingsForMap(search.trainings) })
+  }
+
+  if (search?.formValues) {
+    console.log("search formvalues", search.formValues)
+
+    displayContext.setFormValues(search.formValues)
   }
 }

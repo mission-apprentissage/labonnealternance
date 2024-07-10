@@ -99,7 +99,7 @@ export const searchForJobsFunction = async ({
 
     setInternalJobs(results)
     setHasSearch(true)
-    storeSearchResultInContext({ searchResultContext, results: { jobs: results }, searchTimestamp })
+    storeSearchResultInContext({ searchResultContext, results: { jobs: results }, searchTimestamp, formValues: values })
 
     setJobMarkers({ jobList: factorInternalJobsForMap(results), type: layerType.INTERNAL, searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
@@ -208,7 +208,7 @@ export const searchForPartnerJobsFunction = async ({
 
     setPartnerJobs(results)
     setHasSearch(true)
-    storeSearchResultInContext({ searchResultContext, results: { jobs: results }, searchTimestamp })
+    storeSearchResultInContext({ searchResultContext, results: { jobs: results }, searchTimestamp, formValues: values })
     setJobMarkers({ jobList: factorPartnerJobsForMap(results), type: layerType.PARTNER, searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
     console.error(
