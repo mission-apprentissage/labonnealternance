@@ -69,7 +69,6 @@ export const searchForTrainingsFunction = async ({
       }
     }
   } catch (err) {
-    console.error(err)
     console.error(`Erreur interne lors de la recherche de formations (${err.response ? err.response?.status : ""} : ${err?.response?.data ? err.response.data?.error : ""})`)
     logError("Training search error", err)
     setTrainingSearchError(trainingErrorText)
