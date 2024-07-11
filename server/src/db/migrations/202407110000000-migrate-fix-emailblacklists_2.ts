@@ -23,15 +23,5 @@ export const up = async (db: Db) => {
     },
   ])
 
-  const created_at = new Date()
-  await db.collection("emailblacklists").updateMany(
-    {
-      created_at: { $exists: false },
-    },
-    {
-      $set: { created_at },
-    }
-  )
-
   logger.info("202407110000000-migrate-fix-emailblacklists_2 ended")
 }
