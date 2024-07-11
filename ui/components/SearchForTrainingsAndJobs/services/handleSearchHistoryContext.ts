@@ -4,7 +4,7 @@ import { IContextSearch, IContextSearchHistory } from "@/context/SearchResultCon
 
 import { factorInternalJobsForMap, factorPartnerJobsForMap, factorTrainingsForMap, layerType, setJobMarkers, setTrainingMarkers } from "../../../utils/mapTools"
 
-const SEARCH_HISTORY_LIMIT = 20
+const SEARCH_HISTORY_LIMIT = 20 // arbitraire
 export const storeSearchResultInContext = ({
   searchResultContext,
   results,
@@ -19,21 +19,15 @@ export const storeSearchResultInContext = ({
   const { searchHistory, setSearchHistory } = searchResultContext
 
   const indexToReplace = searchHistory.findIndex((log) => searchTimestamp === log.index)
-  let search: IContextSearchHistory = indexToReplace >= 0 ? searchHistory[indexToReplace] : { index: searchTimestamp, searchParameters: null }
-
-  const jobsToAdd = search.jobs ?? {}
-  let jobs
-  if (results.jobs) {
-    jobs = {
-      ...jobsToAdd,
-      ...results.jobs,
-    }
-  }
+  let search: IContextSearchHistory = indexToReplace >= 0 ? searchHistory[indexToReplace] : { index: searchTimestamp, formValues: null }
 
   search = {
-    ...search,
-    ...results,
-    jobs,
+    trainings: results?.trainings ?? search?.trainings,
+    jobs: {
+      peJobs: results?.jobs?.peJobs ?? search?.jobs?.peJobs,
+      matchas: results?.jobs?.matchas ?? search?.jobs?.matchas,
+      lbaCompanies: results?.jobs?.lbaCompanies ?? search?.jobs?.lbaCompanies,
+    },
     formValues,
     index: searchTimestamp,
   }
@@ -44,7 +38,6 @@ export const storeSearchResultInContext = ({
     searchHistory.shift()
   }
 
-  console.log("searchHIstory ", searchHistory)
   setSearchHistory(searchHistory)
 }
 
@@ -74,7 +67,6 @@ export const restoreSearchFromSearchHistoryContext = ({
   }
 
   if (search?.formValues) {
-    console.log("search formvalues", search.formValues)
     displayContext.setFormValues(search.formValues)
   }
 }
