@@ -100,7 +100,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: b
     )
   }
 
-  await notifyToSlack({ subject: "RDVA - INVITATION AFFELNET - FOLLOW UP", message: `${count} invitation(s) envoyé` })
+  await notifyToSlack({ subject: "RDVA - INVITATION AFFELNET - FOLLOW UP", message: `${count} invitation(s) envoyée(s)` })
 
   logger.info("Cron #inviteEtablissementAffelnetToPremiumFollowUp done.")
 }
