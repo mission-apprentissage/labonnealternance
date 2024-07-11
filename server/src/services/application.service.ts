@@ -93,8 +93,8 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
         $set: {
           email,
           blacklisting_origin: blacklistingOrigin,
-          $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
         },
+        $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
       },
       { upsert: true }
     )
