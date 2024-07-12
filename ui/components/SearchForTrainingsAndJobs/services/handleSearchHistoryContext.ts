@@ -57,8 +57,8 @@ export const restoreSearchFromSearchHistoryContext = ({
 
   if (search?.jobs) {
     setJobs(search.jobs)
-    setJobMarkers({ jobList: factorInternalJobsForMap(search.jobs), type: layerType.INTERNAL, hasTrainings: search?.trainings })
-    setJobMarkers({ jobList: factorPartnerJobsForMap(search.jobs), type: layerType.PARTNER, hasTrainings: search?.trainings })
+    setJobMarkers({ jobList: factorInternalJobsForMap(search.jobs), type: layerType.INTERNAL, hasTrainings: !!search?.trainings })
+    setJobMarkers({ jobList: factorPartnerJobsForMap(search.jobs), type: layerType.PARTNER, hasTrainings: !!search?.trainings })
   }
 
   if (search?.trainings) {
