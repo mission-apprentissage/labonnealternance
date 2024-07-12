@@ -93,8 +93,8 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
         $set: {
           email,
           blacklisting_origin: blacklistingOrigin,
-          $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
         },
+        $setOnInsert: { _id: new ObjectId(), created_at: new Date() },
       },
       { upsert: true }
     )
@@ -114,7 +114,7 @@ export const findApplicationByMessageId = async ({ messageId, email }: { message
   getDbCollection("applications").findOne({ company_email: email, to_company_message_id: messageId })
 
 export const removeEmailFromLbaCompanies = async (email: string) => {
-  return await getDbCollection("bonnesboites").updateMany({ email }, { $set: { email: "" } })
+  return await getDbCollection("recruteurslba").updateMany({ email }, { $set: { email: "" } })
 }
 
 /**
@@ -247,7 +247,7 @@ export const sendApplicationV2 = async ({
 
   if ("company_siret" in newApplication) {
     // email can be null in collection
-    const LbaRecruteur = await getDbCollection("bonnesboites").findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } })
+    const LbaRecruteur = await getDbCollection("recruteurslba").findOne({ siret: newApplication.company_siret, email: { $not: { $eq: null } } })
     if (!LbaRecruteur) {
       throw Boom.badRequest(BusinessErrorCodes.NOTFOUND)
     }
@@ -571,7 +571,7 @@ export const validateJob = async (application: INewApplicationV2): Promise<ILbaJ
     if (!company_siret) {
       return { error: "company_siret manquant" }
     }
-    const lbaCompany = await getDbCollection("bonnesboites").findOne({ siret: company_siret })
+    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret: company_siret })
     if (!lbaCompany) {
       return { error: "société manquante" }
     }

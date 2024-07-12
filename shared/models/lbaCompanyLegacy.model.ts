@@ -3,7 +3,7 @@ import { zObjectId } from "zod-mongodb-schema"
 
 import { IModelDescriptor } from "./common"
 
-const collectionName = "bonnesboiteslegacies" as const
+const collectionName = "recruteurslbalegacies" as const
 
 export const ZLbaCompanyLegacy = z
   .object({
@@ -17,6 +17,9 @@ export type ILbaCompanyLegacy = z.output<typeof ZLbaCompanyLegacy>
 
 export default {
   zod: ZLbaCompanyLegacy,
-  indexes: [[{ siret: 1 }, {}]],
+  indexes: [
+    [{ siret: 1 }, {}],
+    [{ siret: 1, email: 1 }, { unique: true }],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

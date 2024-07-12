@@ -6,7 +6,7 @@ import { uploadFileToS3 } from "../../common/utils/awsUtils"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 interface IGeneratorParams {
-  collection: "jobs" | "bonnesboites"
+  collection: "jobs" | "recruteurslba"
   query: object
   projection: object
   fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA
@@ -48,7 +48,7 @@ async function exportLbaJobsToS3() {
     fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   }
   const recruteurs_lba: IGeneratorParams = {
-    collection: "bonnesboites",
+    collection: "recruteurslba",
     query: {},
     projection: { _id: 0, email: 0, phone: 0, geopoint: 0, recruitment_potential: 0, opco_short_name: 0 },
     fileName: LBA_ITEM_TYPE.RECRUTEURS_LBA,
