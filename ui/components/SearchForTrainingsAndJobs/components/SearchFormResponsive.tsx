@@ -66,10 +66,7 @@ const SearchFormResponsive = (props) => {
       <Formik
         validate={(values) => validateFormik(values, widgetParameters)}
         enableReinitialize
-        initialValues={{
-          radius: formValues?.radius ?? 30,
-          diploma: formValues?.diploma ?? "",
-        }}
+        initialValues={{ job: formValues?.job ?? {}, location: formValues?.location ?? {}, radius: formValues?.radius ?? 30, diploma: formValues?.diploma ?? "" }}
         onSubmit={props.handleSearchSubmit}
       >
         {({ isSubmitting, setFieldValue, errors }) => (
@@ -94,7 +91,7 @@ const SearchFormResponsive = (props) => {
                       kind="Métier ou diplôme *"
                       items={[]}
                       hasError={errors.job}
-                      initialSelectedItem={formValues?.job || null}
+                      initialSelectedItem={formValues?.job ?? null}
                       itemToStringFunction={autoCompleteToStringFunction}
                       onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
                       compareItemFunction={compareAutoCompleteValues}

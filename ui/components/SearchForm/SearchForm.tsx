@@ -62,9 +62,9 @@ const SearchForm = ({ handleSearchSubmit, isHome }) => {
   const renderFormik = () => {
     return (
       <Formik
-        enableReinitialize={true}
-        validate={(values) => validateFormik(values, formValues)}
-        initialValues={{ job: {}, location: {}, radius: formValues?.radius ?? 30, diploma: formValues?.diploma ?? "" }}
+        enableReinitialize
+        validate={(values) => validateFormik(values, widgetParameters)}
+        initialValues={{ job: formValues?.job ?? {}, location: formValues?.location ?? {}, radius: formValues?.radius ?? 30, diploma: formValues?.diploma ?? "" }}
         onSubmit={handleSearchSubmit}
       >
         {({ isSubmitting, setFieldValue, errors }) => (
@@ -76,7 +76,7 @@ const SearchForm = ({ handleSearchSubmit, isHome }) => {
                   id="headerFormJobField"
                   items={[]}
                   hasError={errors.job}
-                  initialSelectedItem={formValues?.job || null}
+                  initialSelectedItem={formValues?.job ?? null}
                   itemToStringFunction={autoCompleteToStringFunction}
                   onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
                   compareItemFunction={compareAutoCompleteValues}
