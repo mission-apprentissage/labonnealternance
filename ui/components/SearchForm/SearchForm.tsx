@@ -38,13 +38,9 @@ const SearchForm = ({ handleSearchSubmit, isHome }) => {
   const [locationRadius, setLocationRadius] = useState(30)
 
   useEffect(() => {
-    setLocationRadius(contextFormValues?.radius ?? 30)
-    setDiploma(contextFormValues?.diploma ?? "")
-    // @ts-expect-error: TODO
-  }, [widgetParameters?.applyFormValues])
-
-  // @ts-expect-error: TODO
-  const contextFormValues = widgetParameters?.applyFormValues && widgetParameters?.formValues ? widgetParameters.formValues : formValues
+    setLocationRadius(formValues?.radius ?? 30)
+    setDiploma(formValues?.diploma ?? "")
+  }, [formValues?.radius, formValues?.diploma])
 
   const [diplomas] = useState([])
   const [diploma, setDiploma] = useState("")
@@ -66,8 +62,9 @@ const SearchForm = ({ handleSearchSubmit, isHome }) => {
   const renderFormik = () => {
     return (
       <Formik
+        enableReinitialize
         validate={(values) => validateFormik(values, widgetParameters)}
-        initialValues={{ job: {}, location: {}, radius: contextFormValues?.radius ?? 30, diploma: contextFormValues?.diploma ?? "" }}
+        initialValues={{ job: formValues?.job ?? {}, location: formValues?.location ?? {}, radius: formValues?.radius ?? 30, diploma: formValues?.diploma ?? "" }}
         onSubmit={handleSearchSubmit}
       >
         {({ isSubmitting, setFieldValue, errors }) => (
@@ -79,7 +76,7 @@ const SearchForm = ({ handleSearchSubmit, isHome }) => {
                   id="headerFormJobField"
                   items={[]}
                   hasError={errors.job}
-                  initialSelectedItem={contextFormValues?.job || null}
+                  initialSelectedItem={formValues?.job ?? null}
                   itemToStringFunction={autoCompleteToStringFunction}
                   onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
                   compareItemFunction={compareAutoCompleteValues}
@@ -102,7 +99,7 @@ const SearchForm = ({ handleSearchSubmit, isHome }) => {
                   kind="Lieu"
                   items={[]}
                   hasError={errors.location}
-                  initialSelectedItem={contextFormValues?.location ?? null}
+                  initialSelectedItem={formValues?.location ?? null}
                   itemToStringFunction={autoCompleteToStringFunction}
                   onSelectedItemChangeFunction={partialRight(formikUpdateValue, "location")}
                   compareItemFunction={compareAutoCompleteValues}

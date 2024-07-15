@@ -1,4 +1,4 @@
-import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemTraining } from "@/../shared"
+import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemTraining, ILbaItemTraining2 } from "@/../shared"
 import React, { createContext, useReducer } from "react"
 
 const initialState = {
@@ -9,6 +9,7 @@ const initialState = {
   extendedSearch: false,
   hasSearch: false,
   selectedMapPopupItem: null,
+  searchHistory: [],
 }
 
 const actions = {
@@ -23,6 +24,7 @@ const actions = {
   SET_TRAININGS_AND_SELECTED_ITEM: "SET_TRAININGS_AND_SELECTED_ITEM",
   SET_SELECTED_MAP_POPUP_ITEM: "SET_SELECTED_MAP_POPUP_ITEM",
   SET_JOBS_AND_SELECTED_ITEM: "SET_JOBS_AND_SELECTED_ITEM",
+  SET_SEARCH_HISTORY: "SET_SEARCH_HISTORY",
 }
 
 const reducer = (state, action) => {
@@ -62,10 +64,19 @@ const reducer = (state, action) => {
     case actions.SET_EXTENDED_SEARCH: {
       return { ...state_copy, extendedSearch: action.extendedSearch }
     }
-
+    case actions.SET_SEARCH_HISTORY: {
+      return { ...state_copy, searchHistory: action.searchHistory }
+    }
     default:
       return state
   }
+}
+
+export type IContextSearchHistory = {
+  index: number
+  trainings?: ILbaItemTraining2[]
+  jobs?: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }
+  formValues?: any
 }
 
 export type IContextSearch = {
@@ -87,6 +98,8 @@ export type IContextSearch = {
   setSelectedMapPopupItem: (b: object) => void
   setTrainingsAndSelectedItem: (trainings: ILbaItemTraining[], selectedItem: ILbaItemTraining) => void
   setJobsAndSelectedItem: (jobs: { peJobs: [] | null; lbaCompanies: [] | null; matchas: [] | null }, selectedItem: ILbaItemFtJob | ILbaItemLbaCompany | ILbaItemLbaJob) => void
+  searchHistory: IContextSearchHistory[]
+  setSearchHistory: (searchHistory: IContextSearchHistory[]) => void
 }
 // @ts-expect-error: TODO
 export const SearchResultContext = createContext<IContextSearch>()
@@ -128,6 +141,9 @@ const SearchResultContextProvider = ({ children }) => {
     },
     setHasSearch: (hasSearch = false) => {
       dispatch({ type: actions.SET_HAS_SEARCH, hasSearch })
+    },
+    setSearchHistory: (searchHistory = []) => {
+      dispatch({ type: actions.SET_SEARCH_HISTORY, searchHistory })
     },
   }
 

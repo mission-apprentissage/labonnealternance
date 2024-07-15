@@ -40,16 +40,10 @@ const SearchFormResponsive = (props) => {
   const [locationRadius, setLocationRadius] = useState(30)
 
   useEffect(() => {
-    setLocationRadius(contextFormValues?.radius ?? 30)
-    setDiploma(contextFormValues?.diploma ?? "")
-    setJobValue(contextFormValues?.job ?? null)
-    // @ts-expect-error: TODO
-  }, [widgetParameters?.applyFormValues])
+    setLocationRadius(formValues?.radius ?? 30)
+    setDiploma(formValues?.diploma ?? "")
+  }, [formValues?.radius, formValues?.diploma])
 
-  // @ts-expect-error: TODO
-  const contextFormValues = widgetParameters?.applyFormValues && widgetParameters?.formValues ? widgetParameters.formValues : formValues
-
-  const [, setJobValue] = useState(null)
   const [diplomas] = useState([])
   const [diploma, setDiploma] = useState("")
   const [domainError, setDomainError] = useState(false)
@@ -71,7 +65,8 @@ const SearchFormResponsive = (props) => {
     return (
       <Formik
         validate={(values) => validateFormik(values, widgetParameters)}
-        initialValues={{ job: {}, location: {}, radius: contextFormValues?.radius ?? 30, diploma: contextFormValues?.diploma ?? "" }}
+        enableReinitialize
+        initialValues={{ job: formValues?.job ?? {}, location: formValues?.location ?? {}, radius: formValues?.radius ?? 30, diploma: formValues?.diploma ?? "" }}
         onSubmit={props.handleSearchSubmit}
       >
         {({ isSubmitting, setFieldValue, errors }) => (
@@ -96,7 +91,7 @@ const SearchFormResponsive = (props) => {
                       kind="Métier ou diplôme *"
                       items={[]}
                       hasError={errors.job}
-                      initialSelectedItem={contextFormValues?.job || null}
+                      initialSelectedItem={formValues?.job ?? null}
                       itemToStringFunction={autoCompleteToStringFunction}
                       onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
                       compareItemFunction={compareAutoCompleteValues}
@@ -122,7 +117,7 @@ const SearchFormResponsive = (props) => {
                     kind="Lieu"
                     items={[]}
                     hasError={errors.location}
-                    initialSelectedItem={contextFormValues?.location ?? null}
+                    initialSelectedItem={formValues?.location ?? null}
                     itemToStringFunction={autoCompleteToStringFunction}
                     onSelectedItemChangeFunction={partialRight(formikUpdateValue, "location")}
                     compareItemFunction={compareAutoCompleteValues}
