@@ -491,7 +491,7 @@ export default (server: Server) => {
 
   server.get(
     `/jobs/${JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA}`,
-    { schema: zRoutes.get["/jobs/recruteurs_lba"], onRequest: server.auth(zRoutes.get["/jobs/recruteurs_lba"]) },
+    { schema: zRoutes.get[`/jobs/${JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA}`], onRequest: server.auth(zRoutes.get[`/jobs/${JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA}`]) },
     async (req, res) => {
       const payload: IJobOpportunityRomeRncp = { ...req.query }
       if ("rncp" in payload) {
@@ -500,7 +500,7 @@ export default (server: Server) => {
           throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
         }
       }
-      const result = await getRecruteursLbaFromDB({ ...payload, romes: payload.romes as string[] })
+      const result = await getRecruteursLbaFromDB({ ...payload, romes: payload?.romes ?? [] })
       return res.send(formatRecruteurLbaToJobOpportunity(result))
     }
   )

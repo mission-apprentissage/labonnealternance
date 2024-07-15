@@ -45,7 +45,7 @@ const validateRomesOrRncp = async (query: Omit<TJobSearchQuery, "isMinimalData">
       if (!romesFromRncp) {
         error_messages.push(`rncp : Rncp code not recognized. Please check that it exists. (${rncp})`)
       } else {
-        query.romes = romesFromRncp
+        query.romes = romesFromRncp.join(",")
       }
     }
   } else {

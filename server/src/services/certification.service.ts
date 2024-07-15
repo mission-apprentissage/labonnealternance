@@ -21,9 +21,9 @@ const getFirstCertificationFromAPIApprentissage = async (rncp: string): Promise<
 }
 
 const getRomesFromCertification = (certification: CertificationAPIApprentissage) => {
-  return certification.domaines.rome.rncp.map((x) => x.code).join(",")
+  return certification.domaines.rome.rncp.map((x) => x.code)
 }
-export const getRomesFromRncp = async (rncp: string): Promise<string | null> => {
+export const getRomesFromRncp = async (rncp: string): Promise<string[] | null> => {
   let certification = await getFirstCertificationFromAPIApprentissage(rncp)
   if (!certification) {
     return null

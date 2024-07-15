@@ -168,9 +168,8 @@ type IRecruteursLbaSearchParams = {
   opcoUrl?: string
 }
 
-export const getRecruteursLbaFromDB = async ({ radius = 10, ...params }: IRecruteursLbaSearchParams): Promise<ILbaCompany[] | []> => {
-  const { romes, opco, opcoUrl, latitude, longitude } = params
-  const query: any = {
+export const getRecruteursLbaFromDB = async ({ radius = 10, romes, opco, opcoUrl, latitude, longitude }: IRecruteursLbaSearchParams): Promise<ILbaCompany[] | []> => {
+  const query: { rome_codes: object; opco_short_name?: string; opco_url?: string } = {
     rome_codes: { $in: romes },
   }
   if (opco) {

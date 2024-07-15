@@ -172,41 +172,37 @@ export const getJobsQuery = async (
 }
 
 export const formatRecruteurLbaToJobOpportunity = (recruteursLba: ILbaCompany[]): IJobOpportunity[] => {
-  const formattedResult: IJobOpportunity[] = []
-  recruteursLba.map((recruteurLba) => {
-    formattedResult.push({
-      identifiant: {
-        id: recruteurLba.siret,
-        type: JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA,
+  return recruteursLba.map((recruteurLba) => ({
+    identifiant: {
+      id: recruteurLba.siret,
+      type: JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA,
+    },
+    contract: null,
+    jobOffre: null,
+    workplace: {
+      description: null,
+      name: recruteurLba.enseigne ?? recruteurLba.raison_sociale,
+      siret: recruteurLba.siret,
+      size: recruteurLba.company_size,
+      website: recruteurLba.website,
+      location: {
+        address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
+        lattitude: recruteurLba.geo_coordinates.split(",")[0],
+        longitude: recruteurLba.geo_coordinates.split(",")[1],
       },
-      contract: null,
-      jobOffre: null,
-      workplace: {
-        description: null,
-        name: recruteurLba.enseigne ?? recruteurLba.raison_sociale,
-        siret: recruteurLba.siret,
-        size: recruteurLba.company_size,
-        website: recruteurLba.website,
-        location: {
-          address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
-          lattitude: recruteurLba.geo_coordinates.split(",")[0],
-          longitude: recruteurLba.geo_coordinates.split(",")[1],
-        },
-        domaine: {
-          opco: recruteurLba.opco,
-          idcc: null,
-          naf: {
-            code: recruteurLba.naf_code,
-            label: recruteurLba.naf_label,
-          },
+      domaine: {
+        opco: recruteurLba.opco,
+        idcc: null,
+        naf: {
+          code: recruteurLba.naf_code,
+          label: recruteurLba.naf_label,
         },
       },
-      apply: {
-        url: null,
-        phone: recruteurLba.phone,
-        email: recruteurLba.email,
-      },
-    })
-  })
-  return formattedResult
+    },
+    apply: {
+      url: null,
+      phone: recruteurLba.phone,
+      email: recruteurLba.email,
+    },
+  }))
 }
