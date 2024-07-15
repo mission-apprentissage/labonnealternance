@@ -25,8 +25,9 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
 
   const entreprise = type === ENTREPRISE && "data" in entrepriseQuery.data && "siret" in entrepriseQuery.data.data && entrepriseQuery.data.data
   const finalOpco = opco ?? parseEnum(OPCOS, entreprise?.opco)
-  const cfa = type === CFA && "data" in cfaQuery.data && "establishment_siret" in cfaQuery.data.data && cfaQuery.data.data
-  const raisonSociale = entreprise?.raison_sociale ?? cfa?.establishment_raison_sociale
+  const cfa = type === CFA && "data" in cfaQuery.data && "siret" in cfaQuery.data.data && cfaQuery.data.data
+  console.log(cfaQuery.data, cfa)
+  const raisonSociale = entreprise?.raison_sociale ?? cfa?.raison_sociale
 
   return (
     <Box border="1px solid #000091" p={5}>
@@ -50,7 +51,14 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
       )}
       <OrganizationInfoFields
         {...(type === CFA
-          ? cfa
+          ? {
+              siret: cfa.siret,
+              establishment_enseigne: cfa.enseigne,
+              establishment_raison_sociale: cfa.raison_sociale,
+              address: cfa.address,
+              type: CFA,
+              is_qualiopi: true,
+            }
           : {
               establishment_enseigne: entreprise?.enseigne,
               establishment_raison_sociale: entreprise?.raison_sociale,

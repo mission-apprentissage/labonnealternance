@@ -37,6 +37,7 @@ import config from "../config"
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
+import { upsertCfa } from "./cfa.service"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementGouv, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
@@ -610,7 +611,16 @@ export const isCfaCreationValid = async (siret: string): Promise<boolean> => {
   return managingRoles.length ? false : true
 }
 
-export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
+export const getCfaSiretInfos = async (siret: string) => {
+  const cfa = await getDbCollection("cfas").findOne({ siret })
+  if (cfa) {
+    return cfa
+  }
+  const response = await validateEligibiliteCfa(siret)
+  return response.cfa
+}
+
+export const validateEligibiliteCfa = async (siret: string, origin = "") => {
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
     throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: BusinessErrorCodes.UNKNOWN })
@@ -627,7 +637,19 @@ export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
   if (!formattedReferentiel.is_qualiopi) {
     throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: BusinessErrorCodes.NOT_QUALIOPI, ...formattedReferentiel })
   }
-  return formattedReferentiel
+  const { address, address_detail, establishment_raison_sociale, geo_coordinates } = formattedReferentiel
+  const cfa = await upsertCfa(
+    siret,
+    {
+      address,
+      address_detail,
+      enseigne: null,
+      geo_coordinates,
+      raison_sociale: establishment_raison_sociale,
+    },
+    origin
+  )
+  return { referentiel: formattedReferentiel, cfa }
 }
 
 export const entrepriseOnboardingWorkflow = {
