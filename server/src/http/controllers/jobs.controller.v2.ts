@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { IJob, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { JOB_OPPORTUNITY_TYPE, LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJobOpportunityRomeRncp } from "shared/routes/_params"
+import { IJobOpportunityRomeRncp } from "shared/routes/jobOpportunity.routes"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -29,8 +29,8 @@ import {
   provideOffre,
 } from "../../services/formulaire.service"
 import { getFtJobFromIdV2 } from "../../services/ftjob.service"
-import { getJobsQuery } from "../../services/jobOpportunity.service"
-import { getCompanyFromSiret } from "../../services/lbacompany.service"
+import { formatRecruteurLbaToJobOpportunity, getJobsQuery } from "../../services/jobOpportunity.service"
+import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/lbacompany.service"
 import { addOffreDetailView, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
@@ -492,7 +492,7 @@ export default (server: Server) => {
   server.get(
     `/jobs/${JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA}`,
     { schema: zRoutes.get["/jobs/recruteurs_lba"], onRequest: server.auth(zRoutes.get["/jobs/recruteurs_lba"]) },
-    async (req) => {
+    async (req, res) => {
       const payload: IJobOpportunityRomeRncp = { ...req.query }
       if ("rncp" in payload) {
         payload.romes = await getRomesFromRncp(payload.rncp)
@@ -500,8 +500,8 @@ export default (server: Server) => {
           throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
         }
       }
-      // const result = await getRecruteursLbaFromDB(payload)
-      // format and return
+      const result = await getRecruteursLbaFromDB({ ...payload, romes: payload.romes as string[] })
+      return res.send(formatRecruteurLbaToJobOpportunity(result))
     }
   )
   server.get(

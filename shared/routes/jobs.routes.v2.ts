@@ -13,10 +13,6 @@ import {
   zCallerParam,
   zDiplomaParam,
   zInseeParams,
-  zJobOpportunityRncp,
-  zJobOpportunityRome,
-  zJobQuerystringFranceTravailRncp,
-  zJobQuerystringFranceTravailRome,
   ZLatitudeParam,
   ZLongitudeParam,
   zOpcoParams,
@@ -28,6 +24,7 @@ import {
   zSourcesParams,
 } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
+import { zJobOpportunityRncp, zJobOpportunityRome, zJobQuerystringFranceTravailRncp, zJobQuerystringFranceTravailRome } from "./jobOpportunity.routes"
 
 export const zJobsRoutesV2 = {
   get: {
@@ -408,7 +405,7 @@ export const zJobsRoutesV2 = {
       path: "/jobs/recruteurs_lba",
       querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome]),
       response: {
-        "200": zJobOpportunity,
+        "200": z.array(zJobOpportunity),
       },
       securityScheme: {
         auth: "api-apprentissage",
