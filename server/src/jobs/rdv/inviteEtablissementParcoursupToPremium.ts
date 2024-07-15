@@ -105,7 +105,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
     )
   }
 
-  await notifyToSlack({ subject: "RDVA - INVITATION PARCOURSUP", message: `${count} invitation(s) envoyé` })
+  await notifyToSlack({ subject: "RDVA - INVITATION PARCOURSUP", message: `${count} invitation(s) envoyée(s)` })
 
   logger.info("Cron #inviteEtablissementToPremium done.")
 }
