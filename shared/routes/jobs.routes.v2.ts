@@ -418,7 +418,7 @@ export const zJobsRoutesV2 = {
       path: "/jobs/offres_emploi_lba",
       querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome]),
       response: {
-        "200": zJobOpportunity,
+        "200": z.array(zJobOpportunity),
       },
       securityScheme: {
         auth: "api-apprentissage",
@@ -431,7 +431,7 @@ export const zJobsRoutesV2 = {
       path: "/jobs/offres_emploi_partenaires",
       querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome]),
       response: {
-        "200": zJobOpportunity,
+        "200": z.array(zJobOpportunity),
       },
       securityScheme: {
         auth: "api-apprentissage",
@@ -444,7 +444,7 @@ export const zJobsRoutesV2 = {
       path: "/jobs/offres_emploi_france_travail",
       querystring: z.union([zJobQuerystringFranceTravailRncp, zJobQuerystringFranceTravailRome]),
       response: {
-        "200": zJobOpportunity,
+        "200": z.array(zJobOpportunity),
       },
       securityScheme: {
         auth: "api-apprentissage",

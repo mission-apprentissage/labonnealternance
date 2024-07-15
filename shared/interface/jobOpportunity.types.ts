@@ -7,7 +7,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 const zJobOpportunityIdentifiant = z.object({
   id: z.union([zObjectId, extensions.siret]),
-  type: z.enum([JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA, JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_LBA, JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_PARTENAIRES]),
+  type: extensions.buildEnum(JOB_OPPORTUNITY_TYPE),
 })
 
 const zJobOpportunityContract = z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE))
@@ -26,8 +26,8 @@ const zJobOpportunityWorkplace = z.object({
   website: z.string().nullable(),
   location: z.object({
     address: z.string(),
-    lattitude: z.string(),
-    longitude: z.string(),
+    lattitude: z.number(),
+    longitude: z.number(),
   }),
   domaine: z.object({
     idcc: z.number().nullable(),
@@ -41,15 +41,15 @@ const zJobOpportunityWorkplace = z.object({
 
 const zJobOpportunityOffer = z.object({
   title: z.string(),
-  start: z.date(),
+  start: z.date().nullable(),
   duration: z.number().nullable(),
   immediateStart: z.boolean().nullable(),
   description: z.string(),
   diplomaLevelLabel: extensions.buildEnum(NIVEAUX_POUR_LBA),
-  desiredSkills: z.string(),
-  toBeAcquiredSkills: z.string(),
+  desiredSkills: z.union([z.array(z.any()), z.string()]).nullable(),
+  toBeAcquiredSkills: z.union([z.array(z.any()), z.string()]).nullable(),
   accessCondition: z.string(),
-  remote: extensions.buildEnum(TRAINING_REMOTE_TYPE),
+  remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable(),
   publication: z.object({
     creation: z.date(),
     expiration: z.date(),
