@@ -26,7 +26,6 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
   const entreprise = type === ENTREPRISE && "data" in entrepriseQuery.data && "siret" in entrepriseQuery.data.data && entrepriseQuery.data.data
   const finalOpco = opco ?? parseEnum(OPCOS, entreprise?.opco)
   const cfa = type === CFA && "data" in cfaQuery.data && "siret" in cfaQuery.data.data && cfaQuery.data.data
-  console.log(cfaQuery.data, cfa)
   const raisonSociale = entreprise?.raison_sociale ?? cfa?.raison_sociale
 
   return (
