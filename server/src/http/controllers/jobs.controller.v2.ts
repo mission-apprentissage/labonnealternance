@@ -29,7 +29,7 @@ import {
   provideOffre,
 } from "../../services/formulaire.service"
 import { getFtJobFromIdV2, getFtJobs } from "../../services/ftjob.service"
-import { formatOffreEmploiLbaToJobOpportunity, formatRecruteurLbaToJobOpportunity, getJobsQuery } from "../../services/jobOpportunity.service"
+import { formatFranceTravailToJobOpportunity, formatOffreEmploiLbaToJobOpportunity, formatRecruteurLbaToJobOpportunity, getJobsQuery } from "../../services/jobOpportunity.service"
 import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/lbacompany.service"
 import { addOffreDetailView, getJobs, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
@@ -534,7 +534,7 @@ export default (server: Server) => {
   server.get(
     "/jobs/offres_emploi_france_travail",
     { schema: zRoutes.get["/jobs/offres_emploi_france_travail"], onRequest: server.auth(zRoutes.get["/jobs/offres_emploi_france_travail"]) },
-    async (req) => {
+    async (req, res) => {
       const payload: IJobOpportunityFranceTravailRomeRncp = { ...req.query }
       let romes: string[]
       if ("rncp" in payload) {
@@ -552,6 +552,8 @@ export default (server: Server) => {
       if ("error" in result) {
         throw Boom.internal(result.message)
       }
+
+      return res.send(formatFranceTravailToJobOpportunity(result.resultats))
     }
   )
 }

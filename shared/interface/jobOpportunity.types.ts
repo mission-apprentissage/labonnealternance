@@ -19,7 +19,7 @@ const zJobOpportunityApply = z.object({
 })
 
 const zJobOpportunityWorkplace = z.object({
-  siret: extensions.siret,
+  siret: extensions.siret.nullable(),
   name: z.string(),
   description: z.string().nullable(),
   size: z.string().nullable(),
@@ -45,17 +45,17 @@ const zJobOpportunityOffer = z.object({
   duration: z.number().nullable(),
   immediateStart: z.boolean().nullable(),
   description: z.string(),
-  diplomaLevelLabel: extensions.buildEnum(NIVEAUX_POUR_LBA),
+  diplomaLevelLabel: extensions.buildEnum(NIVEAUX_POUR_LBA).nullable(),
   desiredSkills: z.union([z.array(z.any()), z.string()]).nullable(),
   toBeAcquiredSkills: z.union([z.array(z.any()), z.string()]).nullable(),
-  accessCondition: z.string(),
+  accessCondition: z.union([z.array(z.any()), z.string()]).nullable(),
   remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable(),
   publication: z.object({
     creation: z.date(),
-    expiration: z.date(),
+    expiration: z.date().nullable(),
   }),
   meta: z.object({
-    origin: z.string(),
+    origin: z.string().nullable(),
     count: z.number(),
   }),
 })

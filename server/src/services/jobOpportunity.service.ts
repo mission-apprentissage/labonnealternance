@@ -7,6 +7,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import config from "../config"
 
 import { getSomeFtJobs } from "./ftjob.service"
+import { FTJob } from "./ftjob.service.types"
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
 import { getSomeCompanies } from "./lbacompany.service"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "./lbaitem.shared.service.types"
@@ -265,22 +266,57 @@ export const formatOffreEmploiLbaToJobOpportunity = (offresEmploiLba: IRecruiter
   )
 }
 
-// export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: FTJob[]): IJobOpportunity[] => {
-//   const buf: IJobOpportunity[]
-//   return offresEmploiFranceTravail.map((offreFT) =>
-//     buf.push({
-//       identifiant: {
-//         id: offreFT.id,
-//         type: JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL,
-//       },
-//       contract: [offreFT.natureContrat],
-//       jobOffre: {
-//         title: offreFT.intitule,
-//         start: null,
-//         duration: null,
-//         immediateStart: null,
-//         description: offreFT.description,
-//       },
-//     })
-//   )
-// }
+export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: FTJob[]): IJobOpportunity[] => {
+  return offresEmploiFranceTravail.map((offreFT) => ({
+    identifiant: {
+      id: offreFT.id,
+      type: JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+    },
+    contract: [offreFT.natureContrat],
+    jobOffre: {
+      title: offreFT.intitule,
+      start: null,
+      duration: null,
+      immediateStart: null,
+      description: offreFT.description,
+      diplomaLevelLabel: null,
+      desiredSkills: null,
+      toBeAcquiredSkills: null,
+      accessCondition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
+      remote: null,
+      publication: {
+        creation: new Date(offreFT.dateCreation),
+        expiration: null,
+      },
+      meta: {
+        origin: null,
+        count: offreFT.nombrePostes,
+      },
+    },
+    workplace: {
+      siret: null,
+      name: offreFT.entreprise.nom,
+      description: offreFT.entreprise.description,
+      size: null,
+      website: null,
+      location: {
+        address: offreFT.lieuTravail.libelle,
+        longitude: parseFloat(offreFT.lieuTravail.longitude),
+        lattitude: parseFloat(offreFT.lieuTravail.latitude),
+      },
+      domaine: {
+        idcc: null,
+        opco: null,
+        naf: {
+          code: offreFT.codeNAF ? offreFT.codeNAF : null,
+          label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
+        },
+      },
+    },
+    apply: {
+      url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
+      phone: null,
+      email: null,
+    },
+  }))
+}
