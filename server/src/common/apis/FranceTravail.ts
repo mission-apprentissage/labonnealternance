@@ -19,11 +19,11 @@ import getApiClient from "./client"
 const axiosClient = getApiClient({})
 
 const getFTTokenFromDB = async (access_type: IFranceTravailAccessType): Promise<IFranceTravailAccess["access_token"] | undefined> => {
-  const data = await getDbCollection("francetravaill_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
+  const data = await getDbCollection("francetravail_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
   return data?.access_token
 }
 const updateFTTokenInDB = async ({ access_type, access_token }: { access_type: IFranceTravailAccessType; access_token: string }) =>
-  await getDbCollection("francetravaill_access").findOneAndUpdate(
+  await getDbCollection("francetravail_access").findOneAndUpdate(
     { access_type },
     { $set: { access_token }, $setOnInsert: { _id: new ObjectId(), created_at: new Date() } },
     { upsert: true }
