@@ -2,7 +2,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
 
-const collectionName = "francetravaill_access" as const
+const collectionName = "francetravail_access" as const
 
 export type IFranceTravailAccessType = "OFFRE" | "ROME" | "ROMEV4"
 
