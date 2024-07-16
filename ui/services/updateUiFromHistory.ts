@@ -3,7 +3,9 @@
  * sans qu'il y ait de changement de page
  */
 
-import { restoreSearchFromSession } from "../components/SearchForTrainingsAndJobs/services/handleSessionStorage"
+import { IContextSearch } from "@/context/SearchResultContextProvider"
+
+import { restoreSearchFromSearchHistoryContext } from "../components/SearchForTrainingsAndJobs/services/handleSearchHistoryContext"
 import { defaultFilters } from "../components/SearchForTrainingsAndJobs/services/utils"
 import { currentSearch, setCurrentSearch } from "../utils/currentPage"
 import { filterLayers } from "../utils/mapTools"
@@ -12,19 +14,28 @@ export const updateUiFromHistory = ({
   url,
   currentPage,
   unSelectItem,
-  selectedItem,
   selectItemFromHistory,
   setCurrentPage,
-  visiblePane,
-  isFormVisible,
   showResultMap,
   showResultList,
   showSearchForm,
-  setTrainings,
-  setJobs,
-  setActiveFilters,
-  activeFilters,
+  displayContext,
+  searchResultContext,
+}: {
+  url: string
+  currentPage: any
+  unSelectItem: any
+  selectItemFromHistory: any
+  setCurrentPage: any
+  showResultMap: any
+  showResultList: any
+  showSearchForm: any
+  displayContext: any
+  searchResultContext: IContextSearch
 }) => {
+  const { selectedItem } = searchResultContext
+  const { activeFilters, setActiveFilters, visiblePane, isFormVisible } = displayContext
+
   // récupération des query parameters donnant des indications sur l'état de l'interface
   let urlParams
   if (url.indexOf("?") >= 0) {
@@ -35,8 +46,6 @@ export const updateUiFromHistory = ({
   const display = urlParams ? urlParams.get("display") : ""
   const itemId = urlParams ? urlParams.get("itemId") : ""
   const searchTimestamp = urlParams ? urlParams.get("s") : ""
-  const jobName = urlParams ? urlParams.get("job_name") : ""
-  const address = urlParams ? urlParams.get("address") : ""
 
   if (!activeFilters) {
     setActiveFilters(defaultFilters) // restauration des onglets à all pour assurer la présence de marker dans le dom
@@ -50,12 +59,7 @@ export const updateUiFromHistory = ({
   // réconciliation entre le store et l'état des résultats de recherche
   if (searchTimestamp && searchTimestamp !== currentSearch) {
     setCurrentSearch(searchTimestamp)
-    restoreSearchFromSession({ searchTimestamp, setTrainings, setJobs })
-  }
-
-  // réconciliation entre le store et l'état des formulaires de recherche
-  if (jobName || address) {
-    // TODO: à faire
+    restoreSearchFromSearchHistoryContext({ searchResultContext, searchTimestamp, displayContext })
   }
 
   // réconciliation entre le store et l'état attendu indiqué par les query parameters pour les éléments sélectionnés

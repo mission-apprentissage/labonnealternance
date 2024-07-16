@@ -35,13 +35,13 @@ import { searchForTrainingsFunction } from "./services/searchForTrainings"
 const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)
 
-  const { hasSearch, trainings, jobs, setTrainings, setJobs, setInternalJobs, setPartnerJobs, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } =
-    useContext(SearchResultContext)
+  const searchResultContext = useContext(SearchResultContext)
+  const { hasSearch, trainings, jobs, setTrainings, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } = searchResultContext
 
   const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch, showCombinedJob } = useContext(ParameterContext)
 
-  const { activeFilters, setActiveFilters, formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } =
-    useContext(DisplayContext)
+  const displayContext = useContext(DisplayContext)
+  const { formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } = displayContext
 
   const [searchRadius, setSearchRadius] = useState(30)
   const [isTrainingSearchLoading, setIsTrainingSearchLoading] = useState(hasSearch ? false : true)
@@ -60,19 +60,14 @@ const SearchForTrainingsAndJobs = () => {
       updateUiFromHistory({
         url,
         currentPage,
-        selectedItem,
         unSelectItem,
         selectItemFromHistory,
         setCurrentPage,
-        visiblePane,
-        isFormVisible,
         showResultMap,
         showResultList,
         showSearchForm,
-        setTrainings,
-        setJobs,
-        setActiveFilters,
-        activeFilters,
+        displayContext,
+        searchResultContext,
       })
     }
 
@@ -84,7 +79,7 @@ const SearchForTrainingsAndJobs = () => {
       router.events.off("routeChangeStart", handleRouteChange)
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
-  }, [trainings, jobs])
+  }, [router.query])
 
   useEffect(() => {
     if (shouldExecuteSearch) {
@@ -142,13 +137,13 @@ const SearchForTrainingsAndJobs = () => {
         return trainings?.find((el) => el.id === itemId)
       }
       case LBA_ITEM_TYPE_OLD.PEJOB: {
-        return jobs?.peJobs?.find((el) => el.job.id === itemId)
+        return jobs?.peJobs?.find((el) => el.id === itemId)
       }
       case LBA_ITEM_TYPE_OLD.LBA: {
-        return jobs?.lbaCompanies?.find((el) => el.company.siret === itemId)
+        return jobs?.lbaCompanies?.find((el) => el.id === itemId)
       }
       case LBA_ITEM_TYPE_OLD.MATCHA: {
-        return jobs?.matchas?.find((el) => el.job.id === itemId)
+        return jobs?.matchas?.find((el) => el.id === itemId)
       }
       default:
         return
@@ -190,7 +185,7 @@ const SearchForTrainingsAndJobs = () => {
     setCurrentSearch(searchTimestamp)
   }
 
-  const handleItemLoad = async (item) => {
+  const handleItemLoad = async ({ item, router, scopeContext, displayMap }) => {
     setShouldShowWelcomeMessage(false)
 
     setHasSearch(false)
@@ -198,10 +193,7 @@ const SearchForTrainingsAndJobs = () => {
 
     loadItem({
       item,
-      setTrainings,
-      setHasSearch,
       setIsFormVisible,
-      setSelectedItem,
       setCurrentPage,
       setTrainingSearchError,
       setIsTrainingSearchLoading,
@@ -209,11 +201,11 @@ const SearchForTrainingsAndJobs = () => {
       setIsPartnerJobSearchLoading,
       setJobSearchError,
       setPartnerJobSearchError,
-      setJobs,
-      setInternalJobs,
-      setPartnerJobs,
+      searchResultContext,
+      router,
+      scopeContext,
+      displayMap,
     })
-
     setIsFormVisible(false)
   }
 
@@ -224,14 +216,13 @@ const SearchForTrainingsAndJobs = () => {
       setIsTrainingSearchLoading,
       setTrainingSearchError,
       clearTrainings,
-      setTrainings,
-      setHasSearch,
       setIsFormVisible,
       setTrainingMarkers,
       factorTrainingsForMap,
       widgetParameters,
       followUpItem,
       selectFollowUpItem,
+      searchResultContext,
     })
   }
 
@@ -240,32 +231,30 @@ const SearchForTrainingsAndJobs = () => {
       values,
       searchTimestamp,
       setIsJobSearchLoading,
-      setHasSearch,
       setJobSearchError,
       widgetParameters,
       scopeContext,
-      setInternalJobs,
       followUpItem,
       selectFollowUpItem,
       opcoFilter,
       opcoUrlFilter,
       showCombinedJob,
+      searchResultContext,
     })
 
     searchForPartnerJobsFunction({
       values,
       searchTimestamp,
       setIsPartnerJobSearchLoading,
-      setHasSearch,
       setPartnerJobSearchError,
       computeMissingPositionAndDistance,
       widgetParameters,
       scopeContext,
-      setPartnerJobs,
       followUpItem,
       selectFollowUpItem,
       opcoFilter,
       opcoUrlFilter,
+      searchResultContext,
     })
   }
 

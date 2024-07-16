@@ -5,7 +5,7 @@ import { IOpco } from "shared/models/opco.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
+import { CFADOCK_FILTER_LIMIT, ICfaDockOpcoItem, fetchOpcosFromCFADock } from "./cfadock.service"
 
 /**
  * @description get opco from database collection OPCOS
@@ -89,22 +89,17 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
     for (let i = 0; i < sirensToFind.length; i += CFADOCK_FILTER_LIMIT) {
       const sirenChunk = sirensToFind.slice(i, i + CFADOCK_FILTER_LIMIT)
       try {
-        const sirenOpcos = (await fetchOpcosFromCFADock(new Set(sirenChunk))).data.found
+        const sirenOpcos = await fetchOpcosFromCFADock(new Set(sirenChunk))
 
         sirenOpcos.forEach(async (sirenOpco) => {
           if (opcoUrl && sirenOpco.url === opcoUrl) {
             opcoFilteredSirens.push(sirenOpco.filters.siret)
-          } else if (opco && opco.toUpperCase() === getMemoizedOpcoShortName(sirenOpco.opcoName)) {
+          } else if (opco && opco.toUpperCase() === getMemoizedOpcoShortName(sirenOpco.opcoName ?? "")) {
             opcoFilteredSirens.push(sirenOpco.filters.siret)
           }
 
           // enregistrement des retours opcos dans notre base pour réduire les recours à CFADOCK
-          await saveOpco({
-            siren: sirenOpco.filters.siret,
-            opco: sirenOpco.opcoName,
-            url: sirenOpco.url,
-            idcc: sirenOpco.idcc,
-          })
+          await saveOpco(cfaDockOpcoItemToIOpco(sirenOpco))
         })
       } catch (err) {
         // ne rien faire. 429 probable de l'api CFADOCK dont le rate limiter est trop limitant
@@ -137,4 +132,15 @@ export const prepareReferentielOpcoForInsert = (referentiel: Omit<IReferentielOp
   } else {
     return false
   }
+}
+
+export const cfaDockOpcoItemToIOpco = (opcoItem: ICfaDockOpcoItem) => {
+  const result: Omit<IOpco, "_id"> = {
+    siren: opcoItem.filters.siret,
+    opco: opcoItem.opcoName ?? "",
+    opco_short_name: getMemoizedOpcoShortName(opcoItem.opcoName ?? ""),
+    url: opcoItem.url,
+    idcc: opcoItem.idcc?.toString(),
+  }
+  return result
 }
