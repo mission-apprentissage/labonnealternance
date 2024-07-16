@@ -42,7 +42,7 @@ const zJobOpportunityWorkplace = z.object({
 const zJobOpportunityOffer = z.object({
   title: z.string(),
   start: z.date().nullable(),
-  duration: z.number().nullable(),
+  duration: z.union([z.number(), z.string()]).nullable(),
   immediateStart: z.boolean().nullable(),
   description: z.string(),
   diplomaLevelLabel: extensions.buildEnum(NIVEAUX_POUR_LBA).nullable(),
