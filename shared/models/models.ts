@@ -15,6 +15,7 @@ import emailBlacklistModel from "./emailBlacklist.model"
 import entrepriseModel from "./entreprise.model"
 import etablissementModel from "./etablissement.model"
 import formationModel from "./formation.model"
+import franceTravailAccessModel from "./franceTravailAccess.model"
 import geolocationsModel from "./geolocations.model"
 import internalJobModel from "./internalJob.model"
 import jobsModel from "./jobs.model"
@@ -51,6 +52,7 @@ const modelDescriptorMap = {
   [entrepriseModel.collectionName]: entrepriseModel,
   [etablissementModel.collectionName]: etablissementModel,
   [formationModel.collectionName]: formationModel,
+  [franceTravailAccessModel.collectionName]: franceTravailAccessModel,
   [geolocationsModel.collectionName]: geolocationsModel,
   [internalJobModel.collectionName]: internalJobModel,
   [jobsModel.collectionName]: jobsModel,
