@@ -30,6 +30,9 @@ export const controlUserState = async (user: IUserWithAccount): Promise<{ error:
         if (hasSomeEntrepriseReady) {
           return { error: false }
         }
+        if (entreprises.every((entreprise) => getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.DESACTIVE)) {
+          return { error: true, reason: "DISABLED" }
+        }
       }
       return { error: true, reason: "VALIDATION" }
     }
