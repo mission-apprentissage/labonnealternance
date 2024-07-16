@@ -276,7 +276,7 @@ export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: F
     jobOffre: {
       title: offreFT.intitule,
       start: null,
-      duration: null,
+      duration: offreFT.typeContratLibelle,
       immediateStart: null,
       description: offreFT.description,
       diplomaLevelLabel: null,
