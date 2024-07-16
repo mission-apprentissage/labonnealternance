@@ -6,7 +6,7 @@ import { logger } from "../../common/logger"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service"
-import { getMemoizedOpcoShortName, saveOpco } from "../../services/opco.service"
+import { cfaDockOpcoItemToIOpco, saveOpco } from "../../services/opco.service"
 
 import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils"
 
@@ -20,22 +20,20 @@ const getSirenOpcosFromCFADock = async () => {
   logger.info(`find and save opcos for ${CFADOCK_FILTER_LIMIT} siren`)
 
   try {
-    const response = await fetchOpcosFromCFADock(sirenSet)
+    const cfaDockOpcoItems = await fetchOpcosFromCFADock(sirenSet)
 
-    if (response?.data?.found) {
-      response.data.found.forEach(async (sirenFilterObj) => {
-        await saveOpco({
-          siren: sirenFilterObj.filters.siret,
-          opco: sirenFilterObj.opcoName,
-          opco_short_name: getMemoizedOpcoShortName(sirenFilterObj.opcoName),
-          url: sirenFilterObj.url,
-          idcc: sirenFilterObj.idcc,
+    if (cfaDockOpcoItems.length) {
+      await Promise.all(
+        cfaDockOpcoItems.map(async (sirenFilterObj) => {
+          await saveOpco(cfaDockOpcoItemToIOpco(sirenFilterObj))
         })
-      })
+      )
+      errorCount += sirenSet.size - cfaDockOpcoItems.length
 
-      response.data.notFound.forEach(async (sirenFilterObj) => {
-        errorCount++
-        sirenWithoutOpco.add(sirenFilterObj.filters.siret)
+      sirenSet.forEach((siren) => {
+        if (!cfaDockOpcoItems.some((item) => item.filters.siret === siren)) {
+          sirenWithoutOpco.add(siren)
+        }
       })
     } else {
       logger.error("CFA Dock returned no found/notFound opcos")
