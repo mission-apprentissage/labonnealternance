@@ -4,6 +4,8 @@ import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "francetravaill_access" as const
 
+export type IFranceTravailAccessType = "OFFRE" | "ROME" | "ROMEV4"
+
 export const ZFranceTravailAccess = z
   .object({
     _id: zObjectId,
@@ -12,7 +14,6 @@ export const ZFranceTravailAccess = z
     created_at: z.date(),
   })
   .strict()
-
 export type IFranceTravailAccess = z.output<typeof ZFranceTravailAccess>
 
 export default {

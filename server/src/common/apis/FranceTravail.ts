@@ -4,7 +4,7 @@ import querystring from "querystring"
 import Boom from "boom"
 import { ObjectId } from "bson"
 import FormData from "form-data"
-import { IFranceTravailAccess } from "shared/models/franceTravailAccess.model"
+import { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
 import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
@@ -18,13 +18,11 @@ import getApiClient from "./client"
 
 const axiosClient = getApiClient({})
 
-type FT_ACCESS_TYPE = "OFFRE" | "ROME" | "ROMEV4"
-
-const getFTTokenFromDB = async (access_type: FT_ACCESS_TYPE): Promise<IFranceTravailAccess["access_token"] | undefined> => {
+const getFTTokenFromDB = async (access_type: IFranceTravailAccessType): Promise<IFranceTravailAccess["access_token"] | undefined> => {
   const data = await getDbCollection("francetravaill_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
   return data?.access_token
 }
-const updateFTTokenInDB = async ({ access_type, access_token }: { access_type: FT_ACCESS_TYPE; access_token: string }) =>
+const updateFTTokenInDB = async ({ access_type, access_token }: { access_type: IFranceTravailAccessType; access_token: string }) =>
   await getDbCollection("francetravaill_access").findOneAndUpdate(
     { access_type },
     { $set: { access_token }, $setOnInsert: { _id: new ObjectId(), created_at: new Date() } },
@@ -52,7 +50,7 @@ const OFFRES_ACCESS = querystring.stringify({
   scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
 })
 
-const getFtAccessToken = async (access: FT_ACCESS_TYPE): Promise<string> => {
+const getFtAccessToken = async (access: IFranceTravailAccessType): Promise<string> => {
   const token = await getFTTokenFromDB(access)
   if (token) {
     return token
