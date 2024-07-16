@@ -3,9 +3,10 @@ import { Jsonify } from "type-fest"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZPointGeometry, ZRecruiter } from "../models"
+import { zCFA } from "../models/cfa.model"
 import { zObjectId } from "../models/common"
 import { ZEntreprise } from "../models/entreprise.model"
-import { ZCfaReferentielData, ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
+import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model"
 import { ZUserWithAccount } from "../models/userWithAccount.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -101,7 +102,7 @@ export const zRecruiterRoutes = {
       path: "/etablissement/cfa/:siret/validate-creation",
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "200": ZCfaReferentielData,
+        "200": z.object({}),
       },
       securityScheme: null,
     },
@@ -112,7 +113,14 @@ export const zRecruiterRoutes = {
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
       params: z.object({ siret: extensions.siret }).strict(),
       response: {
-        "200": ZCfaReferentielData,
+        "200": zCFA.pick({
+          address: true,
+          address_detail: true,
+          geo_coordinates: true,
+          raison_sociale: true,
+          enseigne: true,
+          siret: true,
+        }),
       },
       securityScheme: null,
     },

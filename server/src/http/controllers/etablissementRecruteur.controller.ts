@@ -11,18 +11,18 @@ import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
-import { upsertCfa } from "@/services/cfa.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
   getEntrepriseDataFromSiret,
   getOpcoData,
-  getOrganismeDeFormationDataFromSiret,
+  validateEligibiliteCfa,
   isCfaCreationValid,
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
+  getCfaSiretInfos,
 } from "@/services/etablissement.service"
-import { Organization, UserAndOrganization, upsertEntrepriseData } from "@/services/organization.service"
+import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import {
   autoValidateUser,
@@ -129,8 +129,8 @@ export default (server: Server) => {
       if (!siret) {
         throw Boom.badRequest("Le numéro siret est obligatoire.")
       }
-      const response = await getOrganismeDeFormationDataFromSiret(siret)
-      return res.status(200).send(response)
+      const { address, address_detail, geo_coordinates, raison_sociale, enseigne } = await getCfaSiretInfos(siret)
+      return res.status(200).send({ address, address_detail, geo_coordinates, raison_sociale, enseigne, siret })
     }
   )
 
@@ -151,8 +151,8 @@ export default (server: Server) => {
       if (!isValid) {
         throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
       }
-      const response = await getOrganismeDeFormationDataFromSiret(siret)
-      return res.status(200).send(response)
+      await validateEligibiliteCfa(siret)
+      return res.status(200).send({})
     }
   )
 
@@ -216,19 +216,10 @@ export default (server: Server) => {
           if (!isValid) {
             throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
           }
-          const { contacts, establishment_raison_sociale, geo_coordinates, address, address_detail } = await getOrganismeDeFormationDataFromSiret(establishment_siret)
-
-          const cfa = await upsertCfa(
-            establishment_siret,
-            {
-              address,
-              address_detail,
-              enseigne: null,
-              geo_coordinates,
-              raison_sociale: establishment_raison_sociale,
-            },
-            origin
-          )
+          const {
+            referentiel: { contacts },
+            cfa,
+          } = await validateEligibiliteCfa(establishment_siret, origin)
           const organization: Organization = { type: CFA, cfa }
           const userCfa = await createOrganizationUser({
             userFields: {
