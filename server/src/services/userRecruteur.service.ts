@@ -70,8 +70,13 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
   ]
   if (organisme && "status" in organisme) {
     const lastStatusEvent = getLastStatusEvent(organisme.status)
-    if (lastStatusEvent?.status === EntrepriseStatus.ERROR) {
-      oldStatus.push(entrepriseStatusEventToUserRecruteurStatusEvent(lastStatusEvent, ETAT_UTILISATEUR.ERROR))
+    const entrepriseStatusPassed = [EntrepriseStatus.ERROR, EntrepriseStatus.DESACTIVE]
+    if (lastStatusEvent?.status && entrepriseStatusPassed.includes(lastStatusEvent.status)) {
+      const mappedEtatUtilisateur = {
+        [EntrepriseStatus.ERROR]: ETAT_UTILISATEUR.ERROR,
+        [EntrepriseStatus.DESACTIVE]: ETAT_UTILISATEUR.DESACTIVE,
+      }
+      oldStatus.push(entrepriseStatusEventToUserRecruteurStatusEvent(lastStatusEvent, mappedEtatUtilisateur[lastStatusEvent.status]))
     }
   }
 
