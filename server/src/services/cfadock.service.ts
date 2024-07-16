@@ -17,7 +17,8 @@ export type ICfaDockOpcoItem = z.output<typeof ZResponseItem>
 const ZResponseArray = z.array(ZResponseItem)
 
 /**
- * @description Interroge CFADock pour récupérer les opcos associés aux sirens passés en paramètre
+ * @description Interroge CFADock pour récupérer les opcos associés aux sirens passés en paramètre.
+ * Les sirens non trouvés sont ignorés.
  */
 export const fetchOpcosFromCFADock = async (sirenSet: Set<string>) => {
   const response = await axios.post(
