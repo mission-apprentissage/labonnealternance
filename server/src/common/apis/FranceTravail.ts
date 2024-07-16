@@ -63,7 +63,7 @@ const getFtAccessToken = async (access: "OFFRE" | "ROME" | "ROMEV4"): Promise<FT
     const tokenParams = access === "OFFRE" ? OFFRES_ACCESS : access === "ROME" ? ROME_ACCESS : ROME_V4_ACCESS
     const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=%2Fpartenaire`, tokenParams, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      timeout: 3000,
+      timeout: 7000,
     })
 
     const validation = ZFTApiToken.safeParse(response.data)
