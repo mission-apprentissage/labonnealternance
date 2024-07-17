@@ -7,6 +7,12 @@ import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "jobs_partners" as const
 
+enum JOBPARTNERS_LABEL {
+  HELLOWORK = "hellowork",
+  IMILO = "i-milo",
+  MISSIONLOCALE = "mission-locale",
+}
+
 const ZJobsPartnersApply = z.object({
   url: z.string().nullable().describe("URL pour candidater"),
   email: z.string().nullable().describe("Email de contact"),
@@ -14,6 +20,7 @@ const ZJobsPartnersApply = z.object({
 })
 
 const ZJobsPartnersContract = z.object({
+  start: z.date().nullable().describe("Date de début de contrat"),
   type: extensions.buildEnum(TRAINING_CONTRACT_TYPE).describe("type de contract, formaté à l'insertion"),
   duration: z.string().nullable().describe("Durée du contract"),
 })
@@ -67,6 +74,7 @@ const ZJobsPartnersWorkplace = z.object({
 const ZJobsPartners = z.object({
   _id: zObjectId,
   raw_id: z.string().describe("Identifiant d'origine l'offre provenant du partenaire"),
+  partner_label: extensions.buildEnum(JOBPARTNERS_LABEL).describe("Référence du partenaire"),
   contract: ZJobsPartnersContract,
   jobOffer: ZJobsPartnersJobOffer,
   workplace: ZJobsPartnersWorkplace,
