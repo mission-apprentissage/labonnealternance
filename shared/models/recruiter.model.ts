@@ -89,6 +89,8 @@ export default {
     [{ establishment_siret: 1 }, {}],
     [{ cfa_delegated_siret: 1 }, {}],
     [{ geopoint: "2dsphere" }, {}],
+    [{ email: 1 }, {}],
+    [{ establishment_enseigne: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
