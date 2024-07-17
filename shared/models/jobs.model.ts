@@ -8,6 +8,6 @@ const ZJobs = z.any()
 
 export default {
   zod: ZJobs,
-  indexes: [],
+  indexes: [[{ jobId: 1 }, {}]],
   collectionName,
 } as const satisfies IModelDescriptor
