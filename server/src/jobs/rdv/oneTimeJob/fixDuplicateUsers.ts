@@ -32,7 +32,7 @@ export const fixDuplicateUsers = async () => {
   for await (const groupOfUsers of duplicates) {
     const userToKeep = groupOfUsers.shift()
     for await (const group of groupOfUsers) {
-      await getDbCollection("appointments").updateMany({ applicant_id: group._id.toString() }, { $set: { applicant_id: userToKeep?._id.toString() } })
+      await getDbCollection("appointments").updateMany({ applicant_id: group._id }, { $set: { applicant_id: userToKeep?._id } })
       await getDbCollection("users").deleteOne({ _id: group._id })
     }
   }
