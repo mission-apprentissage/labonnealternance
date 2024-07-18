@@ -15,8 +15,6 @@ describe.skipIf(process.env.CI)("formationRegionV1", () => {
 
   it("Vérifie que la recherche avec Rome et region répond avec des résultats", async () => {
     const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&region=11&caller=a" })
-
-    console.log(res)
     expect(res.statusCode).toBe(200)
     expect(JSON.parse(res.body).results).not.toHaveLength(0)
   })

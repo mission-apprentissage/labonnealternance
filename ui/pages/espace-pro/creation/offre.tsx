@@ -5,10 +5,9 @@ import { DepotSimplifieLayout } from "@/components/espace_pro/common/components/
 
 import { AjouterVoeux, Bandeau } from "../../../components/espace_pro"
 
-export default function DepotRapideAjouterVoeux(props) {
+export default function DepotRapideAjouterVoeux() {
   const router = useRouter()
   const { displayBanner } = router.query
-  console.log("DepotRapideAjouterVoeux", props)
 
   return (
     <DepotSimplifieLayout>
@@ -20,7 +19,7 @@ export default function DepotRapideAjouterVoeux(props) {
         />
       )}
       <Box mt={10}>
-        <AjouterVoeux {...props} />
+        <AjouterVoeux />
       </Box>
     </DepotSimplifieLayout>
   )
