@@ -8,6 +8,7 @@ import { AjouterVoeux, Bandeau } from "../../../components/espace_pro"
 export default function DepotRapideAjouterVoeux(props) {
   const router = useRouter()
   const { displayBanner } = router.query
+  console.log("DepotRapideAjouterVoeux", props)
 
   return (
     <DepotSimplifieLayout>
