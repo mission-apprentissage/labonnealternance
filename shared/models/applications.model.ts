@@ -239,6 +239,9 @@ export default {
     [{ company_name: 1 }, {}],
     [{ company_naf: 1 }, {}],
     [{ job_origin: 1 }, {}],
+    [{ job_id: 1 }, {}],
+    [{ caller: 1 }, {}],
+    [{ created_at: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

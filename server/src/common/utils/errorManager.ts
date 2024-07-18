@@ -11,7 +11,6 @@ export type IApiError = z.input<typeof ZApiError>
 export const manageApiError = ({ error, api_path, caller, errorTitle }: { error: any; api_path?: string; caller?: string | null; errorTitle: string }): IApiError => {
   const errorObj: IApiError = { result: "error", error: "error", message: error.message }
   const status = error?.response?.status || error?.status || ""
-  error.name = `API error ${status ? status + " " : ""}${errorTitle}`
 
   if (caller && api_path) {
     trackApiCall({ caller, api_path, response: "Error" })
