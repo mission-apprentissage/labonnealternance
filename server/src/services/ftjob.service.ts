@@ -206,7 +206,7 @@ const transformFtJobs = ({ jobs, radius, latitude, longitude, isMinimalData }: {
 /**
  * Récupère une liste d'offres depuis l'API France Travail
  */
-const getFtJobs = async ({
+export const getFtJobs = async ({
   romes,
   insee,
   radius,
@@ -222,7 +222,7 @@ const getFtJobs = async ({
   caller: string
   diploma: string
   api: string
-}) => {
+}): Promise<FTResponse | IApiError> => {
   try {
     const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
 
