@@ -788,6 +788,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "job_level_label": {
             "description": "Niveau de formation visé en fin de stage",
             "enum": [
+              "Indifférent",
               "Cap, autres formations niveau (Infrabac)",
               "BP, Bac, autres formations niveau (Bac)",
               "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -817,10 +818,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "2 semaines / 3 semaines",
               "6 semaines / 6 semaines",
             ],
-            "type": [
-              "string",
-              "null",
-            ],
+            "type": "string",
           },
           "job_start_date": {
             "description": "Date de début de l'alternance",
@@ -1222,6 +1220,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "job_status",
           "job_type",
           "is_multi_published",
+          "job_rythm",
         ],
         "type": "object",
       },
@@ -3621,6 +3620,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -4413,6 +4413,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -4846,6 +4847,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -5307,6 +5309,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -6327,6 +6330,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -6642,6 +6646,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
                     "enum": [
+                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -6664,10 +6669,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
                     ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
+                    "type": "string",
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
@@ -6687,6 +6689,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
+                  "job_rythm",
                   "is_multi_published",
                   "job_start_date",
                   "appellation_code",
@@ -6814,6 +6817,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
                     "enum": [
+                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -6836,10 +6840,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
                     ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
+                    "type": "string",
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
@@ -7097,6 +7098,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -7752,6 +7754,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -8044,6 +8047,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -8218,6 +8222,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -8420,6 +8425,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -9607,6 +9613,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -9920,6 +9927,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
                     "enum": [
+                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -9942,10 +9950,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
                     ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
+                    "type": "string",
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
@@ -9965,6 +9970,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
+                  "job_rythm",
                   "is_multi_published",
                   "job_start_date",
                   "appellation_code",
@@ -10091,6 +10097,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
                     "enum": [
+                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -10113,10 +10120,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
                     ],
-                    "type": [
-                      "string",
-                      "null",
-                    ],
+                    "type": "string",
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
@@ -10278,6 +10282,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",

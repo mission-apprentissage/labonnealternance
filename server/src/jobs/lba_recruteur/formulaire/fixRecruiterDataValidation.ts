@@ -112,7 +112,7 @@ const fixJobRythm = async () => {
         if (job.job_rythm === "1 jours / 4 jours") {
           job.job_rythm = TRAINING_RYTHM["1J4J"]
         } else if (job.job_rythm === "" || job.job_rythm === "Non renseigné") {
-          job.job_rythm = null
+          job.job_rythm = TRAINING_RYTHM.INDIFFERENT
         }
         await updateOffre(job._id, { ...job })
       })
