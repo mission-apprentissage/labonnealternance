@@ -17,12 +17,10 @@ const zJobOpportunityQuerystringBase = z.object({
 
 export const zJobOpportunityRome = zJobOpportunityQuerystringBase.extend({ romes }).strict()
 export const zJobOpportunityRncp = zJobOpportunityQuerystringBase.extend({ rncp }).strict()
-type IJobOpportunityRome = z.output<typeof zJobOpportunityRome>
-type IJobOpportunityRncp = z.output<typeof zJobOpportunityRncp>
-export type IJobOpportunityRomeRncp = IJobOpportunityRome | IJobOpportunityRncp
+export type IJobOpportunityRome = z.output<typeof zJobOpportunityRome>
+export type IJobOpportunityRncp = z.output<typeof zJobOpportunityRncp>
 
 export const zJobQuerystringFranceTravailRome = zJobOpportunityQuerystringBase.extend({ romes, insee }).strict()
 export const zJobQuerystringFranceTravailRncp = zJobOpportunityQuerystringBase.extend({ rncp, insee }).strict()
-type IJobOpportunityFranceTravailRome = z.output<typeof zJobQuerystringFranceTravailRome>
-type IJobOpportunityFranceTravailRncp = z.output<typeof zJobQuerystringFranceTravailRncp>
-export type IJobOpportunityFranceTravailRomeRncp = IJobOpportunityFranceTravailRome | IJobOpportunityFranceTravailRncp
+export type IJobOpportunityFranceTravailRome = z.output<typeof zJobQuerystringFranceTravailRome>
+export type IJobOpportunityFranceTravailRncp = z.output<typeof zJobQuerystringFranceTravailRncp>

@@ -400,10 +400,10 @@ export const zJobsRoutesV2 = {
         })}`,
       },
     },
-    "/jobs/recruteurs_lba": {
+    "/jobs/rome/recruteurs_lba": {
       method: "get",
-      path: "/jobs/recruteurs_lba",
-      querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome]),
+      path: "/jobs/rome/recruteurs_lba",
+      querystring: zJobOpportunityRome,
       response: {
         "200": z.array(zJobOpportunity),
       },
@@ -413,10 +413,10 @@ export const zJobsRoutesV2 = {
         resources: {},
       },
     },
-    "/jobs/offres_emploi_lba": {
+    "/jobs/rncp/recruteurs_lba": {
       method: "get",
-      path: "/jobs/offres_emploi_lba",
-      querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome]),
+      path: "/jobs/rncp/recruteurs_lba",
+      querystring: zJobOpportunityRncp,
       response: {
         "200": z.array(zJobOpportunity),
       },
@@ -426,10 +426,10 @@ export const zJobsRoutesV2 = {
         resources: {},
       },
     },
-    "/jobs/offres_emploi_partenaires": {
+    "/jobs/rome/offres_emploi_lba": {
       method: "get",
-      path: "/jobs/offres_emploi_partenaires",
-      querystring: z.union([zJobOpportunityRncp, zJobOpportunityRome]),
+      path: "/jobs/rome/offres_emploi_lba",
+      querystring: zJobOpportunityRome,
       response: {
         "200": z.array(zJobOpportunity),
       },
@@ -439,10 +439,62 @@ export const zJobsRoutesV2 = {
         resources: {},
       },
     },
-    "/jobs/offres_emploi_france_travail": {
+    "/jobs/rncp/offres_emploi_lba": {
       method: "get",
-      path: "/jobs/offres_emploi_france_travail",
-      querystring: z.union([zJobQuerystringFranceTravailRncp, zJobQuerystringFranceTravailRome]),
+      path: "/jobs/rncp/offres_emploi_lba",
+      querystring: zJobOpportunityRncp,
+      response: {
+        "200": z.array(zJobOpportunity),
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
+    "/jobs/rome/offres_emploi_partenaires": {
+      method: "get",
+      path: "/jobs/rome/offres_emploi_partenaires",
+      querystring: zJobOpportunityRome,
+      response: {
+        "200": z.array(zJobOpportunity),
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
+    "/jobs/rncp/offres_emploi_partenaires": {
+      method: "get",
+      path: "/jobs/rncp/offres_emploi_partenaires",
+      querystring: zJobOpportunityRncp,
+      response: {
+        "200": z.array(zJobOpportunity),
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
+    "/jobs/rome/offres_emploi_france_travail": {
+      method: "get",
+      path: "/jobs/rome/offres_emploi_france_travail",
+      querystring: zJobQuerystringFranceTravailRome,
+      response: {
+        "200": z.array(zJobOpportunity),
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
+    "/jobs/rncp/offres_emploi_france_travail": {
+      method: "get",
+      path: "/jobs/rncp/offres_emploi_france_travail",
+      querystring: zJobQuerystringFranceTravailRncp,
       response: {
         "200": z.array(zJobOpportunity),
       },
