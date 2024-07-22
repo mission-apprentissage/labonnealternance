@@ -16,7 +16,7 @@ import { sentryCaptureException } from "../utils/sentryUtils"
 
 import getApiClient from "./client"
 
-const axiosClient = getApiClient({})
+const axiosClient = getApiClient({}, { cache: false })
 
 const getFTTokenFromDB = async (access_type: IFranceTravailAccessType): Promise<IFranceTravailAccess["access_token"] | undefined> => {
   const data = await getDbCollection("francetravail_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
@@ -59,7 +59,7 @@ const getFtAccessToken = async (access: IFranceTravailAccessType): Promise<strin
   try {
     logger.info(`requesting new FT token for access=${access}`)
     const tokenParams = access === "OFFRE" ? OFFRES_ACCESS : access === "ROME" ? ROME_ACCESS : ROME_V4_ACCESS
-    const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=%2Fpartenaire`, tokenParams, {
+    const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=partenaire`, tokenParams, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 7000,
     })
