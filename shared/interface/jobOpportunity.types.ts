@@ -26,7 +26,7 @@ const zJobOpportunityWorkplace = z.object({
   website: z.string().nullable(),
   location: z.object({
     address: z.string(),
-    lattitude: z.number(),
+    latitude: z.number(),
     longitude: z.number(),
   }),
   domaine: z.object({

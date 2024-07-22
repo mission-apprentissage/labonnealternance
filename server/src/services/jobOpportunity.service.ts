@@ -189,7 +189,7 @@ export const formatRecruteurLbaToJobOpportunity = (recruteursLba: ILbaCompany[])
       website: recruteurLba.website,
       location: {
         address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
-        lattitude: parseFloat(recruteurLba.geo_coordinates.split(",")[0]),
+        latitude: parseFloat(recruteurLba.geo_coordinates.split(",")[0]),
         longitude: parseFloat(recruteurLba.geo_coordinates.split(",")[1]),
       },
       domaine: {
@@ -245,8 +245,8 @@ export const formatOffreEmploiLbaToJobOpportunity = (offresEmploiLba: IRecruiter
         website: null,
         location: {
           address: offreEmploiLba.address!,
-          lattitude: offreEmploiLba.geopoint!.coordinates[1], // Changed lattitude to latitude
-          longitude: offreEmploiLba.geopoint!.coordinates[0], // Correcting the order of coordinates
+          latitude: offreEmploiLba.geopoint!.coordinates[1],
+          longitude: offreEmploiLba.geopoint!.coordinates[0],
         },
         domaine: {
           idcc: Number(offreEmploiLba.idcc) ?? null,
@@ -302,7 +302,7 @@ export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: F
       location: {
         address: offreFT.lieuTravail.libelle,
         longitude: parseFloat(offreFT.lieuTravail.longitude),
-        lattitude: parseFloat(offreFT.lieuTravail.latitude),
+        latitude: parseFloat(offreFT.lieuTravail.latitude),
       },
       domaine: {
         idcc: null,
