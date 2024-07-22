@@ -48,52 +48,53 @@ const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, para
  * @param {string} filter
  * @returns {Promise<IFormationCatalogue[]>}
  */
-const getFormations = (
-  query: object,
-  filter: object = {
-    lieu_formation_geo_coordonnees: 1,
-    rome_codes: 1,
-    _id: 0,
-  }
-) => getDbCollection("formationcatalogues").find(query, filter).toArray()
+const getFormations = (query: object) =>
+  getDbCollection("formationcatalogues")
+    .find(query, {
+      projection: {
+        lieu_formation_geo_coordonnees: 1,
+        rome_codes: 1,
+        _id: 0,
+      },
+    })
+    .toArray()
 
 /**
  * @description get formation according to the available parameters passed to the API endpoint
  * @param {object} wish wish data
  * @returns {Promise<IFormationCatalogue[]>}
  */
-const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalogue[]> => {
-  let formations
+const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalogue[] | null> => {
   // search by cle ME
   if (wish.cle_ministere_educatif) {
-    formations = await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
-  }
-
-  if (!formations || !formations.length) {
-    // search by uai_lieu_formation
-    if (wish.uai_lieu_formation) {
-      formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
+    const formations = await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
+    if (formations.length) {
+      return formations
     }
   }
 
-  if (!formations || !formations.length) {
-    // search by uai_formateur
-    if (wish.uai_formateur) {
-      formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
+  // search by uai_formateur
+  if (wish.uai_formateur) {
+    const formations = await getFormations({
+      $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }],
+      etablissement_formateur_uai: wish.uai_formateur,
+    })
+    if (formations.length) {
+      return formations
     }
   }
 
-  if (!formations || !formations.length) {
-    // search by uai_formateur_responsable
-    if (wish.uai_formateur_responsable) {
-      formations = await getFormations({
-        $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }],
-        etablissement_gestionnaire_uai: wish.uai_formateur_responsable,
-      })
+  // search by uai_formateur_responsable
+  if (wish.uai_formateur_responsable) {
+    const formations = await getFormations({
+      $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }],
+      etablissement_gestionnaire_uai: wish.uai_formateur_responsable,
+    })
+    if (formations.length) {
+      return formations
     }
   }
-
-  return formations
+  return null
 }
 
 /**
