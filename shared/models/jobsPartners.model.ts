@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "../constants"
+import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { IModelDescriptor, zObjectId } from "./common"
@@ -34,7 +34,7 @@ const ZJobsPartnersJobOffer = z.object({
   acquired_skills: z.string().describe("Compétence acuqises durant l'alternance"),
   access_condition: z.string().describe("Conditions d'accès à l'offre"),
   diploma_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA).describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
-  remote: extensions.buildEnum("").describe("Format de travail de l'offre"), //use from jobOpportunity PR
+  remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).describe("Format de travail de l'offre"),
   publication: z.object({
     creation_date: z.date().describe("Date de creation de l'offre"),
     expiration_date: z.date().describe("Date d'expiration de l'offre. Si pas présente, mettre àcreation_date + 60j"),
@@ -53,7 +53,6 @@ const ZJobsPartnersWorkplace = z.object({
   name: z.string().nullable().describe("Nom customisé de l'entreprise"),
   description: z.string().nullable().describe("description de l'entreprise"),
   size: z.string().nullable().describe("Taille de l'entreprise"),
-  custom_size: z.string(), // USELESS
   location: z
     .object({
       address: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
