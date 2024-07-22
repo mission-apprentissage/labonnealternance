@@ -209,7 +209,7 @@ export default (server: Server) => {
           }
         ),
         getDbCollection("users").findOne(
-          { _id: new ObjectId(appointment.applicant_id) },
+          { _id: appointment.applicant_id },
           {
             projection: {
               type: 1,
@@ -256,7 +256,7 @@ export default (server: Server) => {
         getParameterByCleMinistereEducatif({
           cleMinistereEducatif: cle_ministere_educatif,
         }),
-        users.getUserById(appointment.applicant_id.toString()),
+        getDbCollection("users").findOne({ _id: appointment.applicant_id }),
       ])
 
       if (!user) throw Boom.notFound()
