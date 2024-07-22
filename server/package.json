@@ -25,9 +25,9 @@
     "@fastify/rate-limit": "^9.0.1",
     "@fastify/swagger": "^8.10.1",
     "@fastify/swagger-ui": "^1.9.3",
-    "@immobiliarelabs/fastify-sentry": "^7.1.1",
-    "@sentry/integrations": "^7.72.0",
-    "@sentry/node": "^7.72.0",
+    "@opentelemetry/instrumentation-mongodb": "^0.46.0",
+    "@sentry/node": "^8.19.0",
+    "@sentry/profiling-node": "^8.19.0",
     "@turf/distance": "^6.5.0",
     "@types/netmask": "^2.0.3",
     "@types/nodemailer": "^6.4.11",
@@ -93,7 +93,7 @@
     "zod-mongodb-schema": "^1.0.2"
   },
   "devDependencies": {
-    "@sentry/types": "^7.72.0",
+    "@sentry/types": "^8.19.0",
     "@swc/core": "^1.3.90",
     "@types/bunyan": "^1.8.9",
     "@types/ejs": "^3.1.3",
