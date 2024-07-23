@@ -56,8 +56,6 @@
       when:
         - stack_status.stdout != ""
         - '"migrations-status=synced" not in migration_status_output.stdout_lines'
-      async: 1800
-      poll: 10
 
     - name: "Create MongoDB Indexes"
       shell:
