@@ -45,11 +45,14 @@ const scanApplications = async (applicationFilter: Filter<IApplication>, batchSi
   const applicationCount = await getDbCollection("applications").countDocuments(applicationFilter)
   logger.info(`${applicationCount} applications to scan. Taking the first ${batchSize}`)
   const applicationsToScan = await getDbCollection("applications").find(applicationFilter).limit(batchSize).toArray()
-  const results = { success: 0, error: 0, total: applicationCount }
+  const results = { success: 0, error: 0, total: applicationCount, virusDetected: 0 }
   await asyncForEach(applicationsToScan, async (application) => {
     try {
-      await processApplicationScanForVirus(application)
+      const hasVirus = await processApplicationScanForVirus(application)
       results.success++
+      if (hasVirus) {
+        results.virusDetected++
+      }
     } catch (err) {
       results.error++
       logger.error(`error while scanning application with id=${application._id}`, err)
@@ -57,7 +60,11 @@ const scanApplications = async (applicationFilter: Filter<IApplication>, batchSi
       await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { scan_status: ApplicationScanStatus.ERROR_CLAMAV } })
     }
   })
-  logger.info("done scanning applications for virus with filter", applicationFilter, `total=${applicationCount}, success=${results.success}, errors=${results.error}`)
+  logger.info(
+    "done scanning applications for virus with filter",
+    applicationFilter,
+    `total=${applicationCount}, success=${results.success}, errors=${results.error}. virus detected=${results.virusDetected}`
+  )
   return results
 }
 

@@ -871,6 +871,31 @@ export const processApplicationScanForVirus = async (application: IApplication) 
     { _id: application._id },
     { $set: { scan_status: hasVirus ? ApplicationScanStatus.VIRUS_DETECTED : ApplicationScanStatus.NO_VIRUS_DETECTED } }
   )
+
+  if (hasVirus) {
+    const jobOrCompany = await getJobOrCompany(application)
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, jobOrCompany)
+    const attachmentContent = await getApplicationAttachmentContent(application)
+    await mailer.sendEmail({
+      to: application.applicant_email,
+      subject: "Echec d'envoi de votre candidature",
+      template: getEmailTemplate("mail-echec-envoi-candidature"),
+      data: {
+        ...sanitizeApplicationForEmail(application),
+        ...images,
+        urlOfDetail,
+        urlOfDetailNoUtm,
+      },
+      attachments: [
+        {
+          filename: application.applicant_attachment_name,
+          path: attachmentContent,
+        },
+      ],
+    })
+  }
+
+  return hasVirus
 }
 
 export const deleteApplicationCvFile = async (application: IApplication) => {
