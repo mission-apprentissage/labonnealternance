@@ -1,12 +1,12 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
-import { ILbaCompany, ZLbaCompany } from "shared/models/lbaCompany.model"
+import { ILbaCompany, ZLbaCompany } from "shared/models/recruteurLba.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils"
+import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./RecruteurLbaUtils"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
 const MIN_COMPANY_THRESHOLD = 200000

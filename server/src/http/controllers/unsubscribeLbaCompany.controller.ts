@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { IUnsubscribedLbaCompany, zRoutes } from "shared"
-import { IUnsubscribeQueryResponse } from "shared/models/unsubscribeLbaCompany.model"
+import { IUnsubscribeQueryResponse } from "shared/models/unsubscribedRecruteurLba.model"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
