@@ -20,6 +20,7 @@ import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
+import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { addJob, executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
@@ -212,6 +213,10 @@ export const CronsMap = {
     cron_string: "*/10 * * * *",
     handler: () => addJob({ name: "send-applications", payload: { batchSize: 100 } }),
   },
+  "Génération du token France Travail pour la récupération des offres": {
+    cron_string: "*/5 * * * *",
+    handler: () => addJob({ name: "francetravail:token-offre", payload: {} }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -230,6 +235,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "francetravail:token-offre":
+        return generateFranceTravailAccess()
       case "recreate:indexes":
         return recreateIndexes()
       case "lbajobs:export:s3":

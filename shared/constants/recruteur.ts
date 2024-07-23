@@ -60,6 +60,7 @@ export enum OPCOS {
 }
 
 export const NIVEAUX_POUR_LBA = {
+  INDIFFERENT: "Indifférent",
   "3 (CAP...)": "Cap, autres formations niveau (Infrabac)",
   "4 (BAC...)": "BP, Bac, autres formations niveau (Bac)",
   "5 (BTS, DEUST...)": "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -91,4 +92,10 @@ export const TRAINING_RYTHM = {
   "1S1S": "1 semaine / 1 semaine",
   "2S3S": "2 semaines / 3 semaines",
   "6S6S": "6 semaines / 6 semaines",
+}
+
+export const TRAINING_REMOTE_TYPE = {
+  PRESENTIEL: "Présentiel",
+  TELETRAVAIL: "Télétravail",
+  HYBRID: "Hybride",
 }
