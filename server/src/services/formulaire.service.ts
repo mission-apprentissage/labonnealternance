@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto"
 
 import Boom from "boom"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
-import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
+import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -30,6 +30,61 @@ export interface IOffreExtended extends IJob {
   pourvue: string
   supprimer: string
 }
+const romeDetailAndCandidatureCountAggregateStage = [
+  {
+    $unwind: { path: "$jobs" },
+  },
+  {
+    $lookup: {
+      from: "referentielromes",
+      localField: "jobs.rome_code.0",
+      foreignField: "rome.code_rome",
+      as: "referentielrome",
+    },
+  },
+  {
+    $unwind: { path: "$referentielrome" },
+  },
+  {
+    $set: { "jobs.rome_detail": "$referentielrome" },
+  },
+  {
+    $addFields: {
+      "jobs.jobIdStr": { $toString: "$jobs._id" },
+    },
+  },
+  {
+    $lookup: {
+      from: "applications",
+      localField: "jobs.jobIdStr",
+      foreignField: "job_id",
+      as: "applications",
+    },
+  },
+  {
+    $set: {
+      "jobs.candidatures": { $size: "$applications" },
+    },
+  },
+  {
+    $group: {
+      _id: "$_id",
+      recruiters: { $first: "$$ROOT" },
+      jobs: { $push: "$jobs" },
+    },
+  },
+  {
+    $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
+  },
+  {
+    $project: {
+      referentielrome: 0,
+      "jobs.rome_detail._id": 0,
+      "jobs.jobIdStr": 0,
+      applications: 0,
+    },
+  },
+]
 
 // étape d'aggragation mongo permettant de récupérer le rome_detail correspondant dans chaque job d'un recruiter
 export const romeDetailAggregateStages = [
@@ -279,7 +334,7 @@ export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
 export const getFormulaire = async (query: Filter<IRecruiter>): Promise<IRecruiter | null> => getDbCollection("recruiters").findOne(query)
 
 export const getFormulaireWithRomeDetail = async (query: Filter<IRecruiter>): Promise<IRecruiter | null> => {
-  const recruiterWithRomeDetail: IRecruiter[] = (await getDbCollection("recruiters")
+  const recruiterWithRomeDetail = (await getDbCollection("recruiters")
     .aggregate([
       {
         $match: query,
@@ -289,6 +344,18 @@ export const getFormulaireWithRomeDetail = async (query: Filter<IRecruiter>): Pr
     .toArray()) as IRecruiter[]
 
   return recruiterWithRomeDetail.length ? recruiterWithRomeDetail[0] : await getFormulaire(query)
+}
+export const getFormulaireWithRomeDetailAndApplicationCount = async (query: Filter<IRecruiter>): Promise<IRecruiterWithApplicationCount | null> => {
+  const recruiterWithRomeDetailAndApplicationCount = (await getDbCollection("recruiters")
+    .aggregate([
+      {
+        $match: query,
+      },
+      ...romeDetailAndCandidatureCountAggregateStage,
+    ])
+    .toArray()) as IRecruiterWithApplicationCount[]
+
+  return recruiterWithRomeDetailAndApplicationCount.length ? recruiterWithRomeDetailAndApplicationCount[0] : null
 }
 
 /**

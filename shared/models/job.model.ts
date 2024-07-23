@@ -57,7 +57,10 @@ export const ZJobFields = z
     is_disabled_elligible: z.boolean().nullish().default(false).describe("Poste ouvert aux personnes en situation de handicap"),
     job_count: z.number().nullish().default(1).describe("Nombre de poste(s) ouvert(s) pour cette offre"),
     job_duration: z.number().min(6).max(36).nullish().describe("Durée du contrat en mois"),
-    job_rythm: z.enum([allJobRythm[0], ...allJobRythm.slice(1)]).describe("Répartition de la présence de l'alternant en formation/entreprise"),
+    job_rythm: z
+      .enum([allJobRythm[0], ...allJobRythm.slice(1)])
+      .nullable()
+      .describe("Répartition de la présence de l'alternant en formation/entreprise"),
     custom_address: z.string().nullish().describe("Adresse personnalisée de l'entreprise"),
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
     custom_job_title: z.string().nullish().describe("Titre personnalisée de l'offre"),
