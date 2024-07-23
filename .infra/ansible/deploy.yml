@@ -69,6 +69,8 @@
         chdir: /opt/app
         cmd: "/opt/app/tools/update-stack.sh"
       register: docker_deploy_output
+      async: 1800
+      poll: 10
 
     - debug:
         var: docker_deploy_output
