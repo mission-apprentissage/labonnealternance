@@ -6,7 +6,7 @@ import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { obfuscateLbaCompanyApplications } from "@/services/application.service"
-import { buildLbaCompanyAddress } from "@/services/lbacompany.service"
+import { buildLbaCompanyAddress } from "@/services/recruteurLba.service"
 
 import config from "../../config"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"

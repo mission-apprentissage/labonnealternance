@@ -30,8 +30,8 @@ import {
 } from "../../services/formulaire.service"
 import { getFtJobFromIdV2, getFtJobs } from "../../services/ftjob.service"
 import { formatFranceTravailToJobOpportunity, formatOffreEmploiLbaToJobOpportunity, formatRecruteurLbaToJobOpportunity, getJobsQuery } from "../../services/jobOpportunity.service"
-import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/lbacompany.service"
 import { addOffreDetailView, getJobs, getLbaJobByIdV2 } from "../../services/lbajob.service"
+import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
 

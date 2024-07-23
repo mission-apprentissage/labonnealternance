@@ -25,9 +25,9 @@ import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyTok
 import { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
 import { getJobFromRecruiter, getOffreAvecInfoMandataire } from "./formulaire.service"
-import { buildLbaCompanyAddress } from "./lbacompany.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
+import { buildLbaCompanyAddress } from "./recruteurLba.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20

@@ -9,10 +9,10 @@ import config from "../config"
 import { getSomeFtJobs } from "./ftjob.service"
 import { FTJob } from "./ftjob.service.types"
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
-import { getSomeCompanies } from "./lbacompany.service"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { getLbaJobs, incrementLbaJobsViewCount } from "./lbajob.service"
 import { jobsQueryValidator } from "./queryValidator.service"
+import { getSomeCompanies } from "./recruteurLba.service"
 
 /**
  * @description Retourn la compilation d'opportunités d'emploi au format unifié
