@@ -5,7 +5,7 @@ import Boom from "boom"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 
-import { getFtJob, getFtReferentiels, searchForFtJobs } from "@/common/apis/FranceTravail"
+import { getFtJob, searchForFtJobs } from "@/common/apis/FranceTravail"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
@@ -23,21 +23,6 @@ const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "op
 const correspondancesNatureContrat = {
   "Cont. professionnalisation": TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION,
   "Contrat apprentissage": TRAINING_CONTRACT_TYPE.APPRENTISSAGE,
-}
-
-/**
- * Utilitaire à garder pour interroger les référentiels PE non documentés par ailleurs
- * Liste des référentiels disponible sur https://www.emploi-store-dev.fr/portail-developpeur-cms/home/catalogue-des-api/documentation-des-api/api/api-offres-demploi-v2/referentiels.html
- *
- * @param {string} referentiel
- */
-export const getFtApiReferentiels = async (referentiel: string) => {
-  try {
-    const referentiels = await getFtReferentiels(referentiel)
-    console.info(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
-  } catch (error) {
-    console.error("error getReferentiel ", error)
-  }
 }
 
 /**
