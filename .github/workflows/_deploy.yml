@@ -100,7 +100,7 @@ jobs:
         with:
           status: ${{ job.status }}
           notification_title: "Le déploiement ${{ inputs.app_version }} en ${{ inputs.environment }} a échoué"
-          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`"
+          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`"
           notify_when: "failure"
           mention_groups: "!channel"
         env:
