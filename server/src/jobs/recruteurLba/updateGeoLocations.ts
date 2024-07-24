@@ -14,7 +14,7 @@ import __dirname from "../../common/dirname"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./RecruteurLbaUtils"
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./recruteurLbaUtils"
 
 const currentDirname = __dirname(import.meta.url)
 
