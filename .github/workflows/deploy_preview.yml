@@ -1,7 +1,9 @@
 name: Deploy Preview
 on:
-  issue_comment:
-    types: [created]
+  # __TEMPLATE_UPDATE__: Uncomment issue_comment section and remove empty array
+  []
+  # issue_comment:
+  #   types: [created]
 
 jobs:
   debug:
@@ -83,31 +85,35 @@ jobs:
           sudo pipx inject ansible-core jmespath
 
       - name: Run playbook
-        run: .bin/mna-lba deploy preview "${{ github.event.issue.number }}"
+        run: .bin/mna deploy preview "${{ github.event.issue.number }}"
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
 
-      - name: Encrypt Error log on failure
-        run: .bin/mna-lba deploy:log:encrypt
-        if: failure()
+      - name: Encrypt logs
+        run: .bin/mna deploy:log:encrypt
+        if: always()
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
 
-      - name: Upload failure artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v3
+      - name: Upload logs artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: error-logs
-          path: /tmp/deploy_error.log.gpg
+          name: logs-${{ github.event.issue.number }}
+          path: /tmp/deploy.log.gpg
+
+      - name: Add Job summary
+        if: always()
+        run: echo 'You can get logs using `.bin/mna deploy:log:decrypt ${{ github.run_id }} ${{ github.event.issue.number }}`' >> $GITHUB_STEP_SUMMARY
 
       - name: Preview Summary when failed
         if: failure()
-        run: echo 'You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`' >> $GITHUB_STEP_SUMMARY
+        run: echo 'You can get error logs using `.bin/mna deploy:log:decrypt ${{ github.run_id }}`' >> $GITHUB_STEP_SUMMARY
 
       - name: Preview Summary
-        run: echo 'https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/ 🚀' >> $GITHUB_STEP_SUMMARY
+        run: echo 'https://${{ github.event.issue.number }}.${{ vars.app_name }}-preview.apprentissage.beta.gouv.fr/ 🚀' >> $GITHUB_STEP_SUMMARY
 
       - name: Comment PR Preview
         if: github.event.issue.state != 'closed'
@@ -115,7 +121,7 @@ jobs:
         with:
           message: |
             ### :rocket: Prévisualisation
-            https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
+            https://${{ github.event.issue.number }}.${{ vars.app_name }}-preview.apprentissage.beta.gouv.fr/
 
             You can access runner logs in ${{ steps.run_url.outputs.url }}
 
@@ -131,9 +137,9 @@ jobs:
           message: |
             ### :ambulance: Prévisualisation failed
 
-            https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
+            https://${{ github.event.issue.number }}.${{ vars.app_name }}-preview.apprentissage.beta.gouv.fr/
 
-            You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`
+            You can get error logs using `.bin/mna deploy:log:decrypt ${{ github.run_id }}`
             You can access runner logs in ${{ steps.run_url.outputs.url }}
 
             To re-deploy just add a comment with :rocket:
@@ -148,7 +154,7 @@ jobs:
           message: |
             ### :ambulance: Prévisualisation cancelled
 
-            https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
+            https://${{ github.event.issue.number }}.${{ vars.app_name }}-preview.apprentissage.beta.gouv.fr/
 
             You can access runner logs in ${{ steps.run_url.outputs.url }}
 
@@ -156,18 +162,3 @@ jobs:
           comment_tag: deployment
           mode: recreate
           pr_number: ${{ github.event.issue.number }}
-
-  cypress:
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.event.issue.id }}-cypress
-      cancel-in-progress: true
-    needs: ["deploy_preview"]
-    uses: "./.github/workflows/cypress.yml"
-    with:
-      cypress_host: "https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr"
-      smtp_host: "https://smtp.labonnealternance-preview.apprentissage.beta.gouv.fr"
-      environment: preview
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      VAULT_PWD: ${{ secrets.VAULT_PWD }}

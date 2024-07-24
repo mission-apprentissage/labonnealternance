@@ -9,7 +9,6 @@ on:
         options:
           - production
           - recette
-          - pentest
       app_version:
         description: app version
         type: string
@@ -42,34 +41,8 @@ on:
         required: true
 
 jobs:
-  version:
-    name: Get Version
-    runs-on: ubuntu-latest
-    outputs:
-      VERSION: ${{ steps.get-version.outputs.VERSION }}
-    steps:
-      - name: Checkout project
-        if: ${{ inputs.app_version == 'latest' }}
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Get Version
-        id: get-version
-        shell: bash
-        run: |
-          if [[ "${APP_VERSION}" == "latest" ]]; then
-            echo "VERSION=$(git describe --tags --abbrev=0 --candidates 100 --always | cut -c 2-)" >> "$GITHUB_OUTPUT"
-          else
-            echo "VERSION=${APP_VERSION}" >> "$GITHUB_OUTPUT"
-          fi
-        env:
-          APP_VERSION: ${{ inputs.app_version }}
-
   deploy:
-    needs: version
-    name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
+    name: Deploy ${{ inputs.app_version }} on ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
       - name: Notify new deployment on Slack
@@ -77,12 +50,9 @@ jobs:
         if: always()
         with:
           status: ${{ job.status }}
-          notification_title: "Déploiement ${{ needs.version.outputs.VERSION }} en ${{ inputs.environment }} initié..."
+          notification_title: "Déploiement ${{ inputs.app_version }} en ${{ inputs.environment }} initié..."
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-
-      - name: Get Action IP
-        run: curl -4 ifconfig.me
 
       - name: Checkout project
         uses: actions/checkout@v4
@@ -101,34 +71,38 @@ jobs:
         run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
 
       - name: Run playbook
-        run: .bin/mna-lba deploy ${{ inputs.environment }} --extra-vars "app_version=${{ needs.version.outputs.VERSION }}"
+        run: .bin/mna deploy ${{ inputs.environment }} --extra-vars "app_version=${{ inputs.app_version }}"
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
 
-      - name: Encrypt Error log on failure
-        run: .bin/mna-lba deploy:log:encrypt
-        if: failure()
+      - name: Encrypt logs
+        run: .bin/mna deploy:log:encrypt
+        if: always()
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
 
-      - name: Upload failure artifacts on failure
-        if: failure()
-        uses: actions/upload-artifact@v3
+      - name: Upload logs artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: error-logs
-          path: /tmp/deploy_error.log.gpg
+          name: logs-${{ inputs.environment }}
+          path: /tmp/deploy.log.gpg
+
+      - name: Add Job summary
+        if: always()
+        run: echo 'You can get logs using `.bin/mna deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`' >> $GITHUB_STEP_SUMMARY
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2
         if: always()
         with:
           status: ${{ job.status }}
-          notification_title: "Le déploiement ${{ needs.version.outputs.VERSION }} en ${{ inputs.environment }} a échoué"
-          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`"
+          notification_title: "Le déploiement ${{ inputs.app_version }} en ${{ inputs.environment }} a échoué"
+          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`"
           notify_when: "failure"
-          mention_groups: "S0693U59FCK"
+          mention_groups: "!channel"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
 
@@ -137,7 +111,7 @@ jobs:
         if: always()
         with:
           status: ${{ job.status }}
-          notification_title: "Déploiement ${{ needs.version.outputs.VERSION }} en ${{ inputs.environment }} terminé avec succès"
+          notification_title: "Déploiement ${{ inputs.app_version }} en ${{ inputs.environment }} terminé avec succès"
           notify_when: "success"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
