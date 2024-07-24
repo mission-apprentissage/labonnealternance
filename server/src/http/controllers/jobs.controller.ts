@@ -25,8 +25,8 @@ import {
 } from "../../services/formulaire.service"
 import { getFtJobFromId } from "../../services/ftjob.service"
 import { getJobsQuery } from "../../services/jobOpportunity.service"
-import { getCompanyFromSiret } from "../../services/lbacompany.service"
 import { addOffreDetailView, getLbaJobById } from "../../services/lbajob.service"
+import { getCompanyFromSiret } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
 

@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
 import { JOB_STATUS, ZJob, ZJobWrite } from "../models/job.model"
-import { ZRecruiter, ZRecruiterWritable } from "../models/recruiter.model"
+import { ZRecruiter, ZRecruiterWithApplicationCount, ZRecruiterWritable } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -12,15 +12,7 @@ export const zFormulaireRoute = {
       path: "/formulaire/:establishment_id",
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "200": ZRecruiter.omit({
-          jobs: true,
-        }).extend({
-          jobs: z.array(
-            ZJob.extend({
-              candidatures: z.number(),
-            })
-          ),
-        }),
+        "200": ZRecruiterWithApplicationCount,
       },
       securityScheme: {
         auth: "cookie-session",
@@ -35,15 +27,7 @@ export const zFormulaireRoute = {
       path: "/formulaire/:establishment_id/by-token",
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "200": ZRecruiter.omit({
-          jobs: true,
-        }).extend({
-          jobs: z.array(
-            ZJob.extend({
-              candidatures: z.number(),
-            })
-          ),
-        }),
+        "200": ZRecruiterWithApplicationCount,
       },
       securityScheme: {
         auth: "access-token",
