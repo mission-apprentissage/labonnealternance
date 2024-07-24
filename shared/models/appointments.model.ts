@@ -42,7 +42,7 @@ export type IMailing = z.output<typeof ZMailing>
 export const ZAppointment = z
   .object({
     _id: zObjectId,
-    applicant_id: z.string(),
+    applicant_id: zObjectId,
     cfa_intention_to_applicant: z.string().nullish(),
     cfa_message_to_applicant_date: z.date().nullish(),
     cfa_message_to_applicant: z.string().nullish(),

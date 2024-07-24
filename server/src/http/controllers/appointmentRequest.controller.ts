@@ -62,7 +62,7 @@ export default (server: Server) => {
 
       if (!isNew) {
         const appointment = await appointmentService.findOne({
-          applicant_id: user._id.toString(),
+          applicant_id: user._id,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
           created_at: {
             $gte: dayjs().subtract(4, "days").toDate(),
@@ -80,7 +80,7 @@ export default (server: Server) => {
 
       const [createdAppointement, etablissement] = await Promise.all([
         appointmentService.createAppointment({
-          applicant_id: user._id.toString(),
+          applicant_id: user._id,
           cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
           cfa_formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
           applicant_message_to_cfa: applicantMessageToCfa,
@@ -209,7 +209,7 @@ export default (server: Server) => {
           }
         ),
         getDbCollection("users").findOne(
-          { _id: new ObjectId(appointment.applicant_id) },
+          { _id: appointment.applicant_id },
           {
             projection: {
               type: 1,
@@ -256,7 +256,7 @@ export default (server: Server) => {
         getParameterByCleMinistereEducatif({
           cleMinistereEducatif: cle_ministere_educatif,
         }),
-        users.getUserById(appointment.applicant_id.toString()),
+        getDbCollection("users").findOne({ _id: appointment.applicant_id }),
       ])
 
       if (!user) throw Boom.notFound()

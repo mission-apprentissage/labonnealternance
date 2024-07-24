@@ -52,7 +52,6 @@ import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtabli
 import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
@@ -249,8 +248,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return runGarbageCollector()
       case "anonymize:appointments":
         return anonymizeOldAppointments()
-      case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
-        return fixDuplicateUsers()
       case "control:applications":
         return controlApplications()
       case "control:appointments":
