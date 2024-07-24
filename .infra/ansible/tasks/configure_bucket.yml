@@ -29,7 +29,7 @@
 
 - name: Create S3 buckets
   include_tasks: ./_create_s3_bucket.yml
-  with_items:
+  loop:
     - "{{ vault.LBA_S3_BUCKET }}"
     - "{{ vault.LBA_S3_APPLICATIONS_BUCKET }}"
   loop_control:
