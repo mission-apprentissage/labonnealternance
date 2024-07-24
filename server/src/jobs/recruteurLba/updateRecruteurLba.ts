@@ -6,7 +6,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./recruteurLbaUtils"
+import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./recruteurLbaUtil"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
 const MIN_COMPANY_THRESHOLD = 200000
