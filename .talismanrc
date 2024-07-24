@@ -30,7 +30,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 9a05471ab787be48dd50f2340b944a91bd52a7ea531881203596c1e60a6733d0
+  checksum: adc73c674637851e8a31aa0c8524875b3cae070957b2340e84795f843e7dcf7b
 - filename: cypress/pages/FlowAdminPage.ts
   checksum: cbb0a8651ca4c5d807f03eeeba6204c7d6d3a5f17ffb0734921f18d54f99f6b0
 - filename: docker-compose.yml

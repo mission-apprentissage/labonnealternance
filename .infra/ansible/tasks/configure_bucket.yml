@@ -1,0 +1,38 @@
+---
+- name: Check if AWS CLI package is installed
+  ansible.builtin.stat:
+    path: /usr/local/aws-cli
+  register: aws_cli_installed
+
+- name: Download and Unarchive AWS CLI package
+  ansible.builtin.unarchive:
+    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp
+    remote_src: yes
+    extra_opts:
+      - -O /tmp/awscliv2.zip
+  when: not aws_cli_installed.stat.exists
+
+- name: Install AWS CLI package.
+  ansible.builtin.command: bash /tmp/aws/install
+  become: true
+  when: not aws_cli_installed.stat.exists
+
+- name: Configure AWS
+  ansible.builtin.command: aws configure set {{ item.key }} {{ item.value }} --profile default
+  become: true
+  with_dict:
+    aws_access_key_id: "{{ vault.OVH_S3_API_KEY }}"
+    aws_secret_access_key: "{{ vault.OVH_S3_API_SECRET }}"
+    region: "{{ vault.OVH_S3_REGION }}"
+    endpoint_url: "{{ vault.OVH_S3_ENDPOINT }}"
+
+- name: Create S3 buckets
+  include_tasks: ./_create_s3_bucket.yml
+  with_items:
+    - "{{ vault.LBA_S3_BUCKET }}"
+    - "{{ vault.LBA_S3_APPLICATIONS_BUCKET }}"
+  loop_control:
+    loop_var: bucket_name
+  vars:
+    bucket_name: "{{ item }}"
