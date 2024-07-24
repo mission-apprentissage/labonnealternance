@@ -10,6 +10,7 @@ import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
+import { processApplications } from "./applications/processApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
@@ -208,6 +209,10 @@ export const CronsMap = {
     cron_string: "00 10,13,17 * * *",
     handler: () => addJob({ name: "metabase:role-management:create", payload: {} }),
   },
+  "Scan et envoi des candidatures": {
+    cron_string: "*/10 * * * *",
+    handler: () => addJob({ name: "send-applications", payload: { batchSize: 100 } }),
+  },
   "Génération du token France Travail pour la récupération des offres": {
     cron_string: "*/5 * * * *",
     handler: () => addJob({ name: "francetravail:token-offre", payload: {} }),
@@ -377,10 +382,12 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "crons:scheduler":
         return cronsScheduler()
-
       case "import-hellowork":
         return importHelloWork()
-
+      case "send-applications": {
+        const { batchSize } = job.payload
+        return processApplications(batchSize ? parseInt(batchSize, 10) : 100)
+      }
       default: {
         logger.warn(`Job not found ${job.name}`)
       }

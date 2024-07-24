@@ -1,10 +1,8 @@
 import { slowCypressDown } from "cypress-slow-down"
 
-import { smtpClient } from "../api/smtpClient"
 import { FlowItemList } from "../pages/FlowItemList"
 import { FlowSendApplication } from "../pages/FlowSendApplication"
 import { SearchForm } from "../pages/SearchForm"
-import { containsText } from "../utils/containText"
 import { generateRandomString } from "../utils/generateRandomString"
 
 slowCypressDown(300)
@@ -33,11 +31,11 @@ describe("send-spontaneous-application", () => {
     FlowSendApplication.applicationForm.submit()
     FlowSendApplication.applicationForm.verifySuccess()
     FlowSendApplication.applicationForm.close()
-
-    smtpClient.getMail(fakeMail, "Votre candidature chez").then((emailContent) => {
-      containsText("Votre candidature a bien été envoyée à", emailContent)
-    })
-
     FlowSendApplication.applicationForm.verifyAlreadyApplied()
+
+    // désactivé à cause du process asynchrone
+    // smtpClient.getMail(fakeMail, "Votre candidature chez").then((emailContent) => {
+    //   containsText("Votre candidature a bien été envoyée à", emailContent)
+    // })
   })
 })

@@ -71,6 +71,15 @@ export async function getVersion(): Promise<string> {
   }
 }
 
+export async function isClamavAvailable(): Promise<boolean> {
+  try {
+    await getVersion()
+    return true
+  } catch (err) {
+    return false
+  }
+}
+
 export async function isInfected(file: string): Promise<boolean> {
   const onFinish = startSentryPerfRecording("clamav", "scan")
   const clamav = await getClamav()
