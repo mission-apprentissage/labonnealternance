@@ -170,6 +170,16 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "scan_status": {
+            "description": "Status du processus de scan de virus",
+            "enum": [
+              "WAITING_FOR_SCAN",
+              "VIRUS_DETECTED",
+              "ERROR_CLAMAV",
+              "NO_VIRUS_DETECTED",
+            ],
+            "type": "string",
+          },
           "searched_for_job_label": {
             "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
             "example": "Vente de fleurs, végétaux",
@@ -192,6 +202,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_phone",
           "company_siret",
           "company_name",
+          "scan_status",
           "applicant_file_name",
           "applicant_file_content",
           "company_type",
