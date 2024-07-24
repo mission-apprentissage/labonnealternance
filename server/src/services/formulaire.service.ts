@@ -650,7 +650,6 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
     },
     { arrayFilters: [{ "x._id": id }], returnDocument: "after" }
   )
-  console.log({ recruiter })
   if (!recruiter) {
     throw Boom.notFound(`job with id=${id} not found`)
   }
@@ -667,10 +666,8 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
  */
 export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecruiter: IRecruiter) => {
   const firstJob = entrepriseRecruiter.jobs.at(0)
-  console.log({ firstJob })
   if (firstJob) {
     const job = await activateAndExtendOffre(firstJob._id)
-    console.log({ job })
     // Send delegation if any
     if (job.delegations?.length) {
       await Promise.all(

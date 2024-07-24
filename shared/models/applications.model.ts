@@ -5,8 +5,16 @@ import { z } from "../helpers/zodWithOpenApi"
 import { zCallerParam } from "../routes/_params"
 
 import { IModelDescriptor, zObjectId } from "./common"
+import { enumToZod } from "./enumToZod"
 
 const collectionName = "applications" as const
+
+export enum ApplicationScanStatus {
+  WAITING_FOR_SCAN = "WAITING_FOR_SCAN",
+  VIRUS_DETECTED = "VIRUS_DETECTED",
+  ERROR_CLAMAV = "ERROR_CLAMAV",
+  NO_VIRUS_DETECTED = "NO_VIRUS_DETECTED",
+}
 
 export const ZApplication = z
   .object({
@@ -96,6 +104,7 @@ export const ZApplication = z
     caller: z.string().nullish().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
     created_at: z.date().nullable().describe("La date création de la demande"),
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
+    scan_status: enumToZod(ApplicationScanStatus).describe("Status du processus de scan de virus"),
   })
   .strict()
   .openapi("Application")

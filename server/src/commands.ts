@@ -545,6 +545,13 @@ program
   .option("-parallelism, [parallelism]", "Number of threads", "10")
   .action(createJobAction("import-hellowork"))
 
+program
+  .command("send-applications")
+  .description("Scanne les virus des pièces jointes et envoie les candidatures")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .option("-batchSize, [batchSize]", "Maximum de candidatures traitées", "100")
+  .action(createJobAction("send-applications"))
+
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }

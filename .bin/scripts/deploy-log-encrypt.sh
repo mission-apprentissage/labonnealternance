@@ -19,5 +19,5 @@ trap delete_cleartext EXIT
 ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq '.vault.SEED_GPG_PASSPHRASE' > "$PASSPHRASE"
 
 # Make sur the file exists
-touch /tmp/deploy_error.log
-gpg  -c --cipher-algo twofish --batch --passphrase-file "$PASSPHRASE" -o /tmp/deploy_error.log.gpg /tmp/deploy_error.log
+touch /tmp/deploy.log
+gpg  -c --cipher-algo twofish --batch --passphrase-file "$PASSPHRASE" -o /tmp/deploy.log.gpg /tmp/deploy.log

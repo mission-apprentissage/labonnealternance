@@ -89,18 +89,22 @@ jobs:
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
 
-      - name: Encrypt Error log on failure
+      - name: Encrypt logs
         run: .bin/mna-lba deploy:log:encrypt
-        if: failure()
+        if: always()
         env:
           ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
 
-      - name: Upload failure artifacts on failure
-        if: failure()
+      - name: Upload logs artifacts
+        if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: error-logs
-          path: /tmp/deploy_error.log.gpg
+          name: logs-${{ github.event.issue.number }}
+          path: /tmp/deploy.log.gpg
+
+      - name: Add Job summary
+        if: always()
+        run: echo 'You can get logs using `.bin/mna deploy:log:decrypt ${{ github.run_id }} ${{ github.event.issue.number }}`' >> $GITHUB_STEP_SUMMARY
 
       - name: Preview Summary when failed
         if: failure()

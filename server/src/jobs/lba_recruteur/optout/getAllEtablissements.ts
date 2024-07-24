@@ -70,7 +70,7 @@ runScript(async () => {
     organismesFiltered.map(async (x) => {
       // TODO à revoir, formated ne correspond pas du tout au modèle Optout
       const formated = formatReferentielData(x)
-      console.log(formated)
+      console.debug(formated)
       //TODO fix and restore :
       //await getDbCollection("optouts").insertOne({ _id: new ObjectId(), createdAt: new Date(), updatedAt: new Date(), ...formated })
     })

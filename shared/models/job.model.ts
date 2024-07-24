@@ -5,7 +5,7 @@ import dayjs from "../helpers/dayjs"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
-import { ZReferentielRomeForJob } from "./rome.model"
+import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model"
 
 export enum JOB_STATUS {
   ACTIVE = "Active",
@@ -67,6 +67,7 @@ export const ZJobFields = z
     stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
     managed_by: z.string().nullish().describe("Id de l'utilisateur gérant l'offre"),
+    competences_rome: ZRomeCompetence.nullish().describe("Compétences du code ROME sélectionnées par le recruteur"),
   })
   .strict()
   .openapi("JobWritable")
@@ -101,6 +102,7 @@ export const ZJobWrite = ZJobFields.pick({
   job_rythm: true,
   job_description: true,
   delegations: true,
+  competences_rome: true,
 })
   .extend({
     job_start_date: ZJobStartDateCreate(),

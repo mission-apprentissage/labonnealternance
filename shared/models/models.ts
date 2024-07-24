@@ -19,6 +19,7 @@ import franceTravailAccessModel from "./franceTravailAccess.model"
 import geolocationsModel from "./geolocations.model"
 import internalJobModel from "./internalJob.model"
 import jobsModel from "./jobs.model"
+import jobsPartnersModel from "./jobsPartners.model"
 import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
 import rawHelloWorkModel from "./rawHelloWork.model"
@@ -56,6 +57,7 @@ const modelDescriptorMap = {
   [geolocationsModel.collectionName]: geolocationsModel,
   [internalJobModel.collectionName]: internalJobModel,
   [jobsModel.collectionName]: jobsModel,
+  [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [lbaCompanyModel.collectionName]: lbaCompanyModel,
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,

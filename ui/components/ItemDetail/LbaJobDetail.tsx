@@ -17,16 +17,14 @@ const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 
-const RomeDescriptions = (job) => (
-  <Accordion allowToggle>
-    <LbaJobCompetences job={job} />
-    <LbaJobTechniques job={job} />
-    <LbaJobAcces job={job} />
-  </Accordion>
-)
-
 const getDescriptionContext = (job: ILbaItemLbaJob) => {
-  return RomeDescriptions(job)
+  return (
+    <Accordion allowToggle>
+      <LbaJobCompetences job={job} />
+      <LbaJobTechniques job={job} />
+      <LbaJobAcces job={job} />
+    </Accordion>
+  )
 }
 
 const LbaJobDetail = ({ job }) => {

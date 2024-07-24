@@ -206,6 +206,7 @@ export default (server: Server) => {
         rome_appellation_label,
         rome_code,
         rome_label,
+        competences_rome,
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
@@ -221,6 +222,7 @@ export default (server: Server) => {
           rome_appellation_label,
           rome_code,
           rome_label,
+          competences_rome,
         },
         user,
         establishment_id,
@@ -265,6 +267,7 @@ export default (server: Server) => {
         rome_appellation_label,
         rome_code,
         rome_label,
+        competences_rome,
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
@@ -280,6 +283,7 @@ export default (server: Server) => {
           rome_appellation_label,
           rome_code,
           rome_label,
+          competences_rome,
         },
         establishment_id,
         user,
@@ -334,8 +338,8 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId"])],
     },
     async (req, res) => {
-      const result = await patchOffre(req.params.jobId, req.body)
-      return res.status(200).send(result)
+      await patchOffre(req.params.jobId, req.body)
+      return res.status(200).send({})
     }
   )
 
@@ -384,9 +388,7 @@ export default (server: Server) => {
           return delegation
         }),
       })
-
-      const jobUpdated = await getJob(jobId.toString())
-      return res.send(jobUpdated)
+      return res.send({})
     }
   )
 

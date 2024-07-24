@@ -14,11 +14,11 @@ fileignoreconfig:
 - filename: .github/workflows/cypress.yml
   checksum: 39f98fb68fdebf6a36959706adb43a8219a4b7781ac35329f957dc1cfa8b6de0
 - filename: .github/workflows/deploy_preview.yml
-  checksum: f54398af24ac144eafc27e69d18c78b1844e0a23b317bd79748ac6d3412ba0ef
+  checksum: 40f9da2dad1254d3f6674137046d431526c6f731989ed0e061995ba58be94322
 - filename: .github/workflows/release.yml
   checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
 - filename: .infra/.env_server
-  checksum: 4230b57e18975ca50c561e052da6bea5d3f7f0265297755c039d9f437cd75271
+  checksum: 22ef4e0aa96e1c20bc2d8903afcc34428c3c40e31f3d3cfb72d3e032b5f07d5a
 - filename: .infra/env.ini
   checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
@@ -30,15 +30,15 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 0620b2b6433ea6fede14439004fefccb3254c644f8977c39d5329d5a50a661f7
+  checksum: 9a05471ab787be48dd50f2340b944a91bd52a7ea531881203596c1e60a6733d0
 - filename: cypress/pages/FlowAdminPage.ts
   checksum: cbb0a8651ca4c5d807f03eeeba6204c7d6d3a5f17ffb0734921f18d54f99f6b0
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 36d5482072da37c98b44bc9ea5b5e704bbe73bd900d0e71d0f5c722b8c2203e1
+  checksum: 20484a96062adc977c1081759bc0376127965d775c6a863412119f88af21af84
 - filename: server/src/common/utils/awsUtils.ts
-  checksum: 0acc085847288b9f2d5235f118e29199a168b368c33a7e37ab7dfc7e143fb507
+  checksum: be4632e9b46913db5b16e7986489b815d054b040560c730fdfa6c5799ee4720d
 - filename: server/src/config.ts
   checksum: de93df113dbac0016655b113750a591ac1052314b0b700ccf000c2c8f5a4f14a
 - filename: server/src/db/migrations/20231127120528-remove-password.ts
@@ -79,6 +79,8 @@ fileignoreconfig:
   checksum: 5fbdf21310d8dfaf259eb39a5ca1e72a53b15493cf3a59ed42c4cb5c8f3a62ab
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
+- filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
+  checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
 - filename: server/tests/integration/http/formationV1.test.ts
   checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
@@ -123,6 +125,10 @@ fileignoreconfig:
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/DepotOffre/RomeDetail.tsx
+  checksum: 3e8962cc324174f8934d5a9da10bfc0d233ea6b32d036d459195d32166154282
+- filename: ui/components/DepotOffre/RomeDetailWithQuery.tsx
+  checksum: 477c08911f43c273ad8b257c3885ae98b92e6a74c8ad096c7023201762907414
 - filename: ui/components/HomeComponents/FacilitezRDVA.tsx
   checksum: cdeae2ef94431bbe8fd1bb0f1bc0c007c938c1a1d4513316cc44cb966b7f4268
 - filename: ui/components/ItemDetail/ItemDetail.tsx
@@ -145,6 +151,8 @@ fileignoreconfig:
   checksum: a50177afa593bae5707bdba29ef27b8f2ed0bc58487491bfff580e7e1f422243
 - filename: ui/components/espace_pro/Admin/utilisateurs/infoDetails/InfoDetails.tsx
   checksum: be2ad6ca5c2bd36d26cd7aebb33ab876bd32662be3735fee3b167325c284ccff
+- filename: ui/components/espace_pro/AjouterVoeux.tsx
+  checksum: 0a8365f461dfaeffa4970365fb1c45ed63c5e28588a63382e1b3e99dfdb42b9a
 - filename: ui/components/footer.tsx
   checksum: d82b5a7d6905070fb32383864566fc16eae4797ca18f82782fb32c95a0d50369
 - filename: ui/pages/accessibilite.tsx
