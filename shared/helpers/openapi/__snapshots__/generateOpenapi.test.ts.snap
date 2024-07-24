@@ -955,7 +955,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "2 semaines / 3 semaines",
               "6 semaines / 6 semaines",
             ],
-            "type": "string",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "job_start_date": {
             "description": "Date de début de l'alternance",
@@ -6806,7 +6809,10 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
                     ],
-                    "type": "string",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
@@ -6977,7 +6983,10 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
                     ],
-                    "type": "string",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
@@ -10087,7 +10096,10 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
                     ],
-                    "type": "string",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
@@ -10257,7 +10269,10 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "2 semaines / 3 semaines",
                       "6 semaines / 6 semaines",
                     ],
-                    "type": "string",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "job_start_date": {
                     "description": "Date de début de l'alternance",
