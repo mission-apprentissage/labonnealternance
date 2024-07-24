@@ -175,7 +175,7 @@ export const sendApplication = async ({
       const emailCompany = await mailer.sendEmail({
         to: newApplication.company_email && newApplication.secret && newApplication.secret === config.lbaSecret ? newApplication.company_email : application.company_email,
         subject: buildTopic(newApplication.company_type, application.job_title),
-        template: getEmailTemplate("mail-candidature"),
+        template: getEmailTemplate(type === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "mail-candidature-spontanee" : "mail-candidature"),
         data: {
           ...sanitizeApplicationForEmail(application),
           ...images,
