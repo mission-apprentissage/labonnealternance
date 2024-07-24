@@ -125,6 +125,10 @@ fileignoreconfig:
   checksum: cfd0e48e8762b43c6431dad873727f6ac091ca6f5c7555e37a8ee3fba03184d1
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/components/DepotOffre/RomeDetail.tsx
+  checksum: 3e8962cc324174f8934d5a9da10bfc0d233ea6b32d036d459195d32166154282
+- filename: ui/components/DepotOffre/RomeDetailWithQuery.tsx
+  checksum: 477c08911f43c273ad8b257c3885ae98b92e6a74c8ad096c7023201762907414
 - filename: ui/components/HomeComponents/FacilitezRDVA.tsx
   checksum: cdeae2ef94431bbe8fd1bb0f1bc0c007c938c1a1d4513316cc44cb966b7f4268
 - filename: ui/components/ItemDetail/ItemDetail.tsx
@@ -147,6 +151,8 @@ fileignoreconfig:
   checksum: a50177afa593bae5707bdba29ef27b8f2ed0bc58487491bfff580e7e1f422243
 - filename: ui/components/espace_pro/Admin/utilisateurs/infoDetails/InfoDetails.tsx
   checksum: be2ad6ca5c2bd36d26cd7aebb33ab876bd32662be3735fee3b167325c284ccff
+- filename: ui/components/espace_pro/AjouterVoeux.tsx
+  checksum: 0a8365f461dfaeffa4970365fb1c45ed63c5e28588a63382e1b3e99dfdb42b9a
 - filename: ui/components/footer.tsx
   checksum: d82b5a7d6905070fb32383864566fc16eae4797ca18f82782fb32c95a0d50369
 - filename: ui/pages/accessibilite.tsx

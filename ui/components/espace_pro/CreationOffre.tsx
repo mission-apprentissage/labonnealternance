@@ -20,7 +20,7 @@ export default function CreationOffre() {
   const { establishment_id, jobId } = router.query as { establishment_id: string; jobId: string }
   const isCreation = jobId === "creation"
 
-  const { data, isLoading } = useQuery("offre", () => getOffre(jobId), {
+  const { data: offre, isLoading } = useQuery("offre", () => getOffre(jobId), {
     enabled: !isCreation,
     cacheTime: 0,
   })
@@ -81,7 +81,7 @@ export default function CreationOffre() {
           )}
         </Breadcrumb>
       </Box>
-      <AjouterVoeux fromDashboard handleSave={handleSave} {...data} />
+      <AjouterVoeux fromDashboard handleSave={handleSave} offre={offre} />
     </Container>
   )
 }
