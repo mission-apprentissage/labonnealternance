@@ -8,7 +8,7 @@ import { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/fr
 
 import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
-import { IAppelattionDetailsFromAPI, IRomeDetailsFromAPI, ZFTApiToken } from "@/services/rome.service.types"
+import { ZFTApiToken } from "@/services/rome.service.types"
 
 import { logger } from "../logger"
 import { getDbCollection } from "../utils/mongodbUtils"
@@ -18,30 +18,16 @@ import getApiClient from "./client"
 
 const axiosClient = getApiClient({}, { cache: false })
 
-const getFTTokenFromDB = async (access_type: IFranceTravailAccessType): Promise<IFranceTravailAccess["access_token"] | undefined> => {
+const getFranceTravailTokenFromDB = async (access_type: IFranceTravailAccessType): Promise<IFranceTravailAccess["access_token"] | undefined> => {
   const data = await getDbCollection("francetravail_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
   return data?.access_token
 }
-const updateFTTokenInDB = async ({ access_type, access_token }: { access_type: IFranceTravailAccessType; access_token: string }) =>
+const updateFranceTravailTokenInDB = async ({ access_type, access_token }: { access_type: IFranceTravailAccessType; access_token: string }) =>
   await getDbCollection("francetravail_access").findOneAndUpdate(
     { access_type },
     { $set: { access_token }, $setOnInsert: { _id: new ObjectId(), created_at: new Date() } },
     { upsert: true }
   )
-
-const ROME_ACCESS = querystring.stringify({
-  grant_type: "client_credentials",
-  client_id: config.esdClientId,
-  client_secret: config.esdClientSecret,
-  scope: `application_${config.esdClientId} api_romev1 nomenclatureRome`,
-})
-
-const ROME_V4_ACCESS = querystring.stringify({
-  grant_type: "client_credentials",
-  client_id: config.esdClientId,
-  client_secret: config.esdClientSecret,
-  scope: `application_${config.esdClientId} api_rome-metiersv1 nomenclatureRome`,
-})
 
 const OFFRES_ACCESS = querystring.stringify({
   grant_type: "client_credentials",
@@ -50,18 +36,22 @@ const OFFRES_ACCESS = querystring.stringify({
   scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
 })
 
-const getFtAccessToken = async (access: IFranceTravailAccessType): Promise<string> => {
-  const token = await getFTTokenFromDB(access)
+const getToken = async (access: IFranceTravailAccessType) => {
+  const token = await getFranceTravailTokenFromDB(access)
   if (token) {
     return token
+  } else {
+    return await getFranceTravailTokenFromAPI(access)
   }
+}
 
+export const getFranceTravailTokenFromAPI = async (access: IFranceTravailAccessType): Promise<string> => {
   try {
     logger.info(`requesting new FT token for access=${access}`)
-    const tokenParams = access === "OFFRE" ? OFFRES_ACCESS : access === "ROME" ? ROME_ACCESS : ROME_V4_ACCESS
+    const tokenParams = OFFRES_ACCESS // if other access are needed, update this value.
     const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=partenaire`, tokenParams, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      timeout: 7000,
+      timeout: 3000,
     })
 
     const validation = ZFTApiToken.safeParse(response.data)
@@ -69,7 +59,7 @@ const getFtAccessToken = async (access: IFranceTravailAccessType): Promise<strin
       throw Boom.internal("inattendu: FT api token format non valide", { error: validation.error })
     }
 
-    await updateFTTokenInDB({ access_type: access, access_token: validation.data.access_token })
+    await updateFranceTravailTokenInDB({ access_type: access, access_token: validation.data.access_token })
 
     return validation.data.access_token
   } catch (error: any) {
@@ -91,7 +81,7 @@ export const searchForFtJobs = async (params: {
   insee?: string
   distance?: number
 }): Promise<FTResponse | null | ""> => {
-  const token = await getFtAccessToken("OFFRE")
+  const token = await getToken("OFFRE")
 
   try {
     const extendedParams = {
@@ -121,7 +111,7 @@ export const searchForFtJobs = async (params: {
  * @description Get a FT Job
  */
 export const getFtJob = async (id: string) => {
-  const token = await getFtAccessToken("OFFRE")
+  const token = await getToken("OFFRE")
   const result = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/${id}`, {
     headers: {
       "Content-Type": "application/json",
@@ -131,71 +121,6 @@ export const getFtJob = async (id: string) => {
   })
 
   return result
-}
-
-/**
- * Utilitaire à garder pour interroger les référentiels FT non documentés par ailleurs
- * Liste des référentiels disponible sur https://www.emploi-store-dev.fr/portail-developpeur-cms/home/catalogue-des-api/documentation-des-api/api/api-offres-demploi-v2/referentiels.html
- *
- * @param {string} referentiel
- */
-export const getFtReferentiels = async (referentiel: string) => {
-  try {
-    const token = await getFtAccessToken("OFFRE")
-
-    const data = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/referentiel/${referentiel}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    return data
-  } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-  }
-}
-
-/**
- * @deprecated use getRomeDetailsFromDB instead
- * @param romeCode
- * @returns
- */
-export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDetailsFromAPI | null | undefined> => {
-  const token = await getFtAccessToken("ROME")
-
-  try {
-    const { data } = await axiosClient.get<IRomeDetailsFromAPI>(`${config.franceTravailIO.baseUrl}/rome/v1/metier/${romeCode}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    return data
-  } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    return null
-  }
-}
-
-export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
-  const token = await getFtAccessToken("ROME")
-
-  try {
-    const { data } = await axiosClient.get<IAppelattionDetailsFromAPI>(`${config.franceTravailIO.baseUrl}/rome/v1/appellation/${appellationCode}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    return data
-  } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    if (error.response.status === 404) {
-      return null
-    }
-  }
 }
 
 /**

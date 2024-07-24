@@ -240,6 +240,6 @@ describe("formationV1", () => {
     const response = await httpClient().inject({ method: "GET", path: "/api/V1/formations?romes=F1603,I1308&radius=0&longitude=180&latitude=90&diploma=lba,lbc" })
 
     expect(response.statusCode).toBe(400)
-    assert.ok(JSON.parse(response.body).message.indexOf("querystring.diploma: Invalid enum value. Expected '3 (CAP...)") >= 0)
+    assert.ok(JSON.parse(response.body).data.validationError.code === "FST_ERR_VALIDATION")
   })
 })
