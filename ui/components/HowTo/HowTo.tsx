@@ -27,7 +27,7 @@ const HowTo = () => {
               <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
                 En un clin d’&oelig;il
               </Text>
-              <Text as="p">Obtenez la liste des formations et entreprises proches de chez vous dans le domaine recherché.</Text>
+              <Text as="p">Obtenez la liste des formations et entreprises prêtes à vous accueillir.</Text>
             </Box>
           </GridItem>
           <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto" mb="12">
