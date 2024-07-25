@@ -37,6 +37,7 @@ export async function processApplications(batchSize: number) {
     message: `${emailResult.total} candidatures à envoyer. ${emailResult.success} candidatures envoyées. ${emailResult.error} erreurs.`,
     error: emailResult.error > 0,
   })
+  await deleteApplicationFiles({ to_applicant_message_id: { $ne: null }, to_company_message_id: { $ne: null }, scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED }, batchSize)
   logger.info("ended job processApplications")
 }
 
@@ -77,7 +78,6 @@ const sendApplicationsEmails = async (applicationFilter: Filter<IApplication>, b
   await asyncForEach(applications, async (application) => {
     try {
       await processApplicationEmails.sendEmailsIfNeeded(application)
-      await deleteApplicationCvFile(application)
       results.success++
     } catch (err) {
       results.error++
@@ -87,4 +87,23 @@ const sendApplicationsEmails = async (applicationFilter: Filter<IApplication>, b
   })
   logger.info("done sending applications emails with filter", applicationFilter, `total=${applicationCount}, success=${results.success}, errors=${results.error}`)
   return results
+}
+
+const deleteApplicationFiles = async (applicationFilter: Filter<IApplication>, batchSize: number) => {
+  logger.info("start removing attachments from s3")
+  const applicationCount = await getDbCollection("applications").countDocuments(applicationFilter)
+  logger.info(`${applicationCount} attachment to remove. Taking the first ${batchSize}`)
+  const applications = await getDbCollection("applications").find(applicationFilter).limit(batchSize).toArray()
+  const results = { success: 0, error: 0, total: applicationCount }
+  await asyncForEach(applications, async (application) => {
+    try {
+      await deleteApplicationCvFile(application)
+      results.success++
+    } catch (err) {
+      results.error++
+      logger.error(`error while removing attachment with id=${application._id}`, err)
+      sentryCaptureException(err, { data: { applicationId: application._id } })
+    }
+  })
+  logger.info("done removing attachement with filter", applicationFilter, `total=${applicationCount}, success=${results.success}, errors=${results.error}`)
 }
