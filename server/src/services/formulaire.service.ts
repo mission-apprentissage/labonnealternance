@@ -32,56 +32,97 @@ export interface IOffreExtended extends IJob {
 }
 const romeDetailAndCandidatureCountAggregateStage = [
   {
-    $unwind: { path: "$jobs" },
-  },
-  {
-    $lookup: {
-      from: "referentielromes",
-      localField: "jobs.rome_code.0",
-      foreignField: "rome.code_rome",
-      as: "referentielrome",
-    },
-  },
-  {
-    $unwind: { path: "$referentielrome" },
-  },
-  {
-    $set: { "jobs.rome_detail": "$referentielrome" },
-  },
-  {
     $addFields: {
-      "jobs.jobIdStr": { $toString: "$jobs._id" },
+      jobs: {
+        $cond: {
+          if: { $isArray: "$jobs" },
+          then: "$jobs",
+          else: [],
+        },
+      },
     },
   },
   {
-    $lookup: {
-      from: "applications",
-      localField: "jobs.jobIdStr",
-      foreignField: "job_id",
-      as: "applications",
+    $facet: {
+      emptyJobs: [{ $match: { jobs: { $eq: [] } } }],
+      nonEmptyJobs: [
+        { $match: { jobs: { $ne: [] } } },
+        { $unwind: { path: "$jobs" } },
+        {
+          $lookup: {
+            from: "referentielromes",
+            let: { rome_code: { $arrayElemAt: ["$jobs.rome_code", 0] } },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$rome.code_rome", "$$rome_code"],
+                  },
+                },
+              },
+            ],
+            as: "referentielrome",
+          },
+        },
+        { $unwind: { path: "$referentielrome", preserveNullAndEmptyArrays: true } },
+        { $set: { "jobs.rome_detail": "$referentielrome" } },
+        { $addFields: { "jobs.jobIdStr": { $toString: "$jobs._id" } } },
+        {
+          $lookup: {
+            from: "applications",
+            let: { jobIdStr: "$jobs.jobIdStr" },
+            pipeline: [{ $match: { $expr: { $eq: ["$job_id", "$$jobIdStr"] } } }, { $project: { _id: 1 } }],
+            as: "applications",
+          },
+        },
+        {
+          $set: {
+            "jobs.candidatures": { $size: "$applications" },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            recruiters: { $first: "$$ROOT" },
+            jobs: {
+              $push: {
+                $mergeObjects: ["$jobs"],
+              },
+            },
+          },
+        },
+        {
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: ["$recruiters", { jobs: "$jobs" }],
+            },
+          },
+        },
+        {
+          $project: {
+            referentielrome: 0,
+            "jobs.rome_detail._id": 0,
+            "jobs.jobIdStr": 0,
+            applications: 0,
+          },
+        },
+      ],
     },
-  },
-  {
-    $set: {
-      "jobs.candidatures": { $size: "$applications" },
-    },
-  },
-  {
-    $group: {
-      _id: "$_id",
-      recruiters: { $first: "$$ROOT" },
-      jobs: { $push: "$jobs" },
-    },
-  },
-  {
-    $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } },
   },
   {
     $project: {
-      referentielrome: 0,
-      "jobs.rome_detail._id": 0,
-      "jobs.jobIdStr": 0,
-      applications: 0,
+      result: {
+        $cond: {
+          if: { $gt: [{ $size: "$emptyJobs" }, 0] },
+          then: { $arrayElemAt: ["$emptyJobs", 0] },
+          else: { $arrayElemAt: ["$nonEmptyJobs", 0] },
+        },
+      },
+    },
+  },
+  {
+    $replaceRoot: {
+      newRoot: "$result",
     },
   },
 ]
