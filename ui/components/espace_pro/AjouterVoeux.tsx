@@ -117,7 +117,7 @@ const AjouterVoeuxForm = ({
         is_disabled_elligible: offre?.is_disabled_elligible ?? false,
         job_count: offre?.job_count ?? 1,
         job_duration: offre?.job_duration ?? 12,
-        job_rythm: offre?.job_rythm ?? undefined,
+        job_rythm: offre?.job_rythm ?? null,
         job_delegation_count: offre?.job_delegation_count ?? 0,
       }}
       validationSchema={Yup.object().shape({
