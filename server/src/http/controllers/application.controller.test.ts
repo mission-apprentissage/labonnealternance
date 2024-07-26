@@ -6,10 +6,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { s3Write } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { isInfected } from "@/services/clamav.service"
 
 vi.mock("@/common/utils/awsUtils", () => {
   return {
     s3Write: vi.fn().mockResolvedValue(undefined),
+  }
+})
+vi.mock("@/services/clamav.service", () => {
+  return {
+    isInfected: vi.fn().mockResolvedValue(false),
   }
 })
 
@@ -108,7 +114,9 @@ describe("POST /v1/application", () => {
     ])
 
     expect(s3Write).toHaveBeenCalledWith("applications", `cv-${applications[0]._id}`, {
-      Body: "data:application/pdf;base64,",
+      Body: body.applicant_file_content,
     })
+
+    expect(isInfected).toHaveBeenCalledWith(body.applicant_file_content)
   })
 })
