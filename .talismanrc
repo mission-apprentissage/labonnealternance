@@ -38,13 +38,15 @@ fileignoreconfig:
 - filename: server/.env.test
   checksum: 20484a96062adc977c1081759bc0376127965d775c6a863412119f88af21af84
 - filename: server/src/common/utils/awsUtils.ts
-  checksum: be4632e9b46913db5b16e7986489b815d054b040560c730fdfa6c5799ee4720d
+  checksum: d574deae0842cd3566f831de184324d7c87d7456a90175076a9f5a9b3ad8c129
 - filename: server/src/config.ts
   checksum: de93df113dbac0016655b113750a591ac1052314b0b700ccf000c2c8f5a4f14a
 - filename: server/src/db/migrations/20231127120528-remove-password.ts
   checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
+- filename: server/src/http/controllers/application.controller.test.ts
+  checksum: 931dca1e50c7215fee39e1b648e15d9d12482f2537e8d97f63782856c351e5f8
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/routes/appointmentRequest.controller.ts

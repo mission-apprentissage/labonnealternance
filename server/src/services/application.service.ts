@@ -12,7 +12,7 @@ import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 import { z } from "zod"
 
-import { s3Bucket } from "@/common/utils/awsUtils"
+import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
@@ -159,12 +159,13 @@ export const sendApplication = async ({
       }
       const application = await newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
       const fileContent = newApplication.applicant_file_content
-      await getApplicationCvS3File(application).write({
+      await s3Write("applications", getApplicationCvS3Filename(application), {
         Body: fileContent,
       })
 
       return { result: "ok", message: "messages sent" }
     } catch (err) {
+      console.error(err)
       logger.error("Error sending application", err)
       sentryCaptureException(err)
       if (newApplication?.caller) {
@@ -225,7 +226,7 @@ export const sendApplicationV2 = async ({
   try {
     const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
     const fileContent = newApplication.applicant_file_content
-    await getApplicationCvS3File(application).write({
+    await s3Write("applications", getApplicationCvS3Filename(application), {
       Body: fileContent,
     })
   } catch (err) {
@@ -854,10 +855,10 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
   }
 }
 
-const getApplicationCvS3File = (application: IApplication) => applicationsS3Bucket.file(`cv-${application._id}`)
+const getApplicationCvS3Filename = (application: IApplication) => `cv-${application._id}`
 
 const getApplicationAttachmentContent = async (application: IApplication): Promise<string> => {
-  const content = await getApplicationCvS3File(application).readAsString()
+  const content = await s3ReadAsString("applications", getApplicationCvS3Filename(application))
   if (!content) {
     throw Boom.internal(`inattendu : cv vide pour la candidature avec id=${application._id}`)
   }
@@ -899,7 +900,7 @@ export const processApplicationScanForVirus = async (application: IApplication) 
 }
 
 export const deleteApplicationCvFile = async (application: IApplication) => {
-  await getApplicationCvS3File(application).delete()
+  await s3Delete("applications", getApplicationCvS3Filename(application))
 }
 
 export const processApplicationEmails = {
@@ -992,5 +993,3 @@ const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany
     return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: company, recruiter: null }
   }
 }
-
-const applicationsS3Bucket = s3Bucket(config.s3.applicationsBucket)
