@@ -60,7 +60,7 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
     formations = await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
   }
 
-  // KBA 2024_07_29 : commenté en attendant la remonté du champ uai_lieu_formation dans le catalogue RCO
+  // KBA 2024_07_29 : commenté en attendant la remonté du champ uai_formation dans le catalogue RCO
   // if (!formations || !formations.length) {
   //   // search by uai_lieu_formation
   //   if (wish.uai_lieu_formation) {
