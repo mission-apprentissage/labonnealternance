@@ -12,8 +12,8 @@ const offerNodeName = "country"
 const openingTag = `<${offerNodeName}`
 const closingTag = `</${offerNodeName}>`
 
-const offerHandler = async (offerXml: string, now: Date) => {
-  logger.info("parsing offer")
+const offerHandler = async (offerXml: string, now: Date, index: number) => {
+  index % 1000 === 0 && logger.info("parsing offer", index)
   const json = await xmlParser.parseStringPromise(offerXml)
   await getDbCollection("raw_hellowork").insertOne({ ...json, _id: new ObjectId(), createdAt: now })
 }
@@ -45,7 +45,7 @@ export const importHelloWork = async () => {
       const found = stringReader.skip(closingTag)
       if (found) {
         offerInsertCount++
-        await offerHandler(openingTag + currentOffer + closingTag, now)
+        await offerHandler(openingTag + currentOffer + closingTag, now, offerInsertCount)
         currentOffer = ""
       }
     }
