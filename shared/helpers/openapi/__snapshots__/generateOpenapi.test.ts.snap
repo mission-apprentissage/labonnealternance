@@ -1349,7 +1349,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "job_status",
           "job_type",
           "is_multi_published",
-          "job_rythm",
         ],
         "type": "object",
       },
@@ -6821,7 +6820,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
-                  "job_rythm",
                   "is_multi_published",
                   "job_start_date",
                   "appellation_code",
@@ -10108,7 +10106,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
-                  "job_rythm",
                   "is_multi_published",
                   "job_start_date",
                   "appellation_code",
