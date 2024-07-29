@@ -18,9 +18,8 @@ interface IGeneratorParams {
 async function generateJsonExport({ collection, query, projection, fileName }: IGeneratorParams): Promise<string> {
   logger.info(`Generating file ${fileName}`)
   const filePath = new URL(`./${fileName}.json`, import.meta.url)
-  const data = await getDbCollection(collection).find(query).project(projection)
+  const cursor = await getDbCollection(collection).find(query).project(projection)
   const writable = createWriteStream(filePath)
-  const readable = Readable.from(data.map((doc) => JSON.stringify(doc, null, 4)))
 
   // Transform stream to add commas between objects and brackets at the beginning and end
   let isFirst = true
@@ -29,10 +28,12 @@ async function generateJsonExport({ collection, query, projection, fileName }: I
     readableObjectMode: true,
     transform(chunk, encoding, callback) {
       if (isFirst) {
-        this.push("[" + chunk)
+       this.push("[")
+       this.push(JSON.stringify(chunk, null, 4));
         isFirst = false
       } else {
-        this.push("," + chunk)
+        this.push(",")
+       this.push(JSON.stringify(chunk, null, 4));
       }
       callback()
     },
@@ -42,7 +43,7 @@ async function generateJsonExport({ collection, query, projection, fileName }: I
     },
   })
 
-  await pipeline(readable, transform, writable)
+  await pipeline(cursor, transform, writable)
 
   return filePath.pathname
 }
