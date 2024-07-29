@@ -2,6 +2,7 @@ import { writeFileSync } from "fs"
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { logger } from "../../common/logger"
 import { uploadFileToS3 } from "../../common/utils/awsUtils"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
@@ -13,8 +14,10 @@ interface IGeneratorParams {
 }
 
 async function generateJsonExport({ collection, query, projection, fileName }: IGeneratorParams): Promise<string> {
+  logger.info(`Generating file ${fileName}`)
   const filePath = new URL(`./${fileName}.json`, import.meta.url)
   const data = await getDbCollection(collection).find(query).project(projection).toArray()
+  console.log(`${fileName}-${data.length}`)
   writeFileSync(filePath, JSON.stringify(data, null, 4))
   return filePath.pathname
 }
@@ -54,8 +57,18 @@ async function exportLbaJobsToS3() {
     fileName: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }
   await Promise.all([
-    generateJsonExport(offres_emploi_lba).then((path) => uploadFileToS3({ key: path.split("/").pop() as string, filePath: path, noCache: true })),
-    generateJsonExport(recruteurs_lba).then((path) => uploadFileToS3({ key: path.split("/").pop() as string, filePath: path, noCache: true })),
+    generateJsonExport(offres_emploi_lba).then((path) => {
+      const key = path.split("/").pop() as string
+      logger.info(`Uploading file ${key} to S3`)
+      uploadFileToS3({ key, filePath: path, noCache: true })
+      logger.info(`file ${key} uploaded`)
+    }),
+    generateJsonExport(recruteurs_lba).then((path) => {
+      const key = path.split("/").pop() as string
+      logger.info(`Uploading file ${key} to S3`)
+      uploadFileToS3({ key, filePath: path, noCache: true })
+      logger.info(`file ${key} uploaded`)
+    }),
   ])
 }
 
