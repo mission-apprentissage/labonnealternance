@@ -148,15 +148,17 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
 }
 
 const getLBALink = async (wish: IWish): Promise<string> => {
-  // get related trainings from catalogue
+  // Try getting formations first
   const formations = await getTrainingsFromParameters(wish)
 
+  // Handle single formation case
   if (formations.length === 1) {
     const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
     const [latitude, longitude] = lieu_formation_geo_coordonnees!.split(",")
     return buildEmploiUrl({ params: { romes: rome_codes as string[], lat: latitude, lon: longitude, radius: "60", ...utmData } })
   }
 
+  // Extract postcode and get coordinates if available
   const postCode = wish.code_insee || wish.code_postal
   let wLat, wLon
   if (postCode) {
@@ -166,56 +168,40 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     }
   }
 
-  if (!formations.length) {
-    let romes
-    if (wish.rncp) {
-      romes = await getRomesFromRncp(wish.rncp)
-      if (!romes) {
-        romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
-      }
+  // Get romes based on rncp or training database
+  const romes = wish.rncp
+    ? (await getRomesFromRncp(wish.rncp)) || (await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }))
+    : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+
+  // Build url based on formations and coordinates
+  if (formations.length) {
+    let formation = formations[0]
+    let lat, lon
+    if (formations.length > 1 && wLat && wLon) {
+      // Find closest formation if multiple and coordinates available
+      formation = formations.reduce(
+        (closest, current) => {
+          if (!current.lieu_formation_geo_coordonnees) return closest
+          const [fLat, fLon] = current.lieu_formation_geo_coordonnees.split(",")
+          const currentDist = getDistance({ latitude: wLat, longitude: wLon }, { latitude: fLat, longitude: fLon })
+          return currentDist < closest.distance! ? { ...current, distance: currentDist } : closest
+        },
+        { distance: 999999999, ...formation }
+      )
+      lat = formation.lieu_formation_geo_coordonnees?.split(",")[0]
+      lon = formation.lieu_formation_geo_coordonnees?.split(",")[1]
     } else {
-      romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+      // Use formation coordinates or user coordinates
+      lat = formation.lieu_formation_geo_coordonnees?.split(",")[0] || wLat
+      lon = formation.lieu_formation_geo_coordonnees?.split(",")[1] || wLon
     }
-    return buildEmploiUrl({ params: { ...(romes.length ? { romes: romes } : {}), lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
-  }
-
-  let [formation] = formations
-
-  if (formations.length > 1 && wLat && wLon) {
-    let distance = 999999999
-    for (const [i, iFormation] of formations.entries()) {
-      if (iFormation.lieu_formation_geo_coordonnees) {
-        const [fLat, fLon] = iFormation.lieu_formation_geo_coordonnees.split(",")
-        const fDist = getDistance({ latitude: wLat, longitude: wLon }, { latitude: fLat, longitude: fLon })
-        if (fDist < distance) {
-          distance = fDist
-          formation = formations[i]
-        }
-      }
-    }
-  }
-
-  let lat, lon
-  if (formation.lieu_formation_geo_coordonnees) {
-    ;[lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
+    return buildEmploiUrl({ params: { ...(romes.length ? { romes } : {}), lat, lon, radius: "60", ...utmData } })
   } else {
-    ;[lat, lon] = [wLat, wLon]
+    // No formations found, use user coordinates if available
+    return buildEmploiUrl({ params: { ...(romes.length ? { romes } : {}), lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
   }
-
-  if (formations.length > 1 && !postCode) {
-    ;[lat, lon] = [undefined, undefined]
-  }
-
-  const romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
-
-  return buildEmploiUrl({ params: { ...(romes.length ? { romes: romes } : {}), lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
 }
 
-/**
- * @description get LBA links from candidat's orientation wish
- * @param {IWish[]} params wish array
- * @returns {Promise<ILinks[]>} LBA link
- */
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
   const results: any[] = []
   await asyncForEach(params, async (training) => {
