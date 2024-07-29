@@ -10,6 +10,8 @@ import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
 
+import { getRomesFromRncp } from "./certification.service"
+
 interface IWish {
   id: string
   cle_ministere_educatif?: string | null
@@ -42,12 +44,6 @@ const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, para
   return url.toString()
 }
 
-/**
- * @description local function to get the formation related to the query
- * @param {Object} query
- * @param {string} filter
- * @returns {Promise<IFormationCatalogue[]>}
- */
 const getFormations = (
   query: object,
   filter: object = {
@@ -57,11 +53,6 @@ const getFormations = (
   }
 ) => getDbCollection("formationcatalogues").find(query, filter).toArray()
 
-/**
- * @description get formation according to the available parameters passed to the API endpoint
- * @param {object} wish wish data
- * @returns {Promise<IFormationCatalogue[]>}
- */
 const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalogue[]> => {
   let formations
   // search by cle ME
@@ -69,12 +60,13 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
     formations = await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
   }
 
-  if (!formations || !formations.length) {
-    // search by uai_lieu_formation
-    if (wish.uai_lieu_formation) {
-      formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
-    }
-  }
+  // KBA 2024_07_29 : commenté en attendant la remonté du champ uai_lieu_formation dans le catalogue RCO
+  // if (!formations || !formations.length) {
+  //   // search by uai_lieu_formation
+  //   if (wish.uai_lieu_formation) {
+  //     formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
+  //   }
+  // }
 
   if (!formations || !formations.length) {
     // search by uai_formateur
@@ -94,38 +86,6 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
   }
 
   return formations
-}
-
-/**
- * @description get training booking link for a specific training
- * @param {object} wish wish data
- * @returns {Promise<string>} LBA link
- */
-const getPrdvLink = async (wish: IWish): Promise<string> => {
-  if (!wish.cle_ministere_educatif) {
-    return ""
-  }
-
-  const elligibleFormation = await getDbCollection("eligible_trainings_for_appointments").findOne(
-    {
-      cle_ministere_educatif: wish.cle_ministere_educatif,
-      lieu_formation_email: {
-        $ne: null,
-        $exists: true,
-        $not: /^$/,
-      },
-    },
-    { projection: { _id: 1 } }
-  )
-
-  if (elligibleFormation) {
-    return buildEmploiUrl({
-      baseUrl: `${config.publicUrl}/espace-pro/form`,
-      params: { referrer: "lba", cleMinistereEducatif: wish.cle_ministere_educatif, ...utmData },
-    })
-  }
-
-  return ""
 }
 
 const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
@@ -160,14 +120,42 @@ const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
   return romes
 }
 
-/**
- * @description get link LBA for a specific training
- * @param {object} wish wish data
- * @returns {Promise<string>} LBA link
- */
+const getPrdvLink = async (wish: IWish): Promise<string> => {
+  if (!wish.cle_ministere_educatif) {
+    return ""
+  }
+
+  const elligibleFormation = await getDbCollection("eligible_trainings_for_appointments").findOne(
+    {
+      cle_ministere_educatif: wish.cle_ministere_educatif,
+      lieu_formation_email: {
+        $ne: null,
+        $exists: true,
+        $not: /^$/,
+      },
+    },
+    { projection: { _id: 1 } }
+  )
+
+  if (elligibleFormation) {
+    return buildEmploiUrl({
+      baseUrl: `${config.publicUrl}/espace-pro/form`,
+      params: { referrer: "lba", cleMinistereEducatif: wish.cle_ministere_educatif, ...utmData },
+    })
+  }
+
+  return ""
+}
+
 const getLBALink = async (wish: IWish): Promise<string> => {
   // get related trainings from catalogue
   const formations = await getTrainingsFromParameters(wish)
+
+  if (formations.length === 1) {
+    const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
+    const [latitude, longitude] = lieu_formation_geo_coordonnees!.split(",")
+    return buildEmploiUrl({ params: { romes: rome_codes as string[], lat: latitude, lon: longitude, radius: "60", ...utmData } })
+  }
 
   const postCode = wish.code_insee || wish.code_postal
   let wLat, wLon
@@ -178,8 +166,16 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     }
   }
 
-  if (!formations || !formations.length) {
-    const romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+  if (!formations.length) {
+    let romes
+    if (wish.rncp) {
+      romes = await getRomesFromRncp(wish.rncp)
+      if (!romes) {
+        romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+      }
+    } else {
+      romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+    }
     return buildEmploiUrl({ params: { ...(romes.length ? { romes: romes } : {}), lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
   }
 
@@ -208,12 +204,6 @@ const getLBALink = async (wish: IWish): Promise<string> => {
 
   if (formations.length > 1 && !postCode) {
     ;[lat, lon] = [undefined, undefined]
-  }
-
-  if (formations.length === 1) {
-    if (formation.rome_codes && formation.rome_codes.length) {
-      return buildEmploiUrl({ params: { romes: formation.rome_codes, lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
-    }
   }
 
   const romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
