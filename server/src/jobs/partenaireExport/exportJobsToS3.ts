@@ -1,4 +1,6 @@
-import { writeFileSync } from "fs"
+import { createWriteStream } from "fs"
+import { Readable, Transform } from "stream"
+import { pipeline } from "stream/promises"
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
@@ -16,9 +18,32 @@ interface IGeneratorParams {
 async function generateJsonExport({ collection, query, projection, fileName }: IGeneratorParams): Promise<string> {
   logger.info(`Generating file ${fileName}`)
   const filePath = new URL(`./${fileName}.json`, import.meta.url)
-  const data = await getDbCollection(collection).find(query).project(projection).toArray()
-  console.log(`${fileName}-${data.length}`)
-  writeFileSync(filePath, JSON.stringify(data, null, 4))
+  const data = await getDbCollection(collection).find(query).project(projection)
+  const writable = createWriteStream(filePath)
+  const readable = Readable.from(data.map((doc) => JSON.stringify(doc, null, 4)))
+
+  // Transform stream to add commas between objects and brackets at the beginning and end
+  let isFirst = true
+  const transform = new Transform({
+    writableObjectMode: true,
+    readableObjectMode: true,
+    transform(chunk, encoding, callback) {
+      if (isFirst) {
+        this.push("[" + chunk)
+        isFirst = false
+      } else {
+        this.push("," + chunk)
+      }
+      callback()
+    },
+    flush(callback) {
+      this.push("]")
+      callback()
+    },
+  })
+
+  await pipeline(readable, transform, writable)
+
   return filePath.pathname
 }
 
@@ -67,7 +92,7 @@ async function exportLbaJobsToS3() {
       const key = path.split("/").pop() as string
       logger.info(`Uploading file ${key} to S3`)
       uploadFileToS3({ key, filePath: path, noCache: true })
-      logger.info(`file ${key} uploaded`)
+      logger.info(`File ${key} uploaded`)
     }),
   ])
 }
