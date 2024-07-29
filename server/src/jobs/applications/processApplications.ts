@@ -19,11 +19,13 @@ export async function processApplications(batchSize: number) {
     scanResult.success += normalScanResult.success + errorScanResult.success
     scanResult.error += normalScanResult.error + errorScanResult.error
     scanResult.total += normalScanResult.total + errorScanResult.total
-    await notifyToSlack({
-      subject: "Scan des candidatures",
-      message: `${scanResult.total} candidatures à scanner. ${scanResult.success} candidatures scannées. ${scanResult.error} erreurs.`,
-      error: scanResult.error > 0,
-    })
+    if (scanResult.total > 0) {
+      await notifyToSlack({
+        subject: "Scan des candidatures",
+        message: `${scanResult.total} candidatures à scanner. ${scanResult.success} candidatures scannées. ${scanResult.error} erreurs.`,
+        error: scanResult.error > 0,
+      })
+    }
   } else {
     await notifyToSlack({
       subject: "Scan des candidatures",
@@ -32,11 +34,13 @@ export async function processApplications(batchSize: number) {
     })
   }
   const emailResult = await sendApplicationsEmails({ to_applicant_message_id: null, scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED }, batchSize)
-  await notifyToSlack({
-    subject: "Envoi des candidatures",
-    message: `${emailResult.total} candidatures à envoyer. ${emailResult.success} candidatures envoyées. ${emailResult.error} erreurs.`,
-    error: emailResult.error > 0,
-  })
+  if (emailResult.total > 0) {
+    await notifyToSlack({
+      subject: "Envoi des candidatures",
+      message: `${emailResult.total} candidatures à envoyer. ${emailResult.success} candidatures envoyées. ${emailResult.error} erreurs.`,
+      error: emailResult.error > 0,
+    })
+  }
   logger.info("ended job processApplications")
 }
 
