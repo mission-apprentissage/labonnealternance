@@ -198,7 +198,11 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     return buildEmploiUrl({ params: { ...(romes.length ? { romes } : {}), lat, lon, radius: "60", ...utmData } })
   } else {
     // No formations found, use user coordinates if available
-    return buildEmploiUrl({ params: { ...(romes.length ? { romes } : {}), lat: romes.length ? wLat : undefined, lon: romes.length ? wLon : undefined, radius: "60", ...utmData } })
+    if (romes.length) {
+      return buildEmploiUrl({ params: { romes, lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
+    } else {
+      return buildEmploiUrl({ baseUrl: config.publicUrl, params: { ...utmData } })
+    }
   }
 }
 
