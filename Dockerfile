@@ -32,9 +32,8 @@ RUN --mount=type=cache,target=/app/.yarn/cache yarn workspaces focus --all --pro
 # Production image, copy all the files and run next
 FROM node:20-slim AS server
 WORKDIR /app
-RUN --mount=type=cache,target=/var/cache/apk apk add --update \
-  curl \
-  && rm -rf /var/cache/apk/*
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt/lists \
+    apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 ARG PUBLIC_VERSION
