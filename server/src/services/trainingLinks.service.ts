@@ -55,6 +55,21 @@ const getFormations = (
 
 const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalogue[]> => {
   let formations
+  let query: any = { $or: [] }
+
+  if (wish.cfd) {
+    query.$or.push({ cfd: wish.cfd })
+  }
+  if (wish.rncp) {
+    query.$or.push({ rncp_code: wish.rncp })
+  }
+  if (wish.mef) {
+    query.$or.push({ "bcn_mefs_10.mef10": wish.mef })
+  }
+
+  if (!query.$or.length) {
+    query = undefined
+  }
   // search by cle ME
   if (wish.cle_ministere_educatif) {
     formations = await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
@@ -71,7 +86,8 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
   if (!formations || !formations.length) {
     // search by uai_formateur
     if (wish.uai_formateur) {
-      formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
+      formations = await getFormations({ ...query, etablissement_formateur_uai: wish.uai_formateur })
+      console.log("coucou", formations)
     }
   }
 
@@ -151,6 +167,8 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   // Try getting formations first
   const formations = await getTrainingsFromParameters(wish)
 
+  console.log({ founds: formations })
+
   // Handle single formation case
   if (formations.length === 1) {
     const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
@@ -163,6 +181,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   let wLat, wLon
   if (postCode) {
     const responseApiAdresse = await apiGeoAdresse.search(postCode)
+    console.log({ responseApiAdresse })
     if (responseApiAdresse && responseApiAdresse.features.length) {
       ;[wLon, wLat] = responseApiAdresse.features[0].geometry.coordinates
     }
@@ -188,6 +207,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
         },
         { distance: 999999999, ...formation }
       )
+      console.log({ sorted: formation })
       lat = formation.lieu_formation_geo_coordonnees?.split(",")[0]
       lon = formation.lieu_formation_geo_coordonnees?.split(",")[1]
     } else {
