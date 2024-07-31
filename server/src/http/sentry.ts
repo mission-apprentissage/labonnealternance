@@ -1,17 +1,21 @@
-/**
- * KBA : to be updated when switching to mongoDB
- * url : https://github.com/mission-apprentissage/api-apprentissage/blob/105fdf0aadadf1fc5bf2d8184a8825a64204fd17/server/src/services/sentry/sentry.ts
- */
-
-// @ts-nocheck
-import fastifySentryPlugin from "@immobiliarelabs/fastify-sentry"
+import { MongoDBInstrumentation } from "@opentelemetry/instrumentation-mongodb"
 import * as Sentry from "@sentry/node"
+import { nodeProfilingIntegration } from "@sentry/profiling-node"
 import { FastifyRequest } from "fastify"
 import { assertUnreachable } from "shared/utils"
 
 import config from "@/config"
 
 import { Server } from "./server"
+
+function mongoDBIntegration() {
+  return {
+    name: "mongoDBIntegration",
+    setup() {
+      new MongoDBInstrumentation({ enhancedDatabaseReporting: true })
+    },
+  }
+}
 
 function getOptions(): Sentry.NodeOptions {
   return {
@@ -21,12 +25,7 @@ function getOptions(): Sentry.NodeOptions {
     environment: config.env,
     release: config.version,
     enabled: config.env !== "local",
-    integrations: [
-      new Sentry.Integrations.Http({ tracing: true }),
-      new Sentry.Integrations.Mongo({ useMongoose: false, describeOperations: true }),
-      Sentry.extraErrorDataIntegration({ depth: 16 }),
-      Sentry.captureConsoleIntegration({ levels: ["error"] }),
-    ],
+    integrations: [nodeProfilingIntegration(), Sentry.extraErrorDataIntegration({ depth: 16 }), Sentry.captureConsoleIntegration({ levels: ["error"] }), mongoDBIntegration()],
   }
 }
 
@@ -96,5 +95,5 @@ export function initSentryFastify(app: Server) {
     ...getOptions(),
   }
 
-  app.register(fastifySentryPlugin, options)
+  app.register(options)
 }
