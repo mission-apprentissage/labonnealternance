@@ -174,7 +174,13 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   const postCode = wish.code_insee || wish.code_postal
   let wLat, wLon
   if (postCode) {
-    const responseApiAdresse = await apiGeoAdresse.search(postCode)
+    let responseApiAdresse = await apiGeoAdresse.search(postCode)
+
+    if (!responseApiAdresse || !responseApiAdresse.features.length) {
+      const generalPostCode = postCode.replace(/\d{3}$/, "000")
+      responseApiAdresse = await apiGeoAdresse.search(generalPostCode)
+    }
+
     if (responseApiAdresse && responseApiAdresse.features.length) {
       ;[wLon, wLat] = responseApiAdresse.features[0].geometry.coordinates
     }
