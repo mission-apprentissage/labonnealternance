@@ -12,7 +12,7 @@ import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { INewApplicationV2NEWCompanySiret, INewApplicationV2NEWJobId } from "shared/routes/application.routes.v2"
 import { z } from "zod"
 
-import { s3Bucket } from "@/common/utils/awsUtils"
+import { s3Delete, s3ReadAsString, s3Write } from "@/common/utils/awsUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
@@ -159,12 +159,13 @@ export const sendApplication = async ({
       }
       const application = await newApplicationToApplicationDocument(newApplication, offreOrError, recruteurEmail)
       const fileContent = newApplication.applicant_file_content
-      await getApplicationCvS3File(application).write({
+      await s3Write("applications", getApplicationCvS3Filename(application), {
         Body: fileContent,
       })
 
       return { result: "ok", message: "messages sent" }
     } catch (err) {
+      console.error(err)
       logger.error("Error sending application", err)
       sentryCaptureException(err)
       if (newApplication?.caller) {
@@ -225,7 +226,7 @@ export const sendApplicationV2 = async ({
   try {
     const application = await newApplicationToApplicationDocumentV2(newApplication, lbaJob, recruteurEmail, caller)
     const fileContent = newApplication.applicant_file_content
-    await getApplicationCvS3File(application).write({
+    await s3Write("applications", getApplicationCvS3Filename(application), {
       Body: fileContent,
     })
   } catch (err) {
@@ -246,17 +247,14 @@ export const sendApplicationV2 = async ({
 /**
  * Build url to access item detail on LBA ui
  */
-const buildUrlsOfDetail = (publicUrl: string, offreOrCompany: IJobOrCompany) => {
-  const { type } = offreOrCompany
+const buildUrlsOfDetail = (publicUrl: string, application: IApplication) => {
+  const { job_id, company_siret } = application
+  const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
   const urlSearchParams = new URLSearchParams()
   urlSearchParams.append("display", "list")
   urlSearchParams.append("page", "fiche")
   urlSearchParams.append("type", newItemTypeToOldItemType(type))
-  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    urlSearchParams.append("itemId", offreOrCompany.job._id.toString())
-  } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    urlSearchParams.append("itemId", offreOrCompany.job.siret)
-  }
+  urlSearchParams.append("itemId", job_id || company_siret)
   const paramsWithoutUtm = urlSearchParams.toString()
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     urlSearchParams.append("utm_source", "jecandidate")
@@ -315,14 +313,18 @@ export const getUser2ManagingOffer = async (job: Pick<IJob, "managed_by" | "_id"
 /**
  * Build urls to add in email messages sent to the recruiter
  */
-const buildRecruiterEmailUrls = async (application: IApplication, jobOrCompany: IJobOrCompany) => {
+const buildRecruiterEmailUrls = async (application: IApplication) => {
+  const { job_id } = application
+  const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
 
-  // get the related recruiters to fetch it's establishment_id
   let user: IUserWithAccount | undefined
-  if (jobOrCompany.type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    const { job } = jobOrCompany
-    user = await getUser2ManagingOffer(job)
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    const jobOrCompany = await getJobOrCompany(application)
+    if (jobOrCompany.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+      throw Boom.internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
+    }
+    user = await getUser2ManagingOffer(jobOrCompany.job)
   }
   const userForToken = buildUserForToken(application, user)
   const urls = {
@@ -854,10 +856,10 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
   }
 }
 
-const getApplicationCvS3File = (application: IApplication) => applicationsS3Bucket.file(`cv-${application._id}`)
+const getApplicationCvS3Filename = (application: IApplication) => `cv-${application._id}`
 
 const getApplicationAttachmentContent = async (application: IApplication): Promise<string> => {
-  const content = await getApplicationCvS3File(application).readAsString()
+  const content = await s3ReadAsString("applications", getApplicationCvS3Filename(application))
   if (!content) {
     throw Boom.internal(`inattendu : cv vide pour la candidature avec id=${application._id}`)
   }
@@ -873,8 +875,7 @@ export const processApplicationScanForVirus = async (application: IApplication) 
   )
 
   if (hasVirus) {
-    const jobOrCompany = await getJobOrCompany(application)
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, jobOrCompany)
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
     const attachmentContent = await getApplicationAttachmentContent(application)
     await mailer.sendEmail({
       to: application.applicant_email,
@@ -899,29 +900,26 @@ export const processApplicationScanForVirus = async (application: IApplication) 
 }
 
 export const deleteApplicationCvFile = async (application: IApplication) => {
-  await getApplicationCvS3File(application).delete()
+  await s3Delete("applications", getApplicationCvS3Filename(application))
 }
 
 export const processApplicationEmails = {
   async sendEmailsIfNeeded(application: IApplication) {
     const { to_company_message_id, to_applicant_message_id } = application
-    const jobOrCompany = await getJobOrCompany(application)
+
     const attachmentContent = await getApplicationAttachmentContent(application)
     if (!to_company_message_id) {
-      await this.sendRecruteurEmail(application, jobOrCompany, attachmentContent)
+      await this.sendRecruteurEmail(application, attachmentContent)
     }
     if (!to_applicant_message_id) {
-      await this.sendCandidatEmail(application, jobOrCompany, attachmentContent)
+      await this.sendCandidatEmail(application, attachmentContent)
     }
   },
-  async sendRecruteurEmail(application: IApplication, jobOrCompany: IJobOrCompany, attachmentContent: string) {
-    const { type, job, recruiter } = jobOrCompany
-    const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.email)?.toLowerCase()
-    if (!recruteurEmail) {
-      throw Boom.internal(BusinessErrorCodes.INTERNAL_EMAIL)
-    }
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, jobOrCompany)
-    const recruiterEmailUrls = await buildRecruiterEmailUrls(application, jobOrCompany)
+  async sendRecruteurEmail(application: IApplication, attachmentContent: string) {
+    const { job_id } = application
+    const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
+    const recruiterEmailUrls = await buildRecruiterEmailUrls(application)
 
     const emailCompany = await mailer.sendEmail({
       to: application.company_email,
@@ -948,9 +946,10 @@ export const processApplicationEmails = {
       throw Boom.internal("Email entreprise destinataire rejeté.")
     }
   },
-  async sendCandidatEmail(application: IApplication, jobOrCompany: IJobOrCompany, attachmentContent: string) {
-    const { type } = jobOrCompany
-    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, jobOrCompany)
+  async sendCandidatEmail(application: IApplication, attachmentContent: string) {
+    const { job_id } = application
+    const type = job_id ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA : LBA_ITEM_TYPE.RECRUTEURS_LBA
+    const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(publicUrl, application)
     const emailCandidat = await mailer.sendEmail({
       to: application.applicant_email,
       subject: `Votre candidature chez ${application.company_name}`,
@@ -992,5 +991,3 @@ const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany
     return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: company, recruiter: null }
   }
 }
-
-const applicationsS3Bucket = s3Bucket(config.s3.applicationsBucket)

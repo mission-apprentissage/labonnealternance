@@ -170,16 +170,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "scan_status": {
-            "description": "Status du processus de scan de virus",
-            "enum": [
-              "WAITING_FOR_SCAN",
-              "VIRUS_DETECTED",
-              "ERROR_CLAMAV",
-              "NO_VIRUS_DETECTED",
-            ],
-            "type": "string",
-          },
           "searched_for_job_label": {
             "description": "Le métier recherché par le candidat envoyant une candidature spontanée.",
             "example": "Vente de fleurs, végétaux",
@@ -202,7 +192,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_phone",
           "company_siret",
           "company_name",
-          "scan_status",
           "applicant_file_name",
           "applicant_file_content",
           "company_type",
@@ -1360,7 +1349,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "job_status",
           "job_type",
           "is_multi_published",
-          "job_rythm",
         ],
         "type": "object",
       },
@@ -6832,7 +6820,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
-                  "job_rythm",
                   "is_multi_published",
                   "job_start_date",
                   "appellation_code",
@@ -10119,7 +10106,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
-                  "job_rythm",
                   "is_multi_published",
                   "job_start_date",
                   "appellation_code",

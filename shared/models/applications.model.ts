@@ -149,6 +149,7 @@ export const ZNewApplication = ZApplication.extend({
     company_feedback_date: true,
     created_at: true,
     last_update_at: true,
+    scan_status: true,
   })
   .openapi("ApplicationUi")
 
@@ -208,6 +209,7 @@ export const ZNewApplicationV2 = ZApplication.extend({
     company_feedback: true,
     company_feedback_date: true,
     created_at: true,
+    scan_status: true,
     last_update_at: true,
   })
   .openapi("ApplicationUi")
