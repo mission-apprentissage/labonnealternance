@@ -40,7 +40,7 @@ export default function ListeOffres({ hideModify = false }: { hideModify?: boole
   dayjs.extend(relativeTime)
 
   const { establishment_id } = router.query as { establishment_id: string }
-  const { data, isLoading, isError, error } = useQuery("offre-liste", {
+  const { data, isLoading, error } = useQuery("offre-liste", {
     enabled: !!establishment_id,
     queryFn: () => getFormulaire(establishment_id),
   })
@@ -49,7 +49,7 @@ export default function ListeOffres({ hideModify = false }: { hideModify?: boole
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  if (isError) {
+  if (error) {
     throw error
   }
 
