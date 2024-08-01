@@ -15,6 +15,25 @@ type FTEntreprise = {
   siret: string
 }
 
+type FTFormation = {
+  codeFormatio: string
+  domaineLibelle: string
+  niveauLibelle: string
+  exigence: string
+}
+
+type FTOrigineOffre = {
+  origine: string
+  urlOrigine: string
+  partenaires: FTPartenaire[]
+}
+
+type FTPartenaire = {
+  nom: string
+  url: string
+  logo: string
+}
+
 export type FTJob = {
   id: string
   intitule: string
@@ -54,9 +73,9 @@ export type FTJob = {
   secteurActivite?: string
   secteurActiviteLibelle?: string
   qualitesProfessionnelles?: [][]
-  origineOffre: object[]
+  origineOffre: FTOrigineOffre
   offresManqueCandidats?: boolean
-  formations?: [][]
+  formations?: FTFormation[]
   langues?: [][]
   complementExercice?: string
   appellationLibelle: string

@@ -202,13 +202,14 @@ export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>
 export default {
   zod: zFormationCatalogueSchema,
   indexes: [
+    [{ lieu_formation_geopoint: "2dsphere" }, {}],
     [{ cle_ministere_educatif: 1 }, {}],
+    [{ uai_formation: 1 }, {}],
+    [{ rome_codes: 1 }, {}],
+    [{ rncp_code: 1 }, {}],
     [{ cfd: 1 }, {}],
     [{ cfd_entree: 1 }, {}],
-    [{ uai_formation: 1 }, {}],
     [{ niveau: 1 }, {}],
-    [{ rncp_code: 1 }, {}],
-    [{ rome_codes: 1 }, {}],
     [{ parcoursup_id: 1 }, {}],
     [{ published: 1 }, {}],
     [{ to_update: 1 }, {}],
@@ -219,7 +220,6 @@ export default {
     [{ id_certifinfo: 1 }, {}],
     [{ tags: 1 }, {}],
     [{ catalogue_published: 1 }, {}],
-    [{ lieu_formation_geopoint: "2dsphere" }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

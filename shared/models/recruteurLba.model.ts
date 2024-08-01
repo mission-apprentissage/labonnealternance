@@ -50,11 +50,12 @@ export type ILbaCompanyForContactUpdate = z.output<typeof ZLbaCompanyForContactU
 export default {
   zod: ZLbaCompany,
   indexes: [
+    [{ geopoint: "2dsphere" }, {}],
     [{ siret: 1 }, {}],
     [{ opco: 1 }, {}],
     [{ opco_short_name: 1 }, {}],
+    [{ rome_codes: 1, size: 1 }, {}],
     [{ opco_url: 1 }, {}],
-    [{ geopoint: "2dsphere" }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

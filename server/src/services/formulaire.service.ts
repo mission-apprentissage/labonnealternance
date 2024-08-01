@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto"
 
 import Boom from "boom"
 import { Filter, ObjectId, UpdateFilter } from "mongodb"
-import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IUserRecruteur, JOB_STATUS } from "shared"
+import { IDelegation, IJob, IJobWithRomeDetail, IJobWritable, IRecruiter, IRecruiterWithApplicationCount, IUserRecruteur, JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -30,6 +30,102 @@ export interface IOffreExtended extends IJob {
   pourvue: string
   supprimer: string
 }
+const romeDetailAndCandidatureCountAggregateStage = [
+  {
+    $addFields: {
+      jobs: {
+        $cond: {
+          if: { $isArray: "$jobs" },
+          then: "$jobs",
+          else: [],
+        },
+      },
+    },
+  },
+  {
+    $facet: {
+      emptyJobs: [{ $match: { jobs: { $eq: [] } } }],
+      nonEmptyJobs: [
+        { $match: { jobs: { $ne: [] } } },
+        { $unwind: { path: "$jobs" } },
+        {
+          $lookup: {
+            from: "referentielromes",
+            let: { rome_code: { $arrayElemAt: ["$jobs.rome_code", 0] } },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$rome.code_rome", "$$rome_code"],
+                  },
+                },
+              },
+            ],
+            as: "referentielrome",
+          },
+        },
+        { $unwind: { path: "$referentielrome", preserveNullAndEmptyArrays: true } },
+        { $set: { "jobs.rome_detail": "$referentielrome" } },
+        { $addFields: { "jobs.jobIdStr": { $toString: "$jobs._id" } } },
+        {
+          $lookup: {
+            from: "applications",
+            let: { jobIdStr: "$jobs.jobIdStr" },
+            pipeline: [{ $match: { $expr: { $eq: ["$job_id", "$$jobIdStr"] } } }, { $project: { _id: 1 } }],
+            as: "applications",
+          },
+        },
+        {
+          $set: {
+            "jobs.candidatures": { $size: "$applications" },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            recruiters: { $first: "$$ROOT" },
+            jobs: {
+              $push: {
+                $mergeObjects: ["$jobs"],
+              },
+            },
+          },
+        },
+        {
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: ["$recruiters", { jobs: "$jobs" }],
+            },
+          },
+        },
+        {
+          $project: {
+            referentielrome: 0,
+            "jobs.rome_detail._id": 0,
+            "jobs.jobIdStr": 0,
+            applications: 0,
+          },
+        },
+      ],
+    },
+  },
+  {
+    $project: {
+      result: {
+        $cond: {
+          if: { $gt: [{ $size: "$emptyJobs" }, 0] },
+          then: { $arrayElemAt: ["$emptyJobs", 0] },
+          else: { $arrayElemAt: ["$nonEmptyJobs", 0] },
+        },
+      },
+    },
+  },
+  {
+    $replaceRoot: {
+      newRoot: "$result",
+    },
+  },
+]
 
 // étape d'aggragation mongo permettant de récupérer le rome_detail correspondant dans chaque job d'un recruiter
 export const romeDetailAggregateStages = [
@@ -279,7 +375,7 @@ export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
 export const getFormulaire = async (query: Filter<IRecruiter>): Promise<IRecruiter | null> => getDbCollection("recruiters").findOne(query)
 
 export const getFormulaireWithRomeDetail = async (query: Filter<IRecruiter>): Promise<IRecruiter | null> => {
-  const recruiterWithRomeDetail: IRecruiter[] = (await getDbCollection("recruiters")
+  const recruiterWithRomeDetail = (await getDbCollection("recruiters")
     .aggregate([
       {
         $match: query,
@@ -289,6 +385,18 @@ export const getFormulaireWithRomeDetail = async (query: Filter<IRecruiter>): Pr
     .toArray()) as IRecruiter[]
 
   return recruiterWithRomeDetail.length ? recruiterWithRomeDetail[0] : await getFormulaire(query)
+}
+export const getFormulaireWithRomeDetailAndApplicationCount = async (query: Filter<IRecruiter>): Promise<IRecruiterWithApplicationCount | null> => {
+  const recruiterWithRomeDetailAndApplicationCount = (await getDbCollection("recruiters")
+    .aggregate([
+      {
+        $match: query,
+      },
+      ...romeDetailAndCandidatureCountAggregateStage,
+    ])
+    .toArray()) as IRecruiterWithApplicationCount[]
+
+  return recruiterWithRomeDetailAndApplicationCount.length ? recruiterWithRomeDetailAndApplicationCount[0] : null
 }
 
 /**
@@ -583,7 +691,6 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
     },
     { arrayFilters: [{ "x._id": id }], returnDocument: "after" }
   )
-  console.log({ recruiter })
   if (!recruiter) {
     throw Boom.notFound(`job with id=${id} not found`)
   }
@@ -600,10 +707,8 @@ const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
  */
 export const activateEntrepriseRecruiterForTheFirstTime = async (entrepriseRecruiter: IRecruiter) => {
   const firstJob = entrepriseRecruiter.jobs.at(0)
-  console.log({ firstJob })
   if (firstJob) {
     const job = await activateAndExtendOffre(firstJob._id)
-    console.log({ job })
     // Send delegation if any
     if (job.delegations?.length) {
       await Promise.all(

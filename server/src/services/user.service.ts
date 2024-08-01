@@ -33,13 +33,6 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
   }
 }
 
-/**
- * @description Returns user from its identifier.
- * @param {string} userId
- * @returns {Promise<IUser>}
- */
-export const getUserById = (userId: string) => getDbCollection("users").findOne({ _id: new ObjectId(userId) })
-
 export const getUserAndRecruitersDataForOpcoUser = async (
   opco: OPCOS
 ): Promise<{

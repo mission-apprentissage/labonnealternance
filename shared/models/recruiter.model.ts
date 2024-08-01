@@ -54,9 +54,20 @@ export const ZRecruiter = ZRecruiterWritable.extend({
   createdAt: z.date().describe("Date de creation"),
   updatedAt: z.date().describe("Date de mise à jour"),
 }).openapi("Recruiter")
-
 export type IRecruiter = z.output<typeof ZRecruiter>
 export type IRecruiterJson = Jsonify<z.input<typeof ZRecruiter>>
+
+export const ZRecruiterWithApplicationCount = ZRecruiter.omit({ jobs: true })
+  .extend({
+    jobs: z.array(
+      ZJob.extend({
+        candidatures: z.number(),
+      })
+    ),
+  })
+  .openapi("Recruiter")
+
+export type IRecruiterWithApplicationCount = z.output<typeof ZRecruiterWithApplicationCount>
 
 export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
   establishment_id: true,

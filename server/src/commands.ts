@@ -180,11 +180,6 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("anonymize-individual"))
 
-program
-  .command("fix:duplicate:users")
-  .description("Fix duplicated users in users collections and update appointment collection accordingly")
-  .action(createJobAction("fix:duplicate:users"))
-
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
 program.command("recruiters:delegations").description("Resend delegation email for all jobs created on November 2023").action(createJobAction("recruiters:delegations"))
@@ -544,6 +539,13 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .option("-parallelism, [parallelism]", "Number of threads", "10")
   .action(createJobAction("import-hellowork"))
+
+program
+  .command("send-applications")
+  .description("Scanne les virus des pièces jointes et envoie les candidatures")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .option("-batchSize, [batchSize]", "Maximum de candidatures traitées", "100")
+  .action(createJobAction("send-applications"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

@@ -6,7 +6,6 @@ import { generateOffreToken } from "@/services/appLinks.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
-import { getApplicationsByJobId } from "../../services/application.service"
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
   archiveDelegatedFormulaire,
@@ -18,6 +17,7 @@ import {
   createJobDelegations,
   extendOffre,
   getFormulaireWithRomeDetail,
+  getFormulaireWithRomeDetailAndApplicationCount,
   getJob,
   getJobWithRomeDetail,
   patchOffre,
@@ -38,21 +38,11 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { establishment_id } = req.params
-
-      const recruiterOpt = await getFormulaireWithRomeDetail({ establishment_id })
-
+      const recruiterOpt = await getFormulaireWithRomeDetailAndApplicationCount({ establishment_id })
       if (!recruiterOpt) {
         throw Boom.notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
       }
-
-      const jobsWithCandidatures = await Promise.all(
-        recruiterOpt.jobs.map(async (job) => {
-          const candidatures = await getApplicationsByJobId(job._id.toString())
-          return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : 0 }
-        })
-      )
-
-      return res.status(200).send({ ...recruiterOpt, jobs: jobsWithCandidatures })
+      return res.status(200).send(recruiterOpt)
     }
   )
   server.get(
@@ -63,18 +53,11 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { establishment_id } = req.params
-      const recruiterOpt = await getFormulaireWithRomeDetail({ establishment_id })
+      const recruiterOpt = await getFormulaireWithRomeDetailAndApplicationCount({ establishment_id })
       if (!recruiterOpt) {
         throw Boom.notFound(`pas de formulaire avec establishment_id=${establishment_id}`)
       }
-      const jobsWithCandidatures = await Promise.all(
-        recruiterOpt.jobs.map(async (job) => {
-          const candidatures = await getApplicationsByJobId(job._id.toString())
-          return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : 0 }
-        })
-      )
-
-      return res.status(200).send({ ...recruiterOpt, jobs: jobsWithCandidatures })
+      return res.status(200).send(recruiterOpt)
     }
   )
 
@@ -223,6 +206,7 @@ export default (server: Server) => {
         rome_appellation_label,
         rome_code,
         rome_label,
+        competences_rome,
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
@@ -238,6 +222,7 @@ export default (server: Server) => {
           rome_appellation_label,
           rome_code,
           rome_label,
+          competences_rome,
         },
         user,
         establishment_id,
@@ -282,6 +267,7 @@ export default (server: Server) => {
         rome_appellation_label,
         rome_code,
         rome_label,
+        competences_rome,
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
@@ -297,6 +283,7 @@ export default (server: Server) => {
           rome_appellation_label,
           rome_code,
           rome_label,
+          competences_rome,
         },
         establishment_id,
         user,
@@ -351,8 +338,8 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId"])],
     },
     async (req, res) => {
-      const result = await patchOffre(req.params.jobId, req.body)
-      return res.status(200).send(result)
+      await patchOffre(req.params.jobId, req.body)
+      return res.status(200).send({})
     }
   )
 
@@ -401,9 +388,7 @@ export default (server: Server) => {
           return delegation
         }),
       })
-
-      const jobUpdated = await getJob(jobId.toString())
-      return res.send(jobUpdated)
+      return res.send({})
     }
   )
 

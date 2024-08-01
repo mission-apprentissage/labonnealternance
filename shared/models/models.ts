@@ -19,12 +19,13 @@ import franceTravailAccessModel from "./franceTravailAccess.model"
 import geolocationsModel from "./geolocations.model"
 import internalJobModel from "./internalJob.model"
 import jobsModel from "./jobs.model"
-import lbaCompanyModel from "./lbaCompany.model"
-import lbaCompanyLegacyModel from "./lbaCompanyLegacy.model"
+import jobsPartnersModel from "./jobsPartners.model"
 import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
 import rawHelloWorkModel from "./rawHelloWork.model"
 import recruiterModel from "./recruiter.model"
+import lbaCompanyModel from "./recruteurLba.model"
+import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model"
 import referentielOnisepModel from "./referentielOnisep.model"
 import referentielOpcoModel from "./referentielOpco.model"
@@ -32,7 +33,7 @@ import roleManagementModel from "./roleManagement.model"
 import romeModel from "./rome.model"
 import sessionModel from "./session.model"
 import siretDiffusibleStatusModel from "./siretDiffusibleStatus.model"
-import unsubscribedLbaCompanyModel from "./unsubscribedLbaCompany.model"
+import unsubscribedLbaCompanyModel from "./unsubscribedRecruteurLba.model"
 import unsubscribeOFModel from "./unsubscribeOF.model"
 import userModel from "./user.model"
 import userWithAccountModel from "./userWithAccount.model"
@@ -56,6 +57,7 @@ const modelDescriptorMap = {
   [geolocationsModel.collectionName]: geolocationsModel,
   [internalJobModel.collectionName]: internalJobModel,
   [jobsModel.collectionName]: jobsModel,
+  [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [lbaCompanyModel.collectionName]: lbaCompanyModel,
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,

@@ -159,10 +159,46 @@ const transformCompanies = ({
   return transformedCompanies
 }
 
+type IRecruteursLbaSearchParams = {
+  romes: string[]
+  latitude: number
+  longitude: number
+  radius: number
+  opco?: string
+  opcoUrl?: string
+}
+
+export const getRecruteursLbaFromDB = async ({ radius = 10, romes, opco, opcoUrl, latitude, longitude }: IRecruteursLbaSearchParams): Promise<ILbaCompany[] | []> => {
+  const query: { rome_codes: object; opco_short_name?: string; opco_url?: string } = {
+    rome_codes: { $in: romes },
+  }
+  if (opco) {
+    query.opco_short_name = opco.toUpperCase()
+  }
+  if (opcoUrl) {
+    query.opco_url = opcoUrl.toLowerCase()
+  }
+  return (await getDbCollection("recruteurslba")
+    .aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [longitude, latitude] },
+          distanceField: "distance",
+          maxDistance: radius * 1000,
+          query,
+        },
+      },
+      {
+        $limit: 150,
+      },
+    ])
+    .toArray()) as ILbaCompany[]
+}
+
 /**
  * Retourne des sociétés issues de l'algo matchant les critères en paramètres
  */
-const getCompanies = async ({
+export const getCompanies = async ({
   romes,
   latitude,
   longitude,

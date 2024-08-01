@@ -682,6 +682,132 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       "JobWritable": {
         "additionalProperties": false,
         "properties": {
+          "competences_rome": {
+            "additionalProperties": false,
+            "description": "Compétences du code ROME sélectionnées par le recruteur",
+            "properties": {
+              "savoir_etre_professionnel": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "code_ogr": {
+                      "type": "string",
+                    },
+                    "coeur_metier": {
+                      "type": [
+                        "string",
+                        "null",
+                      ],
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "code_ogr",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "savoir_faire": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "code_ogr": {
+                            "type": "string",
+                          },
+                          "coeur_metier": {
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                          "libelle": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "libelle",
+                          "code_ogr",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "items",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "savoirs": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "code_ogr": {
+                            "type": "string",
+                          },
+                          "coeur_metier": {
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                          "libelle": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "libelle",
+                          "code_ogr",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "items",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+            },
+            "type": [
+              "object",
+              "null",
+            ],
+          },
           "custom_address": {
             "description": "Adresse personnalisée de l'entreprise",
             "type": [
@@ -788,6 +914,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "job_level_label": {
             "description": "Niveau de formation visé en fin de stage",
             "enum": [
+              "Indifférent",
               "Cap, autres formations niveau (Infrabac)",
               "BP, Bac, autres formations niveau (Bac)",
               "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -3621,6 +3748,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -4413,6 +4541,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -4846,6 +4975,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -5307,6 +5437,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -6327,6 +6458,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -6642,6 +6774,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
                     "enum": [
+                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -6814,6 +6947,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
                     "enum": [
+                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -7097,6 +7231,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -7752,6 +7887,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -8044,6 +8180,7 @@ Limite : 7 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -8218,6 +8355,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -8420,6 +8558,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -9607,6 +9746,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",
@@ -9920,6 +10060,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
                     "enum": [
+                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -10091,6 +10232,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                   "job_level_label": {
                     "description": "Niveau de formation visé en fin de stage",
                     "enum": [
+                      "Indifférent",
                       "Cap, autres formations niveau (Infrabac)",
                       "BP, Bac, autres formations niveau (Bac)",
                       "BTS, DEUST, autres formations niveau (Bac+2)",
@@ -10278,6 +10420,7 @@ Limite : 5 appel(s) / 1 seconde(s)
             "required": false,
             "schema": {
               "enum": [
+                "INDIFFERENT",
                 "3 (CAP...)",
                 "4 (BAC...)",
                 "5 (BTS, DEUST...)",

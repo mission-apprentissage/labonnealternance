@@ -1,21 +1,65 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Flex, Spinner, Text, Box, Heading, Link } from "@chakra-ui/react"
+import { Box, Flex, Heading, Link, Text, Image, Progress } from "@chakra-ui/react"
+import styled from "@emotion/styled"
+import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
 import { getRomeDetail } from "@/utils/api"
 
 import { RomeDetail } from "./RomeDetail"
 
-export const RomeDetailWithQuery = ({ rome, appellation }: { rome: string; appellation: any }) => {
-  const { data, isLoading, error } = useQuery(["getRomeDetail", rome, appellation], () => getRomeDetail(rome), {
+const fakeLoadingDuration = 1000
+
+export const RomeDetailWithQuery = ({
+  rome,
+  appellation,
+  onChange,
+  selectedCompetences,
+}: {
+  rome: string
+  appellation: string
+  onChange: (selectedCompetences: Record<string, string[]>) => void
+  selectedCompetences: Record<string, string[]>
+}) => {
+  const [fakeLoading, setFakeLoading] = useState<{ id: string; isLoading: boolean }>({ id: new Date().toISOString(), isLoading: true })
+  const {
+    data: romeReferentiel,
+    isLoading,
+    error,
+  } = useQuery(["getRomeDetail", rome], () => getRomeDetail(rome), {
     retry: false,
   })
 
-  return isLoading ? (
-    <Flex h="100%" justify="center" align="center" direction="column">
-      <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
-      <Text>Recherche en cours...</Text>
-    </Flex>
+  useEffect(() => {
+    const id = new Date().toISOString()
+    setFakeLoading({ id, isLoading: true })
+    const timeoutId = setTimeout(() => {
+      setFakeLoading({ id, isLoading: false })
+    }, fakeLoadingDuration)
+    return () => clearTimeout(timeoutId)
+  }, [rome, setFakeLoading])
+
+  const setCompetenceSelection = (groupKey: string, competence: string, selected: boolean) => {
+    let group = selectedCompetences[groupKey]
+    if (!group) {
+      group = []
+    }
+    group = [...group]
+    const groupIndex = group.indexOf(competence)
+    const isInGroup = groupIndex !== -1
+    if (!selected && isInGroup) {
+      group.splice(groupIndex, 1)
+    } else if (selected && !isInGroup) {
+      group.push(competence)
+    }
+    onChange({
+      ...selectedCompetences,
+      [groupKey]: group,
+    })
+  }
+
+  return isLoading || fakeLoading.isLoading ? (
+    <LoadingBox />
   ) : error ? (
     <Box border="1px solid #000091" p={5}>
       <Heading fontSize="24px" mb={3}>
@@ -35,6 +79,33 @@ export const RomeDetailWithQuery = ({ rome, appellation }: { rome: string; appel
       </Text>
     </Box>
   ) : (
-    <RomeDetail {...({ appellation, ...data } as any)} />
+    <RomeDetail appellation={appellation} romeReferentiel={romeReferentiel} onChange={setCompetenceSelection} selectedCompetences={selectedCompetences} />
+  )
+}
+
+const LoadingBoxDiv = styled.div`
+  border: solid 1px #000091;
+  height: 430px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 24px 0px;
+  }
+`
+
+const LoadingBox = () => {
+  return (
+    <LoadingBoxDiv>
+      <Flex alignItems="center" flexDirection="column" width="100%">
+        <Image src="/assets/checkbox-list.svg" width="66px" height="80px" alt="" />
+        <Text className="title">Génération du descriptif de l’offre</Text>
+        <Progress width="80%" isIndeterminate size="sm" borderRadius="20px" />
+      </Flex>
+    </LoadingBoxDiv>
   )
 }

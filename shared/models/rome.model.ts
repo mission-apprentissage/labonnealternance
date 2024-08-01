@@ -110,7 +110,7 @@ const ZRomeCategorieSavoir = z
   })
   .strict()
 
-const ZRomeCompetence = z
+export const ZRomeCompetence = z
   .object({
     savoir_faire: z.array(ZRomeCategorieSavoir).nullish(),
     savoir_etre_professionnel: z.array(ZRomeSavoir).nullish(),
@@ -155,6 +155,7 @@ export const ZReferentielRome = ZReferentielRomeForJob.extend({
 })
 
 export type IReferentielRome = z.output<typeof ZReferentielRome>
+export type IReferentielRomeForJob = z.output<typeof ZReferentielRomeForJob>
 
 export default {
   zod: ZReferentielRome,
