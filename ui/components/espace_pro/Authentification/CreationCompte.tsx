@@ -1,11 +1,13 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Alert, AlertIcon, Box, Button, Flex, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
+import { captureException } from "@sentry/nextjs"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import * as Yup from "yup"
 
+import { searchEntreprise } from "@/services/searchEntreprises"
 import { ApiError } from "@/utils/api.utils"
 
 import { AUTHTYPE } from "../../../common/contants"
@@ -14,28 +16,32 @@ import { LogoContext } from "../../../context/contextLogo"
 import { WidgetContext } from "../../../context/contextWidget"
 import { SearchLine } from "../../../theme/components/icons"
 import { getEntrepriseInformation, getEntrepriseOpco, validateCfaCreation } from "../../../utils/api"
+import AutocompleteAsync from "../AutocompleteAsync"
 import { BandeauProps } from "../Bandeau"
 import { Section } from "../common/components/Section"
 import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
-import { AnimationContainer, AuthentificationLayout, Bandeau, CustomInput, InformationLegaleEntreprise } from "../index"
+import { AnimationContainer, AuthentificationLayout, Bandeau } from "../index"
 
 type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
 
+type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
+
 const CreationCompteForm = ({
-  type,
-  setQualiopiSiret,
+  organisationType,
   setBandeau,
   origin,
   isWidget,
+  onSelectOrganisation,
 }: {
-  type: EntrepriseOrCfaType
+  organisationType: EntrepriseOrCfaType
   isWidget: boolean
   origin: string
-  setQualiopiSiret: (siret: string) => void
   setBandeau: (props: BandeauProps) => void
+  onSelectOrganisation: (organisation: Organisation | null) => void
 }) => {
   const router = useRouter()
   const [isCfa, setIsCfa] = useState(false)
+  const [selectedEntreprise, setSelectedEntreprise] = useState<Organisation | null>(null)
 
   const nextUri = isWidget ? "/espace-pro/widget/entreprise/detail" : "/espace-pro/creation/detail"
 
@@ -43,13 +49,13 @@ const CreationCompteForm = ({
     setBandeau(null)
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
     // validate establishment_siret
-    if (type === AUTHTYPE.ENTREPRISE) {
+    if (organisationType === AUTHTYPE.ENTREPRISE) {
       Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error === true) {
           if (entrepriseData.statusCode >= 500) {
             router.push({
               pathname: nextUri,
-              query: { type, origin, informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
+              query: { type: organisationType, origin, informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
             })
           } else {
             setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
@@ -60,7 +66,7 @@ const CreationCompteForm = ({
           setSubmitting(true)
           router.push({
             pathname: nextUri,
-            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }), type, origin },
+            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }), type: organisationType, origin },
           })
         }
       })
@@ -70,7 +76,7 @@ const CreationCompteForm = ({
           setSubmitting(false)
           router.push({
             pathname: nextUri,
-            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret }), type, origin },
+            query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret }), type: organisationType, origin },
           })
         })
         .catch((error) => {
@@ -82,7 +88,6 @@ const CreationCompteForm = ({
                 setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
               } else if (reason === BusinessErrorCodes.NOT_QUALIOPI) {
                 setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
-                setQualiopiSiret(formattedSiret)
                 setBandeau({
                   type: "error",
                   header: "Votre centre de formation n’est pas certifié Qualiopi.",
@@ -141,10 +146,9 @@ const CreationCompteForm = ({
       })}
       onSubmit={submitSiret}
     >
-      {({ values, isValid, isSubmitting, setFieldValue, submitForm }) => {
+      {({ values, errors, isValid, isSubmitting, setFieldValue, submitForm, setFieldTouched }) => {
         return (
           <Form>
-            <CustomInput required={false} name="establishment_siret" label="SIRET" type="text" value={values.establishment_siret} />
             {isCfa && (
               <Alert status="info" variant="top-accent">
                 <AlertIcon />
@@ -164,9 +168,54 @@ const CreationCompteForm = ({
                 </Text>
               </Alert>
             )}
-            <Flex justify="flex-end" mt={5}>
+            <AutocompleteAsync
+              name="establishment_siret"
+              handleSearch={(search: string) => searchEntreprise(search)}
+              renderItem={({ raison_sociale, siret, adresse }, highlighted) => <EntrepriseCard {...{ raison_sociale, siret, adresse, highlighted }} />}
+              itemToString={({ raison_sociale, siret, adresse }) => `${raison_sociale} - ${siret} - ${adresse}`}
+              onInputFieldChange={(value, hasError) => {
+                if (!hasError) return
+                setFieldTouched("establishment_siret", true, false)
+                setFieldValue("establishment_siret", value, true)
+              }}
+              onSelectItem={(organisation) => {
+                setSelectedEntreprise(organisation)
+                setFieldTouched("establishment_siret", false, false)
+                setFieldValue("establishment_siret", organisation?.siret, true)
+                onSelectOrganisation(organisation)
+              }}
+              onError={(error, inputValue) => {
+                captureException(error)
+                setFieldTouched("establishment_siret", true, false)
+                setFieldValue("establishment_siret", inputValue, true)
+              }}
+              allowHealFromError={false}
+              renderError={() =>
+                values?.establishment_siret && !errors?.establishment_siret ? null : (
+                  <Box>
+                    <Text fontSize="12px" lineHeight="20px" color="#CE0500" padding="8px 16px">
+                      La recherche par raison sociale est temporairement indisponible.
+                      <br />
+                      <b>Veuillez renseigner votre numéro de SIRET.</b>
+                    </Text>
+                  </Box>
+                )
+              }
+            />
+            {selectedEntreprise && (
+              <Box marginTop="32px">
+                <Text fontSize="16px" lineHeight="24px">
+                  Établissement sélectionné :
+                </Text>
+                <Box border="solid 1px #000091" marginTop="8px">
+                  <EntrepriseCard {...selectedEntreprise} />
+                </Box>
+              </Box>
+            )}
+
+            <Flex justify="flex-start" marginTop="32px">
               <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
-                Chercher
+                Continuer
               </Button>
             </Flex>
           </Form>
@@ -177,10 +226,11 @@ const CreationCompteForm = ({
 }
 
 export default function CreationCompte({ type, isWidget = false, origin = "lba" }: { type: EntrepriseOrCfaType; isWidget?: boolean; origin?: string }) {
+  const [organisationType, setOrganisationType] = useState<EntrepriseOrCfaType>(type)
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
-  const [qualiopiSiret, setQualiopiSiret] = useState<string>(null)
   const [bandeau, setBandeau] = useState<BandeauProps>(null)
+  const [selectedTab, setSelectedTab] = useState<EntrepriseOrCfaType>(type)
   const router = useRouter()
   const mobile = router.query.mobile === "true" ? true : false
 
@@ -191,6 +241,16 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])
+
+  const onSelectOrganisation = (organisation: Organisation | null) => {
+    if (organisation?.activite_principale?.startsWith("85")) {
+      setOrganisationType(AUTHTYPE.CFA)
+      setSelectedTab(AUTHTYPE.CFA)
+    } else {
+      setOrganisationType(AUTHTYPE.ENTREPRISE)
+      setSelectedTab(AUTHTYPE.ENTREPRISE)
+    }
+  }
 
   return (
     <AuthentificationLayout>
@@ -203,23 +263,35 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
                 Dépot simplifié d'offre en alternance
               </Text>
             )}
-            <Heading>{type === AUTHTYPE.ENTREPRISE ? "Retrouvez votre entreprise" : "Créez votre compte"}</Heading>
+            <Heading>Retrouvez votre établissement</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
-              Nous avons besoin du numéro SIRET de votre {type === AUTHTYPE.ENTREPRISE ? "entreprise" : "organisme de formation"} afin de vous identifier.
+              Nous avons besoin de votre numéro de SIRET ou de votre raison sociale afin de vous identifier.
             </Text>
-            <CreationCompteForm type={type} setQualiopiSiret={setQualiopiSiret} setBandeau={setBandeau} origin={origin} isWidget={isWidget} />
+            <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
           </Box>
           <Box mt={[4, 4, 4, 0]}>
-            {qualiopiSiret ? (
-              <InformationLegaleEntreprise siret={qualiopiSiret} type={type} />
-            ) : (
-              <Section>
-                <InformationsSiret type={type} />
-              </Section>
-            )}
+            <Section>
+              <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
+            </Section>
           </Box>
         </SimpleGrid>
       </AnimationContainer>
     </AuthentificationLayout>
+  )
+}
+
+const EntrepriseCard = ({ adresse, raison_sociale, siret, highlighted }: { highlighted?: boolean; raison_sociale: string; siret: string; adresse: string }) => {
+  return (
+    <Box backgroundColor={highlighted ? "#F6F6F6" : "white"} padding="8px 16px">
+      <Text color="#161616" fontSize="16px" lineHeight="24px" fontWeight={700}>
+        {raison_sociale}
+      </Text>
+      <Text color="#161616" fontSize="16px" lineHeight="24px">
+        {siret}
+      </Text>
+      <Text color="#666666" fontSize="12px" lineHeight="20px">
+        {adresse}
+      </Text>
+    </Box>
   )
 }

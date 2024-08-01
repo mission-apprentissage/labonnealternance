@@ -24,6 +24,7 @@ import omit from "lodash/omit"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
+import { IAppellationsRomes } from "shared"
 import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
 import * as Yup from "yup"
@@ -32,17 +33,16 @@ import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
-import { publicConfig } from "@/config.public"
 import { LogoContext } from "@/context/contextLogo"
 import { WidgetContext } from "@/context/contextWidget"
 import { useAuth } from "@/context/UserContext"
 import { ArrowRightLine, ExternalLinkLine, Minus, Plus, Warning } from "@/theme/components/icons"
 import { createOffre, createOffreByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
+import { apiGet } from "@/utils/api.utils"
 
 import DropdownCombobox from "./DropdownCombobox"
 
 const DATE_FORMAT = "YYYY-MM-DD"
-const URL_LBA = publicConfig.apiEndpoint
 
 const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
   return (
@@ -83,13 +83,11 @@ const AjouterVoeuxForm = (props) => {
 
   const { organisation } = useContext(LogoContext)
 
-  const handleJobSearch = async (search) => {
+  const handleJobSearch = async (search: string) => {
     if (search.trim().length !== 0) {
       try {
-        // KBA 20230214 : update api call.
-        const result = await fetch(`${URL_LBA}/v1/metiers/intitule?label=${search}`)
-        const data = await result.json()
-        return data.coupleAppellationRomeMetier
+        const result = (await apiGet(`/v1/metiers/intitule`, { querystring: { label: search } })) as IAppellationsRomes
+        return result.coupleAppellationRomeMetier
       } catch (error) {
         throw new Error(error)
       }
@@ -212,7 +210,7 @@ const AjouterVoeuxForm = (props) => {
               <FormLabel>Métier</FormLabel>
               <DropdownCombobox
                 handleSearch={debounce(handleJobSearch, 300)}
-                saveSelectedItem={(values) => {
+                saveSelectedItem={(values: IAppellationsRomes["coupleAppellationRomeMetier"][number]) => {
                   /**
                    * validator broken when using setFieldValue : https://github.com/formium/formik/issues/2266
                    * work around until v3 : setTimeout
@@ -229,7 +227,7 @@ const AjouterVoeuxForm = (props) => {
                 name="rome_label"
                 value={values.rome_appellation_label}
                 placeholder="Rechercher un métier.."
-                data-testid="offre-metier"
+                dataTestId="offre-metier"
               />
             </FormControl>
             <FormControl mt={6}>
