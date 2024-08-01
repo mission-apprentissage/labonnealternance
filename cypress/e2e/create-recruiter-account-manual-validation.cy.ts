@@ -79,6 +79,9 @@ describe("create-recruiter-account-manual-validation", () => {
         LoginPage.clickLinkInEmail(email)
         LoginBar.disconnect()
 
+        JobPage.goTo(jobId)
+        JobPage.expectPublished()
+
         loginClient.loginAsAdmin()
         FlowAdminPage.navigation.goToAccountValidation()
         FlowAdminPage.gestionDesRecruteurs.selectTab("Actifs")
