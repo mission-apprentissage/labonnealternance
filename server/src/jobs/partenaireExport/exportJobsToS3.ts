@@ -1,5 +1,5 @@
 import { createWriteStream } from "fs"
-import { Readable, Transform } from "stream"
+import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -28,12 +28,12 @@ async function generateJsonExport({ collection, query, projection, fileName }: I
     readableObjectMode: true,
     transform(chunk, encoding, callback) {
       if (isFirst) {
-       this.push("[")
-       this.push(JSON.stringify(chunk, null, 4));
+        this.push("[")
+        this.push(JSON.stringify(chunk, null, 4))
         isFirst = false
       } else {
         this.push(",")
-       this.push(JSON.stringify(chunk, null, 4));
+        this.push(JSON.stringify(chunk, null, 4))
       }
       callback()
     },
