@@ -21,7 +21,7 @@ describe("create-recruiter-account", () => {
     const studyLevel = "Cap, autres formations niveau (Infrabac)"
 
     FlowCreationEntreprise.siretPage.goTo()
-    FlowCreationEntreprise.siretPage.fillSiret(siret)
+    FlowCreationEntreprise.siretPage.searchAndSelectSiret(siret)
     FlowCreationEntreprise.siretPage.submit()
 
     FlowCreationEntreprise.personalInfosPage.fillForm({
