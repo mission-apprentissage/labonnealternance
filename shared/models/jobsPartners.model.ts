@@ -36,16 +36,16 @@ const ZJobsPartnersJobOffer = z.object({
   title: z.string().describe("Titre de l'offre"),
   rome_code: z.string().describe("Code rome de l'offre"),
   description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
-  diplomaLevelLabel: extensions.buildEnum(NIVEAUX_POUR_LBA).nullable().describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
-  desiredSkills: z
+  diploma_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA).nullable().describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
+  desired_skills: z
     .union([z.array(z.any()), z.string()])
     .nullable()
     .describe("Compétence attendues par le candidat pour l'offre"),
-  toBeAcquiredSkills: z
+  acquired_skills: z
     .union([z.array(z.any()), z.string()])
     .nullable()
     .describe("Compétence acuqises durant l'alternance"),
-  accessCondition: z
+  access_condition: z
     .union([z.array(z.any()), z.string()])
     .nullable()
     .describe("Conditions d'accès à l'offre"),
