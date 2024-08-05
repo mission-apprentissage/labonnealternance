@@ -1,6 +1,6 @@
 import { ILbaCompany, IRecruiter } from "shared"
-import { JOB_OPPORTUNITY_TYPE, LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
-import { IJobOpportunity } from "shared/interface/jobOpportunity.types"
+import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
+import { IJobsPartnersOffresEmploiFranceTravail, IJobsPartnersOffresEmploiLba, IJobsPartnersRecruteurLba, LBA_JOB_TYPE } from "shared/models/jobsPartners.model"
 
 import { IApiError } from "../common/utils/errorManager"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
@@ -173,28 +173,29 @@ export const getJobsQuery = async (
   return result
 }
 
-export const formatRecruteurLbaToJobOpportunity = (recruteursLba: ILbaCompany[]): IJobOpportunity[] => {
+export const formatRecruteurLbaToJobOpportunity = (recruteursLba: ILbaCompany[]): IJobsPartnersRecruteurLba[] => {
   return recruteursLba.map((recruteurLba) => ({
-    identifiant: {
-      id: recruteurLba.siret,
-      type: JOB_OPPORTUNITY_TYPE.RECRUTEURS_LBA,
-    },
+    _id: null,
+    raw_id: recruteurLba._id.toString(),
+    partner_label: LBA_JOB_TYPE.RECRUTEURS_LBA,
     contract: null,
-    jobOffre: null,
+    jobOffer: null,
     workplace: {
-      description: null,
-      name: recruteurLba.enseigne ?? recruteurLba.raison_sociale,
       siret: recruteurLba.siret,
-      size: recruteurLba.company_size,
       website: recruteurLba.website,
+      raison_sociale: recruteurLba.raison_sociale,
+      enseigne: recruteurLba.enseigne,
+      name: null,
+      description: null,
+      size: recruteurLba.company_size,
       location: {
         address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
         latitude: parseFloat(recruteurLba.geo_coordinates.split(",")[0]),
         longitude: parseFloat(recruteurLba.geo_coordinates.split(",")[1]),
       },
       domaine: {
-        opco: recruteurLba.opco,
         idcc: null,
+        opco: recruteurLba.opco,
         naf: {
           code: recruteurLba.naf_code,
           label: recruteurLba.naf_label,
@@ -203,25 +204,27 @@ export const formatRecruteurLbaToJobOpportunity = (recruteursLba: ILbaCompany[])
     },
     apply: {
       url: `${config.publicUrl}/recherche-apprentissage?type=lba&itemId=${recruteurLba.siret}`,
-      phone: recruteurLba.phone,
       email: recruteurLba.email,
+      phone: recruteurLba.phone,
     },
   }))
 }
 
-export const formatOffreEmploiLbaToJobOpportunity = (offresEmploiLba: IRecruiter[]): IJobOpportunity[] => {
+export const formatOffreEmploiLbaToJobOpportunity = (offresEmploiLba: IRecruiter[]): IJobsPartnersOffresEmploiLba[] => {
   return offresEmploiLba.flatMap((offreEmploiLba) =>
     offreEmploiLba.jobs.map((job) => ({
-      identifiant: {
-        id: job._id,
-        type: JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_LBA,
-      },
-      contract: job.job_type,
-      jobOffre: {
-        title: job.rome_appellation_label!,
+      _id: null,
+      raw_id: job._id.toString(),
+      partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_LBA,
+      contract: {
         start: job.job_start_date,
-        duration: job.job_duration!,
         immediateStart: null,
+        type: job.job_type,
+        duration: job.job_duration!.toString(),
+      },
+      jobOffer: {
+        title: job.rome_appellation_label!,
+        rome_code: job.rome_code[0],
         description: job.rome_detail!.definition!,
         diplomaLevelLabel: job.job_level_label!,
         desiredSkills: job.rome_detail!.competences.savoir_etre_professionnel!.map((x) => x.libelle),
@@ -229,20 +232,22 @@ export const formatOffreEmploiLbaToJobOpportunity = (offresEmploiLba: IRecruiter
         accessCondition: job.rome_detail!.acces_metier,
         remote: null,
         publication: {
-          creation: job.job_creation_date!,
-          expiration: job.job_expiration_date!,
+          creation_date: job.job_creation_date!,
+          expiration_date: job.job_expiration_date!,
         },
         meta: {
-          origin: offreEmploiLba.origin!,
           count: job.job_count!,
+          multicast: job.is_multi_published,
         },
       },
       workplace: {
         siret: offreEmploiLba.establishment_siret,
-        name: offreEmploiLba.establishment_enseigne! ?? offreEmploiLba.establishment_raison_sociale!,
+        website: null,
+        raison_sociale: offreEmploiLba.establishment_raison_sociale!,
+        enseigne: offreEmploiLba.establishment_enseigne!,
+        name: null,
         description: null,
         size: offreEmploiLba.establishment_size!,
-        website: null,
         location: {
           address: offreEmploiLba.address!,
           latitude: offreEmploiLba.geopoint!.coordinates[1],
@@ -259,25 +264,27 @@ export const formatOffreEmploiLbaToJobOpportunity = (offresEmploiLba: IRecruiter
       },
       apply: {
         url: `${config.publicUrl}/recherche-apprentissage?type=matcha&itemId=${job._id}`,
-        phone: offreEmploiLba.phone!,
         email: offreEmploiLba.email,
+        phone: offreEmploiLba.phone!,
       },
     }))
   )
 }
 
-export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: FTJob[]): IJobOpportunity[] => {
+export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: FTJob[]): IJobsPartnersOffresEmploiFranceTravail[] => {
   return offresEmploiFranceTravail.map((offreFT) => ({
-    identifiant: {
-      id: offreFT.id,
-      type: JOB_OPPORTUNITY_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL,
-    },
-    contract: [offreFT.natureContrat],
-    jobOffre: {
-      title: offreFT.intitule,
+    _id: null,
+    raw_id: offreFT.id,
+    partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+    contract: {
       start: null,
-      duration: offreFT.typeContratLibelle,
       immediateStart: null,
+      type: [offreFT.natureContrat],
+      duration: offreFT.typeContratLibelle,
+    },
+    jobOffer: {
+      title: offreFT.intitule,
+      rome_code: offreFT.romeCode,
       description: offreFT.description,
       diplomaLevelLabel: null,
       desiredSkills: null,
@@ -285,20 +292,22 @@ export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: F
       accessCondition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
       remote: null,
       publication: {
-        creation: new Date(offreFT.dateCreation),
-        expiration: null,
+        creation_date: new Date(offreFT.dateCreation),
+        expiration_date: null,
       },
       meta: {
-        origin: null,
         count: offreFT.nombrePostes,
+        multicast: true,
       },
     },
     workplace: {
       siret: null,
+      website: null,
+      raison_sociale: offreFT.entreprise.nom,
+      enseigne: offreFT.entreprise.nom,
       name: offreFT.entreprise.nom,
       description: offreFT.entreprise.description,
       size: null,
-      website: null,
       location: {
         address: offreFT.lieuTravail.libelle,
         longitude: parseFloat(offreFT.lieuTravail.longitude),
@@ -315,8 +324,8 @@ export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: F
     },
     apply: {
       url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
-      phone: null,
       email: null,
+      phone: null,
     },
   }))
 }

@@ -6,7 +6,7 @@ const romes = z.array(extensions.romeCode())
 const rncp = extensions.rncpCode()
 const insee = extensions.inseeCode()
 
-const zJobOpportunityQuerystringBase = z.object({
+const ZJobOpportunityQuerystringBase = z.object({
   latitude: extensions.latitude(),
   longitude: extensions.longitude(),
   radius: z.number().min(0).max(200).default(10),
@@ -15,12 +15,12 @@ const zJobOpportunityQuerystringBase = z.object({
   opcoUrl: z.string().optional(),
 })
 
-export const zJobOpportunityRome = zJobOpportunityQuerystringBase.extend({ romes }).strict()
-export const zJobOpportunityRncp = zJobOpportunityQuerystringBase.extend({ rncp }).strict()
-export type IJobOpportunityRome = z.output<typeof zJobOpportunityRome>
-export type IJobOpportunityRncp = z.output<typeof zJobOpportunityRncp>
+export const ZJobOpportunityRome = ZJobOpportunityQuerystringBase.extend({ romes }).strict()
+export const ZJobOpportunityRncp = ZJobOpportunityQuerystringBase.extend({ rncp }).strict()
+export type IJobOpportunityRome = z.output<typeof ZJobOpportunityRome>
+export type IJobOpportunityRncp = z.output<typeof ZJobOpportunityRncp>
 
-export const zJobQuerystringFranceTravailRome = zJobOpportunityQuerystringBase.extend({ romes, insee }).strict()
-export const zJobQuerystringFranceTravailRncp = zJobOpportunityQuerystringBase.extend({ rncp, insee }).strict()
-export type IJobOpportunityFranceTravailRome = z.output<typeof zJobQuerystringFranceTravailRome>
-export type IJobOpportunityFranceTravailRncp = z.output<typeof zJobQuerystringFranceTravailRncp>
+export const ZJobQuerystringFranceTravailRome = ZJobOpportunityQuerystringBase.extend({ romes, insee }).strict()
+export const ZJobQuerystringFranceTravailRncp = ZJobOpportunityQuerystringBase.extend({ rncp, insee }).strict()
+export type IJobOpportunityFranceTravailRome = z.output<typeof ZJobQuerystringFranceTravailRome>
+export type IJobOpportunityFranceTravailRncp = z.output<typeof ZJobQuerystringFranceTravailRncp>

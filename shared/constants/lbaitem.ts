@@ -7,13 +7,6 @@ export enum LBA_ITEM_TYPE {
   OFFRES_EMPLOI_PARTENAIRES = "offres_emploi_partenaires",
 }
 
-export enum JOB_OPPORTUNITY_TYPE {
-  RECRUTEURS_LBA = "recruteurs_lba",
-  OFFRES_EMPLOI_LBA = "offres_emploi_lba",
-  OFFRES_EMPLOI_PARTENAIRES = "offres_emploi_partenaires",
-  OFFRES_EMPLOI_FRANCE_TRAVAIL = "offres_emploi_france_travail",
-}
-
 export enum LBA_ITEM_TYPE_OLD {
   FORMATION = "formation",
   MATCHA = "matcha",
