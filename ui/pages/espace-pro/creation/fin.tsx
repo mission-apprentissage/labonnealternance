@@ -145,7 +145,7 @@ function FinComponent(props: ComponentProps) {
     await router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
   }
 
-  const ValidatedAccountDescription = () => {
+  const ValidatedAccountDescription = ({ withDelegation }) => {
     return (
       <Box mb={5}>
         <Flex alignItems="flex-start" mb={3}>
@@ -155,8 +155,8 @@ function FinComponent(props: ComponentProps) {
               Confirmez votre email
             </Heading>
             <Text textAlign="justify">
-              Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
-              l’adresse suivante : <span style={{ fontWeight: "700" }}>{email}</span>.
+              Pour publier votre offre auprès des candidats {withDelegation ? "et la transmettre aux organismes de formation sélectionnés" : ""}, merci de confirmer votre adresse
+              mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>
             </Text>
           </Box>
         </Flex>
@@ -171,7 +171,7 @@ function FinComponent(props: ComponentProps) {
       </Box>
     )
   }
-  const AwaitingAccountDescription = () => {
+  const AwaitingAccountDescription = ({ withDelegation }) => {
     return (
       <Stack spacing={4} my={4}>
         <Text>Voici les prochaines étapes qui vous attendent :</Text>
@@ -182,8 +182,9 @@ function FinComponent(props: ComponentProps) {
           <Box>
             <Heading fontSize="18px">Confirmez votre email</Heading>
             <Text>
-              Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
-              l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
+              Cliquez sur le lien que nous venons de vous transmettre à l’adresse suivante:
+              <br />
+              <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
             {!userIsInError && (
               <Stack direction="row" align="center" spacing={4} mt={4}>
@@ -200,17 +201,12 @@ function FinComponent(props: ComponentProps) {
             2
           </Circle>
           <Box>
-            <Heading fontSize="18px">Votre compte sera validé manuellement par nos équipes</Heading>
-            <Text>Vous serez notifié par email une fois que ce sera fait.</Text>
-          </Box>
-        </Stack>
-        <Stack direction="row" spacing={4}>
-          <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
-            3
-          </Circle>
-          <Box>
-            <Heading fontSize="18px">Votre offre est automatiquement publiée </Heading>
-            <Text>Une fois votre compte validé, votre offre est automatiquement publiée et partagée aux organismes de formation que vous avez sélectionnés.</Text>
+            <Heading fontSize="18px">Votre compte sera validé manuellement</Heading>
+            <Text>
+              {withDelegation
+                ? "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne et partagée aux organismes de formation que vous avez sélectionnés."
+                : "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne."}
+            </Text>
           </Box>
         </Stack>
       </Stack>
@@ -248,7 +244,11 @@ function FinComponent(props: ComponentProps) {
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
           <JobPreview job={job} />
-          {fromDashboard ? null : userIsInError ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
+          {fromDashboard ? null : userIsInError ? null : userIsValidated ? (
+            <ValidatedAccountDescription withDelegation={withDelegation} />
+          ) : (
+            <AwaitingAccountDescription withDelegation={withDelegation} />
+          )}
         </Box>
       </Flex>
     </AuthentificationLayout>
