@@ -1,5 +1,9 @@
 import { assertUnreachable } from "../utils"
 
+/**
+ * KBA 20240805
+ * to be split and replaced with shared/models/jobsPartners.model.ts when private route V2 are active
+ */
 export enum LBA_ITEM_TYPE {
   FORMATION = "formation",
   RECRUTEURS_LBA = "recruteurs_lba",
@@ -7,13 +11,10 @@ export enum LBA_ITEM_TYPE {
   OFFRES_EMPLOI_PARTENAIRES = "offres_emploi_partenaires",
 }
 
-export enum JOB_OPPORTUNITY_TYPE {
-  RECRUTEURS_LBA = "recruteurs_lba",
-  OFFRES_EMPLOI_LBA = "offres_emploi_lba",
-  OFFRES_EMPLOI_PARTENAIRES = "offres_emploi_partenaires",
-  OFFRES_EMPLOI_FRANCE_TRAVAIL = "offres_emploi_france_travail",
-}
-
+/**
+ * KBA 20240805
+ * to be removed once private route V2 are active
+ */
 export enum LBA_ITEM_TYPE_OLD {
   FORMATION = "formation",
   MATCHA = "matcha",
@@ -23,6 +24,10 @@ export enum LBA_ITEM_TYPE_OLD {
   PEJOB = "peJob",
 }
 
+/**
+ * KBA 20240805
+ * to be removed once public API route V2 are active
+ */
 export const oldItemTypeToNewItemType = (lbaItemType: LBA_ITEM_TYPE_OLD): LBA_ITEM_TYPE => {
   switch (lbaItemType) {
     case LBA_ITEM_TYPE_OLD.MATCHA:
@@ -41,6 +46,10 @@ export const oldItemTypeToNewItemType = (lbaItemType: LBA_ITEM_TYPE_OLD): LBA_IT
   }
 }
 
+/**
+ * KBA 20240805
+ * to be removed once public API route V2 are active
+ */
 export const newItemTypeToOldItemType = (lbaItemType: LBA_ITEM_TYPE): LBA_ITEM_TYPE_OLD => {
   switch (lbaItemType) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
