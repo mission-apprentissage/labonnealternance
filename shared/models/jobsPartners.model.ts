@@ -27,7 +27,6 @@ const ZJobsPartnersApply = z.object({
 
 const ZJobsPartnersContract = z.object({
   start: z.date().nullable().describe("Date de début de contrat"),
-  immediateStart: z.boolean().nullable().describe("Début immédiat du contrat"),
   duration: z.string().nullable().describe("Durée du contract"),
   type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contract, formaté à l'insertion"),
   remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
@@ -57,6 +56,7 @@ const ZJobsPartnersJobOffer = z.object({
   meta: z.object({
     count: z.number().describe("Nombre de poste disponible"),
     multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
+    origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur"),
   }),
 })
 

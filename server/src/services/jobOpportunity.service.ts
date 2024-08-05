@@ -199,6 +199,7 @@ export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJ
         naf: {
           code: recruteurLba.naf_code,
           label: recruteurLba.naf_label,
+          origin: null,
         },
       },
     },
@@ -218,7 +219,6 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
       partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_LBA,
       contract: {
         start: job.job_start_date,
-        immediateStart: null,
         duration: job.job_duration!.toString(),
         type: job.job_type,
         remote: null,
@@ -238,6 +238,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
         meta: {
           count: job.job_count!,
           multicast: job.is_multi_published,
+          origin: null,
         },
       },
       workplace: {
@@ -278,7 +279,6 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
     partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL,
     contract: {
       start: null,
-      immediateStart: null,
       duration: offreFT.typeContratLibelle,
       type: [offreFT.natureContrat],
       remote: null,
@@ -298,6 +298,7 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
       meta: {
         count: offreFT.nombrePostes,
         multicast: true,
+        origin: null,
       },
     },
     workplace: {
