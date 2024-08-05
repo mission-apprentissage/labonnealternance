@@ -14,7 +14,6 @@ import { AUTHTYPE } from "../../../common/contants"
 import { SIRETValidation } from "../../../common/validation/fieldValidations"
 import { LogoContext } from "../../../context/contextLogo"
 import { WidgetContext } from "../../../context/contextWidget"
-import { SearchLine } from "../../../theme/components/icons"
 import { getEntrepriseInformation, getEntrepriseOpco, validateCfaCreation } from "../../../utils/api"
 import AutocompleteAsync from "../AutocompleteAsync"
 import { BandeauProps } from "../Bandeau"
@@ -214,7 +213,7 @@ const CreationCompteForm = ({
             )}
 
             <Flex justify="flex-start" marginTop="32px">
-              <Button type="submit" variant="form" leftIcon={<SearchLine width={5} />} isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
+              <Button type="submit" variant="form" isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
                 Continuer
               </Button>
             </Flex>
