@@ -219,8 +219,9 @@ export const formatOffreEmploiLbaToJobOpportunity = (offresEmploiLba: IRecruiter
       contract: {
         start: job.job_start_date,
         immediateStart: null,
-        type: job.job_type,
         duration: job.job_duration!.toString(),
+        type: job.job_type,
+        remote: null,
       },
       job_offer: {
         title: job.rome_appellation_label!,
@@ -230,7 +231,6 @@ export const formatOffreEmploiLbaToJobOpportunity = (offresEmploiLba: IRecruiter
         desired_skills: job.rome_detail!.competences.savoir_etre_professionnel!.map((x) => x.libelle),
         acquired_skills: job.rome_detail!.competences.savoir_faire!.map((x) => ({ libelle: x.libelle, items: x.items.map((y) => y.libelle) })),
         access_condition: job.rome_detail!.acces_metier,
-        remote: null,
         publication: {
           creation_date: job.job_creation_date!,
           expiration_date: job.job_expiration_date!,
@@ -279,8 +279,9 @@ export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: F
     contract: {
       start: null,
       immediateStart: null,
-      type: [offreFT.natureContrat],
       duration: offreFT.typeContratLibelle,
+      type: [offreFT.natureContrat],
+      remote: null,
     },
     job_offer: {
       title: offreFT.intitule,
@@ -290,7 +291,6 @@ export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: F
       desired_skills: null,
       acquired_skills: null,
       access_condition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
-      remote: null,
       publication: {
         creation_date: new Date(offreFT.dateCreation),
         expiration_date: null,

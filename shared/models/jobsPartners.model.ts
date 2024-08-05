@@ -28,8 +28,9 @@ const ZJobsPartnersApply = z.object({
 const ZJobsPartnersContract = z.object({
   start: z.date().nullable().describe("Date de début de contrat"),
   immediateStart: z.boolean().nullable().describe("Début immédiat du contrat"),
-  type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contract, formaté à l'insertion"),
   duration: z.string().nullable().describe("Durée du contract"),
+  type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contract, formaté à l'insertion"),
+  remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
 })
 
 const ZJobsPartnersJobOffer = z.object({
@@ -49,7 +50,6 @@ const ZJobsPartnersJobOffer = z.object({
     .union([z.array(z.any()), z.string()])
     .nullable()
     .describe("Conditions d'accès à l'offre"),
-  remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
   publication: z.object({
     creation_date: z.date().nullable().describe("Date de creation de l'offre"),
     expiration_date: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre àcreation_date + 60j"),
