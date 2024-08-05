@@ -17,7 +17,7 @@ describe("entreprise-create-offre", () => {
     const lastName = `Doe-${generateRandomString()}`
 
     FlowCreationEntreprise.siretPage.goTo()
-    FlowCreationEntreprise.siretPage.fillSiret(siret)
+    FlowCreationEntreprise.siretPage.searchAndSelectSiret(siret)
     FlowCreationEntreprise.siretPage.submit()
 
     FlowCreationEntreprise.personalInfosPage.fillForm({

@@ -37,7 +37,7 @@ export default function DropdownCombobox(props) {
   })
 
   return (
-    <div data-testid={props["data-testid"]}>
+    <div data-testid={props.dataTestId}>
       <div {...getComboboxProps()}>
         <CustomInput pb="0" required={false} name={name} placeholder={placeholder || "sélectionner un métier"} {...getInputProps()} />
       </div>
