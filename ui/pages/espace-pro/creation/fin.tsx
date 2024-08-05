@@ -1,6 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Circle, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
-import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
@@ -250,21 +249,6 @@ function FinComponent(props: ComponentProps) {
           </Heading>
           <JobPreview job={job} />
           {fromDashboard ? null : userIsInError ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
-          <Box bg="#F6F6F6" p={4}>
-            <Stack direction="column" spacing="16px">
-              <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
-              <Text>
-                Poste : <span style={{ fontWeight: "700" }}>{job.rome_appellation_label}</span>
-              </Text>
-              <Text>
-                Niveau d'étude visé : <span style={{ fontWeight: "700" }}>{job.job_level_label}</span>
-              </Text>
-              <Text>
-                Date de début d'apprentissage souhaitée : <span style={{ fontWeight: "700" }}>{dayjs(job.job_start_date).format("DD/MM/YYYY")}</span>
-              </Text>
-              <Text fontSize="14px">Votre offre expirera 2 mois après sa date de publication</Text>
-            </Stack>
-          </Box>
         </Box>
       </Flex>
     </AuthentificationLayout>
