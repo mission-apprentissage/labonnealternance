@@ -33,6 +33,15 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
   }
 }
 
+export const cleanHardbouncedAppointmentUser = async (email: string) => {
+  await getDbCollection("users").findOneAndUpdate(
+    { email },
+    {
+      $set: { email: "" },
+    }
+  )
+}
+
 export const getUserAndRecruitersDataForOpcoUser = async (
   opco: OPCOS
 ): Promise<{
