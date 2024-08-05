@@ -5,6 +5,7 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { validateSIRET } from "shared/validators/siretValidator"
 import * as Yup from "yup"
 
 import { searchEntreprise } from "@/services/searchEntreprises"
@@ -41,6 +42,7 @@ const CreationCompteForm = ({
   const router = useRouter()
   const [isCfa, setIsCfa] = useState(false)
   const [selectedEntreprise, setSelectedEntreprise] = useState<Organisation | null>(null)
+  const [searchInput, setSearchInput] = useState<string>()
 
   const nextUri = isWidget ? "/espace-pro/widget/entreprise/detail" : "/espace-pro/creation/detail"
 
@@ -173,6 +175,7 @@ const CreationCompteForm = ({
               renderItem={({ raison_sociale, siret, adresse }, highlighted) => <EntrepriseCard {...{ raison_sociale, siret, adresse, highlighted }} />}
               itemToString={({ raison_sociale, siret, adresse }) => `${raison_sociale} - ${siret} - ${adresse}`}
               onInputFieldChange={(value, hasError) => {
+                setSearchInput(value)
                 if (!hasError) return
                 setFieldTouched("establishment_siret", true, false)
                 setFieldValue("establishment_siret", value, true)
@@ -189,6 +192,15 @@ const CreationCompteForm = ({
                 setFieldValue("establishment_siret", inputValue, true)
               }}
               allowHealFromError={false}
+              renderNoResult={
+                /^[0-9]{14}$/.test(searchInput) && !validateSIRET(searchInput) ? (
+                  <Box>
+                    <Text fontSize="12px" lineHeight="20px" color="#CE0500" padding="8px 16px">
+                      Le numéro de SIRET saisi n’est pas valide
+                    </Text>
+                  </Box>
+                ) : undefined
+              }
               renderError={() =>
                 values?.establishment_siret && !errors?.establishment_siret ? null : (
                   <Box>

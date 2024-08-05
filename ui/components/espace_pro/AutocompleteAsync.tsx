@@ -52,7 +52,7 @@ export default function AutocompleteAsync<T>({
   const [inputItems, setInputJobItems] = useState([])
   const debouncedSearch = useMemo(() => {
     return debounce(handleSearch, debounceDelayInMs)
-  }, [handleSearch, debounceDelayInMs])
+  }, [])
 
   const { isOpen, getMenuProps, getInputProps, getComboboxProps, getItemProps, highlightedIndex } = useCombobox<T>({
     itemToString,
