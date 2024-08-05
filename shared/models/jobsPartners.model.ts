@@ -90,7 +90,7 @@ export const ZJobsPartners = z.object({
   raw_id: z.string().describe("Identifiant d'origine l'offre provenant du partenaire"),
   partner_label: extensions.buildEnum(JOBPARTNERS_LABEL).describe("Référence du partenaire"),
   contract: ZJobsPartnersContract.nullable(),
-  jobOffer: ZJobsPartnersJobOffer.nullable(),
+  job_offer: ZJobsPartnersJobOffer.nullable(),
   workplace: ZJobsPartnersWorkplace,
   apply: ZJobsPartnersApply,
 })

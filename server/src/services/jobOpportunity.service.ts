@@ -179,7 +179,7 @@ export const formatRecruteurLbaToJobOpportunity = (recruteursLba: ILbaCompany[])
     raw_id: recruteurLba._id.toString(),
     partner_label: LBA_JOB_TYPE.RECRUTEURS_LBA,
     contract: null,
-    jobOffer: null,
+    job_offer: null,
     workplace: {
       siret: recruteurLba.siret,
       website: recruteurLba.website,
@@ -222,7 +222,7 @@ export const formatOffreEmploiLbaToJobOpportunity = (offresEmploiLba: IRecruiter
         type: job.job_type,
         duration: job.job_duration!.toString(),
       },
-      jobOffer: {
+      job_offer: {
         title: job.rome_appellation_label!,
         rome_code: job.rome_code[0],
         description: job.rome_detail!.definition!,
@@ -282,7 +282,7 @@ export const formatFranceTravailToJobOpportunity = (offresEmploiFranceTravail: F
       type: [offreFT.natureContrat],
       duration: offreFT.typeContratLibelle,
     },
-    jobOffer: {
+    job_offer: {
       title: offreFT.intitule,
       rome_code: offreFT.romeCode,
       description: offreFT.description,
