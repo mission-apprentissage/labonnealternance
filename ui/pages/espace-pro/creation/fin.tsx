@@ -8,7 +8,6 @@ import { z } from "zod"
 
 import { AuthentificationLayout, LoadingEmptySpace } from "../../../components/espace_pro"
 import { WidgetContext } from "../../../context/contextWidget"
-import { InfoCircle } from "../../../theme/components/icons"
 import { MailCloud } from "../../../theme/components/logos"
 import { getUserStatus, getUserStatusByToken, sendValidationLink } from "../../../utils/api"
 
@@ -70,19 +69,19 @@ function FinComponent(props: ComponentProps) {
     onSettled: (data) => {
       if (data?.status_current === "ERROR") {
         setUserIsInError(true)
-        setTitle("Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte.")
+        setTitle("Félicitations, votre offre est créée.<br>Elle sera publiée dès validation de votre compte.")
       } else if (data?.status_current === "VALIDÉ" || fromDashboard === true) {
         setUserIsValidated(true)
         setTitle(
           withDelegation
-            ? "Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés."
-            : "Félicitations,<br>votre offre a bien été créée!"
+            ? "Félicitations, votre offre est créée et a été transmise aux organismes de formation que vous avez sélectionnés."
+            : "Félicitations, votre offre est créée."
         )
       } else {
         setTitle(
           withDelegation
-            ? "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
-            : "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte."
+            ? "Félicitations, votre offre est créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
+            : "Félicitations, votre offre est créée.<br>Elle sera publiée dès validation de votre compte."
         )
       }
     },
@@ -149,7 +148,6 @@ function FinComponent(props: ComponentProps) {
     return (
       <Box mb={5}>
         <Flex alignItems="flex-start" mb={3}>
-          <InfoCircle mr={2} mt={1} />
           <Box>
             <Heading fontSize="18px" pb={2}>
               Confirmez votre email
