@@ -1,4 +1,5 @@
-import { Box, Button, Circle, Flex, Heading, Stack, Text, useToast } from "@chakra-ui/react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Button, Circle, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
@@ -217,6 +218,28 @@ function FinComponent(props: ComponentProps) {
     )
   }
 
+  const JobPreview = ({ job }) => {
+    return (
+      <Box mb={2}>
+        <Box mb={2}>
+          <Link
+            href={`/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${job._id}`}
+            aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
+            isExternal
+            fontSize={16}
+            color="bluefrance.500"
+          >
+            Voir mon offre sur La bonne alternance <ExternalLinkIcon mx="2px" />
+          </Link>
+        </Box>
+        <Text fontStyle="italic" fontSize={16} color="grey.425">
+          Votre offre est également visible sur les sites internet partenaires de La bonne alternance dont : Parcoursup, “Choisir son affectation après la 3è”, le Portail de
+          l’alternance, l’ONISEP, la CCI, des plateformes régionales et certains sites d’OPCO.
+        </Text>
+      </Box>
+    )
+  }
+
   return (
     <AuthentificationLayout fromDashboard={fromDashboard} onClose={onClose}>
       <Flex direction={["column", widget?.mobile ? "column" : "row"]} align={widget?.mobile ? "center" : "flex-start"} border="1px solid #000091" mt={[4, 8]} p={[4, 8]}>
@@ -225,6 +248,7 @@ function FinComponent(props: ComponentProps) {
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
+          <JobPreview job={job} />
           {fromDashboard ? null : userIsInError ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
           <Box bg="#F6F6F6" p={4}>
             <Stack direction="column" spacing="16px">
