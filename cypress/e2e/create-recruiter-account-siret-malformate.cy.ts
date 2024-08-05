@@ -8,8 +8,7 @@ describe("create-recruiter-account-siret-malformate", () => {
 
     FlowCreationEntreprise.siretPage.goTo()
     FlowCreationEntreprise.siretPage.fillSiret(siret)
-    // unfocus
-    cy.get("h2").first().click()
+
     cy.contains("Le numéro de SIRET saisi n’est pas valide", { timeout: 10000 }).should("exist")
     cy.get("button[type='submit']", { timeout: 10000 }).should("be.disabled")
   })

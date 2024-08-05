@@ -46,7 +46,7 @@ fileignoreconfig:
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
   checksum: 0c1b814245a58b8ca788fbfab9899206edbddaae795d56963f86c5aa83ea555f
 - filename: server/src/http/controllers/application.controller.test.ts
-  checksum: 931dca1e50c7215fee39e1b648e15d9d12482f2537e8d97f63782856c351e5f8
+  checksum: 1f3c9b8cd7c578252a0c41ca9028672712a5bca2ce1686cba83ff60305708305
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/routes/appointmentRequest.controller.ts
@@ -154,7 +154,7 @@ fileignoreconfig:
 - filename: ui/components/espace_pro/Admin/utilisateurs/infoDetails/InfoDetails.tsx
   checksum: be2ad6ca5c2bd36d26cd7aebb33ab876bd32662be3735fee3b167325c284ccff
 - filename: ui/components/espace_pro/AjouterVoeux.tsx
-  checksum: 0a8365f461dfaeffa4970365fb1c45ed63c5e28588a63382e1b3e99dfdb42b9a
+  checksum: 8ba50b9d7127114cd71789bbf7c26dc19b4b915ab4ae2e2e033c1ca65accee94
 - filename: ui/components/footer.tsx
   checksum: d82b5a7d6905070fb32383864566fc16eae4797ca18f82782fb32c95a0d50369
 - filename: ui/pages/accessibilite.tsx
