@@ -14,6 +14,7 @@ export enum ApplicationScanStatus {
   VIRUS_DETECTED = "VIRUS_DETECTED",
   ERROR_CLAMAV = "ERROR_CLAMAV",
   NO_VIRUS_DETECTED = "NO_VIRUS_DETECTED",
+  DO_NOT_SEND = "DO_NOT_SEND",
 }
 
 export const ZApplication = z
