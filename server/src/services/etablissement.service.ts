@@ -821,15 +821,17 @@ export const entrepriseOnboardingWorkflow = {
 }
 
 const entrepriseToRecruiter = ({ siret, address, address_detail, enseigne, geo_coordinates, idcc, opco, raison_sociale }: IEntreprise): Partial<IRecruiter> => {
+  const [latitude, longitude] = geo_coordinates!.split(",").map((coords) => parseFloat(coords))
   const formulaire: Partial<IRecruiter> = {
     establishment_siret: siret,
+    establishment_raison_sociale: raison_sociale,
+    establishment_enseigne: enseigne,
+    opco,
+    idcc,
     address,
     address_detail,
-    establishment_enseigne: enseigne,
     geo_coordinates,
-    idcc,
-    opco,
-    establishment_raison_sociale: raison_sociale,
+    geopoint: { type: "Point", coordinates: [longitude, latitude] as [number, number] },
   }
   return formulaire
 }
