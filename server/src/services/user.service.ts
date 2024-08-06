@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto"
+
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IUser } from "shared"
@@ -34,10 +36,11 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
 }
 
 export const cleanHardbouncedAppointmentUser = async (email: string) => {
+  const fakeEmail = `hardbounced-${randomUUID()}@faux-domaine.fr`
   await getDbCollection("users").findOneAndUpdate(
     { email },
     {
-      $set: { email: "" },
+      $set: { email: fakeEmail },
     }
   )
 }
