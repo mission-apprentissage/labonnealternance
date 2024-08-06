@@ -69,21 +69,10 @@ function FinComponent(props: ComponentProps) {
     onSettled: (data) => {
       if (data?.status_current === "ERROR") {
         setUserIsInError(true)
-        setTitle("Félicitations, votre offre est créée.<br>Elle sera publiée dès validation de votre compte.")
       } else if (data?.status_current === "VALIDÉ" || fromDashboard === true) {
         setUserIsValidated(true)
-        setTitle(
-          withDelegation
-            ? "Félicitations, votre offre est créée et a été transmise aux organismes de formation que vous avez sélectionnés."
-            : "Félicitations, votre offre est créée."
-        )
-      } else {
-        setTitle(
-          withDelegation
-            ? "Félicitations, votre offre est créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
-            : "Félicitations, votre offre est créée.<br>Elle sera publiée dès validation de votre compte."
-        )
       }
+      setTitle("Félicitations, votre offre est créée.")
     },
   })
 
@@ -146,7 +135,7 @@ function FinComponent(props: ComponentProps) {
 
   const ValidatedAccountDescription = ({ withDelegation }) => {
     return (
-      <Box mb={5}>
+      <Box mb={5} mt={5}>
         <Flex alignItems="flex-start" mb={3}>
           <Box>
             <Heading fontSize="18px" pb={2}>
@@ -159,7 +148,7 @@ function FinComponent(props: ComponentProps) {
           </Box>
         </Flex>
         {!userIsInError && (
-          <Stack direction="row" align="center" spacing={4} mt={4} ml={6}>
+          <Stack direction="row" align="center" spacing={4} mt={6}>
             <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
             <Button variant="popover" textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
               Renvoyer le mail
@@ -185,7 +174,7 @@ function FinComponent(props: ComponentProps) {
               <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
             {!userIsInError && (
-              <Stack direction="row" align="center" spacing={4} mt={4}>
+              <Stack direction="row" align="center" spacing={4}>
                 <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
                 <Button variant="popover" textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
                   Renvoyer le mail
@@ -238,7 +227,7 @@ function FinComponent(props: ComponentProps) {
       <Flex direction={["column", widget?.mobile ? "column" : "row"]} align={widget?.mobile ? "center" : "flex-start"} border="1px solid #000091" mt={[4, 8]} p={[4, 8]}>
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
-          <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
+          <Heading fontSize="24px" mb={6} mt={widget?.mobile ? "10px" : "0px"}>
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
           <JobPreview job={job} />
