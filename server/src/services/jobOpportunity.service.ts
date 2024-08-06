@@ -173,7 +173,8 @@ export const getJobsQuery = async (
   return result
 }
 
-export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJobsPartnersRecruteurLba[] => {
+export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJobsPartnersRecruteurLba[] | [] => {
+  if (!recruteursLba.length) return []
   return recruteursLba.map((recruteurLba) => ({
     created_at: null,
     _id: null,
@@ -212,7 +213,8 @@ export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJ
   }))
 }
 
-export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]): IJobsPartnersOffresEmploiLba[] => {
+export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]): IJobsPartnersOffresEmploiLba[] | [] => {
+  if (!offresEmploiLba.length) return []
   return offresEmploiLba.flatMap((offreEmploiLba) =>
     offreEmploiLba.jobs.map((job) => ({
       created_at: null,
@@ -274,7 +276,8 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
   )
 }
 
-export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob[]): IJobsPartnersOffresEmploiFranceTravail[] => {
+export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob[]): IJobsPartnersOffresEmploiFranceTravail[] | [] => {
+  if (!offresEmploiFranceTravail.length) return []
   return offresEmploiFranceTravail.map((offreFT) => ({
     created_at: null,
     _id: null,
