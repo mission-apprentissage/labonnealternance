@@ -8,10 +8,11 @@ import { DisplayContext } from "@/context/DisplayContextProvider"
 const blueBannerText = (
   <Text>
     <Text as="span" fontWeight={700}>
-      La bonne alternance évolue !
+      La bonne alternance évolue pour les recruteurs !
     </Text>{" "}
-    Vous pouvez désormais être plusieurs utilisateurs au sein de votre organisation à gérer les offres d’emploi de votre entreprise.{" "}
-    <Link textDecoration="underline">En savoir plus</Link>
+    Vous pouvez désormais personnaliser le contenu de vos offres en décochant certains éléments du descriptif généré automatiquement{" "}
+    <Link textDecoration="underline" href="mailto:labonnealternance@beta.gouv.fr?subject=Personnaliser%20mon%20offre%20-%20en%20savoir%20plus">En savoir plus</Link>
+    </Link>
   </Text>
 )
 
