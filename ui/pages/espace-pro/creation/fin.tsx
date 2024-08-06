@@ -208,8 +208,7 @@ function FinComponent(props: ComponentProps) {
             href={`/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${job._id}`}
             aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
             isExternal
-            fontSize={16}
-            color="bluefrance.500"
+            variant="basicUnderlinedBlue"
           >
             Voir mon offre sur La bonne alternance <ExternalLinkIcon mx="2px" />
           </Link>
