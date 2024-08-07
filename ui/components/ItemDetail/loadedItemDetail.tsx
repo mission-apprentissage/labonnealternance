@@ -23,9 +23,9 @@ import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
-import getSoustitre from "./ItemDetailServices/getSoustitre"
 import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
+import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import LbaJobDetail from "./LbaJobDetail"
 import LbbCompanyDetail from "./LbbCompanyDetail"
 import LocationDetail from "./LocationDetail"
@@ -140,7 +140,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
             {actualTitle || ""}
           </Text>
 
-          {!isCollapsedHeader && getSoustitre({ selectedItem })}
+          {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
 
           {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && buttonJePostuleShouldBeDisplayed(selectedItem) && (
             <Box my={4}>

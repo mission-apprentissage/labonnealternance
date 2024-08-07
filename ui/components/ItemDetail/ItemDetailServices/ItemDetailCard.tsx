@@ -1,7 +1,7 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
 import React from "react"
 
-export default function getSoustitre({ selectedItem }) {
+export default function ItemDetailCard({ selectedItem }) {
   const res = selectedItem?.company?.mandataire ? (
     <Box color="grey.700" textAlign="left" mt={6}>
       <Flex alignItems="center">
@@ -33,8 +33,13 @@ export default function getSoustitre({ selectedItem }) {
           fill="#2A2A2A"
         />
       </svg>
-      <Text as="span">&nbsp;{selectedItem?.place?.zipCode}</Text>
-      <Text as="span">&nbsp;{selectedItem?.place?.city || selectedItem?.place?.address}</Text>
+      <Text ml={1}>{selectedItem?.place?.zipCode}</Text>
+      <Text ml={1}>{selectedItem?.place?.city || selectedItem?.place?.address}</Text>
+      {(selectedItem?.place?.distance ?? -1) >= 0 && (
+        <Text ml={2} color="grey.425" fontSize={14}>
+          &nbsp;{selectedItem?.place?.distance} km(s) du lieu de recherche
+        </Text>
+      )}
     </Flex>
   )
 
