@@ -93,43 +93,19 @@ export const ZJobsPartners = z.object({
   job_offer: ZJobsPartnersJobOffer.nullable(),
   workplace: ZJobsPartnersWorkplace,
   apply: ZJobsPartnersApply,
-  created_at: z.date().describe("Date de creation dans la collection"),
+  created_at: z.date().describe("Date de creation de l'offre"),
 })
 export type IJobsPartners = z.output<typeof ZJobsPartners>
 
-/**
- * FOR FORMATTING
- * RECRUTEURS_LBA comes from recruteurslba collection, not from JobsPartners
- */
-export const ZJobsPartnersRecruteurLba = ZJobsPartners.omit({ _id: true, partner_label: true, created_at: true, raw_id: true }).extend({
-  _id: z.null(),
-  partner_label: z.literal(LBA_JOB_TYPE.RECRUTEURS_LBA),
-})
-export type IJobsPartnersRecruteurLba = z.output<typeof ZJobsPartnersRecruteurLba>
+export const ZJobOffer = ZJobsPartners.omit({ raw_id: true })
+export type IJobOffer = z.output<typeof ZJobOffer>
 
-/**
- * FOR FORMATTING
- * OFFRES_EMPLOI_LBA comes from JobsPartners (API) AND RECRUITERS
- */
-export const ZJobsPartnersOffresEmploiLba = ZJobsPartners.omit({ _id: true, created_at: true, raw_id: true }).extend({
-  _id: zObjectId.nullable(),
-  partner_label: z.literal(LBA_JOB_TYPE.OFFRES_EMPLOI_LBA),
-})
-export type IJobsPartnersOffresEmploiLba = z.output<typeof ZJobsPartnersOffresEmploiLba>
-
-/**
- * FOR FORMATTING
- * OFFRES_EMPLOI_FRANCE_TRAVAIL
- */
-export const ZJobsPartnersOffresEmploiFranceTravail = ZJobsPartners.omit({ _id: true, created_at: true, raw_id: true }).extend({
-  _id: z.null(),
-  partner_label: z.literal(LBA_JOB_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL),
-})
-export type IJobsPartnersOffresEmploiFranceTravail = z.output<typeof ZJobsPartnersOffresEmploiFranceTravail>
+export const ZJobOfferFranceTravail = ZJobsPartners.omit({ _id: true }).extend({ _id: z.null() })
+export type IJobOfferFranceTravail = z.output<typeof ZJobOfferFranceTravail>
 
 export const ZJobsPartnersResponse = z.object({
-  jobs: z.array(z.union([ZJobsPartnersOffresEmploiLba, ZJobsPartnersOffresEmploiFranceTravail, ZJobsPartners])),
-  recruiters: z.array(ZJobsPartnersRecruteurLba),
+  jobs: z.array(z.union([ZJobOffer, ZJobOfferFranceTravail, ZJobsPartners])),
+  recruiters: z.array(ZJobOffer),
 })
 
 export default {
