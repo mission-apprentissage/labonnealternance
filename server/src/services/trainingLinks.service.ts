@@ -97,7 +97,7 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
     }
   }
 
-  return formations
+  return formations || []
 }
 
 const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
