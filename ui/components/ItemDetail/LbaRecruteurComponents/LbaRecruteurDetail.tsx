@@ -1,10 +1,11 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { AddIcon, /*ExternalLinkIcon,*/ MinusIcon } from "@chakra-ui/icons"
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, /*Link,*/ Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
+
+import { scrollToNestedElement } from "@/utils/tools"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../../utils/plausible"
-import CandidatureLbaExplanation from "../CandidatureLba/CandidatureLbaExplanation"
 
 const LbaRecruteurDetail = ({ lbaRecruteur }) => {
   useEffect(() => {
@@ -20,6 +21,12 @@ const LbaRecruteurDetail = ({ lbaRecruteur }) => {
   }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
 
   const { formValues } = React.useContext(DisplayContext)
+
+  const onClick = (e) => {
+    setTimeout(() => {
+      scrollToNestedElement({ containerId: "itemDetailColumn", nestedElement: e.target, yOffsett: 220 })
+    }, 200)
+  }
 
   return (
     <>
@@ -41,51 +48,62 @@ const LbaRecruteurDetail = ({ lbaRecruteur }) => {
         </Flex>
       </Box>
 
-      <Box
-        data-testid="lbb-component"
-        pb="0px"
-        mt={6}
-        mb={8}
-        position="relative"
-        background="white"
-        padding={["1px 12px 12px 12px", "1px 24px 12px 24px", "1px 12px 12px 12px"]}
-        mx={["0", "30px"]}
-      >
-        <CandidatureLbaExplanation about={"what"} />
-        <CandidatureLbaExplanation about={"how"} />
-      </Box>
+      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} mx={["0", "30px"]}>
+        <Text mb={6} color="bluefrance.500" fontSize="22px" fontWeight={700} as="h2">
+          Comment candidater ?
+        </Text>
+        <Accordion allowMultiple={false} allowToggle defaultIndex={0}>
+          <AccordionItem onClick={onClick}>
+            {({ isExpanded }) => (
+              <>
+                <AccordionButton borderBottom={isExpanded ? "none" : "1px solid #E5E5E5"} fontSize="1rem" fontWeight={700} color="#161616">
+                  <Box as="span" flex="1" textAlign="left">
+                    1. Renseignez-vous sur l’entreprise
+                  </Box>
+                  {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
+                </AccordionButton>
 
-      <Box bg="#f5f5fe" border="1px solid #e3e3fd" mx={8} mb={8} px={6} py={4}>
-        <Box color="bluefrance.500" fontSize="22px" fontWeight={700}>
-          Besoin d&apos;aide ?
-        </Box>
-        <Box color="grey.700">Découvrez les modules de formation de La bonne alternance. Des modules de quelques minutes pour bien préparer vos candidatures.</Box>
-        <Box pl={6}>
-          <Box pt={4}>
-            &bull;
-            <Link
-              variant="basicUnderlined"
-              ml={4}
-              isExternal
-              href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
-              aria-label="Formation Chercher un employeur - nouvelle fenêtre"
-            >
-              Chercher un employeur <ExternalLinkIcon mb="3px" mx="2px" />
-            </Link>
-          </Box>
-          <Box pt={4}>
-            &bull;
-            <Link
-              variant="basicUnderlined"
-              ml={4}
-              isExternal
-              href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
-              aria-label="Formation préparer un entretien avec un employeur - nouvelle fenêtre"
-            >
-              Préparer un entretien avec un employeur <ExternalLinkIcon mb="3px" mx="2px" />
-            </Link>
-          </Box>
-        </Box>
+                <AccordionPanel borderBottom="1px solid #E5E5E5" pb={4}>
+                  TEXTE
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
+
+          <AccordionItem onClick={onClick}>
+            {({ isExpanded }) => (
+              <>
+                <AccordionButton borderBottom={isExpanded ? "none" : "1px solid #E5E5E5"} fontSize="1rem" fontWeight={700} color="#161616">
+                  <Box as="span" flex="1" textAlign="left">
+                    2. Préparez votre candidature spontanée
+                  </Box>
+                  {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
+                </AccordionButton>
+
+                <AccordionPanel borderBottom="1px solid #E5E5E5" pb={4}>
+                  TEXTE
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
+
+          <AccordionItem onClick={onClick}>
+            {({ isExpanded }) => (
+              <>
+                <AccordionButton borderBottom={isExpanded ? "none" : "1px solid #E5E5E5"} fontSize="1rem" fontWeight={700} color="#161616">
+                  <Box as="span" flex="1" textAlign="left">
+                    3. Anticiper la suite
+                  </Box>
+                  {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
+                </AccordionButton>
+
+                <AccordionPanel borderBottom="1px solid #E5E5E5" pb={4}>
+                  TEXTE
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
+        </Accordion>
       </Box>
     </>
   )
