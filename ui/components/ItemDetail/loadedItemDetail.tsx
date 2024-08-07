@@ -14,7 +14,7 @@ import { SendPlausibleEvent } from "../../utils/plausible"
 import InfoBanner from "../InfoBanner/InfoBanner"
 
 import AideApprentissage from "./AideApprentissage"
-import CandidatureLba from "./CandidatureLba/CandidatureLba"
+import CandidatureLba, { NoCandidatureLba } from "./CandidatureLba/CandidatureLba"
 import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
 import FTJobDetail from "./FTJobDetail"
@@ -163,6 +163,8 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
               <CandidatureLba item={selectedItem} />
             </>
           )}
+
+          {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
           {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
