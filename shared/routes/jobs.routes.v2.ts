@@ -1,7 +1,7 @@
 import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
+import { ZJob, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZJobsPartners, ZJobsPartnersOffresEmploiFranceTravail, ZJobsPartnersOffresEmploiLba, ZJobsPartnersRecruteurLba } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
@@ -506,114 +506,6 @@ export const zJobsRoutesV2 = {
     },
   },
   post: {
-    "/jobs/establishment": {
-      method: "post",
-      path: "/jobs/establishment",
-      body: z
-        .object({
-          establishment_siret: extensions.siret,
-          first_name: z.string(),
-          last_name: z.string(),
-          phone: z
-            .string()
-            .trim()
-            .regex(/^0[1-9]\d{8}$/)
-            .optional(),
-          email: z.string().email(),
-          idcc: z.string().optional(),
-          origin: z.string().optional().openapi({
-            description:
-              "always prefixed with you identification name declared at the API user creation. BETA GOUV with an origin set to 'campaign2023' will be betagouv-campaign2023.",
-            example: "betagouv-campaign2023",
-          }),
-        })
-        .strict(),
-      response: {
-        "201": ZRecruiter,
-        "400": z.union([ZResError, ZLbarError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: { every: ["user:validate", "recruiter:manage", "user:manage"] },
-        resources: {},
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        description: `Create an establishment entity\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-        operationId: "createEstablishment",
-      },
-    },
-    "/jobs/:establishmentId": {
-      method: "post",
-      path: "/jobs/:establishmentId",
-      params: z.object({ establishmentId: z.string() }).strict(),
-      body: ZJobFields.pick({
-        job_level_label: true,
-        job_duration: true,
-        job_type: true,
-        job_count: true,
-        job_rythm: true,
-        job_employer_description: true,
-        job_description: true,
-        is_disabled_elligible: true,
-        custom_address: true,
-        custom_geo_coordinates: true,
-        is_multi_published: true,
-        custom_job_title: true,
-      })
-        .extend({
-          job_start_date: ZJobStartDateCreate(),
-          appellation_code: z.string().regex(/^[0-9]+$/, "appelation code ne doit contenir que des chiffres"),
-        })
-        .strict()
-        .refine(
-          ({ custom_address, custom_geo_coordinates }) => {
-            if ((custom_address !== undefined && custom_geo_coordinates === undefined) || (custom_address === undefined && custom_geo_coordinates !== undefined)) {
-              return false
-            }
-            return true
-          },
-          { message: "custom_geo_coordinates est obligatoire si custom_address est passé en paramètre" }
-        )
-        .refine(
-          ({ job_description }) => {
-            if (job_description && job_description?.length < 30) {
-              return false
-            }
-            return true
-          },
-          { message: "job_description doit avoir un minimum de 30 caractères" }
-        )
-        .refine(
-          ({ job_employer_description }) => {
-            if (job_employer_description && job_employer_description?.length < 30) {
-              return false
-            }
-            return true
-          },
-          { message: "job_employer_description doit avoir un minimum de 30 caractères" }
-        ),
-      response: {
-        "201": ZRecruiter,
-        "400": z.union([ZResError, ZLbarError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: "recruiter:add_job",
-        resources: {
-          recruiter: [
-            {
-              establishment_id: { type: "params", key: "establishmentId" },
-            },
-          ],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        description: `Create a job offer inside an establishment entity.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-        operationId: "createJob",
-      },
-    },
     "/jobs/delegations/:jobId": {
       method: "post",
       path: "/jobs/delegations/:jobId",

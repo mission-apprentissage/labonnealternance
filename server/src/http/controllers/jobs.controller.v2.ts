@@ -1,11 +1,10 @@
 import Boom from "boom"
-import { IJob, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { ILbaItemFtJob, ILbaItemLbaJob, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IJobOpportunityFranceTravailRncp, IJobOpportunityFranceTravailRome, IJobOpportunityRncp, IJobOpportunityRome } from "shared/routes/jobOpportunity.routes"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
-import { Appellation } from "@/services/rome.service.types"
 
 import { getFileSignedURL } from "../../common/utils/awsUtils"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
@@ -14,25 +13,11 @@ import { getNearEtablissementsFromRomes } from "../../services/catalogue.service
 import { getRomesFromRncp } from "../../services/certification.service"
 import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
-import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
-import {
-  addExpirationPeriod,
-  cancelOffre,
-  createJobDelegations,
-  createOffre,
-  extendOffre,
-  getFormulaire,
-  getFormulaires,
-  getJob,
-  getOffre,
-  patchOffre,
-  provideOffre,
-} from "../../services/formulaire.service"
+import { addExpirationPeriod, cancelOffre, createJobDelegations, extendOffre, getFormulaires, getJob, getOffre, patchOffre, provideOffre } from "../../services/formulaire.service"
 import { getFtJobFromIdV2, getFtJobs } from "../../services/ftjob.service"
 import { formatFranceTravailToJobPartner, formatOffreEmploiLbaToJobPartner, formatRecruteurLbaToJobPartner, getJobsQuery } from "../../services/jobOpportunity.service"
 import { addOffreDetailView, getJobs, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/recruteurLba.service"
-import { getFicheMetierFromDB } from "../../services/rome.service"
 import { Server } from "../server"
 
 const config = {
@@ -85,97 +70,16 @@ export default (server: Server) => {
     }
   )
 
-  server.post(
-    "/jobs/establishment",
-    {
-      schema: zRoutes.post["/jobs/establishment"],
-      onRequest: server.auth(zRoutes.post["/jobs/establishment"]),
-      config,
-    },
-    async (req, res) => {
-      const { body } = req
-
-      const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
-      const user = getUserFromRequest(req, zRoutes.post["/jobs/establishment"]).value
-
-      const result = await entrepriseOnboardingWorkflow.create(
-        {
-          email,
-          first_name,
-          last_name,
-          phone,
-          origin: `${user.scope}${origin ? `-${origin}` : ""}`,
-          idcc,
-          siret: establishment_siret,
-          opco: user.organisation,
-        },
-        {
-          isUserValidated: true,
-        }
-      )
-      if ("error" in result) {
-        const { message } = result
-        return res.status(400).send({ error: true, message })
-      }
-
-      return res.status(201).send(result.formulaire)
-    }
-  )
-
-  server.post(
-    "/jobs/:establishmentId",
-    {
-      schema: zRoutes.post["/jobs/:establishmentId"],
-      onRequest: server.auth(zRoutes.post["/jobs/:establishmentId"]),
-      config,
-    },
-    async (req, res) => {
-      const { establishmentId } = req.params
-      const { body } = req
-      // Check if entity exists
-      const establishmentExists = await getFormulaire({ establishment_id: establishmentId })
-
-      if (!establishmentExists) {
-        return res.status(400).send({ error: true, message: "Establishment does not exist" })
-      }
-
-      const romeDetails = await getFicheMetierFromDB({
-        query: {
-          "appellations.code_ogr": body.appellation_code,
-        },
-      })
-
-      if (!romeDetails) {
-        return res.send({ error: true, message: "ROME Code details could not be retrieved" })
-      }
-
-      const appellation = romeDetails?.appellations ? (romeDetails.appellations.find(({ code_ogr }) => code_ogr === body.appellation_code) as Appellation) : null
-
-      const job: Partial<IJob> = {
-        rome_label: romeDetails.rome.intitule,
-        rome_appellation_label: appellation && appellation.libelle,
-        rome_code: [romeDetails.rome.code_rome],
-        job_level_label: body.job_level_label,
-        job_start_date: new Date(body.job_start_date),
-        job_description: body.job_description,
-        job_employer_description: body.job_employer_description,
-        job_creation_date: dayjs().toDate(),
-        job_expiration_date: addExpirationPeriod(dayjs()).toDate(),
-        job_status: JOB_STATUS.ACTIVE,
-        job_type: body.job_type,
-        is_disabled_elligible: body.is_disabled_elligible,
-        job_count: body.job_count,
-        job_duration: body.job_duration,
-        job_rythm: body.job_rythm,
-        custom_address: body.custom_address,
-        custom_geo_coordinates: body.custom_geo_coordinates,
-      }
-
-      const updatedRecruiter = await createOffre(establishmentId, job)
-
-      return res.status(201).send(updatedRecruiter)
-    }
-  )
+  // POST job in jobs_partners
+  server.post("/jobs", {}, async () => {})
+  // PATCH job in jobs_partners
+  server.post("/jobs/:id", {}, async () => {})
+  // PROVIDED job in jobs_partners
+  server.post("/jobs/provided/:id", {}, async () => {})
+  // CANCELED job in jobs_partners
+  server.post("/jobs/canceled/:id", {}, async () => {})
+  // EXTEND job in jobs_partners
+  server.post("/jobs/extend/:id", {}, async () => {})
 
   server.patch(
     "/jobs/:jobId",
