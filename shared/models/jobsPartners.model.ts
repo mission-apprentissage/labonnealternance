@@ -127,6 +127,11 @@ export const ZJobsPartnersOffresEmploiFranceTravail = ZJobsPartners.omit({ _id: 
 })
 export type IJobsPartnersOffresEmploiFranceTravail = z.output<typeof ZJobsPartnersOffresEmploiFranceTravail>
 
+export const ZJobsPartnersResponse = z.object({
+  jobs: z.array(z.union([ZJobsPartnersOffresEmploiLba, ZJobsPartnersOffresEmploiFranceTravail, ZJobsPartners])),
+  recruiters: z.array(ZJobsPartnersRecruteurLba),
+})
+
 export default {
   zod: ZJobsPartners,
   indexes: [],

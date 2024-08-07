@@ -15,7 +15,7 @@ const ZJobOpportunityQuerystringBase = z.object({
   opcoUrl: z.string().optional(),
 })
 
-export const ZJobOpportunityRome = ZJobOpportunityQuerystringBase.extend({ romes, insee }).strict()
-export const ZJobOpportunityRncp = ZJobOpportunityQuerystringBase.extend({ rncp, insee }).strict()
+export const ZJobOpportunityRome = ZJobOpportunityQuerystringBase.extend({ romes, insee })
+export const ZJobOpportunityRncp = ZJobOpportunityQuerystringBase.extend({ rncp, insee })
 export type IJobOpportunityRome = z.output<typeof ZJobOpportunityRome>
 export type IJobOpportunityRncp = z.output<typeof ZJobOpportunityRncp>

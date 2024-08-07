@@ -510,11 +510,7 @@ export default (server: Server) => {
     }
 
     return res.send({
-      jobs: {
-        lba: formatOffreEmploiLbaToJobPartner(offreEmploiLba),
-        france_travail: formatFranceTravailToJobPartner(franceTravail.resultats),
-        partners: [], // to be completed when available
-      },
+      jobs: [...formatOffreEmploiLbaToJobPartner(offreEmploiLba), ...formatFranceTravailToJobPartner(franceTravail.resultats)],
       recruiters: formatRecruteurLbaToJobPartner(recruterLba),
     })
   })
@@ -544,11 +540,7 @@ export default (server: Server) => {
     }
 
     return res.send({
-      jobs: {
-        lba: formatOffreEmploiLbaToJobPartner(offreEmploiLba),
-        france_travail: formatFranceTravailToJobPartner(franceTravail.resultats),
-        partners: [], // to be completed when available
-      },
+      jobs: [...formatOffreEmploiLbaToJobPartner(offreEmploiLba), ...formatFranceTravailToJobPartner(franceTravail.resultats)],
       recruiters: formatRecruteurLbaToJobPartner(recruterLba),
     })
   })
