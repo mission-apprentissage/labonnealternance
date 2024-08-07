@@ -15,7 +15,7 @@ export default function useLocalStorage(key: string, initialValue: string | null
   return [storedValue, setValue]
 }
 
-export const useLocalStorageGeneric = <T>(key: string, initialValue: T) => {
+export const useLocalStorageTyped = <T>(key: string, initialValue: T) => {
   const storage = window.localStorage
   const [memoryValue, setMemoryValue] = useState<T | null>(() => {
     const storageValue = storage?.getItem(key)

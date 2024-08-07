@@ -5,7 +5,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { InterrogationCircle } from "@/theme/components/icons/InterrogationCircle"
 import { reportLbaItem } from "@/utils/api"
 
-import { useLocalStorageGeneric } from "./CandidatureLba/services/useLocalStorage"
+import { useLocalStorageTyped } from "./CandidatureLba/services/useLocalStorage"
 
 export const ReportJobLink = ({
   linkLabelNotReported,
@@ -23,7 +23,7 @@ export const ReportJobLink = ({
   type: LBA_ITEM_TYPE
 }) => {
   const [isTooltipOpen, setTooltipOpen] = useState(false)
-  const [isReported, setReported] = useLocalStorageGeneric<boolean>(`report-job-${itemId}`, false)
+  const [isReported, setReported] = useLocalStorageTyped<boolean>(`report-job-${itemId}`, false)
 
   const onReport = async () => {
     if (isReported) {
