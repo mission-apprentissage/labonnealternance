@@ -2,7 +2,7 @@ import { Box } from "@chakra-ui/react"
 import React from "react"
 
 import Job from "../../ItemDetail/Job"
-import LbaRecruteur from "../../ItemDetail/LbaRecruteur"
+import LbaRecruteur from "../../ItemDetail/LbaRecruteurComponents/LbaRecruteur"
 import Training from "../../ItemDetail/Training"
 
 export const renderJob = (isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter) => {

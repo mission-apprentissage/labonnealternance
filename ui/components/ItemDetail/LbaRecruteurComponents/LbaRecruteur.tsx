@@ -4,14 +4,13 @@ import React, { useState } from "react"
 
 import { focusWithin } from "@/theme/theme-lba-tools"
 
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import { fetchAddresses } from "../../services/baseAdresse"
-import { getItemQueryParameters } from "../../utils/getItemId"
-import { getSearchQueryParameters } from "../../utils/getSearchParameters"
-import { setSelectedMarker } from "../../utils/mapTools"
-
-import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
+import { DisplayContext } from "../../../context/DisplayContextProvider"
+import { SearchResultContext } from "../../../context/SearchResultContextProvider"
+import { fetchAddresses } from "../../../services/baseAdresse"
+import { getItemQueryParameters } from "../../../utils/getItemId"
+import { getSearchQueryParameters } from "../../../utils/getSearchParameters"
+import { setSelectedMarker } from "../../../utils/mapTools"
+import TagCandidatureSpontanee from "../TagCandidatureSpontanee"
 
 const LbaRecruteur = ({ company, handleSelectItem, showTextOnly = undefined, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)

@@ -1,9 +1,9 @@
 import FTJobDetail from "./FTJobDetail"
 import ItemDetail from "./ItemDetail"
 import Job from "./Job"
-import LbaJobDetail from "./LbaJobDetail"
-import LbaRecruteur from "./LbaRecruteur"
-import LbaRecruteurDetail from "./LbaRecruteurDetail"
+import LbaJobDetail from "./LbaJobComponents/LbaJobDetail"
+import LbaRecruteur from "./LbaRecruteurComponents/LbaRecruteur"
+import LbaRecruteurDetail from "./LbaRecruteurComponents/LbaRecruteurDetail"
 import Training from "./Training"
 import TrainingDetail from "./TrainingDetail"
 

@@ -1,4 +1,3 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -26,8 +25,8 @@ import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
-import LbaJobDetail from "./LbaJobDetail"
-import LbaRecruteurDetail from "./LbaRecruteurDetail"
+import LbaJobDetail from "./LbaJobComponents/LbaJobDetail"
+import LbaRecruteurDetail from "./LbaRecruteurComponents/LbaRecruteurDetail"
 import LocationDetail from "./LocationDetail"
 import TrainingDetail from "./TrainingDetail"
 
@@ -178,43 +177,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <LbaRecruteurDetail lbaRecruteur={selectedItem} />}
-
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
-
-      {kind === LBA_ITEM_TYPE_OLD.LBA && (
-        <Box bg="#f5f5fe" border="1px solid #e3e3fd" mx={8} mb={8} px={6} py={4}>
-          <Box color="bluefrance.500" fontSize="22px" fontWeight={700}>
-            Besoin d&apos;aide ?
-          </Box>
-          <Box color="grey.700">Découvrez les modules de formation de La bonne alternance. Des modules de quelques minutes pour bien préparer vos candidatures.</Box>
-          <Box pl={6}>
-            <Box pt={4}>
-              &bull;
-              <Link
-                variant="basicUnderlined"
-                ml={4}
-                isExternal
-                href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
-                aria-label="Formation Chercher un employeur - nouvelle fenêtre"
-              >
-                Chercher un employeur <ExternalLinkIcon mb="3px" mx="2px" />
-              </Link>
-            </Box>
-            <Box pt={4}>
-              &bull;
-              <Link
-                variant="basicUnderlined"
-                ml={4}
-                isExternal
-                href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
-                aria-label="Formation préparer un entretien avec un employeur - nouvelle fenêtre"
-              >
-                Préparer un entretien avec un employeur <ExternalLinkIcon mb="3px" mx="2px" />
-              </Link>
-            </Box>
-          </Box>
-        </Box>
-      )}
 
       <LocationDetail item={selectedItem} isCfa={isCfa}></LocationDetail>
 
