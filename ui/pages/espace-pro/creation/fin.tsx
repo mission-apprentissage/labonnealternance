@@ -150,7 +150,7 @@ function FinComponent(props: ComponentProps) {
         {!userIsInError && (
           <Stack direction="row" align="center" spacing={4} mt={6}>
             <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-            <Button variant="popover" textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
+            <Button variant="popover" fontWeight={400} textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
               Renvoyer le mail
             </Button>
           </Stack>
@@ -176,7 +176,7 @@ function FinComponent(props: ComponentProps) {
             {!userIsInError && (
               <Stack direction="row" align="center" spacing={4}>
                 <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-                <Button variant="popover" textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
+                <Button variant="popover" fontWeight={400} textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
                   Renvoyer le mail
                 </Button>
               </Stack>
