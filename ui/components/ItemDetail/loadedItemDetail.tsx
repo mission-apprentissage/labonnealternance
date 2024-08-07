@@ -181,7 +181,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
       <LocationDetail item={selectedItem} isCfa={isCfa}></LocationDetail>
 
-      <AideApprentissage item={selectedItem}></AideApprentissage>
+      <AideApprentissage />
 
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && (
         <>
