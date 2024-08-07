@@ -1,10 +1,12 @@
-import { Box } from "@chakra-ui/react"
+import { Box, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import React, { useEffect } from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../utils/plausible"
 
 import CandidatureLbaExplanation from "./CandidatureLba/CandidatureLbaExplanation"
+import { ReportJobLink } from "./ReportJobLink"
 
 const LbbCompanyDetail = ({ lbb }) => {
   useEffect(() => {
@@ -34,6 +36,32 @@ const LbbCompanyDetail = ({ lbb }) => {
     >
       <CandidatureLbaExplanation about={"what"} />
       <CandidatureLbaExplanation about={"how"} />
+      <ReportJobLink
+        width="490px"
+        itemId={lbb?.company?.siret}
+        type={LBA_ITEM_TYPE.RECRUTEURS_LBA}
+        linkLabelNotReported="Signaler l’entreprise"
+        linkLabelReported="Entreprise signalée"
+        tooltip={
+          <Box>
+            <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
+              Cette entreprise vous semble peu recommandable ? Voici les raisons pour lesquelles vous pouvez nous signaler une entreprise :
+            </Text>
+            <UnorderedList
+              style={{
+                color: "#383838",
+                fontSize: "16px",
+                lineHeight: "24px",
+              }}
+            >
+              <ListItem>Informations trompeuses ou fausses</ListItem>
+              <ListItem>Non-respect des lois du travail </ListItem>
+              <ListItem>Fraude ou arnaque</ListItem>
+              <ListItem>Comportement inapproprié ou abusif </ListItem>
+            </UnorderedList>
+          </Box>
+        }
+      />
     </Box>
   )
 }

@@ -29,6 +29,7 @@ import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model"
 import referentielOnisepModel from "./referentielOnisep.model"
 import referentielOpcoModel from "./referentielOpco.model"
+import reportModel from "./report.model"
 import roleManagementModel from "./roleManagement.model"
 import romeModel from "./rome.model"
 import sessionModel from "./session.model"
@@ -75,6 +76,7 @@ const modelDescriptorMap = {
   [unsubscribeOFModel.collectionName]: unsubscribeOFModel,
   [userModel.collectionName]: userModel,
   [userWithAccountModel.collectionName]: userWithAccountModel,
+  [reportModel.collectionName]: reportModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

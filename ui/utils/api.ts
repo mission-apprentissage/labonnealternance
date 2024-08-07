@@ -2,6 +2,7 @@ import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
 import { IJobWritable, INewDelegations, INewSuperUser, IRoutes, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
@@ -182,3 +183,5 @@ export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: a
  */
 
 export const getOpcoUsers = () => apiGet("/user/opco", {})
+
+export const reportLbaItem = (itemId: string, type: LBA_ITEM_TYPE) => apiPost("/report", { querystring: { type, itemId } })
