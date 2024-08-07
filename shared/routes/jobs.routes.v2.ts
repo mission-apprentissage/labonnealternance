@@ -407,11 +407,11 @@ export const zJobsRoutesV2 = {
       response: {
         "200": z.object({
           jobs: z.object({
-            lba: z.union([z.array(ZJobsPartnersOffresEmploiLba), z.array(z.never())]),
-            france_travail: z.union([z.array(ZJobsPartnersOffresEmploiFranceTravail), z.array(z.never())]),
-            partners: z.union([z.array(ZJobsPartners), z.array(z.never())]),
+            lba: z.array(ZJobsPartnersOffresEmploiLba),
+            france_travail: z.array(ZJobsPartnersOffresEmploiFranceTravail),
+            partners: z.array(ZJobsPartners),
           }),
-          recruiters: z.union([z.array(ZJobsPartnersRecruteurLba), z.array(z.never())]),
+          recruiters: z.array(ZJobsPartnersRecruteurLba),
         }),
       },
       securityScheme: {
@@ -427,11 +427,11 @@ export const zJobsRoutesV2 = {
       response: {
         "200": z.object({
           jobs: z.object({
-            lba: z.union([z.array(ZJobsPartnersOffresEmploiLba), z.array(z.never())]),
-            france_travail: z.union([z.array(ZJobsPartnersOffresEmploiFranceTravail), z.array(z.never())]),
-            partners: z.union([z.array(ZJobsPartners), z.array(z.never())]),
+            lba: z.array(ZJobsPartnersOffresEmploiLba),
+            france_travail: z.array(ZJobsPartnersOffresEmploiFranceTravail),
+            partners: z.array(ZJobsPartners),
           }),
-          recruiters: z.union([z.array(ZJobsPartnersRecruteurLba), z.array(z.never())]),
+          recruiters: z.array(ZJobsPartnersRecruteurLba),
         }),
       },
       securityScheme: {

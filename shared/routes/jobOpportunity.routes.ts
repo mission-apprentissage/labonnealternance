@@ -4,12 +4,12 @@ import { z } from "../helpers/zodWithOpenApi"
 
 const romes = z.array(extensions.romeCode())
 const rncp = extensions.rncpCode()
-const insee = extensions.inseeCode()
+const insee = extensions.inseeCode().nullish()
 
 const ZJobOpportunityQuerystringBase = z.object({
   latitude: extensions.latitude(),
   longitude: extensions.longitude(),
-  radius: z.number().min(0).max(200).default(10),
+  radius: z.number().min(0).max(200).default(30),
   diploma: extensions.buildEnum(NIVEAUX_POUR_LBA).default(NIVEAUX_POUR_LBA.INDIFFERENT),
   opco: extensions.buildEnum(OPCOS).optional(),
   opcoUrl: z.string().optional(),

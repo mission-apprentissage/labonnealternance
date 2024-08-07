@@ -201,7 +201,7 @@ export const getFtJobs = async ({
   api = "jobV1",
 }: {
   romes: string[]
-  insee: string
+  insee?: string
   radius: number
   jobLimit: number
   caller: string
@@ -221,7 +221,7 @@ export const getFtJobs = async ({
 
     const distance = radius || 10
 
-    const params: { codeROME: string; commune: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
+    const params: { codeROME: string; commune?: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
       codeROME: romes.join(","),
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS

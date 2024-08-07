@@ -502,7 +502,7 @@ export default (server: Server) => {
         lon: payload.longitude,
         isMinimalData: false,
       }),
-      getFtJobs({ jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rome"].path, ...payload }),
+      getFtJobs({ jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rome"].path, ...payload, insee: payload.insee ?? undefined }),
     ])
 
     if ("error" in franceTravail) {
@@ -536,7 +536,7 @@ export default (server: Server) => {
         lon: payload.longitude,
         isMinimalData: false,
       }),
-      getFtJobs({ romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rncp"].path, ...payload }),
+      getFtJobs({ romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rncp"].path, ...payload, insee: payload.insee ?? undefined }),
     ])
 
     if ("error" in franceTravail) {
