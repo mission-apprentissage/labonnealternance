@@ -13,7 +13,7 @@ import { setSelectedMarker } from "../../utils/mapTools"
 
 import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
 
-const LbbCompany = ({ company, handleSelectItem, showTextOnly = undefined, searchForTrainingsOnNewCenter }) => {
+const LbaRecruteur = ({ company, handleSelectItem, showTextOnly = undefined, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
   const { formValues } = React.useContext(DisplayContext)
 
@@ -170,4 +170,4 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly = undefined, searc
   )
 }
 
-export default LbbCompany
+export default LbaRecruteur

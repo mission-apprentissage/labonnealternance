@@ -27,7 +27,7 @@ import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
 import LbaJobDetail from "./LbaJobDetail"
-import LbbCompanyDetail from "./LbbCompanyDetail"
+import LbaRecruteurDetail from "./LbaRecruteurDetail"
 import LocationDetail from "./LocationDetail"
 import TrainingDetail from "./TrainingDetail"
 
@@ -177,7 +177,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.LBA && <LbbCompanyDetail lbb={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.LBA && <LbaRecruteurDetail lbaRecruteur={selectedItem} />}
 
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
 
