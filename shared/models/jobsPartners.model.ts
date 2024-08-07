@@ -101,7 +101,7 @@ export type IJobsPartners = z.output<typeof ZJobsPartners>
  * FOR FORMATTING
  * RECRUTEURS_LBA comes from recruteurslba collection, not from JobsPartners
  */
-export const ZJobsPartnersRecruteurLba = ZJobsPartners.omit({ _id: true, partner_label: true, created_at: true }).extend({
+export const ZJobsPartnersRecruteurLba = ZJobsPartners.omit({ _id: true, partner_label: true, created_at: true, raw_id: true }).extend({
   _id: z.null(),
   partner_label: z.literal(LBA_JOB_TYPE.RECRUTEURS_LBA),
 })
@@ -111,7 +111,7 @@ export type IJobsPartnersRecruteurLba = z.output<typeof ZJobsPartnersRecruteurLb
  * FOR FORMATTING
  * OFFRES_EMPLOI_LBA comes from JobsPartners (API) AND RECRUITERS
  */
-export const ZJobsPartnersOffresEmploiLba = ZJobsPartners.omit({ _id: true, created_at: true }).extend({
+export const ZJobsPartnersOffresEmploiLba = ZJobsPartners.omit({ _id: true, created_at: true, raw_id: true }).extend({
   _id: zObjectId.nullable(),
   partner_label: z.literal(LBA_JOB_TYPE.OFFRES_EMPLOI_LBA),
 })
@@ -121,7 +121,7 @@ export type IJobsPartnersOffresEmploiLba = z.output<typeof ZJobsPartnersOffresEm
  * FOR FORMATTING
  * OFFRES_EMPLOI_FRANCE_TRAVAIL
  */
-export const ZJobsPartnersOffresEmploiFranceTravail = ZJobsPartners.omit({ _id: true, created_at: true }).extend({
+export const ZJobsPartnersOffresEmploiFranceTravail = ZJobsPartners.omit({ _id: true, created_at: true, raw_id: true }).extend({
   _id: z.null(),
   partner_label: z.literal(LBA_JOB_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL),
 })
