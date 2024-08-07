@@ -22,10 +22,10 @@ import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
-import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
 import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
+import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
 import LbaJobDetail from "./LbaJobDetail"
 import LbbCompanyDetail from "./LbbCompanyDetail"
 import LocationDetail from "./LocationDetail"
@@ -123,7 +123,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
           )}
 
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
-          {!isCollapsedHeader && getJobSurtitre({ selectedItem, kind, isMandataire })}
+          {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
 
           <Text
             as="h1"
