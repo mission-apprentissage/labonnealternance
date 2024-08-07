@@ -29,7 +29,7 @@ import {
   provideOffre,
 } from "../../services/formulaire.service"
 import { getFtJobFromIdV2, getFtJobs } from "../../services/ftjob.service"
-import { formatFranceTravailToJobOpportunity, formatOffreEmploiLbaToJobOpportunity, formatRecruteurLbaToJobOpportunity, getJobsQuery } from "../../services/jobOpportunity.service"
+import { formatFranceTravailToJobPartner, formatOffreEmploiLbaToJobPartner, formatRecruteurLbaToJobPartner, getJobsQuery } from "../../services/jobOpportunity.service"
 import { addOffreDetailView, getJobs, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
@@ -495,7 +495,7 @@ export default (server: Server) => {
     async (req, res) => {
       const payload: IJobOpportunityRome = req.query
       const result = await getRecruteursLbaFromDB(payload)
-      return res.send(formatRecruteurLbaToJobOpportunity(result))
+      return res.send(formatRecruteurLbaToJobPartner(result))
     }
   )
 
@@ -509,7 +509,7 @@ export default (server: Server) => {
         throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
       }
       const result = await getRecruteursLbaFromDB({ ...payload, romes })
-      return res.send(formatRecruteurLbaToJobOpportunity(result))
+      return res.send(formatRecruteurLbaToJobPartner(result))
     }
   )
 
@@ -526,7 +526,7 @@ export default (server: Server) => {
         lon: payload.longitude,
         isMinimalData: false,
       })
-      return res.send(formatOffreEmploiLbaToJobOpportunity(result))
+      return res.send(formatOffreEmploiLbaToJobPartner(result))
     }
   )
 
@@ -547,7 +547,7 @@ export default (server: Server) => {
         lon: payload.longitude,
         isMinimalData: false,
       })
-      return res.send(formatOffreEmploiLbaToJobOpportunity(result))
+      return res.send(formatOffreEmploiLbaToJobPartner(result))
     }
   )
 
@@ -572,7 +572,7 @@ export default (server: Server) => {
       if ("error" in result) {
         throw Boom.internal(result.message)
       }
-      return res.send(formatFranceTravailToJobOpportunity(result.resultats))
+      return res.send(formatFranceTravailToJobPartner(result.resultats))
     }
   )
 
@@ -589,7 +589,7 @@ export default (server: Server) => {
       if ("error" in result) {
         throw Boom.internal(result.message)
       }
-      return res.send(formatFranceTravailToJobOpportunity(result.resultats))
+      return res.send(formatFranceTravailToJobPartner(result.resultats))
     }
   )
 }
