@@ -1,6 +1,6 @@
 import { ILbaItemLbaCompany } from "@/../shared"
 import { AddIcon, ExternalLinkIcon, /*ExternalLinkIcon,*/ MinusIcon } from "@chakra-ui/icons"
-import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, Link, /*Link,*/ Text } from "@chakra-ui/react"
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, Link, ListItem, /*Link,*/ Text, UnorderedList } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 
 import { getPathLink, scrollToNestedElement } from "@/utils/tools"
@@ -94,6 +94,18 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
                       </Text>
                       <Text as="span">{lbaRecruteur.nafs[0].label}</Text>
                     </Text>
+                    {lbaRecruteur?.contact?.phone && (
+                      <Text>
+                        <Text as="span" fontWeight={700}>
+                          Téléphone :{" "}
+                        </Text>
+                        <Text as="span">
+                          <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${lbaRecruteur.contact.phone}`} aria-label="Appeler la société au téléphone">
+                            {lbaRecruteur.contact.phone} <ExternalLinkIcon mb="3px" ml="2px" />
+                          </Link>
+                        </Text>
+                      </Text>
+                    )}
 
                     <Text mt={4}>
                       <Text as="span">
@@ -111,6 +123,25 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
                     </Text>
                   </Box>
 
+                  <Text>
+                    Avant de candidater, il est indispensable de prendre le temps de vous renseigner sur les activités de l’entreprise.{" "}
+                    <Link
+                      ml="2px"
+                      isExternal
+                      variant="basicUnderlined"
+                      href={getCompanyGoogleSearchLink(lbaRecruteur)}
+                      aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre"
+                    >
+                      Démarrez une recherche <ExternalLinkIcon mb="3px" ml="2px" />
+                    </Link>{" "}
+                    et visitez son site internet. Posez-vous les questions suivantes :
+                  </Text>
+                  <UnorderedList pl={3} mt={3}>
+                    <ListItem>Est-ce que les activités de l’entreprise correspondent au métier que je souhaite exercer, en lien avec ma formation ?</ListItem>
+                    <ListItem>Pourquoi cette entreprise plutôt que ses concurrents ?</ListItem>
+                    <ListItem>Quelles compétences souhaiteriez-vous développer en intégrant cette entreprise ?</ListItem>
+                    <ListItem>Parmi mes qualités, lesquelles pourraient être utiles à cette entreprise ?</ListItem>
+                  </UnorderedList>
                   {/* <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>
           {getTitle(item)}
