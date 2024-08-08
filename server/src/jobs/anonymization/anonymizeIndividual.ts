@@ -4,6 +4,8 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
 
+import { anonymizeAppointments } from "./anonymizeAppointments"
+
 const anonimizeUserWithAccount = (_id: ObjectId) =>
   getDbCollection("userswithaccounts")
     .aggregate([
@@ -137,8 +139,12 @@ export async function anonymizeIndividual({ collection, id }: { collection: stri
       await anonymizeUserWithAccountAndRecruiter(id)
       break
     }
-    default:
+    case "appointments": {
+      await anonymizeAppointments({ _id: id })
       break
+    }
+    default:
+      throw new Error(`collection ${collection} unsupported`)
   }
 }
 export default anonymizeIndividual
