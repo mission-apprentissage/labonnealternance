@@ -1,3 +1,4 @@
+import { ILbaItemLbaCompany } from "@/../shared"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -176,7 +177,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem} />}
+      {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
 
       {kind !== LBA_ITEM_TYPE_OLD.LBA && <LocationDetail item={selectedItem} isCfa={isCfa} />}
