@@ -4,7 +4,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
 
-import { anonymizeAppointments } from "./anonumizeAppointments"
+import { anonymizeAppointments } from "./anonymizeAppointments"
 
 const anonimizeUserWithAccount = (_id: ObjectId) =>
   getDbCollection("userswithaccounts")
