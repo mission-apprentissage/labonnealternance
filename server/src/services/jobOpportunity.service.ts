@@ -1,8 +1,9 @@
-import { ILbaCompany, IRecruiter } from "shared"
+import { IGeoPoint, ILbaCompany, IRecruiter } from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
-import { IJobOffer, IJobOfferFranceTravail, LBA_JOB_TYPE } from "shared/models/jobsPartners.model"
+import { IJobOffer, IJobOfferFranceTravail, IJobsPartners, LBA_JOB_TYPE } from "shared/models/jobsPartners.model"
 
 import { IApiError } from "../common/utils/errorManager"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import config from "../config"
 
@@ -173,6 +174,43 @@ export const getJobsQuery = async (
   return result
 }
 
+type IRecruteursLbaSearchParams = {
+  romes: string[]
+  latitude: number
+  longitude: number
+  radius: number
+  opco?: string
+  opcoUrl?: string
+}
+
+export const getJobsPartnersFromDB = async ({ radius = 10, romes, opco, latitude, longitude }: IRecruteursLbaSearchParams): Promise<IJobsPartners[] | []> => {
+  const query: { "job_offer.rome_code": object; "workplace.domaine.opco"?: string } = {
+    "job_offer.rome_code": { $in: romes },
+  }
+
+  if (opco) {
+    query["workplace.domaine.opco"] = opco
+  }
+
+  return (await getDbCollection("jobs_partners")
+    .aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [longitude, latitude] },
+          distanceField: "distance",
+          maxDistance: radius * 1000,
+          query,
+        },
+      },
+      {
+        $limit: 150,
+      },
+    ])
+    .toArray()) as IJobsPartners[]
+}
+
+const convertToGeopoint = (longitude: number, latitude: number): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
+
 export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJobOffer[] | [] => {
   if (!recruteursLba.length) return []
   return recruteursLba.map((recruteurLba) => ({
@@ -192,8 +230,7 @@ export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJ
       size: recruteurLba.company_size,
       location: {
         address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
-        latitude: parseFloat(recruteurLba.geo_coordinates.split(",")[0]),
-        longitude: parseFloat(recruteurLba.geo_coordinates.split(",")[1]),
+        geopoint: convertToGeopoint(parseFloat(recruteurLba.geo_coordinates.split(",")[1]), parseFloat(recruteurLba.geo_coordinates.split(",")[0])),
       },
       domaine: {
         idcc: null,
@@ -229,7 +266,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
       },
       job_offer: {
         title: job.rome_appellation_label!,
-        rome_code: job.rome_code[0],
+        rome_code: job.rome_code,
         description: job.rome_detail!.definition!,
         diploma_level_label: job.job_level_label!,
         desired_skills: job.rome_detail!.competences.savoir_etre_professionnel!.map((x) => x.libelle),
@@ -255,8 +292,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
         size: offreEmploiLba.establishment_size!,
         location: {
           address: offreEmploiLba.address!,
-          latitude: offreEmploiLba.geopoint!.coordinates[1],
-          longitude: offreEmploiLba.geopoint!.coordinates[0],
+          geopoint: convertToGeopoint(offreEmploiLba.geopoint!.coordinates[0], offreEmploiLba.geopoint!.coordinates[1]),
         },
         domaine: {
           idcc: Number(offreEmploiLba.idcc) ?? null,
@@ -291,7 +327,7 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
     },
     job_offer: {
       title: offreFT.intitule,
-      rome_code: offreFT.romeCode,
+      rome_code: [offreFT.romeCode],
       description: offreFT.description,
       diploma_level_label: null,
       desired_skills: null,
@@ -317,8 +353,7 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
       size: null,
       location: {
         address: offreFT.lieuTravail.libelle,
-        longitude: parseFloat(offreFT.lieuTravail.longitude),
-        latitude: parseFloat(offreFT.lieuTravail.latitude),
+        geopoint: convertToGeopoint(parseFloat(offreFT.lieuTravail.longitude), parseFloat(offreFT.lieuTravail.latitude)),
       },
       domaine: {
         idcc: null,

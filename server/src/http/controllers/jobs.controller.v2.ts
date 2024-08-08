@@ -28,8 +28,14 @@ import {
   patchOffre,
   provideOffre,
 } from "../../services/formulaire.service"
-import { getFtJobFromIdV2, getFtJobs } from "../../services/ftjob.service"
-import { formatFranceTravailToJobPartner, formatOffreEmploiLbaToJobPartner, formatRecruteurLbaToJobPartner, getJobsQuery } from "../../services/jobOpportunity.service"
+import { getFtJobFromIdV2, getFtJobsV2 } from "../../services/ftjob.service"
+import {
+  formatFranceTravailToJobPartner,
+  formatOffreEmploiLbaToJobPartner,
+  formatRecruteurLbaToJobPartner,
+  getJobsPartnersFromDB,
+  getJobsQuery,
+} from "../../services/jobOpportunity.service"
 import { addOffreDetailView, getJobs, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
@@ -492,7 +498,7 @@ export default (server: Server) => {
   server.get("/jobs/rome", { schema: zRoutes.get["/jobs/rome"], onRequest: server.auth(zRoutes.get["/jobs/rome"]) }, async (req, res) => {
     const payload: IJobOpportunityRome = req.query
 
-    const [recruterLba, offreEmploiLba, franceTravail] = await Promise.all([
+    const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
       getRecruteursLbaFromDB(payload),
       getJobs({
         romes: payload.romes,
@@ -502,15 +508,12 @@ export default (server: Server) => {
         lon: payload.longitude,
         isMinimalData: false,
       }),
-      getFtJobs({ jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rome"].path, ...payload, insee: payload.insee ?? undefined }),
+      getJobsPartnersFromDB(payload),
+      getFtJobsV2({ jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rome"].path, ...payload, insee: payload.insee ?? undefined }),
     ])
 
-    if ("error" in franceTravail) {
-      throw Boom.internal(franceTravail.message)
-    }
-
     return res.send({
-      jobs: [...formatOffreEmploiLbaToJobPartner(offreEmploiLba), ...formatFranceTravailToJobPartner(franceTravail.resultats)],
+      jobs: [...formatOffreEmploiLbaToJobPartner(offreEmploiLba), ...formatFranceTravailToJobPartner(franceTravail.resultats), ...offreEmploiPartenaire],
       recruiters: formatRecruteurLbaToJobPartner(recruterLba),
     })
   })
@@ -532,12 +535,8 @@ export default (server: Server) => {
         lon: payload.longitude,
         isMinimalData: false,
       }),
-      getFtJobs({ romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rncp"].path, ...payload, insee: payload.insee ?? undefined }),
+      getFtJobsV2({ romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rncp"].path, ...payload, insee: payload.insee ?? undefined }),
     ])
-
-    if ("error" in franceTravail) {
-      throw Boom.internal(franceTravail.message)
-    }
 
     return res.send({
       jobs: [...formatOffreEmploiLbaToJobPartner(offreEmploiLba), ...formatFranceTravailToJobPartner(franceTravail.resultats)],

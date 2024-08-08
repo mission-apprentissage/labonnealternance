@@ -257,6 +257,72 @@ export const getFtJobs = async ({
 }
 
 /**
+ * Récupère une liste d'offres depuis l'API France Travail
+ */
+export const getFtJobsV2 = async ({
+  romes,
+  insee,
+  radius,
+  jobLimit,
+  caller,
+  api,
+  diploma,
+}: {
+  romes: string[]
+  insee?: string
+  radius: number
+  jobLimit: number
+  caller: string
+  diploma: string
+  api: string
+}): Promise<FTResponse | { resultats: [] }> => {
+  try {
+    const hasLocation = insee ? true : false
+
+    // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
+    let codeInsee = insee
+    if (insee === "75056") codeInsee = "75101"
+    else if (insee === "13055") codeInsee = "13201"
+    else if (insee === "69123") codeInsee = "69381"
+
+    const distance = radius || 10
+
+    const params: { codeROME: string; commune?: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
+      codeROME: romes.join(","),
+      commune: codeInsee,
+      sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
+      natureContrat: "E2,FS", //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
+      range: `0-${jobLimit - 1}`,
+    }
+
+    if (diploma) {
+      const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
+      if (niveauRequis && niveauRequis !== "NV5") {
+        // pas de filtrage sur niveau requis NV5 car pas de résultats
+        params.niveauFormation = niveauRequis
+      }
+    }
+
+    if (hasLocation) {
+      params.insee = codeInsee
+      params.distance = distance
+    }
+
+    const jobs = await searchForFtJobs(params)
+
+    if (jobs === null || jobs === "") {
+      return { resultats: [] }
+    }
+
+    return jobs
+  } catch (error) {
+    trackApiCall({ caller, api_path: api, response: "Error" })
+    sentryCaptureException(error)
+    return { resultats: [] }
+  }
+}
+
+/**
  * Retourne une liste d'offres France Travail au format unifié La bonne alternance
  * applique post traitements suivants :
  * - filtrage optionnel sur les opco
