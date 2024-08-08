@@ -12,7 +12,7 @@ import { getSearchQueryParameters } from "../../../utils/getSearchParameters"
 import { setSelectedMarker } from "../../../utils/mapTools"
 import TagCandidatureSpontanee from "../TagCandidatureSpontanee"
 
-const LbaRecruteur = ({ company, handleSelectItem, showTextOnly = undefined, searchForTrainingsOnNewCenter }) => {
+const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
   const { formValues } = React.useContext(DisplayContext)
 
@@ -169,4 +169,4 @@ const LbaRecruteur = ({ company, handleSelectItem, showTextOnly = undefined, sea
   )
 }
 
-export default LbaRecruteur
+export default RecruteurLba

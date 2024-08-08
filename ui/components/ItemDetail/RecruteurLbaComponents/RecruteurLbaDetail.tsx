@@ -10,13 +10,13 @@ import { SendPlausibleEvent } from "../../../utils/plausible"
 import { getCompanyGoogleSearchLink } from "../ItemDetailServices/getCompanyGoogleSearchLink"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
 
-const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany }) => {
+const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche entreprise Algo", {
-      info_fiche: `${lbaRecruteur?.company?.siret}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
+      info_fiche: `${recruteurLba?.company?.siret}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
     /* eslint react-hooks/exhaustive-deps: 0 */
-  }, [lbaRecruteur?.company?.siret])
+  }, [recruteurLba?.company?.siret])
 
   useEffect(() => {
     // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
@@ -72,13 +72,13 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
                       <Text as="span" fontWeight={700}>
                         Localisation :{" "}
                       </Text>
-                      <Text as="span">{lbaRecruteur?.place?.fullAddress}</Text>
-                      <Link ml={4} isExternal variant="basicUnderlined" href={getPathLink(lbaRecruteur)} aria-label="Localisation sur google maps - nouvelle fenêtre">
+                      <Text as="span">{recruteurLba?.place?.fullAddress}</Text>
+                      <Link ml={4} isExternal variant="basicUnderlined" href={getPathLink(recruteurLba)} aria-label="Localisation sur google maps - nouvelle fenêtre">
                         Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
                       </Link>
-                      {(lbaRecruteur?.place?.distance ?? -1) >= 0 && (
+                      {(recruteurLba?.place?.distance ?? -1) >= 0 && (
                         <Text mt={2} color="grey.425" fontSize={14}>
-                          {lbaRecruteur?.place?.distance} km(s) du lieu de recherche
+                          {recruteurLba?.place?.distance} km(s) du lieu de recherche
                         </Text>
                       )}
                     </Text>
@@ -86,22 +86,22 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
                       <Text as="span" fontWeight={700}>
                         Taille de l'entreprise :{" "}
                       </Text>
-                      <Text as="span">{getCompanySize(lbaRecruteur)}</Text>
+                      <Text as="span">{getCompanySize(recruteurLba)}</Text>
                     </Text>
                     <Text>
                       <Text as="span" fontWeight={700}>
                         Secteur d'activité :{" "}
                       </Text>
-                      <Text as="span">{lbaRecruteur.nafs[0].label}</Text>
+                      <Text as="span">{recruteurLba.nafs[0].label}</Text>
                     </Text>
-                    {lbaRecruteur?.contact?.phone && (
+                    {recruteurLba?.contact?.phone && (
                       <Text>
                         <Text as="span" fontWeight={700}>
                           Téléphone :{" "}
                         </Text>
                         <Text as="span">
-                          <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${lbaRecruteur.contact.phone}`} aria-label="Appeler la société au téléphone">
-                            {lbaRecruteur.contact.phone} <ExternalLinkIcon mb="3px" ml="2px" />
+                          <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${recruteurLba.contact.phone}`} aria-label="Appeler la société au téléphone">
+                            {recruteurLba.contact.phone} <ExternalLinkIcon mb="3px" ml="2px" />
                           </Link>
                         </Text>
                       </Text>
@@ -114,10 +114,10 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
                           ml="2px"
                           isExternal
                           variant="basicUnderlined"
-                          href={getCompanyGoogleSearchLink(lbaRecruteur)}
+                          href={getCompanyGoogleSearchLink(recruteurLba)}
                           aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre"
                         >
-                          {lbaRecruteur.company.name} <ExternalLinkIcon mb="3px" ml="2px" />
+                          {recruteurLba.company.name} <ExternalLinkIcon mb="3px" ml="2px" />
                         </Link>
                       </Text>
                     </Text>
@@ -129,7 +129,7 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
                       ml="2px"
                       isExternal
                       variant="basicUnderlined"
-                      href={getCompanyGoogleSearchLink(lbaRecruteur)}
+                      href={getCompanyGoogleSearchLink(recruteurLba)}
                       aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre"
                     >
                       Démarrez une recherche <ExternalLinkIcon mb="3px" ml="2px" />
@@ -247,4 +247,4 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
     </>
   )
 }
-export default LbaRecruteurDetail
+export default RecruteurLbaDetail
