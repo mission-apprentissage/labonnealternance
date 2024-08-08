@@ -1,0 +1,17 @@
+import { ILbaItemFormation2, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
+import { Text } from "@chakra-ui/react"
+import { useContext } from "react"
+
+import { DisplayContext } from "@/context/DisplayContextProvider"
+
+export default function ItemDistanceToCenter({ item }: { item: ILbaItemFormation2 | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob }) {
+  const { formValues } = useContext(DisplayContext)
+
+  return formValues?.location?.value && (item?.place?.distance ?? -1) >= 0 ? (
+    <Text ml={2} color="grey.425" fontSize={14}>
+      &nbsp;{item?.place?.distance} km(s) du lieu de recherche
+    </Text>
+  ) : (
+    <></>
+  )
+}

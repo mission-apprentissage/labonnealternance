@@ -1,6 +1,8 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
 import React from "react"
 
+import ItemDistanceToCenter from "./ItemDistanceToCenter"
+
 export default function ItemDetailCard({ selectedItem }) {
   const res = selectedItem?.company?.mandataire ? (
     <Box color="grey.700" textAlign="left" mt={6}>
@@ -35,11 +37,7 @@ export default function ItemDetailCard({ selectedItem }) {
       </svg>
       <Text ml={1}>{selectedItem?.place?.zipCode}</Text>
       <Text ml={1}>{selectedItem?.place?.city || selectedItem?.place?.address}</Text>
-      {(selectedItem?.place?.distance ?? -1) >= 0 && (
-        <Text ml={2} color="grey.425" fontSize={14}>
-          &nbsp;{selectedItem?.place?.distance} km(s) du lieu de recherche
-        </Text>
-      )}
+      <ItemDistanceToCenter item={selectedItem} />
     </Flex>
   )
 

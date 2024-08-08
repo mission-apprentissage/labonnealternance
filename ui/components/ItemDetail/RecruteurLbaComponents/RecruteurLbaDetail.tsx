@@ -1,7 +1,7 @@
 import { ILbaItemLbaCompany } from "@/../shared"
 import { AddIcon, ExternalLinkIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, Link, ListItem, /*Link,*/ Text, UnorderedList } from "@chakra-ui/react"
-import React, { useEffect } from "react"
+import React, { useContext, useEffect } from "react"
 
 import { getPathLink, scrollToNestedElement } from "@/utils/tools"
 
@@ -9,6 +9,7 @@ import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { getCompanyGoogleSearchLink } from "../ItemDetailServices/getCompanyGoogleSearchLink"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
+import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 
 const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany }) => {
   useEffect(() => {
@@ -23,7 +24,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
     document.getElementsByClassName("choiceCol")[0]?.scrollTo(0, 0)
   }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
 
-  const { formValues } = React.useContext(DisplayContext)
+  const { formValues } = useContext(DisplayContext)
 
   const onClick = (e) => {
     setTimeout(() => {
@@ -76,11 +77,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                       <Link ml={4} isExternal variant="basicUnderlined" href={getPathLink(recruteurLba)} aria-label="Localisation sur google maps - nouvelle fenêtre">
                         Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
                       </Link>
-                      {(recruteurLba?.place?.distance ?? -1) >= 0 && (
-                        <Text mt={2} color="grey.425" fontSize={14}>
-                          {recruteurLba?.place?.distance} km(s) du lieu de recherche
-                        </Text>
-                      )}
+                      <ItemDistanceToCenter item={recruteurLba} />
                     </Text>
                     <Text mt={4}>
                       <Text as="span" fontWeight={700}>
