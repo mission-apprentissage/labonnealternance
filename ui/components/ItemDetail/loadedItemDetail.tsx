@@ -179,7 +179,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE_OLD.LBA && <LbaRecruteurDetail lbaRecruteur={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
 
-      <LocationDetail item={selectedItem} isCfa={isCfa}></LocationDetail>
+      {kind !== LBA_ITEM_TYPE_OLD.LBA && <LocationDetail item={selectedItem} isCfa={isCfa} />}
 
       <AideApprentissage />
 
