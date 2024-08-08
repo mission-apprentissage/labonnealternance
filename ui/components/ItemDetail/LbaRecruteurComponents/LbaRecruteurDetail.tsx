@@ -1,5 +1,5 @@
 import { ILbaItemLbaCompany } from "@/../shared"
-import { AddIcon, ExternalLinkIcon, /*ExternalLinkIcon,*/ MinusIcon } from "@chakra-ui/icons"
+import { AddIcon, ExternalLinkIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, Link, ListItem, /*Link,*/ Text, UnorderedList } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 
@@ -142,139 +142,10 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
                     <ListItem>Quelles compétences souhaiteriez-vous développer en intégrant cette entreprise ?</ListItem>
                     <ListItem>Parmi mes qualités, lesquelles pourraient être utiles à cette entreprise ?</ListItem>
                   </UnorderedList>
-                  {/* <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
-        <Text as="h2" variant="itemDetailH2" mt={2}>
-          {getTitle(item)}
-        </Text>
-
-        {item?.company?.mandataire && (
-          <Box color="grey.700" mt={6}>
-            Le centre de formation peut vous renseigner sur cette offre d’emploi ainsi que les formations qu’il propose.
-          </Box>
-        )}
-
-        <Box color="grey.700" mt={6}>
-          {item?.place?.fullAddress}
-        </Box>
-
-        {item?.place?.distance !== null && !item?.company?.mandataire && <Box color="grey.600" fontSize="14px">{`${item?.place?.distance} km(s) du lieu de recherche`}</Box>}
-
-        <Flex mt={4} alignItems="center" direction="row">
-          <Box width="30px" minWidth="30px" pl="1px" mr={2}>
-            <Image mt="2px" src="/images/icons/small_map_point.svg" alt="" />
-          </Box>
-          <Link isExternal variant="basicUnderlined" href={getPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
-            Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
-          </Link>
-        </Flex>
-
-        {item?.company?.url && (
-          <Flex alignItems="center" mt={2} direction="row">
-            <Box width="30px" minWidth="30px" mr={2}>
-              <Image mt="2px" src="/images/icons/small_info.svg" alt="" />
-            </Box>
-            <Text as="span">
-              En savoir plus sur
-              <Link ml="2px" isExternal variant="basicUnderlined" href={item?.company?.url} aria-label="Site de l'entreprise - nouvelle fenêtre">
-                {item?.company?.url} <ExternalLinkIcon mb="3px" ml="2px" />
-              </Link>
-            </Text>
-          </Flex>
-        )}
-
-        {item?.contact?.phone && (
-          <Flex mt={2} mb={4}>
-            <Box fontWeight={700} pl="2px" mr={2}>
-              Téléphone :
-            </Box>
-            <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${item.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
-              {item.contact.phone} <ExternalLinkIcon mx="2px" />
-            </Link>
-          </Flex>
-        )}
-
-        {isCfa && (
-          <Box background="#f6f6f6" borderRadius="8px" mt={6} p={4}>
-            <Flex alignItems="center" pt={1} pb={2}>
-              <Image src="/images/info.svg" alt="" width="24px" height="24px" />
-              <Text as="span" ml={2} fontWeight={700}>
-                Cet établissement est un CFA d&apos;entreprise
-              </Text>
-            </Flex>
-            <Text>
-              La particularité ? Il s&apos;agit d&apos;une formule complète <strong>Emploi + Formation</strong> ! Cette formation vous intéresse ? La marche à suivre diffère selon
-              le CFA d&apos;entreprise concerné :
-            </Text>
-
-            <Box mt={3}>
-              &bull;{" "}
-              <Text as="span" ml={4}>
-                Commencez par vous inscrire à la formation pour accéder ensuite au contrat,
-              </Text>
-            </Box>
-            <Box mt={2}>
-              &bull;{" "}
-              <Text as="span" ml={4}>
-                Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.
-              </Text>
-            </Box>
-
-            <Text>Prenez contact avec cet établissement ou consultez son site web pour en savoir + !</Text>
-
-            <Box my={2}>
-              Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
-              <Link
-                isExternal
-                variant="basicUnderlined"
-                href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
-                aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA - nouvelle fenêtre"
-              >
-                Préparez votre premier contact avec un CFA&nbsp;
-                <ExternalLinkIcon mb="3px" ml="2px" />
-              </Link>
-            </Box>
-          </Box>
-        )}
-
-        {[LBA_ITEM_TYPE_OLD.MATCHA, LBA_ITEM_TYPE_OLD.LBA].includes(kind) && (
-          <>
-            <Text fontStyle="italic" color="grey.425">
-              Renseignez-vous sur l’entreprise, ses activités et ses valeurs pour préparer votre candidature. Vous pouvez rechercher leur site internet et leur présence sur les
-              réseaux sociaux.
-            </Text>
-            <Flex mt={2} mb={4}>
-              <Box width="30px" pl="2px" minWidth="30px" mr={2}>
-                <Image mt="2px" src="/images/info.svg" alt="A noter" />
-              </Box>
-              <Text as="span">
-                En savoir plus sur
-                <Link
-                  ml="2px"
-                  isExternal
-                  variant="basicUnderlined"
-                  href={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}
-                  aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre"
-                >
-                  {item.company.name} <ExternalLinkIcon mb="3px" ml="2px" />
-              Box/Flex>
-            <Box pl={10}>
-              <Text fontSize="14px" fontStyle="italic" color="grey.500">
-                Renseignez-vous sur l&apos;établissement pour préparer votre candidature
-              </Text>
-            </Box>
-            {!item?.company?.mandataire && (
-              <Box mt={4} mb={1}>
-                <strong>Taille de l&apos;entreprise :&nbsp;</strong> {companySize}
-              </Box>
-            )}
-          </>
-        )}
-      </Box> */}
                 </AccordionPanel>
               </>
             )}
           </AccordionItem>
-
           <AccordionItem onClick={onClick}>
             {({ isExpanded }) => (
               <>
@@ -286,12 +157,44 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
                 </AccordionButton>
 
                 <AccordionPanel borderBottom="1px solid #E5E5E5" pb={4}>
-                  TEXTE
+                  <Text>
+                    Après une recherche approfondie sur l'entreprise, personnalisez votre lettre de motivation en précisant tout d'abord pourquoi elle vous intéresse
+                    particulièrement : son domaine d'activité, ses valeurs, etc.
+                    <br />
+                    Mettez ensuite en avant vos qualités en lien avec le métier recherché. Puis terminez en exposant ce que vous pensez apporter à l'entreprise lors de votre
+                    alternance. Adaptez également votre CV.
+                    <br />
+                    <br />
+                    Pour cela, le service{" "}
+                    <Link href="https://diagoriente.beta.gouv.fr/" aria-label="Accéder au site de Diagoriente" isExternal variant="basicUnderlined">
+                      Diagoriente <ExternalLinkIcon mb="3px" ml="2px" />
+                    </Link>{" "}
+                    vous aide à valoriser vos compétences sur votre CV sur la base de vos expériences et vos centres d’intérêt.
+                    <br />
+                    <br />
+                    Pour rendre votre CV plus beau et professionnel, vous pouvez utiliser ces outils gratuits :
+                  </Text>
+                  <UnorderedList pl={3} mt={3}>
+                    <ListItem mb={3}>
+                      <Link href="https://cv.clicnjob.fr/" aria-label="Accéder au site cv.clicnjob.fr" isExternal variant="basicUnderlined">
+                        https://cv.clicnjob.fr/ <ExternalLinkIcon mb="3px" ml="2px" />
+                      </Link>
+                    </ListItem>
+                    <ListItem mb={3}>
+                      <Link href="https://cvdesignr.com/fr" aria-label="Accéder au site cvdesignr.com" isExternal variant="basicUnderlined">
+                        https://cvdesignr.com/fr <ExternalLinkIcon mb="3px" ml="2px" />
+                      </Link>
+                    </ListItem>
+                    <ListItem mb={3}>
+                      <Link href="https://www.canva.com/fr_fr/creer/cv/" aria-label="Accéder au site www.canva.com pour créer un cv" isExternal variant="basicUnderlined">
+                        https://www.canva.com/fr_fr/creer/cv/ <ExternalLinkIcon mb="3px" ml="2px" />
+                      </Link>
+                    </ListItem>
+                  </UnorderedList>
                 </AccordionPanel>
               </>
             )}
           </AccordionItem>
-
           <AccordionItem onClick={onClick}>
             {({ isExpanded }) => (
               <>
@@ -303,7 +206,38 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
                 </AccordionButton>
 
                 <AccordionPanel borderBottom="1px solid #E5E5E5" pb={4}>
-                  TEXTE
+                  <Text>
+                    Une fois votre candidature envoyée, notez-vous un rappel pour pouvoir relancer l’entreprise dans 10 jours si vous n’avez pas de réponse d’ici là.
+                    <br />
+                    <br />
+                    <strong>Vous ne recevez pas de réponse ?</strong>
+                    <br />
+                    Voici un exemple de relance par téléphone :
+                    <br />
+                    <Text py={4} fontStyle="italic" color="grey.425">
+                      “Bonjour,
+                      <br />
+                      Je suis [Prénom Nom]. Je vous appelle car je vous ai envoyé ma candidature par mail le [jour/mois] pour un poste d'apprenti [intitulé du poste visé]. N'ayant
+                      pas reçu de réponse, je me permets de vous relancer car je suis vraiment très intéressé·e par votre entreprise. Je serai heureux·se de vous expliquer plus en
+                      détail ma motivation lors d'un rendez-vous. Pourriez-vous me dire à qui je dois m’adresser pour savoir où en est ma candidature et quand puis-je espérer
+                      recevoir une réponse ?”
+                    </Text>
+                    <strong>Vous avez une proposition d’entretien ?</strong>
+                    <br />
+                    Préparez-vous avec ce quizz interactif :
+                  </Text>
+                  <UnorderedList pl={3} mt={3}>
+                    <ListItem mb={3}>
+                      <Link
+                        href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
+                        aria-label="Accéder aux site de conseils didask pour préparer un entretient avec un employeur"
+                        isExternal
+                        variant="basicUnderlined"
+                      >
+                        Préparer un entretien avec un employeur <ExternalLinkIcon mb="3px" ml="2px" />
+                      </Link>
+                    </ListItem>
+                  </UnorderedList>
                 </AccordionPanel>
               </>
             )}
@@ -313,5 +247,4 @@ const LbaRecruteurDetail = ({ lbaRecruteur }: { lbaRecruteur: ILbaItemLbaCompany
     </>
   )
 }
-
 export default LbaRecruteurDetail

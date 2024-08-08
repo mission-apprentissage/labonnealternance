@@ -140,7 +140,7 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/LbaJobDetail.tsx
   checksum: e1c36f9a6cd1cec8d459da178e5c42d723760a63a867dac1f50dd941a334696c
 - filename: ui/components/ItemDetail/LbaRecruteurComponents/LbaRecruteurDetail.tsx
-  checksum: 759ee12270fa03d91671939ab5f207b0c88795c3491460ad240dc15da6340100
+  checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx
   checksum: 9db6a64f202979b07251fd40445961d8db03bdb18b6668f9813bdbdf0d56aa65
 - filename: ui/components/Ressources/conseilsEtAstuces.tsx
