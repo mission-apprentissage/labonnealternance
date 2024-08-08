@@ -6,6 +6,7 @@ import { getCompanyPathLink, getPathLink } from "../../utils/tools"
 
 import { getCompanyGoogleSearchLink } from "./ItemDetailServices/getCompanyGoogleSearchLink"
 import { getCompanySize } from "./ItemDetailServices/getCompanySize"
+import ItemDistanceToCenter from "./ItemDetailServices/ItemDistanceToCenter"
 
 const LocationDetail = ({ item, isCfa }) => {
   const kind: LBA_ITEM_TYPE_OLD = item?.ideaType
@@ -46,7 +47,7 @@ const LocationDetail = ({ item, isCfa }) => {
           <Box mt={3} color="grey.700">
             {item?.company?.place?.city}
           </Box>
-          {item?.place?.distance !== null && <Box fontSize="14px" color="grey.600">{`${item?.place?.distance} km(s) du lieu de recherche`}</Box>}
+          <ItemDistanceToCenter item={item} />
 
           {companyPathLink && (
             <Flex mt={4} alignItems="center" direction="row">
@@ -76,7 +77,7 @@ const LocationDetail = ({ item, isCfa }) => {
           {item?.place?.fullAddress}
         </Box>
 
-        {item?.place?.distance !== null && !item?.company?.mandataire && <Box color="grey.600" fontSize="14px">{`${item?.place?.distance} km(s) du lieu de recherche`}</Box>}
+        {!item?.company?.mandataire && <ItemDistanceToCenter item={item} />}
 
         <Flex mt={4} alignItems="center" direction="row">
           <Box width="30px" minWidth="30px" pl="1px" mr={2}>
