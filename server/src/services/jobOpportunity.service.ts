@@ -1,4 +1,5 @@
-import { ILbaCompany, IRecruiter } from "shared"
+import { ILbaCompany, IRecruiter, parseEnum } from "shared"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { IJobsPartnersOffresEmploiFranceTravail, IJobsPartnersOffresEmploiLba, IJobsPartnersRecruteurLba, LBA_JOB_TYPE } from "shared/models/jobsPartners.model"
 
@@ -275,61 +276,64 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
 }
 
 export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob[]): IJobsPartnersOffresEmploiFranceTravail[] => {
-  return offresEmploiFranceTravail.map((offreFT) => ({
-    created_at: null,
-    _id: null,
-    raw_id: offreFT.id,
-    partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL,
-    contract: {
-      start: null,
-      duration: offreFT.typeContratLibelle,
-      type: [offreFT.natureContrat],
-      remote: null,
-    },
-    job_offer: {
-      title: offreFT.intitule,
-      rome_code: offreFT.romeCode,
-      description: offreFT.description,
-      diploma_level_label: null,
-      desired_skills: null,
-      acquired_skills: null,
-      access_condition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
-      publication: {
-        creation_date: new Date(offreFT.dateCreation),
-        expiration_date: null,
+  return offresEmploiFranceTravail.map((offreFT) => {
+    const contractType = parseEnum(TRAINING_CONTRACT_TYPE, offreFT.natureContrat)
+    return {
+      created_at: null,
+      _id: null,
+      raw_id: offreFT.id,
+      partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+      contract: {
+        start: null,
+        duration: offreFT.typeContratLibelle,
+        type: contractType ? [contractType] : [],
+        remote: null,
       },
-      meta: {
-        count: offreFT.nombrePostes,
-        multicast: true,
-        origin: null,
-      },
-    },
-    workplace: {
-      siret: null,
-      website: null,
-      raison_sociale: offreFT.entreprise.nom,
-      enseigne: offreFT.entreprise.nom,
-      name: offreFT.entreprise.nom,
-      description: offreFT.entreprise.description,
-      size: null,
-      location: {
-        address: offreFT.lieuTravail.libelle,
-        longitude: parseFloat(offreFT.lieuTravail.longitude),
-        latitude: parseFloat(offreFT.lieuTravail.latitude),
-      },
-      domaine: {
-        idcc: null,
-        opco: null,
-        naf: {
-          code: offreFT.codeNAF ? offreFT.codeNAF : null,
-          label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
+      job_offer: {
+        title: offreFT.intitule,
+        rome_code: offreFT.romeCode,
+        description: offreFT.description,
+        diploma_level_label: null,
+        desired_skills: null,
+        acquired_skills: null,
+        access_condition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
+        publication: {
+          creation_date: new Date(offreFT.dateCreation),
+          expiration_date: null,
+        },
+        meta: {
+          count: offreFT.nombrePostes,
+          multicast: true,
+          origin: null,
         },
       },
-    },
-    apply: {
-      url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
-      email: null,
-      phone: null,
-    },
-  }))
+      workplace: {
+        siret: null,
+        website: null,
+        raison_sociale: offreFT.entreprise.nom,
+        enseigne: offreFT.entreprise.nom,
+        name: offreFT.entreprise.nom,
+        description: offreFT.entreprise.description,
+        size: null,
+        location: {
+          address: offreFT.lieuTravail.libelle,
+          longitude: parseFloat(offreFT.lieuTravail.longitude),
+          latitude: parseFloat(offreFT.lieuTravail.latitude),
+        },
+        domaine: {
+          idcc: null,
+          opco: null,
+          naf: {
+            code: offreFT.codeNAF ? offreFT.codeNAF : null,
+            label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
+          },
+        },
+      },
+      apply: {
+        url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
+        email: null,
+        phone: null,
+      },
+    }
+  })
 }

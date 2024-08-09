@@ -94,7 +94,7 @@ export const extensions = {
         content: z.array(z.string()).nullish(),
       })
       .strict(),
-  buildEnum: (enumObject: Record<string, string>) => {
+  buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>) => {
     const values = Object.values(enumObject)
     if (!values.length) {
       throw new Error("inattendu : enum vide")

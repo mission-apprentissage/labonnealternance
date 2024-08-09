@@ -1,10 +1,10 @@
 import { Jsonify } from "type-fest"
 
 import { AppointmentUserType } from "../constants/appointment"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
-import { enumToZod } from "./enumToZod"
 
 const collectionName = "appointments" as const
 
@@ -57,7 +57,7 @@ export const ZAppointment = z
     cle_ministere_educatif: z.string(),
     created_at: z.date().default(() => new Date()),
     cfa_recipient_email: z.string(),
-    applicant_type: enumToZod(AppointmentUserType).nullish(),
+    applicant_type: extensions.buildEnum(AppointmentUserType).nullish(),
   })
   .strict()
   .openapi("Appointment")

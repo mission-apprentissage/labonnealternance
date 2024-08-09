@@ -7,10 +7,9 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress, ZPointGeometry } from "./address.model"
 import { zObjectId } from "./common"
-import { enumToZod } from "./enumToZod"
 import { IUserWithAccount, ZValidationUtilisateur } from "./userWithAccount.model"
 
-export const ZEtatUtilisateur = enumToZod(ETAT_UTILISATEUR).describe("Statut de l'utilisateur")
+export const ZEtatUtilisateur = extensions.buildEnum(ETAT_UTILISATEUR).describe("Statut de l'utilisateur")
 
 const authTypeValues = Object.values(AUTHTYPE)
 
@@ -118,7 +117,7 @@ export const ZUserRecruteurPublic = ZUserRecruteur.pick({
   scope: true,
 }).extend({
   cfa_delegated_siret: extensions.siret.nullish(),
-  status_current: enumToZod(ETAT_UTILISATEUR).nullish(),
+  status_current: extensions.buildEnum(ETAT_UTILISATEUR).nullish(),
 })
 export type IUserRecruteurPublic = Jsonify<z.output<typeof ZUserRecruteurPublic>>
 

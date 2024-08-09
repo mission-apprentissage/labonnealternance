@@ -1,9 +1,9 @@
 import { Jsonify } from "type-fest"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
-import { enumToZod } from "./enumToZod"
 import { ZValidationUtilisateur } from "./userWithAccount.model"
 
 export enum AccessEntityType {
@@ -23,14 +23,14 @@ export enum AccessStatus {
 export const ZRoleManagementEvent = z
   .object({
     validation_type: ZValidationUtilisateur.describe("Indique si l'action est ordonnée par un utilisateur ou le serveur"),
-    status: enumToZod(AccessStatus).describe("Statut de l'accès"),
+    status: extensions.buildEnum(AccessStatus).describe("Statut de l'accès"),
     reason: z.string().describe("Raison du changement de statut"),
     date: z.date().describe("Date de l'évènement"),
     granted_by: z.string().nullish().describe("Utilisateur à l'origine du changement"),
   })
   .strict()
 
-export const ZAccessEntityType = enumToZod(AccessEntityType)
+export const ZAccessEntityType = extensions.buildEnum(AccessEntityType)
 
 const collectionName = "rolemanagements" as const
 
