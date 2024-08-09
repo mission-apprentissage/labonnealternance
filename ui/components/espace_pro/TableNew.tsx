@@ -29,6 +29,7 @@ function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }) {
   return (
     <InputGroup>
       <Input
+        data-testid="search-input"
         variant="search"
         value={value || ""}
         onChange={(e) => {

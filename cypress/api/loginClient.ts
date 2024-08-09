@@ -1,8 +1,10 @@
+import { LoginPage } from "../pages/LoginPage"
+
 import { smtpClient } from "./smtpClient"
 
 export const loginClient = {
   loginAsAdmin() {
-    return this.login("admin-recette@beta.gouv.fr").then(() => {
+    return this.login(LoginPage.adminEmail).then(() => {
       cy.contains("Gestion des recruteurs")
     })
   },
