@@ -171,8 +171,10 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-- filename: server/tests/integration/http/jobs.controller.test.ts
-  checksum: 63436805733292049c44dd7230478f679b5154e5db74e84e2135e7771622b5e3
+- filename: server/src/http/controllers/jobs.controller.v2.test.ts
+  checksum: 9bcdb3d6462e7075d21d53d56f98d25ae469b88aad80863640d364f3f7dba4b6
+- filename: server/tests/utils/jwt.test.utils.ts
+  checksum: d63fdd6737a8592a88458d1948ea96434727c3e7960f038a66a8c30df1652260
 scopeconfig:
 - scope: node
 custom_patterns:

@@ -45,7 +45,6 @@ const config = {
       expiresIn: env.get("LBA_AUTH_USER_JWT_SECRET_EXPIRES").required().asString(),
     },
     apiApprentissage: {
-      privateTestKey: env.get("LBA_API_APPRENTISSAGE_TEST_PRIVATE_KEY").required().asString(),
       publicKey: env.get("LBA_API_APPRENTISSAGE_PUBLIC_KEY").required().asString(),
     },
     session: {

@@ -1,6 +1,6 @@
 import { IGeoPoint, ILbaCompany, IRecruiter } from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
-import { IJobOffer, IJobOfferFranceTravail, IJobsPartners, LBA_JOB_TYPE } from "shared/models/jobsPartners.model"
+import { IJobOffer, IJobOfferFranceTravail, IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { IApiError } from "../common/utils/errorManager"
 import { getDbCollection } from "../common/utils/mongodbUtils"
@@ -217,7 +217,7 @@ export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJ
     created_at: recruteurLba.created_at,
     _id: recruteurLba._id,
     raw_id: recruteurLba._id.toString(),
-    partner_label: LBA_JOB_TYPE.RECRUTEURS_LBA,
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     contract: null,
     job_offer: null,
     workplace: {
@@ -230,7 +230,7 @@ export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJ
       size: recruteurLba.company_size,
       location: {
         address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
-        geopoint: convertToGeopoint(parseFloat(recruteurLba.geo_coordinates.split(",")[1]), parseFloat(recruteurLba.geo_coordinates.split(",")[0])),
+        geopoint: recruteurLba.geopoint!,
       },
       domaine: {
         idcc: null,
@@ -257,7 +257,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
       created_at: job.job_creation_date!,
       _id: job._id,
       raw_id: job._id.toString(),
-      partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_LBA,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       contract: {
         start: job.job_start_date,
         duration: job.job_duration!.toString(),
@@ -292,7 +292,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
         size: offreEmploiLba.establishment_size!,
         location: {
           address: offreEmploiLba.address!,
-          geopoint: convertToGeopoint(offreEmploiLba.geopoint!.coordinates[0], offreEmploiLba.geopoint!.coordinates[1]),
+          geopoint: offreEmploiLba.geopoint!,
         },
         domaine: {
           idcc: Number(offreEmploiLba.idcc) ?? null,
@@ -318,7 +318,7 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
     created_at: new Date(offreFT.dateCreation),
     _id: null,
     raw_id: offreFT.id,
-    partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
     contract: {
       start: null,
       duration: offreFT.typeContratLibelle,

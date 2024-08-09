@@ -10,7 +10,6 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 const { JsonWebTokenError, TokenExpiredError } = jwt
 
 const jwtPublicKey = config.auth.apiApprentissage.publicKey
-const jwtTestingPrivateKey = config.auth.apiApprentissage.privateTestKey
 
 const ZApiApprentissageTokenData = z.object({
   email: z.string().email(),
@@ -46,8 +45,4 @@ export const parseApiApprentissageToken = (jwtToken: string): ApiApprentissageTo
     sentryCaptureException(e)
     throw Boom.unauthorized()
   }
-}
-
-export const getApiApprentissageTestingToken = (payload: ApiApprentissageTokenData) => {
-  return jwt.sign(payload, jwtTestingPrivateKey, { algorithm: "ES512" })
 }

@@ -2,7 +2,7 @@ import { NIVEAUX_POUR_LBA, OPCOS } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-const romes = extensions.romeCode().transform((romes) => romes.split(","))
+const romes = extensions.romeCodeArray()
 const rncp = extensions.rncpCode()
 const insee = extensions.inseeCode().nullish()
 

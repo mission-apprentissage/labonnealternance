@@ -8,15 +8,11 @@ import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "jobs_partners" as const
 
-export enum LBA_JOB_TYPE {
+export enum JOBPARTNERS_LABEL {
+  HELLOWORK = "hellowork",
   RECRUTEURS_LBA = "recruteurs_lba",
   OFFRES_EMPLOI_LBA = "offres_emploi_lba",
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "offres_emploi_france_travail",
-}
-
-export enum JOBPARTNERS_LABEL {
-  LBA = LBA_JOB_TYPE.OFFRES_EMPLOI_LBA,
-  HELLOWORK = "hellowork",
 }
 
 const ZJobsPartnersApply = z.object({
@@ -61,7 +57,7 @@ export const ZJobsPartnersJobOffer = z.object({
 })
 export type IJobsPartnersJobOffer = z.output<typeof ZJobsPartnersJobOffer>
 
-const ZJobsPartnersWorkplace = z.object({
+export const ZJobsPartnersWorkplace = z.object({
   siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   website: z.string().nullable().describe("Site web de l'entreprise"),
   raison_sociale: z.string().nullable().describe("Raison sociale"),
@@ -84,6 +80,7 @@ const ZJobsPartnersWorkplace = z.object({
     }),
   }),
 })
+export type IJobsPartnersWorkplace = z.output<typeof ZJobsPartnersWorkplace>
 
 export const ZJobsPartners = z.object({
   _id: zObjectId,
@@ -107,6 +104,7 @@ export const ZJobsPartnersResponse = z.object({
   jobs: z.array(z.union([ZJobOffer, ZJobOfferFranceTravail, ZJobsPartners])),
   recruiters: z.array(ZJobOffer),
 })
+export type IJobsPartnersResponse = z.output<typeof ZJobsPartnersResponse>
 
 export default {
   zod: ZJobsPartners,

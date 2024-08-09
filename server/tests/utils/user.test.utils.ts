@@ -1,11 +1,11 @@
 import { ObjectId } from "mongodb"
 import { OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist } from "shared/models"
+import { IApplication, ICredential, IEmailBlacklist, IJob, ILbaCompany, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany } from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartners, IJobsPartnersJobOffer, ZJobsPartners, ZJobsPartnersJobOffer } from "shared/models/jobsPartners.model"
+import { IJobsPartners, IJobsPartnersJobOffer, IJobsPartnersWorkplace, ZJobsPartners, ZJobsPartnersJobOffer, ZJobsPartnersWorkplace } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodArray, ZodObject, ZodString, ZodTypeAny } from "zod"
@@ -234,7 +234,7 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   return u
 }
 
-export function jobPartnerFactory(props: Partial<IJobsPartnersJobOffer> = {}) {
+export function jobPartnerOfferFactory(props: Partial<IJobsPartnersJobOffer> = {}) {
   const jobPartner: IJobsPartnersJobOffer = {
     ...getFixture().fromSchema(ZJobsPartnersJobOffer),
     ...props,
@@ -242,12 +242,30 @@ export function jobPartnerFactory(props: Partial<IJobsPartnersJobOffer> = {}) {
   return jobPartner
 }
 
-export async function createJobParnter(data: Partial<IJobsPartners> = {}) {
-  return await saveJobPartner({ job_offer: jobPartnerFactory(), ...data })
+export function jobPartnerWorkplaceFactory(props: Partial<IJobsPartnersWorkplace> = {}) {
+  const jobPartner: IJobsPartnersWorkplace = {
+    ...getFixture().fromSchema(ZJobsPartnersWorkplace),
+    ...props,
+  }
+  return jobPartner
 }
 
-export async function saveJobPartner(data: Partial<IJobsPartners> = {}) {
-  return saveDbEntity(ZJobsPartners, (item) => getDbCollection("jobs_partners").insertOne(item), data)
+export async function createJobPartnerTest({
+  jobOfferData = {},
+  workplaceData = {},
+}: {
+  jobOfferData: Partial<IJobsPartnersJobOffer>
+  workplaceData: Partial<IJobsPartnersWorkplace>
+}) {
+  return await saveJobPartnerTest({ job_offer: jobPartnerOfferFactory(jobOfferData), workplace: jobPartnerWorkplaceFactory(workplaceData) })
+}
+
+export async function saveJobPartnerTest(data: Partial<IJobsPartners> = {}) {
+  return await saveDbEntity(ZJobsPartners, (item) => getDbCollection("jobs_partners").insertOne(item), data)
+}
+
+export async function createRecruteurLbaTest(data: Partial<ILbaCompany>) {
+  return await saveDbEntity(ZLbaCompany, (item) => getDbCollection("recruteurslba").insertOne(item), data)
 }
 
 export const saveAdminUserTest = async (userProps: Partial<IUserWithAccount> = {}) => {
