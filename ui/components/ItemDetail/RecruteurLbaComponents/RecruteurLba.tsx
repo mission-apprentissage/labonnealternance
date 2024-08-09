@@ -162,7 +162,7 @@ const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, sea
                 </Text>
               </Flex>
             )}
-            <ItemDetailApplicationsStatus item={company} mt={2} />
+            <ItemDetailApplicationsStatus item={company} mt={2} mb={2} />
           </Box>
           {!showTextOnly && company.place.distance > currentSearchRadius && <>{getCenterSearchOnCompanyButton()}</>}
         </Box>

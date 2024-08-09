@@ -12,6 +12,7 @@ import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { setSelectedMarker } from "../../utils/mapTools"
 
+import ItemDetailApplicationsStatus from "./ItemDetailServices/ItemDetailApplicationStatus"
 import TagCfaDEntreprise from "./TagCfaDEntreprise"
 import TagFormation from "./TagFormation"
 
@@ -156,6 +157,7 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
             )}
           </Text>
           {!showTextOnly && (training.place.distance === null || training.place.distance > currentSearchRadius) && scopeContext.isJob && <>{getCenterSearchOnTrainingButton()}</>}
+          {!showTextOnly && <ItemDetailApplicationsStatus item={training} mt={2} mb={2} />}
         </Box>
       </Flex>
     </Link>

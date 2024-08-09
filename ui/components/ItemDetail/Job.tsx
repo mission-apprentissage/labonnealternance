@@ -181,7 +181,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
                 </Text>
               </Flex>
             )}
-            <ItemDetailApplicationsStatus item={job} mt={2} />
+            <ItemDetailApplicationsStatus item={job} mt={2} mb={2} />
           </Box>
           {job.place.distance > currentSearchRadius ? getCenterSearchOnJobButton() : ""}
         </Box>
