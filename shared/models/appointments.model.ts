@@ -67,6 +67,10 @@ export type IAppointmentJson = Jsonify<z.input<typeof ZAppointment>>
 
 export default {
   zod: ZAppointment,
-  indexes: [[{ applicant_id: 1 }, {}]],
+  indexes: [
+    [{ applicant_id: 1 }, {}],
+    [{ "to_applicant_mails.message_id": 1 }, {}],
+    [{ "to_cfa_mails.message_id": 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

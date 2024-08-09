@@ -2,25 +2,16 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { endsWithNumber } from "../../utils/strutils"
 import { getCompanyPathLink, getPathLink } from "../../utils/tools"
+
+import { getCompanyGoogleSearchLink } from "./ItemDetailServices/getCompanyGoogleSearchLink"
+import { getCompanySize } from "./ItemDetailServices/getCompanySize"
+import ItemDistanceToCenter from "./ItemDetailServices/ItemDistanceToCenter"
 
 const LocationDetail = ({ item, isCfa }) => {
   const kind: LBA_ITEM_TYPE_OLD = item?.ideaType
 
-  const getGoogleSearchParameters = () => {
-    return encodeURIComponent(`${item.company.name} ${item.place.city || item.place.address}`)
-  }
-
-  let companySize = item?.company?.size?.toLowerCase()
-  if (!companySize) {
-    companySize = "non renseigné"
-  } else if (companySize.startsWith("0")) {
-    companySize = "0 à 9 salariés"
-  }
-  if (endsWithNumber(companySize)) {
-    companySize += " salariés"
-  }
+  const companySize = getCompanySize(item)
 
   const getTitle = (oneItem) => {
     const oneKind = oneItem?.ideaType
@@ -56,7 +47,7 @@ const LocationDetail = ({ item, isCfa }) => {
           <Box mt={3} color="grey.700">
             {item?.company?.place?.city}
           </Box>
-          {item?.place?.distance !== null && <Box fontSize="14px" color="grey.600">{`${item?.place?.distance} km(s) du lieu de recherche`}</Box>}
+          <ItemDistanceToCenter item={item} />
 
           {companyPathLink && (
             <Flex mt={4} alignItems="center" direction="row">
@@ -86,7 +77,7 @@ const LocationDetail = ({ item, isCfa }) => {
           {item?.place?.fullAddress}
         </Box>
 
-        {item?.place?.distance !== null && !item?.company?.mandataire && <Box color="grey.600" fontSize="14px">{`${item?.place?.distance} km(s) du lieu de recherche`}</Box>}
+        {!item?.company?.mandataire && <ItemDistanceToCenter item={item} />}
 
         <Flex mt={4} alignItems="center" direction="row">
           <Box width="30px" minWidth="30px" pl="1px" mr={2}>
@@ -177,13 +168,7 @@ const LocationDetail = ({ item, isCfa }) => {
               </Box>
               <Text as="span">
                 En savoir plus sur
-                <Link
-                  ml="2px"
-                  isExternal
-                  variant="basicUnderlined"
-                  href={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}
-                  aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre"
-                >
+                <Link ml="2px" isExternal variant="basicUnderlined" href={getCompanyGoogleSearchLink(item)} aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre">
                   {item.company.name} <ExternalLinkIcon mb="3px" ml="2px" />
                 </Link>
               </Text>
