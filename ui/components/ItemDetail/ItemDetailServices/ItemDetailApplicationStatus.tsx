@@ -11,18 +11,41 @@ const getAPostuleMessage = (type, applicationDate, mb, mt) => {
 
   return (
     <Box mb={mb} mt={mt}>
-      <Text color="grey.600" fontSize="12px" fontStyle="italic" as="span" px={2} py={1} backgroundColor="#FEF7DA">
-        {type === LBA_ITEM_TYPE_OLD.FORMATION
-          ? `
-        👍 Super, vous avez déjà pris contact le ${date}.`
-          : `🤞 Bravo, vous avez déjà postulé le ${date}.`}
+      <Text color="grey.600" fontSize="12px" as="span" px={2} py={1} backgroundColor="#FEF7DA">
+        {type === LBA_ITEM_TYPE_OLD.FORMATION ? (
+          <>
+            <Text as="span">👍 </Text>
+            <Text as="span" fontStyle="italic">
+              Super, vous avez déjà pris contact le ${date}.
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text as="span">🤞 </Text>
+            <Text as="span" fontStyle="italic">
+              Bravo, vous avez déjà postulé le {date}.
+            </Text>
+          </>
+        )}
       </Text>
     </Box>
   )
 }
 
-export default function ItemDetailApplicationsStatus({ item, mb, mt }: { item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob; mb: number; mt: number }) {
-  const key = `candidaturespontanee-${item.ideaType}-${item.id}`
+export const hasApplied = (item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob) => {
+  return window.localStorage.getItem(`application-${item.ideaType}-${item.id}`) !== null
+}
+
+export default function ItemDetailApplicationsStatus({
+  item,
+  mb = 0,
+  mt = 0,
+}: {
+  item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob
+  mb?: number
+  mt?: number
+}) {
+  const key = `application-${item.ideaType}-${item.id}`
   const ls = window.localStorage.getItem(key)
 
   return ls !== null ? getAPostuleMessage(item.ideaType, ls, mb, mt) : <></>
