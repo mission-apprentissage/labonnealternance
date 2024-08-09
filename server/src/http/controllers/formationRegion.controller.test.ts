@@ -1,5 +1,5 @@
-import { useMongo } from "@tests/utils/mongo.utils"
-import { useServer } from "@tests/utils/server.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { describe, expect, it } from "vitest"
 
 // Skip from CI (ES is not populated correctly)

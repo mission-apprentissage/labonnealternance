@@ -73,7 +73,7 @@ export const getFranceTravailTokenFromAPI = async (access: IFranceTravailAccessT
  */
 export const searchForFtJobs = async (params: {
   codeROME: string
-  commune: string
+  commune?: string
   sort: number
   natureContrat: string
   range: string

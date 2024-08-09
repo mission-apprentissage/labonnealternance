@@ -1,8 +1,8 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { createEmailBlacklistTest } from "@tests/utils/user.test.utils"
 import { describe, expect, it } from "vitest"
 
-import { getEmailForRdv } from "../../../src/services/eligibleTrainingsForAppointment.service"
-import { useMongo } from "../../utils/mongo.utils"
-import { createEmailBlacklistTest } from "../../utils/user.utils"
+import { getEmailForRdv } from "./eligibleTrainingsForAppointment.service"
 
 describe("getEmailForRdv", () => {
   const blacklistedEmail = "blacklisted@email.com"

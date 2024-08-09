@@ -1,4 +1,4 @@
-import { useMongo } from "@tests/utils/mongo.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { describe, expect, it } from "vitest"
 
 import { createIndexes } from "../../../src/common/utils/mongodbUtils"

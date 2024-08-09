@@ -1,8 +1,8 @@
-import { useMongo } from "@tests/utils/mongo.utils"
-import { useServer } from "@tests/utils/server.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { describe, expect, it } from "vitest"
 
-import config from "../../../src/config"
+import config from "../config"
 
 describe("healthcheckRoutes", () => {
   useMongo()

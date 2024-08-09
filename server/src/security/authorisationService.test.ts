@@ -1,5 +1,5 @@
-import { useMongo } from "@tests/utils/mongo.utils"
-import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
