@@ -1,6 +1,6 @@
 import { IGeoPoint, ILbaCompany, IRecruiter } from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
-import { IJobOffer, IJobOfferFranceTravail, IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobOffer, IJobRecruiter, IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { IApiError } from "../common/utils/errorManager"
 import { getDbCollection } from "../common/utils/mongodbUtils"
@@ -211,15 +211,11 @@ export const getJobsPartnersFromDB = async ({ radius = 10, romes, opco, latitude
 
 const convertToGeopoint = (longitude: number, latitude: number): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
 
-export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJobOffer[] | [] => {
+export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJobRecruiter[] | [] => {
   if (!recruteursLba.length) return []
   return recruteursLba.map((recruteurLba) => ({
     created_at: recruteurLba.created_at,
     _id: recruteurLba._id,
-    raw_id: recruteurLba._id.toString(),
-    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-    contract: null,
-    job_offer: null,
     workplace: {
       siret: recruteurLba.siret,
       website: recruteurLba.website,
@@ -255,8 +251,8 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
   return offresEmploiLba.flatMap((offreEmploiLba) =>
     offreEmploiLba.jobs.map((job) => ({
       created_at: job.job_creation_date!,
-      _id: job._id,
-      raw_id: job._id.toString(),
+      _id: job._id.toString(),
+      partner_id: null,
       partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       contract: {
         start: job.job_start_date,
@@ -312,12 +308,20 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
   )
 }
 
-export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob[]): IJobOfferFranceTravail[] | [] => {
+export const formatOffresEmploiPartenaire = (offresEmploiPartenaire: IJobsPartners[]): IJobOffer[] | [] => {
+  if (!offresEmploiPartenaire.length) return []
+  return offresEmploiPartenaire.map((offreEmploiPartenaire) => ({
+    ...offreEmploiPartenaire,
+    _id: offreEmploiPartenaire._id.toString(),
+  }))
+}
+
+export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob[]): IJobOffer[] | [] => {
   if (!offresEmploiFranceTravail.length) return []
   return offresEmploiFranceTravail.map((offreFT) => ({
     created_at: new Date(offreFT.dateCreation),
-    _id: null,
-    raw_id: offreFT.id,
+    _id: offreFT.id.toString(),
+    partner_id: null,
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
     contract: {
       start: null,

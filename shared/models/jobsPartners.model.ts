@@ -9,10 +9,9 @@ import { IModelDescriptor, zObjectId } from "./common"
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
-  HELLOWORK = "hellowork",
-  RECRUTEURS_LBA = "recruteurs_lba",
-  OFFRES_EMPLOI_LBA = "offres_emploi_lba",
-  OFFRES_EMPLOI_FRANCE_TRAVAIL = "offres_emploi_france_travail",
+  HELLOWORK = "Hellowork",
+  OFFRES_EMPLOI_LBA = "La bonne alternance",
+  OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
 }
 
 const ZJobsPartnersApply = z.object({
@@ -82,27 +81,28 @@ export const ZJobsPartnersWorkplace = z.object({
 })
 export type IJobsPartnersWorkplace = z.output<typeof ZJobsPartnersWorkplace>
 
-export const ZJobsPartners = z.object({
+export const ZJobRecruiter = z.object({
   _id: zObjectId,
-  raw_id: z.string().describe("Identifiant d'origine l'offre provenant du partenaire"),
-  partner_label: extensions.buildEnum(JOBPARTNERS_LABEL).describe("Référence du partenaire"),
-  contract: ZJobsPartnersContract.nullable(),
-  job_offer: ZJobsPartnersJobOffer.nullable(),
   workplace: ZJobsPartnersWorkplace,
   apply: ZJobsPartnersApply,
   created_at: z.date().describe("Date de creation de l'offre"),
 })
+export type IJobRecruiter = z.output<typeof ZJobRecruiter>
+
+export const ZJobsPartners = ZJobRecruiter.extend({
+  partner_id: z.string().nullable().describe("Identifiant d'origine l'offre provenant du partenaire"),
+  partner_label: extensions.buildEnum(JOBPARTNERS_LABEL).describe("Référence du partenaire"),
+  contract: ZJobsPartnersContract,
+  job_offer: ZJobsPartnersJobOffer,
+})
 export type IJobsPartners = z.output<typeof ZJobsPartners>
 
-export const ZJobOffer = ZJobsPartners.omit({ raw_id: true })
+export const ZJobOffer = ZJobsPartners.omit({ _id: true }).extend({ _id: z.string() })
 export type IJobOffer = z.output<typeof ZJobOffer>
 
-export const ZJobOfferFranceTravail = ZJobsPartners.omit({ _id: true }).extend({ _id: z.null() })
-export type IJobOfferFranceTravail = z.output<typeof ZJobOfferFranceTravail>
-
 export const ZJobsPartnersResponse = z.object({
-  jobs: z.array(z.union([ZJobOffer, ZJobOfferFranceTravail, ZJobsPartners])),
-  recruiters: z.array(ZJobOffer),
+  jobs: z.array(ZJobOffer),
+  recruiters: z.array(ZJobRecruiter),
 })
 export type IJobsPartnersResponse = z.output<typeof ZJobsPartnersResponse>
 

@@ -32,6 +32,7 @@ import { getFtJobFromIdV2, getFtJobsV2 } from "../../services/ftjob.service"
 import {
   formatFranceTravailToJobPartner,
   formatOffreEmploiLbaToJobPartner,
+  formatOffresEmploiPartenaire,
   formatRecruteurLbaToJobPartner,
   getJobsPartnersFromDB,
   getJobsQuery,
@@ -513,7 +514,11 @@ export default (server: Server) => {
     ])
 
     return res.send({
-      jobs: [...formatOffreEmploiLbaToJobPartner(offreEmploiLba), ...formatFranceTravailToJobPartner(franceTravail.resultats), ...offreEmploiPartenaire],
+      jobs: [
+        ...formatOffreEmploiLbaToJobPartner(offreEmploiLba),
+        ...formatFranceTravailToJobPartner(franceTravail.resultats),
+        ...formatOffresEmploiPartenaire(offreEmploiPartenaire),
+      ],
       recruiters: formatRecruteurLbaToJobPartner(recruterLba),
     })
   })
@@ -521,11 +526,12 @@ export default (server: Server) => {
   server.get("/jobs/rncp", { schema: zRoutes.get["/jobs/rncp"], onRequest: server.auth(zRoutes.get["/jobs/rncp"]) }, async (req, res) => {
     const payload: IJobOpportunityRncp = req.query
     const romes = await getRomesFromRncp(payload.rncp)
+    console.log({ romes })
     if (!romes) {
       throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
     }
 
-    const [recruterLba, offreEmploiLba, franceTravail] = await Promise.all([
+    const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
       getRecruteursLbaFromDB({ ...payload, romes }),
       getJobs({
         romes,
@@ -535,11 +541,16 @@ export default (server: Server) => {
         lon: payload.longitude,
         isMinimalData: false,
       }),
+      getJobsPartnersFromDB({ ...payload, romes }),
       getFtJobsV2({ romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rncp"].path, ...payload, insee: payload.insee ?? undefined }),
     ])
 
     return res.send({
-      jobs: [...formatOffreEmploiLbaToJobPartner(offreEmploiLba), ...formatFranceTravailToJobPartner(franceTravail.resultats)],
+      jobs: [
+        ...formatOffreEmploiLbaToJobPartner(offreEmploiLba),
+        ...formatFranceTravailToJobPartner(franceTravail.resultats),
+        ...formatOffresEmploiPartenaire(offreEmploiPartenaire),
+      ],
       recruiters: formatRecruteurLbaToJobPartner(recruterLba),
     })
   })
