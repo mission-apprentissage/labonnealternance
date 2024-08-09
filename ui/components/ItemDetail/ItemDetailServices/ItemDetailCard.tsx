@@ -36,7 +36,9 @@ export default function ItemDetailCard({ selectedItem }) {
         />
       </svg>
       <Text ml={1}>{selectedItem?.place?.zipCode}</Text>
-      <Text ml={1}>{selectedItem?.place?.city || selectedItem?.place?.address}</Text>
+      <Text ml={1} mr={2}>
+        {selectedItem?.place?.city || selectedItem?.place?.address}
+      </Text>
       <ItemDistanceToCenter item={selectedItem} />
     </Flex>
   )
