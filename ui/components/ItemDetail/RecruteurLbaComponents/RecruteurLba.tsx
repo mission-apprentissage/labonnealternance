@@ -10,6 +10,7 @@ import { fetchAddresses } from "../../../services/baseAdresse"
 import { getItemQueryParameters } from "../../../utils/getItemId"
 import { getSearchQueryParameters } from "../../../utils/getSearchParameters"
 import { setSelectedMarker } from "../../../utils/mapTools"
+import ItemDetailApplicationsStatus from "../ItemDetailServices/ItemDetailApplicationStatus"
 import TagCandidatureSpontanee from "../TagCandidatureSpontanee"
 
 const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, searchForTrainingsOnNewCenter }) => {
@@ -161,6 +162,7 @@ const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, sea
                 </Text>
               </Flex>
             )}
+            <ItemDetailApplicationsStatus item={company} mt={2} />
           </Box>
           {!showTextOnly && company.place.distance > currentSearchRadius && <>{getCenterSearchOnCompanyButton()}</>}
         </Box>
