@@ -42,6 +42,7 @@ import metierv2 from "./controllers/metiers.controller.v2"
 import metiersDAvenirRoute from "./controllers/metiersDAvenir.controller"
 import optoutRoute from "./controllers/optout.controller"
 import partnersRoute from "./controllers/partners.controller"
+import reportController from "./controllers/report.controller"
 import rome from "./controllers/rome.controller"
 import trainingLinks from "./controllers/trainingLinks.controller"
 import unsubscribeLbaCompany from "./controllers/unsubscribeRecruteurLba.controller"
@@ -132,6 +133,7 @@ export async function bind(app: Server) {
       formationsV1Route(typedSubApp)
       formationsRegionV1Route(typedSubApp)
       jobsEtFormationsV1Route(typedSubApp)
+      reportController(typedSubApp)
 
       /**
        * Admin / Auth
