@@ -1,4 +1,4 @@
-import { ILbaItemFormation, ILbaItemLbaCompany } from "@/../shared"
+import { ILbaItemLbaCompany } from "@/../shared"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -170,7 +170,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
           {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
             <>
               <Divider my={2} />
-              <DemandeDeContact training={selectedItem as ILbaItemFormation} context={selectedItem.rdvContext} referrer="LBA" showInModal />
+              <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
             </>
           )}
           {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}

@@ -30,7 +30,7 @@ import {
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
-import { EReasonsKey, ILbaItemFormation } from "shared"
+import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 import * as Yup from "yup"
@@ -44,7 +44,6 @@ import InfoBanner from "../InfoBanner/InfoBanner"
 import LBAModalCloseButton from "../lbaModalCloseButton"
 
 type Props = {
-  training: ILbaItemFormation
   context: IAppointmentRequestContextCreateFormAvailableResponseSchema
   referrer: string
   showInModal: boolean
