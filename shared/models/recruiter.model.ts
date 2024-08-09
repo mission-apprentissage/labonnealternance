@@ -43,7 +43,6 @@ export const ZRecruiterWritable = z
     establishment_creation_date: z.date().nullish().describe("Date de creation de l'établissement"),
     managed_by: z.string().nullish().describe("Id de l'utilisateur gestionnaire"),
   })
-  .strict()
   .openapi("RecruiterWritable")
 
 const collectionName = "recruiters" as const
@@ -89,7 +88,7 @@ export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
   naf_label: true,
   establishment_size: true,
   establishment_creation_date: true,
-}).strict()
+})
 
 export type IAnonymizedRecruiter = z.output<typeof ZAnonymizedRecruiter>
 
