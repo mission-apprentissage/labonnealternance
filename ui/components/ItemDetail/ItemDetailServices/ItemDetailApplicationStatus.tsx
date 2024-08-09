@@ -16,7 +16,7 @@ const getAPostuleMessage = (type, applicationDate, mb, mt) => {
           <>
             <Text as="span">👍 </Text>
             <Text as="span" fontStyle="italic">
-              Super, vous avez déjà pris contact le ${date}.
+              Super, vous avez déjà pris contact le {date}.
             </Text>
           </>
         ) : (

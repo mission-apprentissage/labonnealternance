@@ -157,7 +157,7 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
             )}
           </Text>
           {!showTextOnly && (training.place.distance === null || training.place.distance > currentSearchRadius) && scopeContext.isJob && <>{getCenterSearchOnTrainingButton()}</>}
-          {!showTextOnly && <ItemDetailApplicationsStatus item={training} mt={2} mb={2} />}
+          <ItemDetailApplicationsStatus item={training} mt={2} mb={2} />
         </Box>
       </Flex>
     </Link>

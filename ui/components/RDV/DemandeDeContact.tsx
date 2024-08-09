@@ -30,7 +30,7 @@ import {
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
-import { EReasonsKey } from "shared"
+import { EReasonsKey, ILbaItemFormation } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema } from "shared/routes/appointments.routes"
 import * as Yup from "yup"
@@ -44,6 +44,7 @@ import InfoBanner from "../InfoBanner/InfoBanner"
 import LBAModalCloseButton from "../lbaModalCloseButton"
 
 type Props = {
+  training: ILbaItemFormation
   context: IAppointmentRequestContextCreateFormAvailableResponseSchema
   referrer: string
   showInModal: boolean
@@ -138,9 +139,12 @@ const DemandeDeContact = (props: Props) => {
           },
         })
 
+        window.localStorage.setItem(`application-formation-${props.context.cle_ministere_educatif}`, Date.now().toString())
+
         SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
           info_fiche: `${props.context.cle_ministere_educatif}`,
         })
+
         setOnSuccessSubmitResponse(response)
       } catch (json) {
         setError(json?.message || "Une erreur inattendue est survenue.")

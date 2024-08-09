@@ -1,4 +1,4 @@
-import { ILbaItemLbaCompany } from "@/../shared"
+import { ILbaItemFormation, ILbaItemLbaCompany } from "@/../shared"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -24,6 +24,7 @@ import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplaye
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
+import ItemDetailApplicationsStatus, { hasApplied } from "./ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
 import LbaJobDetail from "./LbaJobComponents/LbaJobDetail"
@@ -166,12 +167,13 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
           {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
-          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
             <>
               <Divider my={2} />
-              <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
+              <DemandeDeContact training={selectedItem as ILbaItemFormation} context={selectedItem.rdvContext} referrer="LBA" showInModal />
             </>
           )}
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
         </Box>
       </Box>
 
