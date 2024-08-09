@@ -14,6 +14,7 @@ import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { isDepartmentJob } from "../../utils/itemListUtils"
 import { setSelectedMarker } from "../../utils/mapTools"
 
+import ItemDetailApplicationsStatus from "./ItemDetailServices/ItemDetailApplicationStatus"
 import TagFormationAssociee from "./TagFormationAssociee"
 import TagOffreEmploi from "./TagOffreEmploi"
 
@@ -180,6 +181,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
                 </Text>
               </Flex>
             )}
+            <ItemDetailApplicationsStatus item={job} mt={2} mb={2} />
           </Box>
           {job.place.distance > currentSearchRadius ? getCenterSearchOnJobButton() : ""}
         </Box>

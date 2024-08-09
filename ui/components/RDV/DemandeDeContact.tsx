@@ -138,9 +138,12 @@ const DemandeDeContact = (props: Props) => {
           },
         })
 
+        window.localStorage.setItem(`application-formation-${props.context.cle_ministere_educatif}`, Date.now().toString())
+
         SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
           info_fiche: `${props.context.cle_ministere_educatif}`,
         })
+
         setOnSuccessSubmitResponse(response)
       } catch (json) {
         setError(json?.message || "Une erreur inattendue est survenue.")
