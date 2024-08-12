@@ -36,7 +36,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
 
   return (
     <>
-      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} mx={["0", "30px"]}>
+      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text mb={6} color="bluefrance.500" fontSize="22px" fontWeight={700} as="h2">
           Qu’est ce qu’une candidature spontanée ?
         </Text>
@@ -54,7 +54,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
         </Flex>
       </Box>
 
-      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} mx={["0", "30px"]}>
+      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text mb={6} color="bluefrance.500" fontSize="22px" fontWeight={700} as="h2">
           Comment candidater ?
         </Text>
