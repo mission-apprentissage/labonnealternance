@@ -367,6 +367,28 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
           label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
         },
       },
+      workplace: {
+        siret: null,
+        website: null,
+        raison_sociale: offreFT.entreprise.nom,
+        enseigne: offreFT.entreprise.nom,
+        name: offreFT.entreprise.nom,
+        description: offreFT.entreprise.description,
+        size: null,
+        location: {
+          address: offreFT.lieuTravail.libelle,
+          longitude: parseFloat(offreFT.lieuTravail.longitude),
+          latitude: parseFloat(offreFT.lieuTravail.latitude),
+        },
+        domaine: {
+          idcc: null,
+          opco: null,
+          naf: {
+            code: offreFT.codeNAF ? offreFT.codeNAF : null,
+            label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
+          },
+        },
+      },
     },
     apply: {
       url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
