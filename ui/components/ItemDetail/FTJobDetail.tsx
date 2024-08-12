@@ -79,7 +79,7 @@ const FTJobDetail = ({ job }) => {
                 <ListItem>Offre offensante ou discriminatoire</ListItem>
                 <ListItem>Offre inexacte ou expirée</ListItem>
                 <ListItem>Fausse offre provenant d’un centre de formation</ListItem>
-                <ListItem>Tentative d'escroquerie </ListItem>
+                <ListItem>Tentative d'escroquerie</ListItem>
               </UnorderedList>
             </Box>
           }
