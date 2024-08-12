@@ -13,7 +13,7 @@ export const ZReportedCompany = z
   })
   .strict()
 
-export type IReport = z.output<typeof ZReportedCompany>
+export type IReportedCompany = z.output<typeof ZReportedCompany>
 
 export default {
   zod: ZReportedCompany,
