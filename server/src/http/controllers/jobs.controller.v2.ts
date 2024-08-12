@@ -9,11 +9,10 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { getFileSignedURL } from "../../common/utils/awsUtils"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
 import { getRomesFromRncp } from "../../services/certification.service"
 import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
-import { addExpirationPeriod, cancelOffre, createJobDelegations, extendOffre, getFormulaires, getJob, getOffre, patchOffre, provideOffre } from "../../services/formulaire.service"
+import { addExpirationPeriod, cancelOffre, extendOffre, getFormulaires, getJob, provideOffre } from "../../services/formulaire.service"
 import { getFtJobFromIdV2, getFtJobsV2 } from "../../services/ftjob.service"
 import {
   formatFranceTravailToJobPartner,
@@ -87,88 +86,6 @@ export default (server: Server) => {
   server.post("/jobs/canceled/:id", {}, async () => {})
   // EXTEND job in jobs_partners
   server.post("/jobs/extend/:id", {}, async () => {})
-
-  server.patch(
-    "/jobs/:jobId",
-    {
-      schema: zRoutes.patch["/jobs/:jobId"],
-      onRequest: server.auth(zRoutes.patch["/jobs/:jobId"]),
-      config,
-    },
-    async (req, res) => {
-      const { jobId } = req.params
-      const jobExists = await getOffre(jobId.toString())
-
-      if (!jobExists) {
-        return res.status(400).send({ error: true, message: "Job does not exists" })
-      }
-
-      const updatedRecruiter = await patchOffre(jobId, req.body)
-
-      return res.status(200).send(updatedRecruiter)
-    }
-  )
-
-  server.get(
-    "/jobs/delegations/:jobId",
-    {
-      schema: zRoutes.get["/jobs/delegations/:jobId"],
-      onRequest: server.auth(zRoutes.get["/jobs/delegations/:jobId"]),
-      config,
-    },
-    async (req, res) => {
-      const { jobId } = req.params
-      const recruiter = await getOffre(jobId.toString())
-
-      if (!recruiter) {
-        throw Boom.badRequest("Job does not exists")
-      }
-
-      if (!recruiter.geo_coordinates) {
-        throw Boom.internal("geo_coordinates is empty", { jobId: recruiter._id })
-      }
-
-      const [latitude = "", longitude = ""] = recruiter.geo_coordinates.split(",")
-      const { rome_code } = recruiter.jobs.filter(({ _id }) => _id.toString() === jobId.toString())[0]
-
-      // Get related establishment from a job offer
-      const etablissements = await getNearEtablissementsFromRomes({
-        rome: rome_code,
-        origin: {
-          latitude: parseFloat(latitude),
-          longitude: parseFloat(longitude),
-        },
-      })
-
-      if (!etablissements.length) {
-        throw Boom.notFound("No delegations found")
-      }
-
-      const top10 = etablissements.slice(0, 10)
-
-      return res.status(200).send(top10)
-    }
-  )
-
-  server.post(
-    "/jobs/delegations/:jobId",
-    {
-      schema: zRoutes.post["/jobs/delegations/:jobId"],
-      onRequest: server.auth(zRoutes.post["/jobs/delegations/:jobId"]),
-    },
-    async (req, res) => {
-      const { jobId } = req.params
-      const jobExists = await getOffre(jobId.toString())
-
-      if (!jobExists) {
-        throw Boom.badRequest("Job does not exists")
-      }
-
-      const updatedRecruiter = await createJobDelegations({ jobId: jobId.toString(), etablissementCatalogueIds: req.body.establishmentIds })
-
-      return res.status(200).send(updatedRecruiter)
-    }
-  )
 
   server.post(
     "/jobs/provided/:jobId",

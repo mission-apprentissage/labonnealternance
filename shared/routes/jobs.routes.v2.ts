@@ -1,7 +1,6 @@
 import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
 import { ZJobsApiResponseV2 } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
@@ -126,43 +125,6 @@ export const zJobsRoutesV2 = {
         tags: ["V2 - Jobs"] as string[],
         description: `Get all jobs related to my organization\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "getJobs",
-      },
-    },
-    "/jobs/delegations/:jobId": {
-      method: "get",
-      path: "/jobs/delegations/:jobId",
-      params: z
-        .object({
-          jobId: zObjectId,
-        })
-        .strict(),
-      response: {
-        "200": z.array(
-          z
-            .object({
-              _id: zObjectId,
-              numero_voie: z.string().nullish(),
-              type_voie: z.string().nullish(),
-              nom_voie: z.string().nullish(),
-              code_postal: z.string(),
-              nom_departement: z.string(),
-              entreprise_raison_sociale: z.string(),
-              geo_coordonnees: z.string(),
-              distance_en_km: z.number(),
-            })
-            .strict()
-        ),
-        "4xx": z.union([ZLbarError, ZResError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: { job: [{ _id: { type: "params", key: "jobId" } }] },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "getDelegation",
-        description: `Get related training organization related to a job offer.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs": {
@@ -428,36 +390,6 @@ export const zJobsRoutesV2 = {
     },
   },
   post: {
-    "/jobs/delegations/:jobId": {
-      method: "post",
-      path: "/jobs/delegations/:jobId",
-      params: z
-        .object({
-          jobId: zObjectId,
-        })
-        .strict(),
-      body: z
-        .object({
-          establishmentIds: z.array(z.string()),
-        })
-        .strict(),
-      response: {
-        "200": ZRecruiter,
-        "400": z.union([ZResError, ZLbarError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "createDelegation",
-        description: "Create delegation related to a job offer.",
-      },
-    },
     "/jobs/provided/:jobId": {
       method: "post",
       path: "/jobs/provided/:jobId",
@@ -549,47 +481,5 @@ export const zJobsRoutesV2 = {
       },
     },
   },
-  patch: {
-    "/jobs/:jobId": {
-      method: "patch",
-      path: "/jobs/:jobId",
-      params: z
-        .object({
-          jobId: zObjectId,
-        })
-        .strict(),
-      body: ZJob.pick({
-        job_level_label: true,
-        job_duration: true,
-        job_type: true,
-        is_disabled_elligible: true,
-        job_count: true,
-        job_rythm: true,
-        job_employer_description: true,
-        job_description: true,
-        custom_address: true,
-        custom_geo_coordinates: true,
-      })
-        .extend({
-          job_start_date: ZJobStartDateCreate(),
-        })
-        .partial(),
-      response: {
-        "200": ZRecruiter,
-        "400": z.union([ZResError, ZLbarError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "updateJob",
-        description: `Update a job offer specific fields inside an establishment entity.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-      },
-    },
-  },
+  patch: {},
 } as const satisfies IRoutesDef
