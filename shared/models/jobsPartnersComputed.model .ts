@@ -22,9 +22,9 @@ export const ZComputedJobsPatners = ZJobsPartners.extend({
         error: z.string(),
       })
       .nullable()
-      .describe("Détail des erreurs rencontrées lors de la récupération des données obligatoire")
+      .describe("Détail des erreurs rencontrées lors de la récupération des données obligatoires")
   ),
-  validated: z.boolean().default(false).describe("Toutes les données nécessaires au passage vers jobs_partners sont présentes et valide"),
+  validated: z.boolean().default(false).describe("Toutes les données nécessaires au passage vers jobs_partners sont présentes et valides"),
 })
 export type IComputedJobsPartners = z.output<typeof ZComputedJobsPatners>
 
