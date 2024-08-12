@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
+import { NIVEAUX_POUR_LBA, TRAINING_REMOTE_TYPE } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
@@ -23,7 +23,7 @@ const ZJobsPartnersApply = z.object({
 const ZJobsPartnersContract = z.object({
   start: z.date().nullable().describe("Date de début de contrat"),
   duration: z.string().nullable().describe("Durée du contract"),
-  type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contract, formaté à l'insertion"),
+  type: z.array(z.string()).nullable().describe("type de contract, formaté à l'insertion"),
   remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
 })
 
