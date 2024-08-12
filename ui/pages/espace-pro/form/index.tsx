@@ -1,11 +1,11 @@
 import { Box, Spinner, Text } from "@chakra-ui/react"
-import { useLocalStorage } from "@uidotdev/usehooks"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema, IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
 
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
+import { useLocalStorage } from "@/services/useLocalStorage"
 import { apiPost } from "@/utils/api.utils"
 
 import { FormLayoutComponent } from "../../../components/espace_pro/Candidat/layout/FormLayoutComponent"

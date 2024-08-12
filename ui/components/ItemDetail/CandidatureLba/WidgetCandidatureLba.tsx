@@ -1,8 +1,9 @@
 import { Box, Container } from "@chakra-ui/react"
-import { useLocalStorage } from "@uidotdev/usehooks"
 import { useFormik } from "formik"
 import { useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+
+import { useLocalStorage } from "@/services/useLocalStorage"
 
 import ItemDetailApplicationsStatus from "../ItemDetailServices/ItemDetailApplicationStatus"
 

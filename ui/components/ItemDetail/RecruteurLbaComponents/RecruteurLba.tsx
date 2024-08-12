@@ -1,8 +1,8 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
-import { useLocalStorage } from "@uidotdev/usehooks"
 import { get } from "lodash"
 import React, { useState } from "react"
 
+import { useLocalStorage } from "@/services/useLocalStorage"
 import { focusWithin } from "@/theme/theme-lba-tools"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
