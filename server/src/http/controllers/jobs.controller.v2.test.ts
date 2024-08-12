@@ -104,7 +104,7 @@ describe("/jobs", () => {
       expect(response.statusCode).toBe(400)
       expect(data.validationError.code).toBe("FST_ERR_VALIDATION")
     })
-    it.skip("should perform search and return data", async () => {
+    it("should perform search and return data", async () => {
       // KBA 20240809 need API APPRENTISSAGE TESTING KEY TO WORK.
       const response = await httpClient().inject({
         method: "GET",

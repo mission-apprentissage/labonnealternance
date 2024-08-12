@@ -526,7 +526,6 @@ export default (server: Server) => {
   server.get("/jobs/rncp", { schema: zRoutes.get["/jobs/rncp"], onRequest: server.auth(zRoutes.get["/jobs/rncp"]) }, async (req, res) => {
     const payload: IJobOpportunityRncp = req.query
     const romes = await getRomesFromRncp(payload.rncp)
-    console.log({ romes })
     if (!romes) {
       throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
     }
