@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { ILbaItemFtJob, ILbaItemLbaJob, assertUnreachable, zRoutes } from "shared"
+import { ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IJobOpportunityRncp, IJobOpportunityRome } from "shared/routes/jobOpportunity.routes"
 
@@ -12,7 +12,7 @@ import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { getRomesFromRncp } from "../../services/certification.service"
 import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
-import { addExpirationPeriod, cancelOffre, extendOffre, getFormulaires, getJob, provideOffre } from "../../services/formulaire.service"
+import { addExpirationPeriod, getFormulaires } from "../../services/formulaire.service"
 import { getFtJobFromIdV2, getFtJobsV2 } from "../../services/ftjob.service"
 import {
   formatFranceTravailToJobPartner,
@@ -80,88 +80,69 @@ export default (server: Server) => {
   server.post("/jobs", {}, async () => {})
   // PATCH job in jobs_partners
   server.post("/jobs/:id", {}, async () => {})
-  // PROVIDED job in jobs_partners
-  server.post("/jobs/provided/:id", {}, async () => {})
-  // CANCELED job in jobs_partners
-  server.post("/jobs/canceled/:id", {}, async () => {})
-  // EXTEND job in jobs_partners
-  server.post("/jobs/extend/:id", {}, async () => {})
 
   server.post(
-    "/jobs/provided/:jobId",
+    "/jobs/provided/:id",
     {
-      schema: zRoutes.post["/jobs/provided/:jobId"],
-      onRequest: server.auth(zRoutes.post["/jobs/provided/:jobId"]),
+      schema: zRoutes.post["/jobs/provided/:id"],
+      onRequest: server.auth(zRoutes.post["/jobs/provided/:id"]),
       config,
     },
     async (req, res) => {
-      const { jobId } = req.params
-      const job = await getJob(jobId.toString())
-
+      const { id } = req.params
+      const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) {
         throw Boom.badRequest("Job does not exists")
       }
-
-      if (job.job_status === POURVUE) {
+      if (job.offer_status === POURVUE) {
         throw Boom.badRequest("Job is already provided")
       }
-
-      await provideOffre(jobId)
-
+      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.POURVUE } })
       return res.status(204).send()
     }
   )
 
   server.post(
-    "/jobs/canceled/:jobId",
+    "/jobs/canceled/:id",
     {
-      schema: zRoutes.post["/jobs/canceled/:jobId"],
-      onRequest: server.auth(zRoutes.post["/jobs/canceled/:jobId"]),
+      schema: zRoutes.post["/jobs/canceled/:id"],
+      onRequest: server.auth(zRoutes.post["/jobs/canceled/:id"]),
       config,
     },
     async (req, res) => {
-      const { jobId } = req.params
-      const job = await getJob(jobId.toString())
-
+      const { id } = req.params
+      const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) {
         throw Boom.badRequest("Job does not exists")
       }
-
-      if (job.job_status === ANNULEE) {
+      if (job.offer_status === ANNULEE) {
         throw Boom.badRequest("Job is already canceled")
       }
-
-      await cancelOffre(jobId)
-
+      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.ANNULEE } })
       return res.status(204).send()
     }
   )
 
   server.post(
-    "/jobs/extend/:jobId",
+    "/jobs/extend/:id",
     {
-      schema: zRoutes.post["/jobs/extend/:jobId"],
-      onRequest: server.auth(zRoutes.post["/jobs/extend/:jobId"]),
+      schema: zRoutes.post["/jobs/extend/:id"],
+      onRequest: server.auth(zRoutes.post["/jobs/extend/:id"]),
       config,
     },
     async (req, res) => {
-      const { jobId } = req.params
-      const job = await getJob(jobId.toString())
-
+      const { id } = req.params
+      const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) {
         throw Boom.badRequest("Job does not exists")
       }
-
-      if (addExpirationPeriod(dayjs()).isSame(dayjs(job.job_expiration_date), "day")) {
-        throw Boom.badRequest("Job is already extended up to a month")
+      if (addExpirationPeriod(dayjs()).isSame(dayjs(job.offer_expiration_date), "day")) {
+        throw Boom.badRequest("Job is already extended up to two month")
       }
-
-      if (job.job_status !== ACTIVE) {
+      if (job.offer_status !== ACTIVE) {
         throw Boom.badRequest("Job cannot be extended as it is not active")
       }
-
-      await extendOffre(jobId)
-
+      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_expiration_date: addExpirationPeriod(dayjs()).toDate() } })
       return res.status(204).send()
     }
   )

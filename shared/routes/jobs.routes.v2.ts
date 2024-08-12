@@ -390,76 +390,55 @@ export const zJobsRoutesV2 = {
     },
   },
   post: {
-    "/jobs/provided/:jobId": {
+    "/jobs/provided/:id": {
       method: "post",
-      path: "/jobs/provided/:jobId",
+      path: "/jobs/provided/:id",
       params: z
         .object({
-          jobId: zObjectId,
+          id: zObjectId,
         })
         .strict(),
       response: {
         "204": z.object({}).strict(),
       },
       securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        description: `Update a job offer status to Provided\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-        operationId: "setJobAsProvided",
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
       },
     },
-    "/jobs/canceled/:jobId": {
+    "/jobs/canceled/:id": {
       method: "post",
-      path: "/jobs/canceled/:jobId",
+      path: "/jobs/canceled/:id",
       params: z
         .object({
-          jobId: zObjectId,
+          id: zObjectId,
         })
         .strict(),
       response: {
         "204": z.object({}).strict(),
       },
       securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "setJobAsCanceled",
-        description: `Update a job offer status to Canceled\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
       },
     },
-    "/jobs/extend/:jobId": {
+    "/jobs/extend/:id": {
       method: "post",
-      path: "/jobs/extend/:jobId",
+      path: "/jobs/extend/:id",
       params: z
         .object({
-          jobId: zObjectId,
+          id: zObjectId,
         })
         .strict(),
       response: {
         "204": z.object({}).strict(),
       },
       securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "extendJobExpiration",
-        description: `Update a job expiration date by 30 days.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
       },
     },
     "/jobs/matcha/:id/stats/view-details": {

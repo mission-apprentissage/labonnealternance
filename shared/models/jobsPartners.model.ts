@@ -5,6 +5,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
+import { JOB_STATUS } from "./job.model"
 
 const collectionName = "jobs_partners" as const
 
@@ -49,6 +50,7 @@ export const ZJobsPartnersJobOffer = z.object({
   offer_count: z.number().describe("Nombre de poste disponible"),
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur"),
+  offer_status: extensions.buildEnum(JOB_STATUS).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 })
 export type IJobsPartnersJobOffer = z.output<typeof ZJobsPartnersJobOffer>
 
