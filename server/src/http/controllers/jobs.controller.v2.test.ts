@@ -105,7 +105,6 @@ describe("/jobs", () => {
       expect(data.validationError.code).toBe("FST_ERR_VALIDATION")
     })
     it("should perform search and return data", async () => {
-      // KBA 20240809 need API APPRENTISSAGE TESTING KEY TO WORK.
       const response = await httpClient().inject({
         method: "GET",
         path: `/api/v2/jobs/rncp?rncp=${rncpQuery}&latitude=${latitude}&longitude=${longitude}`,
