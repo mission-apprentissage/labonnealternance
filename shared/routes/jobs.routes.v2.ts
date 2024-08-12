@@ -3,7 +3,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
-import { ZJobsPartners, ZJobsPartnersOffresEmploiFranceTravail, ZJobsPartnersOffresEmploiLba, ZJobsPartnersRecruteurLba } from "../models/jobsPartners.model"
+import { ZJobsApiResponseV2 } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -24,7 +24,7 @@ import {
   zSourcesParams,
 } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
-import { ZJobOpportunityRncp, ZJobOpportunityRome, ZJobQuerystringFranceTravailRncp, ZJobQuerystringFranceTravailRome } from "./jobOpportunity.routes"
+import { ZJobOpportunityRncp, ZJobOpportunityRome } from "./jobOpportunity.routes"
 
 export const zJobsRoutesV2 = {
   get: {
@@ -400,12 +400,12 @@ export const zJobsRoutesV2 = {
         })}`,
       },
     },
-    "/jobs/rome/recruteurs_lba": {
+    "/jobs/rome": {
       method: "get",
-      path: "/jobs/rome/recruteurs_lba",
+      path: "/jobs/rome",
       querystring: ZJobOpportunityRome,
       response: {
-        "200": z.array(ZJobsPartnersRecruteurLba),
+        "200": ZJobsApiResponseV2,
       },
       securityScheme: {
         auth: "api-apprentissage",
@@ -413,90 +413,12 @@ export const zJobsRoutesV2 = {
         resources: {},
       },
     },
-    "/jobs/rncp/recruteurs_lba": {
+    "/jobs/rncp": {
       method: "get",
-      path: "/jobs/rncp/recruteurs_lba",
+      path: "/jobs/rncp",
       querystring: ZJobOpportunityRncp,
       response: {
-        "200": z.array(ZJobsPartnersRecruteurLba),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
-    "/jobs/rome/offres_emploi_lba": {
-      method: "get",
-      path: "/jobs/rome/offres_emploi_lba",
-      querystring: ZJobOpportunityRome,
-      response: {
-        "200": z.array(ZJobsPartnersOffresEmploiLba),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
-    "/jobs/rncp/offres_emploi_lba": {
-      method: "get",
-      path: "/jobs/rncp/offres_emploi_lba",
-      querystring: ZJobOpportunityRncp,
-      response: {
-        "200": z.array(ZJobsPartnersOffresEmploiLba),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
-    "/jobs/rome/offres_emploi_partenaires": {
-      method: "get",
-      path: "/jobs/rome/offres_emploi_partenaires",
-      querystring: ZJobOpportunityRome,
-      response: {
-        "200": z.array(ZJobsPartners),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
-    "/jobs/rncp/offres_emploi_partenaires": {
-      method: "get",
-      path: "/jobs/rncp/offres_emploi_partenaires",
-      querystring: ZJobOpportunityRncp,
-      response: {
-        "200": z.array(ZJobsPartners),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
-    "/jobs/rome/offres_emploi_france_travail": {
-      method: "get",
-      path: "/jobs/rome/offres_emploi_france_travail",
-      querystring: ZJobQuerystringFranceTravailRome,
-      response: {
-        "200": z.array(ZJobsPartnersOffresEmploiFranceTravail),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
-    "/jobs/rncp/offres_emploi_france_travail": {
-      method: "get",
-      path: "/jobs/rncp/offres_emploi_france_travail",
-      querystring: ZJobQuerystringFranceTravailRncp,
-      response: {
-        "200": z.array(ZJobsPartnersOffresEmploiFranceTravail),
+        "200": ZJobsApiResponseV2,
       },
       securityScheme: {
         auth: "api-apprentissage",

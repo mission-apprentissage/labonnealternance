@@ -1,22 +1,17 @@
 import { z } from "zod"
 
-import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
+import { NIVEAUX_POUR_LBA, TRAINING_REMOTE_TYPE } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
+import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
-  HELLOWORK = "hellowork",
-  IMILO = "i-milo",
-  MISSIONLOCALE = "mission-locale",
-}
-
-export enum LBA_JOB_TYPE {
-  RECRUTEURS_LBA = "recruteurs_lba",
-  OFFRES_EMPLOI_LBA = "offres_emploi_lba",
-  OFFRES_EMPLOI_FRANCE_TRAVAIL = "offres_emploi_france_travail",
+  HELLOWORK = "Hellowork",
+  OFFRES_EMPLOI_LBA = "La bonne alternance",
+  OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
 }
 
 const ZJobsPartnersApply = z.object({
@@ -28,13 +23,13 @@ const ZJobsPartnersApply = z.object({
 const ZJobsPartnersContract = z.object({
   start: z.date().nullable().describe("Date de début de contrat"),
   duration: z.string().nullable().describe("Durée du contract"),
-  type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contract, formaté à l'insertion"),
+  type: z.array(z.string()).nullable().describe("type de contract, formaté à l'insertion"),
   remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
 })
 
-const ZJobsPartnersJobOffer = z.object({
+export const ZJobsPartnersJobOffer = z.object({
   title: z.string().describe("Titre de l'offre"),
-  rome_code: z.string().describe("Code rome de l'offre"),
+  rome_code: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
   description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   diploma_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA).nullable().describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
   desired_skills: z
@@ -51,7 +46,7 @@ const ZJobsPartnersJobOffer = z.object({
     .describe("Conditions d'accès à l'offre"),
   publication: z.object({
     creation_date: z.date().nullable().describe("Date de creation de l'offre"),
-    expiration_date: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre àcreation_date + 60j"),
+    expiration_date: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j"),
   }),
   meta: z.object({
     count: z.number().describe("Nombre de poste disponible"),
@@ -59,8 +54,9 @@ const ZJobsPartnersJobOffer = z.object({
     origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur"),
   }),
 })
+export type IJobsPartnersJobOffer = z.output<typeof ZJobsPartnersJobOffer>
 
-const ZJobsPartnersWorkplace = z.object({
+export const ZJobsPartnersWorkplace = z.object({
   siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   website: z.string().nullable().describe("Site web de l'entreprise"),
   raison_sociale: z.string().nullable().describe("Raison sociale"),
@@ -71,8 +67,7 @@ const ZJobsPartnersWorkplace = z.object({
   location: z
     .object({
       address: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
-      latitude: z.number().describe("Lattitude provenant de la BAN ou du partenaire"),
-      longitude: z.number().describe("Longitude provenant de la BAN ou du partenaire"),
+      geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
     })
     .describe("Adresse définit par le SIRET ou transmise par le partenaire (tous les champs sont obligatoire)"),
   domaine: z.object({
@@ -84,51 +79,39 @@ const ZJobsPartnersWorkplace = z.object({
     }),
   }),
 })
+export type IJobsPartnersWorkplace = z.output<typeof ZJobsPartnersWorkplace>
 
-export const ZJobsPartners = z.object({
+export const ZJobRecruiter = z.object({
   _id: zObjectId,
-  raw_id: z.string().describe("Identifiant d'origine l'offre provenant du partenaire"),
-  partner_label: extensions.buildEnum(JOBPARTNERS_LABEL).describe("Référence du partenaire"),
-  contract: ZJobsPartnersContract.nullable(),
-  job_offer: ZJobsPartnersJobOffer.nullable(),
   workplace: ZJobsPartnersWorkplace,
   apply: ZJobsPartnersApply,
-  created_at: z.date().describe("Date de creation dans la collection"),
+  created_at: z.date().describe("Date de creation de l'offre"),
+})
+export type IJobRecruiter = z.output<typeof ZJobRecruiter>
+
+export const ZJobsPartners = ZJobRecruiter.extend({
+  partner_id: z.string().nullable().describe("Identifiant d'origine l'offre provenant du partenaire"),
+  partner_label: extensions.buildEnum(JOBPARTNERS_LABEL).describe("Référence du partenaire"),
+  contract: ZJobsPartnersContract,
+  job_offer: ZJobsPartnersJobOffer,
 })
 export type IJobsPartners = z.output<typeof ZJobsPartners>
 
-/**
- * FOR FORMATTING
- * RECRUTEURS_LBA comes from recruteurslba collection, not from JobsPartners
- */
-export const ZJobsPartnersRecruteurLba = ZJobsPartners.omit({ _id: true, partner_label: true, created_at: true }).extend({
-  _id: z.null(),
-  partner_label: z.literal(LBA_JOB_TYPE.RECRUTEURS_LBA),
-})
-export type IJobsPartnersRecruteurLba = z.output<typeof ZJobsPartnersRecruteurLba>
+export const ZJobOffer = ZJobsPartners.omit({ _id: true }).extend({ _id: z.string() })
+export type IJobOffer = z.output<typeof ZJobOffer>
 
-/**
- * FOR FORMATTING
- * OFFRES_EMPLOI_LBA comes from JobsPartners (API) AND RECRUITERS
- */
-export const ZJobsPartnersOffresEmploiLba = ZJobsPartners.omit({ _id: true, created_at: true }).extend({
-  _id: zObjectId.nullable(),
-  partner_label: z.literal(LBA_JOB_TYPE.OFFRES_EMPLOI_LBA),
+export const ZJobsApiResponseV2 = z.object({
+  jobs: z.array(ZJobOffer),
+  recruiters: z.array(ZJobRecruiter),
 })
-export type IJobsPartnersOffresEmploiLba = z.output<typeof ZJobsPartnersOffresEmploiLba>
-
-/**
- * FOR FORMATTING
- * OFFRES_EMPLOI_FRANCE_TRAVAIL
- */
-export const ZJobsPartnersOffresEmploiFranceTravail = ZJobsPartners.omit({ _id: true, created_at: true }).extend({
-  _id: z.null(),
-  partner_label: z.literal(LBA_JOB_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL),
-})
-export type IJobsPartnersOffresEmploiFranceTravail = z.output<typeof ZJobsPartnersOffresEmploiFranceTravail>
+export type IJobsPartnersResponse = z.output<typeof ZJobsApiResponseV2>
 
 export default {
   zod: ZJobsPartners,
-  indexes: [],
+  indexes: [
+    [{ "workplace.location.geopoint": "2dsphere" }, {}],
+    [{ "job_offer.rome_code": 1 }, {}],
+    [{ partner_label: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

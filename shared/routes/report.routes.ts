@@ -1,6 +1,6 @@
 import { LBA_ITEM_TYPE } from "../constants/lbaitem"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { enumToZod } from "../models/enumToZod"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -11,7 +11,7 @@ export const zReportRoutes = {
       path: "/report",
       querystring: z
         .object({
-          type: enumToZod(LBA_ITEM_TYPE),
+          type: extensions.buildEnum(LBA_ITEM_TYPE),
           itemId: z.string(),
         })
         .strict(),

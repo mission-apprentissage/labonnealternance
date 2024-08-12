@@ -192,7 +192,7 @@ export const processAppointmentToCfaWebhookEvent = async (payload) => {
 export const isHardbounceEventFromAppointment = async (payload) => {
   const messageId = payload["message-id"]
 
-  const appointment = await findOne({ "to_cfa_mails.message_id": messageId })
+  const appointment = await findOne({ $or: [{ "to_cfa_mails.message_id": messageId }, { "to_applicant_mails.message_id": messageId }] })
   if (appointment) {
     return true
   }
