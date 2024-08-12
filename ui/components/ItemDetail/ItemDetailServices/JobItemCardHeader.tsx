@@ -10,7 +10,7 @@ const detailActivityProperties = {
   color: "grey.600",
 }
 
-export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCollapsedHeader = undefined }) {
+export default function JobItemCardHeader({ selectedItem, kind, isMandataire, isCollapsedHeader = undefined }) {
   let res = <></>
   const companyName = selectedItem?.company?.name || ""
 

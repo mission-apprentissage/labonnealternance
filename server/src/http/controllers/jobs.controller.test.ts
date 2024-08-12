@@ -1,7 +1,7 @@
 import assert from "assert"
 
-import { useMongo } from "@tests/utils/mongo.utils"
-import { useServer } from "@tests/utils/server.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { describe, expect, it } from "vitest"
 
 describe.skip("jobV1", () => {

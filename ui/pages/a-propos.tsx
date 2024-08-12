@@ -149,7 +149,7 @@ const APropos = () => (
             <Text as="p" mb={4}>
               D’abord développé par France travail, La bonne alternance a été repris en 2020 par{" "}
               <Link
-                href="https://mission-apprentissage.gitbook.io/general/"
+                href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html"
                 aria-label="Accéder au site de la mission interministérielle pour l'apprentissage - nouvelle fenêtre"
                 isExternal
                 variant="basicUnderlinedBlue"

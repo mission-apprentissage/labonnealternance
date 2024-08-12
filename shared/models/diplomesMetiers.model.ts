@@ -91,6 +91,8 @@ export const ZAppellationsRomes = z
   })
   .strict()
 
+export type IAppellationsRomes = z.output<typeof ZAppellationsRomes>
+
 const collectionName = "diplomesmetiers" as const
 
 export const ZDiplomesMetiers = z

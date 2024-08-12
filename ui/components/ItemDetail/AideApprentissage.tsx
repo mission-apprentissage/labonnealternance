@@ -1,14 +1,11 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Link, Text } from "@chakra-ui/react"
-import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-const AideApprentissage = ({ item }) => {
-  const kind = item?.ideaType
-
+const AideApprentissage = () => {
   return (
     <Box pb="0px" mt={6} mb={4} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
       <Text as="h2" variant="itemDetailH2" mt={2}>
-        {kind === LBA_ITEM_TYPE_OLD.FORMATION ? "Ai-je le droit à une aide ?" : "Simuler mes droits aux aides"}
+        Avez-vous droit à des aides financières ?
       </Text>
 
       <Box color="grey.700" mt={6}>

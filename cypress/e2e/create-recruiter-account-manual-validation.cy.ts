@@ -23,7 +23,7 @@ describe("create-recruiter-account-manual-validation", () => {
     const studyLevel = "Indifférent"
 
     FlowCreationEntreprise.siretPage.goTo()
-    FlowCreationEntreprise.siretPage.fillSiret(siret)
+    FlowCreationEntreprise.siretPage.searchAndSelectSiret(siret)
     FlowCreationEntreprise.siretPage.submit()
 
     FlowCreationEntreprise.personalInfosPage.fillForm({
