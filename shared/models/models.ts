@@ -5,6 +5,7 @@ import applicationsModel from "./applications.model"
 import appointmentsModel from "./appointments.model"
 import cfaModel from "./cfa.model"
 import { IModelDescriptor } from "./common"
+import computedJobsPartnersModel from "./computedJobsPartners.model"
 import credentialsModel from "./credentials.model"
 import customEmailETFAModel from "./customEmailETFA.model"
 import diplomesMetiersModel from "./diplomesMetiers.model"
@@ -75,6 +76,7 @@ const modelDescriptorMap = {
   [unsubscribeOFModel.collectionName]: unsubscribeOFModel,
   [userModel.collectionName]: userModel,
   [userWithAccountModel.collectionName]: userWithAccountModel,
+  [computedJobsPartnersModel.collectionName]: computedJobsPartnersModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

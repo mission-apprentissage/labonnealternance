@@ -19,20 +19,20 @@ export enum LBA_JOB_TYPE {
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "offres_emploi_france_travail",
 }
 
-const ZJobsPartnersApply = z.object({
+export const ZJobsPartnersApply = z.object({
   url: z.string().nullable().describe("URL pour candidater"),
   email: z.string().nullable().describe("Email de contact"),
   phone: z.string().nullable().describe("Téléphone de contact"),
 })
 
-const ZJobsPartnersContract = z.object({
+export const ZJobsPartnersContract = z.object({
   start: z.date().nullable().describe("Date de début de contrat"),
-  duration: z.string().nullable().describe("Durée du contract"),
+  duration: z.number().nullable().describe("Durée du contrat en mois"),
   type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contract, formaté à l'insertion"),
   remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
 })
 
-const ZJobsPartnersJobOffer = z.object({
+export const ZJobsPartnersJobOffer = z.object({
   title: z.string().describe("Titre de l'offre"),
   rome_code: z.string().describe("Code rome de l'offre"),
   description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
@@ -60,7 +60,15 @@ const ZJobsPartnersJobOffer = z.object({
   }),
 })
 
-const ZJobsPartnersWorkplace = z.object({
+export const ZJobsPartnersLocation = z
+  .object({
+    address: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
+    latitude: z.number().describe("Lattitude provenant de la BAN ou du partenaire"),
+    longitude: z.number().describe("Longitude provenant de la BAN ou du partenaire"),
+  })
+  .describe("Adresse définit par le SIRET ou transmise par le partenaire (tous les champs sont obligatoire)")
+
+export const ZJobsPartnersWorkplace = z.object({
   siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   website: z.string().nullable().describe("Site web de l'entreprise"),
   raison_sociale: z.string().nullable().describe("Raison sociale"),
@@ -68,13 +76,7 @@ const ZJobsPartnersWorkplace = z.object({
   name: z.string().nullable().describe("Nom customisé de l'entreprise"),
   description: z.string().nullable().describe("description de l'entreprise"),
   size: z.string().nullable().describe("Taille de l'entreprise"),
-  location: z
-    .object({
-      address: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
-      latitude: z.number().describe("Lattitude provenant de la BAN ou du partenaire"),
-      longitude: z.number().describe("Longitude provenant de la BAN ou du partenaire"),
-    })
-    .describe("Adresse définit par le SIRET ou transmise par le partenaire (tous les champs sont obligatoire)"),
+  location: ZJobsPartnersLocation,
   domaine: z.object({
     idcc: z.number().nullable().describe("Identifiant convention collective"),
     opco: z.string().nullable().describe("Nom de l'OPCO"),
@@ -129,6 +131,9 @@ export type IJobsPartnersOffresEmploiFranceTravail = z.output<typeof ZJobsPartne
 
 export default {
   zod: ZJobsPartners,
-  indexes: [],
+  indexes: [
+    [{ raw_id: 1 }, {}],
+    [{ partner_label: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor
