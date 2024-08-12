@@ -34,7 +34,7 @@ ansible-vault view --vault-password-file="$ROOT_DIR/.bin/scripts/get-vault-passw
 
 rm -f "$SEED_GZ"
 gpg -d --batch --passphrase-file "$PASSPHRASE" -o "$SEED_GZ" "$SEED_GPG"
-cat "$SEED_GZ" | /opt/app/tools/docker-compose.sh -f "$ROOT_DIR/docker-compose.yml" exec -iT mongodb mongorestore --archive --nsInclude="labonnealternance.*" --uri="${TARGET_DB}" --drop --gzip
+cat "$SEED_GZ" | docker compose -f "$ROOT_DIR/docker-compose.yml" exec -iT mongodb mongorestore --archive --nsInclude="labonnealternance.*" --uri="${TARGET_DB}" --drop --gzip
 
 yarn build:dev
 yarn cli migrations:up

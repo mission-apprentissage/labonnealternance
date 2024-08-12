@@ -9,7 +9,7 @@ const collectionName = "recruteurslba" as const
 export const ZLbaCompany = z
   .object({
     _id: zObjectId,
-    siret: z.string().describe("Le Siret de la société"),
+    siret: z.string().describe("Le Siret de la société"), // use extension.siret
     recruitment_potential: z.number().nullish().describe("Le score de recrutement de la société"),
     raison_sociale: z.string().nullable().describe("Raison sociale de l'entreprise"),
     enseigne: z.string().describe("Enseigne de l'entreprise"),

@@ -5,7 +5,6 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
-import { enumToZod } from "./enumToZod"
 
 export enum UserEventType {
   ACTIF = "ACTIF",
@@ -13,12 +12,12 @@ export enum UserEventType {
   DESACTIVE = "DESACTIVE",
 }
 
-export const ZValidationUtilisateur = enumToZod(VALIDATION_UTILISATEUR)
+export const ZValidationUtilisateur = extensions.buildEnum(VALIDATION_UTILISATEUR)
 
 export const ZUserStatusEvent = z
   .object({
     validation_type: ZValidationUtilisateur,
-    status: enumToZod(UserEventType),
+    status: extensions.buildEnum(UserEventType),
     reason: z.string(),
     granted_by: z.string().nullish(),
     date: z.date(),
@@ -57,7 +56,7 @@ export type IUserWithAccountFields = z.output<typeof ZUserWithAccountFields>
 export const ZNewSuperUser = z.union([
   ZUserWithAccountFields.extend({
     type: z.literal(OPCO),
-    opco: enumToZod(OPCOS),
+    opco: extensions.buildEnum(OPCOS),
   }),
   ZUserWithAccountFields.extend({
     type: z.literal(ADMIN),

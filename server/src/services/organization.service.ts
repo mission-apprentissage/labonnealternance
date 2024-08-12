@@ -88,6 +88,7 @@ export const upsertEntrepriseData = async (
         address_detail,
         establishment_enseigne,
         geo_coordinates,
+        geopoint: siretResponse.geopoint,
         establishment_raison_sociale,
         establishment_creation_date: siretResponse.establishment_creation_date,
         establishment_size: siretResponse.establishment_size,

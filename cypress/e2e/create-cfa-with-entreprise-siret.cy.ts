@@ -7,8 +7,9 @@ describe("create-cfa-with-entreprise-siret", () => {
     cy.viewport(1254, 721)
 
     FlowCreationCfa.siretPage.goTo()
-    FlowCreationCfa.siretPage.fillSiret(entrepriseSiret)
+    FlowCreationCfa.siretPage.searchAndSelectSiret(entrepriseSiret)
     FlowCreationCfa.siretPage.submit()
-    cy.contains("Le numéro siret n'est pas référencé comme centre de formation.")
+    cy.url().should("contain", "/espace-pro/creation/detail")
+    cy.contains("CAISSE NATIONALE DE L'ASSURANC")
   })
 })

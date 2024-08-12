@@ -59,7 +59,7 @@ export const ZJobFields = z
     job_duration: z.number().min(6).max(36).nullish().describe("Durée du contrat en mois"),
     job_rythm: z
       .enum([allJobRythm[0], ...allJobRythm.slice(1)])
-      .nullable()
+      .nullish()
       .describe("Répartition de la présence de l'alternant en formation/entreprise"),
     custom_address: z.string().nullish().describe("Adresse personnalisée de l'entreprise"),
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
