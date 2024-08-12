@@ -1,9 +1,9 @@
-import { ILbaCompany, IRecruiter, parseEnum } from "shared"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { IGeoPoint, ILbaCompany, IRecruiter } from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
-import { IJobsPartnersOffresEmploiFranceTravail, IJobsPartnersOffresEmploiLba, IJobsPartnersRecruteurLba, LBA_JOB_TYPE } from "shared/models/jobsPartners.model"
+import { IJobOffer, IJobRecruiter, IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { IApiError } from "../common/utils/errorManager"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import config from "../config"
 
@@ -174,14 +174,48 @@ export const getJobsQuery = async (
   return result
 }
 
-export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJobsPartnersRecruteurLba[] => {
+type IRecruteursLbaSearchParams = {
+  romes: string[]
+  latitude: number
+  longitude: number
+  radius: number
+  opco?: string
+  opcoUrl?: string
+}
+
+export const getJobsPartnersFromDB = async ({ radius = 10, romes, opco, latitude, longitude }: IRecruteursLbaSearchParams): Promise<IJobsPartners[] | []> => {
+  const query: { "job_offer.rome_code": object; "workplace.domaine.opco"?: string } = {
+    "job_offer.rome_code": { $in: romes },
+  }
+
+  if (opco) {
+    query["workplace.domaine.opco"] = opco
+  }
+
+  return (await getDbCollection("jobs_partners")
+    .aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [longitude, latitude] },
+          distanceField: "distance",
+          maxDistance: radius * 1000,
+          query,
+        },
+      },
+      {
+        $limit: 150,
+      },
+    ])
+    .toArray()) as IJobsPartners[]
+}
+
+const convertToGeopoint = (longitude: number, latitude: number): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
+
+export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJobRecruiter[] | [] => {
+  if (!recruteursLba.length) return []
   return recruteursLba.map((recruteurLba) => ({
-    created_at: null,
-    _id: null,
-    raw_id: recruteurLba._id.toString(),
-    partner_label: LBA_JOB_TYPE.RECRUTEURS_LBA,
-    contract: null,
-    job_offer: null,
+    created_at: recruteurLba.created_at,
+    _id: recruteurLba._id,
     workplace: {
       siret: recruteurLba.siret,
       website: recruteurLba.website,
@@ -192,8 +226,7 @@ export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJ
       size: recruteurLba.company_size,
       location: {
         address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
-        latitude: parseFloat(recruteurLba.geo_coordinates.split(",")[0]),
-        longitude: parseFloat(recruteurLba.geo_coordinates.split(",")[1]),
+        geopoint: recruteurLba.geopoint!,
       },
       domaine: {
         idcc: null,
@@ -213,13 +246,14 @@ export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJ
   }))
 }
 
-export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]): IJobsPartnersOffresEmploiLba[] => {
+export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]): IJobOffer[] | [] => {
+  if (!offresEmploiLba.length) return []
   return offresEmploiLba.flatMap((offreEmploiLba) =>
     offreEmploiLba.jobs.map((job) => ({
-      created_at: null,
-      _id: null,
-      raw_id: job._id.toString(),
-      partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_LBA,
+      created_at: job.job_creation_date!,
+      _id: job._id.toString(),
+      partner_id: null,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       contract: {
         start: job.job_start_date,
         duration: job.job_duration!.toString(),
@@ -228,7 +262,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
       },
       job_offer: {
         title: job.rome_appellation_label!,
-        rome_code: job.rome_code[0],
+        rome_code: job.rome_code,
         description: job.rome_detail!.definition!,
         diploma_level_label: job.job_level_label!,
         desired_skills: job.rome_detail!.competences.savoir_etre_professionnel!.map((x) => x.libelle),
@@ -254,8 +288,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
         size: offreEmploiLba.establishment_size!,
         location: {
           address: offreEmploiLba.address!,
-          latitude: offreEmploiLba.geopoint!.coordinates[1],
-          longitude: offreEmploiLba.geopoint!.coordinates[0],
+          geopoint: offreEmploiLba.geopoint!,
         },
         domaine: {
           idcc: Number(offreEmploiLba.idcc) ?? null,
@@ -275,36 +308,63 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
   )
 }
 
-export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob[]): IJobsPartnersOffresEmploiFranceTravail[] => {
-  return offresEmploiFranceTravail.map((offreFT) => {
-    const contractType = parseEnum(TRAINING_CONTRACT_TYPE, offreFT.natureContrat)
-    return {
-      created_at: null,
-      _id: null,
-      raw_id: offreFT.id,
-      partner_label: LBA_JOB_TYPE.OFFRES_EMPLOI_FRANCE_TRAVAIL,
-      contract: {
-        start: null,
-        duration: offreFT.typeContratLibelle,
-        type: contractType ? [contractType] : [],
-        remote: null,
+export const formatOffresEmploiPartenaire = (offresEmploiPartenaire: IJobsPartners[]): IJobOffer[] | [] => {
+  if (!offresEmploiPartenaire.length) return []
+  return offresEmploiPartenaire.map((offreEmploiPartenaire) => ({
+    ...offreEmploiPartenaire,
+    _id: offreEmploiPartenaire._id.toString(),
+  }))
+}
+
+export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob[]): IJobOffer[] | [] => {
+  if (!offresEmploiFranceTravail.length) return []
+  return offresEmploiFranceTravail.map((offreFT) => ({
+    created_at: new Date(offreFT.dateCreation),
+    _id: offreFT.id.toString(),
+    partner_id: null,
+    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+    contract: {
+      start: null,
+      duration: offreFT.typeContratLibelle,
+      type: [offreFT.natureContrat],
+      remote: null,
+    },
+    job_offer: {
+      title: offreFT.intitule,
+      rome_code: [offreFT.romeCode],
+      description: offreFT.description,
+      diploma_level_label: null,
+      desired_skills: null,
+      acquired_skills: null,
+      access_condition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
+      publication: {
+        creation_date: new Date(offreFT.dateCreation),
+        expiration_date: null,
       },
-      job_offer: {
-        title: offreFT.intitule,
-        rome_code: offreFT.romeCode,
-        description: offreFT.description,
-        diploma_level_label: null,
-        desired_skills: null,
-        acquired_skills: null,
-        access_condition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
-        publication: {
-          creation_date: new Date(offreFT.dateCreation),
-          expiration_date: null,
-        },
-        meta: {
-          count: offreFT.nombrePostes,
-          multicast: true,
-          origin: null,
+      meta: {
+        count: offreFT.nombrePostes,
+        multicast: true,
+        origin: null,
+      },
+    },
+    workplace: {
+      siret: null,
+      website: null,
+      raison_sociale: offreFT.entreprise.nom,
+      enseigne: offreFT.entreprise.nom,
+      name: offreFT.entreprise.nom,
+      description: offreFT.entreprise.description,
+      size: null,
+      location: {
+        address: offreFT.lieuTravail.libelle,
+        geopoint: convertToGeopoint(parseFloat(offreFT.lieuTravail.longitude), parseFloat(offreFT.lieuTravail.latitude)),
+      },
+      domaine: {
+        idcc: null,
+        opco: null,
+        naf: {
+          code: offreFT.codeNAF ? offreFT.codeNAF : null,
+          label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
         },
       },
       workplace: {
@@ -329,11 +389,11 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
           },
         },
       },
-      apply: {
-        url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
-        email: null,
-        phone: null,
-      },
-    }
-  })
+    },
+    apply: {
+      url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
+      email: null,
+      phone: null,
+    },
+  }))
 }

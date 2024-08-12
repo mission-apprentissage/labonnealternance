@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
 - filename: .infra/.env_server
-  checksum: 22ef4e0aa96e1c20bc2d8903afcc34428c3c40e31f3d3cfb72d3e032b5f07d5a
+  checksum: a8bdafaafd42549926f526a620699dc256ea6069a2c9675f5c4f34e157e7db71
 - filename: .infra/env.ini
   checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
@@ -30,17 +30,17 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: fc2fa53c75721579b28d1cb3e1a819e5ff495bba0febf9e57afc4745a7358259
+  checksum: 36d16053fc337f5fdd704c674c716b64575600ec3b775e1dbbc8d4040755e580
 - filename: cypress/pages/FlowAdminPage.ts
   checksum: cbb0a8651ca4c5d807f03eeeba6204c7d6d3a5f17ffb0734921f18d54f99f6b0
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 20484a96062adc977c1081759bc0376127965d775c6a863412119f88af21af84
+  checksum: 96211e16c7ab6f13ebbcebeb6abf265f20214a4b82b5dfa09bd4b3c0ba25157e
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d574deae0842cd3566f831de184324d7c87d7456a90175076a9f5a9b3ad8c129
 - filename: server/src/config.ts
-  checksum: de93df113dbac0016655b113750a591ac1052314b0b700ccf000c2c8f5a4f14a
+  checksum: 4fbe7f8abdfbd25a6c8230b408cd6e1c4acf9a9c91c63469782627743e29554f
 - filename: server/src/db/migrations/20231127120528-remove-password.ts
   checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
@@ -66,7 +66,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/importHelloWork.ts
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
 - filename: server/src/security/accessApiApprentissageService.ts
-  checksum: 2f0bf2a0a20e071cbcaec67eebed21acd0de40b7d7a1e8178484ebc14f024ca5
+  checksum: ab427834ccbb6bb3798b0c3a299d1ecea236705187df86eececae7b68218e8bd
 - filename: server/src/security/accessTokenService.ts
   checksum: 2183e326a88ae3c10193a7033ab5fd421ce576cd1e234c323df247da335f74d7
 - filename: server/src/security/apiApprentissageService.ts
@@ -173,6 +173,10 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+- filename: server/src/http/controllers/jobs.controller.v2.test.ts
+  checksum: 9bcdb3d6462e7075d21d53d56f98d25ae469b88aad80863640d364f3f7dba4b6
+- filename: server/tests/utils/jwt.test.utils.ts
+  checksum: d63fdd6737a8592a88458d1948ea96434727c3e7960f038a66a8c30df1652260
 scopeconfig:
 - scope: node
 custom_patterns:
