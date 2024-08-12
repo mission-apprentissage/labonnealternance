@@ -1,11 +1,14 @@
-import { Box, Text } from "@chakra-ui/react"
+import { Box, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import mdIt from "markdown-it"
 import React, { useEffect } from "react"
 import ReactHtmlParser from "react-html-parser"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
+
+import { ReportJobLink } from "./ReportJobLink"
 
 const md = mdIt().disable(["link", "image"])
 
@@ -54,6 +57,34 @@ const FTJobDetail = ({ job }) => {
           </Box>
         </Box>
       )}
+      <Box marginTop="10px">
+        <ReportJobLink
+          width="490px"
+          itemId={job?.job?.id}
+          type={LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}
+          linkLabelNotReported="Signaler l’entreprise"
+          linkLabelReported="Entreprise signalée"
+          tooltip={
+            <Box>
+              <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
+                Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
+              </Text>
+              <UnorderedList
+                style={{
+                  color: "#383838",
+                  fontSize: "16px",
+                  lineHeight: "24px",
+                }}
+              >
+                <ListItem>Offre offensante ou discriminatoire ;</ListItem>
+                <ListItem>Offre inexacte ou expirée ;</ListItem>
+                <ListItem>Fausse offre provenant d’un centre de formation ;</ListItem>
+                <ListItem>Tentative d'escroquerie.</ListItem>
+              </UnorderedList>
+            </Box>
+          }
+        />
+      </Box>
     </Box>
   )
 }

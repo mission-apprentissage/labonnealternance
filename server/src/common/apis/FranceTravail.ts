@@ -37,6 +37,7 @@ const OFFRES_ACCESS = querystring.stringify({
 })
 
 const getToken = async (access: IFranceTravailAccessType) => {
+  await getFranceTravailTokenFromAPI(access)
   const token = await getFranceTravailTokenFromDB(access)
   if (token) {
     return token
