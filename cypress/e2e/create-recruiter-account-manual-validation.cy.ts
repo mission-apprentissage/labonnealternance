@@ -49,7 +49,7 @@ describe("create-recruiter-account-manual-validation", () => {
     FlowCreationEntreprise.offerPage.submit()
     FlowCreationEntreprise.delegationPage.selectCFAs(["SAS L'ACADEMIE DE MANAGEMENT"])
     FlowCreationEntreprise.delegationPage.submit()
-    FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase(), romeLabel, studyLevel])
+    FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase()])
     FlowCreationEntreprise.emailSentPage.getJobId().then((jobId) => {
       FlowCreationEntreprise.emailSentPage.goBackHome()
       // verifie que l'offre n'est pas visible

@@ -5,7 +5,7 @@ import { IApplication, ICredential, IEmailBlacklist, IJob, ILbaCompany, IRecruit
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartners, IJobsPartnersJobOffer, IJobsPartnersWorkplace, ZJobsPartners, ZJobsPartnersJobOffer, ZJobsPartnersWorkplace } from "shared/models/jobsPartners.model"
+import { IJobsPartners, ZJobsPartners } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodArray, ZodObject, ZodString, ZodTypeAny } from "zod"
@@ -31,7 +31,7 @@ function getFixture() {
   return new Fixture({ seed }).extend([
     Generator({
       schema: ZodArray,
-      filter: ({ context }) => context.path.at(-1) === "rome_code",
+      filter: ({ context }) => context.path.at(-1) === "offer_rome_code",
       output: () => [generateRandomRomeCode()],
     }),
     Generator({
@@ -232,32 +232,6 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   }
   await getDbCollection("emailblacklists").insertOne(u)
   return u
-}
-
-export function jobPartnerOfferFactory(props: Partial<IJobsPartnersJobOffer> = {}) {
-  const jobPartner: IJobsPartnersJobOffer = {
-    ...getFixture().fromSchema(ZJobsPartnersJobOffer),
-    ...props,
-  }
-  return jobPartner
-}
-
-export function jobPartnerWorkplaceFactory(props: Partial<IJobsPartnersWorkplace> = {}) {
-  const jobPartner: IJobsPartnersWorkplace = {
-    ...getFixture().fromSchema(ZJobsPartnersWorkplace),
-    ...props,
-  }
-  return jobPartner
-}
-
-export async function createJobPartnerTest({
-  jobOfferData = {},
-  workplaceData = {},
-}: {
-  jobOfferData: Partial<IJobsPartnersJobOffer>
-  workplaceData: Partial<IJobsPartnersWorkplace>
-}) {
-  return await saveJobPartnerTest({ job_offer: jobPartnerOfferFactory(jobOfferData), workplace: jobPartnerWorkplaceFactory(workplaceData) })
 }
 
 export async function saveJobPartnerTest(data: Partial<IJobsPartners> = {}) {
