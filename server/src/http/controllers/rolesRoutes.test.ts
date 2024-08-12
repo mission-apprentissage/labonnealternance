@@ -1,8 +1,8 @@
 import assert from "assert"
 
-import { createAndLogUser } from "@tests/utils/login.utils"
-import { useMongo } from "@tests/utils/mongo.utils"
-import { useServer } from "@tests/utils/server.utils"
+import { createAndLogUser } from "@tests/utils/login.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { describe, expect, it } from "vitest"
 
 describe("rolesRoutes", () => {

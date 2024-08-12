@@ -63,7 +63,7 @@ export const getFranceTravailTokenFromAPI = async (access: IFranceTravailAccessT
 
     return validation.data.access_token
   } catch (error: any) {
-    logger.error("error lors de la récupération d'un token pour l'API FT", JSON.stringify(error))
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     throw Boom.internal("impossible d'obtenir un token pour l'API france travail")
   }
 }
@@ -73,7 +73,7 @@ export const getFranceTravailTokenFromAPI = async (access: IFranceTravailAccessT
  */
 export const searchForFtJobs = async (params: {
   codeROME: string
-  commune: string
+  commune?: string
   sort: number
   natureContrat: string
   range: string

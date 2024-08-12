@@ -1,10 +1,10 @@
 import { Jsonify } from "type-fest"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
-import { enumToZod } from "./enumToZod"
 import { ZValidationUtilisateur } from "./userWithAccount.model"
 
 export enum EntrepriseStatus {
@@ -17,7 +17,7 @@ export enum EntrepriseStatus {
 export const ZEntrepriseStatusEvent = z
   .object({
     validation_type: ZValidationUtilisateur.describe("Indique si l'action est ordonnée par un utilisateur ou le serveur"),
-    status: enumToZod(EntrepriseStatus).describe("Statut de l'accès"),
+    status: extensions.buildEnum(EntrepriseStatus).describe("Statut de l'accès"),
     reason: z.string().describe("Raison du changement de statut"),
     date: z.date().describe("Date de l'évènement"),
     granted_by: z.string().nullish().describe("Utilisateur à l'origine du changement"),
