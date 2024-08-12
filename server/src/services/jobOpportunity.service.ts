@@ -184,8 +184,8 @@ type IRecruteursLbaSearchParams = {
 }
 
 export const getJobsPartnersFromDB = async ({ radius = 10, romes, opco, latitude, longitude }: IRecruteursLbaSearchParams): Promise<IJobsPartners[] | []> => {
-  const query: { "job_offer.rome_code": object; "workplace.domaine.opco"?: string } = {
-    "job_offer.rome_code": { $in: romes },
+  const query: { offer_rome_code: object; workplace_opco?: string } = {
+    offer_rome_code: { $in: romes },
   }
 
   if (opco) {
