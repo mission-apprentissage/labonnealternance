@@ -52,8 +52,6 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob) => {
   const {
     contract,
     job_id,
-    contract_period_unit,
-    contract_period_value,
     contract_start_date,
     remote,
     title,
@@ -71,21 +69,9 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob) => {
     geoloc,
     url,
   } = job
-  let contractDuration: number | null = null
-  if (contract_period_unit && contract_period_value) {
-    switch (contract_period_unit) {
-      case "Year":
-        contractDuration = contract_period_value * 12
-        break
-      case "Month":
-        contractDuration = contract_period_value
-        break
-      case "Week":
-        contractDuration = Math.ceil((contract_period_value * 7) / (365 / 12))
-        break
-    }
-  }
+  const contractDuration: number | null = parseContractDuration(job)
   const { latitude, longitude } = geolocToLatLon(geoloc)
+  const siretParsing = extensions.siret.safeParse(siret)
 
   const partnerJob: IComputedJobsPartners = {
     _id: new ObjectId(),
@@ -117,7 +103,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob) => {
       },
     },
     workplace: {
-      siret: extensions.siret.safeParse(siret).success ? siret : null,
+      siret: siretParsing.success ? siretParsing.data : null,
       name: company_title,
       description: company_description && company_description.length >= 30 ? company_description : null,
       size: null,
@@ -156,4 +142,19 @@ const geolocToLatLon = (geoloc: string | null | undefined) => {
   } else {
     throw new Error("inattendu")
   }
+}
+
+const parseContractDuration = ({ contract_period_unit, contract_period_value }: { contract_period_unit?: string | null; contract_period_value?: number | null }): number | null => {
+  if (!contract_period_unit || !contract_period_value) {
+    return null
+  }
+  switch (contract_period_unit) {
+    case "Year":
+      return contract_period_value * 12
+    case "Month":
+      return contract_period_value
+    case "Week":
+      return Math.ceil((contract_period_value * 7) / (365 / 12))
+  }
+  return null
 }
