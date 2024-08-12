@@ -3,7 +3,7 @@ import { useFormik } from "formik"
 import { useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { useLocalStorage } from "@/services/useLocalStorage"
+import { useLocalStorageSynchronized } from "@/services/useLocalStorageSynchronized"
 
 import ItemDetailApplicationsStatus from "../ItemDetailServices/ItemDetailApplicationStatus"
 
@@ -17,7 +17,7 @@ const WidgetCandidatureLba = ({ item, caller }) => {
   const [sendingState, setSendingState] = useState("not_sent")
   const kind: LBA_ITEM_TYPE_OLD = item?.ideaType || ""
 
-  const [hasApplied, setHasApplied] = useLocalStorage(`application-${kind}-${item?.id}`)
+  const [hasApplied, setHasApplied] = useLocalStorageSynchronized(`application-${kind}-${item?.id}`)
 
   const formik = useFormik({
     initialValues: getInitialSchemaValues(),

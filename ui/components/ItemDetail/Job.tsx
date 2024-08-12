@@ -3,7 +3,7 @@ import React, { useState } from "react"
 import ReactHtmlParser from "react-html-parser"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { useLocalStorage } from "@/services/useLocalStorage"
+import { useLocalStorageSynchronized } from "@/services/useLocalStorageSynchronized"
 import { focusWithin } from "@/theme/theme-lba-tools"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
@@ -31,7 +31,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
 
   const kind: LBA_ITEM_TYPE_OLD = job?.ideaType
 
-  const [hasApplied] = useLocalStorage(`application-${kind}-${job?.id}`)
+  const [hasApplied] = useLocalStorageSynchronized(`application-${kind}-${job?.id}`)
 
   const onSelectItem = (e) => {
     e.preventDefault()

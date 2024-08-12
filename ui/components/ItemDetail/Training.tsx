@@ -2,7 +2,7 @@ import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { useLocalStorage } from "@/services/useLocalStorage"
+import { useLocalStorageSynchronized } from "@/services/useLocalStorageSynchronized"
 import { focusWithin } from "@/theme/theme-lba-tools"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
@@ -26,7 +26,7 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
 
   const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
 
-  const [hasApplied] = useLocalStorage(`application-${training.ideaType}-${training?.id}`)
+  const [hasApplied] = useLocalStorageSynchronized(`application-${training.ideaType}-${training?.id}`)
 
   const onSelectItem = (e) => {
     e.preventDefault()

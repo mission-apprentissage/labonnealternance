@@ -1,5 +1,6 @@
 // This code is adapted from the following GitHub repository:
 // https://github.com/uidotdev
+// for hook useLocalStorage
 // Original author: tylermcginnis
 // Licensed under the MIT License
 
@@ -30,7 +31,7 @@ const getLocalStorageServerSnapshot = () => {
   throw Error("useLocalStorage is a client-only hook")
 }
 
-export function useLocalStorage(key: string, initialValue?: any) {
+export function useLocalStorageSynchronized(key: string, initialValue?: any) {
   const getSnapshot = () => getLocalStorageItem(key)
   const store = React.useSyncExternalStore(useLocalStorageSubscribe, getSnapshot, getLocalStorageServerSnapshot)
 

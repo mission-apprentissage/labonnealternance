@@ -2,7 +2,7 @@ import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { get } from "lodash"
 import React, { useState } from "react"
 
-import { useLocalStorage } from "@/services/useLocalStorage"
+import { useLocalStorageSynchronized } from "@/services/useLocalStorageSynchronized"
 import { focusWithin } from "@/theme/theme-lba-tools"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
@@ -20,7 +20,7 @@ const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, sea
 
   const currentSearchRadius = formValues?.radius || 30
 
-  const [hasApplied] = useLocalStorage(`application-${company.ideaType}-${company?.id}`)
+  const [hasApplied] = useLocalStorageSynchronized(`application-${company.ideaType}-${company?.id}`)
 
   const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
 

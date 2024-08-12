@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
-import { useLocalStorage } from "@/services/useLocalStorage"
+import { useLocalStorageSynchronized } from "@/services/useLocalStorageSynchronized"
 import { focusWithin } from "@/theme/theme-lba-tools"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
@@ -39,7 +39,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
   const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
 
-  const [hasApplied, setHasApplied] = useLocalStorage(`application-${kind}-${selectedItem?.id}`)
+  const [hasApplied, setHasApplied] = useLocalStorageSynchronized(`application-${kind}-${selectedItem?.id}`)
 
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire

@@ -5,7 +5,7 @@ import { IAppointmentRequestContextCreateFormAvailableResponseSchema, IAppointme
 
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import DemandeDeContact from "@/components/RDV/DemandeDeContact"
-import { useLocalStorage } from "@/services/useLocalStorage"
+import { useLocalStorageSynchronized } from "@/services/useLocalStorageSynchronized"
 import { apiPost } from "@/utils/api.utils"
 
 import { FormLayoutComponent } from "../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
@@ -22,7 +22,7 @@ export default function FormCreatePage() {
 
   const { cleMinistereEducatif, referrer } = router.query as { cleMinistereEducatif: string; referrer: string }
 
-  const [, setHasApplied] = useLocalStorage(`application-formation-${cleMinistereEducatif}`)
+  const [, setHasApplied] = useLocalStorageSynchronized(`application-formation-${cleMinistereEducatif}`)
   /**
    * @description Initialize.
    */
