@@ -1,6 +1,6 @@
 import { IGeoPoint, ILbaCompany, IRecruiter } from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
-import { IJobOffer, IJobRecruiter, IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobOffer, IJobRecruiterApiFormat, IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { IApiError } from "../common/utils/errorManager"
 import { getDbCollection } from "../common/utils/mongodbUtils"
@@ -211,37 +211,30 @@ export const getJobsPartnersFromDB = async ({ radius = 10, romes, opco, latitude
 
 const convertToGeopoint = (longitude: number, latitude: number): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
 
-export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJobRecruiter[] | [] => {
+export const formatRecruteurLbaToJobPartner = (recruteursLba: ILbaCompany[]): IJobRecruiterApiFormat[] | [] => {
   if (!recruteursLba.length) return []
   return recruteursLba.map((recruteurLba) => ({
     created_at: recruteurLba.created_at,
     _id: recruteurLba._id,
     workplace: {
-      siret: recruteurLba.siret,
-      website: recruteurLba.website,
-      raison_sociale: recruteurLba.raison_sociale,
-      enseigne: recruteurLba.enseigne,
-      name: null,
-      description: null,
-      size: recruteurLba.company_size,
-      location: {
-        address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
-        geopoint: recruteurLba.geopoint!,
-      },
-      domaine: {
-        idcc: null,
-        opco: recruteurLba.opco,
-        naf: {
-          code: recruteurLba.naf_code,
-          label: recruteurLba.naf_label,
-          origin: null,
-        },
-      },
+      workplace_siret: recruteurLba.siret,
+      workplace_website: recruteurLba.website,
+      workplace_raison_sociale: recruteurLba.raison_sociale,
+      workplace_enseigne: recruteurLba.enseigne,
+      workplace_name: null,
+      workplace_description: null,
+      workplace_size: recruteurLba.company_size,
+      workplace_address: `${recruteurLba.street_number} ${recruteurLba.street_name} ${recruteurLba.zip_code} ${recruteurLba.city}`,
+      workplace_geopoint: recruteurLba.geopoint!,
+      workplace_idcc: null,
+      workplace_opco: recruteurLba.opco,
+      workplace_naf_code: recruteurLba.naf_code,
+      workplace_naf_label: recruteurLba.naf_label,
     },
     apply: {
-      url: `${config.publicUrl}/recherche-apprentissage?type=lba&itemId=${recruteurLba.siret}`,
-      email: recruteurLba.email,
-      phone: recruteurLba.phone,
+      apply_url: `${config.publicUrl}/recherche-apprentissage?type=lba&itemId=${recruteurLba.siret}`,
+      apply_email: recruteurLba.email,
+      apply_phone: recruteurLba.phone,
     },
   }))
 }
@@ -255,54 +248,44 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
       partner_id: null,
       partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       contract: {
-        start: job.job_start_date,
-        duration: job.job_duration!.toString(),
-        type: job.job_type,
-        remote: null,
+        contract_start: job.job_start_date,
+        contract_duration: job.job_duration!.toString(),
+        contract_type: job.job_type,
+        contract_remote: null,
       },
       job_offer: {
-        title: job.rome_appellation_label!,
-        rome_code: job.rome_code,
-        description: job.rome_detail!.definition!,
-        diploma_level_label: job.job_level_label!,
-        desired_skills: job.rome_detail!.competences.savoir_etre_professionnel!.map((x) => x.libelle),
-        acquired_skills: job.rome_detail!.competences.savoir_faire!.map((x) => ({ libelle: x.libelle, items: x.items.map((y) => y.libelle) })),
-        access_condition: job.rome_detail!.acces_metier,
-        publication: {
-          creation_date: job.job_creation_date!,
-          expiration_date: job.job_expiration_date!,
-        },
-        meta: {
-          count: job.job_count!,
-          multicast: job.is_multi_published,
-          origin: null,
-        },
+        offer_title: job.rome_appellation_label!,
+        offer_rome_code: job.rome_code,
+        offer_description: job.rome_detail!.definition!,
+        offer_diploma_level_label: job.job_level_label!,
+        offer_desired_skills: job.rome_detail!.competences.savoir_etre_professionnel!.map((x) => x.libelle),
+        offer_acquired_skills: job.rome_detail!.competences.savoir_faire!.map((x) => ({ libelle: x.libelle, items: x.items.map((y) => y.libelle) })),
+        offer_access_condition: job.rome_detail!.acces_metier,
+        offer_creation_date: job.job_creation_date!,
+        offer_expiration_date: job.job_expiration_date!,
+        offer_count: job.job_count!,
+        offer_multicast: job.is_multi_published,
+        offer_origin: null,
       },
       workplace: {
-        siret: offreEmploiLba.establishment_siret,
-        website: null,
-        raison_sociale: offreEmploiLba.establishment_raison_sociale!,
-        enseigne: offreEmploiLba.establishment_enseigne!,
-        name: null,
-        description: null,
-        size: offreEmploiLba.establishment_size!,
-        location: {
-          address: offreEmploiLba.address!,
-          geopoint: offreEmploiLba.geopoint!,
-        },
-        domaine: {
-          idcc: Number(offreEmploiLba.idcc) ?? null,
-          opco: offreEmploiLba.opco!,
-          naf: {
-            code: offreEmploiLba.naf_code!,
-            label: offreEmploiLba.naf_label!,
-          },
-        },
+        workplace_siret: offreEmploiLba.establishment_siret,
+        workplace_website: null,
+        workplace_raison_sociale: offreEmploiLba.establishment_raison_sociale!,
+        workplace_enseigne: offreEmploiLba.establishment_enseigne!,
+        workplace_name: null,
+        workplace_description: null,
+        workplace_size: offreEmploiLba.establishment_size!,
+        workplace_address: offreEmploiLba.address!,
+        workplace_geopoint: offreEmploiLba.geopoint!,
+        workplace_idcc: Number(offreEmploiLba.idcc) ?? null,
+        workplace_opco: offreEmploiLba.opco!,
+        workplace_naf_code: offreEmploiLba.naf_code!,
+        workplace_naf_label: offreEmploiLba.naf_label!,
       },
       apply: {
-        url: `${config.publicUrl}/recherche-apprentissage?type=matcha&itemId=${job._id}`,
-        email: offreEmploiLba.email,
-        phone: offreEmploiLba.phone!,
+        apply_url: `${config.publicUrl}/recherche-apprentissage?type=matcha&itemId=${job._id}`,
+        apply_email: offreEmploiLba.email,
+        apply_phone: offreEmploiLba.phone!,
       },
     }))
   )
@@ -311,8 +294,50 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
 export const formatOffresEmploiPartenaire = (offresEmploiPartenaire: IJobsPartners[]): IJobOffer[] | [] => {
   if (!offresEmploiPartenaire.length) return []
   return offresEmploiPartenaire.map((offreEmploiPartenaire) => ({
-    ...offreEmploiPartenaire,
+    created_at: offreEmploiPartenaire.created_at,
     _id: offreEmploiPartenaire._id.toString(),
+    partner_id: offreEmploiPartenaire.partner_id,
+    partner_label: offreEmploiPartenaire.partner_label,
+    contract: {
+      contract_start: offreEmploiPartenaire.contract_start,
+      contract_duration: offreEmploiPartenaire.contract_duration,
+      contract_type: offreEmploiPartenaire.contract_type,
+      contract_remote: offreEmploiPartenaire.contract_remote,
+    },
+    job_offer: {
+      offer_title: offreEmploiPartenaire.offer_title,
+      offer_rome_code: offreEmploiPartenaire.offer_rome_code,
+      offer_description: offreEmploiPartenaire.offer_description,
+      offer_diploma_level_label: offreEmploiPartenaire.offer_diploma_level_label,
+      offer_desired_skills: offreEmploiPartenaire.offer_desired_skills,
+      offer_acquired_skills: offreEmploiPartenaire.offer_acquired_skills,
+      offer_access_condition: offreEmploiPartenaire.offer_access_condition,
+      offer_creation_date: offreEmploiPartenaire.offer_creation_date,
+      offer_expiration_date: offreEmploiPartenaire.offer_expiration_date,
+      offer_count: offreEmploiPartenaire.offer_count,
+      offer_multicast: offreEmploiPartenaire.offer_multicast,
+      offer_origin: offreEmploiPartenaire.offer_origin,
+    },
+    workplace: {
+      workplace_siret: offreEmploiPartenaire.workplace_siret,
+      workplace_website: offreEmploiPartenaire.workplace_website,
+      workplace_raison_sociale: offreEmploiPartenaire.workplace_raison_sociale,
+      workplace_enseigne: offreEmploiPartenaire.workplace_enseigne,
+      workplace_name: offreEmploiPartenaire.workplace_name,
+      workplace_description: offreEmploiPartenaire.workplace_description,
+      workplace_size: offreEmploiPartenaire.workplace_size,
+      workplace_address: offreEmploiPartenaire.workplace_address,
+      workplace_geopoint: offreEmploiPartenaire.workplace_geopoint,
+      workplace_idcc: offreEmploiPartenaire.workplace_idcc,
+      workplace_opco: offreEmploiPartenaire.workplace_opco,
+      workplace_naf_code: offreEmploiPartenaire.workplace_naf_code,
+      workplace_naf_label: offreEmploiPartenaire.workplace_naf_label,
+    },
+    apply: {
+      apply_url: `${config.publicUrl}/recherche-apprentissage?type=matcha&itemId=${offreEmploiPartenaire._id}`,
+      apply_email: offreEmploiPartenaire.apply_email,
+      apply_phone: offreEmploiPartenaire.apply_phone,
+    },
   }))
 }
 
@@ -324,76 +349,44 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
     partner_id: null,
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
     contract: {
-      start: null,
-      duration: offreFT.typeContratLibelle,
-      type: [offreFT.natureContrat],
-      remote: null,
+      contract_start: null,
+      contract_duration: offreFT.typeContratLibelle,
+      contract_type: [offreFT.natureContrat],
+      contract_remote: null,
     },
     job_offer: {
-      title: offreFT.intitule,
-      rome_code: [offreFT.romeCode],
-      description: offreFT.description,
-      diploma_level_label: null,
-      desired_skills: null,
-      acquired_skills: null,
-      access_condition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
-      publication: {
-        creation_date: new Date(offreFT.dateCreation),
-        expiration_date: null,
-      },
-      meta: {
-        count: offreFT.nombrePostes,
-        multicast: true,
-        origin: null,
-      },
+      offer_title: offreFT.intitule,
+      offer_rome_code: [offreFT.romeCode],
+      offer_description: offreFT.description,
+      offer_diploma_level_label: null,
+      offer_desired_skills: null,
+      offer_acquired_skills: null,
+      offer_access_condition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
+      offer_creation_date: new Date(offreFT.dateCreation),
+      offer_expiration_date: null,
+      offer_count: offreFT.nombrePostes,
+      offer_multicast: true,
+      offer_origin: null,
     },
     workplace: {
-      siret: null,
-      website: null,
-      raison_sociale: offreFT.entreprise.nom,
-      enseigne: offreFT.entreprise.nom,
-      name: offreFT.entreprise.nom,
-      description: offreFT.entreprise.description,
-      size: null,
-      location: {
-        address: offreFT.lieuTravail.libelle,
-        geopoint: convertToGeopoint(parseFloat(offreFT.lieuTravail.longitude), parseFloat(offreFT.lieuTravail.latitude)),
-      },
-      domaine: {
-        idcc: null,
-        opco: null,
-        naf: {
-          code: offreFT.codeNAF ? offreFT.codeNAF : null,
-          label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
-        },
-      },
-      workplace: {
-        siret: null,
-        website: null,
-        raison_sociale: offreFT.entreprise.nom,
-        enseigne: offreFT.entreprise.nom,
-        name: offreFT.entreprise.nom,
-        description: offreFT.entreprise.description,
-        size: null,
-        location: {
-          address: offreFT.lieuTravail.libelle,
-          longitude: parseFloat(offreFT.lieuTravail.longitude),
-          latitude: parseFloat(offreFT.lieuTravail.latitude),
-        },
-        domaine: {
-          idcc: null,
-          opco: null,
-          naf: {
-            code: offreFT.codeNAF ? offreFT.codeNAF : null,
-            label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
-          },
-        },
-      },
+      workplace_siret: null,
+      workplace_website: null,
+      workplace_raison_sociale: offreFT.entreprise.nom,
+      workplace_enseigne: offreFT.entreprise.nom,
+      workplace_name: offreFT.entreprise.nom,
+      workplace_description: offreFT.entreprise.description,
+      workplace_size: null,
+      workplace_address: offreFT.lieuTravail.libelle,
+      workplace_geopoint: convertToGeopoint(parseFloat(offreFT.lieuTravail.longitude), parseFloat(offreFT.lieuTravail.latitude)),
+      workplace_idcc: null,
+      workplace_opco: null,
+      workplace_naf_code: offreFT.codeNAF ? offreFT.codeNAF : null,
+      workplace_naf_label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
     },
     apply: {
-      url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
-      email: null,
-      phone: null,
+      apply_url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
+      apply_email: null,
+      apply_phone: null,
     },
   }))
 }
