@@ -249,7 +249,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
       partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       contract: {
         contract_start: job.job_start_date,
-        contract_duration: job.job_duration!.toString(),
+        contract_duration: job.job_duration!,
         contract_type: job.job_type,
         contract_remote: null,
       },
@@ -350,7 +350,7 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
     contract: {
       contract_start: null,
-      contract_duration: offreFT.typeContratLibelle,
+      contract_duration: parseInt(offreFT.typeContratLibelle),
       contract_type: [offreFT.natureContrat],
       contract_remote: null,
     },

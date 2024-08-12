@@ -22,7 +22,7 @@ const ZJobsPartnersApply = z.object({
 
 const ZJobsPartnersContract = z.object({
   contract_start: z.date().nullable().describe("Date de début de contrat"),
-  contract_duration: z.string().nullable().describe("Durée du contract"),
+  contract_duration: z.number().nullable().describe("Durée du contract"),
   contract_type: z.array(z.string()).nullable().describe("type de contract, formaté à l'insertion"),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
 })
