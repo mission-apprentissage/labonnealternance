@@ -1,4 +1,5 @@
-import { IGeoPoint, ILbaCompany, IRecruiter } from "shared"
+import { IGeoPoint, ILbaCompany, IRecruiter, parseEnum } from "shared"
+import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { IJobOffer, IJobRecruiter, IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
@@ -256,7 +257,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
       partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       contract: {
         start: job.job_start_date,
-        duration: job.job_duration!.toString(),
+        duration: job.job_duration!,
         type: job.job_type,
         remote: null,
       },
@@ -264,7 +265,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
         title: job.rome_appellation_label!,
         rome_code: job.rome_code,
         description: job.rome_detail!.definition!,
-        diploma_level_label: job.job_level_label!,
+        diploma_level_label: parseEnum(NIVEAUX_POUR_LBA, job.job_level_label),
         desired_skills: job.rome_detail!.competences.savoir_etre_professionnel!.map((x) => x.libelle),
         acquired_skills: job.rome_detail!.competences.savoir_faire!.map((x) => ({ libelle: x.libelle, items: x.items.map((y) => y.libelle) })),
         access_condition: job.rome_detail!.acces_metier,
@@ -326,7 +327,7 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
     contract: {
       start: null,
       duration: offreFT.typeContratLibelle,
-      type: [offreFT.natureContrat],
+      type: [parseEnum(TRAINING_CONTRACT_TYPE, offreFT.natureContrat)].flatMap((x) => (x ? [x] : [])),
       remote: null,
     },
     job_offer: {

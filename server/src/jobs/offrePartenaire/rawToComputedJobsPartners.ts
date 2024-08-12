@@ -1,8 +1,8 @@
 import Boom from "boom"
 import { oleoduc, writeData } from "oleoduc"
 import { z } from "shared/helpers/zodWithOpenApi"
-import { IComputedJobsPartners } from "shared/models"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
 import { CollectionName } from "shared/models/models"
 import { AnyZodObject } from "zod"
 
