@@ -1,5 +1,5 @@
-import { Box, Button, Circle, Flex, Heading, Stack, Text, useToast } from "@chakra-ui/react"
-import dayjs from "dayjs"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Button, Circle, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
@@ -8,7 +8,6 @@ import { z } from "zod"
 
 import { AuthentificationLayout, LoadingEmptySpace } from "../../../components/espace_pro"
 import { WidgetContext } from "../../../context/contextWidget"
-import { InfoCircle } from "../../../theme/components/icons"
 import { MailCloud } from "../../../theme/components/logos"
 import { getUserStatus, getUserStatusByToken, sendValidationLink } from "../../../utils/api"
 
@@ -70,21 +69,10 @@ function FinComponent(props: ComponentProps) {
     onSettled: (data) => {
       if (data?.status_current === "ERROR") {
         setUserIsInError(true)
-        setTitle("Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte.")
       } else if (data?.status_current === "VALIDÉ" || fromDashboard === true) {
         setUserIsValidated(true)
-        setTitle(
-          withDelegation
-            ? "Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés."
-            : "Félicitations,<br>votre offre a bien été créée!"
-        )
-      } else {
-        setTitle(
-          withDelegation
-            ? "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
-            : "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte."
-        )
       }
+      setTitle("Félicitations, votre offre est créée.")
     },
   })
 
@@ -145,25 +133,24 @@ function FinComponent(props: ComponentProps) {
     await router.push(`/espace-pro/administration/entreprise/${encodeURIComponent(establishment_id.toString())}`)
   }
 
-  const ValidatedAccountDescription = () => {
+  const ValidatedAccountDescription = ({ withDelegation }) => {
     return (
-      <Box mb={5}>
+      <Box mb={5} mt={5}>
         <Flex alignItems="flex-start" mb={3}>
-          <InfoCircle mr={2} mt={1} />
           <Box>
             <Heading fontSize="18px" pb={2}>
               Confirmez votre email
             </Heading>
             <Text textAlign="justify">
-              Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
-              l’adresse suivante : <span style={{ fontWeight: "700" }}>{email}</span>.
+              Pour publier votre offre auprès des candidats {withDelegation ? "et la transmettre aux organismes de formation sélectionnés" : ""}, merci de confirmer votre adresse
+              mail en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>
             </Text>
           </Box>
         </Flex>
         {!userIsInError && (
-          <Stack direction="row" align="center" spacing={4} mt={4} ml={6}>
+          <Stack direction="row" align="center" spacing={4} mt={6}>
             <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-            <Button variant="popover" textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
+            <Button variant="popover" fontWeight={400} textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
               Renvoyer le mail
             </Button>
           </Stack>
@@ -171,7 +158,7 @@ function FinComponent(props: ComponentProps) {
       </Box>
     )
   }
-  const AwaitingAccountDescription = () => {
+  const AwaitingAccountDescription = ({ withDelegation }) => {
     return (
       <Stack spacing={4} my={4}>
         <Text>Voici les prochaines étapes qui vous attendent :</Text>
@@ -182,13 +169,14 @@ function FinComponent(props: ComponentProps) {
           <Box>
             <Heading fontSize="18px">Confirmez votre email</Heading>
             <Text>
-              Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
-              l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
+              Cliquez sur le lien que nous venons de vous transmettre à l’adresse suivante:
+              <br />
+              <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
             {!userIsInError && (
-              <Stack direction="row" align="center" spacing={4} mt={4}>
+              <Stack direction="row" align="center" spacing={4}>
                 <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-                <Button variant="popover" textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
+                <Button variant="popover" fontWeight={400} textDecoration="underline" onClick={resendMail} isDisabled={disableLink}>
                   Renvoyer le mail
                 </Button>
               </Stack>
@@ -200,20 +188,36 @@ function FinComponent(props: ComponentProps) {
             2
           </Circle>
           <Box>
-            <Heading fontSize="18px">Votre compte sera validé manuellement par nos équipes</Heading>
-            <Text>Vous serez notifié par email une fois que ce sera fait.</Text>
-          </Box>
-        </Stack>
-        <Stack direction="row" spacing={4}>
-          <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
-            3
-          </Circle>
-          <Box>
-            <Heading fontSize="18px">Votre offre est automatiquement publiée </Heading>
-            <Text>Une fois votre compte validé, votre offre est automatiquement publiée et partagée aux organismes de formation que vous avez sélectionnés.</Text>
+            <Heading fontSize="18px">Votre compte sera validé manuellement</Heading>
+            <Text>
+              {withDelegation
+                ? "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne et partagée aux organismes de formation que vous avez sélectionnés."
+                : "Une fois votre compte validé, vous en serez notifié par email. Votre offre sera publiée en ligne."}
+            </Text>
           </Box>
         </Stack>
       </Stack>
+    )
+  }
+
+  const JobPreview = ({ job }) => {
+    return (
+      <Box mb={2}>
+        <Box mb={2}>
+          <Link
+            href={`/recherche-apprentissage?display=list&page=fiche&type=matcha&itemId=${job._id}`}
+            aria-label="Ouvrir la page de prévisualisation de l'offre sur le site La bonne alternance - nouvelle fenêtre"
+            isExternal
+            variant="basicUnderlinedBlue"
+          >
+            Voir mon offre sur La bonne alternance <ExternalLinkIcon mx="2px" />
+          </Link>
+        </Box>
+        <Text fontStyle="italic" fontSize={16} color="grey.425">
+          Votre offre est également visible sur les sites internet partenaires de La bonne alternance dont : Parcoursup, “Choisir son affectation après la 3è”, le Portail de
+          l’alternance, l’ONISEP, la CCI, des plateformes régionales et certains sites d’OPCO.
+        </Text>
+      </Box>
     )
   }
 
@@ -222,25 +226,15 @@ function FinComponent(props: ComponentProps) {
       <Flex direction={["column", widget?.mobile ? "column" : "row"]} align={widget?.mobile ? "center" : "flex-start"} border="1px solid #000091" mt={[4, 8]} p={[4, 8]}>
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
-          <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
+          <Heading fontSize="24px" mb={6} mt={widget?.mobile ? "10px" : "0px"}>
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
-          {fromDashboard ? null : userIsInError ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
-          <Box bg="#F6F6F6" p={4}>
-            <Stack direction="column" spacing="16px">
-              <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
-              <Text>
-                Poste : <span style={{ fontWeight: "700" }}>{job.rome_appellation_label}</span>
-              </Text>
-              <Text>
-                Niveau d'étude visé : <span style={{ fontWeight: "700" }}>{job.job_level_label}</span>
-              </Text>
-              <Text>
-                Date de début d'apprentissage souhaitée : <span style={{ fontWeight: "700" }}>{dayjs(job.job_start_date).format("DD/MM/YYYY")}</span>
-              </Text>
-              <Text fontSize="14px">Votre offre expirera 2 mois après sa date de publication</Text>
-            </Stack>
-          </Box>
+          <JobPreview job={job} />
+          {fromDashboard ? null : userIsInError ? null : userIsValidated ? (
+            <ValidatedAccountDescription withDelegation={withDelegation} />
+          ) : (
+            <AwaitingAccountDescription withDelegation={withDelegation} />
+          )}
         </Box>
       </Flex>
     </AuthentificationLayout>

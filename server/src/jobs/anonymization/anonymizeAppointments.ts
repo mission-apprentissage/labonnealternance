@@ -1,17 +1,17 @@
+import { Filter } from "mongodb"
+import { IAppointment } from "shared/models"
+
 import { logger } from "../../common/logger"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-const anonymizeAppointments = async () => {
+export const anonymizeAppointments = async (filter: Filter<IAppointment>) => {
   logger.info(`Début anonymisation`)
-
-  const lastYear = new Date()
-  lastYear.setFullYear(lastYear.getFullYear() - 1)
 
   await getDbCollection("appointments")
     .aggregate([
       {
-        $match: { created_at: { $lte: lastYear } },
+        $match: filter,
       },
       {
         $project: {
@@ -32,7 +32,7 @@ const anonymizeAppointments = async () => {
     ])
     .toArray()
 
-  const res = await getDbCollection("appointments").deleteMany({ created_at: { $lte: lastYear } })
+  const res = await getDbCollection("appointments").deleteMany(filter)
 
   return res.deletedCount
 }
@@ -41,7 +41,9 @@ export const anonymizeOldAppointments = async function () {
   try {
     logger.info(" -- Anonymisation des appointments de plus de un (1) an -- ")
 
-    const anonymizedAppointmentCount = await anonymizeAppointments()
+    const lastYear = new Date()
+    lastYear.setFullYear(lastYear.getFullYear() - 1)
+    const anonymizedAppointmentCount = await anonymizeAppointments({ created_at: { $lte: lastYear } })
 
     logger.info(`Fin traitement ${anonymizedAppointmentCount}`)
 
