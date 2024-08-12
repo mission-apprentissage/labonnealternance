@@ -8,7 +8,7 @@ import LBAModalCloseButton from "@/components/lbaModalCloseButton"
 
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
-import ItemDetailApplicationsStatus, { hasApplied } from "../ItemDetailServices/ItemDetailApplicationStatus"
+import ItemDetailApplicationsStatus from "../ItemDetailServices/ItemDetailApplicationStatus"
 
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import CandidatureLbaModalBody from "./CandidatureLbaModalBody"
@@ -29,7 +29,7 @@ export const NoCandidatureLba = () => {
   )
 }
 
-const CandidatureLba = ({ item }) => {
+const CandidatureLba = ({ item, hasApplied, setHasApplied }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [sendingState, setSendingState] = useState("not_sent")
   const kind: LBA_ITEM_TYPE_OLD = item?.ideaType || ""
@@ -54,15 +54,15 @@ const CandidatureLba = ({ item }) => {
     initialValues: getInitialSchemaValues(),
     validationSchema: getValidationSchema(),
     onSubmit: async (formValues) => {
-      await submitCandidature({ formValues, setSendingState, LbaJob: item })
+      await submitCandidature({ formValues, setSendingState, setHasApplied, LbaJob: item })
     },
   })
 
   return (
     <Box data-testid="CandidatureSpontanee">
       <Box>
-        <ItemDetailApplicationsStatus item={item} />
-        {(kind !== LBA_ITEM_TYPE_OLD.MATCHA || item.job.status === JOB_STATUS.ACTIVE) && !hasApplied(item) && (
+        <ItemDetailApplicationsStatus item={item} hasApplied={hasApplied} />
+        {(kind !== LBA_ITEM_TYPE_OLD.MATCHA || item.job.status === JOB_STATUS.ACTIVE) && !hasApplied && (
           <>
             <Box my={4}>
               <Button

@@ -1,9 +1,10 @@
 import { Box, Container } from "@chakra-ui/react"
+import { useLocalStorage } from "@uidotdev/usehooks"
 import { useFormik } from "formik"
 import { useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import ItemDetailApplicationsStatus, { hasApplied } from "../ItemDetailServices/ItemDetailApplicationStatus"
+import ItemDetailApplicationsStatus from "../ItemDetailServices/ItemDetailApplicationStatus"
 
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import CandidatureLbaModalBody from "./CandidatureLbaModalBody"
@@ -15,6 +16,8 @@ const WidgetCandidatureLba = ({ item, caller }) => {
   const [sendingState, setSendingState] = useState("not_sent")
   const kind: LBA_ITEM_TYPE_OLD = item?.ideaType || ""
 
+  const [hasApplied, setHasApplied] = useLocalStorage(`application-${kind}-${item?.id}`)
+
   const formik = useFormik({
     initialValues: getInitialSchemaValues(),
     validationSchema: getValidationSchema(),
@@ -23,6 +26,7 @@ const WidgetCandidatureLba = ({ item, caller }) => {
         formValues,
         setSendingState,
         LbaJob: item,
+        setHasApplied,
         caller,
       })
     },
@@ -33,10 +37,10 @@ const WidgetCandidatureLba = ({ item, caller }) => {
       {["ok_sent"].includes(sendingState) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
       {!["ok_sent"].includes(sendingState) && (
         <Container>
-          <ItemDetailApplicationsStatus item={item} mt={12} />
+          <ItemDetailApplicationsStatus item={item} hasApplied={hasApplied} mt={12} />
         </Container>
       )}
-      {!["ok_sent"].includes(sendingState) && !hasApplied(item) ? (
+      {!["ok_sent"].includes(sendingState) && !hasApplied ? (
         <form onSubmit={formik.handleSubmit}>
           {["not_sent", "currently_sending"].includes(sendingState) && (
             <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} fromWidget={true} />

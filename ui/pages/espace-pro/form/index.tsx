@@ -1,4 +1,5 @@
 import { Box, Spinner, Text } from "@chakra-ui/react"
+import { useLocalStorage } from "@uidotdev/usehooks"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { IAppointmentRequestContextCreateFormAvailableResponseSchema, IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
@@ -20,6 +21,8 @@ export default function FormCreatePage() {
   const [loading, setLoading] = useState(false)
 
   const { cleMinistereEducatif, referrer } = router.query as { cleMinistereEducatif: string; referrer: string }
+
+  const [, setHasApplied] = useLocalStorage(`application-formation-${cleMinistereEducatif}`)
   /**
    * @description Initialize.
    */
@@ -74,7 +77,7 @@ export default function FormCreatePage() {
             codePostal={data?.code_postal}
             ville={data?.localite}
           />
-          <DemandeDeContact context={data} referrer={referrer} showInModal={false} />
+          <DemandeDeContact context={data} referrer={referrer} showInModal={false} setHasApplied={setHasApplied} />
         </>
       )}
     </FormLayoutComponent>

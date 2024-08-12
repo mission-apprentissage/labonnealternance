@@ -1,18 +1,18 @@
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { getItemId } from "@/utils/getItemId"
-
 import { apiPost } from "../../../../utils/api.utils"
 
 export default async function submitCandidature({
   formValues,
   setSendingState,
   LbaJob = {},
+  setHasApplied,
   caller,
 }: {
   formValues: any // TODO
   setSendingState: (state: string) => void
   LbaJob?: any // TODO
+  setHasApplied: (value: any) => void
   caller?: string
 }) {
   setSendingState("currently_sending")
@@ -32,7 +32,7 @@ export default async function submitCandidature({
 
   try {
     await apiPost("/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {}, "V2")
-    window.localStorage.setItem(`application-${LbaJob.ideaType}-${getItemId(LbaJob)}`, Date.now().toString())
+    setHasApplied(Date.now().toString())
     setSendingState("ok_sent")
     return true
   } catch (error) {

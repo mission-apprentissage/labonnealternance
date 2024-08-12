@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { useLocalStorage } from "@uidotdev/usehooks"
 import React, { useState } from "react"
 import ReactHtmlParser from "react-html-parser"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -29,6 +30,8 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
   const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
 
   const kind: LBA_ITEM_TYPE_OLD = job?.ideaType
+
+  const [hasApplied] = useLocalStorage(`application-${kind}-${job?.id}`)
 
   const onSelectItem = (e) => {
     e.preventDefault()
@@ -181,7 +184,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
                 </Text>
               </Flex>
             )}
-            <ItemDetailApplicationsStatus item={job} mt={2} mb={2} />
+            <ItemDetailApplicationsStatus item={job} hasApplied={hasApplied} mt={2} mb={2} />
           </Box>
           {job.place.distance > currentSearchRadius ? getCenterSearchOnJobButton() : ""}
         </Box>

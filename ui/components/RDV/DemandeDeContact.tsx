@@ -47,6 +47,7 @@ type Props = {
   context: IAppointmentRequestContextCreateFormAvailableResponseSchema
   referrer: string
   showInModal: boolean
+  setHasApplied: (value: string) => void
 }
 
 /**
@@ -138,8 +139,7 @@ const DemandeDeContact = (props: Props) => {
           },
         })
 
-        window.localStorage.setItem(`application-formation-${props.context.cle_ministere_educatif}`, Date.now().toString())
-
+        props.setHasApplied(Date.now().toString())
         SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
           info_fiche: `${props.context.cle_ministere_educatif}`,
         })

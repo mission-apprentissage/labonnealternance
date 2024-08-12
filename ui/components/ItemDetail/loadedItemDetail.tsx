@@ -1,5 +1,6 @@
 import { ILbaItemLbaCompany } from "@/../shared"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
+import { useLocalStorage } from "@uidotdev/usehooks"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -24,7 +25,7 @@ import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplaye
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
-import ItemDetailApplicationsStatus, { hasApplied } from "./ItemDetailServices/ItemDetailApplicationStatus"
+import ItemDetailApplicationsStatus from "./ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
 import LbaJobDetail from "./LbaJobComponents/LbaJobDetail"
@@ -37,6 +38,8 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
   const { activeFilters } = useContext(DisplayContext)
 
   const kind: LBA_ITEM_TYPE_OLD = selectedItem?.ideaType
+
+  const [hasApplied, setHasApplied] = useLocalStorage(`application-${kind}-${selectedItem?.id}`)
 
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
@@ -161,19 +164,19 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
           {isCandidatureLba(selectedItem) && (
             <>
               <Divider my={2} />
-              <CandidatureLba item={selectedItem} />
+              <CandidatureLba item={selectedItem} hasApplied={hasApplied} setHasApplied={setHasApplied} />
             </>
           )}
 
           {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
-          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied && (
             <>
               <Divider my={2} />
-              <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
+              <DemandeDeContact context={selectedItem.rdvContext} setHasApplied={setHasApplied} referrer="LBA" showInModal />
             </>
           )}
-          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} hasApplied={hasApplied} mt={2} mb={2} />}
         </Box>
       </Box>
 

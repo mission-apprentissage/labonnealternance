@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { useLocalStorage } from "@uidotdev/usehooks"
 import React, { useContext, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -24,6 +25,8 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
   const currentSearchRadius = formValues?.radius || 30
 
   const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
+
+  const [hasApplied] = useLocalStorage(`application-${training.ideaType}-${training?.id}`)
 
   const onSelectItem = (e) => {
     e.preventDefault()
@@ -157,7 +160,7 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
             )}
           </Text>
           {!showTextOnly && (training.place.distance === null || training.place.distance > currentSearchRadius) && scopeContext.isJob && <>{getCenterSearchOnTrainingButton()}</>}
-          <ItemDetailApplicationsStatus item={training} mt={2} mb={2} />
+          <ItemDetailApplicationsStatus item={training} hasApplied={hasApplied} mt={2} mb={2} />
         </Box>
       </Flex>
     </Link>

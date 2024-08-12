@@ -32,21 +32,17 @@ const getAPostuleMessage = (type, applicationDate, mb, mt) => {
   )
 }
 
-export const hasApplied = (item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob) => {
-  return window.localStorage.getItem(`application-${item.ideaType}-${item.id}`) !== null
-}
-
 export default function ItemDetailApplicationsStatus({
   item,
   mb = 0,
   mt = 0,
+  hasApplied,
 }: {
   item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob
   mb?: number
   mt?: number
+  hasApplied: string
 }) {
-  const key = `application-${item.ideaType}-${item.id}`
-  const ls = window.localStorage.getItem(key)
-
-  return ls !== null ? getAPostuleMessage(item.ideaType, ls, mb, mt) : <></>
+  // hasApplied contient le timestamp de la date de candidature / prise de rendez-vous
+  return hasApplied ? getAPostuleMessage(item.ideaType, hasApplied, mb, mt) : <></>
 }

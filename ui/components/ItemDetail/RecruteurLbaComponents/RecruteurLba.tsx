@@ -1,4 +1,5 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { useLocalStorage } from "@uidotdev/usehooks"
 import { get } from "lodash"
 import React, { useState } from "react"
 
@@ -18,6 +19,8 @@ const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, sea
   const { formValues } = React.useContext(DisplayContext)
 
   const currentSearchRadius = formValues?.radius || 30
+
+  const [hasApplied] = useLocalStorage(`application-${company.ideaType}-${company?.id}`)
 
   const [allowDim, setAllowDim] = useState(true) // cet état évite un appel qui masque la mise en avant de l'icône lors de l'ouverture du détail
 
@@ -162,7 +165,7 @@ const RecruteurLba = ({ company, handleSelectItem, showTextOnly = undefined, sea
                 </Text>
               </Flex>
             )}
-            <ItemDetailApplicationsStatus item={company} mt={2} mb={2} />
+            <ItemDetailApplicationsStatus item={company} hasApplied={hasApplied} mt={2} mb={2} />
           </Box>
           {!showTextOnly && company.place.distance > currentSearchRadius && <>{getCenterSearchOnCompanyButton()}</>}
         </Box>

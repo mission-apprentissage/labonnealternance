@@ -19,6 +19,7 @@
     "@sentry/nextjs": "^7.73.0",
     "@socialgouv/matomo-next": "^1.8.0",
     "@turf/distance": "^6.5.0",
+    "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.5.1",
     "dayjs": "^1.11.10",
     "downshift": "5.2.0",
