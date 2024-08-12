@@ -100,11 +100,11 @@ export type IJobsPartners = z.output<typeof ZJobsPartners>
 export const ZJobOffer = ZJobsPartners.omit({ _id: true }).extend({ _id: z.string() })
 export type IJobOffer = z.output<typeof ZJobOffer>
 
-export const ZJobsPartnersResponse = z.object({
+export const ZJobsApiResponseV2 = z.object({
   jobs: z.array(ZJobOffer),
   recruiters: z.array(ZJobRecruiter),
 })
-export type IJobsPartnersResponse = z.output<typeof ZJobsPartnersResponse>
+export type IJobsPartnersResponse = z.output<typeof ZJobsApiResponseV2>
 
 export default {
   zod: ZJobsPartners,
