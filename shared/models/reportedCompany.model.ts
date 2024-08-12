@@ -4,7 +4,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
 
-export const ZReport = z
+export const ZReportedCompany = z
   .object({
     _id: zObjectId,
     type: extensions.buildEnum(LBA_ITEM_TYPE),
@@ -13,10 +13,10 @@ export const ZReport = z
   })
   .strict()
 
-export type IReport = z.output<typeof ZReport>
+export type IReport = z.output<typeof ZReportedCompany>
 
 export default {
-  zod: ZReport,
+  zod: ZReportedCompany,
   indexes: [[{ itemId: 1 }, {}]],
-  collectionName: "reports" as const,
+  collectionName: "reported_companies" as const,
 } as const satisfies IModelDescriptor

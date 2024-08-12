@@ -7,13 +7,13 @@ import { Server } from "../server"
 
 export default (server: Server) => {
   server.post(
-    "/report",
+    "/report-company",
     {
-      schema: zRoutes.post["/report"],
+      schema: zRoutes.post["/report-company"],
     },
     async (req, res) => {
       const { itemId, type } = req.query
-      await getDbCollection("reports").insertOne({
+      await getDbCollection("reported_companies").insertOne({
         _id: new ObjectId(),
         createdAt: new Date(),
         type,

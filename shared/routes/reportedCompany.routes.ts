@@ -4,11 +4,11 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { IRoutesDef } from "./common.routes"
 
-export const zReportRoutes = {
+export const zReportedCompanyRoutes = {
   post: {
-    "/report": {
+    "/report-company": {
       method: "post",
-      path: "/report",
+      path: "/report-company",
       querystring: z
         .object({
           type: extensions.buildEnum(LBA_ITEM_TYPE),

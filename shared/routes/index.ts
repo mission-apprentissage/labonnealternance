@@ -21,7 +21,7 @@ import { zMetiersDAvenirRoutes } from "./metiersdavenir.routes"
 import { zOptoutRoutes } from "./optout.routes"
 import { zPartnersRoutes } from "./partners.routes"
 import { zRecruiterRoutes } from "./recruiters.routes"
-import { zReportRoutes } from "./report.routes"
+import { zReportedCompanyRoutes } from "./reportedCompany.routes"
 import { zRomeRoutes } from "./rome.routes"
 import { zTrainingLinksRoutes } from "./trainingLinks.routes"
 import { zUnsubscribeRoute } from "./unsubscribe.routes"
@@ -98,7 +98,7 @@ const zRoutesPost3 = {
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
   ...zJobsRoutesV2.post,
-  ...zReportRoutes.post,
+  ...zReportedCompanyRoutes.post,
 }
 
 const zRoutesPost = {

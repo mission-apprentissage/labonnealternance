@@ -184,4 +184,4 @@ export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: a
 
 export const getOpcoUsers = () => apiGet("/user/opco", {})
 
-export const reportLbaItem = (itemId: string, type: LBA_ITEM_TYPE) => apiPost("/report", { querystring: { type, itemId } })
+export const reportLbaItem = (itemId: string, type: LBA_ITEM_TYPE) => apiPost("/report-company", { querystring: { type, itemId } })
