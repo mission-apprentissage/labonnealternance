@@ -1,3 +1,5 @@
+import { LoginBar } from "./LoginBar"
+
 const ALGO_COMPANY_SIRET = "11000002300017"
 
 export const FlowAdminPage = {
@@ -10,6 +12,10 @@ export const FlowAdminPage = {
     goToAccountValidation() {
       cy.get("[data-testid='recruiter_management_tab']").click({ force: true })
       cy.url().should("contain", "/espace-pro/administration/users")
+    },
+    goToGestionDesAdministrateurs() {
+      LoginBar.clickLoggedButton()
+      cy.contains("Gestion des administrateurs").click()
     },
   },
   editAlgoCompany: {
@@ -52,6 +58,72 @@ export const FlowAdminPage = {
       cy.contains("button", "Désactiver le compte").click()
       cy.get("[data-testid='confirmation-desactivation-utilisateur-modal']").contains("select", "Sélectionnez un motif").select(reason)
       cy.get("[data-testid='confirmation-desactivation-utilisateur-modal']").contains("button", "Supprimer").click()
+      cy.contains("Utilisateur désactivé")
+    },
+  },
+  gestionDesAdministrateur: {
+    creerNouvelUtilisateur({
+      email,
+      firstname,
+      lastname,
+      type,
+      opco,
+      phone,
+    }: {
+      type: "OPCO" | "ADMIN"
+      opco?: string
+      firstname: string
+      lastname: string
+      email: string
+      phone?: string
+    }) {
+      cy.contains("Créer un utilisateur").click()
+      cy.get("[data-testid='select-type']").select(type)
+      if (opco) {
+        cy.get("[data-testid='select-opco']").select(opco)
+      }
+      cy.get("input[name='first_name']").type(firstname)
+      cy.get("input[name='last_name']").type(lastname)
+      cy.get("input[name='email']").type(email)
+      if (phone) {
+        cy.get("input[name='phone']").type(phone)
+      }
+      cy.contains("button", "Créer l'utilisateur").click()
+    },
+    selectAccountWithEmail(email: string) {
+      cy.get("input[data-testid='search-input']").type(email)
+      cy.contains("[role='row']", email.toLowerCase()).find("a").first().click()
+    },
+  },
+  gestionDunAdmin: {
+    verifyUserFields({
+      email,
+      firstname,
+      lastname,
+      type,
+      opco,
+      phone,
+    }: {
+      type: "OPCO" | "ADMIN"
+      opco?: string
+      firstname: string
+      lastname: string
+      email: string
+      phone?: string
+    }) {
+      cy.get("[data-testid='select-type']").should("have.value", type)
+      if (opco) {
+        cy.get("[data-testid='select-opco']").should("have.value", opco)
+      }
+      cy.get("input[name='first_name']").should("have.value", firstname)
+      cy.get("input[name='last_name']").should("have.value", lastname)
+      cy.get("input[name='email']").should("have.value", email.toLowerCase())
+      if (phone) {
+        cy.get("input[name='phone']").should("have.value", phone)
+      }
+    },
+    deactivate() {
+      cy.contains("button", "Désactiver le compte").click()
       cy.contains("Utilisateur désactivé")
     },
   },
