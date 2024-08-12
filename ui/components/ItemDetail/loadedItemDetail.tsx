@@ -1,4 +1,4 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { ILbaItemLbaCompany } from "@/../shared"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { useContext, useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -14,7 +14,7 @@ import { SendPlausibleEvent } from "../../utils/plausible"
 import InfoBanner from "../InfoBanner/InfoBanner"
 
 import AideApprentissage from "./AideApprentissage"
-import CandidatureLba from "./CandidatureLba/CandidatureLba"
+import CandidatureLba, { NoCandidatureLba } from "./CandidatureLba/CandidatureLba"
 import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
 import FTJobDetail from "./FTJobDetail"
@@ -22,13 +22,13 @@ import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
-import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
-import getSoustitre from "./ItemDetailServices/getSoustitre"
 import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
-import LbaJobDetail from "./LbaJobDetail"
-import LbbCompanyDetail from "./LbbCompanyDetail"
+import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
+import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
+import LbaJobDetail from "./LbaJobComponents/LbaJobDetail"
 import LocationDetail from "./LocationDetail"
+import RecruteurLbaDetail from "./RecruteurLbaComponents/RecruteurLbaDetail"
 import TrainingDetail from "./TrainingDetail"
 
 const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
@@ -123,7 +123,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
           )}
 
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
-          {!isCollapsedHeader && getJobSurtitre({ selectedItem, kind, isMandataire })}
+          {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
 
           <Text
             as="h1"
@@ -140,7 +140,7 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
             {actualTitle || ""}
           </Text>
 
-          {!isCollapsedHeader && getSoustitre({ selectedItem })}
+          {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
 
           {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.PEJOB && buttonJePostuleShouldBeDisplayed(selectedItem) && (
             <Box my={4}>
@@ -164,6 +164,8 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
             </>
           )}
 
+          {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
+
           {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
             <>
               <Divider my={2} />
@@ -175,48 +177,12 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && <FTJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
-      {kind === LBA_ITEM_TYPE_OLD.LBA && <LbbCompanyDetail lbb={selectedItem} />}
-
+      {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
 
-      {kind === LBA_ITEM_TYPE_OLD.LBA && (
-        <Box bg="#f5f5fe" border="1px solid #e3e3fd" mx={8} mb={8} px={6} py={4}>
-          <Box color="bluefrance.500" fontSize="22px" fontWeight={700}>
-            Besoin d&apos;aide ?
-          </Box>
-          <Box color="grey.700">Découvrez les modules de formation de La bonne alternance. Des modules de quelques minutes pour bien préparer vos candidatures.</Box>
-          <Box pl={6}>
-            <Box pt={4}>
-              &bull;
-              <Link
-                variant="basicUnderlined"
-                ml={4}
-                isExternal
-                href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
-                aria-label="Formation Chercher un employeur - nouvelle fenêtre"
-              >
-                Chercher un employeur <ExternalLinkIcon mb="3px" mx="2px" />
-              </Link>
-            </Box>
-            <Box pt={4}>
-              &bull;
-              <Link
-                variant="basicUnderlined"
-                ml={4}
-                isExternal
-                href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
-                aria-label="Formation préparer un entretien avec un employeur - nouvelle fenêtre"
-              >
-                Préparer un entretien avec un employeur <ExternalLinkIcon mb="3px" mx="2px" />
-              </Link>
-            </Box>
-          </Box>
-        </Box>
-      )}
+      {kind !== LBA_ITEM_TYPE_OLD.LBA && <LocationDetail item={selectedItem} isCfa={isCfa} />}
 
-      <LocationDetail item={selectedItem} isCfa={isCfa}></LocationDetail>
-
-      <AideApprentissage item={selectedItem}></AideApprentissage>
+      <AideApprentissage />
 
       {kind === LBA_ITEM_TYPE_OLD.PEJOB && (
         <>

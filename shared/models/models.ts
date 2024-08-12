@@ -5,7 +5,6 @@ import applicationsModel from "./applications.model"
 import appointmentsModel from "./appointments.model"
 import cfaModel from "./cfa.model"
 import { IModelDescriptor } from "./common"
-import computedJobsPartnersModel from "./computedJobsPartners.model"
 import credentialsModel from "./credentials.model"
 import customEmailETFAModel from "./customEmailETFA.model"
 import diplomesMetiersModel from "./diplomesMetiers.model"
@@ -21,6 +20,7 @@ import geolocationsModel from "./geolocations.model"
 import internalJobModel from "./internalJob.model"
 import jobsModel from "./jobs.model"
 import jobsPartnersModel from "./jobsPartners.model"
+import jobsPartnersComputedModel from "./jobsPartnersComputed.model "
 import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
 import rawHelloWorkModel from "./rawHelloWork.model"
@@ -30,6 +30,7 @@ import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model"
 import referentielOnisepModel from "./referentielOnisep.model"
 import referentielOpcoModel from "./referentielOpco.model"
+import reportedCompanyModel from "./reportedCompany.model"
 import roleManagementModel from "./roleManagement.model"
 import romeModel from "./rome.model"
 import sessionModel from "./session.model"
@@ -59,6 +60,7 @@ const modelDescriptorMap = {
   [internalJobModel.collectionName]: internalJobModel,
   [jobsModel.collectionName]: jobsModel,
   [jobsPartnersModel.collectionName]: jobsPartnersModel,
+  [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
   [lbaCompanyModel.collectionName]: lbaCompanyModel,
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,
@@ -76,7 +78,7 @@ const modelDescriptorMap = {
   [unsubscribeOFModel.collectionName]: unsubscribeOFModel,
   [userModel.collectionName]: userModel,
   [userWithAccountModel.collectionName]: userWithAccountModel,
-  [computedJobsPartnersModel.collectionName]: computedJobsPartnersModel,
+  [reportedCompanyModel.collectionName]: reportedCompanyModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

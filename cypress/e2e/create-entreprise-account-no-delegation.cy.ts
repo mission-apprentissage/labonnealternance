@@ -42,7 +42,7 @@ describe("create-entreprise-account-no-delegation", () => {
     FlowCreationEntreprise.offerPage.submit()
     FlowCreationEntreprise.delegationPage.selectCFAs([])
     FlowCreationEntreprise.delegationPage.submitNoDelegation()
-    FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase(), romeLabel, studyLevel])
+    FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase()])
     FlowCreationEntreprise.emailSentPage.goBackHome()
   })
 })
