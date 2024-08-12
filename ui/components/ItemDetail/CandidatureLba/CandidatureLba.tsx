@@ -1,4 +1,4 @@
-import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Flex, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -16,6 +16,19 @@ import { getInitialSchemaValues, getValidationSchema } from "./services/getSchem
 import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandidature"
 import submitCandidature from "./services/submitCandidature"
 import useLocalStorage from "./services/useLocalStorage"
+
+export const NoCandidatureLba = () => {
+  return (
+    <Flex alignItems="center" maxWidth="640px" my={4} backgroundColor="#FEF7DA" p={1}>
+      <Box fontSize="20px" mr={2}>
+        🕵️
+      </Box>
+      <Text color="#66673D" fontSize="12px" fontStyle="italic">
+        Nous n’avons pas de contact pour cette entreprise, peut-être que vous en trouverez un sur internet !
+      </Text>
+    </Flex>
+  )
+}
 
 const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()

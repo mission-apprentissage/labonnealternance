@@ -16,7 +16,7 @@ describe("create-recruiter-account-manual-validation-no-offer", () => {
     const lastName = "Doe"
 
     FlowCreationEntreprise.siretPage.goTo()
-    FlowCreationEntreprise.siretPage.fillSiret(siret)
+    FlowCreationEntreprise.siretPage.searchAndSelectSiret(siret)
     FlowCreationEntreprise.siretPage.submit()
 
     FlowCreationEntreprise.personalInfosPage.fillForm({

@@ -64,7 +64,7 @@ export const NIVEAUX_POUR_LBA = {
   "3 (CAP...)": "Cap, autres formations niveau (Infrabac)",
   "4 (BAC...)": "BP, Bac, autres formations niveau (Bac)",
   "5 (BTS, DEUST...)": "BTS, DEUST, autres formations niveau (Bac+2)",
-  "6 (Licence, BUT...)": "Licence, autres formations niveau (Bac+3)",
+  "6 (Licence, BUT...)": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
   "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveau (Bac+5)",
 }
 

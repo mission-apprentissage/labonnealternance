@@ -2,16 +2,16 @@ import { Accordion, Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { ILbaItemLbaJob } from "shared"
 
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { notifyLbaJobDetailView } from "../../services/notifyLbaJobDetailView"
-import { SendPlausibleEvent } from "../../utils/plausible"
-import { formatDate } from "../../utils/strutils"
+import { DisplayContext } from "../../../context/DisplayContextProvider"
+import { notifyLbaJobDetailView } from "../../../services/notifyLbaJobDetailView"
+import { SendPlausibleEvent } from "../../../utils/plausible"
+import { formatDate } from "../../../utils/strutils"
 
-import LbaJobAcces from "./LbaJobComponents/LbaJobAcces"
-import LbaJobCompetences from "./LbaJobComponents/LbaJobCompetences"
-import LbaJobDescription from "./LbaJobComponents/LbaJobDescription"
-import LbaJobQualites from "./LbaJobComponents/LbaJobQualites"
-import LbaJobTechniques from "./LbaJobComponents/LbaJobTechniques"
+import LbaJobAcces from "./LbaJobAcces"
+import LbaJobCompetences from "./LbaJobCompetences"
+import LbaJobDescription from "./LbaJobDescription"
+import LbaJobQualites from "./LbaJobQualites"
+import LbaJobTechniques from "./LbaJobTechniques"
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes

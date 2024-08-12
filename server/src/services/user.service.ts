@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto"
+
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IUser } from "shared"
@@ -31,6 +33,16 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
     // If the user is new, we will have to update the _id with the default one
     isNew: savedUser._id.equals(newUserId),
   }
+}
+
+export const cleanHardbouncedAppointmentUser = async (email: string) => {
+  const fakeEmail = `hardbounced-${randomUUID()}@faux-domaine.fr`
+  await getDbCollection("users").findOneAndUpdate(
+    { email },
+    {
+      $set: { email: fakeEmail },
+    }
+  )
 }
 
 export const getUserAndRecruitersDataForOpcoUser = async (
