@@ -1,0 +1,90 @@
+import { omit } from "lodash-es"
+import { describe, expect, it } from "vitest"
+
+import { helloWorkJobToJobsPartners } from "./helloWorkMapper"
+
+describe("helloWorkJobToJobsPartners", () => {
+  it("should convert a hellowork job to a partner job", () => {
+    expect(
+      omit(
+        helloWorkJobToJobsPartners({
+          job_id: "73228597",
+          reference: "1267078/12939556 GPEADPA/69V",
+          cpc: "0",
+          title: "Gestionnaire Paie et ADP - Alternance H/F",
+          url: "https://www.url.com/redirect?poc=2&op=5989883668&o=1",
+          description: "ceci est une longue description qui a du sens et qui va passer la limite de 30 caractères",
+          profile: "profile",
+          benefits: null,
+          address: "Stem Propreté Lyon,Villeurbanne,69100",
+          city: "VILLEURBANNE",
+          geoloc: "45.770996568,4.889070834",
+          region: "AUVERGNE RHONE ALPES",
+          department: "RHONE",
+          postal_code: "69100",
+          country: "France",
+          publication_date: new Date("2024-07-05 22:14:56"),
+          updated_date: "2024-07-21 04:49:06",
+          contract: "Alternance",
+          contract_start_date: null,
+          contract_end_date: null,
+          contract_period_value: 1,
+          contract_period_unit: "Year",
+          qualification: "RJ/Qualif/Agent_maitrise_B3",
+          experience: "Inf_1",
+          function: "RH_Personnel_Formation",
+          code_rome: "M1203",
+          ogr_id: "12802",
+          job_time: "Full time",
+          education: "RJ/Qualif/Agent_maitrise_B3",
+          language: null,
+          remote: "Pas_teletravail",
+          sector: "Serv_entreprise",
+          company_title: "Stem Propreté Lyon",
+          company_description: "ceci est une longue description de l'entreprise qui a du sens et qui va passer la limite de 30 caractères",
+          logo: "https://f.hellowork.com/img/mail/logo/hellowork-black.png",
+          company_logo: "http://ressources.regionsjob.com/img/entreprises/94930.png",
+          siret: "39837261500128",
+          naf_code: "8121Z",
+          company_sector: "Nettoyage courant des bâtiments",
+          csr_label: null,
+        }),
+        ["_id", "created_at"]
+      )
+    ).toEqual({
+      partner_label: "Hellowork",
+      partner_id: "73228597",
+      contract_start: null,
+      contract_type: ["Apprentissage", "Professionnalisation"],
+      contract_remote: "Présentiel",
+      contract_duration: 12,
+      offer_title: "Gestionnaire Paie et ADP - Alternance H/F",
+      offer_description: "ceci est une longue description qui a du sens et qui va passer la limite de 30 caractères",
+      offer_diploma_level_label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+      offer_desired_skills: "profile",
+      offer_access_condition: null,
+      offer_acquired_skills: null,
+      offer_rome_code: ["M1203"],
+      offer_creation_date: new Date("2024-07-05T20:14:56.000Z"),
+      offer_expiration_date: null,
+      offer_origin: null,
+      offer_count: 1,
+      offer_multicast: false,
+      workplace_siret: "39837261500128",
+      workplace_name: "Stem Propreté Lyon",
+      workplace_description: "ceci est une longue description de l'entreprise qui a du sens et qui va passer la limite de 30 caractères",
+      workplace_size: null,
+      workplace_website: null,
+      workplace_raison_sociale: null,
+      workplace_enseigne: null,
+      workplace_address: "Stem Propreté Lyon,Villeurbanne,69100 69100 VILLEURBANNE",
+      workplace_geopoint: {
+        type: "Point",
+        coordinates: [45.770996568, 4.889070834],
+      },
+      apply_url: "https://www.url.com/redirect?poc=2&op=5989883668&o=1",
+      errors: [],
+      validated: false,
+    })
+  })
+})

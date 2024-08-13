@@ -5,28 +5,30 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
 import { z } from "zod"
 
-export const ZHelloWorkJob = z.object({
-  job_id: z.string(),
-  contract_start_date: z.coerce.date().nullish(),
-  contract: z.string(),
-  remote: z.string().nullish(),
-  contract_period_value: z.coerce.number().nullish(),
-  contract_period_unit: z.string().nullish(),
-  title: z.string(),
-  description: z.string().nullish(),
-  education: z.string().nullish(),
-  profile: z.string().nullish(),
-  code_rome: z.string().nullish(),
-  publication_date: z.coerce.date().nullish(),
-  siret: z.string().nullish(),
-  company_title: z.string(),
-  company_description: z.string().nullish(),
-  address: z.string().nullish(),
-  postal_code: z.string().nullish(),
-  city: z.string().nullish(),
-  geoloc: z.string().nullish(),
-  url: extensions.url(),
-})
+export const ZHelloWorkJob = z
+  .object({
+    job_id: z.string(),
+    contract_start_date: z.coerce.date().nullish(),
+    contract: z.string(),
+    remote: z.string().nullish(),
+    contract_period_value: z.coerce.number().nullish(),
+    contract_period_unit: z.string().nullish(),
+    title: z.string(),
+    description: z.string().nullish(),
+    education: z.string().nullish(),
+    profile: z.string().nullish(),
+    code_rome: z.string().nullish(),
+    publication_date: z.coerce.date().nullish(),
+    siret: z.string().nullish(),
+    company_title: z.string(),
+    company_description: z.string().nullish(),
+    address: z.string().nullish(),
+    postal_code: z.string().nullish(),
+    city: z.string().nullish(),
+    geoloc: z.string().nullish(),
+    url: extensions.url(),
+  })
+  .passthrough()
 
 export type IHelloWorkJob = z.output<typeof ZHelloWorkJob>
 
