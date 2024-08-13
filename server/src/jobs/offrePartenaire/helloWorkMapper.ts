@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants"
+import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
@@ -8,7 +9,7 @@ import { z } from "zod"
 export const ZHelloWorkJob = z
   .object({
     job_id: z.string(),
-    contract_start_date: z.coerce.date().nullish(),
+    contract_start_date: z.string().nullish(),
     contract: z.string(),
     remote: z.string().nullish(),
     contract_period_value: z.coerce.number().nullish(),
@@ -18,7 +19,7 @@ export const ZHelloWorkJob = z
     education: z.string().nullish(),
     profile: z.string().nullish(),
     code_rome: z.string().nullish(),
-    publication_date: z.coerce.date().nullish(),
+    publication_date: z.string().nullish(),
     siret: z.string().nullish(),
     company_title: z.string(),
     company_description: z.string().nullish(),
@@ -81,7 +82,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     created_at: new Date(),
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     partner_id: job_id,
-    contract_start: contract_start_date ?? null,
+    contract_start: parseDate(contract_start_date),
     contract_type: contract.toLowerCase() === "alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
     contract_remote: remote ? teletravailMapping[remote] ?? null : null,
     contract_duration: contractDuration,
@@ -92,7 +93,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_access_condition: null,
     offer_acquired_skills: null,
     offer_rome_code: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
-    offer_creation_date: publication_date ?? null,
+    offer_creation_date: parseDate(publication_date),
     offer_expiration_date: null,
     offer_origin: null,
     offer_count: 1,
@@ -151,4 +152,11 @@ const parseContractDuration = ({ contract_period_unit, contract_period_value }: 
       return Math.ceil((contract_period_value * 7) / (365 / 12))
   }
   return null
+}
+
+const parseDate = (dateStr: string | null | undefined) => {
+  if (!dateStr) {
+    return null
+  }
+  return dayjs.tz(dateStr).toDate()
 }
