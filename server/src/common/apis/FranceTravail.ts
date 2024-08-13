@@ -4,6 +4,7 @@ import querystring from "querystring"
 import Boom from "boom"
 import { ObjectId } from "bson"
 import FormData from "form-data"
+import { IRomeoApiResponse, ZRomeoApiResponse } from "shared/interface/franceTravail.types"
 import { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
 import config from "@/config"
@@ -18,7 +19,7 @@ import getApiClient from "./client"
 
 const axiosClient = getApiClient({}, { cache: false })
 
-const getFranceTravailTokenFromDB = async (access_type: IFranceTravailAccessType): Promise<IFranceTravailAccess["access_token"] | undefined> => {
+const getFranceTravailTokenFromDB = async (access_type: IAccessParams): Promise<IFranceTravailAccess["access_token"] | undefined> => {
   const data = await getDbCollection("francetravail_access").findOne({ access_type }, { projection: { access_token: 1, _id: 0 } })
   return data?.access_token
 }
@@ -29,14 +30,24 @@ const updateFranceTravailTokenInDB = async ({ access_type, access_token }: { acc
     { upsert: true }
   )
 
-const OFFRES_ACCESS = querystring.stringify({
-  grant_type: "client_credentials",
-  client_id: config.esdClientId,
-  client_secret: config.esdClientSecret,
-  scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
-})
+export const ACCESS_PARAMS = {
+  OFFRE: querystring.stringify({
+    grant_type: "client_credentials",
+    client_id: config.esdClientId,
+    client_secret: config.esdClientSecret,
+    scope: `application_${config.esdClientId} api_offresdemploiv2 o2dsoffre`,
+  }),
+  ROMEO: querystring.stringify({
+    grant_type: "client_credentials",
+    client_id: config.esdClientId,
+    client_secret: config.esdClientSecret,
+    scope: `application_${config.esdClientId} api_romeov2`,
+  }),
+}
 
-const getToken = async (access: IFranceTravailAccessType) => {
+type IAccessParams = keyof typeof ACCESS_PARAMS
+
+const getToken = async (access: IAccessParams) => {
   const token = await getFranceTravailTokenFromDB(access)
   if (token) {
     return token
@@ -45,10 +56,11 @@ const getToken = async (access: IFranceTravailAccessType) => {
   }
 }
 
-export const getFranceTravailTokenFromAPI = async (access: IFranceTravailAccessType): Promise<string> => {
+export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promise<string> => {
   try {
     logger.info(`requesting new FT token for access=${access}`)
-    const tokenParams = OFFRES_ACCESS // if other access are needed, update this value.
+    const tokenParams = ACCESS_PARAMS[access] // if other access are needed, update this value.
+    console.log({ tokenParams })
     const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=partenaire`, tokenParams, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 3000,
@@ -144,5 +156,38 @@ export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => 
     return data
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+  }
+}
+
+export type IRomeoPayload = {
+  intitule: string
+  identifiant: string
+  contexte?: string
+}
+type IRomeoOptions = {
+  nomAppelant: string
+  nbResultats?: number // betwwen 1 and 25, default 5
+  seuilScorePrediction?: number
+}
+export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRomeoOptions = { nomAppelant: "La bonne alternance" }): Promise<IRomeoApiResponse> => {
+  if (payload.length > 50) throw Error("Maximum recommanded array size is 50") // Louis feeback https://mna-matcha.atlassian.net/browse/LBA-2232?focusedCommentId=13000
+  const token = await getToken("ROMEO")
+  try {
+    const result = await axiosClient.post(
+      `${config.franceTravailIO.baseUrl}/romeo/v2/predictionMetiers`,
+      { appellations: payload, options },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    await ZRomeoApiResponse.parse(result.data)
+    return result.data
+  } catch (error: any) {
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+    throw Boom.internal("impossible d'obtenir les prédictions ROMEO")
   }
 }

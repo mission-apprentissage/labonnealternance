@@ -163,6 +163,7 @@ function createJobAction(name) {
   }
 }
 
+program.command("poc:romeo").description("Recreate MongoDB indexes").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("poc:romeo"))
 program.command("recreate:indexes").description("Recreate MongoDB indexes").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("recreate:indexes"))
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
