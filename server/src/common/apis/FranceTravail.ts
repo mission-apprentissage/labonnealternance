@@ -30,7 +30,7 @@ const updateFranceTravailTokenInDB = async ({ access_type, access_token }: { acc
     { upsert: true }
   )
 
-export const ACCESS_PARAMS = {
+const ACCESS_PARAMS = {
   OFFRE: querystring.stringify({
     grant_type: "client_credentials",
     client_id: config.esdClientId,
