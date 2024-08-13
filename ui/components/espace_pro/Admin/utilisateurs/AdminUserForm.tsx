@@ -200,6 +200,7 @@ const UserFieldsForm = ({
               possibleValues={[AUTHTYPE.OPCO, AUTHTYPE.ADMIN]}
               value={values.type}
               onChange={(newValue) => formik?.setFieldValue("type", newValue, true)}
+              dataTestId="select-type"
               selectProps={{
                 isDisabled: Boolean(user),
               }}
@@ -212,6 +213,7 @@ const UserFieldsForm = ({
                 possibleValues={Object.values(OPCOS)}
                 value={values.opco}
                 onChange={(newValue) => formik?.setFieldValue("opco", newValue, true)}
+                dataTestId="select-opco"
                 selectProps={{
                   isDisabled: Boolean(user),
                 }}

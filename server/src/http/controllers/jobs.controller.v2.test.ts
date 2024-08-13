@@ -1,7 +1,7 @@
 import { getApiApprentissageTestingToken } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { createJobPartnerTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
+import { createRecruteurLbaTest, saveJobPartnerTest } from "@tests/utils/user.test.utils"
 import { describe, expect, it } from "vitest"
 
 import { ApiApprentissageTokenData } from "../../security/accessApiApprentissageService"
@@ -18,7 +18,7 @@ describe("/jobs", () => {
   const token = getApiApprentissageTestingToken(tokenPayload)
 
   const mockData = async () => {
-    await createJobPartnerTest({ jobOfferData: { rome_code: rome }, workplaceData: { location: { address: "adresse", geopoint: geopoint } } })
+    await saveJobPartnerTest({ offer_rome_code: rome, workplace_geopoint: geopoint })
     await createRecruteurLbaTest({ rome_codes: rome, geopoint: geopoint, siret: "58006820882692" })
   }
 
