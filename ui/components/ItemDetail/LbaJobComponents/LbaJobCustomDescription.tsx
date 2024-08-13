@@ -8,7 +8,7 @@ const LbaJobCustomDescription = ({ data, title }: { data: string; title: string 
   })
   return (
     <Accordion allowToggle>
-      <AccordionItem>
+      <AccordionItem borderBottom="1px solid #E5E5E5">
         {({ isExpanded }) => (
           <>
             <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
