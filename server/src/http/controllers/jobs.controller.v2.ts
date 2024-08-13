@@ -76,10 +76,27 @@ export default (server: Server) => {
     }
   )
 
-  // POST job in jobs_partners
-  server.post("/jobs", {}, async () => {})
-  // PATCH job in jobs_partners
-  server.post("/jobs/:id", {}, async () => {})
+  // POST job in jobs_partners need spec review
+  server.post(
+    "/jobs",
+    {
+      schema: zRoutes.post["/jobs"],
+      onRequest: server.auth(zRoutes.post["/jobs"]),
+      config,
+    },
+    async () => {}
+  )
+
+  // PATCH job in jobs_partners need spec review
+  server.post(
+    "/jobs/:id",
+    {
+      schema: zRoutes.post["/jobs/:id"],
+      onRequest: server.auth(zRoutes.post["/jobs/:id"]),
+      config,
+    },
+    async () => {}
+  )
 
   server.post(
     "/jobs/provided/:id",

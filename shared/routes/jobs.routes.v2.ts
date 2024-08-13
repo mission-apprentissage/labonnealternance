@@ -2,7 +2,7 @@ import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
-import { ZJobsApiResponseV2 } from "../models/jobsPartners.model"
+import { ZJobsApiResponseV2, ZJobsPartners, ZJobsPartnersPostApiBody } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -390,6 +390,19 @@ export const zJobsRoutesV2 = {
     },
   },
   post: {
+    "/jobs": {
+      method: "post",
+      path: "/jobs",
+      body: ZJobsPartnersPostApiBody,
+      response: {
+        "200": ZJobsPartners,
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
     "/jobs/provided/:id": {
       method: "post",
       path: "/jobs/provided/:id",
@@ -460,5 +473,22 @@ export const zJobsRoutesV2 = {
       },
     },
   },
-  patch: {},
+  patch: {
+    "/jobs/:id": {
+      method: "post",
+      path: "/jobs",
+      params: z.object({
+        id: zObjectId,
+      }),
+      body: ZJobsPartnersPostApiBody,
+      response: {
+        "200": ZJobsPartners,
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
+  },
 } as const satisfies IRoutesDef
