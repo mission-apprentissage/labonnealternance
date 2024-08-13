@@ -66,7 +66,7 @@ export const NIVEAUX_POUR_LBA = {
   "5 (BTS, DEUST...)": "BTS, DEUST, autres formations niveau (Bac+2)",
   "6 (Licence, BUT...)": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
   "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveau (Bac+5)",
-}
+} as const
 
 export const NIVEAUX_POUR_OFFRES_PE = {
   "4 (BAC...)": "NV5",
@@ -94,8 +94,8 @@ export const TRAINING_RYTHM = {
   "6S6S": "6 semaines / 6 semaines",
 }
 
-export const TRAINING_REMOTE_TYPE = {
-  PRESENTIEL: "Présentiel",
-  TELETRAVAIL: "Télétravail",
-  HYBRID: "Hybride",
+export enum TRAINING_REMOTE_TYPE {
+  PRESENTIEL = "Présentiel",
+  TELETRAVAIL = "Télétravail",
+  HYBRID = "Hybride",
 }

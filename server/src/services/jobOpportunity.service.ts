@@ -1,4 +1,5 @@
-import { IGeoPoint, ILbaCompany, IRecruiter } from "shared"
+import { IGeoPoint, ILbaCompany, IRecruiter, parseEnum } from "shared"
+import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { IJobOffer, IJobRecruiterApiFormat, IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
@@ -257,7 +258,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
         offer_title: job.rome_appellation_label!,
         offer_rome_code: job.rome_code,
         offer_description: job.rome_detail!.definition!,
-        offer_diploma_level_label: job.job_level_label!,
+        offer_diploma_level_label: parseEnum(NIVEAUX_POUR_LBA, job.job_level_label),
         offer_desired_skills: job.rome_detail!.competences.savoir_etre_professionnel!.map((x) => x.libelle),
         offer_acquired_skills: job.rome_detail!.competences.savoir_faire!.map((x) => ({ libelle: x.libelle, items: x.items.map((y) => y.libelle) })),
         offer_access_condition: job.rome_detail!.acces_metier,
@@ -343,50 +344,54 @@ export const formatOffresEmploiPartenaire = (offresEmploiPartenaire: IJobsPartne
 
 export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob[]): IJobOffer[] | [] => {
   if (!offresEmploiFranceTravail.length) return []
-  return offresEmploiFranceTravail.map((offreFT) => ({
-    created_at: new Date(offreFT.dateCreation),
-    _id: offreFT.id.toString(),
-    partner_id: null,
-    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
-    contract: {
-      contract_start: null,
-      contract_duration: parseInt(offreFT.typeContratLibelle),
-      contract_type: [offreFT.natureContrat],
-      contract_remote: null,
-    },
-    job_offer: {
-      offer_title: offreFT.intitule,
-      offer_rome_code: [offreFT.romeCode],
-      offer_description: offreFT.description,
-      offer_diploma_level_label: null,
-      offer_desired_skills: null,
-      offer_acquired_skills: null,
-      offer_access_condition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
-      offer_creation_date: new Date(offreFT.dateCreation),
-      offer_expiration_date: null,
-      offer_count: offreFT.nombrePostes,
-      offer_multicast: true,
-      offer_origin: null,
-    },
-    workplace: {
-      workplace_siret: null,
-      workplace_website: null,
-      workplace_raison_sociale: offreFT.entreprise.nom,
-      workplace_enseigne: offreFT.entreprise.nom,
-      workplace_name: offreFT.entreprise.nom,
-      workplace_description: offreFT.entreprise.description,
-      workplace_size: null,
-      workplace_address: offreFT.lieuTravail.libelle,
-      workplace_geopoint: convertToGeopoint(parseFloat(offreFT.lieuTravail.longitude), parseFloat(offreFT.lieuTravail.latitude)),
-      workplace_idcc: null,
-      workplace_opco: null,
-      workplace_naf_code: offreFT.codeNAF ? offreFT.codeNAF : null,
-      workplace_naf_label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
-    },
-    apply: {
-      apply_url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
-      apply_email: null,
-      apply_phone: null,
-    },
-  }))
+  return offresEmploiFranceTravail.map((offreFT) => {
+    const contractDuration = parseInt(offreFT.typeContratLibelle, 10)
+    const contractType = parseEnum(TRAINING_CONTRACT_TYPE, offreFT.natureContrat)
+    return {
+      created_at: new Date(offreFT.dateCreation),
+      _id: offreFT.id.toString(),
+      partner_id: null,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+      contract: {
+        contract_start: null,
+        contract_duration: isNaN(contractDuration) ? null : contractDuration,
+        contract_type: contractType ? [contractType] : [],
+        contract_remote: null,
+      },
+      job_offer: {
+        offer_title: offreFT.intitule,
+        offer_rome_code: [offreFT.romeCode],
+        offer_description: offreFT.description,
+        offer_diploma_level_label: null,
+        offer_desired_skills: null,
+        offer_acquired_skills: null,
+        offer_access_condition: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
+        offer_creation_date: new Date(offreFT.dateCreation),
+        offer_expiration_date: null,
+        offer_count: offreFT.nombrePostes,
+        offer_multicast: true,
+        offer_origin: null,
+      },
+      workplace: {
+        workplace_siret: null,
+        workplace_website: null,
+        workplace_raison_sociale: offreFT.entreprise.nom,
+        workplace_enseigne: offreFT.entreprise.nom,
+        workplace_name: offreFT.entreprise.nom,
+        workplace_description: offreFT.entreprise.description,
+        workplace_size: null,
+        workplace_address: offreFT.lieuTravail.libelle,
+        workplace_geopoint: convertToGeopoint(parseFloat(offreFT.lieuTravail.longitude), parseFloat(offreFT.lieuTravail.latitude)),
+        workplace_idcc: null,
+        workplace_opco: null,
+        workplace_naf_code: offreFT.codeNAF ? offreFT.codeNAF : null,
+        workplace_naf_label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
+      },
+      apply: {
+        apply_url: offreFT.origineOffre.partenaires[0].url ?? offreFT.origineOffre.urlOrigine,
+        apply_email: null,
+        apply_phone: null,
+      },
+    }
+  })
 }
