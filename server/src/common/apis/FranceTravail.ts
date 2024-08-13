@@ -4,13 +4,14 @@ import querystring from "querystring"
 import Boom from "boom"
 import { ObjectId } from "bson"
 import FormData from "form-data"
-import { IRomeoApiResponse, ZRomeoApiResponse } from "shared/interface/franceTravail.types"
+import { IRomeoApiResponse, ZRomeoApiResponse } from "shared/models/cacheRomeo.model"
 import { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
 import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
 import { ZFTApiToken } from "@/services/rome.service.types"
 
+import { updateRomeoCache } from "../../services/cache.service"
 import { logger } from "../logger"
 import { getDbCollection } from "../utils/mongodbUtils"
 import { sentryCaptureException } from "../utils/sentryUtils"
@@ -184,6 +185,7 @@ export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRo
       }
     )
     await ZRomeoApiResponse.parse(result.data)
+    await updateRomeoCache(result.data)
     return result.data
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
