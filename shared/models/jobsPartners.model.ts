@@ -52,13 +52,6 @@ export const ZJobsPartnersJobOffer = z.object({
 })
 export type IJobsPartnersJobOffer = z.output<typeof ZJobsPartnersJobOffer>
 
-export const ZJobsPartnersLocation = z
-  .object({
-    address: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
-    geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
-  })
-  .describe("Adresse définit par le SIRET ou transmise par le partenaire (tous les champs sont obligatoire)")
-
 export const ZJobsPartnersWorkplace = z.object({
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   workplace_website: z.string().nullable().describe("Site web de l'entreprise"),
@@ -116,10 +109,10 @@ export type IJobsPartnersResponse = z.output<typeof ZJobsApiResponseV2>
 export default {
   zod: ZJobsPartners,
   indexes: [
-    [{ raw_id: 1 }, {}],
     [{ workplace_geopoint: "2dsphere" }, {}],
     [{ offer_rome_code: 1 }, {}],
     [{ partner_label: 1 }, {}],
+    [{ partner_id: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
