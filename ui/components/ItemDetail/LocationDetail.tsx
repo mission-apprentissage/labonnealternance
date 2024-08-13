@@ -32,7 +32,7 @@ const LocationDetail = ({ item, isCfa }) => {
   return (
     <>
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && item?.company?.mandataire && (
-        <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
+        <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
           <Text as="h2" variant="itemDetailH2" mt={2}>
             {getTitle({})}
           </Text>
@@ -62,7 +62,7 @@ const LocationDetail = ({ item, isCfa }) => {
         </Box>
       )}
 
-      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
+      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>
           {getTitle(item)}
         </Text>
