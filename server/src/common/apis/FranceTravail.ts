@@ -59,8 +59,7 @@ const getToken = async (access: IAccessParams) => {
 export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promise<string> => {
   try {
     logger.info(`requesting new FT token for access=${access}`)
-    const tokenParams = ACCESS_PARAMS[access] // if other access are needed, update this value.
-    console.log({ tokenParams })
+    const tokenParams = ACCESS_PARAMS[access]
     const response = await axiosClient.post(`${config.franceTravailIO.authUrl}?realm=partenaire`, tokenParams, {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       timeout: 3000,
