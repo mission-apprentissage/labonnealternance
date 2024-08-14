@@ -32,7 +32,7 @@ const FTJobDetail = ({ job }) => {
   const creationDate = formatDate(job?.job?.creationDate)
 
   return (
-    <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
+    <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
       <Text as="h2" variant="itemDetailH2" mt={2} mb={4}>
         Description de l&apos;offre
       </Text>
@@ -76,10 +76,10 @@ const FTJobDetail = ({ job }) => {
                   lineHeight: "24px",
                 }}
               >
-                <ListItem>Offre offensante ou discriminatoire ;</ListItem>
-                <ListItem>Offre inexacte ou expirée ;</ListItem>
-                <ListItem>Fausse offre provenant d’un centre de formation ;</ListItem>
-                <ListItem>Tentative d'escroquerie.</ListItem>
+                <ListItem>Offre offensante ou discriminatoire</ListItem>
+                <ListItem>Offre inexacte ou expirée</ListItem>
+                <ListItem>Fausse offre provenant d’un centre de formation</ListItem>
+                <ListItem>Tentative d'escroquerie</ListItem>
               </UnorderedList>
             </Box>
           }

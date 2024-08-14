@@ -1,9 +1,11 @@
-import { Box, Flex, Link, Text, Tooltip } from "@chakra-ui/react"
+import { Box, Flex, Link, Text, Tooltip, useDisclosure } from "@chakra-ui/react"
 import { useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { InterrogationCircle } from "@/theme/components/icons/InterrogationCircle"
 import { reportLbaItem } from "@/utils/api"
+
+import { ModalReadOnly } from "../ModalReadOnly"
 
 import { useLocalStorageTyped } from "./CandidatureLba/services/useLocalStorage"
 
@@ -23,14 +25,37 @@ export const ReportJobLink = ({
   type: LBA_ITEM_TYPE
 }) => {
   const [isTooltipOpen, setTooltipOpen] = useState(false)
+  const { isOpen: isModalOpen, onClose: onModalClose, onOpen: setModalOpen } = useDisclosure()
   const [isReported, setReported] = useLocalStorageTyped<boolean>(`report-job-${itemId}`, false)
+  const isMobile = () => window.innerWidth < 500
 
   const onReport = async () => {
     if (isReported) {
       return
     }
+    if (!confirm("Êtes-vous sûr de vouloir signaler cette offre comme frauduleuse ?")) {
+      return
+    }
     setReported(true)
     reportLbaItem(itemId, type)
+  }
+
+  const onClick = () => {
+    if (isMobile()) {
+      setModalOpen()
+    }
+  }
+
+  const onMouseOver = () => {
+    if (!isMobile()) {
+      setTooltipOpen(true)
+    }
+  }
+
+  const onMouseOut = () => {
+    if (!isMobile()) {
+      setTooltipOpen(false)
+    }
   }
 
   return (
@@ -44,6 +69,9 @@ export const ReportJobLink = ({
           <span style={{ color: "#03053D" }}>⚐</span> &nbsp;{linkLabelNotReported}
         </Link>
       )}
+      <ModalReadOnly isOpen={isModalOpen} onClose={onModalClose}>
+        {tooltip}
+      </ModalReadOnly>
       <Tooltip
         isOpen={isTooltipOpen}
         label={<Box padding="24px 46px 24px 24px">{tooltip}</Box>}
@@ -54,14 +82,7 @@ export const ReportJobLink = ({
         width={width}
         minWidth={`min(${width}, 100vw)`}
       >
-        <Text
-          as={"span"}
-          _hover={{ cursor: "pointer" }}
-          color="#000091"
-          onClick={() => setTooltipOpen(!isTooltipOpen)}
-          onMouseOver={() => setTooltipOpen(true)}
-          onMouseOut={() => setTooltipOpen(false)}
-        >
+        <Text as={"span"} _hover={{ cursor: "pointer" }} color="#000091" onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
           <InterrogationCircle />
         </Text>
       </Tooltip>

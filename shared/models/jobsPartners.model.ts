@@ -23,8 +23,8 @@ const ZJobsPartnersApply = z.object({
 
 const ZJobsPartnersContract = z.object({
   contract_start: z.date().nullable().describe("Date de début de contrat"),
-  contract_duration: z.number().nullable().describe("Durée du contract"),
-  contract_type: z.array(z.string()).nullable().describe("type de contract, formaté à l'insertion"),
+  contract_duration: z.number().nullable().describe("Durée du contrat en mois"),
+  contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contrat, formaté à l'insertion"),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
 })
 
@@ -151,6 +151,7 @@ export default {
     [{ workplace_geopoint: "2dsphere" }, {}],
     [{ offer_rome_code: 1 }, {}],
     [{ partner_label: 1 }, {}],
+    [{ partner_id: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

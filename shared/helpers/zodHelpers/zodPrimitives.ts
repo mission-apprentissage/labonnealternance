@@ -123,4 +123,5 @@ export const extensions = {
       .regex(LONGITUDE_REGEX, "Longitude invalide")
       .transform((val) => parseFloat(val)),
   inseeCode: () => z.string().trim().regex(CODE_INSEE_REGEX, "Code INSEE invalide"),
+  url: () => z.string().regex(/^(https?:\/\/)?(http?:\/\/)?(www\.)?([a-zA-Z0-9-]+)(\.[a-zA-Z0-9-]+)+([a-zA-Z]{2,6})(:[0-9]{1,5})?(\/.*)?$/, "URL invalide"),
 }

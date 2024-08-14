@@ -253,6 +253,8 @@ export default {
     [{ job_id: 1 }, {}],
     [{ caller: 1 }, {}],
     [{ created_at: 1 }, {}],
+    [{ scan_status: 1 }, {}],
+    [{ scan_status: 1, to_applicant_message_id: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
