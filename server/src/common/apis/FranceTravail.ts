@@ -169,7 +169,7 @@ type IRomeoOptions = {
   nbResultats?: number // betwwen 1 and 25, default 5
   seuilScorePrediction?: number
 }
-export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRomeoOptions = { nomAppelant: "La bonne alternance" }): Promise<IRomeoApiResponse> => {
+export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRomeoOptions = { nomAppelant: "La bonne alternance" }): Promise<IRomeoApiResponse | null> => {
   if (payload.length > 50) throw Error("Maximum recommanded array size is 50") // Louis feeback https://mna-matcha.atlassian.net/browse/LBA-2232?focusedCommentId=13000
   const token = await getToken("ROMEO")
   try {
@@ -189,6 +189,6 @@ export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRo
     return result.data
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    throw Boom.internal("impossible d'obtenir les prédictions ROMEO")
+    return null
   }
 }
