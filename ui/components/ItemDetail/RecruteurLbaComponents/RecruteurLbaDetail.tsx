@@ -4,13 +4,14 @@ import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, I
 import React, { useContext, useEffect } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { getPathLink, scrollToNestedElement } from "@/utils/tools"
+import { scrollToNestedElement } from "@/utils/tools"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { getCompanyGoogleSearchLink } from "../ItemDetailServices/getCompanyGoogleSearchLink"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
-import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
+import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
+import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import { ReportJobLink } from "../ReportJobLink"
 
 const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany }) => {
@@ -71,16 +72,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
 
                 <AccordionPanel pb={4}>
                   <Box background="#f6f6f6" mb={4} p={4}>
-                    <Text>
-                      <Text as="span" fontWeight={700}>
-                        Localisation :{" "}
-                      </Text>
-                      <Text as="span">{recruteurLba?.place?.fullAddress}</Text>
-                      <Link ml={4} isExternal variant="basicUnderlined" href={getPathLink(recruteurLba)} aria-label="Localisation sur google maps - nouvelle fenêtre">
-                        Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
-                      </Link>
-                      <ItemDistanceToCenter item={recruteurLba} />
-                    </Text>
+                    <ItemLocalisation item={recruteurLba} />
                     <Text mt={4}>
                       <Text as="span" fontWeight={700}>
                         Taille de l'entreprise :{" "}
@@ -105,21 +97,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                         </Text>
                       </Text>
                     )}
-
-                    <Text mt={4}>
-                      <Text as="span">
-                        Lancer une recherche Google sur
-                        <Link
-                          ml="2px"
-                          isExternal
-                          variant="basicUnderlined"
-                          href={getCompanyGoogleSearchLink(recruteurLba)}
-                          aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre"
-                        >
-                          {recruteurLba.company.name} <ExternalLinkIcon mb="3px" ml="2px" />
-                        </Link>
-                      </Text>
-                    </Text>
+                    <ItemGoogleSearchLink item={recruteurLba} />
                   </Box>
 
                   <Text>
