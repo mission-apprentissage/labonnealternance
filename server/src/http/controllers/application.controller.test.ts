@@ -1,5 +1,5 @@
-import { useMongo } from "@tests/utils/mongo.utils"
-import { useServer } from "@tests/utils/server.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import { ILbaCompany } from "shared/models"
 import { beforeEach, describe, expect, it, vi } from "vitest"

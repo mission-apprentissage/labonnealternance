@@ -1,21 +1,39 @@
 import { ObjectId } from "mongodb"
 import { OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IEmailBlacklist, IJob, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist } from "shared/models"
+import { IApplication, ICredential, IEmailBlacklist, IJob, ILbaCompany, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany } from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
+import { IJobsPartners, ZJobsPartners } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
-import { ZodObject, ZodString, ZodTypeAny } from "zod"
+import { ZodArray, ZodObject, ZodString, ZodTypeAny } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+
+function generateRandomRomeCode() {
+  // Générer une lettre aléatoire
+  const letters = "ABCDEFGHIJKL"
+  const randomLetter = letters.charAt(Math.floor(Math.random() * letters.length))
+
+  // Générer quatre chiffres aléatoires
+  const randomDigits = Math.floor(1000 + Math.random() * 9000) // Cela génère un nombre entre 1000 et 9999
+
+  // Combiner la lettre et les chiffres pour former le code ROME
+  return randomLetter + randomDigits
+}
 
 let seed = 0
 function getFixture() {
   seed++
   return new Fixture({ seed }).extend([
+    Generator({
+      schema: ZodArray,
+      filter: ({ context }) => context.path.at(-1) === "offer_rome_code",
+      output: () => [generateRandomRomeCode()],
+    }),
     Generator({
       schema: ZodObject,
       filter: ({ context }) => context.path.at(-1) === "geopoint",
@@ -37,16 +55,17 @@ function getFixture() {
       schema: extensions.siret,
       output: ({ transform }) =>
         transform.utils.random.from([
-          "55327987900672",
-          "55327987900673",
-          "55327987900674",
-          "55327987900675",
-          "55327987900676",
-          "55327987900677",
-          "73282932000074",
-          "35600000000048",
-          "35600000009075",
-          "35600000009093",
+          "58006820882692",
+          "94770756516212",
+          "08993700810714",
+          "89557430766546",
+          "10392947668876",
+          "81952222258729",
+          "34843069553553",
+          "55445073871148",
+          "44477717954190",
+          "62006652591225",
+          "77147689105960",
         ]),
     }),
   ])
@@ -213,6 +232,14 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   }
   await getDbCollection("emailblacklists").insertOne(u)
   return u
+}
+
+export async function saveJobPartnerTest(data: Partial<IJobsPartners> = {}) {
+  return await saveDbEntity(ZJobsPartners, (item) => getDbCollection("jobs_partners").insertOne(item), data)
+}
+
+export async function createRecruteurLbaTest(data: Partial<ILbaCompany>) {
+  return await saveDbEntity(ZLbaCompany, (item) => getDbCollection("recruteurslba").insertOne(item), data)
 }
 
 export const saveAdminUserTest = async (userProps: Partial<IUserWithAccount> = {}) => {

@@ -1,11 +1,13 @@
-import { Accordion, Box, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { ILbaItemLbaJob } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { notifyLbaJobDetailView } from "../../../services/notifyLbaJobDetailView"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
+import { ReportJobLink } from "../ReportJobLink"
 
 import LbaJobAcces from "./LbaJobAcces"
 import LbaJobCompetences from "./LbaJobCompetences"
@@ -46,7 +48,7 @@ const LbaJobDetail = ({ job }) => {
 
   return (
     <>
-      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
+      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text as="h2" variant="itemDetailH2" mt={2} mb={4}>
           Description de l&apos;offre
         </Text>
@@ -107,9 +109,37 @@ const LbaJobDetail = ({ job }) => {
           <LbaJobDescription job={job} />
           <LbaJobQualites job={job} />
         </Accordion>
+        <Box marginTop="10px">
+          <ReportJobLink
+            width="480px"
+            itemId={job?.job?.id}
+            type={LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}
+            linkLabelNotReported="Signaler l'offre"
+            linkLabelReported="Offre signalée"
+            tooltip={
+              <Box>
+                <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
+                  Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
+                </Text>
+                <UnorderedList
+                  style={{
+                    color: "#383838",
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                  }}
+                >
+                  <ListItem>Offre offensante ou discriminatoire</ListItem>
+                  <ListItem>Offre inexacte ou expirée</ListItem>
+                  <ListItem>Fausse offre provenant d’un centre de formation</ListItem>
+                  <ListItem>Tentative d'escroquerie</ListItem>
+                </UnorderedList>
+              </Box>
+            }
+          />
+        </Box>
       </Box>
 
-      <Flex padding="16px 24px" mx={["0", "30px"]}>
+      <Flex padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Box mt={2} width="30px" minWidth="30px" mr={2}>
           <Image mt="2px" src="/images/whisper.svg" alt="" aria-hidden={true} />
         </Box>
@@ -126,7 +156,7 @@ const LbaJobDetail = ({ job }) => {
         </Box>
       </Flex>
 
-      <Box pb="0px" position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
+      <Box pb="0px" position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
         <Box data-testid="lbb-component">
           <Box mb={4}>{getDescriptionContext(job)}</Box>

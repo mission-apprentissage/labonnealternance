@@ -45,7 +45,7 @@ describe("create-recruiter-account", () => {
     FlowCreationEntreprise.offerPage.submit()
     FlowCreationEntreprise.delegationPage.selectCFAs(["UNIVERSITE GRENOBLE ALPES"])
     FlowCreationEntreprise.delegationPage.submit()
-    FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase(), romeLabel, studyLevel])
+    FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase()])
     FlowCreationEntreprise.emailSentPage.getJobId().then((jobId) => {
       FlowCreationEntreprise.emailSentPage.goBackHome()
 

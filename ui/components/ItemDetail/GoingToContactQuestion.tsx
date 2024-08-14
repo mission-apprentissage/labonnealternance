@@ -32,7 +32,8 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
       position="relative"
       background="white"
       padding={["6px 12px 8px 12px", "6px 24px 8px 24px", "6px 12px 8px 12px"]}
-      mx={["0", "30px"]}
+      maxWidth="970px"
+      mx={["0", "30px", "30px", "auto"]}
     >
       <Box fontSize="14px" fontWeight={700}>
         Allez-vous contacter {workplace} ?

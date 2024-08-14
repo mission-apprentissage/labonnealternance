@@ -1,4 +1,5 @@
-import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.test.utils"
 import { zRoutes } from "shared"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
@@ -6,15 +7,14 @@ import { AccessStatus } from "shared/models/roleManagement.model"
 import { describe, expect, it } from "vitest"
 
 import {
-  IUserWithAccountForAccessToken as IUserWithAccountForAccessToken,
+  IUserWithAccountForAccessToken,
   SchemaWithSecurity,
   UserForAccessToken,
   generateAccessToken,
   generateScope,
   parseAccessToken,
   userWithAccountToUserForToken,
-} from "../../../src/security/accessTokenService"
-import { useMongo } from "../../utils/mongo.utils"
+} from "./accessTokenService"
 
 describe("accessTokenService", () => {
   let userACTIVE: IUserWithAccountForAccessToken

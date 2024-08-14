@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { IJob, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJobOpportunityFranceTravailRncp, IJobOpportunityFranceTravailRome, IJobOpportunityRncp, IJobOpportunityRome } from "shared/routes/jobOpportunity.routes"
+import { IJobOpportunityRncp, IJobOpportunityRome } from "shared/routes/jobOpportunity.routes"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -28,8 +28,15 @@ import {
   patchOffre,
   provideOffre,
 } from "../../services/formulaire.service"
-import { getFtJobFromIdV2, getFtJobs } from "../../services/ftjob.service"
-import { formatFranceTravailToJobPartner, formatOffreEmploiLbaToJobPartner, formatRecruteurLbaToJobPartner, getJobsQuery } from "../../services/jobOpportunity.service"
+import { getFtJobFromIdV2, getFtJobsV2 } from "../../services/ftjob.service"
+import {
+  formatFranceTravailToJobPartner,
+  formatOffreEmploiLbaToJobPartner,
+  formatOffresEmploiPartenaire,
+  formatRecruteurLbaToJobPartner,
+  getJobsPartnersFromDB,
+  getJobsQuery,
+} from "../../services/jobOpportunity.service"
 import { addOffreDetailView, getJobs, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"
@@ -489,107 +496,61 @@ export default (server: Server) => {
     }
   )
 
-  server.get(
-    "/jobs/rome/recruteurs_lba",
-    { schema: zRoutes.get["/jobs/rome/recruteurs_lba"], onRequest: server.auth(zRoutes.get["/jobs/rome/recruteurs_lba"]) },
-    async (req, res) => {
-      const payload: IJobOpportunityRome = req.query
-      const result = await getRecruteursLbaFromDB(payload)
-      return res.send(formatRecruteurLbaToJobPartner(result))
-    }
-  )
+  server.get("/jobs/rome", { schema: zRoutes.get["/jobs/rome"], onRequest: server.auth(zRoutes.get["/jobs/rome"]) }, async (req, res) => {
+    const payload: IJobOpportunityRome = req.query
 
-  server.get(
-    "/jobs/rncp/recruteurs_lba",
-    { schema: zRoutes.get["/jobs/rncp/recruteurs_lba"], onRequest: server.auth(zRoutes.get["/jobs/rncp/recruteurs_lba"]) },
-    async (req, res) => {
-      const payload: IJobOpportunityRncp = req.query
-      const romes = await getRomesFromRncp(payload.rncp)
-      if (!romes) {
-        throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
-      }
-      const result = await getRecruteursLbaFromDB({ ...payload, romes })
-      return res.send(formatRecruteurLbaToJobPartner(result))
-    }
-  )
-
-  server.get(
-    "/jobs/rome/offres_emploi_lba",
-    { schema: zRoutes.get["/jobs/rome/offres_emploi_lba"], onRequest: server.auth(zRoutes.get["/jobs/rome/offres_emploi_lba"]) },
-    async (req, res) => {
-      const payload: IJobOpportunityRome = req.query
-      const result = await getJobs({
+    const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
+      getRecruteursLbaFromDB(payload),
+      getJobs({
         romes: payload.romes,
         distance: payload.radius,
         niveau: payload.diploma,
         lat: payload.latitude,
         lon: payload.longitude,
         isMinimalData: false,
-      })
-      return res.send(formatOffreEmploiLbaToJobPartner(result))
-    }
-  )
+      }),
+      getJobsPartnersFromDB(payload),
+      getFtJobsV2({ jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rome"].path, ...payload, insee: payload.insee ?? undefined }),
+    ])
 
-  server.get(
-    "/jobs/rncp/offres_emploi_lba",
-    { schema: zRoutes.get["/jobs/rncp/offres_emploi_lba"], onRequest: server.auth(zRoutes.get["/jobs/rncp/offres_emploi_lba"]) },
-    async (req, res) => {
-      const payload: IJobOpportunityRncp = req.query
-      const romes = await getRomesFromRncp(payload.rncp)
-      if (!romes) {
-        throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
-      }
-      const result = await getJobs({
+    return res.send({
+      jobs: [
+        ...formatOffreEmploiLbaToJobPartner(offreEmploiLba),
+        ...formatFranceTravailToJobPartner(franceTravail.resultats),
+        ...formatOffresEmploiPartenaire(offreEmploiPartenaire),
+      ],
+      recruiters: formatRecruteurLbaToJobPartner(recruterLba),
+    })
+  })
+
+  server.get("/jobs/rncp", { schema: zRoutes.get["/jobs/rncp"], onRequest: server.auth(zRoutes.get["/jobs/rncp"]) }, async (req, res) => {
+    const payload: IJobOpportunityRncp = req.query
+    const romes = await getRomesFromRncp(payload.rncp)
+    if (!romes) {
+      throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
+    }
+
+    const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
+      getRecruteursLbaFromDB({ ...payload, romes }),
+      getJobs({
         romes,
         distance: payload.radius,
         niveau: payload.diploma,
         lat: payload.latitude,
         lon: payload.longitude,
         isMinimalData: false,
-      })
-      return res.send(formatOffreEmploiLbaToJobPartner(result))
-    }
-  )
+      }),
+      getJobsPartnersFromDB({ ...payload, romes }),
+      getFtJobsV2({ romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rncp"].path, ...payload, insee: payload.insee ?? undefined }),
+    ])
 
-  server.get(
-    "/jobs/rome/offres_emploi_partenaires",
-    { schema: zRoutes.get["/jobs/rome/offres_emploi_partenaires"], onRequest: server.auth(zRoutes.get["/jobs/rome/offres_emploi_partenaires"]) },
-    async () => {}
-  )
-
-  server.get(
-    "/jobs/rncp/offres_emploi_partenaires",
-    { schema: zRoutes.get["/jobs/rncp/offres_emploi_partenaires"], onRequest: server.auth(zRoutes.get["/jobs/rncp/offres_emploi_partenaires"]) },
-    async () => {}
-  )
-
-  server.get(
-    "/jobs/rome/offres_emploi_france_travail",
-    { schema: zRoutes.get["/jobs/rome/offres_emploi_france_travail"], onRequest: server.auth(zRoutes.get["/jobs/rome/offres_emploi_france_travail"]) },
-    async (req, res) => {
-      const payload: IJobOpportunityFranceTravailRome = req.query
-      const result = await getFtJobs({ jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/offres_emploi_france_travail"].path, ...payload })
-      if ("error" in result) {
-        throw Boom.internal(result.message)
-      }
-      return res.send(formatFranceTravailToJobPartner(result.resultats))
-    }
-  )
-
-  server.get(
-    "/jobs/rncp/offres_emploi_france_travail",
-    { schema: zRoutes.get["/jobs/rncp/offres_emploi_france_travail"], onRequest: server.auth(zRoutes.get["/jobs/rncp/offres_emploi_france_travail"]) },
-    async (req, res) => {
-      const payload: IJobOpportunityFranceTravailRncp = req.query
-      const romes = await getRomesFromRncp(payload.rncp)
-      if (!romes) {
-        throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
-      }
-      const result = await getFtJobs({ romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/offres_emploi_france_travail"].path, ...payload })
-      if ("error" in result) {
-        throw Boom.internal(result.message)
-      }
-      return res.send(formatFranceTravailToJobPartner(result.resultats))
-    }
-  )
+    return res.send({
+      jobs: [
+        ...formatOffreEmploiLbaToJobPartner(offreEmploiLba),
+        ...formatFranceTravailToJobPartner(franceTravail.resultats),
+        ...formatOffresEmploiPartenaire(offreEmploiPartenaire),
+      ],
+      recruiters: formatRecruteurLbaToJobPartner(recruterLba),
+    })
+  })
 }

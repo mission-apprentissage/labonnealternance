@@ -2,6 +2,7 @@ import { ILbaItemLbaCompany } from "@/../shared"
 import { AddIcon, ExternalLinkIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Flex, Image, Link, ListItem, /*Link,*/ Text, UnorderedList } from "@chakra-ui/react"
 import React, { useContext, useEffect } from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getPathLink, scrollToNestedElement } from "@/utils/tools"
 
@@ -10,6 +11,7 @@ import { SendPlausibleEvent } from "../../../utils/plausible"
 import { getCompanyGoogleSearchLink } from "../ItemDetailServices/getCompanyGoogleSearchLink"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
 import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
+import { ReportJobLink } from "../ReportJobLink"
 
 const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany }) => {
   useEffect(() => {
@@ -34,7 +36,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
 
   return (
     <>
-      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} mx={["0", "30px"]}>
+      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text mb={6} color="bluefrance.500" fontSize="22px" fontWeight={700} as="h2">
           Qu’est ce qu’une candidature spontanée ?
         </Text>
@@ -52,22 +54,22 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
         </Flex>
       </Box>
 
-      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} mx={["0", "30px"]}>
+      <Box mt={6} mb={4} position="relative" background="white" pt={4} pb={6} px={6} maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text mb={6} color="bluefrance.500" fontSize="22px" fontWeight={700} as="h2">
           Comment candidater ?
         </Text>
         <Accordion allowMultiple={false} allowToggle defaultIndex={0}>
-          <AccordionItem onClick={onClick}>
+          <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick}>
             {({ isExpanded }) => (
               <>
-                <AccordionButton borderBottom={isExpanded ? "none" : "1px solid #E5E5E5"} fontSize="1rem" fontWeight={700} color="#161616">
+                <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
                   <Box as="span" flex="1" textAlign="left">
                     1. Renseignez-vous sur l’entreprise
                   </Box>
                   {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
                 </AccordionButton>
 
-                <AccordionPanel borderBottom="1px solid #E5E5E5" pb={4}>
+                <AccordionPanel pb={4}>
                   <Box background="#f6f6f6" mb={4} p={4}>
                     <Text>
                       <Text as="span" fontWeight={700}>
@@ -143,17 +145,17 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
               </>
             )}
           </AccordionItem>
-          <AccordionItem onClick={onClick}>
+          <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick}>
             {({ isExpanded }) => (
               <>
-                <AccordionButton borderBottom={isExpanded ? "none" : "1px solid #E5E5E5"} fontSize="1rem" fontWeight={700} color="#161616">
+                <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
                   <Box as="span" flex="1" textAlign="left">
                     2. Préparez votre candidature spontanée
                   </Box>
                   {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
                 </AccordionButton>
 
-                <AccordionPanel borderBottom="1px solid #E5E5E5" pb={4}>
+                <AccordionPanel pb={4}>
                   <Text>
                     Après une recherche approfondie sur l'entreprise, personnalisez votre lettre de motivation en précisant tout d'abord pourquoi elle vous intéresse
                     particulièrement : son domaine d'activité, ses valeurs, etc.
@@ -192,17 +194,17 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
               </>
             )}
           </AccordionItem>
-          <AccordionItem onClick={onClick}>
+          <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick}>
             {({ isExpanded }) => (
               <>
-                <AccordionButton borderBottom={isExpanded ? "none" : "1px solid #E5E5E5"} fontSize="1rem" fontWeight={700} color="#161616">
+                <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
                   <Box as="span" flex="1" textAlign="left">
                     3. Anticiper la suite
                   </Box>
                   {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
                 </AccordionButton>
 
-                <AccordionPanel borderBottom="1px solid #E5E5E5" pb={4}>
+                <AccordionPanel pb={4}>
                   <Text>
                     Une fois votre candidature envoyée, notez-vous un rappel pour pouvoir relancer l’entreprise dans 10 jours si vous n’avez pas de réponse d’ici là.
                     <br />
@@ -240,6 +242,34 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             )}
           </AccordionItem>
         </Accordion>
+        <Box marginTop="10px">
+          <ReportJobLink
+            width="490px"
+            itemId={recruteurLba?.company?.siret}
+            type={LBA_ITEM_TYPE.RECRUTEURS_LBA}
+            linkLabelNotReported="Signaler l’entreprise"
+            linkLabelReported="Entreprise signalée"
+            tooltip={
+              <Box>
+                <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
+                  Cette entreprise vous semble peu recommandable ? Voici les raisons pour lesquelles vous pouvez nous signaler une entreprise :
+                </Text>
+                <UnorderedList
+                  style={{
+                    color: "#383838",
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                  }}
+                >
+                  <ListItem>Informations trompeuses ou fausses</ListItem>
+                  <ListItem>Non-respect des lois du travail </ListItem>
+                  <ListItem>Fraude ou arnaque</ListItem>
+                  <ListItem>Comportement inapproprié ou abusif </ListItem>
+                </UnorderedList>
+              </Box>
+            }
+          />
+        </Box>
       </Box>
     </>
   )
