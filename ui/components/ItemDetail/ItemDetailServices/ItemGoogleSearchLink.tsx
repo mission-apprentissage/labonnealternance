@@ -9,7 +9,7 @@ export default function ItemGoogleSearchLink({ item }: { item: ILbaItemFormation
     <Flex alignItems="center" mt={4}>
       <Image mr={2} alt="" aria-hidden={true} src="/images/icons/magnifyingglass.svg" width="24px" height="24px" />
       <Text as="span">
-        Lancer une recherche Google sur
+        Lancer une recherche Google sur{" "}
         <Link ml="2px" isExternal variant="basicUnderlined" href={getCompanyGoogleSearchLink(item)} aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre">
           {item.company.name} <ExternalLinkIcon mb="3px" ml="2px" />
         </Link>
