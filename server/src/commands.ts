@@ -547,6 +547,12 @@ program
   .option("-batchSize, [batchSize]", "Maximum de candidatures traitées", "100")
   .action(createJobAction("send-applications"))
 
+program
+  .command("fill-computed-jobs-partners")
+  .description("Enrichie la collection computed_jobs_partners avec les données provenant d'API externes")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("fill-computed-jobs-partners"))
+
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }

@@ -14,7 +14,7 @@ export enum COMPUTED_ERROR_SOURCE {
   API_ROMEO = "api_romeo",
 }
 
-export const ZComputedJobsPatners = ZJobsPartners.partial().extend({
+export const ZComputedJobsPatners = extensions.optionalToNullish(ZJobsPartners.partial()).extend({
   errors: z.array(
     z
       .object({

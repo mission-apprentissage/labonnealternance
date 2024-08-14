@@ -18,6 +18,7 @@ import {
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
@@ -36,11 +37,12 @@ import config from "../config"
 
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
+import { getSiretInfos } from "./cacheInfosSiret.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
-import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementGouv, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
+import { IAPIAdresse, IAPIEtablissement, ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
@@ -181,7 +183,7 @@ const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  */
-const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIEtablissement | BusinessErrorCodes.NON_DIFFUSIBLE | null> => {
+export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIEtablissement | BusinessErrorCodes.NON_DIFFUSIBLE | null> => {
   try {
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
@@ -349,7 +351,7 @@ type IGetAllEmailFromLbaCompany = Pick<ILbaCompany, "email">
 export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<ILbaCompany>) =>
   (await getDbCollection("recruteurslba").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
 
-function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undefined {
+function getRaisonSocialeFromGouvResponse(d: IEtablissementGouvData["data"]): string | undefined {
   const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
   const { raison_sociale } = personne_morale_attributs
   if (raison_sociale) {
@@ -369,22 +371,22 @@ const addressDetailToString = (address: IAdresseV3): string => {
 /**
  * @description Format Entreprise data
  */
-const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
-  if (!d.adresse) {
+export const formatEntrepriseData = (data: IEtablissementGouvData["data"]): IFormatAPIEntreprise => {
+  if (!data.adresse) {
     throw new Error("erreur dans le format de l'api SIRENE : le champ adresse est vide")
   }
   return {
-    establishment_enseigne: d.enseigne,
-    establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
-    establishment_siret: d.siret,
-    establishment_raison_sociale: getRaisonSocialeFromGouvResponse(d),
-    address_detail: d.adresse,
-    address: addressDetailToString(d.adresse),
+    establishment_enseigne: data.enseigne,
+    establishment_state: data.etat_administratif, // F pour fermé ou A pour actif
+    establishment_siret: data.siret,
+    establishment_raison_sociale: getRaisonSocialeFromGouvResponse(data),
+    address_detail: data.adresse,
+    address: addressDetailToString(data.adresse),
     contacts: [], // conserve la coherence avec l'UI
-    naf_code: d.activite_principale.code,
-    naf_label: d.activite_principale.libelle,
-    establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
-    establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
+    naf_code: data.activite_principale.code,
+    naf_label: data.activite_principale.libelle,
+    establishment_size: getEffectif(data.unite_legale.tranche_effectif_salarie.code),
+    establishment_creation_date: data.unite_legale?.date_creation ? new Date(data.unite_legale.date_creation * 1000) : null,
   }
 }
 
@@ -566,7 +568,7 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
 }
 
 export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: string; type: "CFA" | "ENTREPRISE" }) => {
-  const result = await getEtablissementFromGouvSafe(siret)
+  const result = await getSiretInfos(siret)
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
   }
@@ -585,7 +587,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: strin
   // Check if a CFA already has the company as partenaire
   if (type === ENTREPRISE) {
     // Allow cfa to add themselves as a company
-    if (activite_principale.code.startsWith("85")) {
+    if (activite_principale?.code?.startsWith("85")) {
       return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
     }
   }

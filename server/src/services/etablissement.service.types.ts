@@ -33,7 +33,7 @@ export interface IAPIEtablissement {
 export interface IEtablissementGouv {
   siret: string
   siege_social: boolean
-  etat_administratif: string
+  etat_administratif: "A" | "F"
   date_fermeture: any
   enseigne: any
   activite_principale: IActivitePrincipale

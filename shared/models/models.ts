@@ -3,6 +3,7 @@ import { z } from "zod"
 import apicallsModel from "./apicalls.model"
 import applicationsModel from "./applications.model"
 import appointmentsModel from "./appointments.model"
+import cacheInfosSiretModel from "./cacheInfosSiret.model"
 import cfaModel from "./cfa.model"
 import { IModelDescriptor } from "./common"
 import credentialsModel from "./credentials.model"
@@ -79,6 +80,7 @@ const modelDescriptorMap = {
   [userModel.collectionName]: userModel,
   [userWithAccountModel.collectionName]: userWithAccountModel,
   [reportedCompanyModel.collectionName]: reportedCompanyModel,
+  [cacheInfosSiretModel.collectionName]: cacheInfosSiretModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

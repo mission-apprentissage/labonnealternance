@@ -39,6 +39,7 @@ import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretIn
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importHelloWork } from "./offrePartenaire/importHelloWork"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
@@ -385,6 +386,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         const { batchSize } = job.payload
         return processApplications(batchSize ? parseInt(batchSize, 10) : 100)
       }
+      case "fill-computed-jobs-partners":
+        return fillComputedJobsPartners()
       default: {
         logger.warn(`Job not found ${job.name}`)
       }
