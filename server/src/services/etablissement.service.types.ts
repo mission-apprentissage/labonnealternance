@@ -1,4 +1,4 @@
-import { IAdresseCFA, IAdresseV3, IRecruiter, IUserRecruteur } from "shared"
+import { IAdresseCFA, IRecruiter, IUserRecruteur } from "shared"
 import { Jsonify } from "type-fest"
 
 export interface IFormatAPIReferentiel
@@ -23,98 +23,6 @@ export interface IFormatAPIEntreprise
   contacts: object[]
   qualiopi?: boolean
   geo_coordinates?: string
-}
-export interface IAPIEtablissement {
-  data: IEtablissementGouv
-  links: ILinks
-  meta: IMetaAPIEtablissement
-}
-
-export interface IEtablissementGouv {
-  siret: string
-  siege_social: boolean
-  etat_administratif: "A" | "F"
-  date_fermeture: any
-  enseigne: any
-  activite_principale: IActivitePrincipale
-  tranche_effectif_salarie: ITrancheEffectifSalarie
-  diffusable_commercialement: boolean
-  status_diffusion: "diffusible" | "partiellement_diffusible" | "non_diffusible"
-  date_creation: number
-  unite_legale: IUniteLegale
-  adresse: IAdresseV3
-}
-
-interface IActivitePrincipale {
-  code: string
-  nomenclature: string
-  libelle: string
-}
-
-interface ITrancheEffectifSalarie {
-  de: any
-  a: any
-  code: string | null
-  date_reference: any
-  intitule: string | null
-}
-
-interface IUniteLegale {
-  siren: string
-  rna: any
-  siret_siege_social: string
-  type: string
-  personne_morale_attributs: IPersonneMoraleAttributs
-  personne_physique_attributs: IPersonnePhysiqueAttributs
-  categorie_entreprise: string
-  status_diffusion: string
-  diffusable_commercialement: boolean
-  forme_juridique: IFormeJuridique
-  activite_principale: IActivitePrincipale2
-  tranche_effectif_salarie: ITrancheEffectifSalarie2
-  economie_sociale_et_solidaire: any
-  date_creation: number
-  etat_administratif: string
-}
-
-interface IPersonneMoraleAttributs {
-  raison_sociale: string | null
-  sigle: any
-}
-
-interface IPersonnePhysiqueAttributs {
-  pseudonyme: any
-  prenom_usuel: any
-  prenom_1: any
-  prenom_2: any
-  prenom_3: any
-  prenom_4: any
-  nom_usage: any
-  nom_naissance: any
-  sexe: any
-}
-
-interface IActivitePrincipale2 {
-  code: string
-  nomenclature: string
-  libelle: string
-}
-
-interface ITrancheEffectifSalarie2 {
-  de: any
-  a: any
-  code: string | null
-  date_reference: any
-  intitule: string | null
-}
-
-interface ILinks {
-  unite_legale: string
-}
-
-interface IMetaAPIEtablissement {
-  date_derniere_mise_a_jour: number
-  redirect_from_siret: any
 }
 
 interface IReferentielRaw {

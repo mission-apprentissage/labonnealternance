@@ -42,7 +42,7 @@ import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
-import { IAPIAdresse, IAPIEtablissement, ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
+import { IAPIAdresse, ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import mailer, { sanitizeForEmail } from "./mailer.service"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
@@ -57,61 +57,27 @@ const apiParams = {
   object: config.entreprise.object,
 }
 
-/**
- * Get company size by code
- * @param {string} code
- * @returns {string}
- */
-const getEffectif = (code) => {
-  switch (code) {
-    case "00":
-      return "0 salarié"
+const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
+  "00": "0 salarié",
+  "01": "1 ou 2 salariés",
+  "02": "3 à 5 salariés",
+  "03": "6 à 9 salariés",
+  "11": "10 à 19 salariés",
+  "12": "20 à 49 salariés",
+  "21": "50 à 99 salariés",
+  "22": "100 à 199 salariés",
+  "31": "200 à 249 salariés",
+  "32": "250 à 499 salariés",
+  "41": "500 à 999 salariés",
+  "42": "1 000 à 1 999 salariés",
+  "51": "2 000 à 4 999 salariés",
+  "52": "5 000 à 9 999 salariés",
+  "53": "10 000 salariés et plus",
+  NN: null,
+}
 
-    case "01":
-      return "1 ou 2 salariés"
-
-    case "02":
-      return "3 à 5 salariés"
-
-    case "03":
-      return "6 à 9 salariés"
-
-    case "11":
-      return "10 à 19 salariés"
-
-    case "12":
-      return "20 à 49 salariés"
-
-    case "21":
-      return "50 à 99 salariés"
-
-    case "22":
-      return "100 à 199 salariés"
-
-    case "31":
-      return "200 à 249 salariés"
-
-    case "32":
-      return "250 à 499 salariés"
-
-    case "41":
-      return "500 à 999 salariés"
-
-    case "42":
-      return "1 000 à 1 999 salariés"
-
-    case "51":
-      return "2 000 à 4 999 salariés"
-
-    case "52":
-      return "5 000 à 9 999 salariés"
-
-    case "53":
-      return "10 000 salariés et plus"
-
-    default:
-      return "Non diffusé"
-  }
+const getEffectif = (code: IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]) => {
+  return (code ? effectifMapping[code] : null) ?? "Non diffusé"
 }
 
 /**
@@ -183,14 +149,17 @@ const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  */
-export const getEtablissementFromGouvSafe = async (siret: string): Promise<IAPIEtablissement | BusinessErrorCodes.NON_DIFFUSIBLE | null> => {
+export const getEtablissementFromGouvSafe = async (siret: string): Promise<IEtablissementGouvData | BusinessErrorCodes.NON_DIFFUSIBLE | null> => {
   try {
     if (config.entreprise.simulateError) {
       throw new Error("API entreprise : simulation d'erreur")
     }
-    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`, {
-      params: apiParams,
-    })
+    const { data } = await getHttpClient({ timeout: 5000 }).get<IEtablissementGouvData>(
+      `${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}`,
+      {
+        params: apiParams,
+      }
+    )
     if (data.data.status_diffusion !== EDiffusibleStatus.DIFFUSIBLE) {
       return BusinessErrorCodes.NON_DIFFUSIBLE
     }
@@ -223,7 +192,7 @@ const getEtablissementDiffusionStatus = async (siret: string): Promise<string> =
       return siretDiffusibleStatus.status_diffusion
     }
 
-    const { data } = await getHttpClient({ timeout: 5000 }).get<IAPIEtablissement>(
+    const { data } = await getHttpClient({ timeout: 5000 }).get<IEtablissementGouvData>(
       `${config.entreprise.baseUrl}/sirene/etablissements/diffusibles/${encodeURIComponent(siret)}/adresse`,
       {
         params: apiParams,
@@ -288,7 +257,7 @@ export const checkIsDiffusible = async (siret: string) => (await getDiffusionSta
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  * Throw an error if the data is private
  */
-export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement | null> => {
+export const getEtablissementFromGouv = async (siret: string): Promise<IEtablissementGouvData | null> => {
   const data = await getEtablissementFromGouvSafe(siret)
   if (data === BusinessErrorCodes.NON_DIFFUSIBLE) {
     throw Boom.internal(BusinessErrorCodes.NON_DIFFUSIBLE)

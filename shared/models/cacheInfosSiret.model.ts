@@ -1,3 +1,4 @@
+import { EDiffusibleStatus } from "../constants/diffusibleStatus"
 import { BusinessErrorCodes } from "../constants/errorCodes"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
@@ -5,10 +6,12 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZAdresseV3 } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
 
+// cf documentation https://entreprise.api.gouv.fr/developpeurs/openapi#tag/Informations-generales/paths/~1v3~1insee~1sirene~1etablissements~1diffusibles~1%7Bsiret%7D/get
 export const ZEtablissementGouvData = z
   .object({
     data: z
       .object({
+        status_diffusion: extensions.buildEnum(EDiffusibleStatus),
         siret: extensions.siret,
         etat_administratif: z.enum(["A", "F"]).describe("A: actif, F: fermé"),
         activite_principale: z
