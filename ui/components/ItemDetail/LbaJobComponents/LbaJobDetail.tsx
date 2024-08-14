@@ -1,3 +1,4 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { ILbaItemLbaJob } from "shared"
@@ -7,6 +8,10 @@ import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { notifyLbaJobDetailView } from "../../../services/notifyLbaJobDetailView"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
+import { getCompanySize } from "../ItemDetailServices/getCompanySize"
+import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
+import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
+import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import { ReportJobLink } from "../ReportJobLink"
 
 import LbaJobAcces from "./LbaJobAcces"
@@ -162,6 +167,83 @@ const LbaJobDetail = ({ job }) => {
           <Box mb={4}>{getDescriptionContext(job)}</Box>
         </Box>
       </Box>
+
+      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
+        <Text as="h2" variant="itemDetailH2" mt={2}>
+          Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
+        </Text>
+
+        <Text my={2}>
+          {job?.company?.mandataire
+            ? "Le centre de formation peut vous renseigner sur l’entreprise."
+            : "Renseignez-vous sur l’entreprise, ses activités et ses valeurs pour préparer votre candidature. Vous pouvez rechercher leur site internet et leur présence sur les réseaux sociaux."}
+        </Text>
+
+        {!job?.company?.mandataire ? (
+          <ItemLocalisation item={job} />
+        ) : (
+          <Text>
+            <Text as="span" fontWeight={700}>
+              Localisation :{" "}
+            </Text>
+            <Text as="span">{job.place.city}</Text>
+            <ItemDistanceToCenter item={job} />
+          </Text>
+        )}
+
+        <Text>
+          <Text as="span" fontWeight={700}>
+            Secteur d'activité :{" "}
+          </Text>
+          <Text as="span">{job.nafs[0].label}</Text>
+        </Text>
+
+        <Text>
+          <Text as="span" fontWeight={700}>
+            Taille de l'entreprise :{" "}
+          </Text>
+          <Text as="span">{getCompanySize(job)}</Text>
+        </Text>
+
+        {!job?.company?.mandataire && job?.contact?.phone && (
+          <Text>
+            <Text as="span" fontWeight={700}>
+              Téléphone :{" "}
+            </Text>
+            <Text as="span">
+              <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${job.contact.phone}`} aria-label="Appeler la société au téléphone">
+                {job.contact.phone} <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>
+            </Text>
+          </Text>
+        )}
+
+        {!job?.company?.mandataire && <ItemGoogleSearchLink item={job} />}
+      </Box>
+
+      {job?.company?.mandataire && (
+        <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
+          <Text as="h2" variant="itemDetailH2" mt={2}>
+            Contactez le CFA pour avoir plus d’informations
+          </Text>
+
+          <Text my={2}>Le centre de formation peut vous renseigner sur les formations qu’il propose.</Text>
+          <ItemLocalisation item={job.company} />
+
+          {job?.contact?.phone && (
+            <Flex mt={2} mb={4}>
+              <Box fontWeight={700} pl="2px" mr={2}>
+                Téléphone :
+              </Box>
+              <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
+                {job.contact.phone} <ExternalLinkIcon mx="2px" />
+              </Link>
+            </Flex>
+          )}
+
+          <ItemGoogleSearchLink item={job} />
+        </Box>
+      )}
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { ILbaItemFormation2, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
+import { ILbaItemCompany, ILbaItemFormation2, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/../shared"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Link, Text } from "@chakra-ui/react"
 
@@ -6,7 +6,7 @@ import { getPathLink } from "@/utils/tools"
 
 import ItemDistanceToCenter from "./ItemDistanceToCenter"
 
-export default function ItemLocalisation({ item }: { item: ILbaItemFormation2 | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob }) {
+export default function ItemLocalisation({ item }: { item: ILbaItemFormation2 | ILbaItemLbaCompany | ILbaItemCompany | ILbaItemLbaJob | ILbaItemFtJob }) {
   return (
     <Text>
       <Text as="span" fontWeight={700}>
