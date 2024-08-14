@@ -46,6 +46,7 @@ export const pocRomeo = async () => {
     })
   )
   const romeoResult = await getRomeoPredictions(dataset)
+  if (!romeoResult) return null
   const formated = transformMetiersRomeArray(romeoResult)
   console.log(formated)
 }
