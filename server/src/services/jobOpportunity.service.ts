@@ -267,6 +267,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
         offer_count: job.job_count!,
         offer_multicast: job.is_multi_published,
         offer_origin: null,
+        offer_status: null,
       },
       workplace: {
         workplace_siret: offreEmploiLba.establishment_siret,
@@ -278,7 +279,7 @@ export const formatOffreEmploiLbaToJobPartner = (offresEmploiLba: IRecruiter[]):
         workplace_size: offreEmploiLba.establishment_size!,
         workplace_address: offreEmploiLba.address!,
         workplace_geopoint: offreEmploiLba.geopoint!,
-        workplace_idcc: Number(offreEmploiLba.idcc) ?? null,
+        workplace_idcc: offreEmploiLba.idcc ?? null,
         workplace_opco: offreEmploiLba.opco!,
         workplace_naf_code: offreEmploiLba.naf_code!,
         workplace_naf_label: offreEmploiLba.naf_label!,
@@ -318,6 +319,7 @@ export const formatOffresEmploiPartenaire = (offresEmploiPartenaire: IJobsPartne
       offer_count: offreEmploiPartenaire.offer_count,
       offer_multicast: offreEmploiPartenaire.offer_multicast,
       offer_origin: offreEmploiPartenaire.offer_origin,
+      offer_status: offreEmploiPartenaire.offer_status,
     },
     workplace: {
       workplace_siret: offreEmploiPartenaire.workplace_siret,
@@ -371,6 +373,7 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
         offer_count: offreFT.nombrePostes,
         offer_multicast: true,
         offer_origin: null,
+        offer_status: null,
       },
       workplace: {
         workplace_siret: null,

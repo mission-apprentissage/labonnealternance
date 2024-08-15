@@ -1,6 +1,7 @@
 import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
+import { ZBusinessError } from "../models"
 import { zObjectId } from "../models/common"
 import { ZJobsApiResponseV2, ZJobsPartners, ZJobsPartnersPostApiBody } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
@@ -395,7 +396,8 @@ export const zJobsRoutesV2 = {
       path: "/jobs",
       body: ZJobsPartnersPostApiBody,
       response: {
-        "200": ZJobsPartners,
+        "201": z.object({ id: zObjectId }),
+        "400": ZBusinessError,
       },
       securityScheme: {
         auth: "api-apprentissage",

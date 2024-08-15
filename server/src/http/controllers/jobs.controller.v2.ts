@@ -1,6 +1,9 @@
 import Boom from "boom"
-import { ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { ObjectId } from "mongodb"
+import { IGeoPoint, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IJobOpportunityRncp, IJobOpportunityRome } from "shared/routes/jobOpportunity.routes"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -9,9 +12,11 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { getFileSignedURL } from "../../common/utils/awsUtils"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { getRomeoInfos } from "../../services/cache.service"
 import { getRomesFromRncp } from "../../services/certification.service"
 import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
+import { getEntrepriseDataFromSiret, getGeoCoordinates, getOpcoData } from "../../services/etablissement.service"
 import { addExpirationPeriod, getFormulaires } from "../../services/formulaire.service"
 import { getFtJobFromIdV2, getFtJobsV2 } from "../../services/ftjob.service"
 import {
@@ -84,7 +89,79 @@ export default (server: Server) => {
       onRequest: server.auth(zRoutes.post["/jobs"]),
       config,
     },
-    async () => {}
+    async (req, res) => {
+      const { workplace_siret, workplace_address, offer_title, ...rest } = req.body
+      let geopoint: IGeoPoint | null = null
+
+      const siretInformation = await getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE" })
+      if ("error" in siretInformation) {
+        return res.status(400).send(siretInformation)
+      }
+      if (workplace_address) {
+        const { latitude, longitude } = await getGeoCoordinates(workplace_address)
+        if (latitude && longitude) {
+          geopoint = { type: "Point", coordinates: [longitude, latitude] }
+        } else {
+          geopoint = siretInformation.geopoint
+        }
+      }
+      if (!geopoint) {
+        return res.status(400).send({
+          error: true,
+          errorCode: BusinessErrorCodes.GEOLOCATION_NOT_FOUND,
+          message: "",
+        })
+      }
+      const romeCode = await getRomeoInfos({ intitule: offer_title, contexte: siretInformation.naf_label ?? undefined })
+      if (!romeCode) {
+        return res.status(400).send({
+          error: true,
+          errorCode: BusinessErrorCodes.ROMEO_NOT_FOUND,
+          message: "",
+        })
+      }
+      const opcoData = await getOpcoData(workplace_siret)
+      const now = new Date()
+      const job: IJobsPartners = {
+        ...rest,
+        _id: new ObjectId(),
+        created_at: now,
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        partner_id: rest.partner_id ?? null,
+        offer_title,
+        offer_rome_code: [romeCode],
+        offer_status: JOB_STATUS.ACTIVE,
+        offer_creation_date: rest.offer_creation_date ?? now,
+        offer_expiration_date: rest.offer_expiration_date ?? addExpirationPeriod(now).toDate(),
+        offer_desired_skills: rest.offer_desired_skills ?? null,
+        offer_acquired_skills: rest.offer_acquired_skills ?? null,
+        offer_access_condition: rest.offer_access_condition ?? null,
+        offer_count: rest.offer_count ?? 1,
+        offer_multicast: rest.offer_multicast ?? true,
+        offer_origin: rest.offer_origin ?? null,
+        workplace_siret,
+        workplace_geopoint: geopoint,
+        workplace_address: workplace_address ?? siretInformation.address!,
+        workplace_raison_sociale: siretInformation.establishment_raison_sociale ?? null,
+        workplace_enseigne: siretInformation.establishment_enseigne ?? null,
+        workplace_website: rest.workplace_website ?? null,
+        workplace_description: rest.workplace_description ?? null,
+        workplace_name: null,
+        workplace_naf_label: siretInformation.naf_label ?? null,
+        workplace_naf_code: siretInformation.naf_code ?? null,
+        workplace_opco: opcoData?.opco ?? null,
+        workplace_idcc: opcoData?.idcc ?? null,
+        workplace_size: siretInformation.establishment_size ?? null,
+        contract_remote: rest.contract_remote ?? null,
+        apply_url: rest.apply_url ?? null,
+        apply_email: rest.apply_email ?? null,
+        apply_phone: rest.apply_phone ?? null,
+      }
+
+      await getDbCollection("jobs_partners").insertOne(job)
+
+      return res.status(201).send({ id: job._id })
+    }
   )
 
   // PATCH job in jobs_partners need spec review

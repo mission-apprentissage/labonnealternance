@@ -50,7 +50,7 @@ export const ZJobsPartnersJobOffer = z.object({
   offer_count: z.number().describe("Nombre de poste disponible"),
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur"),
-  offer_status: extensions.buildEnum(JOB_STATUS).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
+  offer_status: extensions.buildEnum(JOB_STATUS).nullable().describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 })
 export type IJobsPartnersJobOffer = z.output<typeof ZJobsPartnersJobOffer>
 
@@ -64,7 +64,7 @@ export const ZJobsPartnersWorkplace = z.object({
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
   workplace_address: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
-  workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
+  workplace_idcc: z.string().nullable().describe("Identifiant convention collective"),
   workplace_opco: z.string().nullable().describe("Nom de l'OPCO"),
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
@@ -85,6 +85,7 @@ export type IJobsPartners = z.output<typeof ZJobsPartners>
 
 export const ZJobsPartnersPostApiBody = z
   .object({
+    partner_id: z.string().optional(),
     contract_start: z.date(),
     contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)),
     contract_duration: z.number(),
@@ -104,12 +105,7 @@ export const ZJobsPartnersPostApiBody = z
     workplace_siret: extensions.siret,
     workplace_website: z.string().optional(),
     workplace_description: z.string().optional(),
-    workplace_size: z.string().optional(),
     workplace_address: z.string().optional(),
-    workplace_idcc: z.number().optional(),
-    workplace_opco: z.string().optional(),
-    workplace_naf_code: z.string().optional(),
-    workplace_naf_label: z.string().optional(),
     apply_url: z.string().optional(),
     apply_email: z.string().email().optional(),
     apply_phone: extensions.telephone().optional(),

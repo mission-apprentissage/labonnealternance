@@ -14,4 +14,6 @@ export enum BusinessErrorCodes {
   NOTFOUND = "Aucune offre correspondante trouvée.",
   ATTACHMENT = "Pièce jointe invalide.",
   INTERNAL_EMAIL = "Aucun email pour l'offre trouvée.",
+  ROMEO_NOT_FOUND = "Une erreur est survenue lors de la récupération du code ROME à partir du titre de l'offre",
+  GEOLOCATION_NOT_FOUND = "Une erreur est survenue lors de la récupération de la géolocalisation à partir de l'adresse de l'entreprise",
 }
