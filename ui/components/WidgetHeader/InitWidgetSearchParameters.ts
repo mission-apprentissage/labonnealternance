@@ -1,11 +1,16 @@
-import React, { useEffect } from "react"
+import { useRouter } from "next/router"
+import { useContext, useEffect } from "react"
+
+import { ScopeContext } from "@/context/ScopeContext"
 
 import { ParameterContext } from "../../context/ParameterContextProvider"
 import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
 import { logError } from "../../utils/tools"
 
 const InitWidgetSearchParameters = ({ handleSearchSubmit, handleItemLoad }) => {
-  const { widgetParameters, itemParameters, setWidgetParameters, setItemParameters } = React.useContext(ParameterContext)
+  const { displayMap, widgetParameters, itemParameters, setWidgetParameters, setItemParameters } = useContext(ParameterContext)
+  const router = useRouter()
+  const scopeContext = useContext(ScopeContext)
 
   useEffect(() => {
     // initialisation par les query params
@@ -74,8 +79,9 @@ const InitWidgetSearchParameters = ({ handleSearchSubmit, handleItemLoad }) => {
   const launchItemFetch = async () => {
     // @ts-expect-error: TODO
     const p = itemParameters.parameters
+    p.router = router
     try {
-      await handleItemLoad(p)
+      await handleItemLoad({ item: p, router, scopeContext, displayMap })
     } catch (err) {
       logError("WidgetSearch error", err)
     }

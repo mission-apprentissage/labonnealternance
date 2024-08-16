@@ -25,7 +25,6 @@ export const up = async (db: Db) => {
       },
     },
     {
-      // @ts-expect-error bypassDocumentValidation is not properly set in @types/mongodb
       bypassDocumentValidation: true,
     }
   )

@@ -1,10 +1,12 @@
 import { Jsonify } from "type-fest"
 
 import { AppointmentUserType } from "../constants/appointment"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
-import { enumToZod } from "./enumToZod"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "appointments" as const
 
 export const enum EReasonsKey {
   MODALITE = "modalite",
@@ -22,6 +24,7 @@ export const enum EReasonsKey {
 }
 
 export const EREASONS = Object.values(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre", "debouche"])
+export type EReason = NonNullable<IAppointment["applicant_reasons"]>[0]
 
 export const ZMailing = z
   .object({
@@ -33,6 +36,8 @@ export const ZMailing = z
   })
   .strict()
   .openapi("Mailing")
+
+export type IMailing = z.output<typeof ZMailing>
 
 export const ZAppointment = z
   .object({
@@ -47,12 +52,12 @@ export const ZAppointment = z
     cfa_formateur_siret: z.string().nullish(),
     appointment_origin: z.string(),
     cfa_read_appointment_details_date: z.date().nullish(),
-    to_applicant_mails: z.array(ZMailing).nullable(),
-    to_cfa_mails: z.array(ZMailing),
+    to_applicant_mails: z.array(ZMailing).nullish(),
+    to_cfa_mails: z.array(ZMailing).nullish(),
     cle_ministere_educatif: z.string(),
     created_at: z.date().default(() => new Date()),
     cfa_recipient_email: z.string(),
-    applicant_type: enumToZod(AppointmentUserType).nullish(),
+    applicant_type: extensions.buildEnum(AppointmentUserType).nullish(),
   })
   .strict()
   .openapi("Appointment")
@@ -60,5 +65,12 @@ export const ZAppointment = z
 export type IAppointment = z.output<typeof ZAppointment>
 export type IAppointmentJson = Jsonify<z.input<typeof ZAppointment>>
 
-export type IMailing = z.output<typeof ZMailing>
-export type EReason = NonNullable<IAppointment["applicant_reasons"]>[0]
+export default {
+  zod: ZAppointment,
+  indexes: [
+    [{ applicant_id: 1 }, {}],
+    [{ "to_applicant_mails.message_id": 1 }, {}],
+    [{ "to_cfa_mails.message_id": 1 }, {}],
+  ],
+  collectionName,
+} as const satisfies IModelDescriptor

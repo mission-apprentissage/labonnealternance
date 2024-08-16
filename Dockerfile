@@ -1,4 +1,4 @@
-FROM node:20-alpine as builder_root
+FROM node:20-slim AS builder_root
 WORKDIR /app
 RUN yarn set version 3.3.1
 COPY .yarn /app/.yarn
@@ -11,7 +11,7 @@ COPY shared/package.json shared/package.json
 
 RUN --mount=type=cache,target=/app/.yarn/cache yarn install --immutable
 
-FROM builder_root as root
+FROM builder_root AS root
 WORKDIR /app
 
 ##############################################################
@@ -30,13 +30,12 @@ RUN yarn --cwd server build
 RUN --mount=type=cache,target=/app/.yarn/cache yarn workspaces focus --all --production
 
 # Production image, copy all the files and run next
-FROM node:20-alpine AS server
+FROM node:20-slim AS server
 WORKDIR /app
-RUN --mount=type=cache,target=/var/cache/apk apk add --update \
-  curl \
-  && rm -rf /var/cache/apk/*
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt/lists \
+    apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 ARG PUBLIC_VERSION
 ENV PUBLIC_VERSION=$PUBLIC_VERSION
 
@@ -64,7 +63,7 @@ COPY ./shared ./shared
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 ARG PUBLIC_VERSION
 ENV NEXT_PUBLIC_VERSION=$PUBLIC_VERSION
@@ -76,12 +75,12 @@ RUN yarn --cwd ui build
 # RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
 
 # Production image, copy all the files and run next
-FROM node:20-alpine AS ui
+FROM node:20-slim AS ui
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 # Uncomment the following line in case you want to disable telemetry during runtime.
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 ARG PUBLIC_VERSION
 ENV NEXT_PUBLIC_VERSION=$PUBLIC_VERSION
@@ -106,6 +105,6 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
+ENV PORT=3000
 
 CMD ["node", "ui/server"]

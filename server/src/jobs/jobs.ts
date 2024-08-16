@@ -1,24 +1,27 @@
-import { createMongoDBIndexes } from "@/common/model"
-import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { ObjectId } from "mongodb"
+
+import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 
 import { getLoggerWithContext } from "../common/logger"
 
-import anonymizeOldAppointments from "./anonymization/anonumizeAppointments"
+import anonymizeOldAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
 import fixApplications from "./applications/fixApplications"
+import { processApplications } from "./applications/processApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
-import { removeVersionKeyFromAllCollections } from "./database/removeVersionKeyFromAllCollections"
-import { fixRDVACollections } from "./database/temp/fixRDVACollections"
-import { validateModels } from "./database/validateModels"
+import { recreateIndexes } from "./database/recreateIndexes"
+import { validateModels } from "./database/schemaValidation"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
+import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
+import { pocRomeo } from "./franceTravail/pocRomeo"
 import { addJob, executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
@@ -27,21 +30,17 @@ import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
 import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
 import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
-import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
-import { resendDelegationEmailWithAccessToken } from "./lba_recruteur/formulaire/misc/sendDelegationEmailWithSecuredToken"
 import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
 import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
-import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
-import buildSAVE from "./lbb/buildSAVE"
-import updateGeoLocations from "./lbb/updateGeoLocations"
-import updateLbaCompanies from "./lbb/updateLbaCompanies"
-import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
+import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
+import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
+import { importHelloWork } from "./offrePartenaire/importHelloWork"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -54,14 +53,14 @@ import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtabli
 import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { fixDuplicateUsers } from "./rdv/oneTimeJob/fixDuplicateUsers"
-import { repriseEmailRdvs } from "./rdv/oneTimeJob/repriseEmailsRdv"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { importFichesRomeV4 } from "./seed/ficheMetierRomev4/ficheMetierRomev4"
+import updateGeoLocations from "./recruteurLba/updateGeoLocations"
+import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
+import updateLbaCompanies from "./recruteurLba/updateRecruteurLba"
 import { importReferentielRome } from "./seed/referentielRome/referentielRome"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
@@ -72,7 +71,7 @@ const logger = getLoggerWithContext("script")
 export const CronsMap = {
   "Create offre collection for metabase": {
     cron_string: "55 0 * * *",
-    handler: () => addJob({ name: "metabase:offre:create", payload: {} }),
+    handler: () => addJob({ name: "metabase:jobs:collection", payload: {} }),
   },
   "Cancel lba recruteur expired offers": {
     cron_string: "15 0 * * *",
@@ -176,7 +175,7 @@ export const CronsMap = {
   },
   "Mise à jour des sociétés issues de l'algo": {
     cron_string: "0 5 * * 7",
-    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true } }),
+    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true } }),
   },
   "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
     cron_string: "5 1 * * *",
@@ -206,6 +205,18 @@ export const CronsMap = {
     cron_string: "30 6 * * 1",
     handler: () => addJob({ name: "lbajobs:export:s3", payload: {}, productionOnly: true }),
   },
+  "Génération de la collection rolemanagement360": {
+    cron_string: "00 10,13,17 * * *",
+    handler: () => addJob({ name: "metabase:role-management:create", payload: {} }),
+  },
+  "Scan et envoi des candidatures": {
+    cron_string: "*/10 * * * *",
+    handler: () => addJob({ name: "send-applications", payload: { batchSize: 100 } }),
+  },
+  "Génération du token France Travail pour la récupération des offres": {
+    cron_string: "*/5 * * * *",
+    handler: () => addJob({ name: "francetravail:token-offre", payload: {} }),
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -224,6 +235,12 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "poc:romeo":
+        return pocRomeo()
+      case "francetravail:token-offre":
+        return generateFranceTravailAccess()
+      case "recreate:indexes":
+        return recreateIndexes()
       case "lbajobs:export:s3":
         return exportLbaJobsToS3()
       case "sync:etablissement:dates":
@@ -234,12 +251,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return runGarbageCollector()
       case "anonymize:appointments":
         return anonymizeOldAppointments()
-      case "recruiters:delegations": // Temporaire, doit tourner une fois en production
-        return resendDelegationEmailWithAccessToken()
-      case "fix:duplicate:users": // Temporaire, doit tourner une fois en production
-        return fixDuplicateUsers()
-      case "migration:correctionRDVA": // Temporaire, doit tourner une fois en recette et production
-        return fixRDVACollections()
       case "control:applications":
         return controlApplications()
       case "control:appointments":
@@ -250,14 +261,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return repiseGeocoordinates()
       case "recruiters:get-missing-address-detail":
         return updateAddressDetailOnRecruitersCollection()
-      case "import:ficheromev4":
-        return importFichesRomeV4()
       case "import:referentielrome":
         return importReferentielRome()
-      case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
-        return removeVersionKeyFromAllCollections()
-      case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
-        return removeIsDelegatedFromJobs()
       case "api:user:create": {
         const { nom, prenom, email, organization, scope } = job.payload
         return createApiUser(nom, prenom, email, organization, scope)
@@ -274,8 +279,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "formulaire:annulation":
         return annuleFormulaire()
-      case "metabase:offre:create":
-        return createOffreCollection()
+      case "metabase:role-management:create":
+        return createRoleManagement360()
+      case "metabase:jobs:collection":
+        return createJobsCollectionForMetabase()
       case "opco:relance":
         return relanceOpco()
       case "pe:offre:export":
@@ -330,8 +337,6 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return updateOpcoCompanies(job.payload)
       case "domaines-metiers:update":
         return updateDomainesMetiers()
-      case "save:update":
-        return buildSAVE()
       case "domaines-metiers:file:update": {
         const { filename, key } = job.payload
         return updateDomainesMetiersFile({ filename, key })
@@ -350,16 +355,9 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
       }
-      case "prdv:emails:resend": {
-        const { fromDate } = job.payload
-        return repriseEmailRdvs({ fromDateStr: fromDate })
-      }
-      ///////
-      case "mongodb:indexes:create":
-        return createMongoDBIndexes()
       case "anonymize-individual": {
         const { collection, id } = job.payload
-        return anonymizeIndividual({ collection, id })
+        return anonymizeIndividual({ collection, id: new ObjectId(id) })
       }
       case "db:validate":
         return validateModels()
@@ -384,7 +382,12 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       }
       case "crons:scheduler":
         return cronsScheduler()
-
+      case "import-hellowork":
+        return importHelloWork()
+      case "send-applications": {
+        const { batchSize } = job.payload
+        return processApplications(batchSize ? parseInt(batchSize, 10) : 100)
+      }
       default: {
         logger.warn(`Job not found ${job.name}`)
       }

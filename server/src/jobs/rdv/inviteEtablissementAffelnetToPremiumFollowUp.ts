@@ -1,8 +1,8 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { EligibleTrainingsForAppointment, Etablissement } from "../../common/model/index"
 import { isValidEmail } from "../../common/utils/isValidEmail"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
@@ -29,37 +29,39 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: b
     clause = [{ premium_affelnet_invitation_date: { $ne: null } }]
   }
 
-  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = await Etablissement.aggregate([
-    {
-      $match: {
-        gestionnaire_email: {
-          $ne: null,
+  const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = (await getDbCollection("etablissements")
+    .aggregate([
+      {
+        $match: {
+          gestionnaire_email: {
+            $ne: null,
+          },
+          premium_affelnet_activation_date: null,
+          premium_affelnet_refusal_date: null,
+          premium_affelnet_follow_up_date: null,
+          $and: clause,
         },
-        premium_affelnet_activation_date: null,
-        premium_affelnet_refusal_date: null,
-        premium_affelnet_follow_up_date: null,
-        $and: clause,
       },
-    },
-    {
-      $group: {
-        _id: {
-          gestionnaire_siret: "$gestionnaire_siret",
+      {
+        $group: {
+          _id: {
+            gestionnaire_siret: "$gestionnaire_siret",
+          },
+          id: { $first: "$_id" },
+          optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
+          gestionnaire_email: { $first: "$gestionnaire_email" },
+          count: { $sum: 1 },
         },
-        id: { $first: "$_id" },
-        optout_activation_scheduled_date: { $first: "$optout_activation_scheduled_date" },
-        gestionnaire_email: { $first: "$gestionnaire_email" },
-        count: { $sum: 1 },
       },
-    },
-  ])
+    ])
+    .toArray()) as Array<IEtablissementsToInviteToPremium>
 
   for (const etablissement of etablissementsToInviteToPremium) {
-    const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
+    const hasOneAvailableFormation = await getDbCollection("eligible_trainings_for_appointments").findOne({
       etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
       lieu_formation_email: { $ne: null },
       affelnet_visible: true,
-    }).lean()
+    })
 
     if (!hasOneAvailableFormation || !etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email) || !etablissement._id.gestionnaire_siret) {
       continue
@@ -87,16 +89,18 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: b
       },
     })
 
-    await Etablissement.updateMany(
+    await getDbCollection("etablissements").updateMany(
       { gestionnaire_siret: etablissement._id.gestionnaire_siret },
       {
-        premium_affelnet_follow_up_date: dayjs().toDate(),
-        to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
+        $set: {
+          premium_affelnet_follow_up_date: dayjs().toDate(),
+          to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
+        },
       }
     )
   }
 
-  await notifyToSlack({ subject: "RDVA - INVITATION AFFELNET - FOLLOW UP", message: `${count} invitation(s) envoyé` })
+  await notifyToSlack({ subject: "RDVA - INVITATION AFFELNET - FOLLOW UP", message: `${count} invitation(s) envoyée(s)` })
 
   logger.info("Cron #inviteEtablissementAffelnetToPremiumFollowUp done.")
 }

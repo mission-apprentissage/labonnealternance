@@ -1,36 +1,33 @@
 import Boom from "boom"
-import type { ObjectId } from "mongodb"
-import type { FilterQuery } from "mongoose"
+import { Filter, ObjectId } from "mongodb"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
 
 import { logger } from "@/common/logger"
-import { getReferrerByKeyName } from "@/common/model/constants/referrers"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
-import { EligibleTrainingsForAppointment, Etablissement, ReferentielOnisep } from "../common/model/index"
 import { isValidEmail } from "../common/utils/isValidEmail"
 
 import { isEmailBlacklisted } from "./application.service"
 import { getMostFrequentEmailByGestionnaireSiret } from "./formation.service"
+import { getReferrerByKeyName } from "./referrers.service"
 
-export const create = (params: Partial<IEligibleTrainingsForAppointment>) => EligibleTrainingsForAppointment.create(params)
+export const create = (params: IEligibleTrainingsForAppointment) => getDbCollection("eligible_trainings_for_appointments").insertOne(params)
 
-export const find = (conditions: FilterQuery<IEligibleTrainingsForAppointment>, options = {}) => EligibleTrainingsForAppointment.find(conditions, options)
+export const find = (conditions: Filter<IEligibleTrainingsForAppointment>, options = {}) =>
+  getDbCollection("eligible_trainings_for_appointments").find(conditions, options).toArray()
 
-export const findOne = (conditions: FilterQuery<IEligibleTrainingsForAppointment>) => EligibleTrainingsForAppointment.findOne(conditions)
+export const findOne = (conditions: Filter<IEligibleTrainingsForAppointment>, options = {}) => getDbCollection("eligible_trainings_for_appointments").findOne(conditions, options)
 
-export const updateParameter = (id: ObjectId | string, params: Partial<IEligibleTrainingsForAppointment>) =>
-  EligibleTrainingsForAppointment.findOneAndUpdate({ _id: id }, params, { new: true })
+export const updateParameter = (id: ObjectId, params: Partial<IEligibleTrainingsForAppointment>) =>
+  getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: id }, params, { returnDocument: "after" })
 
-export const remove = (id: string) => EligibleTrainingsForAppointment.findByIdAndDelete(id)
+export const findOneAndUpdate = (conditions: Filter<IEligibleTrainingsForAppointment>, values) =>
+  getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate(conditions, { $set: values }, { returnDocument: "after", upsert: true })
 
-export const updateMany = (conditions: FilterQuery<IEligibleTrainingsForAppointment>, values) =>
-  EligibleTrainingsForAppointment.updateMany(conditions, values, { new: true, upsert: true })
-
-export const update = (conditions: FilterQuery<IEligibleTrainingsForAppointment>, values) => EligibleTrainingsForAppointment.updateMany(conditions, values, { new: true })
-
-export const getParameterByCleMinistereEducatif = ({ cleMinistereEducatif }) => EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: cleMinistereEducatif }).lean()
+export const getParameterByCleMinistereEducatif = ({ cleMinistereEducatif }) =>
+  getDbCollection("eligible_trainings_for_appointments").findOne({ cle_ministere_educatif: cleMinistereEducatif })
 
 export const getEmailForRdv = async (
   formation: Pick<IFormationCatalogue, "email" | "etablissement_gestionnaire_courriel" | "etablissement_gestionnaire_siret">,
@@ -50,7 +47,7 @@ export const disableEligibleTraininForAppointmentWithEmail = async (disabledEmai
 
   await Promise.all(
     eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
-      await eligibleTrainingsForAppointment.update({ referrers: [], lieu_formation_email: "" })
+      await getDbCollection("eligible_trainings_for_appointments").updateOne({ _id: eligibleTrainingsForAppointment._id }, { $set: { referrers: [], lieu_formation_email: "" } })
 
       logger.info('Eligible training disabled for "hard_bounce" reason', {
         eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
@@ -61,21 +58,21 @@ export const disableEligibleTraininForAppointmentWithEmail = async (disabledEmai
 }
 
 const findEligibleTrainingByMinisterialKey = async (idCleMinistereEducatif: string) => {
-  return await EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: idCleMinistereEducatif })
+  return await getDbCollection("eligible_trainings_for_appointments").findOne({ cle_ministere_educatif: idCleMinistereEducatif })
 }
 
 const findEligibleTrainingByParcoursupId = async (idParcoursup: string) => {
-  return await EligibleTrainingsForAppointment.findOne({ parcoursup_id: idParcoursup })
+  return await getDbCollection("eligible_trainings_for_appointments").findOne({ parcoursup_id: idParcoursup })
 }
 
 const findEligibleTrainingByActionFormation = async (idActionFormation: string) => {
-  const referentielOnisepIdActionFormation = await ReferentielOnisep.findOne({ id_action_ideo2: idActionFormation })
+  const referentielOnisepIdActionFormation = await getDbCollection("referentieloniseps").findOne({ id_action_ideo2: idActionFormation })
 
   if (!referentielOnisepIdActionFormation) {
     throw Boom.notFound("Formation not found")
   }
 
-  return await EligibleTrainingsForAppointment.findOne({
+  return await getDbCollection("eligible_trainings_for_appointments").findOne({
     cle_ministere_educatif: referentielOnisepIdActionFormation.cle_ministere_educatif,
   })
 }
@@ -85,7 +82,7 @@ function isOpenForAppointments(eligibleTrainingsForAppointment: IEligibleTrainin
 }
 
 const findEtablissement = async (formateurSiret: string | null | undefined) => {
-  return await Etablissement.findOne({ formateur_siret: formateurSiret })
+  return await getDbCollection("etablissements").findOne({ formateur_siret: formateurSiret })
 }
 
 export const findElligibleTrainingForAppointment = async (req: any): Promise<IAppointmentRequestContextCreateResponseSchema> => {

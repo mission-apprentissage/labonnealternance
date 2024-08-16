@@ -1,19 +1,19 @@
+import { randomUUID } from "crypto"
+
 import Boom from "boom"
-import type { FilterQuery } from "mongoose"
+import { ObjectId } from "mongodb"
 import { IUser } from "shared"
 import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { ObjectId } from "@/common/mongodb"
-
-import { Recruiter, User, UserWithAccount } from "../common/model/index"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getUserRecruteursForManagement } from "./userRecruteur.service"
 
-const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
+export const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
   const newUserId = new ObjectId()
-  const user = await User.findOneAndUpdate(
+  await getDbCollection("users").findOneAndUpdate(
     { email },
     {
       $set: update,
@@ -21,74 +21,29 @@ const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, 
     },
     {
       upsert: true,
-      new: true,
     }
   )
+  const savedUser = await getDbCollection("users").findOne({ email })
+  if (!savedUser) {
+    throw Boom.internal("inattendu : user non sauvegardé")
+  }
 
   return {
-    user,
+    user: savedUser,
     // If the user is new, we will have to update the _id with the default one
-    isNew: user._id.equals(newUserId),
+    isNew: savedUser._id.equals(newUserId),
   }
 }
 
-/**
- * @description Returns user from its email.
- * @param {string} email
- * @returns {Promise<IUser>}
- */
-const getUserByMail = (email: string) => User.findOne({ email })
-
-/**
- * @description Returns user from its identifier.
- * @param {string} userId
- * @returns {Promise<IUser>}
- */
-const getUserById = (userId: string) => User.findById(userId)
-
-/**
- * @description Updates item.
- * @param {String} id - ObjectId
- * @param {User} params
- * @returns {Promise<User>}
- */
-const update = (id: string, params) => User.findOneAndUpdate({ _id: id }, params, { new: true })
-
-/**
- * @description Creates an user.
- * @param {String} username
- * @param {String} password
- * @param {User} options
- * @returns {Promise<User>}
- */
-const createUser = async (options: Partial<IUser>) => {
-  const { firstname, lastname, phone, email, role, type } = options
-
-  const user = new User({
-    firstname,
-    lastname,
-    phone,
-    email,
-    role,
-    type,
-  })
-
-  return user.save()
+export const cleanHardbouncedAppointmentUser = async (email: string) => {
+  const fakeEmail = `hardbounced-${randomUUID()}@faux-domaine.fr`
+  await getDbCollection("users").findOneAndUpdate(
+    { email },
+    {
+      $set: { email: fakeEmail },
+    }
+  )
 }
-
-/**
- * @description Returns items.
- * @param {FilterQuery<IUser>} conditions
- * @returns {Promise<User[]>}
- */
-const find = (conditions: FilterQuery<IUser>) => User.find(conditions)
-
-/**
- * @description Returns one item.
- * @param {FilterQuery<IUser>} conditions
- * @returns {Promise<User>}
- */
-const findOne = (conditions: FilterQuery<IUser>) => User.findOne(conditions)
 
 export const getUserAndRecruitersDataForOpcoUser = async (
   opco: OPCOS
@@ -100,9 +55,9 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   const userRecruteurs = await getUserRecruteursForManagement({ opco })
   const filteredUserRecruteurs = [...userRecruteurs.active, ...userRecruteurs.awaiting, ...userRecruteurs.disabled]
   const userIds = [...new Set(filteredUserRecruteurs.map(({ _id }) => _id.toString()))]
-  const recruiters = await Recruiter.find({ "jobs.managed_by": { $in: userIds } })
-    .select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 })
-    .lean()
+  const recruiters = await getDbCollection("recruiters")
+    .find({ "jobs.managed_by": { $in: userIds } }, { projection: { establishment_id: 1, origin: 1, jobs: 1, _id: 0 } })
+    .toArray()
 
   const recruiterMap = new Map<string, (typeof recruiters)[0]>()
   recruiters.forEach((recruiter) => {
@@ -157,9 +112,9 @@ export const getUserAndRecruitersDataForOpcoUser = async (
 }
 
 export const getUserNamesFromIds = async (ids: string[]) => {
-  const deduplicatedIds = [...new Set(ids)].filter((id) => ObjectId.isValid(id))
-  const users = await UserWithAccount.find({ _id: { $in: deduplicatedIds } }).lean()
+  const deduplicatedIds = [...new Set(ids)].filter((id) => ObjectId.isValid(id)).map((id) => new ObjectId(id))
+  const users = await getDbCollection("userswithaccounts")
+    .find({ _id: { $in: deduplicatedIds } })
+    .toArray()
   return users
 }
-
-export { createOrUpdateUserByEmail, createUser, find, findOne, getUserById, getUserByMail, update }

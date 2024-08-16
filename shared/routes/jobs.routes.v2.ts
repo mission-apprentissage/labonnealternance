@@ -3,6 +3,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
+import { ZJobsApiResponseV2 } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -23,6 +24,7 @@ import {
   zSourcesParams,
 } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
+import { ZJobOpportunityRncp, ZJobOpportunityRome } from "./jobOpportunity.routes"
 
 export const zJobsRoutesV2 = {
   get: {
@@ -396,6 +398,32 @@ export const zJobsRoutesV2 = {
           max: 1,
           timeWindow: "1s",
         })}`,
+      },
+    },
+    "/jobs/rome": {
+      method: "get",
+      path: "/jobs/rome",
+      querystring: ZJobOpportunityRome,
+      response: {
+        "200": ZJobsApiResponseV2,
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
+      },
+    },
+    "/jobs/rncp": {
+      method: "get",
+      path: "/jobs/rncp",
+      querystring: ZJobOpportunityRncp,
+      response: {
+        "200": ZJobsApiResponseV2,
+      },
+      securityScheme: {
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
       },
     },
   },

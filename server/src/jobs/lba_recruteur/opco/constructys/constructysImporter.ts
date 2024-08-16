@@ -5,18 +5,18 @@ import { oleoduc, transformData, writeData } from "oleoduc"
 import { removeAccents } from "shared"
 import { OPCOS } from "shared/constants/recruteur"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { prepareReferentielOpcoForInsert } from "@/services/opco.service"
 
 import __dirname from "../../../../common/dirname"
 import { logger } from "../../../../common/logger"
-import { ReferentielOpco } from "../../../../common/model/index"
 import { fileDownloader, parseCsv } from "../../../../common/utils/fileUtils"
 import config from "../../../../config"
 
 const importer = async (filePath: string, opco_label: OPCOS, parallelism: number) => {
   logger.info(`Deleting collection entries for ${opco_label}...`)
-  await ReferentielOpco.deleteMany({ opco_label })
+  await getDbCollection("referentielopcos").deleteMany({ opco_label })
 
   logger.info("Importing Data...")
 
@@ -49,7 +49,7 @@ const importer = async (filePath: string, opco_label: OPCOS, parallelism: number
     writeData(
       async (referentiel) => {
         const { siret_code } = referentiel
-        await ReferentielOpco.findOneAndUpdate({ siret_code }, { $set: referentiel }, { upsert: true }).lean()
+        await getDbCollection("referentielopcos").findOneAndUpdate({ siret_code }, { $set: referentiel }, { upsert: true })
       },
       { parallel: parallelism }
     )

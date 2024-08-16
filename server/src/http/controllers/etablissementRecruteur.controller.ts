@@ -5,24 +5,24 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { Cfa, Entreprise, Recruiter } from "@/common/model"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
-import { upsertCfa } from "@/services/cfa.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
   getEntrepriseDataFromSiret,
   getOpcoData,
-  getOrganismeDeFormationDataFromSiret,
+  validateEligibiliteCfa,
   isCfaCreationValid,
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
+  getCfaSiretInfos,
 } from "@/services/etablissement.service"
-import { Organization, UserAndOrganization, upsertEntrepriseData } from "@/services/organization.service"
+import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import {
   autoValidateUser,
@@ -79,7 +79,7 @@ export default (server: Server) => {
       }
 
       if (skipUpdate) {
-        const entrepriseOpt = await Entreprise.findOne({ siret }).lean()
+        const entrepriseOpt = await getDbCollection("entreprises").findOne({ siret })
         if (entrepriseOpt) {
           return res.status(200).send(entrepriseOpt)
         }
@@ -129,8 +129,8 @@ export default (server: Server) => {
       if (!siret) {
         throw Boom.badRequest("Le numéro siret est obligatoire.")
       }
-      const response = await getOrganismeDeFormationDataFromSiret(siret)
-      return res.status(200).send(response)
+      const { address, address_detail, geo_coordinates, raison_sociale, enseigne } = await getCfaSiretInfos(siret)
+      return res.status(200).send({ address, address_detail, geo_coordinates, raison_sociale, enseigne, siret })
     }
   )
 
@@ -151,8 +151,8 @@ export default (server: Server) => {
       if (!isValid) {
         throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
       }
-      const response = await getOrganismeDeFormationDataFromSiret(siret)
-      return res.status(200).send(response)
+      await validateEligibiliteCfa(siret)
+      return res.status(200).send({})
     }
   )
 
@@ -167,7 +167,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { cfaId } = req.params
-      const cfa = await Cfa.findOne({ _id: cfaId }).lean()
+      const cfa = await getDbCollection("cfas").findOne({ _id: cfaId })
       if (!cfa) {
         throw Boom.notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
       }
@@ -175,7 +175,9 @@ export default (server: Server) => {
       if (!cfa_delegated_siret) {
         throw Boom.internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
       }
-      const entreprises = await Recruiter.find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret }).lean()
+      const entreprises = await getDbCollection("recruiters")
+        .find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret })
+        .toArray()
       return res.status(200).send(entreprises)
     }
   )
@@ -214,19 +216,10 @@ export default (server: Server) => {
           if (!isValid) {
             throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
           }
-          const { contacts, establishment_raison_sociale, geo_coordinates, address, address_detail } = await getOrganismeDeFormationDataFromSiret(establishment_siret)
-
-          const cfa = await upsertCfa(
-            establishment_siret,
-            {
-              address,
-              address_detail,
-              enseigne: null,
-              geo_coordinates,
-              raison_sociale: establishment_raison_sociale,
-            },
-            origin
-          )
+          const {
+            referentiel: { contacts },
+            cfa,
+          } = await validateEligibiliteCfa(establishment_siret, origin)
           const organization: Organization = { type: CFA, cfa }
           const userCfa = await createOrganizationUser({
             userFields: {
@@ -337,7 +330,7 @@ export default (server: Server) => {
         throw Boom.forbidden("Votre compte est désactivé. Merci de contacter le support La bonne alternance.")
       }
       if (!isUserEmailChecked(user)) {
-        await validateUserWithAccountEmail(user._id.toString())
+        await validateUserWithAccountEmail(user._id)
       }
       const mainRole = await getMainRoleManagement(user._id, true)
       if (getLastStatusEvent(mainRole?.status)?.status === AccessStatus.GRANTED) {

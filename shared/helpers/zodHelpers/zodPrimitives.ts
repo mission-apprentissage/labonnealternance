@@ -1,6 +1,6 @@
 import { capitalize } from "lodash-es"
 
-import { CODE_NAF_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 import { validateSIRET } from "../../validators/siretValidator"
 import { removeUrlsFromText } from "../common"
 import { z } from "../zodWithOpenApi"
@@ -94,11 +94,35 @@ export const extensions = {
         content: z.array(z.string()).nullish(),
       })
       .strict(),
-  buildEnum: (enumObject: Record<string, string>) => {
+  buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>) => {
     const values = Object.values(enumObject)
     if (!values.length) {
       throw new Error("inattendu : enum vide")
     }
     return z.enum([values[0], ...values.slice(1)])
   },
+  romeCode: () => z.string().trim().regex(CODE_ROME_REGEX, "Code ROME invalide"),
+  romeCodeArray: () =>
+    z
+      .string()
+      .trim()
+      .transform((str) => str.split(","))
+      .refine((arr) => arr.every((code) => CODE_ROME_REGEX.test(code.trim())), {
+        message: "One or more ROME codes are invalid. Expected format is 'D1234'.",
+      }),
+  rncpCode: () => z.string().trim().regex(RNCP_REGEX, "Code RNCP invalide"),
+  latitude: () =>
+    z
+      .string()
+      .trim()
+      .regex(LATITUDE_REGEX, "Latitude invalide")
+      .transform((val) => parseFloat(val)),
+  longitude: () =>
+    z
+      .string()
+      .trim()
+      .regex(LONGITUDE_REGEX, "Longitude invalide")
+      .transform((val) => parseFloat(val)),
+  inseeCode: () => z.string().trim().regex(CODE_INSEE_REGEX, "Code INSEE invalide"),
+  url: () => z.string().regex(/^(https?:\/\/)?(http?:\/\/)?(www\.)?([a-zA-Z0-9-]+)(\.[a-zA-Z0-9-]+)+([a-zA-Z]{2,6})(:[0-9]{1,5})?(\/.*)?$/, "URL invalide"),
 }

@@ -5,6 +5,7 @@ module.exports = {
     "n/no-missing-import": 0,
     "import/no-extraneous-dependencies": 0,
     "n/no-extraneous-import": 0,
+    "import/no-unresolved": 0,
   },
   env: {
     es2022: true,

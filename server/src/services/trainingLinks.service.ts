@@ -4,10 +4,13 @@ import { URL } from "url"
 import { getDistance } from "geolib"
 import { IFormationCatalogue } from "shared/models"
 
-import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
+
+import { getRomesFromRncp } from "./certification.service"
 
 interface IWish {
   id: string
@@ -41,12 +44,6 @@ const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, para
   return url.toString()
 }
 
-/**
- * @description local function to get the formation related to the query
- * @param {Object} query
- * @param {string} filter
- * @returns {Promise<IFormationCatalogue[]>}
- */
 const getFormations = (
   query: object,
   filter: object = {
@@ -54,58 +51,93 @@ const getFormations = (
     rome_codes: 1,
     _id: 0,
   }
-) => FormationCatalogue.find(query, filter)
+) => getDbCollection("formationcatalogues").find(query, filter).toArray()
 
-/**
- * @description get formation according to the available parameters passed to the API endpoint
- * @param {object} wish wish data
- * @returns {Promise<IFormationCatalogue[]>}
- */
 const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalogue[]> => {
   let formations
+  let query: any = { $or: [] }
+
+  if (wish.cfd) {
+    query.$or.push({ cfd: wish.cfd })
+  }
+  if (wish.rncp) {
+    query.$or.push({ rncp_code: wish.rncp })
+  }
+  if (wish.mef) {
+    query.$or.push({ "bcn_mefs_10.mef10": wish.mef })
+  }
+
+  if (!query.$or.length) {
+    query = undefined
+  }
   // search by cle ME
   if (wish.cle_ministere_educatif) {
     formations = await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
   }
 
-  if (!formations || !formations.length) {
-    // search by uai_lieu_formation
-    if (wish.uai_lieu_formation) {
-      formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
-    }
-  }
+  // KBA 2024_07_29 : commenté en attendant la remonté du champ uai_formation dans le catalogue RCO
+  // if (!formations || !formations.length) {
+  //   // search by uai_lieu_formation
+  //   if (wish.uai_lieu_formation) {
+  //     formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
+  //   }
+  // }
 
   if (!formations || !formations.length) {
     // search by uai_formateur
     if (wish.uai_formateur) {
-      formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
+      formations = await getFormations({ ...query, etablissement_formateur_uai: wish.uai_formateur })
     }
   }
 
   if (!formations || !formations.length) {
     // search by uai_formateur_responsable
     if (wish.uai_formateur_responsable) {
-      formations = await getFormations({
-        $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }],
-        etablissement_gestionnaire_uai: wish.uai_formateur_responsable,
-      })
+      formations = await getFormations({ ...query, etablissement_gestionnaire_uai: wish.uai_formateur_responsable })
     }
   }
 
-  return formations
+  return formations || []
 }
 
-/**
- * @description get training booking link for a specific training
- * @param {object} wish wish data
- * @returns {Promise<string>} LBA link
- */
+const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
+  let romes = [] as string[]
+  const tmpFormations = await getDbCollection("formationcatalogues")
+    .find(
+      {
+        $or: [
+          {
+            rncp_code: rncp,
+          },
+          {
+            cfd: cfd ? cfd : undefined,
+          },
+          {
+            "bcn_mefs_10.mef10": mef,
+          },
+        ],
+      },
+      {
+        projection: {
+          rome_codes: 1,
+          _id: 0,
+        },
+      }
+    )
+    .limit(5)
+    .toArray()
+  if (tmpFormations.length) {
+    romes = [...new Set(tmpFormations.flatMap(({ rome_codes }) => rome_codes))] as string[]
+  }
+  return romes
+}
+
 const getPrdvLink = async (wish: IWish): Promise<string> => {
   if (!wish.cle_ministere_educatif) {
     return ""
   }
 
-  const elligibleFormation = await EligibleTrainingsForAppointment.findOne(
+  const elligibleFormation = await getDbCollection("eligible_trainings_for_appointments").findOne(
     {
       cle_ministere_educatif: wish.cle_ministere_educatif,
       lieu_formation_email: {
@@ -114,7 +146,7 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
         $not: /^$/,
       },
     },
-    { _id: 1 }
+    { projection: { _id: 1 } }
   )
 
   if (elligibleFormation) {
@@ -127,99 +159,71 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
   return ""
 }
 
-const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
-  let romes = [] as string[]
-  const tmpFormations = await FormationCatalogue.find(
-    {
-      $or: [
-        {
-          rncp_code: rncp,
-        },
-        {
-          cfd: cfd ? cfd : undefined,
-        },
-        {
-          "bcn_mefs_10.mef10": mef,
-        },
-      ],
-    },
-    {
-      rome_codes: 1,
-      _id: 0,
-    }
-  ).limit(5)
-  if (tmpFormations.length) {
-    romes = [...new Set(tmpFormations.flatMap(({ rome_codes }) => rome_codes))] as string[]
-  }
-  return romes
-}
-
-/**
- * @description get link LBA for a specific training
- * @param {object} wish wish data
- * @returns {Promise<string>} LBA link
- */
 const getLBALink = async (wish: IWish): Promise<string> => {
-  // get related trainings from catalogue
+  // Try getting formations first
   const formations = await getTrainingsFromParameters(wish)
 
+  // Handle single formation case
+  if (formations?.length === 1) {
+    const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
+    const [latitude, longitude] = lieu_formation_geo_coordonnees!.split(",")
+    return buildEmploiUrl({ params: { romes: rome_codes as string[], lat: latitude, lon: longitude, radius: "60", ...utmData } })
+  }
+
+  // Extract postcode and get coordinates if available
   const postCode = wish.code_insee || wish.code_postal
   let wLat, wLon
   if (postCode) {
-    const responseApiAdresse = await apiGeoAdresse.search(postCode)
+    let responseApiAdresse = await apiGeoAdresse.search(postCode)
+
+    if (!responseApiAdresse || !responseApiAdresse.features.length) {
+      const generalPostCode = postCode.replace(/\d{3}$/, "000")
+      responseApiAdresse = await apiGeoAdresse.search(generalPostCode)
+    }
+
     if (responseApiAdresse && responseApiAdresse.features.length) {
       ;[wLon, wLat] = responseApiAdresse.features[0].geometry.coordinates
     }
   }
 
-  if (!formations || !formations.length) {
-    const romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
-    return buildEmploiUrl({ params: { ...(romes.length ? { romes: romes } : {}), lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
-  }
+  // Get romes based on rncp or training database
+  const romes = wish.rncp
+    ? (await getRomesFromRncp(wish.rncp)) || (await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }))
+    : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
 
-  let [formation] = formations
-
-  if (formations.length > 1 && wLat && wLon) {
-    let distance = 999999999
-    for (const [i, iFormation] of formations.entries()) {
-      if (iFormation.lieu_formation_geo_coordonnees) {
-        const [fLat, fLon] = iFormation.lieu_formation_geo_coordonnees.split(",")
-        const fDist = getDistance({ latitude: wLat, longitude: wLon }, { latitude: fLat, longitude: fLon })
-        if (fDist < distance) {
-          distance = fDist
-          formation = formations[i]
-        }
-      }
+  // Build url based on formations and coordinates
+  if (formations?.length) {
+    let formation = formations[0]
+    let lat, lon
+    if (formations.length > 1 && wLat && wLon) {
+      // Find closest formation if multiple and coordinates available
+      formation = formations.reduce(
+        (closest, current) => {
+          if (!current.lieu_formation_geo_coordonnees) return closest
+          const [fLat, fLon] = current.lieu_formation_geo_coordonnees.split(",")
+          const currentDist = getDistance({ latitude: wLat, longitude: wLon }, { latitude: fLat, longitude: fLon })
+          return currentDist < closest.distance! ? { ...current, distance: currentDist } : closest
+        },
+        { distance: 999999999, ...formation }
+      )
+      lat = formation.lieu_formation_geo_coordonnees?.split(",")[0]
+      lon = formation.lieu_formation_geo_coordonnees?.split(",")[1]
+    } else {
+      // Use formation coordinates or user coordinates
+      lat = formation.lieu_formation_geo_coordonnees?.split(",")[0] || wLat
+      lon = formation.lieu_formation_geo_coordonnees?.split(",")[1] || wLon
     }
-  }
-
-  let lat, lon
-  if (formation.lieu_formation_geo_coordonnees) {
-    ;[lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
+    return buildEmploiUrl({ params: { ...(romes.length ? { romes } : {}), lat, lon, radius: "60", ...utmData } })
   } else {
-    ;[lat, lon] = [wLat, wLon]
-  }
-
-  if (formations.length > 1 && !postCode) {
-    ;[lat, lon] = [undefined, undefined]
-  }
-
-  if (formations.length === 1) {
-    if (formation.rome_codes && formation.rome_codes.length) {
-      return buildEmploiUrl({ params: { romes: formation.rome_codes, lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
+    // No formations found, use user coordinates if available
+    if (romes.length) {
+      return buildEmploiUrl({ params: { romes, lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
+    } else {
+      return buildEmploiUrl({ baseUrl: config.publicUrl, params: { ...utmData } })
     }
   }
-
-  const romes = await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
-
-  return buildEmploiUrl({ params: { ...(romes.length ? { romes: romes } : {}), lat: lat ?? undefined, lon: lon ?? undefined, radius: "60", ...utmData } })
 }
 
-/**
- * @description get LBA links from candidat's orientation wish
- * @param {IWish[]} params wish array
- * @returns {Promise<ILinks[]>} LBA link
- */
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
   const results: any[] = []
   await asyncForEach(params, async (training) => {

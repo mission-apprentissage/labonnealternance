@@ -1,8 +1,8 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
-import { CustomEmailETFA, EligibleTrainingsForAppointment } from "../../../common/model/index"
-import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { Server } from "../../server"
 
 /**
@@ -21,7 +21,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { siret } = req.params
 
-      const parameters = await EligibleTrainingsForAppointment.find({ etablissement_formateur_siret: siret }).lean()
+      const parameters = await getDbCollection("eligible_trainings_for_appointments").find({ etablissement_formateur_siret: siret }).toArray()
 
       if (parameters == undefined || parameters.length == 0) {
         throw Boom.badRequest()
@@ -41,19 +41,18 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"])],
     },
     async ({ body, params }, res) => {
-      console.info(body)
       if ("is_lieu_formation_email_customized" in body) {
         if (body.is_lieu_formation_email_customized) {
           if ("cle_ministere_educatif" in body && "lieu_formation_email" in body && body.lieu_formation_email && body.cle_ministere_educatif) {
-            await CustomEmailETFA.findOneAndUpdate(
+            await getDbCollection("customemailetfas").findOneAndUpdate(
               { cle_ministere_educatif: body.cle_ministere_educatif },
-              { email: body.lieu_formation_email, cle_ministere_educatif: body.cle_ministere_educatif },
+              { $set: { email: body.lieu_formation_email, cle_ministere_educatif: body.cle_ministere_educatif } },
               { upsert: true }
             )
           }
         }
       }
-      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id.toString(), body).lean()
+      const result = await getDbCollection("eligible_trainings_for_appointments").findOneAndUpdate({ _id: params.id }, { $set: { ...body } }, { returnDocument: "after" })
 
       res.send(result)
     }

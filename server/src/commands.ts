@@ -2,11 +2,10 @@ import { captureException } from "@sentry/node"
 import { program } from "commander"
 import HttpTerminator from "lil-http-terminator"
 
-import { closeMongoConnection } from "@/common/mongodb"
-
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
+import { closeMongodbConnection } from "./common/utils/mongodbUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { closeSentry, initSentryProcessor } from "./http/sentry"
@@ -70,7 +69,7 @@ program
     logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await Promise.all([closeMongoConnection(), closeMemoryCache()])
+    await Promise.all([closeMongodbConnection(), closeMemoryCache()])
     await closeSentry()
 
     setTimeout(async () => {
@@ -164,6 +163,8 @@ function createJobAction(name) {
   }
 }
 
+program.command("poc:romeo").description("temporaire - poc api romeo").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("poc:romeo"))
+program.command("recreate:indexes").description("Recreate MongoDB indexes").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("recreate:indexes"))
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
@@ -179,16 +180,6 @@ program
   .requiredOption("-i, --id <string>", " <id> est l'identifiant de l'élément à anonymiser")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("anonymize-individual"))
-
-program
-  .command("fix:duplicate:users")
-  .description("Fix duplicated users in users collections and update appointment collection accordingly")
-  .action(createJobAction("fix:duplicate:users"))
-
-program
-  .command("migration:correctionRDVA")
-  .description("Corrige les erreurs de données ne correspondant pas aux modèles associés")
-  .action(createJobAction("migration:correctionRDVA"))
 
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
@@ -219,11 +210,6 @@ program
   .action(createJobAction("recruiters:get-missing-address-detail"))
 
 program
-  .command("import:ficheromev4")
-  .description("import fiches métiers rome v4 (pas utilisé 29/04/2024)")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("import:ficheromev4"))
-program
   .command("import:referentielrome")
   .description("import référentiel rome v4 from XML")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -242,12 +228,6 @@ program
   .description("Retirer le champ is_delegated des offres")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("migration:remove-delegated-from-jobs"))
-
-program
-  .command("mongodb:indexes:create")
-  .description("Creation des indexes mongo")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("mongodb:indexes:create"))
 
 /********************/
 
@@ -291,10 +271,16 @@ program
   .action(createJobAction("formulaire:annulation"))
 
 program
-  .command("creer-offre-metabase")
+  .command("metabase:jobs:collection")
   .description("Permet de créer une collection dédiée aux offres pour metabase")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("metabase:offre:create"))
+  .action(createJobAction("metabase:jobs:collection"))
+
+program
+  .command("metabase:role-management:create")
+  .description("Crée une collection jointure entre userWithAccounts, roleManagements, cfas et entreprises pour metabase")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("metabase:role-management:create"))
 
 program
   .command("relance-opco")
@@ -463,7 +449,6 @@ program
   .description("Met à jour la liste des sociétés bonnes alternances")
   .option("-use-algo-file, [UseAlgoFile]", "télécharge et traite le fichier issu de l'algo", false)
   .option("-clear-mongo, [ClearMongo]", "vide la collection des bonnes alternances", false)
-  .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
   .option("-source-file, [SourceFile]", "fichier source alternatif")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -485,12 +470,6 @@ program
   .option("-source-file, [SourceFile]", "fichier source alternatif")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("opcos:update"))
-
-program
-  .command("update-save-files")
-  .description("Procède à la mise à jour sur le S3 des fichiers SAVE")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("save:update"))
 
 program
   .command("update-domaines-metiers")
@@ -556,11 +535,18 @@ program
   .action(createJobAction("referentiel-opco:constructys:import"))
 
 program
-  .command("resend-prdv-emails")
-  .description("Renvoie les emails de prises de rendez-vous")
+  .command("import-hellowork")
+  .description("Importe les offres hellowork")
   .option("-q, --queued", "Run job asynchronously", false)
-  .requiredOption("--from-date <string>, [fromDate]", "format DD-MM-YYYY. Date depuis laquelle les prises de rendez-vous sont renvoyéees")
-  .action(createJobAction("prdv:emails:resend"))
+  .option("-parallelism, [parallelism]", "Number of threads", "10")
+  .action(createJobAction("import-hellowork"))
+
+program
+  .command("send-applications")
+  .description("Scanne les virus des pièces jointes et envoie les candidatures")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .option("-batchSize, [batchSize]", "Maximum de candidatures traitées", "100")
+  .action(createJobAction("send-applications"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

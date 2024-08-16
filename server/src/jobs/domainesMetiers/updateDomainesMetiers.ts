@@ -1,21 +1,21 @@
 import fs from "fs"
 import path from "path"
 
+import { ObjectId } from "mongodb"
 import { oleoduc } from "oleoduc"
-import { ZDomainesMetiers } from "shared/models"
+import { IDomainesMetiers, ZDomainesMetiers } from "shared/models"
 import { removeAccents } from "shared/utils"
 import XLSX from "xlsx"
 
-import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
 import { initializeCacheMetiers } from "@/services/metiers.service"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { DomainesMetiers } from "../../common/model/index"
 import { getFileFromS3Bucket } from "../../common/utils/awsUtils"
 import { readXLSXFile } from "../../common/utils/fileUtils"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { createAssetsFolder } from "../lbb/lbaCompaniesUtils"
+import { createAssetsFolder } from "../recruteurLba/recruteurLbaUtil"
 
 const currentDirname = __dirname(import.meta.url)
 const FILEPATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
@@ -35,7 +35,7 @@ export default async function (optionalFileName?: string) {
   await downloadAndSaveFile(optionalFileName)
 
   logger.info(`Clearing domainesmetiers...`)
-  await DomainesMetiers.deleteMany({})
+  await getDbCollection("domainesmetiers").deleteMany({})
 
   const workbookDomainesMetiers = readXLSXFile(FILEPATH)
 
@@ -99,7 +99,9 @@ export default async function (optionalFileName?: string) {
         // cas de la ligne sur laquelle se trouve le nom du métier qui va marquer l'insertion d'une ligne dans la db
         step = 1
 
+        const now = new Date()
         const paramsDomaineMetier: IDomainesMetiers = {
+          _id: new ObjectId(),
           domaine: domaine,
           domaine_sans_accent_computed: removeAccents(domaine),
           sous_domaine: metier,
@@ -123,8 +125,8 @@ export default async function (optionalFileName?: string) {
           intitules_fap_sans_accent_computed: [...new Set(libellesFAPs)].map(removeAccents),
           sous_domaine_onisep: sousDomainesOnisep,
           sous_domaine_onisep_sans_accent_computed: sousDomainesOnisep.map(removeAccents),
-          created_at: new Date(),
-          last_update_at: new Date(),
+          created_at: now,
+          last_update_at: now,
         }
 
         if (codesROMEs.length > 15) {
@@ -134,7 +136,7 @@ export default async function (optionalFileName?: string) {
         const parsedDomaineMetier = ZDomainesMetiers.safeParse(paramsDomaineMetier)
 
         if (parsedDomaineMetier.success) {
-          await new DomainesMetiers(parsedDomaineMetier.data).save()
+          await getDbCollection("domainesmetiers").insertOne(paramsDomaineMetier)
         } else {
           logger.error(`Erreur non bloquante : mauvais format de domaines metiers domaine=${paramsDomaineMetier.domaine} - sous_domaine=${paramsDomaineMetier.sous_domaine}`)
         }

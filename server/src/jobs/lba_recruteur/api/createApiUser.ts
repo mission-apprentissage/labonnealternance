@@ -1,7 +1,10 @@
+import { randomUUID } from "crypto"
+
+import { ObjectId } from "mongodb"
 import { ICredential } from "shared/models"
 
 import { logger } from "../../../common/logger"
-import { Credential } from "../../../common/model/index"
+import { getDbCollection } from "../../../common/utils/mongodbUtils"
 
 export const createApiUser = async (
   nom: ICredential["nom"],
@@ -10,6 +13,19 @@ export const createApiUser = async (
   organisation: ICredential["organisation"],
   scope: ICredential["scope"]
 ) => {
-  const apiUser = await Credential.create({ nom, prenom, email, organisation, scope })
-  logger.info(`API-KEY : ${apiUser.api_key}`)
+  const now = new Date()
+  const newUser: ICredential = {
+    _id: new ObjectId(),
+    nom,
+    prenom,
+    email,
+    organisation,
+    scope,
+    actif: true,
+    api_key: `mna-${randomUUID()}`,
+    createdAt: now,
+    updatedAt: now,
+  }
+  await getDbCollection("credentials").insertOne(newUser)
+  logger.info(`API-KEY : ${newUser.api_key}`)
 }

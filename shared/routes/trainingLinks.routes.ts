@@ -23,6 +23,9 @@ export const zTrainingLinksRoutes = {
               uai_formateur: z.string().nullable().optional(),
               uai_formateur_responsable: z.string().nullable().optional(),
               code_insee: z.string().nullable().optional(),
+              siret_lieu_formation: z.string().nullable().optional(),
+              siret_formateur: z.string().nullable().optional(),
+              siret_formateur_responsable: z.string().nullable().optional(),
             })
             .strict()
           // .refine(({ rncp, cfd, mef }) => !!(rncp || cfd || mef), { message: "Au moins un des champs suivants est obligatoire : CFD, RNCP, MEF" })

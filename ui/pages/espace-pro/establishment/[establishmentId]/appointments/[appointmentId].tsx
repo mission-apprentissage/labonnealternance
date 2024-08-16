@@ -7,7 +7,6 @@ import * as Yup from "yup"
 import { reasons } from "@/components/RDV/types"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
-import { formatDate } from "../../../../../common/utils/dateUtils"
 import { FormLayoutComponent } from "../../../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
 import { CfaCandidatInformationAnswered } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationAnswered"
 import { CfaCandidatInformationForm } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationForm"
@@ -38,7 +37,6 @@ export default function CfaCandidatInformationPage() {
           appointment_id: appointmentId,
           cfa_intention_to_applicant: "personalised_answer",
           cfa_message_to_applicant: values.message,
-          cfa_message_to_applicant_date: formatDate(new Date()),
         },
         headers: {
           authorization: `Bearer ${token}`,
@@ -57,7 +55,6 @@ export default function CfaCandidatInformationPage() {
         appointment_id: appointmentId,
         cfa_intention_to_applicant: "other_channel",
         cfa_message_to_applicant: "",
-        cfa_message_to_applicant_date: formatDate(new Date()),
       },
       headers: {
         authorization: `Bearer ${token}`,
@@ -73,7 +70,6 @@ export default function CfaCandidatInformationPage() {
         appointment_id: appointmentId,
         cfa_intention_to_applicant: "no_answer",
         cfa_message_to_applicant: "",
-        cfa_message_to_applicant_date: formatDate(new Date()),
       },
       headers: {
         authorization: `Bearer ${token}`,

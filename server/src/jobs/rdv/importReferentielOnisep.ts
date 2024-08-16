@@ -3,10 +3,13 @@ import { writeFile } from "node:fs/promises"
 import { pipeline } from "stream/promises"
 
 import axios from "axios"
+import { ObjectId } from "mongodb"
 import { filterData, oleoduc, transformData, writeData } from "oleoduc"
+import { IReferentielOnisep } from "shared/models"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { logger } from "../../common/logger"
-import { ReferentielOnisep } from "../../common/model/index"
 import { parseCsv } from "../../common/utils/fileUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
@@ -29,7 +32,7 @@ export const importReferentielOnisep = async () => {
   const stats = {
     csvRows: 0,
     minCsvRowsThreshold: 10000,
-    beforeImportationDatabaseRows: await ReferentielOnisep.estimatedDocumentCount({}),
+    beforeImportationDatabaseRows: await getDbCollection("referentieloniseps").estimatedDocumentCount({}),
     afterImportationDatabaseRows: 0,
     filePath: "./widget_mna_ideo.csv",
   }
@@ -61,7 +64,7 @@ export const importReferentielOnisep = async () => {
     return
   }
 
-  await ReferentielOnisep.deleteMany({})
+  await getDbCollection("referentieloniseps").deleteMany({})
 
   try {
     await oleoduc(
@@ -69,15 +72,18 @@ export const importReferentielOnisep = async () => {
       parseCsv(),
       filterData((row: TCsvRow) => row["ID action IDEO2"] && row["Clé ministère éducatif MA"]),
       transformData((row: TCsvRow) => {
-        return {
+        const refOnisep: IReferentielOnisep = {
+          _id: new ObjectId(),
           id_action_ideo2: row["ID action IDEO2"],
           cle_ministere_educatif: row["Clé ministère éducatif MA"],
+          created_at: new Date(),
         }
+        return refOnisep
       }),
-      writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 10 })
+      writeData((transformedData: IReferentielOnisep) => getDbCollection("referentieloniseps").insertOne(transformedData), { parallel: 10 })
     )
 
-    stats.afterImportationDatabaseRows = await ReferentielOnisep.estimatedDocumentCount({})
+    stats.afterImportationDatabaseRows = await getDbCollection("referentieloniseps").estimatedDocumentCount({})
 
     await notifyToSlack({
       subject: "IMPORT ONISEP",

@@ -21,6 +21,7 @@ import { zMetiersDAvenirRoutes } from "./metiersdavenir.routes"
 import { zOptoutRoutes } from "./optout.routes"
 import { zPartnersRoutes } from "./partners.routes"
 import { zRecruiterRoutes } from "./recruiters.routes"
+import { zReportedCompanyRoutes } from "./reportedCompany.routes"
 import { zRomeRoutes } from "./rome.routes"
 import { zTrainingLinksRoutes } from "./trainingLinks.routes"
 import { zUnsubscribeRoute } from "./unsubscribe.routes"
@@ -97,6 +98,7 @@ const zRoutesPost3 = {
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
   ...zJobsRoutesV2.post,
+  ...zReportedCompanyRoutes.post,
 }
 
 const zRoutesPost = {
@@ -183,8 +185,6 @@ export type IRequestFetchOptions = {
   headers?: Record<string, string>
 }
 
-export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never | EmptyObject> extends EmptyObject
-  ? EmptyObject
-  : ConditionalExcept<IRequestRaw<S>, never | EmptyObject>
+export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never>
 
 export type IApiVersion = "V1" | "V2"

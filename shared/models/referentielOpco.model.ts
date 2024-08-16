@@ -2,7 +2,9 @@ import { OPCOS } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "referentielopcos" as const
 
 export const ZReferentielOpco = z
   .object({
@@ -20,3 +22,12 @@ export const ZReferentielOpcoInsert = ZReferentielOpco.pick({
 })
 
 export type IReferentielOpco = z.output<typeof ZReferentielOpco>
+
+export default {
+  zod: ZReferentielOpco,
+  indexes: [
+    [{ siret_code: 1 }, {}],
+    [{ emails: 1 }, {}],
+  ],
+  collectionName,
+} as const satisfies IModelDescriptor

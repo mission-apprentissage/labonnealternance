@@ -1,72 +1,198 @@
 <mjml>
   <mj-head>
-    <mj-title>Votre offre est publiée</mj-title>
-    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
-    <mj-style inline="inline">
-      .grey {color: #1E1E1E;}
-    </mj-style>
+    <mj-preview></mj-preview>
+    <mj-breakpoint width="480px"></mj-breakpoint>
     <mj-attributes>
-      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
-      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+      <mj-all padding="0"></mj-all>
     </mj-attributes>
+    <mj-style>
+      @media only screen and (max-width: 799px) {
+        .text > div {
+            text-align: inherit !important;
+        }
+    
+        .wrapper > table > tbody > tr > td {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .section > table > tbody > tr > td {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+        }
+
+        .column > table > tbody > tr > td {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .padB40 {
+            padding-bottom: 40px !important;
+        }
+
+        .image {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .image > table {
+            text-align: center !important;
+            margin: 0 auto !important;
+        }
+
+        .divider {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .button > table {
+            width: 100% !important;
+        }
+
+        .button > table > tbody > tr > td > a {
+            width: 80% !important;
+        }
+    }
+    </mj-style>
+    <mj-style inline="inline">
+      .column > table { border-collapse: separate; }
+    </mj-style>
+    <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
   </mj-head>
-  <mj-body background-color="#E5E5E5">
-    <mj-section>
-      <mj-column>
-        <mj-image src="<%= data.images.logoLba %>" width="150px"  alt="Logo du site La bonne alternance" />
-      </mj-column>
-    </mj-section>
-
-    <mj-wrapper background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-
-      <mj-section>
-        <mj-column padding-bottom="0px">
-          <mj-text>
-            Bonjour <%= data.prenom %> <%= data.nom %>,
-          </mj-text>
-
-          <% if(!data.mandataire){ %>
-          <mj-text>Félicitations! Votre offre d'alternance a bien été publiée.</mj-text>
-          <mj-text> Elle est maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, 1 Jeune 1 Solution, Affelnet...</mj-text>
-          <% } %>
-
-          <% if(data.mandataire){ %>
-          <mj-text>Félicitations! Votre offre d'alternance pour l'entreprise <%= data.raison_sociale %> a bien été publiée. </mj-text>
-          <mj-text> Elle est maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, 1 Jeune 1 Solution, Affelnet...</mj-text>
-          <% } %>
+  <mj-body background-color="#f5f5fe" name="Entreprise - Confirmation de dépôt d'offre" width="800px">
+    <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+            <mj-image align="left" alt="Image" css-class="image" src="<%= data.images.logoRf %>" width="89px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+            <mj-image align="left" alt="Image" css-class="image" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
+        </mj-group>
       </mj-section>
-
-      <mj-section padding="0px">
-        <mj-column width="550px" padding="10px 0px" background-color="#F6F6F6">
-          <mj-text padding-bottom="0px">Métier: <b><%= data.offre.rome_appellation_label %></b>
-          </mj-text>
-          <mj-text padding-bottom="0px" padding-top="0px">Type de contrat: <b><%= data.offre.job_type %></b>
-          </mj-text>
-          <mj-text padding-bottom="0px" padding-top="0px">Niveau de formation: <b><%= data.offre.job_level_label %></b>
-          </mj-text>
-          <mj-text padding-top="0px">Date de début: <b><%= data.offre.job_start_date %></b>
-          </mj-text>
-        </mj-column>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 24px 0px">
+              Bonjour <%= data.prenom %> <%= data.nom %>,
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 24px 0px">
+              Félicitations! Votre offre d'alternance a bien été publiée.
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              Elle est maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, 1Jeune1Solution, Affelnet...
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
       </mj-section>
-
-      <mj-section>
-        <mj-column>
-          <mj-text>Voici le lien de votre annonce sur La bonne alternance</mj-text>
-          <mj-button color="#ffffff" background-color="#000091" href="<%= data.lba_url %>">
-            Voir mon annonce
-          </mj-button>
-          <mj-text>
-            L'équipe La bonne alternance, <br>
-            Mission interministérielle pour l'apprentissage
-          </mj-text>
-        </mj-column>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="-398.20000000000005%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
+              Rappel de l’offre
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 0px 0px">
+              Métier :
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 10px 0px">
+              <%= data.offre.rome_appellation_label %>
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 0px 0px">
+              Type de contrat :
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 10px 0px">
+              <%= data.offre.job_type %>
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 0px 0px">
+              Niveau de formation :
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 10px 0px">
+              <%= data.offre.job_level_label %>
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 0px 0px">
+              Date de début de contrat :
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 10px 0px">
+              <%= data.offre.job_start_date %>
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 213px 0px 212px" vertical-align="middle" width="99.64%">
+            <mj-button href="<%= data.lba_url %>" align="center" background-color="#000091" border-radius="0px" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 0px 0px" width="127px">
+              Voir mon offre
+            </mj-button>
+          </mj-column>
+        </mj-group>
       </mj-section>
-
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="11px 23px 11px 23px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="10px 0px 10px 0px">
+              <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">🎲 </span>Préparez l'arrivée de votre futur·e alternant·e
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="28px" padding="10px 0px 10px 0px">
+              Vous recrutez un·e alternant·e ? On vous accompagne dans les étapes clés de son intégration <a href="https://dinum.didask.com/courses/lalternance-pour-les-recruteurs" style="text-decoration: underline; color: inherit;">grâce à ce quiz interactif de 7 questions</a>.
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+<br/>Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq" style="text-decoration: underline; color: inherit;">FAQ</a> ou écrivez-nous à <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Confirmez%20votre%20email" style="text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              La bonne alternance est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail, du Plein emploi et de l’Insertion.
+<br/>
+<br/>Nous vous contactons car vous avez déposé une offre d'emploi en alternance.
+<br/>
+<br/>Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+<br/>
+<br/>Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a> de La bonne alternance.
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
     </mj-wrapper>
-    <mj-section padding-top="30px">
-      <mj-column>
-        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/assets/logo-republique-francaise.png" width="200px" align="left"></mj-image>
-      </mj-column>
-    </mj-section>
   </mj-body>
 </mjml>

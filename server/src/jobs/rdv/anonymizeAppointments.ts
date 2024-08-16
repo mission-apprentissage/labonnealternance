@@ -1,17 +1,17 @@
 import { logger } from "../../common/logger"
-import { Appointment } from "../../common/model/index"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 export const anonimizeAppointments = async () => {
   logger.info("job #anonimizeAppointments start")
   const archiveThreshold = new Date()
   archiveThreshold.setFullYear(archiveThreshold.getFullYear() - 1)
 
-  const result = await Appointment.updateMany(
+  const result = await getDbCollection("appointments").updateMany(
     { created_at: { $lte: archiveThreshold } },
     {
       $set: {
         etablissement_id: null,
-        cle_ministere_educatif: null,
+        cle_ministere_educatif: undefined,
         formation_id: null,
         motivations: null,
         id_rco_formation: null,

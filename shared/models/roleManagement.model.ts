@@ -1,9 +1,9 @@
 import { Jsonify } from "type-fest"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
-import { enumToZod } from "./enumToZod"
+import { IModelDescriptor, zObjectId } from "./common"
 import { ZValidationUtilisateur } from "./userWithAccount.model"
 
 export enum AccessEntityType {
@@ -23,14 +23,16 @@ export enum AccessStatus {
 export const ZRoleManagementEvent = z
   .object({
     validation_type: ZValidationUtilisateur.describe("Indique si l'action est ordonnée par un utilisateur ou le serveur"),
-    status: enumToZod(AccessStatus).describe("Statut de l'accès"),
+    status: extensions.buildEnum(AccessStatus).describe("Statut de l'accès"),
     reason: z.string().describe("Raison du changement de statut"),
     date: z.date().describe("Date de l'évènement"),
     granted_by: z.string().nullish().describe("Utilisateur à l'origine du changement"),
   })
   .strict()
 
-export const ZAccessEntityType = enumToZod(AccessEntityType)
+export const ZAccessEntityType = extensions.buildEnum(AccessEntityType)
+
+const collectionName = "rolemanagements" as const
 
 export const ZRoleManagement = z
   .object({
@@ -48,3 +50,14 @@ export const ZRoleManagement = z
 export type IRoleManagement = z.output<typeof ZRoleManagement>
 export type IRoleManagementJson = Jsonify<z.input<typeof ZRoleManagement>>
 export type IRoleManagementEvent = z.output<typeof ZRoleManagementEvent>
+
+export default {
+  zod: ZRoleManagement,
+  indexes: [
+    [{ authorized_id: 1 }, {}],
+    [{ authorized_type: 1 }, {}],
+    [{ user_id: 1 }, {}],
+    [{ user_id: 1, authorized_id: 1, authorized_type: 1 }, { unique: true }],
+  ],
+  collectionName,
+} as const satisfies IModelDescriptor

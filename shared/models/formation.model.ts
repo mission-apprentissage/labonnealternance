@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZPointGeometry } from "./address.model"
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 
 // Define schemas for nested objects
 const geoCoordSchema = z.string()
@@ -87,6 +87,8 @@ const etablissementReferenceSchema = z
 // Define a schema for a single string or an array of strings
 const stringOrArraySchema = z.union([z.string(), z.array(z.string())])
 
+const collectionName = "formationcatalogues" as const
+
 // Define the Zod schema for IFormationCatalogue
 export const zFormationCatalogueSchema = z
   .object({
@@ -94,7 +96,7 @@ export const zFormationCatalogueSchema = z
     cle_ministere_educatif: z.string().nullish(),
     cfd: z.string(),
     cfd_specialite: z.string().nullish(),
-    cfa_outdated: z.boolean().nullish(),
+    cfd_outdated: z.boolean().nullish(),
     cfd_date_fermeture: z.date().nullish(),
     cfd_entree: z.string().nullish(),
     mef_10_code: z.string().nullish(),
@@ -196,3 +198,28 @@ export const zFormationCatalogueSchema = z
 export const zFormationCatalogueSchemaNew = zFormationCatalogueSchema.omit({ _id: true })
 
 export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>
+
+export default {
+  zod: zFormationCatalogueSchema,
+  indexes: [
+    [{ lieu_formation_geopoint: "2dsphere" }, {}],
+    [{ cle_ministere_educatif: 1 }, {}],
+    [{ uai_formation: 1 }, {}],
+    [{ rome_codes: 1 }, {}],
+    [{ rncp_code: 1 }, {}],
+    [{ cfd: 1 }, {}],
+    [{ cfd_entree: 1 }, {}],
+    [{ niveau: 1 }, {}],
+    [{ parcoursup_id: 1 }, {}],
+    [{ published: 1 }, {}],
+    [{ to_update: 1 }, {}],
+    [{ id_rco_formation: 1 }, {}],
+    [{ id_formation: 1 }, {}],
+    [{ id_action: 1 }, {}],
+    [{ ids_action: 1 }, {}],
+    [{ id_certifinfo: 1 }, {}],
+    [{ tags: 1 }, {}],
+    [{ catalogue_published: 1 }, {}],
+  ],
+  collectionName,
+} as const satisfies IModelDescriptor

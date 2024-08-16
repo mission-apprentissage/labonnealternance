@@ -7,6 +7,10 @@ export const FlowCreationCfa = {
       cy.visit(`${Cypress.env("ui")}/espace-pro/creation/cfa`)
       cy.contains("Comment s'inscrire ?", { timeout: 10000 }).should("exist")
     },
+    searchAndSelectSiret(siret: string) {
+      FlowCreationCfa.siretPage.fillSiret(siret)
+      cy.contains(siret).click()
+    },
     fillSiret(siret: string) {
       cy.get("input[name='establishment_siret']").click()
       cy.get("input[name='establishment_siret']").type(siret)

@@ -1,5 +1,5 @@
 import { logger } from "../../common/logger"
-import { Application } from "../../common/model/index"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymizeApplications = async () => {
@@ -10,28 +10,30 @@ const anonymizeApplications = async () => {
 
   const matchCondition = { created_at: { $lte: lastYear } }
 
-  await Application.aggregate([
-    {
-      $match: matchCondition,
-    },
-    {
-      $project: {
-        company_recruitment_intention: 1,
-        company_feedback_date: 1,
-        company_siret: 1,
-        company_naf: 1,
-        job_origin: 1,
-        job_id: 1,
-        caller: 1,
-        created_at: 1,
+  await getDbCollection("applications")
+    .aggregate([
+      {
+        $match: matchCondition,
       },
-    },
-    {
-      $merge: "anonymizedapplications",
-    },
-  ])
+      {
+        $project: {
+          company_recruitment_intention: 1,
+          company_feedback_date: 1,
+          company_siret: 1,
+          company_naf: 1,
+          job_origin: 1,
+          job_id: 1,
+          caller: 1,
+          created_at: 1,
+        },
+      },
+      {
+        $merge: "anonymizedapplications",
+      },
+    ])
+    .toArray()
 
-  const res = await Application.deleteMany(matchCondition)
+  const res = await getDbCollection("applications").deleteMany(matchCondition)
 
   return res.deletedCount
 }

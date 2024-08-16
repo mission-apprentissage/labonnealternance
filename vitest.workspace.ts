@@ -11,13 +11,11 @@ export default defineWorkspace([
       include: ["./tests/**/*.test.ts", "**/*.test.ts"],
       setupFiles: ["./tests/utils/setup.ts"],
       globalSetup: ["./server/tests/utils/globalSetup.ts"],
-      // Isolate doesn't work with Mongoose
-      isolate: false,
-      // poolOptions: {
-      //   threads: {
-      //     singleThread: true,
-      //   },
-      // },
+      clearMocks: true,
+      sequence: {
+        // Important for useMongo to be sequential
+        hooks: "stack",
+      },
     },
   },
   {

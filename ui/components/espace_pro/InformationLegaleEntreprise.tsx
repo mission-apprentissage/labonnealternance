@@ -9,6 +9,7 @@ import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 
 import { InfoCircle } from "../../theme/components/icons"
 
+import { FieldWithValue } from "./FieldWithValue"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
 
@@ -18,14 +19,14 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
   const { user } = useAuth()
   const entrepriseQuery = useQuery(["get-entreprise", siret], () => getEntrepriseInformation(siret, { skipUpdate: true }), { enabled: Boolean(siret && type === ENTREPRISE) })
   const cfaQuery = useQuery(["get-cfa-infos", siret], () => getCfaInformation(siret), { enabled: Boolean(siret && type === CFA) })
-  const { isLoading, data } = type === ENTREPRISE ? entrepriseQuery : cfaQuery
+  const { isLoading } = type === ENTREPRISE ? entrepriseQuery : cfaQuery
 
   if (isLoading) return null
 
-  const entreprise = type === ENTREPRISE && "data" in data && "siret" in data.data && data.data
+  const entreprise = type === ENTREPRISE && "data" in entrepriseQuery.data && "siret" in entrepriseQuery.data.data && entrepriseQuery.data.data
   const finalOpco = opco ?? parseEnum(OPCOS, entreprise?.opco)
-  const cfa = type === CFA && "establishment_siret" in data && data
-  const raisonSociale = entreprise?.raison_sociale ?? cfa?.establishment_raison_sociale
+  const cfa = type === CFA && "data" in cfaQuery.data && "siret" in cfaQuery.data.data && cfaQuery.data.data
+  const raisonSociale = entreprise?.raison_sociale ?? cfa?.raison_sociale
 
   return (
     <Box border="1px solid #000091" p={5}>
@@ -49,7 +50,14 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
       )}
       <OrganizationInfoFields
         {...(type === CFA
-          ? cfa
+          ? {
+              siret: cfa.siret,
+              establishment_enseigne: cfa.enseigne,
+              establishment_raison_sociale: cfa.raison_sociale,
+              address: cfa.address,
+              type: CFA,
+              is_qualiopi: true,
+            }
           : {
               establishment_enseigne: entreprise?.enseigne,
               establishment_raison_sociale: entreprise?.raison_sociale,
@@ -142,29 +150,6 @@ const OrganizationInfoFields = ({
         />
       )}
     </Stack>
-  )
-}
-
-const FieldWithValue = ({ title, value, tooltip, hideIfEmpty = false }) => {
-  if (hideIfEmpty && !value) {
-    return null
-  }
-  return (
-    <Flex align="center">
-      <Text mr={3} minW="fit-content">
-        {title} :
-      </Text>
-      {value ? (
-        <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-          {value}
-        </Text>
-      ) : (
-        <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-          Non identifié
-        </Text>
-      )}
-      {tooltip && (typeof tooltip === "string" ? <InfoTooltip description={tooltip} /> : tooltip)}
-    </Flex>
   )
 }
 

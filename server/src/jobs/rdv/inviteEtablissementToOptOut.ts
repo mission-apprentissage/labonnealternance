@@ -1,8 +1,8 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
 
 import { logger } from "../../common/logger"
-import { Etablissement } from "../../common/model/index"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"
@@ -25,24 +25,26 @@ export const inviteEtablissementToOptOut = async () => {
   logger.info("Cron #inviteEtablissementToOptOut started.")
 
   // Opt-out etablissement to activate
-  const etablissementsWithouOptMode: Array<IEtablissementsWithouOptMode> = await Etablissement.aggregate([
-    {
-      $match: {
-        optout_invitation_date: null,
-        gestionnaire_email: { $ne: null },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          gestionnaire_siret: "$gestionnaire_siret",
+  const etablissementsWithouOptMode: Array<IEtablissementsWithouOptMode> = (await getDbCollection("etablissements")
+    .aggregate([
+      {
+        $match: {
+          optout_invitation_date: null,
+          gestionnaire_email: { $ne: null },
         },
-        id: { $first: "$_id" },
-        gestionnaire_email: { $first: "$gestionnaire_email" },
-        count: { $sum: 1 },
       },
-    },
-  ])
+      {
+        $group: {
+          _id: {
+            gestionnaire_siret: "$gestionnaire_siret",
+          },
+          id: { $first: "$_id" },
+          gestionnaire_email: { $first: "$gestionnaire_email" },
+          count: { $sum: 1 },
+        },
+      },
+    ])
+    .toArray()) as Array<IEtablissementsWithouOptMode>
   const willBeActivatedAt = dayjs().add(15, "days")
 
   logger.info(`Etablissements to invite: ${etablissementsWithouOptMode.length}`)
@@ -71,18 +73,20 @@ export const inviteEtablissementToOptOut = async () => {
         },
       })
 
-      await Etablissement.updateMany(
+      await getDbCollection("etablissements").updateMany(
         { gestionnaire_siret: etablissement._id.gestionnaire_siret },
         {
-          optout_invitation_date: dayjs().toDate(),
-          optout_activation_scheduled_date: willBeActivatedAt.toDate(),
-          to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
+          $set: {
+            optout_invitation_date: dayjs().toDate(),
+            optout_activation_scheduled_date: willBeActivatedAt.toDate(),
+            to_CFA_invite_optout_last_message_id: emailEtablissement.messageId,
+          },
         }
       )
     }
   }
 
-  await notifyToSlack({ subject: "RDVA - INVITATION OPTOUT", message: `${etablissementsWithouOptMode.length} invitation(s) envoyé` })
+  await notifyToSlack({ subject: "RDVA - INVITATION OPTOUT", message: `${etablissementsWithouOptMode.length} invitation(s) envoyée(s)` })
 
   logger.info("Cron #inviteEtablissementToOptOut done.")
 }

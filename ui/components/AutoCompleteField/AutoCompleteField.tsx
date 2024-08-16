@@ -84,9 +84,7 @@ export const AutoCompleteField = ({
   ...props
 }) => {
   useEffect(() => {
-    if (!initialized && initialSelectedItem) {
-      setInitialized(true)
-
+    if (initialSelectedItem) {
       // provoque un appel pour charger la liste des valeurs en fonction de la value de l'input text
       onInputValueChangeService({
         inputValue: initialSelectedItem.label,
@@ -109,7 +107,6 @@ export const AutoCompleteField = ({
 
   const [inputTextValue, setInputTextValue]: [any, (t: any) => void] = useState("")
   const [inputItems, setInputItems]: [any, (t: any) => void] = useState(items)
-  const [initialized, setInitialized] = useState(false)
   const [loadingState, setLoadingState]: [any, (t: any) => void] = useState("loading")
 
   const itemToString = (item) => {
@@ -139,7 +136,6 @@ export const AutoCompleteField = ({
 
       return res
     }
-    /*fin*/
 
     return inputItems
       .filter((item) => !!item?.label)

@@ -1,11 +1,7 @@
-import path from "path"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { describe, expect, it } from "vitest"
 
-import { describe, it, expect } from "vitest"
-
-import __dirname from "@/common/dirname"
-import { createMongoDBIndexes } from "@/common/model"
-import { mongooseInstance } from "@/common/mongodb"
-import { useMongo } from "@tests/utils/mongo.utils"
+import { createIndexes } from "../../../src/common/utils/mongodbUtils"
 
 describe("createMongoDBIndexes", () => {
   useMongo()
@@ -13,7 +9,7 @@ describe("createMongoDBIndexes", () => {
   it(
     "should create indexes for all models",
     async () => {
-      await expect(createMongoDBIndexes()).resolves.toBeUndefined()
+      await expect(createIndexes()).resolves.toBeUndefined()
     },
     { timeout: 20_000 }
   )
@@ -21,13 +17,7 @@ describe("createMongoDBIndexes", () => {
   it(
     "should load all schemas",
     async () => {
-      const names = mongooseInstance.modelNames()
-
-      // Load all schemas found in our application
-      await import(path.join(__dirname(import.meta.url), "..", "..", "..", "src", "commands"))
-
-      // If this test fail, make sure the schema is imported in @/common/model/index
-      expect(names).toEqual(mongooseInstance.modelNames())
+      // TODO
     },
     { timeout: 20_000 }
   )

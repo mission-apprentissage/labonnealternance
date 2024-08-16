@@ -1,12 +1,13 @@
 import Boom from "boom"
+import { ObjectId } from "mongodb"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils"
 
-import { Entreprise, Recruiter, RoleManagement, UserWithAccount } from "@/common/model"
-import { asyncForEach } from "@/common/utils/asyncUtils"
+import { asyncForEach } from "../common/utils/asyncUtils"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { CFA, ENTREPRISE } from "./constant.service"
 import { autoValidateUserRoleOnCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "./etablissement.service"
@@ -17,11 +18,11 @@ export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } 
 export type UserAndOrganization = { user: IUserWithAccount; organization: Organization }
 
 export const updateEntrepriseOpco = async (siret: string, { opco, idcc }: { opco: string; idcc?: string }) => {
-  const entreprise = await Entreprise.findOne({ siret }).lean()
+  const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
     throw new Error("inattendu: aucune entreprise trouvée. Merci d'appeler cette méthode une fois l'entreprise créée")
   }
-  await Entreprise.findOneAndUpdate({ siret }, { opco, idcc }).lean()
+  await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, idcc } })
 }
 
 /**
@@ -37,10 +38,12 @@ export const upsertEntrepriseData = async (
   siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>,
   isInternalError: boolean
 ): Promise<IEntreprise> => {
-  let existingEntreprise = await Entreprise.findOne({ siret }).lean()
+  let existingEntreprise: IEntreprise | null = await getDbCollection("entreprises").findOne({ siret })
   if ("error" in siretResponse) {
     if (!existingEntreprise) {
-      existingEntreprise = (await Entreprise.create({ siret, origin, status: [] })).toObject()
+      const now = new Date()
+      existingEntreprise = { _id: new ObjectId(), createdAt: now, updatedAt: now, siret, origin, status: [] }
+      await getDbCollection("entreprises").insertOne(existingEntreprise)
     }
     if (isInternalError) {
       const statusToUpdate = [EntrepriseStatus.ERROR, EntrepriseStatus.A_METTRE_A_JOUR]
@@ -51,7 +54,7 @@ export const upsertEntrepriseData = async (
     } else {
       await deactivateEntreprise(existingEntreprise._id, siretResponse.message)
     }
-    return Entreprise.findOne({ siret }).lean()
+    return (await getDbCollection("entreprises").findOne({ siret }))!
   }
 
   const { address, address_detail, establishment_enseigne, geo_coordinates, establishment_raison_sociale } = siretResponse
@@ -65,18 +68,43 @@ export const upsertEntrepriseData = async (
   }
   let savedEntreprise: IEntreprise
   if (existingEntreprise) {
-    savedEntreprise = await Entreprise.findOneAndUpdate({ siret }, { $set: entrepriseFields }, { new: true }).lean()
+    const updatedEntreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: entrepriseFields }, { returnDocument: "after" })
+    if (!updatedEntreprise) {
+      throw Boom.internal("inattendu: aucune entreprise trouvée")
+    }
+    savedEntreprise = updatedEntreprise
   } else {
-    savedEntreprise = (await Entreprise.create({ ...entrepriseFields, siret, origin })).toObject()
+    const now = new Date()
+    savedEntreprise = { ...entrepriseFields, siret, origin, _id: new ObjectId(), createdAt: now, updatedAt: now, status: [] }
+    await getDbCollection("entreprises").insertOne(savedEntreprise)
   }
   await setEntrepriseValid(savedEntreprise._id)
 
-  await Recruiter.updateMany({ establishment_siret: siret }, siretResponse)
+  await getDbCollection("recruiters").updateMany(
+    { establishment_siret: siret },
+    {
+      $set: {
+        address,
+        address_detail,
+        establishment_enseigne,
+        geo_coordinates,
+        geopoint: siretResponse.geopoint,
+        establishment_raison_sociale,
+        establishment_creation_date: siretResponse.establishment_creation_date,
+        establishment_size: siretResponse.establishment_size,
+        naf_code: siretResponse.naf_code,
+        naf_label: siretResponse.naf_label,
+        updatedAt: new Date(),
+      },
+    }
+  )
   if (getLastStatusEvent(existingEntreprise?.status)?.status === EntrepriseStatus.ERROR) {
-    const recruiters = await Recruiter.find({ establishment_siret: siret }).lean()
-    const roles = await RoleManagement.find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: savedEntreprise._id.toString() }).lean()
+    const recruiters = await getDbCollection("recruiters").find({ establishment_siret: siret }).toArray()
+    const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: savedEntreprise._id.toString() }).toArray()
     const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
-    const users = await UserWithAccount.find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } }).lean()
+    const users = await getDbCollection("userswithaccounts")
+      .find({ _id: { $in: rolesToUpdate.map((role) => role.user_id) } })
+      .toArray()
     await asyncForEach(users, async (user) => {
       const userAndOrganization: UserAndOrganization = { user, organization: { entreprise: savedEntreprise, type: ENTREPRISE } }
       const result = await autoValidateUserRoleOnCompany(userAndOrganization, origin)

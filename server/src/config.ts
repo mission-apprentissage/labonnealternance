@@ -83,7 +83,7 @@ const config = {
   franceTravailIO: {
     baseUrl: "https://api.francetravail.io/partenaire",
     authUrl: "https://entreprise.francetravail.fr/connexion/oauth2/access_token",
-    depotUrl: "https://portail-partenaire.pole-emploi.fr/partenaire/depotcurl",
+    depotUrl: "https://portail-partenaire.francetravail.fr/partenaire/depotcurl ",
   },
   bal: {
     baseUrl: env.get("LBA_BAL_ENV_URL").required().asString(),
@@ -93,8 +93,8 @@ const config = {
     username: env.get("LBA_CATALOGUE_ME_USERNAME").required().asString(),
     password: env.get("LBA_CATALOGUE_ME_PASSWORD").required().asString(),
   },
-  algoBonnesBoites: {
-    s3File: env.get("LBA_ALGO_LBB_S3FILE").required().asString(),
+  algoRecuteursLba: {
+    s3File: env.get("LBA_ALGO_RECRUTEURS_LBA_S3FILE").required().asString(),
   },
   s3: {
     accessKeyId: env.get("LBA_S3_ACCESSKEYID").required().asString(),
@@ -102,6 +102,7 @@ const config = {
     endpoint: env.get("LBA_S3_ENDPOINT").required().asString(),
     region: env.get("LBA_S3_REGION").required().asString(),
     bucket: env.get("LBA_S3_BUCKET").required().asString(),
+    applicationsBucket: env.get("LBA_S3_APPLICATIONS_BUCKET").required().asString(),
   },
   entreprise: {
     baseUrl: "https://entreprise.api.gouv.fr/v3/insee",

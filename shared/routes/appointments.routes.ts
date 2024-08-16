@@ -232,9 +232,8 @@ export const zAppointmentsRoute = {
       path: "/appointment-request/reply",
       body: z
         .object({
-          appointment_id: z.string(),
+          appointment_id: zObjectId,
           cfa_intention_to_applicant: z.string(),
-          cfa_message_to_applicant_date: z.string(),
           cfa_message_to_applicant: z.string().nullable(),
         })
         .strict(),

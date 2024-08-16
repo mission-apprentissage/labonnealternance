@@ -1,3 +1,9 @@
+export type ReferrerObject = {
+  code: number
+  name: string
+  full_name: string
+  url: string
+}
 // Referrer configurations
 export const referrers = {
   PARCOURSUP: {

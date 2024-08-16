@@ -6,13 +6,11 @@ import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models"
 
-import { db } from "@/common/mongodb"
-
 import { sendCsvToFranceTravail } from "../../common/apis/FranceTravail"
 import { logger } from "../../common/logger"
-import { Cfa } from "../../common/model/index"
 import { getDepartmentByZipCode } from "../../common/territoires"
 import { asyncForEach } from "../../common/utils/asyncUtils"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import dayjs from "../../services/dayjs.service"
 
@@ -176,46 +174,29 @@ export const exportToFranceTravail = async (): Promise<void> => {
     const threshold = dayjs().subtract(30, "days").toDate()
 
     // Retrieve only active offers
-    const offres: any[] = await db
-      .collection("jobs")
-      .aggregate([
-        {
-          $match: {
-            job_status: JOB_STATUS.ACTIVE,
-            recruiterStatus: RECRUITER_STATUS.ACTIF,
-            geo_coordinates: { $nin: ["NOT FOUND", null] },
-            job_update_date: { $gte: threshold },
-            address_detail: { $ne: null },
-            is_multi_published: true,
-          },
-        },
-        {
-          $lookup: {
-            from: "referentielromes",
-            localField: "rome_code.0",
-            foreignField: "rome.code_rome",
-            as: "referentielrome",
-          },
-        },
-        {
-          $unwind: { path: "$referentielrome" },
-        },
-        {
-          $set: { rome_detail: "$referentielrome" },
-        },
-        {
-          $project: { referentielrome: 0, "rome_detail._id": 0 },
-        },
-      ])
+    const offres: any[] = await getDbCollection("jobs")
+      .find({
+        job_status: JOB_STATUS.ACTIVE,
+        recruiterStatus: RECRUITER_STATUS.ACTIF,
+        geo_coordinates: { $nin: ["NOT FOUND", null] },
+        job_update_date: { $gte: threshold },
+        address_detail: { $ne: null },
+        is_multi_published: true,
+      })
       .toArray()
 
     logger.info(`get info from ${offres.length} offers...`)
     await asyncForEach(offres, async (offre) => {
-      const cfa = offre.is_delegated ? await Cfa.findOne({ siret: offre.cfa_delegated_siret }) : null
-      offre.job_type.map((type) => {
-        const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
-        buffer.push({ ...offre, type, cfa: cfaFields })
-      })
+      const cfa = offre.is_delegated ? await getDbCollection("cfas").findOne({ siret: offre.cfa_delegated_siret }) : null
+
+      if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
+        offre.job_type.map(async (type) => {
+          if (offre.rome_detail && typeof offre.rome_detail !== "string") {
+            const cfaFields = cfa ? { address_detail: cfa.address_detail, establishment_raison_sociale: cfa.raison_sociale } : null
+            buffer.push({ ...offre, type, cfa: cfaFields })
+          }
+        })
+      }
     })
 
     logger.info("Start stream to CSV...")
@@ -229,13 +210,14 @@ export const exportToFranceTravail = async (): Promise<void> => {
     await sendCsvToFranceTravail(path.resolve(csvPath.pathname))
 
     await notifyToSlack({
-      subject: "EXPORT FRANCE TRAVAIL OK",
+      subject: "EXPORT FRANCE TRAVAIL",
       message: `${buffer.length} offres transmises à France Travail`,
     })
   } catch (err) {
     await notifyToSlack({
-      subject: "EXPORT FRANCE TRAVAIL KO",
+      subject: "EXPORT FRANCE TRAVAIL",
       message: `Echec de l'export des offres France Travail. ${err}`,
+      error: true,
     })
     throw err
   }

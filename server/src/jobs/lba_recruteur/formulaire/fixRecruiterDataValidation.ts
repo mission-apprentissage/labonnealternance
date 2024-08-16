@@ -3,8 +3,8 @@ import { TRAINING_RYTHM } from "shared/constants/recruteur"
 import { z } from "zod"
 
 import { logger } from "@/common/logger"
-import { Recruiter } from "@/common/model"
 import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { updateOffre } from "@/services/formulaire.service"
@@ -12,9 +12,11 @@ import { getRomeDetailsFromDB } from "@/services/rome.service"
 
 const fixDates = async () => {
   const subject = "Fix data validations pour recruiters : delegations.cfa_read_company_detail_at"
-  const recruiters = await Recruiter.find({
-    "jobs.delegations.cfa_read_company_detail_at": { $type: "string" },
-  }).lean()
+  const recruiters = await getDbCollection("recruiters")
+    .find({
+      "jobs.delegations.cfa_read_company_detail_at": { $type: "string" },
+    })
+    .toArray()
   const stats = { success: 0, failure: 0 }
   logger.info(`${subject}: ${recruiters.length} recruteurs à mettre à jour...`)
   await asyncForEach(recruiters, async (recruiter) => {
@@ -50,13 +52,11 @@ const fixDates = async () => {
 
 const fixRomeDetails = async () => {
   const subject = "Fix data validations pour recruiters : rome_detail"
-  const recruiters = await Recruiter.find(
-    {
+  const recruiters = await getDbCollection("recruiters")
+    .find({
       "jobs.rome_detail": { $type: "string" },
-    },
-    undefined,
-    { runValidators: false, rawResult: true }
-  ).lean()
+    })
+    .toArray()
   const stats = { success: 0, failure: 0 }
   logger.info(`${subject}: ${recruiters.length} recruteurs à mettre à jour...`)
   await asyncForEach(recruiters, async (recruiter) => {
@@ -91,16 +91,18 @@ const fixRomeDetails = async () => {
 
 const fixJobRythm = async () => {
   const subject = "Fix data validations : job_rythm"
-  const recruiters = await Recruiter.find({
-    $or: [
-      {
-        "jobs.job_rythm": "1 jours / 4 jours",
-      },
-      {
-        "jobs.job_rythm": "",
-      },
-    ],
-  }).lean()
+  const recruiters = await getDbCollection("recruiters")
+    .find({
+      $or: [
+        {
+          "jobs.job_rythm": "1 jours / 4 jours",
+        },
+        {
+          "jobs.job_rythm": "",
+        },
+      ],
+    })
+    .toArray()
   const stats = { success: 0, failure: 0 }
   logger.info(`${subject}: ${recruiters.length} recruteurs à mettre à jour...`)
   await asyncForEach(recruiters, async (recruiter) => {
@@ -110,7 +112,7 @@ const fixJobRythm = async () => {
         if (job.job_rythm === "1 jours / 4 jours") {
           job.job_rythm = TRAINING_RYTHM["1J4J"]
         } else if (job.job_rythm === "" || job.job_rythm === "Non renseigné") {
-          job.job_rythm = null
+          job.job_rythm = TRAINING_RYTHM.INDIFFERENT
         }
         await updateOffre(job._id, { ...job })
       })

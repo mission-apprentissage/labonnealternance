@@ -2,7 +2,9 @@ import { Jsonify } from "type-fest"
 
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
+
+const collectionName = "emailblacklists" as const
 
 export const ZEmailBlacklist = z
   .object({
@@ -15,3 +17,9 @@ export const ZEmailBlacklist = z
 
 export type IEmailBlacklist = z.output<typeof ZEmailBlacklist>
 export type IEmailBlacklistJson = Jsonify<z.input<typeof ZEmailBlacklist>>
+
+export default {
+  zod: ZEmailBlacklist,
+  indexes: [[{ email: 1 }, { unique: true }]],
+  collectionName,
+} as const satisfies IModelDescriptor

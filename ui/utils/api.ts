@@ -2,12 +2,13 @@ import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
 import { IJobWritable, INewDelegations, INewSuperUser, IRoutes, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IEntrepriseJson } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
 import { publicConfig } from "@/config.public"
 
-import { ApiError, apiDelete, apiGet, apiPost, apiPut } from "./api.utils"
+import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
 
 const API = Axios.create({
   baseURL: publicConfig.apiEndpoint,
@@ -41,7 +42,8 @@ export const getOffre = (jobId: string) => apiGet("/formulaire/offre/f/:jobId", 
 export const createOffre = (establishment_id: string, newOffre: IJobWritable) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
 export const createOffreByToken = (establishment_id: string, newOffre: IJobWritable, token: string) =>
   apiPost("/formulaire/:establishment_id/offre/by-token", { params: { establishment_id }, body: newOffre, headers: { authorization: `Bearer ${token}` } })
-export const patchOffreDelegation = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}/delegation`, data, config).catch(errorHandler)
+export const patchOffreDelegation = (jobId: string, siret: string) =>
+  apiPatch(`/formulaire/offre/:jobId/delegation`, { params: { jobId }, querystring: { siret_formateur: siret } }).catch(errorHandler)
 export const cancelOffre = (jobId, token) => apiPut(`/formulaire/offre/:jobId/cancel`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const cancelOffreFromAdmin = (jobId: string, data: IRoutes["put"]["/formulaire/offre/f/:jobId/cancel"]["body"]["_input"]) =>
   apiPut("/formulaire/offre/f/:jobId/cancel", { params: { jobId }, body: data })
@@ -98,7 +100,23 @@ export const sendValidationLink = async (userId: string, token: string) =>
  * Etablissement API
  */
 export const getEntreprisesManagedByCfa = (cfaId: string) => apiGet("/etablissement/cfa/:cfaId/entreprises", { params: { cfaId } })
-export const getCfaInformation = async (siret: string) => apiGet("/etablissement/cfa/:siret", { params: { siret } })
+export const getCfaInformation = async (siret: string) => {
+  try {
+    const data = await apiGet("/etablissement/cfa/:siret", { params: { siret } })
+    return { statusCode: 200, data, error: false }
+  } catch (error) {
+    if (error instanceof ApiError && error.context?.statusCode >= 400) {
+      const { errorData, statusCode, message } = error.context
+      if (error.context.statusCode >= 500) {
+        captureException(error)
+      }
+      return { statusCode, message, data: errorData, error: true }
+    } else {
+      captureException(error)
+      return { statusCode: 500, message: "unkown error", error: true }
+    }
+  }
+}
 export const validateCfaCreation = async (siret: string) => apiGet("/etablissement/cfa/:siret/validate-creation", { params: { siret } })
 
 export const getEntrepriseInformation = async (
@@ -165,3 +183,5 @@ export const etablissementUnsubscribeDemandeDelegation = (establishment_siret: a
  */
 
 export const getOpcoUsers = () => apiGet("/user/opco", {})
+
+export const reportLbaItem = (itemId: string, type: LBA_ITEM_TYPE) => apiPost("/report-company", { querystring: { type, itemId } })

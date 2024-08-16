@@ -1,3 +1,5 @@
+import { IModelDescriptor, zObjectId } from "shared/models/common"
+
 import { z } from "../helpers/zodWithOpenApi"
 
 const ZCompetenceV4 = z
@@ -108,7 +110,7 @@ const ZRomeCategorieSavoir = z
   })
   .strict()
 
-const ZRomeCompetence = z
+export const ZRomeCompetence = z
   .object({
     savoir_faire: z.array(ZRomeCategorieSavoir).nullish(),
     savoir_etre_professionnel: z.array(ZRomeSavoir).nullish(),
@@ -131,7 +133,7 @@ const ZRomeMobilite = z
   })
   .strict()
 
-export const ZReferentielRome = z
+export const ZReferentielRomeForJob = z
   .object({
     numero: z.string(),
     rome: ZRome,
@@ -147,4 +149,16 @@ export const ZReferentielRome = z
 
 export type IRome = z.output<typeof ZRome>
 export type IRomeMobilite = z.output<typeof ZRomeMobilite>
+
+export const ZReferentielRome = ZReferentielRomeForJob.extend({
+  _id: zObjectId,
+})
+
 export type IReferentielRome = z.output<typeof ZReferentielRome>
+export type IReferentielRomeForJob = z.output<typeof ZReferentielRomeForJob>
+
+export default {
+  zod: ZReferentielRome,
+  indexes: [[{ "rome.code_rome": 1 }, {}]],
+  collectionName: "referentielromes" as const,
+} as const satisfies IModelDescriptor

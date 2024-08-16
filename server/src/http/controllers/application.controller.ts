@@ -1,9 +1,9 @@
 import Boom from "boom"
-import mongoose from "mongoose"
+import { ObjectId } from "mongodb"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { zRoutes } from "shared/index"
 
-import { Application } from "../../common/model/index"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { sendApplication, sendMailToApplicant } from "../../services/application.service"
 import { Server } from "../server"
 
@@ -60,9 +60,9 @@ export default function (server: Server) {
       const { id } = req.params
       const { company_recruitment_intention, company_feedback, email, phone } = req.body
 
-      const application = await Application.findOneAndUpdate(
-        { _id: new mongoose.Types.ObjectId(id) },
-        { company_recruitment_intention, company_feedback, company_feedback_date: new Date() }
+      const application = await getDbCollection("applications").findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { company_recruitment_intention, company_feedback, company_feedback_date: new Date() } }
       )
 
       if (!application) {
@@ -92,7 +92,10 @@ export default function (server: Server) {
       const { id } = req.params
       const { company_recruitment_intention } = req.body
 
-      const application = await Application.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(id) }, { company_recruitment_intention, company_feedback_date: new Date() })
+      const application = await getDbCollection("applications").findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { company_recruitment_intention, company_feedback_date: new Date() } }
+      )
       if (!application) throw new Error("application not found")
 
       return res.status(200).send({ result: "ok" })

@@ -6,7 +6,7 @@ import { RECRUITER_STATUS } from "../constants/recruteur"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZPointGeometry } from "./address.model"
-import { zObjectId } from "./common"
+import { IModelDescriptor, zObjectId } from "./common"
 import { ZJob } from "./job.model"
 
 const allRecruiterStatus = Object.values(RECRUITER_STATUS)
@@ -41,10 +41,12 @@ export const ZRecruiterWritable = z
     naf_label: z.string().nullish().describe("Libellé NAF de l'établissement"),
     establishment_size: z.string().nullish().describe("Tranche d'effectif salariale de l'établissement"),
     establishment_creation_date: z.date().nullish().describe("Date de creation de l'établissement"),
-    managed_by: zObjectId.nullish().describe("Id de l'utilisateur gestionnaire"),
+    managed_by: z.string().nullish().describe("Id de l'utilisateur gestionnaire"),
   })
   .strict()
   .openapi("RecruiterWritable")
+
+const collectionName = "recruiters" as const
 
 export const ZRecruiter = ZRecruiterWritable.extend({
   _id: zObjectId,
@@ -52,9 +54,20 @@ export const ZRecruiter = ZRecruiterWritable.extend({
   createdAt: z.date().describe("Date de creation"),
   updatedAt: z.date().describe("Date de mise à jour"),
 }).openapi("Recruiter")
-
 export type IRecruiter = z.output<typeof ZRecruiter>
 export type IRecruiterJson = Jsonify<z.input<typeof ZRecruiter>>
+
+export const ZRecruiterWithApplicationCount = ZRecruiter.omit({ jobs: true })
+  .extend({
+    jobs: z.array(
+      ZJob.extend({
+        candidatures: z.number(),
+      })
+    ),
+  })
+  .openapi("Recruiter")
+
+export type IRecruiterWithApplicationCount = z.output<typeof ZRecruiterWithApplicationCount>
 
 export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
   establishment_id: true,
@@ -79,3 +92,16 @@ export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
 }).strict()
 
 export type IAnonymizedRecruiter = z.output<typeof ZAnonymizedRecruiter>
+
+export default {
+  zod: ZRecruiter,
+  indexes: [
+    [{ establishment_id: 1 }, {}],
+    [{ establishment_siret: 1 }, {}],
+    [{ cfa_delegated_siret: 1 }, {}],
+    [{ geopoint: "2dsphere" }, {}],
+    [{ email: 1 }, {}],
+    [{ establishment_enseigne: 1 }, {}],
+  ],
+  collectionName,
+} as const satisfies IModelDescriptor

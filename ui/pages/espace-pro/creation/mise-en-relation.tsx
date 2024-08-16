@@ -53,16 +53,17 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
     setIsSubmitLoading(true)
     const etablissementCatalogueIds = etablissements.filter((etablissement) => etablissement.checked).map((etablissement) => etablissement._id)
 
-    await (token
-      ? createEtablissementDelegationByToken({
-          jobId: job._id,
-          data: { etablissementCatalogueIds },
-          token: token as string,
-        })
-      : createEtablissementDelegation({
-          jobId: job._id,
-          data: { etablissementCatalogueIds },
-        })
+    await (
+      token
+        ? createEtablissementDelegationByToken({
+            jobId: job._id,
+            data: { etablissementCatalogueIds },
+            token: token as string,
+          })
+        : createEtablissementDelegation({
+            jobId: job._id,
+            data: { etablissementCatalogueIds },
+          })
     ).finally(() => setIsSubmitLoading(false))
 
     goToEndStep({ withDelegation: true })

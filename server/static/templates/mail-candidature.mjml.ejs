@@ -1,255 +1,249 @@
 <mjml>
   <mj-head>
-    <mj-title>Candidature de <%= data.applicant_email %></mj-title>
-    <mj-font name="Roboto" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;700;800;900&display=swap" />
-    <mj-style inline="inline">
-      a:link,a:visited, a:hover, a:active {color: #206BC4;}, a {color: #3A55D1;}, body{background: #F9F8F6;} a.purple {color: #3A55D1; text-decoration: none} .link-nostyle { color:
-      inherit; text-decoration: none; font-size: 28px } .link-nostyle:hover { color: inherit; text-decoration: none } .form-row { font-size: 16px; padding-bottom: 15px;}
-      .form-value { background: #F9F8F6; font-weight: 500; padding: 3px 15px } .form-msg { background: #F9F8F6; font-weight: 400; padding: 3px 15px } .nom-societe { font-size:
-      14px; color: #F07F87; font-weight: bold; } .gras { font-weight: bold; } .link-black { color: #000; text-decoration: underline; } .link-black:hover { color: #000;
-      text-decoration: underline; } .intention-link:hover td, .intention-link:hover a { background-color: #000091 !important; color: #fff !important; } .poll-link:hover a {
-      background-color: #000091 !important; color: #fff !important; }
-    </mj-style>
+    <mj-preview></mj-preview>
+    <mj-breakpoint width="480px"></mj-breakpoint>
     <mj-attributes>
-      <mj-text padding="0px" font-family="Roboto,Arial,sans-serif" color="#232E3C" font-size="16px" line-height="23px" />
-      <mj-divider padding="0px" />
+      <mj-all padding="0"></mj-all>
     </mj-attributes>
+    <mj-style>
+      @media only screen and (max-width: 799px) {
+        .text > div {
+            text-align: inherit !important;
+        }
+    
+        .wrapper > table > tbody > tr > td {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .section > table > tbody > tr > td {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+        }
+
+        .column > table > tbody > tr > td {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .padB40 {
+            padding-bottom: 40px !important;
+        }
+
+        .image {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .image > table {
+            text-align: center !important;
+            margin: 0 auto !important;
+        }
+
+        .divider {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .button > table {
+            width: 100% !important;
+        }
+
+        .button > table > tbody > tr > td > a {
+            width: 80% !important;
+        }
+    }
+    </mj-style>
+    <mj-style inline="inline">
+      .column > table { border-collapse: separate; }
+    </mj-style>
+    <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
   </mj-head>
-  <mj-body background-color="#EDF0F2">
-    <mj-section padding-bottom="10px">
-      <mj-column padding="0px" vertical-align="middle">
-        <mj-image padding="0px" width="150px" src="<%= data.images.logoLba %>" alt="Logo du site La bonne alternance" />
-      </mj-column>
-    </mj-section>
-
-    <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
-      <mj-section padding="15px">
-        <mj-column>
-          <mj-text font-style="normal" padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
-            Vous avez reçu une candidature !
-          </mj-text>
-          <mj-text font-size="16px" line-height="24px">
-            <% if (data.job_origin == "offres_emploi_lba") { %> Bonjour,
-            <br /><br />
-
-            <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé à
-            <a style="font-weight: bold; color: black" href="<%= data.urlOfDetail %>"> votre offre</a>
-            sur le métier <%= data.job_title %>. <% } else { %> Bonjour,
-            <br /><br />
-            <%= data.applicant_first_name %> <%= data.applicant_last_name %> s'intéresse à votre entreprise et a postulé spontanément à partir du site
-            <a style="font-weight: bold; color: black" href="<%= data.urlOfDetail %>"> La bonne alternance</a>. <br /><br />
-            Votre entreprise <span class="nom-societe"><%= data.company_name %></span>
-            a été identifiée par notre algorithme comme susceptible de recruter en alternance. <% } %>
-          </mj-text>
-
-          <mj-text font-style="normal" padding-top="24px" padding-bottom="24px" font-size="16px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
-            Nous vous invitons à répondre au candidat à l'aide de l'un de nos 3 formulaires de réponse rapide ci-dessous :
-          </mj-text>
-
-          <mj-button
-            href="<%= data.meetCandidateUrl %>"
-            css-class="intention-link"
-            width="250px"
-            color="#FFFFFF"
-            font-family="Roboto,Arial,sans-serif"
-            font-size="14px"
-            font-weight="700"
-            background-color="#000091"
-            align="center"
-          >
-            &nbsp;Rencontrer le candidat
-          </mj-button>
-          <mj-button
-            href="<%= data.waitCandidateUrl %>"
-            css-class="intention-link"
-            width="250px"
-            color="#FFFFFF"
-            font-family="Roboto,Arial,sans-serif"
-            font-size="14px"
-            font-weight="700"
-            background-color="#000091"
-            align="center"
-          >
-            &nbsp;En attente de décision</mj-button
-          >
-          <mj-button
-            href="<%= data.refuseCandidateUrl %>"
-            css-class="intention-link"
-            width="250px"
-            color="#FFFFFF"
-            font-family="Roboto,Arial,sans-serif"
-            font-size="14px"
-            font-weight="700"
-            background-color="#000091"
-            align="center"
-            >&nbsp;Refuser la candidature</mj-button
-          >
-        </mj-column>
+  <mj-body background-color="#f5f5fe" name="Candidature" width="800px">
+    <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+            <mj-image align="left" alt="Image" css-class="image" src="<%= data.images.logoRF %>" width="89px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+            <mj-image align="left" alt="Image" css-class="image" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
+        </mj-group>
       </mj-section>
-    </mj-wrapper>
-
-    <mj-section padding-bottom="30px"></mj-section>
-    <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
-      <mj-section padding="15px">
-        <mj-column>
-          <mj-text padding-bottom="32px" font-size="24px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#F07F87">
-            <img style="margin-bottom: 2px" src="<%= data.images.icoCandidat %>" alt="" />&nbsp;&nbsp;Candidat
-          </mj-text>
-          <mj-text font-size="16px" padding-bottom="15px">Nom : <span class="form-value"> <%= data.applicant_last_name %> </span> </mj-text>
-          <mj-text font-size="16px" padding-bottom="15px">Prénom : <span class="form-value"> <%= data.applicant_first_name %> </span> </mj-text>
-          <mj-text font-size="16px" padding-bottom="15px">Téléphone : <span class="form-value"> <%= data.applicant_phone %> </span> </mj-text>
-          <mj-text font-size="16px" padding-bottom="15px">E-mail : <span class="form-value"> <%= data.applicant_email %> </span> </mj-text>
-          <mj-text font-size="13px" padding-bottom="15px"
-            ><img style="margin-bottom: -3px; margin-right: 3px" src="<%= data.images.icoInfo %>" alt="" />&nbsp;&nbsp;Vous trouverez le curriculum vitae du candidat en pièce
-            jointe.</mj-text
-          >
-          <mj-text font-size="16px" padding-bottom="15px">Message du candidat : </mj-text>
-          <mj-text font-size="16px" padding-bottom="32px"><div class="form-msg" width="100%"><%- data.applicant_message_to_company %></div> </mj-text>
-        </mj-column>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="18px" font-weight="700" line-height="20px" padding="0px 0px 16px 0px">
+              Vous avez reçu une candidature !
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 16px 0px">
+              <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;"><%= data.applicant_first_name %> <%= data.applicant_last_name %></span> vous adresse sa candidature à
+                <a href="<%= data.jobUrl %>" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">votre offre</a>
+              sur le métier <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-size: 16px; font-weight: 700;"><%= data.job_title %>.</span>
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 16px 0px">
+              Nous vous invitons à répondre au candidat à l'aide de l'un de nos 3 formulaires de réponse rapide ci-dessous :
+<br/>
+            </mj-text>
+            <mj-button href="<%= data.meetCandidateUrl %>" align="center" background-color="#18753c" border-radius="0px" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 16px 0px" width="184px">
+              Rencontrer le candidat
+            </mj-button>
+            <mj-button href="<%= data.waitCandidateUrl %>" align="center" background-color="#000091" border-radius="0px" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 16px 0px" width="181px">
+              En attente de décision
+            </mj-button>
+            <mj-button href="<%= data.refuseCandidateUrl %>" align="center" background-color="#ce0500" border-radius="0px" color="#ffffff" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" inner-padding="4px 0px 4px 0px" line-height="24px" padding="0px 0px 16px 0px" width="184px">
+              Refuser la candidature
+            </mj-button>
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+<br/>Pour répondre au candidat, veuillez utiliser les boutons de réponse situés ci-dessus.
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
       </mj-section>
-    </mj-wrapper>
-
-    <mj-section padding-bottom="30px"></mj-section>
-    <mj-wrapper background-color="#E3E3FD" padding="10px 0 10px" border-radius="10px">
-      <mj-section padding="15px">
-        <mj-column>
-          <mj-text font-style="normal" padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#000000">
-            Rencontrez-vous des difficultés de recrutement?
-          </mj-text>
-          <mj-text font-size="16px" line-height="24px" color="#000000">
-            Répondez à nos 3 questions et partagez-nous vos difficultés en tant que recruteur. Nous animerons un webinar prochainement afin de vous apporter nos réponses.
-          </mj-text>
-          <mj-button
-            href="https://tally.so/r/mO49pM"
-            css-class="poll-link"
-            width="250px"
-            color="#000091"
-            font-family="Roboto,Arial,sans-serif"
-            border="1px solid #000091"
-            font-size="16px"
-            font-weight="400"
-            background-color="#E3E3FD"
-            align="center"
-          >
-            &nbsp;Participer à l'enquête
-          </mj-button>
-        </mj-column>
-      </mj-section>
-    </mj-wrapper>
-
-    <mj-section padding-bottom="30px"></mj-section>
-    <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
-      <mj-section>
-        <mj-column>
-          <mj-table line-height="100%">
-            <tr>
-              <td valign="top" style="padding-top: 5px">
-                <img width="120" src="<%= data.images.logoLba %>" alt="Logo du site La bonne alternance" />
-              </td>
-              <td valign="top" style="font-family: Roboto, Arial, sans-serif; font-size: 16px; line-height: 22px; padding-left: 40px; padding-top: 0">
-                <% if (data.job_origin == "offres_emploi_lba" ) { %> Vous recevez cette candidature car vous avez déposé une offre sur le
-                <a style="font-weight: bold; color: black" href="<%= data.lbaRecruiterUrl %>"> service de dépôt d'offre simplifié </a>
-                de La bonne alternance.
-                <br /><br />
-                Votre offre est donc visible sur :
-                <ul>
-                  <li>La bonne alternance, un site web conçu et porté par la Mission interministérielle de l’apprentissage,</li>
-                  <li>Nos sites partenaires, afin d'étendre la portée de votre recrutement là où les candidats se trouvent.</li>
-                </ul>
-                <% } else { %> Vous recevez cette candidature car votre établissement est référencé sur
-                <a style="font-weight: bold; color: black" href="<%= data.lbaUrl %>"> La bonne alternance </a> puisqu'il a été identifié comme "à fort potentiel d'embauche en
-                alternance" par un algorithme prédictif. La bonne alternance, un site web conçu et porté par la Mission interministérielle de l’apprentissage. <% } %>
-              </td>
-            </tr>
-          </mj-table>
-        </mj-column>
-      </mj-section>
-    </mj-wrapper>
-
-    <mj-section padding-bottom="30px"></mj-section>
-    <mj-wrapper background-color="#ffffff" padding="10px 0 20px" border-radius="10px">
-      <mj-section padding="15px">
-        <mj-column>
-          <mj-text padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
-            <span style="font-weight: bold">Une question ?</span>
-          </mj-text>
-
-          <% if (data.job_origin == "offres_emploi_lba" ) { %>
-          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
-            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="link-black" href="<%= data.jobProvidedUrl %>"> ✅ Indiquer que mon offre est pourvue</a>
-          </mj-text>
-          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
-            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="link-black" href="<%= data.cancelJobUrl %>"> 📝 Supprimer mon offre</a>
-          </mj-text>
-          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
-            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="link-black" href="<%= data.faqUrl %>"> 💬 Consulter la FAQ</a>
-          </mj-text>
-          <% } else { %>
-          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
-            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="link-black" href="<%= data.unsubscribeUrl %>"> 🚫 Je ne souhaite plus recevoir de candidatures spontanées</a>
-          </mj-text>
-          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
-            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="link-black" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=MAJ%20informations%20entreprise%20-%20Candidature%20spontanée">
-              📝 Je souhaite modifier l'email/téléphone de contact</a
-            >
-          </mj-text>
-          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
-            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="link-black" href="<%= data.lbaRecruiterUrl %>"> 🚀 J'ai un besoin en recrutement spécifique</a>
-          </mj-text>
-          <mj-text font-size="16px" line-height="28px" padding-bottom="15px"
-            >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a class="link-black" href="<%= data.faqUrl %>"> 💬 Consulter la FAQ</a>
-          </mj-text>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="-497.84000000000003%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
+              Candidature
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px"></mj-spacer>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="4px 0px 0px 0px">
+              Nom : 
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 4px 0px">
+              <%= data.applicant_last_name %>
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px"></mj-spacer>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="4px 0px 0px 0px">
+              Prénom :
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 4px 0px">
+              <%= data.applicant_first_name %>
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px"></mj-spacer>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              Téléphone :
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px">
+              <%= data.applicant_phone %>
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-spacer height="24px" padding="0px 24px 0px 24px"></mj-spacer>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              E-mail :
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" text-decoration="underline">
+              <a href="mailto:<%= data.applicant_email %>">
+                <%= data.applicant_email %>
+              </a>
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-style="italic" font-weight="400" line-height="16px" padding="20px 0px 20px 0px">
+              Vous trouverez le curriculum vitae du candidat en pièce jointe. 
+<br/>
+            </mj-text>
+          </mj-column>
+          <% if (data.applicant_message_to_company) { %>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              Message du candidat : 
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="28px">
+              <%= data.applicant_message_to_company %>
+<br/>
+            </mj-text>
+          </mj-column>
           <% } %>
-        </mj-column>
+        </mj-group>
       </mj-section>
-    </mj-wrapper>
-
-    <mj-wrapper padding="0px" border-radius="10px" padding-bottom="50px">
-      <mj-section>
-        <mj-column>
-          <mj-table line-height="100%">
-            <tr>
-              <td valign="top" style="padding-top: 5px"><img width="89" height="auto" src="<%= data.images.logoRF %>" alt="Logo République française" /></td>
-              <td valign="top" style="line-height: 22px; padding-left: 40px; padding-top: 0">
-                <% if (data.job_origin == "recruteurs_lba" ) { %>
-                <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
-                  La bonne alternance est un site développé par la
-                  <a class="link-black" href="https://mission-apprentissage.gitbook.io/general/"> Mission interministérielle pour l'apprentissage</a>, au sein de l’État,
-                  conformément aux missions d’intérêt public du ministère du Travail.
-                </mj-text>
-                <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
-                  Nous souhaitons vous proposer des candidats à l'alternance. Par ailleurs, nous ne faisons aucune utilisation commerciale de vos données. Conformément à l’article
-                  L.34-5 du code des postes et communications électroniques, vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse
-                  <a
-                    class="link-black"
-                    href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Déréférencer%20entreprise%20-%20Candidature%20spontanée&body=Bonjour,%0A%0APouvez-vous%20proc%C3%A9der%20au%20d%C3%A9r%C3%A9f%C3%A9rencement%20de%20mon%20entreprise%20du%20service%20gouvernemental%20La%20bonne%20alternance%20%3F%0A%0AEn%20effet,%20mon%20entreprise%20%28pr%C3%A9ciser%20parmi%20les%20raisons%20suivantes%29%0A-%20A%20d%C3%A9j%C3%A0%20recrut%C3%A9%20tous%20ses%20alternants%20pour%20l'ann%C3%A9e%20en%20cours%0A-%20Re%C3%A7oit%20des%20candidatures%20qui%20ne%20correspondent%20pas%20%C3%A0%20notre%20besoin%0A-%20Utilise%20d'autres%20canaux%20pour%20ses%20recrutements%0A-%20Ne%20recrute%20pas%20en%20alternance%0A-%20Autre"
-                  >
-                    labonnealternance@apprentissage.beta.gouv.fr</a
-                  >.
-                </mj-text>
-                <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
-                  Votre adresse e-mail sera dès lors supprimée de notre base de données et vous ne serez plus contacté. Si vous pensez que vos droits ne sont pas respectés, vous
-                  pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la
-                  <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">
-                    politique de confidentialité de La bonne alternance</a
-                  >.
-                </mj-text>
-                <br /><br />
-                <% } %> Cet e-mail a été envoyé à <%= data.company_email %>
-                <br />
-                Merci de ne pas répondre à cet e-mail. Pour toute question ou besoin d’aide, vous pouvez écrire à labonnealternance@apprentissage.beta.gouv.fr
-                <br />
-              </td>
-            </tr>
-          </mj-table>
-        </mj-column>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="11px 23px 11px 23px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="10px 0px 10px 0px">
+              <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400;">🎲 </span>Préparez l'arrivée de votre futur·e alternant·e
+<br/>
+            </mj-text>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="28px" padding="10px 0px 10px 0px">
+              Vous recrutez un·e alternant·e ? On vous accompagne dans les étapes clés de son intégration <a href="https://dinum.didask.com/courses/lalternance-pour-les-recruteurs" style="text-decoration: underline; color: inherit;">grâce à ce quiz interactif de 7 questions</a>.
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="0px 0px 12px 0px">
+              Une question ?
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px" padding="0px 0px 12px 0px" text-decoration="underline">
+              <a href="<%= data.jobProvidedUrl %>" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">
+                ✅ Indiquer que mon offre est pourvue
+              </a>
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px" padding="0px 0px 12px 0px" text-decoration="underline">
+              <a href="<%= data.cancelJobUrl %>" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">
+                📝 Supprimer mon offre
+              </a>
+<br/>
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px" text-decoration="underline">
+              <a href="<%= data.faqUrl %>" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">
+                💬 Consulter la FAQ
+              </a>
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              La bonne alternance est un site développé par la Mission interministérielle pour l'apprentissage, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail, du Plein emploi et de l’Insertion.
+<br/>
+<br/>Vous recevez cette candidature car vous avez déposé une offre sur le service de dépôt d'offre simplifié de La bonne alternance.
+<br/>
+<br/>Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+<br/>
+<br/>Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a> de La bonne alternance.
+<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group>
       </mj-section>
     </mj-wrapper>
   </mj-body>

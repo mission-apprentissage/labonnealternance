@@ -1,21 +1,50 @@
-import { writeFileSync } from "fs"
+import { createWriteStream } from "fs"
+import { Transform } from "stream"
+import { pipeline } from "stream/promises"
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { db } from "../../common/mongodb"
+import { logger } from "../../common/logger"
 import { uploadFileToS3 } from "../../common/utils/awsUtils"
+import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 interface IGeneratorParams {
-  collection: "jobs" | "bonnesboites"
+  collection: "jobs" | "recruteurslba"
   query: object
   projection: object
   fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA
 }
 
 async function generateJsonExport({ collection, query, projection, fileName }: IGeneratorParams): Promise<string> {
+  logger.info(`Generating file ${fileName}`)
   const filePath = new URL(`./${fileName}.json`, import.meta.url)
-  const data = await db.collection(collection).find(query).project(projection).toArray()
-  writeFileSync(filePath, JSON.stringify(data, null, 4))
+  const cursor = await getDbCollection(collection).find(query).project(projection)
+  const writable = createWriteStream(filePath)
+
+  // Transform stream to add commas between objects and brackets at the beginning and end
+  let isFirst = true
+  const transform = new Transform({
+    writableObjectMode: true,
+    readableObjectMode: true,
+    transform(chunk, encoding, callback) {
+      if (isFirst) {
+        this.push("[")
+        this.push(JSON.stringify(chunk, null, 4))
+        isFirst = false
+      } else {
+        this.push(",")
+        this.push(JSON.stringify(chunk, null, 4))
+      }
+      callback()
+    },
+    flush(callback) {
+      this.push("]")
+      callback()
+    },
+  })
+
+  await pipeline(cursor, transform, writable)
+
   return filePath.pathname
 }
 
@@ -48,14 +77,24 @@ async function exportLbaJobsToS3() {
     fileName: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   }
   const recruteurs_lba: IGeneratorParams = {
-    collection: "bonnesboites",
+    collection: "recruteurslba",
     query: {},
     projection: { _id: 0, email: 0, phone: 0, geopoint: 0, recruitment_potential: 0, opco_short_name: 0 },
     fileName: LBA_ITEM_TYPE.RECRUTEURS_LBA,
   }
   await Promise.all([
-    generateJsonExport(offres_emploi_lba).then((path) => uploadFileToS3({ key: path.split("/").pop() as string, filePath: path, noCache: true })),
-    generateJsonExport(recruteurs_lba).then((path) => uploadFileToS3({ key: path.split("/").pop() as string, filePath: path, noCache: true })),
+    generateJsonExport(offres_emploi_lba).then((path) => {
+      const key = path.split("/").pop() as string
+      logger.info(`Uploading file ${key} to S3`)
+      uploadFileToS3({ key, filePath: path, noCache: true })
+      logger.info(`file ${key} uploaded`)
+    }),
+    generateJsonExport(recruteurs_lba).then((path) => {
+      const key = path.split("/").pop() as string
+      logger.info(`Uploading file ${key} to S3`)
+      uploadFileToS3({ key, filePath: path, noCache: true })
+      logger.info(`File ${key} uploaded`)
+    }),
   ])
 }
 

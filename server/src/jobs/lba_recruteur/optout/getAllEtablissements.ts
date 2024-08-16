@@ -1,7 +1,9 @@
+// import { ObjectId } from "mongodb"
 import axios from "axios"
 import { differenceBy } from "lodash-es"
 
-import { Optout } from "../../../common/model/index"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 import { formatReferentielData } from "../../../services/etablissement.service"
 import { runScript } from "../../scriptWrapper"
 
@@ -31,7 +33,7 @@ const getEtablissements = async (options?: { page: number }): Promise<Etablissem
 
 runScript(async () => {
   const referentiel = await getEtablissements()
-  const data = await Optout.find({}).lean()
+  const data = await getDbCollection("optouts").find({}).toArray()
 
   const newEtablissement = differenceBy(referentiel, data, "siret")
   const organismes = newEtablissement.filter((etablissement) => etablissement.contacts.length > 0 && etablissement.adresse)
@@ -66,13 +68,15 @@ runScript(async () => {
 
   await Promise.all(
     organismesFiltered.map(async (x) => {
-      // TODO wtf is this ?
+      // TODO à revoir, formated ne correspond pas du tout au modèle Optout
       const formated = formatReferentielData(x)
-      await Optout.create(formated)
+      console.debug(formated)
+      //TODO fix and restore :
+      //await getDbCollection("optouts").insertOne({ _id: new ObjectId(), createdAt: new Date(), updatedAt: new Date(), ...formated })
     })
   )
 
-  const count = await Optout.countDocuments()
+  const count = await getDbCollection("optouts").countDocuments()
 
   return {
     total: referentiel.length,

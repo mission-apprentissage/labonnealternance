@@ -1,13 +1,24 @@
+import { LoginPage } from "../pages/LoginPage"
+
 import { smtpClient } from "./smtpClient"
 
 export const loginClient = {
+  loginAsAdmin() {
+    return this.login(LoginPage.adminEmail).then(() => {
+      cy.contains("Gestion des recruteurs")
+    })
+  },
   login(email: string) {
-    cy.request("POST", `${Cypress.env("server")}/api/login/magiclink`, { email })
+    return cy
+      .request("POST", `${Cypress.env("server")}/api/login/magiclink`, { email })
       .then(() => {
         return smtpClient.getMail(email, "Lien de connexion")
       })
       .then((mailContent) => {
-        const url = new RegExp("(http[^ ]+token=[a-zA-Z0-9.-]+)", "g").exec(mailContent)?.at(1)
+        const url = new RegExp("(http[^ ]+token=[a-zA-Z0-9.\\-_]+)", "g").exec(mailContent)[1]
+        if (!url) {
+          throw new Error("could not find url")
+        }
         cy.visit(url)
       })
   },

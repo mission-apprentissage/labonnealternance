@@ -4,8 +4,7 @@ import { ADMIN, OPCO, OPCOS, VALIDATION_UTILISATEUR } from "../constants/recrute
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { zObjectId } from "./common"
-import { enumToZod } from "./enumToZod"
+import { IModelDescriptor, zObjectId } from "./common"
 
 export enum UserEventType {
   ACTIF = "ACTIF",
@@ -13,12 +12,12 @@ export enum UserEventType {
   DESACTIVE = "DESACTIVE",
 }
 
-export const ZValidationUtilisateur = enumToZod(VALIDATION_UTILISATEUR)
+export const ZValidationUtilisateur = extensions.buildEnum(VALIDATION_UTILISATEUR)
 
 export const ZUserStatusEvent = z
   .object({
     validation_type: ZValidationUtilisateur,
-    status: enumToZod(UserEventType),
+    status: extensions.buildEnum(UserEventType),
     reason: z.string(),
     granted_by: z.string().nullish(),
     date: z.date(),
@@ -26,6 +25,8 @@ export const ZUserStatusEvent = z
   .strict()
 export type IUserStatusEvent = z.output<typeof ZUserStatusEvent>
 export type IUserStatusEventJson = Jsonify<z.input<typeof ZUserStatusEvent>>
+
+const collectionName = "userswithaccounts" as const
 
 export const ZUserWithAccount = z
   .object({
@@ -55,10 +56,20 @@ export type IUserWithAccountFields = z.output<typeof ZUserWithAccountFields>
 export const ZNewSuperUser = z.union([
   ZUserWithAccountFields.extend({
     type: z.literal(OPCO),
-    opco: enumToZod(OPCOS),
+    opco: extensions.buildEnum(OPCOS),
   }),
   ZUserWithAccountFields.extend({
     type: z.literal(ADMIN),
   }),
 ])
 export type INewSuperUser = z.output<typeof ZNewSuperUser>
+
+export default {
+  zod: ZUserWithAccount,
+  indexes: [
+    [{ email: 1 }, { unique: true }],
+    [{ last_action_date: 1 }, {}],
+    [{ "status.status": 1 }, {}],
+  ],
+  collectionName,
+} as const satisfies IModelDescriptor

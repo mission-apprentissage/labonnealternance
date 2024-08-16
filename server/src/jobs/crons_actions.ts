@@ -1,11 +1,10 @@
 import cronParser from "cron-parser"
-import mongoose from "mongoose"
 
-import { IInternalJobsCron } from "@/common/model/schema/internalJobs/internalJobs.types"
-import { db } from "@/common/mongodb"
+import { IInternalJobsCron } from "@/common/model/internalJobs.types"
 import config from "@/config"
 
 import { getLoggerWithContext } from "../common/logger"
+import { getDbCollection } from "../common/utils/mongodbUtils"
 
 import { createJobCron, createJobCronTask, createJobSimple, findJob, findJobs, updateJob } from "./job.actions"
 import { CRONS } from "./jobs"
@@ -26,8 +25,8 @@ export async function cronsInit() {
   }
 
   logger.info(`Crons - initialise crons in DB`)
-  await db.collection("internalJobs").deleteMany({ type: "cron" })
-  await db.collection("internalJobs").deleteMany({
+  await getDbCollection("internalJobs").deleteMany({ type: "cron" })
+  await getDbCollection("internalJobs").deleteMany({
     status: { $in: ["pending", "will_start"] },
     type: "cron_task",
   })
@@ -68,7 +67,7 @@ export async function cronsScheduler(): Promise<void> {
       scheduled_for: next.toDate(),
     })
 
-    await updateJob(new mongoose.Types.ObjectId(cron._id), {
+    await updateJob(cron._id, {
       scheduled_for: next.toDate(),
     })
   }
