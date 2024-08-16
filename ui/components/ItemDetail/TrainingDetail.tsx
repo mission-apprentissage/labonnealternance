@@ -115,7 +115,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
       {IJStats && <StatsInserJeunes stats={IJStats} />}
 
       <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-        <Text as="h2" variant="itemDetailH2" mt={2}>
+        <Text as="h2" variant="itemDetailH2" my={2}>
           Quelques informations l'établissement
         </Text>
 
