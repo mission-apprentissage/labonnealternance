@@ -3,7 +3,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZBusinessError } from "../models"
 import { zObjectId } from "../models/common"
-import { ZJobsApiResponseV2, ZJobsPartners, ZJobsPartnersPostApiBody } from "../models/jobsPartners.model"
+import { ZJobsApiResponseV2, ZJobsPartners, ZJobsPartnersPatchApiBody, ZJobsPartnersPostApiBody } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -482,7 +482,7 @@ export const zJobsRoutesV2 = {
       params: z.object({
         id: zObjectId,
       }),
-      body: ZJobsPartnersPostApiBody,
+      body: ZJobsPartnersPatchApiBody,
       response: {
         "200": ZJobsPartners,
       },

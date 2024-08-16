@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb"
 import { IGeoPoint, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJobsPartners, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IJobsPartners, IJobsPartnersPatchApiBody, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IJobOpportunityRncp, IJobOpportunityRome } from "shared/routes/jobOpportunity.routes"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -26,6 +26,7 @@ import {
   formatRecruteurLbaToJobPartner,
   getJobsPartnersFromDB,
   getJobsQuery,
+  mergePatchWithDb,
 } from "../../services/jobOpportunity.service"
 import { addOffreDetailView, getJobs, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/recruteurLba.service"
@@ -165,14 +166,27 @@ export default (server: Server) => {
   )
 
   // PATCH job in jobs_partners need spec review
-  server.post(
+  server.patch(
     "/jobs/:id",
     {
-      schema: zRoutes.post["/jobs/:id"],
+      schema: zRoutes.patch["/jobs/:id"],
       onRequest: server.auth(zRoutes.post["/jobs/:id"]),
       config,
     },
-    async () => {}
+    async (req, res) => {
+      const { id } = req.params
+      const patchBody = req.body
+      const job = await getDbCollection("jobs_partners").findOne({ _id: id })
+      if (!job) {
+        throw Boom.badRequest("Job does not exist")
+      }
+      const update: IJobsPartnersPatchApiBody = mergePatchWithDb(patchBody, job)
+      const updatedJob = await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: update }, { returnDocument: "after" })
+      if (!updatedJob) {
+        throw Boom.internal(`Job partner updated did not return ${id}`)
+      }
+      return res.status(200).send(updatedJob)
+    }
   )
 
   server.post(
@@ -186,7 +200,7 @@ export default (server: Server) => {
       const { id } = req.params
       const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) {
-        throw Boom.badRequest("Job does not exists")
+        throw Boom.badRequest("Job does not exist")
       }
       if (job.offer_status === POURVUE) {
         throw Boom.badRequest("Job is already provided")

@@ -115,6 +115,25 @@ export const ZJobsPartnersPostApiBody = z
     path: ["apply_url", "apply_email", "apply_phone"],
   })
 export type IJobsPartnersPostApiBody = z.output<typeof ZJobsPartnersPostApiBody>
+export const ZJobsPartnersPatchApiBody = z.object({
+  contract_start: z.date().optional(),
+  contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).optional(),
+  contract_duration: z.number().optional(),
+  contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).optional(),
+  offer_description: z.string().optional(),
+  offer_diploma_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA).optional(),
+  offer_desired_skills: z.union([z.array(z.any()), z.string()]).optional(),
+  offer_acquired_skills: z.union([z.array(z.any()), z.string()]).optional(),
+  offer_access_condition: z.union([z.array(z.any()), z.string()]).optional(),
+  offer_count: z.number().optional(),
+  offer_multicast: z.boolean().optional(),
+  offer_origin: z.string().optional(),
+  apply_url: z.string().optional(),
+  apply_email: z.string().email().optional(),
+  apply_phone: extensions.telephone().optional(),
+})
+
+export type IJobsPartnersPatchApiBody = z.output<typeof ZJobsPartnersPatchApiBody>
 
 export const ZJobRecruiterApiFormat = z.object({
   _id: zObjectId,

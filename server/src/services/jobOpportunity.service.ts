@@ -398,3 +398,19 @@ export const formatFranceTravailToJobPartner = (offresEmploiFranceTravail: FTJob
     }
   })
 }
+
+export const mergePatchWithDb = <T extends Record<string, any>, U extends Record<string, any>>(patchObj: T, dbObj: U): Partial<T & U> => {
+  const result: Partial<T & U> = {}
+
+  ;(Object.keys(patchObj) as (keyof T)[]).forEach((key) => {
+    const patchValue = patchObj[key]
+    const dbValue = dbObj[key as keyof U]
+
+    if (patchValue !== null && patchValue !== undefined && dbValue !== undefined) {
+      // If patch value is not null and the key exists in dbObj, include it in the result
+      result[key] = patchValue as (T & U)[keyof (T & U)]
+    }
+  })
+
+  return result
+}
