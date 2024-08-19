@@ -36,7 +36,7 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
 }
 
 export const cleanHardbouncedAppointmentUser = async (email: string) => {
-  const fakeEmail = `hardbounced-${randomUUID()}@faux-domaine.fr`
+  const fakeEmail = `email-blacklist-par-lba-${randomUUID()}@faux-domaine.fr`
   await getDbCollection("users").findOneAndUpdate(
     { email },
     {
