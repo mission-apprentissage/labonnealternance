@@ -198,12 +198,14 @@ const LbaJobDetail = ({ job }) => {
           <Text as="span">{getCompanySize(job)}</Text>
         </Text>
 
-        <Text mt={1}>
-          <Text as="span" fontWeight={700}>
-            Secteur d'activité :{" "}
+        {job.nafs[0]?.label && (
+          <Text mt={1}>
+            <Text as="span" fontWeight={700}>
+              Secteur d'activité :{" "}
+            </Text>
+            <Text as="span">{job.nafs[0].label}</Text>
           </Text>
-          <Text as="span">{job.nafs[0].label}</Text>
-        </Text>
+        )}
 
         {!job?.company?.mandataire && job?.contact?.phone && (
           <Text mt={1}>
