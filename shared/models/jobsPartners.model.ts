@@ -88,7 +88,7 @@ export const ZJobsPartnersPostApiBody = z
     partner_id: z.string().optional(),
     contract_start: z.date(),
     contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)),
-    contract_duration: z.number(),
+    contract_duration: z.number().min(6).max(36),
     contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).optional(),
     offer_title: z.string(),
     offer_description: z.string(),

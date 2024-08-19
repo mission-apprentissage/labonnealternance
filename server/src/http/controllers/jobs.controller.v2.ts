@@ -82,7 +82,6 @@ export default (server: Server) => {
     }
   )
 
-  // POST job in jobs_partners need spec review
   server.post(
     "/jobs",
     {
@@ -91,8 +90,9 @@ export default (server: Server) => {
       config,
     },
     async (req, res) => {
-      const { workplace_siret, workplace_address, offer_title, ...rest } = req.body
+      const { workplace_siret, workplace_address, offer_title, offer_rome_code, ...rest } = req.body
       let geopoint: IGeoPoint | null = null
+      let romeCode = offer_rome_code ?? null
 
       const siretInformation = await getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE" })
       if ("error" in siretInformation) {
@@ -113,13 +113,16 @@ export default (server: Server) => {
           message: "",
         })
       }
-      const romeCode = await getRomeoInfos({ intitule: offer_title, contexte: siretInformation.naf_label ?? undefined })
       if (!romeCode) {
-        return res.status(400).send({
-          error: true,
-          errorCode: BusinessErrorCodes.ROMEO_NOT_FOUND,
-          message: "",
-        })
+        const romeoResponse = await getRomeoInfos({ intitule: offer_title, contexte: siretInformation.naf_label ?? undefined })
+        if (!romeoResponse) {
+          return res.status(400).send({
+            error: true,
+            errorCode: BusinessErrorCodes.ROMEO_NOT_FOUND,
+            message: "",
+          })
+        }
+        romeCode = [romeoResponse]
       }
       const opcoData = await getOpcoData(workplace_siret)
       const now = new Date()
@@ -130,7 +133,7 @@ export default (server: Server) => {
         partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
         partner_id: rest.partner_id ?? null,
         offer_title,
-        offer_rome_code: [romeCode],
+        offer_rome_code: romeCode,
         offer_status: JOB_STATUS.ACTIVE,
         offer_creation_date: rest.offer_creation_date ?? now,
         offer_expiration_date: rest.offer_expiration_date ?? addExpirationPeriod(now).toDate(),
@@ -165,7 +168,6 @@ export default (server: Server) => {
     }
   )
 
-  // PATCH job in jobs_partners need spec review
   server.patch(
     "/jobs/:id",
     {
