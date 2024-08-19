@@ -8,7 +8,7 @@ import ItemDistanceToCenter from "./ItemDistanceToCenter"
 
 export default function ItemLocalisation({ item }: { item: ILbaItemFormation2 | ILbaItemLbaCompany | ILbaItemCompany | ILbaItemLbaJob | ILbaItemFtJob }) {
   return (
-    <Text>
+    <Text mt={1}>
       <Text as="span" fontWeight={700}>
         Localisation :{" "}
       </Text>

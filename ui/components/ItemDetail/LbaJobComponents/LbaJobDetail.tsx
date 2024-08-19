@@ -173,7 +173,7 @@ const LbaJobDetail = ({ job }) => {
           Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
         </Text>
 
-        <Text my={2}>
+        <Text my={3}>
           {job?.company?.mandataire
             ? "Le centre de formation peut vous renseigner sur l’entreprise."
             : "Renseignez-vous sur l’entreprise, ses activités et ses valeurs pour préparer votre candidature. Vous pouvez rechercher leur site internet et leur présence sur les réseaux sociaux."}
@@ -182,7 +182,7 @@ const LbaJobDetail = ({ job }) => {
         {!job?.company?.mandataire ? (
           <ItemLocalisation item={job} />
         ) : (
-          <Text>
+          <Text mt={1}>
             <Text as="span" fontWeight={700}>
               Localisation :{" "}
             </Text>
@@ -191,14 +191,14 @@ const LbaJobDetail = ({ job }) => {
           </Text>
         )}
 
-        <Text>
+        <Text mt={1}>
           <Text as="span" fontWeight={700}>
             Taille de l'entreprise :{" "}
           </Text>
           <Text as="span">{getCompanySize(job)}</Text>
         </Text>
 
-        <Text>
+        <Text mt={1}>
           <Text as="span" fontWeight={700}>
             Secteur d'activité :{" "}
           </Text>
@@ -206,7 +206,7 @@ const LbaJobDetail = ({ job }) => {
         </Text>
 
         {!job?.company?.mandataire && job?.contact?.phone && (
-          <Text>
+          <Text mt={1}>
             <Text as="span" fontWeight={700}>
               Téléphone :{" "}
             </Text>
