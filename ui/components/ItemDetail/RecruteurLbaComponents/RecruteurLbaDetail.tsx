@@ -73,7 +73,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                 <AccordionPanel pb={4}>
                   <Box background="#f6f6f6" mb={4} p={4}>
                     <ItemLocalisation item={recruteurLba} />
-                    <Text mt={4}>
+                    <Text mt={1}>
                       <Text as="span" fontWeight={700}>
                         Taille de l'entreprise :{" "}
                       </Text>
