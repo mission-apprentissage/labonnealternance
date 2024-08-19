@@ -146,7 +146,7 @@ function GestionEntreprises() {
   return (
     <Layout displayNavigationMenu={false} adminPage={EAdminPages.ENTREPRISES_ALGO} footer={false}>
       <Box pt={5}>
-        <Breadcrumb pages={[{ title: "Acceuil", to: "/espace-pro/administration/users" }, { title: "Entreprises de l'algorithme" }]} />
+        <Breadcrumb pages={[{ title: "Accueil", to: "/espace-pro/administration/users" }, { title: "Entreprises de l'algorithme" }]} />
         <Box mt={6} px={4}>
           <Text fontSize="2rem" mb={4} fontWeight={700} as="h1">
             Entreprises de l'algorithme
