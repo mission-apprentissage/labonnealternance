@@ -397,7 +397,7 @@ export const zJobsRoutesV2 = {
       body: ZJobsPartnersPostApiBody,
       response: {
         "201": z.object({ id: zObjectId }),
-        "400": ZBusinessError,
+        "400": z.union([ZBusinessError, ZResError]),
       },
       securityScheme: {
         auth: "api-apprentissage",
@@ -477,8 +477,8 @@ export const zJobsRoutesV2 = {
   },
   patch: {
     "/jobs/:id": {
-      method: "post",
-      path: "/jobs",
+      method: "patch",
+      path: "/jobs/:id",
       params: z.object({
         id: zObjectId,
       }),

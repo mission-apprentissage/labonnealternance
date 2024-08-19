@@ -172,7 +172,7 @@ export default (server: Server) => {
     "/jobs/:id",
     {
       schema: zRoutes.patch["/jobs/:id"],
-      onRequest: server.auth(zRoutes.post["/jobs/:id"]),
+      onRequest: server.auth(zRoutes.patch["/jobs/:id"]),
       config,
     },
     async (req, res) => {

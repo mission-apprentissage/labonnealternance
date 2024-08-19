@@ -66,7 +66,7 @@ describe("/jobs", () => {
       expect(!!data.recruiters.length).toBe(true)
     })
   })
-  describe.skip("/rncp", () => {
+  describe("/rncp", () => {
     it("should return 401 if no api key provided", async () => {
       const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/rncp" })
       expect(response.statusCode).toBe(401)

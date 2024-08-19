@@ -5,7 +5,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
-import { JOB_STATUS } from "./job.model"
+import { JOB_STATUS, ZJobStartDateCreate } from "./job.model"
 
 const collectionName = "jobs_partners" as const
 
@@ -86,12 +86,12 @@ export type IJobsPartners = z.output<typeof ZJobsPartners>
 export const ZJobsPartnersPostApiBody = z
   .object({
     partner_id: z.string().optional(),
-    contract_start: z.date(),
+    contract_start: ZJobStartDateCreate(),
     contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)),
     contract_duration: z.number().min(6).max(36),
     contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).optional(),
     offer_title: z.string(),
-    offer_description: z.string(),
+    offer_description: z.string().min(30, "Description should be at least 30 characters"),
     offer_diploma_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA),
     offer_desired_skills: z.union([z.array(z.any()), z.string()]).optional(),
     offer_acquired_skills: z.union([z.array(z.any()), z.string()]).optional(),
