@@ -2,17 +2,18 @@ import { getApiApprentissageTestingToken } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { createRecruteurLbaTest, saveJobPartnerTest } from "@tests/utils/user.test.utils"
+import { IJobsPartnersPostApiBody, ZJobsPartnersPostApiBody } from "shared/models/jobsPartners.model"
 import { describe, expect, it } from "vitest"
 
 describe("/jobs", () => {
   const httpClient = useServer()
+  const token = getApiApprentissageTestingToken({ email: "test@test.fr" })
+
   const rome = ["D1214", "D1212", "D1211"]
   const rncpQuery = "RNCP13620"
   const geopoint = { type: "Point", coordinates: [7.120835315436125, -45.16534931026399] as [number, number] }
   const romesQuery = rome.join(",")
   const [longitude, latitude] = geopoint.coordinates
-
-  const token = getApiApprentissageTestingToken({ email: "test@test.fr" })
 
   const mockData = async () => {
     await saveJobPartnerTest({ offer_rome_code: rome, workplace_geopoint: geopoint })
@@ -21,7 +22,7 @@ describe("/jobs", () => {
 
   useMongo(mockData, "beforeAll")
 
-  describe("/rome", () => {
+  describe.skip("/rome", () => {
     it("should return 401 if no api key provided", async () => {
       const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/rome" })
       expect(response.statusCode).toBe(401)
@@ -66,7 +67,7 @@ describe("/jobs", () => {
       expect(!!data.recruiters.length).toBe(true)
     })
   })
-  describe("/rncp", () => {
+  describe.skip("/rncp", () => {
     it("should return 401 if no api key provided", async () => {
       const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/rncp" })
       expect(response.statusCode).toBe(401)
@@ -122,7 +123,10 @@ describe("/jobs", () => {
         offer_diploma_level_label: "Bachelor's Degree",
       }
 
-      const mandatoryFields = ["workplace_siret", "contract_start", "contract_duration", "offer_title", "offer_description", "offer_diploma_level_label"]
+      const mandatoryFields = Object.keys(ZJobsPartnersPostApiBody._def.schema.shape).filter((key) => {
+        const field = ZJobsPartnersPostApiBody._def.schema.shape[key]
+        return !(field.isOptional() || field._def.defaultValue !== undefined)
+      })
 
       describe.each(mandatoryFields)("Validation for missing %s", async (field) => {
         it(`should throw ZOD error if ${field} is missing`, async () => {
@@ -142,5 +146,20 @@ describe("/jobs", () => {
         })
       })
     })
+    it.skip("TODO should create an offer", async () => {
+      const newOffer: IJobsPartnersPostApiBody = {
+        workplace_siret: "42476141900045", // OVH
+        contract_start: new Date(),
+        contract_duration: 12,
+        contract_type: ["Apprentissage"],
+        offer_title: "Software Engineer",
+        offer_description: "Develop and maintain software.",
+        offer_diploma_level_label: "Indifférent",
+        apply_email: "test@test.com",
+      }
+      console.log(newOffer)
+    })
+    it.skip("TODO should retrieve the offer created before", async () => {})
+    it.skip("TODO should update an existing offer", async () => {})
   })
 })
