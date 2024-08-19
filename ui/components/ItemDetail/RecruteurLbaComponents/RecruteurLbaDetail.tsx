@@ -79,14 +79,14 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
                       </Text>
                       <Text as="span">{getCompanySize(recruteurLba)}</Text>
                     </Text>
-                    <Text>
+                    <Text mt={1}>
                       <Text as="span" fontWeight={700}>
                         Secteur d'activité :{" "}
                       </Text>
                       <Text as="span">{recruteurLba.nafs[0].label}</Text>
                     </Text>
                     {recruteurLba?.contact?.phone && (
-                      <Text>
+                      <Text mt={1}>
                         <Text as="span" fontWeight={700}>
                           Téléphone :{" "}
                         </Text>
