@@ -122,7 +122,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
         <ItemLocalisation item={training} />
 
         {training?.contact?.phone && (
-          <Text>
+          <Text mt={1}>
             <Text as="span" fontWeight={700}>
               Téléphone :{" "}
             </Text>
