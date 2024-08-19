@@ -129,7 +129,7 @@ const getTrainingDetails = (training) => {
       )}
 
       {training.objectif && training.objectif.length > 20 && (
-        <Flex alignItems="flex-start" mt={10}>
+        <Flex alignItems="flex-start" mt={5}>
           <Image mt={1} src="/images/icons/training-target.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
@@ -143,7 +143,7 @@ const getTrainingDetails = (training) => {
       )}
 
       {training["sessions"]?.length ? (
-        <Flex alignItems="flex-start" mt={10}>
+        <Flex alignItems="flex-start" mt={5}>
           <Image src="/images/icons/training-academic-cap.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
