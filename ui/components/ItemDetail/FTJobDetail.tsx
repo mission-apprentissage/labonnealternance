@@ -62,8 +62,8 @@ const FTJobDetail = ({ job }) => {
           width="490px"
           itemId={job?.job?.id}
           type={LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}
-          linkLabelNotReported="Signaler l’entreprise"
-          linkLabelReported="Entreprise signalée"
+          linkLabelNotReported="Signaler l’offre"
+          linkLabelReported="Offre signalée"
           tooltip={
             <Box>
               <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
