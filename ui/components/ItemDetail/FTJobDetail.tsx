@@ -94,7 +94,7 @@ const FTJobDetail = ({ job }) => {
         <Text as="h2" variant="itemDetailH2" mt={2}>
           Quelques informations sur l'entreprise
         </Text>
-        <Text my={2}>
+        <Text my={3}>
           Renseignez-vous sur l’entreprise, ses activités et ses valeurs pour préparer votre candidature. Vous pouvez rechercher leur site internet et leur présence sur les réseaux
           sociaux.
         </Text>
@@ -102,7 +102,7 @@ const FTJobDetail = ({ job }) => {
         <ItemLocalisation item={job} />
 
         {job?.nafs?.length && (
-          <Text>
+          <Text mt={1}>
             <Text as="span" fontWeight={700}>
               Secteur d'activité :{" "}
             </Text>
@@ -111,7 +111,7 @@ const FTJobDetail = ({ job }) => {
         )}
 
         {job?.contact?.phone && (
-          <Text>
+          <Text mt={1}>
             <Text as="span" fontWeight={700}>
               Téléphone :{" "}
             </Text>
