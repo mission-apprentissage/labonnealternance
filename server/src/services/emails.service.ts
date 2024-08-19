@@ -31,7 +31,6 @@ export const processHardBounceWebhookEvent = async (payload) => {
     if (await processApplicationHardbounceEvent(payload)) {
       origin = "candidature_spontanee"
     }
-    prise_de_rdv
 
     if (await isHardbounceEventFromAppointmentCfa(payload)) {
       origin = "prise_de_rdv"
