@@ -28,7 +28,6 @@ import ItemDetailApplicationsStatus, { hasApplied } from "./ItemDetailServices/I
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
 import LbaJobDetail from "./LbaJobComponents/LbaJobDetail"
-import LocationDetail from "./LocationDetail"
 import RecruteurLbaDetail from "./RecruteurLbaComponents/RecruteurLbaDetail"
 import TrainingDetail from "./TrainingDetail"
 
@@ -181,8 +180,6 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
-
-      {kind !== LBA_ITEM_TYPE_OLD.LBA && <LocationDetail item={selectedItem} isCfa={isCfa} />}
 
       <AideApprentissage />
 
