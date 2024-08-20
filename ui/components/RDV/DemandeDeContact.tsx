@@ -38,6 +38,7 @@ import * as Yup from "yup"
 import { reasons } from "@/components/RDV/types"
 import { BarberGuy } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
+import { localStorageSet } from "@/utils/localStorage"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 import InfoBanner from "../InfoBanner/InfoBanner"
@@ -138,7 +139,7 @@ const DemandeDeContact = (props: Props) => {
           },
         })
 
-        window.localStorage.setItem(`application-formation-${props.context.cle_ministere_educatif}`, Date.now().toString())
+        localStorageSet(`application-formation-${props.context.cle_ministere_educatif}`, Date.now().toString())
 
         SendPlausibleEvent("Envoi Prendre RDV - Fiche formation", {
           info_fiche: `${props.context.cle_ministere_educatif}`,

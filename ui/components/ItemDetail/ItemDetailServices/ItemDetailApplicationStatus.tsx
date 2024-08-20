@@ -2,6 +2,8 @@ import { ILbaItemFormation, ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } 
 import { LBA_ITEM_TYPE_OLD } from "@/../shared/constants/lbaitem"
 import { Box, Text } from "@chakra-ui/react"
 
+import { localStorageGet } from "@/utils/localStorage"
+
 const getAPostuleMessage = (type, applicationDate, mb, mt) => {
   const date = new Date(parseInt(applicationDate, 10)).toLocaleDateString("fr-FR", {
     year: "numeric",
@@ -33,7 +35,7 @@ const getAPostuleMessage = (type, applicationDate, mb, mt) => {
 }
 
 export const hasApplied = (item: ILbaItemFormation | ILbaItemLbaCompany | ILbaItemLbaJob | ILbaItemFtJob) => {
-  return window.localStorage.getItem(`application-${item.ideaType}-${item.id}`) !== null
+  return localStorageGet(`application-${item.ideaType}-${item.id}`) !== null
 }
 
 export default function ItemDetailApplicationsStatus({
@@ -46,7 +48,7 @@ export default function ItemDetailApplicationsStatus({
   mt?: number
 }) {
   const key = `application-${item.ideaType}-${item.id}`
-  const ls = window.localStorage.getItem(key)
+  const ls = localStorageGet(key)
 
   return ls !== null ? getAPostuleMessage(item.ideaType, ls, mb, mt) : <></>
 }
