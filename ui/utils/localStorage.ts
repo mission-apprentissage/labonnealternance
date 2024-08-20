@@ -1,4 +1,4 @@
-export function localStorageSet(key: string, value: T) {
+export function localStorageSet<T>(key: string, value: T) {
   try {
     if (window?.localStorage) {
       const serializedValue = typeof value === "string" ? value : JSON.stringify(value)
