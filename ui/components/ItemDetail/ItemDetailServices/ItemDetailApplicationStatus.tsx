@@ -4,7 +4,12 @@ import { Box, Text } from "@chakra-ui/react"
 
 import { localStorageGet } from "@/utils/localStorage"
 
-const getAPostuleMessage = (type, applicationDate, mb, mt) => {
+const getAPostuleMessage = (
+  type: LBA_ITEM_TYPE_OLD.FORMATION | LBA_ITEM_TYPE_OLD.PEJOB | LBA_ITEM_TYPE_OLD.LBA | LBA_ITEM_TYPE_OLD.MATCHA,
+  applicationDate: string,
+  mb = 0,
+  mt = 0
+) => {
   const date = new Date(parseInt(applicationDate, 10)).toLocaleDateString("fr-FR", {
     year: "numeric",
     month: "long",
