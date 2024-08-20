@@ -69,7 +69,15 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
   }
 
   return (
-    <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 36px 12px", "1px 24px 36px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
+    <Box
+      pb="0px"
+      mt={6}
+      position="relative"
+      background="white"
+      padding={["1px 12px 36px 12px", "1px 24px 36px 24px", "1px 12px 24px 12px"]}
+      maxWidth="970px"
+      mx={["0", "30px", "30px", "auto"]}
+    >
       {getTrainingDetails(training.training)}
       <Box background="#f6f6f6" borderRadius="8px" mt={8} pl={8} py="10px" pr="10px">
         {training.onisepUrl && (

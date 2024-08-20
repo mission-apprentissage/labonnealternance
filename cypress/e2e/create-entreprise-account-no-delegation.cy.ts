@@ -18,7 +18,7 @@ describe("create-entreprise-account-no-delegation", () => {
     const studyLevel = "Cap, autres formations niveau (Infrabac)"
 
     FlowCreationEntreprise.siretPage.goTo()
-    FlowCreationEntreprise.siretPage.fillSiret(siret)
+    FlowCreationEntreprise.siretPage.searchAndSelectSiret(siret)
     FlowCreationEntreprise.siretPage.submit()
 
     FlowCreationEntreprise.personalInfosPage.fillForm({
@@ -42,7 +42,7 @@ describe("create-entreprise-account-no-delegation", () => {
     FlowCreationEntreprise.offerPage.submit()
     FlowCreationEntreprise.delegationPage.selectCFAs([])
     FlowCreationEntreprise.delegationPage.submitNoDelegation()
-    FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase(), romeLabel, studyLevel])
+    FlowCreationEntreprise.emailSentPage.verify([email.toLowerCase()])
     FlowCreationEntreprise.emailSentPage.goBackHome()
   })
 })

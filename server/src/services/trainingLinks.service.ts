@@ -55,6 +55,21 @@ const getFormations = (
 
 const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalogue[]> => {
   let formations
+  let query: any = { $or: [] }
+
+  if (wish.cfd) {
+    query.$or.push({ cfd: wish.cfd })
+  }
+  if (wish.rncp) {
+    query.$or.push({ rncp_code: wish.rncp })
+  }
+  if (wish.mef) {
+    query.$or.push({ "bcn_mefs_10.mef10": wish.mef })
+  }
+
+  if (!query.$or.length) {
+    query = undefined
+  }
   // search by cle ME
   if (wish.cle_ministere_educatif) {
     formations = await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
@@ -71,21 +86,18 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
   if (!formations || !formations.length) {
     // search by uai_formateur
     if (wish.uai_formateur) {
-      formations = await getFormations({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
+      formations = await getFormations({ ...query, etablissement_formateur_uai: wish.uai_formateur })
     }
   }
 
   if (!formations || !formations.length) {
     // search by uai_formateur_responsable
     if (wish.uai_formateur_responsable) {
-      formations = await getFormations({
-        $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }],
-        etablissement_gestionnaire_uai: wish.uai_formateur_responsable,
-      })
+      formations = await getFormations({ ...query, etablissement_gestionnaire_uai: wish.uai_formateur_responsable })
     }
   }
 
-  return formations
+  return formations || []
 }
 
 const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
@@ -152,7 +164,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   const formations = await getTrainingsFromParameters(wish)
 
   // Handle single formation case
-  if (formations.length === 1) {
+  if (formations?.length === 1) {
     const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
     const [latitude, longitude] = lieu_formation_geo_coordonnees!.split(",")
     return buildEmploiUrl({ params: { romes: rome_codes as string[], lat: latitude, lon: longitude, radius: "60", ...utmData } })
@@ -162,7 +174,13 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   const postCode = wish.code_insee || wish.code_postal
   let wLat, wLon
   if (postCode) {
-    const responseApiAdresse = await apiGeoAdresse.search(postCode)
+    let responseApiAdresse = await apiGeoAdresse.search(postCode)
+
+    if (!responseApiAdresse || !responseApiAdresse.features.length) {
+      const generalPostCode = postCode.replace(/\d{3}$/, "000")
+      responseApiAdresse = await apiGeoAdresse.search(generalPostCode)
+    }
+
     if (responseApiAdresse && responseApiAdresse.features.length) {
       ;[wLon, wLat] = responseApiAdresse.features[0].geometry.coordinates
     }
@@ -174,7 +192,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
 
   // Build url based on formations and coordinates
-  if (formations.length) {
+  if (formations?.length) {
     let formation = formations[0]
     let lat, lon
     if (formations.length > 1 && wLat && wLon) {
@@ -198,7 +216,11 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     return buildEmploiUrl({ params: { ...(romes.length ? { romes } : {}), lat, lon, radius: "60", ...utmData } })
   } else {
     // No formations found, use user coordinates if available
-    return buildEmploiUrl({ params: { ...(romes.length ? { romes } : {}), lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
+    if (romes.length) {
+      return buildEmploiUrl({ params: { romes, lat: wLat ?? undefined, lon: wLon ?? undefined, radius: "60", ...utmData } })
+    } else {
+      return buildEmploiUrl({ baseUrl: config.publicUrl, params: { ...utmData } })
+    }
   }
 }
 

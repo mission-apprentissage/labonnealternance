@@ -5,7 +5,7 @@ import { create as createMigration, status as statusMigration, up as upMigration
 
 import { getLoggerWithContext } from "../common/logger"
 
-import anonymizeOldAppointments from "./anonymization/anonumizeAppointments"
+import anonymizeOldAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
@@ -21,6 +21,7 @@ import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFi
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
+import { pocRomeo } from "./franceTravail/pocRomeo"
 import { addJob, executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
@@ -234,6 +235,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CronsMap[job.name].handler()
     }
     switch (job.name) {
+      case "poc:romeo":
+        return pocRomeo()
       case "francetravail:token-offre":
         return generateFranceTravailAccess()
       case "recreate:indexes":

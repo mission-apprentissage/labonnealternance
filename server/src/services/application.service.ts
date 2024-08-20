@@ -162,7 +162,7 @@ export const sendApplication = async ({
       await s3Write("applications", getApplicationCvS3Filename(application), {
         Body: fileContent,
       })
-
+      await getDbCollection("applications").insertOne(application)
       return { result: "ok", message: "messages sent" }
     } catch (err) {
       console.error(err)
@@ -229,6 +229,7 @@ export const sendApplicationV2 = async ({
     await s3Write("applications", getApplicationCvS3Filename(application), {
       Body: fileContent,
     })
+    await getDbCollection("applications").insertOne(application)
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {
@@ -413,7 +414,6 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
     company_feedback: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
   }
-  await getDbCollection("applications").insertOne(application)
   return application
 }
 
@@ -447,7 +447,6 @@ const newApplicationToApplicationDocumentV2 = async (
     company_feedback: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
   }
-  await getDbCollection("applications").insertOne(application)
   return application
 }
 

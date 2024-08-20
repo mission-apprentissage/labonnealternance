@@ -7,6 +7,10 @@ export const FlowCreationEntreprise = {
       cy.get("input[name='establishment_siret']").click()
       cy.get("input[name='establishment_siret']").type(siret)
     },
+    searchAndSelectSiret(siret: string) {
+      FlowCreationEntreprise.siretPage.fillSiret(siret)
+      cy.contains(siret).click()
+    },
     submit() {
       cy.get("button[type='submit']").click({ timeout: 10000 })
     },
@@ -52,7 +56,7 @@ export const FlowCreationEntreprise = {
       jobDurationInMonths: number
     }) {
       const typedRomeLabel = romeLabel.substring(0, romeLabel.length - 10)
-      cy.intercept(`${Cypress.env("server")}/api/v1/metiers/intitule?label=${encodeURI(typedRomeLabel)}`).as("romeSearch")
+      cy.intercept(`${Cypress.env("server")}/api/v1/metiers/intitule?label=${encodeURIComponent(typedRomeLabel).replace(/%20/g, "+")}`).as("romeSearch")
 
       cy.get("[data-testid='offre-metier'] input").click()
       cy.get("[data-testid='offre-metier'] input").type(typedRomeLabel)

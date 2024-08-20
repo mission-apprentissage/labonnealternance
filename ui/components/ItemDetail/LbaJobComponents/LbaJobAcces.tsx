@@ -18,7 +18,7 @@ const LbaJobAcces = ({ job }) => {
   }
 
   return (
-    <AccordionItem onClick={onClick}>
+    <AccordionItem borderBottom="1px solid #E5E5E5" onClick={onClick}>
       {({ isExpanded }) => (
         <>
           <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">

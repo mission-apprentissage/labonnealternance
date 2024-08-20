@@ -28,7 +28,7 @@ export const FormCreatePageFooter = () => {
                 </Link>
                 . Il est développé par la{" "}
                 <Link
-                  href="https://mission-apprentissage.gitbook.io/general/"
+                  href="https://beta.gouv.fr/incubateurs/mission-apprentissage.html"
                   aria-label="Lien vers la mission interministérielle - nouvelle fenêtre"
                   isExternal
                   textDecoration="underline"
