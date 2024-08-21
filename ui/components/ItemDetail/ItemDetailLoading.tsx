@@ -73,7 +73,6 @@ const ItemDetailLoading = ({ item }) => {
 
   return (
     <Box pt="0">
-      {/* @ts-expect-error: TODO */}
       <Box {...resultListProperties}>
         <Box textAlign="center">
           <Image margin="auto" src={currentIllustration.src} aria-hidden={true} alt="" />
