@@ -99,7 +99,7 @@ export const TRAINING_RYTHM = {
 } as const
 
 export enum TRAINING_REMOTE_TYPE {
-  PRESENTIEL = "Présentiel",
-  TELETRAVAIL = "Télétravail",
-  HYBRID = "Hybride",
+  onsite = "onsite",
+  remote = "remote",
+  hybrid = "hybrid",
 }

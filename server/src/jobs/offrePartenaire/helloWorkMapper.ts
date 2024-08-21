@@ -34,10 +34,10 @@ export const ZHelloWorkJob = z
 export type IHelloWorkJob = z.output<typeof ZHelloWorkJob>
 
 const teletravailMapping: Record<string, TRAINING_REMOTE_TYPE> = {
-  Complet: TRAINING_REMOTE_TYPE.TELETRAVAIL,
-  Partiel: TRAINING_REMOTE_TYPE.HYBRID,
-  Pas_teletravail: TRAINING_REMOTE_TYPE.PRESENTIEL,
-  Occasionnel: TRAINING_REMOTE_TYPE.HYBRID,
+  Complet: TRAINING_REMOTE_TYPE.remote,
+  Partiel: TRAINING_REMOTE_TYPE.hybrid,
+  Pas_teletravail: TRAINING_REMOTE_TYPE.onsite,
+  Occasionnel: TRAINING_REMOTE_TYPE.hybrid,
 }
 
 const diplomeValues = Object.values(NIVEAUX_POUR_LBA)
