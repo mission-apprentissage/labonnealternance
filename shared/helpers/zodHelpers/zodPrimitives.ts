@@ -1,4 +1,5 @@
 import { capitalize } from "lodash-es"
+import { ZodEnum } from "zod"
 
 import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 import { validateSIRET } from "../../validators/siretValidator"
@@ -94,12 +95,19 @@ export const extensions = {
         content: z.array(z.string()).nullish(),
       })
       .strict(),
-  buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>) => {
+  buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>): ZodEnum<[EnumValue, ...EnumValue[]]> => {
     const values = Object.values(enumObject)
     if (!values.length) {
       throw new Error("inattendu : enum vide")
     }
     return z.enum([values[0], ...values.slice(1)])
+  },
+  buildEnumKeys: <EnumKey extends string>(enumObject: Record<EnumKey, string>): ZodEnum<[EnumKey, ...EnumKey[]]> => {
+    const keys = Object.keys(enumObject) as EnumKey[]
+    if (!keys.length) {
+      throw new Error("inattendu : enum vide")
+    }
+    return z.enum([keys[0], ...keys.slice(1)])
   },
   romeCode: () => z.string().trim().regex(CODE_ROME_REGEX, "Code ROME invalide"),
   romeCodeArray: () =>

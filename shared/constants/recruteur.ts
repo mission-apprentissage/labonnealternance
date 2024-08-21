@@ -68,6 +68,16 @@ export const NIVEAUX_POUR_LBA = {
   "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveau (Bac+5)",
 } as const
 
+export const NIVEAU_DIPLOME_LABEL = {
+  "3": NIVEAUX_POUR_LBA["3 (CAP...)"],
+  "4": NIVEAUX_POUR_LBA["4 (BAC...)"],
+  "5": NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"],
+  "6": NIVEAUX_POUR_LBA["6 (Licence, BUT...)"],
+  "7": NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"],
+} as const
+
+export type INiveauDiplomeEuropeen = keyof typeof NIVEAU_DIPLOME_LABEL
+
 // Note: notre moteur de recherche demande le niveau visé ce qui matche avec les offres lba.
 // en revanche pour l'api offres de France Travail le filtre sur le niveau est le niveau
 // requis en entrée.

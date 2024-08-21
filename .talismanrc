@@ -119,8 +119,12 @@ fileignoreconfig:
   checksum: caa1131ffe2f23d62ba2d4370173cce74ffa05a17330c8d342c41c4b971c6f9f
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
+- filename: shared/helpers/zodHelpers/zodPrimitives.ts
+  checksum: fd2a7a0fcaedc1305cf36021a2c4051b73adead6fd3944a4026ba875cd135a57
 - filename: shared/models/applications.model.ts
   checksum: 0db1feff739fda6ff77b2a460e214c03bbeb0451c2e4cf44556f5314c1896bd7
+- filename: shared/models/jobsPartners.model.ts
+  checksum: 5d40aec2ffb3dfca99d000746aa856addcc75774dfbc46191d513b90e4383101
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts

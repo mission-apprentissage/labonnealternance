@@ -60,7 +60,10 @@ describe("helloWorkJobToJobsPartners", () => {
       contract_duration: 12,
       offer_title: "Gestionnaire Paie et ADP - Alternance H/F",
       offer_description: "ceci est une longue description qui a du sens et qui va passer la limite de 30 caractères",
-      offer_diploma_level: { label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)" },
+      offer_diploma_level: {
+        european: "6",
+        label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+      },
       offer_desired_skills: ["profile"],
       offer_access_conditions: null,
       offer_to_be_acquired_skills: null,

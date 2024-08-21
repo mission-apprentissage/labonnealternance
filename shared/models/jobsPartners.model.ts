@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
@@ -53,7 +53,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   offer_diploma_level: z
     .object({
-      // european: extensions.buildEnum(NIVEAUX_POUR_LBA).nullable().describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
+      european: extensions.buildEnumKeys(NIVEAU_DIPLOME_LABEL).nullable().describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
       label: z.string().nullable().describe("Libellé du niveau de diplome"),
     })
     .nullable(),

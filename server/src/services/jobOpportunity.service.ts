@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { IGeoPoint, ILbaCompany, IRecruiter, parseEnum } from "shared"
+import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, parseEnum } from "shared"
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { IJobsPartnersRecruiterApi, IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL, IJobsPartnersOfferApi, IJobsOpportunityResponse } from "shared/models/jobsPartners.model"
@@ -239,6 +239,43 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
   )
 }
 
+function getDiplomaEuropeanLevel(job: IJob): IJobsPartnersOfferApi["offer_diploma_level"] {
+  const label = parseEnum(NIVEAUX_POUR_LBA, job.job_level_label)
+
+  switch (label) {
+    case NIVEAUX_POUR_LBA["3 (CAP...)"]:
+      return {
+        european: "3",
+        label,
+      }
+    case NIVEAUX_POUR_LBA["4 (BAC...)"]:
+      return {
+        european: "4",
+        label,
+      }
+    case NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"]:
+      return {
+        european: "5",
+        label,
+      }
+    case NIVEAUX_POUR_LBA["6 (Licence, BUT...)"]:
+      return {
+        european: "4",
+        label,
+      }
+    case NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"]:
+      return {
+        european: "7",
+        label,
+      }
+    case NIVEAUX_POUR_LBA.INDIFFERENT:
+    case null:
+      return null
+    default:
+      assertUnreachable(label)
+  }
+}
+
 export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IRecruiter[]): IJobsPartnersOfferApi[] => {
   return offresEmploiLba.flatMap((offreEmploiLba): IJobsPartnersOfferApi[] =>
     offreEmploiLba.jobs.map(
@@ -253,12 +290,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IRecrui
         offer_title: job.rome_appellation_label!,
         offer_rome_code: job.rome_code,
         offer_description: job.rome_detail!.definition!,
-        offer_diploma_level:
-          job.job_level_label === NIVEAUX_POUR_LBA.INDIFFERENT
-            ? null
-            : {
-                label: parseEnum(NIVEAUX_POUR_LBA, job.job_level_label),
-              },
+        offer_diploma_level: getDiplomaEuropeanLevel(job),
         offer_desired_skills: job.rome_detail!.competences.savoir_etre_professionnel!.map((x) => x.libelle),
         offer_to_be_acquired_skills: job.rome_detail!.competences.savoir_faire!.flatMap((x) => x.items.map((y) => `${x.libelle}: ${y.libelle}`)),
         offer_access_conditions: job.rome_detail!.acces_metier.split("\n"),
