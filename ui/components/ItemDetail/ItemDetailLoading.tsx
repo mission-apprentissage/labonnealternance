@@ -58,7 +58,6 @@ const ItemDetailLoading = ({ item }) => {
 
     return () => {
       if (interval) {
-        console.log("clearing")
         clearInterval(interval)
       }
     }
@@ -79,7 +78,7 @@ const ItemDetailLoading = ({ item }) => {
           <Text mt={1}>{currentIllustration.text}</Text>
 
           <Box maxWidth="400px" mx="auto" my={4}>
-            <Progress color={item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "cyan" : "orange"} isIndeterminate size="sm" borderRadius="20px" />
+            <Progress colorScheme={item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? "cyan" : "orange"} isIndeterminate size="sm" borderRadius="20px" />
           </Box>
 
           <Box padding="6" boxShadow="lg" bg="white">
