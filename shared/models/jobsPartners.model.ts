@@ -16,7 +16,7 @@ export enum JOBPARTNERS_LABEL {
 }
 
 const ZJobsPartnersApply = z.object({
-  apply_url: z.string().nullable().describe("URL pour candidater"),
+  apply_url: z.string().url().nullable().describe("URL pour candidater"),
   apply_email: z.string().email().nullable().describe("Email de contact"),
   apply_phone: extensions.telephone().nullable().describe("Téléphone de contact"),
 })
@@ -91,7 +91,7 @@ export const ZJobsPartnersPostApiBody = z
     contract_duration: z.number().min(6).max(36),
     contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).optional(),
     offer_title: z.string(),
-    offer_description: z.string().min(30, "Description should be at least 30 characters"),
+    offer_description: z.string().min(30, "Job description should be at least 30 characters"),
     offer_diploma_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA),
     offer_desired_skills: z.union([z.array(z.any()), z.string()]).optional(),
     offer_acquired_skills: z.union([z.array(z.any()), z.string()]).optional(),

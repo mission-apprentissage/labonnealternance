@@ -95,6 +95,7 @@ export default (server: Server) => {
       let romeCode = offer_rome_code ?? null
 
       const siretInformation = await getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE" })
+
       if ("error" in siretInformation) {
         return res.status(400).send(siretInformation)
       }
@@ -102,9 +103,9 @@ export default (server: Server) => {
         const { latitude, longitude } = await getGeoCoordinates(workplace_address)
         if (latitude && longitude) {
           geopoint = { type: "Point", coordinates: [longitude, latitude] }
-        } else {
-          geopoint = siretInformation.geopoint
         }
+      } else {
+        geopoint = siretInformation.geopoint
       }
       if (!geopoint) {
         return res.status(400).send({
