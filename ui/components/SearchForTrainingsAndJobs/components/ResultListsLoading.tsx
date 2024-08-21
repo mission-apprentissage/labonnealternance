@@ -1,7 +1,5 @@
 import { Box, Image, Progress, Text } from "@chakra-ui/react"
-import React, { /*useContext,*/ useEffect, useState } from "react"
-
-// import { ScopeContext } from "../../../context/ScopeContext"
+import React, { useRef, useState } from "react"
 
 enum LOADING_ILLUSTRATION_TYPES {
   PARTNER = "PARTNER",
@@ -9,22 +7,18 @@ enum LOADING_ILLUSTRATION_TYPES {
   JOB = "JOB",
 }
 
-const ResultListsLoadingIllustration = ({ isTrainingSearchLoading, isJobSearchLoading, isPartnerJobSearchLoading }) => {
-  // console.log("inside ? ", isTrainingSearchLoading, isJobSearchLoading, isPartnerJobSearchLoading)
-
-  // const scopeContext = useContext(ScopeContext)
+const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, isPartnerJobSearchLoading }) => {
+  const isLoading = isTrainingSearchLoading || isJobSearchLoading || isPartnerJobSearchLoading
 
   const getNextLoadingIllustration = (currentIllustrationIndex: number | null) => {
-    //if (scopeContext.isJob && (isJobSearchLoading || isPartnerJobSearchLoading)) {
-    //scopeContext.isTraining && isTrainingSearchLoading
     const initialIndex = currentIllustrationIndex ?? Math.floor(Math.random() * loadingIllustrations.length)
-
     const filteredIndexes = loadingIllustrations
       .map((item, index) => {
         if (
-          (item.type === LOADING_ILLUSTRATION_TYPES.PARTNER && isPartnerJobSearchLoading) ||
-          (item.type === LOADING_ILLUSTRATION_TYPES.JOB && isJobSearchLoading) ||
-          (item.type === LOADING_ILLUSTRATION_TYPES.FORMATION && isTrainingSearchLoading)
+          ((item.type === LOADING_ILLUSTRATION_TYPES.PARTNER && isPartnerJobSearchLoading) ||
+            (item.type === LOADING_ILLUSTRATION_TYPES.JOB && isJobSearchLoading) ||
+            (item.type === LOADING_ILLUSTRATION_TYPES.FORMATION && isTrainingSearchLoading)) &&
+          index !== initialIndex
         )
           return index
         else {
@@ -67,59 +61,38 @@ const ResultListsLoadingIllustration = ({ isTrainingSearchLoading, isJobSearchLo
     },
   ]
 
-  const [currentIllustrationIndex, setCurrentIllustrationIndex] = useState(0)
+  const [currentIllustrationIndex, setCurrentIllustrationIndex] = useState(isJobSearchLoading ? 0 : 2)
 
-  const isLoading = isTrainingSearchLoading || isJobSearchLoading || isPartnerJobSearchLoading
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-
-    // console.log("là ? ? ", isLoading, isTrainingSearchLoading, isJobSearchLoading, isPartnerJobSearchLoading, currentIllustrationIndex, "interval = ", interval)
-
-    if (isLoading) {
-      // Start changing the illustration every second
-      interval = setInterval(() => {
+  const startInterval = () => {
+    if (typeof window !== "undefined" && isLoading && intervalRef.current === null) {
+      intervalRef.current = setInterval(() => {
         const nextIndex = getNextLoadingIllustration(currentIllustrationIndex)
 
-        console.log("chicha ? ", nextIndex)
-
         setCurrentIllustrationIndex(nextIndex)
-      }, 500)
-    } else if (!isLoading && interval) {
-      // Clear the interval when loading is done
-      // console.log("ouf ? ", interval)
-      clearInterval(interval)
+      }, 1000)
     }
+  }
 
-    return () => {
-      // console.log("ZTHERE", "interval=", interval)
-      if (interval) {
-        clearInterval(interval)
-      }
+  const stopInterval = () => {
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
     }
-  }, [isTrainingSearchLoading, isJobSearchLoading, isPartnerJobSearchLoading])
+  }
 
-  return isLoading && currentIllustrationIndex !== null ? (
-    <>
-      <Image margin="auto" src={loadingIllustrations[currentIllustrationIndex].src} aria-hidden={true} alt="" />
-      <Text>{loadingIllustrations[currentIllustrationIndex].text}</Text>
-    </>
-  ) : (
-    <></>
-  )
-}
+  if (!isLoading && intervalRef.current !== null) {
+    stopInterval()
+  }
 
-const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, isPartnerJobSearchLoading }) => {
-  const isLoading = isTrainingSearchLoading || isJobSearchLoading || isPartnerJobSearchLoading
-
-  // console.log("ici ? ", isLoading, isTrainingSearchLoading, isJobSearchLoading, isPartnerJobSearchLoading)
+  if (isLoading && intervalRef.current === null) {
+    startInterval()
+  }
 
   if (jobSearchError && partnerJobSearchError && trainingSearchError) {
     return <></>
   }
-
-  //if (scopeContext.isJob && (isJobSearchLoading || isPartnerJobSearchLoading)) {
-  //scopeContext.isTraining && isTrainingSearchLoading
 
   const resultListProperties = {
     textAlign: "left",
@@ -138,11 +111,8 @@ const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSea
       <Box {...resultListProperties}>
         {isLoading ? (
           <Box textAlign="center">
-            <ResultListsLoadingIllustration
-              isTrainingSearchLoading={isTrainingSearchLoading}
-              isJobSearchLoading={isJobSearchLoading}
-              isPartnerJobSearchLoading={isPartnerJobSearchLoading}
-            />
+            <Image margin="auto" src={loadingIllustrations[currentIllustrationIndex].src} aria-hidden={true} alt="" />
+            <Text>{loadingIllustrations[currentIllustrationIndex].text}</Text>
             <Box maxWidth="400px" margin="auto">
               <Progress width="80%" isIndeterminate size="sm" borderRadius="20px" />
             </Box>
