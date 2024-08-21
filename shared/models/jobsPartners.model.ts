@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
+import { NIVEAU_DIPLOME_LABEL, OPCOS, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
@@ -27,7 +27,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   }),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
   workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
-  workplace_opco: z.string().nullable().describe("Nom de l'OPCO"), // enum ?
+  workplace_opco: extensions.buildEnum(OPCOS).nullable().describe("Nom de l'OPCO"), // enum ?
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 

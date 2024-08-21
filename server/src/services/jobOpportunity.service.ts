@@ -2,7 +2,14 @@ import Boom from "boom"
 import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, parseEnum } from "shared"
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
-import { IJobsPartnersRecruiterApi, IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL, IJobsPartnersOfferApi, IJobsOpportunityResponse } from "shared/models/jobsPartners.model"
+import {
+  IJobsPartnersRecruiterApi,
+  IJobsPartnersOfferPrivate,
+  JOBPARTNERS_LABEL,
+  IJobsPartnersOfferApi,
+  IJobsOpportunityResponse,
+  ZJobsPartnersRecruiterApi,
+} from "shared/models/jobsPartners.model"
 import { IRouteSchema } from "shared/routes/common.routes"
 import { IJobOpportunityRncp, IJobOpportunityRome } from "shared/routes/jobOpportunity.routes"
 
@@ -216,6 +223,16 @@ export const getJobsPartnersFromDB = async ({ radius = 10, romes, opco, latitude
 
 const convertToGeopoint = ({ longitude, latitude }: { longitude: number; latitude: number }): IGeoPoint => ({ type: "Point", coordinates: [longitude, latitude] })
 
+function convertOpco(recruteurLba: ILbaCompany | IRecruiter): IJobsPartnersRecruiterApi["workplace_opco"] {
+  const r = ZJobsPartnersRecruiterApi.shape.workplace_opco.safeParse(recruteurLba.opco)
+  if (r.success) {
+    return r.data
+  }
+
+  // Currently in database we have things such as "Sélectionnez un OPCO" or "Opco multiple"
+  return null
+}
+
 export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCompany[]): IJobsPartnersRecruiterApi[] => {
   return recruteursLba.map(
     (recruteurLba): IJobsPartnersRecruiterApi => ({
@@ -230,7 +247,7 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
       },
       workplace_geopoint: recruteurLba.geopoint!,
       workplace_idcc: null,
-      workplace_opco: recruteurLba.opco,
+      workplace_opco: convertOpco(recruteurLba),
       workplace_naf_code: recruteurLba.naf_code,
       workplace_naf_label: recruteurLba.naf_label,
       apply_url: `${config.publicUrl}/recherche-apprentissage?type=lba&itemId=${recruteurLba.siret}`,
@@ -308,7 +325,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IRecrui
         },
         workplace_geopoint: offreEmploiLba.geopoint!,
         workplace_idcc: Number(offreEmploiLba.idcc) ?? null,
-        workplace_opco: offreEmploiLba.opco!,
+        workplace_opco: convertOpco(offreEmploiLba),
         workplace_naf_code: offreEmploiLba.naf_code!,
         workplace_naf_label: offreEmploiLba.naf_label!,
 
