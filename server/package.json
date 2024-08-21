@@ -107,6 +107,7 @@
     "@types/supertest": "^2.0.13",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "eslint": "^8.50.0",
+    "nock": "beta",
     "supertest": "^6.3.3",
     "tsup": "^7.2.0",
     "typescript": "^5.4.5",
