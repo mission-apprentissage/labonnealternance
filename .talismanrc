@@ -153,6 +153,8 @@ fileignoreconfig:
   checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
   checksum: e61fa8a7bca174c70714ce633165436127f89e9fd8cf9005af681ca870465806
+- filename: ui/components/ItemDetail/TrainingDetail.tsx
+  checksum: 01556e58758449693529955a0de80ba4a2c243bfb8a41d1829df0daeca83e456
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx
   checksum: 9db6a64f202979b07251fd40445961d8db03bdb18b6668f9813bdbdf0d56aa65
 - filename: ui/components/Ressources/conseilsEtAstuces.tsx

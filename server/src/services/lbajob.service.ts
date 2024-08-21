@@ -317,6 +317,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
         latitude,
         longitude,
         city: getCity(recruiter),
+        zipCode: recruiter?.address_detail?.code_postal,
       },
       company: {
         // si mandataire contient les données du CFA

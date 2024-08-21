@@ -1,5 +1,10 @@
 import { addEmailToBlacklist, processApplicationHardbounceEvent, removeEmailFromLbaCompanies } from "@/services/application.service"
-import { isHardbounceEventFromAppointment, processAppointmentToApplicantWebhookEvent, processAppointmentToCfaWebhookEvent } from "@/services/appointment.service"
+import {
+  isHardbounceEventFromAppointmentApplicant,
+  isHardbounceEventFromAppointmentCfa,
+  processAppointmentToApplicantWebhookEvent,
+  processAppointmentToCfaWebhookEvent,
+} from "@/services/appointment.service"
 
 import { BrevoEventStatus } from "./brevo.service"
 import { disableEligibleTraininForAppointmentWithEmail } from "./eligibleTrainingsForAppointment.service"
@@ -27,8 +32,12 @@ export const processHardBounceWebhookEvent = async (payload) => {
       origin = "candidature_spontanee"
     }
 
-    if (await isHardbounceEventFromAppointment(payload)) {
+    if (await isHardbounceEventFromAppointmentCfa(payload)) {
       origin = "prise_de_rdv"
+    }
+
+    if (await isHardbounceEventFromAppointmentApplicant(payload)) {
+      origin = "candidat_prise_de_rdv"
     }
 
     if (await isHardbounceEventFromEtablissement(payload)) {
