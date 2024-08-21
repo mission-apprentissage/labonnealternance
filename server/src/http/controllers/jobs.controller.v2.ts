@@ -10,7 +10,6 @@ import { getFileSignedURL } from "../../common/utils/awsUtils"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
-import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
@@ -272,7 +271,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Job does not exists")
       }
 
-      if (job.job_status === POURVUE) {
+      if (job.job_status === JOB_STATUS.POURVUE) {
         throw Boom.badRequest("Job is already provided")
       }
 
@@ -297,7 +296,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Job does not exists")
       }
 
-      if (job.job_status === ANNULEE) {
+      if (job.job_status === JOB_STATUS.ANNULEE) {
         throw Boom.badRequest("Job is already canceled")
       }
 
@@ -326,7 +325,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Job is already extended up to a month")
       }
 
-      if (job.job_status !== ACTIVE) {
+      if (job.job_status !== JOB_STATUS.ACTIVE) {
         throw Boom.badRequest("Job cannot be extended as it is not active")
       }
 

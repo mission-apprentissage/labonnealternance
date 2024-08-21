@@ -20,17 +20,17 @@ export enum VALIDATION_UTILISATEUR {
   AUTO = "AUTOMATIQUE",
   MANUAL = "MANUELLE",
 }
-export const ENTREPRISE_DELEGATION = "ENTREPRISE_DELEGATION"
+export const ENTREPRISE_DELEGATION = "ENTREPRISE_DELEGATION" as const
 export enum ETAT_UTILISATEUR {
   VALIDE = "VALIDÉ",
   DESACTIVE = "DESACTIVÉ",
   ATTENTE = "EN ATTENTE DE VALIDATION",
   ERROR = "ERROR",
 }
-export const ENTREPRISE = "ENTREPRISE"
-export const CFA = "CFA"
-export const ADMIN = "ADMIN"
-export const OPCO = "OPCO"
+export const ENTREPRISE = "ENTREPRISE" as const
+export const CFA = "CFA" as const
+export const ADMIN = "ADMIN" as const
+export const OPCO = "OPCO" as const
 
 export const AUTHTYPE = {
   OPCO: "OPCO",
@@ -43,7 +43,7 @@ export const REGEX = {
   SIRET: /^([0-9]{9}|[0-9]{14})$/,
   GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,
   TELEPHONE: /^[0-9]{10}$/,
-}
+} as const
 export enum OPCOS {
   AFDAS = "AFDAS",
   AKTO = "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
@@ -68,17 +68,21 @@ export const NIVEAUX_POUR_LBA = {
   "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveau (Bac+5)",
 } as const
 
+// Note: notre moteur de recherche demande le niveau visé ce qui matche avec les offres lba.
+// en revanche pour l'api offres de France Travail le filtre sur le niveau est le niveau
+// requis en entrée.
 export const NIVEAUX_POUR_OFFRES_PE = {
   "4 (BAC...)": "NV5",
   "5 (BTS, DEUST...)": "NV4",
   "6 (Licence, BUT...)": "NV3",
   "7 (Master, titre ingénieur...)": "NV2",
-}
+} as const
 
 export const UNSUBSCRIBE_EMAIL_ERRORS = {
   NON_RECONNU: "NON_RECONNU",
   ETABLISSEMENTS_MULTIPLES: "ETABLISSEMENTS_MULTIPLES",
-}
+  WRONG_PARAMETERS: "WRONG_PARAMETERS",
+} as const
 
 export const TRAINING_CONTRACT_TYPE = {
   APPRENTISSAGE: "Apprentissage",
@@ -92,7 +96,7 @@ export const TRAINING_RYTHM = {
   "1S1S": "1 semaine / 1 semaine",
   "2S3S": "2 semaines / 3 semaines",
   "6S6S": "6 semaines / 6 semaines",
-}
+} as const
 
 export enum TRAINING_REMOTE_TYPE {
   PRESENTIEL = "Présentiel",

@@ -1,5 +1,6 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
+import { ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
@@ -16,7 +17,6 @@ import { activateUser, createSuperUser, getUserWithAccountByEmail, validateUserW
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import config from "../../config"
-import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
 import {
   activateEntrepriseRecruiterForTheFirstTime,
   deleteFormulaire,
