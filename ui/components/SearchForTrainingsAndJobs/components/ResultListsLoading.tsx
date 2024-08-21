@@ -1,5 +1,5 @@
 import { Box, Image, Progress, Text } from "@chakra-ui/react"
-import React, { useRef, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 enum LOADING_ILLUSTRATION_TYPES {
   PARTNER = "PARTNER",
@@ -65,59 +65,41 @@ const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSea
 
   const [currentIllustrationIndex, setCurrentIllustrationIndex] = useState(isJobSearchLoading ? 0 : 2)
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = getNextLoadingIllustration(currentIllustrationIndex)
+      setCurrentIllustrationIndex(nextIndex)
+    }, 1000)
 
-  const startInterval = () => {
-    // typeof window... ensures that interval is not created server side
-    if (typeof window !== "undefined" && isLoading && intervalRef.current === null) {
-      intervalRef.current = setInterval(() => {
-        const nextIndex = getNextLoadingIllustration(currentIllustrationIndex)
-
-        setCurrentIllustrationIndex(nextIndex)
-      }, 1000)
+    if (!isLoading) {
+      clearInterval(interval)
     }
-  }
 
-  const stopInterval = () => {
-    if (intervalRef.current !== null) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
+    return () => {
+      clearInterval(interval)
     }
-  }
-
-  if (!isLoading && intervalRef.current !== null) {
-    stopInterval()
-  }
-
-  if (isLoading && intervalRef.current === null) {
-    startInterval()
-  }
+  }, [isLoading])
 
   if (jobSearchError && partnerJobSearchError && trainingSearchError) {
     return <></>
   }
 
   const resultListProperties = {
-    textAlign: "left",
-    marginLeft: "10px",
-    color: "grey.650",
-    fontWeight: 600,
-    fontSize: "22px",
-    marginBottom: "0px",
-    padding: "0 20px",
+    color: "grey.425",
+    fontWeight: 500,
+    fontSize: "18px",
     mt: [0, 0, 2],
   }
 
   return (
     <Box pt="0">
-      {/* @ts-expect-error: TODO */}
       <Box {...resultListProperties}>
         {isLoading ? (
           <Box textAlign="center">
             <Image margin="auto" src={loadingIllustrations[currentIllustrationIndex].src} aria-hidden={true} alt="" />
-            <Text>{loadingIllustrations[currentIllustrationIndex].text}</Text>
-            <Box maxWidth="400px" margin="auto">
-              <Progress width="80%" isIndeterminate size="sm" borderRadius="20px" />
+            <Text mt={1}>{loadingIllustrations[currentIllustrationIndex].text}</Text>
+            <Box maxWidth="400px" mx="auto" my={4}>
+              <Progress isIndeterminate size="sm" borderRadius="20px" />
             </Box>
           </Box>
         ) : (
