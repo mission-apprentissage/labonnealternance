@@ -3,7 +3,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
-import { ZJobsApiResponseV2 } from "../models/jobsPartners.model"
+import { ZJobsOpportunityResponse } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -405,7 +405,7 @@ export const zJobsRoutesV2 = {
       path: "/jobs/rome",
       querystring: ZJobOpportunityRome,
       response: {
-        "200": ZJobsApiResponseV2,
+        "200": ZJobsOpportunityResponse,
       },
       securityScheme: {
         auth: "api-apprentissage",
@@ -418,7 +418,7 @@ export const zJobsRoutesV2 = {
       path: "/jobs/rncp",
       querystring: ZJobOpportunityRncp,
       response: {
-        "200": ZJobsApiResponseV2,
+        "200": ZJobsOpportunityResponse,
       },
       securityScheme: {
         auth: "api-apprentissage",

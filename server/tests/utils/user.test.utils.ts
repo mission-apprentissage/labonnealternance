@@ -1,14 +1,27 @@
 import { ObjectId } from "mongodb"
 import { OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IEmailBlacklist, IJob, ILbaCompany, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany } from "shared/models"
+import {
+  IApplication,
+  ICredential,
+  IEmailBlacklist,
+  IJob,
+  ILbaCompany,
+  IRecruiter,
+  JOB_STATUS,
+  ZApplication,
+  ZCredential,
+  ZEmailBlacklist,
+  ZLbaCompany,
+  ZPointGeometry,
+} from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartners, ZJobsPartners } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
-import { ZodArray, ZodObject, ZodString, ZodTypeAny } from "zod"
+import { ZodArray, ZodObject, ZodString, ZodTypeAny, z } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -39,7 +52,7 @@ function getFixture() {
       filter: ({ context }) => context.path.at(-1) === "geopoint",
       output: ({ transform }) => ({
         type: "Point",
-        coordinates: [transform.utils.random.float(), transform.utils.random.float()],
+        coordinates: [transform.utils.random.float({ min: -180, max: 180 }), transform.utils.random.float({ min: -90, max: 90 })],
       }),
     }),
     Generator({
@@ -68,14 +81,21 @@ function getFixture() {
           "77147689105960",
         ]),
     }),
+    Generator({
+      schema: ZPointGeometry,
+      output: ({ transform }) => ({
+        type: "Point",
+        coordinates: [transform.utils.random.float({ min: -180, max: 180 }), transform.utils.random.float({ min: -90, max: 90 })],
+      }),
+    }),
   ])
 }
 
-export const saveDbEntity = async <T>(schema: ZodTypeAny, saveEntity: (item: T) => Promise<any>, data: Partial<T>) => {
-  const entity = {
+export const saveDbEntity = async <T extends ZodTypeAny>(schema: T, saveEntity: (item: z.output<T>) => Promise<any>, data: Partial<z.input<T>>): Promise<z.output<T>> => {
+  const entity = schema.parse({
     ...getFixture().fromSchema(schema),
     ...data,
-  }
+  })
   await saveEntity(entity)
   return entity
 }
@@ -234,11 +254,11 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   return u
 }
 
-export async function saveJobPartnerTest(data: Partial<IJobsPartners> = {}) {
-  return await saveDbEntity(ZJobsPartners, (item) => getDbCollection("jobs_partners").insertOne(item), data)
+export async function saveJobPartnerTest(data: Partial<IJobsPartnersOfferPrivate> = {}): Promise<IJobsPartnersOfferPrivate> {
+  return await saveDbEntity(ZJobsPartnersOfferPrivate, (item) => getDbCollection("jobs_partners").insertOne(item), data)
 }
 
-export async function createRecruteurLbaTest(data: Partial<ILbaCompany>) {
+export async function createRecruteurLbaTest(data: Partial<ILbaCompany>): Promise<ILbaCompany> {
   return await saveDbEntity(ZLbaCompany, (item) => getDbCollection("recruteurslba").insertOne(item), data)
 }
 

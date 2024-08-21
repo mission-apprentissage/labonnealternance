@@ -54,7 +54,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/jobs.controller.v2.test.ts
-  checksum: a558b5537b35ddac94a10c9efb306d72877d33fc9ea7ab3377f04af0856fedc0
+  checksum: 925e11dd9837a4d92245b9d2a5a1e62e4370d65c7b996af53ba8e2469767ab29
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -201,5 +201,6 @@ allowed_patterns:
 - APIKey
 - versionKey
 - '@apprentissage.beta.gouv.fr'
+- '@mail.com'
 - adminusersview
 version: "1.0"
