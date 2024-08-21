@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
 - filename: .infra/.env_server
-  checksum: 021131f33ad15ebadf0f43ad2cd217bec7d0dd928f2ef035964b336ab2645688
+  checksum: a3a8b9007e4c082a14b3d09ed8386138db9277ea11ca921a989ba87d0ea61f47
 - filename: .infra/env.ini
   checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
@@ -30,7 +30,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 62838b99c1f0662b486d4ffeeebaa771406a50cbb6993f73f658705a4ae823d7
+  checksum: 91d0fc33bf31fd738911d83194e8a749e3c5b0e4ce14254560cf6d08b0cb3fb5
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/pages/FlowAdminPage.ts
