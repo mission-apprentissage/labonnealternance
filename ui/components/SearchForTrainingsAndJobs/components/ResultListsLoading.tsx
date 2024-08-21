@@ -12,7 +12,9 @@ const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSea
 
   const getNextLoadingIllustration = (currentIllustrationIndex: number | null) => {
     const initialIndex = currentIllustrationIndex ?? Math.floor(Math.random() * loadingIllustrations.length)
-    const filteredIndexes = loadingIllustrations
+
+    // filtered relevant illustrations
+    const filteredIllustrationIndexes = loadingIllustrations
       .map((item, index) => {
         if (
           ((item.type === LOADING_ILLUSTRATION_TYPES.PARTNER && isPartnerJobSearchLoading) ||
@@ -27,15 +29,15 @@ const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSea
       })
       .filter((index) => index !== -1)
 
-    if (filteredIndexes.length === 0) {
+    if (filteredIllustrationIndexes.length === 0) {
       return initialIndex
     }
 
     // Select a random index from the filtered indexes
-    const randomIndex = Math.floor(Math.random() * filteredIndexes.length)
+    const randomIndex = Math.floor(Math.random() * filteredIllustrationIndexes.length)
 
     // Return the original array's index corresponding to the random filtered index
-    return filteredIndexes[randomIndex]
+    return filteredIllustrationIndexes[randomIndex]
   }
 
   const loadingIllustrations: { type: LOADING_ILLUSTRATION_TYPES; src: string; text: string }[] = [
@@ -66,6 +68,7 @@ const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSea
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const startInterval = () => {
+    // typeof window... ensures that interval is not created server side
     if (typeof window !== "undefined" && isLoading && intervalRef.current === null) {
       intervalRef.current = setInterval(() => {
         const nextIndex = getNextLoadingIllustration(currentIllustrationIndex)
