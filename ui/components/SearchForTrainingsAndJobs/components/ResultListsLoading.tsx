@@ -59,7 +59,7 @@ const ResultListsLoading = ({ jobSearchError, partnerJobSearchError, trainingSea
     {
       type: LOADING_ILLUSTRATION_TYPES.FORMATION,
       src: "/images/loading/search_qualiopi.svg",
-      text: "Sélection des formations Qualiopi",
+      text: "Sélection des formations",
     },
   ]
 
