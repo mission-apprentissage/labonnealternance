@@ -14750,7 +14750,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nock@npm:^14.0.0-beta.11":
+"nock@npm:^14.0.0-beta.11, nock@npm:beta":
   version: 14.0.0-beta.11
   resolution: "nock@npm:14.0.0-beta.11"
   dependencies:
@@ -18263,7 +18263,7 @@ __metadata:
     mjml: ^4.14.1
     mongodb: ^6.7.0
     netmask: ^2.0.2
-    nock: ^14.0.0-beta.11
+    nock: beta
     nodemailer: ^6.9.5
     nodemailer-html-to-text: ^3.2.0
     oleoduc: ^0.7.0

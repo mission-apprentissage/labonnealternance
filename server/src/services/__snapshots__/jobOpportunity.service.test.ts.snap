@@ -24,6 +24,7 @@ exports[`findJobsOpportunityResponseFromRome > should execute query 1`] = `
     "offer_rome_code": [
       "M1602",
     ],
+    "offer_status": "Active",
     "offer_title": undefined,
     "offer_to_be_acquired_skills": [
       "Production, Fabrication: Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
@@ -68,6 +69,7 @@ exports[`findJobsOpportunityResponseFromRome > should execute query 1`] = `
     "offer_rome_code": [
       "M1602",
     ],
+    "offer_status": "Active",
     "offer_title": "Super offre d'apprentissage",
     "offer_to_be_acquired_skills": null,
     "partner": "France Travail",
@@ -113,6 +115,7 @@ exports[`findJobsOpportunityResponseFromRome > should execute query 1`] = `
     "offer_rome_code": [
       "M1602",
     ],
+    "offer_status": "Active",
     "offer_title": "Une super offre d'alternance",
     "offer_to_be_acquired_skills": null,
     "partner": "Hellowork",

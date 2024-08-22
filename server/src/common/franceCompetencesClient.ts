@@ -1,5 +1,5 @@
 import axios from "axios"
-import { OPCOS } from "shared/constants/recruteur"
+import { IOpco, OPCOS } from "shared/constants/recruteur"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { assertUnreachable, parseEnum } from "shared/utils"
 
@@ -42,7 +42,7 @@ const ZOpcoResponse = z.union([
   }),
 ])
 
-const mappingOpcoNames: Record<string, OPCOS> = {
+const mappingOpcoNames: Record<string, IOpco> = {
   AKTO: OPCOS.AKTO,
   "OPCO EP": OPCOS.EP,
   "UNIFORMATION COHESION SOCIALE": OPCOS.UNIFORMATION,
@@ -50,16 +50,16 @@ const mappingOpcoNames: Record<string, OPCOS> = {
   OPCO2I: OPCOS.OPCO2I,
 }
 
-export const FCOpcoToOpcoEnum = (fcOpco: string): OPCOS => {
+export const FCOpcoToOpcoEnum = (fcOpco: string): IOpco => {
   const parsedOpco = parseEnum(OPCOS, fcOpco)
-  const finalOpco: OPCOS | undefined = mappingOpcoNames[fcOpco] ?? parsedOpco ?? undefined
+  const finalOpco: IOpco | undefined = mappingOpcoNames[fcOpco] ?? parsedOpco ?? undefined
   if (!finalOpco) {
     throw new Error(`opco inconnu: ${fcOpco}`)
   }
   return finalOpco
 }
 
-export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS | null> => {
+export const FCGetOpcoInfos = async (siret: string): Promise<IOpco | null> => {
   try {
     const response = await axios.get(`${baseUrl}/siropartfc/${encodeURIComponent(siret)}`, {
       headers: {

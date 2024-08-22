@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { Filter } from "mongodb"
-import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, parseEnum } from "shared"
+import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, parseEnum } from "shared"
 import { INiveauDiplomeEuropeen, NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { IJobsPartnersRecruiterApi, IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL, IJobsPartnersOfferApi, ZJobsPartnersRecruiterApi } from "shared/models/jobsPartners.model"
@@ -300,6 +300,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       offer_creation: job.job_creation_date ?? null,
       offer_expiration: job.job_expiration_date ?? null,
       offer_opening_count: job.job_count ?? 1,
+      offer_status: job.job_status,
 
       workplace_siret: recruiter.establishment_siret,
       workplace_website: null,
@@ -345,6 +346,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       offer_creation: new Date(offreFT.dateCreation),
       offer_expiration: null,
       offer_opening_count: offreFT.nombrePostes,
+      offer_status: JOB_STATUS.ACTIVE,
 
       workplace_siret: null,
       workplace_website: null,
@@ -444,4 +446,20 @@ export async function findJobsOpportunityResponseFromRncp(payload: IJobOpportuni
   }
 
   return findJobsOpportunityResponseFromRome({ romes, ...rest }, context)
+}
+
+export const mergePatchWithDb = <T extends Record<string, any>, U extends Record<string, any>>(patchObj: T, dbObj: U): Partial<T & U> => {
+  const result: Partial<T & U> = {}
+
+  ;(Object.keys(patchObj) as (keyof T)[]).forEach((key) => {
+    const patchValue = patchObj[key]
+    const dbValue = dbObj[key as keyof U]
+
+    if (patchValue !== null && patchValue !== undefined && dbValue !== undefined) {
+      // If patch value is not null and the key exists in dbObj, include it in the result
+      result[key] = patchValue as (T & U)[keyof (T & U)]
+    }
+  })
+
+  return result
 }

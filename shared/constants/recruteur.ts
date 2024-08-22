@@ -61,6 +61,10 @@ export const OPCOS = {
   MULTIPLE: "Opco multiple",
 } as const
 
+export type IOpcoKey = keyof typeof OPCOS
+
+export type IOpco = (typeof OPCOS)[IOpcoKey]
+
 export const NIVEAUX_POUR_LBA = {
   INDIFFERENT: "Indifférent",
   "3 (CAP...)": "Cap, autres formations niveau (Infrabac)",

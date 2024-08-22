@@ -8,7 +8,7 @@ fileignoreconfig:
 - filename: .bin/scripts/set-cypress-env.sh
   checksum: 4463ed7c1d5b82a8b152248b953778f37771bfba72865ee0e8af3b61cf3c38da
 - filename: .bin/scripts/setup-local-env.sh
-  checksum: 164cfbaa5965f9c06f84d90cb7e5af0df0c4cc1745e57d99490d44ba6efc1b33
+  checksum: ec5baf2cf62d53592545167d7f214fa96e154dc696ee3343a149bcd1a41d7242
 - filename: .github/workflows/_build.yml
   checksum: ab457b5b512b181d7d73c8fdf9c3843eed39f3b0245f5d22742cc93697a08bf5
 - filename: .github/workflows/cypress.yml
@@ -54,7 +54,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/jobs.controller.v2.test.ts
-  checksum: 925e11dd9837a4d92245b9d2a5a1e62e4370d65c7b996af53ba8e2469767ab29
+  checksum: 9ab849e69fe56ef40f99ae76a1fecf165bdcf4be1e52ba8ef106042b8db92618
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -112,7 +112,7 @@ fileignoreconfig:
 - filename: server/tests/utils/jwt.test.utils.ts
   checksum: d63fdd6737a8592a88458d1948ea96434727c3e7960f038a66a8c30df1652260
 - filename: shared/constants/recruteur.ts
-  checksum: fe86239647194f80e19d7af99f20b9298f2856989060ae12591da68979ebd584
+  checksum: b61b8b0a834777cf16e3ac8b1155e595f52631d4e9f3e276005042ce1a56b29d
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
@@ -124,7 +124,7 @@ fileignoreconfig:
 - filename: shared/models/applications.model.ts
   checksum: 0db1feff739fda6ff77b2a460e214c03bbeb0451c2e4cf44556f5314c1896bd7
 - filename: shared/models/jobsPartners.model.ts
-  checksum: 5d40aec2ffb3dfca99d000746aa856addcc75774dfbc46191d513b90e4383101
+  checksum: 3c38e28c53fd9f4cf7ab31a4fa72c30e53032d48b2e826575622f0e979350660
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts
@@ -196,6 +196,23 @@ fileignoreconfig:
 scopeconfig:
 - scope: node
 custom_patterns:
+- (?s)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
+allowed_patterns:
+- key
+- secret
+- SECRET
+- password
+- Password
+- pass
+- apiKey
+- ApiKey
+- APIKey
+- versionKey
+- '@apprentissage.beta.gouv.fr'
+- '@mail.com'
+- adminusersview
+version: "1.0"
+rns:
 - (?s)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
 allowed_patterns:
 - key

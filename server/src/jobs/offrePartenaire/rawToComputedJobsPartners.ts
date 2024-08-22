@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { oleoduc, writeData } from "oleoduc"
 import { z } from "shared/helpers/zodWithOpenApi"
-import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { IJobPartnersLabel, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
 import { CollectionName } from "shared/models/models"
 import { AnyZodObject } from "zod"
@@ -20,7 +20,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
   collectionSource: CollectionName
   zodInput: ZodInput
   mapper: (raw: z.output<ZodInput>) => IComputedJobsPartners
-  partnerLabel: JOBPARTNERS_LABEL
+  partnerLabel: IJobPartnersLabel
   documentJobRoot?: string
 }) => {
   logger.info(`début d'import dans computed_jobs_partners pour partner=${partnerLabel}`)

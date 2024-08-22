@@ -1,7 +1,7 @@
 import { capitalize } from "lodash-es"
 import { ZodEnum } from "zod"
 
-import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, PHONE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 import { validateSIRET } from "../../validators/siretValidator"
 import { removeUrlsFromText } from "../common"
 import { z } from "../zodWithOpenApi"
@@ -17,8 +17,6 @@ const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
   return { message: ctx.defaultError }
 }
 z.setErrorMap(customErrorMap)
-
-//const phoneRegex = new RegExp(/^0[1-9]\d{8}$/)
 
 export const extensions = {
   siret: z
@@ -40,7 +38,8 @@ export const extensions = {
     z
       .string()
       .trim()
-      .transform((value) => removeUrlsFromText(value)) /*.regex(phoneRegex)*/,
+      .transform((value) => removeUrlsFromText(value)), /// is it a phone extensions still ??
+  telephone: () => z.string().trim().regex(PHONE_REGEX, "Téléphone invalide"),
   code_naf: () =>
     z.preprocess(
       (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point
