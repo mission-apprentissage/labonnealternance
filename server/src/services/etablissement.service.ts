@@ -736,12 +736,6 @@ export const entrepriseOnboardingWorkflow = {
       validated = result.validated
     }
 
-    const nafInfo: { naf_code?: string | null; naf_label?: string | null } = {}
-    if ("naf_label" in siretResponse) {
-      nafInfo.naf_label = siretResponse.naf_label
-      nafInfo.naf_code = siretResponse.naf_code
-    }
-
     const formulaire = await createFormulaire(
       {
         ...entrepriseToRecruiter(entreprise),
@@ -754,7 +748,6 @@ export const entrepriseOnboardingWorkflow = {
         email: formatedEmail,
         status: RECRUITER_STATUS.ACTIF,
         jobs: [],
-        ...nafInfo,
       },
       managingUser._id.toString()
     )
@@ -806,13 +799,6 @@ export const entrepriseOnboardingWorkflow = {
     if (opco) {
       await updateEntrepriseOpco(siret, { opco, idcc: idcc ?? undefined })
     }
-
-    const nafInfo: { naf_code?: string | null; naf_label?: string | null } = {}
-    if ("naf_label" in siretResponse) {
-      nafInfo.naf_label = siretResponse.naf_label
-      nafInfo.naf_code = siretResponse.naf_code
-    }
-
     const formulaireInfo = await createFormulaire(
       {
         ...entrepriseToRecruiter(entreprise),
@@ -827,7 +813,6 @@ export const entrepriseOnboardingWorkflow = {
         origin,
         opco,
         idcc,
-        ...nafInfo,
       },
       managedBy
     )
