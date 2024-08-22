@@ -131,7 +131,10 @@ export const configureDbSchemaValidation = async (modelDescriptors: IModelDescri
             },
           },
         })
+
+        logger.info(`Validation rule for collection ${collectionName} updated`)
       } catch (error) {
+        logger.error(`Error adding validation rule for collection ${collectionName}`)
         captureException(error)
         logger.error(error)
       }
