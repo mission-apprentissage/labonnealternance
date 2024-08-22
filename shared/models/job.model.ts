@@ -15,7 +15,7 @@ export enum JOB_STATUS {
 }
 
 const allJobRythm = Object.values(TRAINING_RYTHM)
-const allJobLevel = [...Object.values(NIVEAUX_POUR_LBA), "Indifférent"]
+const allJobLevel = [...Object.values(NIVEAUX_POUR_LBA)]
 const allJobStatus = Object.values(JOB_STATUS)
 const allJobType = Object.values(TRAINING_CONTRACT_TYPE)
 export const ZJobType = z.array(z.enum([allJobType[0], ...allJobType.slice(1)])).describe("Type de contrat")
