@@ -3,8 +3,9 @@ import { Box, Image, Progress, SkeletonCircle, SkeletonText, Text } from "@chakr
 import React, { useEffect, useState } from "react"
 
 const ItemDetailLoading = ({ item }) => {
-  const getNextLoadingIllustration = () => {
-    return loadingIllustrations[Math.floor(Math.random() * loadingIllustrations.length)]
+  const getNextLoadingIllustration = (currentIllustration) => {
+    const currentIndex = loadingIllustrations.findIndex((ill) => ill.src === currentIllustration.src)
+    return loadingIllustrations[(currentIndex + 1) % loadingIllustrations.length]
   }
 
   const loadingIllustrations: { src: string; text: string }[] =
@@ -44,9 +45,11 @@ const ItemDetailLoading = ({ item }) => {
     let interval: NodeJS.Timeout | null = null
 
     let iterations = 0
+    let current = currentIllustration
     interval = setInterval(() => {
       if (iterations < 5) {
-        setCurrentIllustration(getNextLoadingIllustration())
+        current = getNextLoadingIllustration(current)
+        setCurrentIllustration(current)
       } else {
         setCurrentIllustration({
           src: "/images/loading/hourglass.svg",
@@ -62,7 +65,7 @@ const ItemDetailLoading = ({ item }) => {
         clearInterval(interval)
       }
     }
-  }, [item.loadedItemDetail])
+  }, [item.loadedItemDetail, item.id])
 
   const resultListProperties = {
     color: "grey.425",
