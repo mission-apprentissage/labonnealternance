@@ -112,7 +112,7 @@ fileignoreconfig:
 - filename: server/tests/utils/jwt.test.utils.ts
   checksum: d63fdd6737a8592a88458d1948ea96434727c3e7960f038a66a8c30df1652260
 - filename: shared/constants/recruteur.ts
-  checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
+  checksum: fe86239647194f80e19d7af99f20b9298f2856989060ae12591da68979ebd584
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap

@@ -3,7 +3,6 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
 import { zObjectId } from "../models/common"
-import { ZJobsOpportunityResponse } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -24,7 +23,7 @@ import {
   zSourcesParams,
 } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
-import { ZJobOpportunityRncp, ZJobOpportunityRome } from "./jobOpportunity.routes"
+import { ZJobOpportunityRncp, ZJobOpportunityRome, ZJobsOpportunityResponse } from "./jobOpportunity.routes"
 
 export const zJobsRoutesV2 = {
   get: {

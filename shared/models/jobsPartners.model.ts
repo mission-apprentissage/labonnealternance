@@ -8,11 +8,11 @@ import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "jobs_partners" as const
 
-export enum JOBPARTNERS_LABEL {
-  HELLOWORK = "Hellowork",
-  OFFRES_EMPLOI_LBA = "La bonne alternance",
-  OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
-}
+export const JOBPARTNERS_LABEL = {
+  HELLOWORK: "Hellowork",
+  OFFRES_EMPLOI_LBA: "La bonne alternance",
+  OFFRES_EMPLOI_FRANCE_TRAVAIL: "France Travail",
+} as const
 
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
@@ -98,10 +98,3 @@ export default {
   ],
   collectionName,
 } as const satisfies IModelDescriptor
-
-export const ZJobsOpportunityResponse = z.object({
-  jobs: z.array(ZJobsPartnersOfferApi),
-  recruiters: z.array(ZJobsPartnersRecruiterApi),
-})
-
-export type IJobsOpportunityResponse = z.output<typeof ZJobsOpportunityResponse>

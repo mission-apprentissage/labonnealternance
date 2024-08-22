@@ -14,7 +14,7 @@ export default defineWorkspace([
       clearMocks: true,
       sequence: {
         // Important for useMongo to be sequential
-        hooks: "stack",
+        hooks: "list",
       },
     },
   },

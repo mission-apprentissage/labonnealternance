@@ -1,9 +1,9 @@
 import Boom from "boom"
-import { ObjectId } from "mongodb"
-import { IJob, IRecruiter, JOB_STATUS } from "shared"
+import { Document, Filter, ObjectId } from "mongodb"
+import { IJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { INiveauPourLbaValue, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -42,59 +42,50 @@ export const getJobs = async ({
   niveau,
   caller,
   isMinimalData,
+  limit,
 }: {
   distance: number
   lat: number | undefined
   lon: number | undefined
   romes: string[]
-  niveau: string
+  niveau: string | null
   caller?: string | null
   isMinimalData: boolean
+  limit?: number
 }): Promise<IRecruiter[]> => {
-  const clauses: any[] = [
-    { "jobs.job_status": JOB_STATUS.ACTIVE },
-    { "jobs.rome_code": { $in: romes } },
-    { status: RECRUITER_STATUS.ACTIF },
-    { jobs: { $exists: true, $not: { $size: 0 } } },
-  ]
+  const query: Filter<IRecruiter> = {
+    status: RECRUITER_STATUS.ACTIF,
+    "jobs.job_status": JOB_STATUS.ACTIVE,
+    "jobs.rome_code": { $in: romes },
+  }
 
-  if (niveau && niveau !== "Indifférent") {
-    clauses.push({
-      $or: [
-        {
-          "jobs.job_level_label": niveau,
-        },
-        {
-          "jobs.job_level_label": NIVEAUX_POUR_LBA["INDIFFERENT"],
-        },
-      ],
-    })
+  if (niveau && niveau !== NIVEAUX_POUR_LBA["INDIFFERENT"]) {
+    query["jobs.job_level_label"] = { $in: [niveau, NIVEAUX_POUR_LBA["INDIFFERENT"]] }
   }
 
   if (caller) {
-    clauses.push({ "jobs.is_multi_published": true })
+    query["jobs.is_multi_published"] = true
   }
 
-  const stages: any[] = [
+  const stages: Document[] = [
     {
-      $limit: JOB_SEARCH_LIMIT,
+      $geoNear: {
+        near: { type: "Point", coordinates: [lon, lat] },
+        distanceField: "distance",
+        maxDistance: distance * 1000,
+        query,
+      },
+    },
+    {
+      $limit: limit ?? JOB_SEARCH_LIMIT,
     },
   ]
 
-  const query: any = { $and: clauses }
+  if (!isMinimalData) {
+    stages.push(...romeDetailAggregateStages)
+  }
 
-  stages.unshift({
-    $geoNear: {
-      near: { type: "Point", coordinates: [lon, lat] },
-      distanceField: "distance",
-      maxDistance: distance * 1000,
-      query,
-    },
-  })
-
-  const recruiters: IRecruiter[] = (await getDbCollection("recruiters")
-    .aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
-    .toArray()) as IRecruiter[]
+  const recruiters = await getDbCollection("recruiters").aggregate<IRecruiter>(stages).toArray()
 
   const recruitersWithJobs = await Promise.all(
     recruiters.map(async (recruiter) => {
@@ -120,6 +111,88 @@ export const getJobs = async ({
   )
 
   return recruitersWithJobs
+}
+
+export type IJobResult = {
+  recruiter: Omit<IRecruiter, "jobs">
+  job: IJob & { rome_detail: IReferentielRomeForJob }
+}
+
+export const getLbaJobsV2 = async ({
+  distance,
+  lat,
+  lon,
+  romes,
+  niveau,
+  limit,
+}: {
+  distance: number
+  lat: number
+  lon: number
+  romes: string[]
+  niveau: INiveauPourLbaValue | null
+  limit: number
+}): Promise<IJobResult[]> => {
+  const jobFilters: Filter<IRecruiter> = {
+    "jobs.job_status": JOB_STATUS.ACTIVE,
+    "jobs.rome_code": { $in: romes },
+    "jobs.is_multi_published": true,
+  }
+
+  if (niveau && niveau !== NIVEAUX_POUR_LBA["INDIFFERENT"]) {
+    jobFilters["jobs.job_level_label"] = { $in: [niveau, NIVEAUX_POUR_LBA["INDIFFERENT"]] }
+  }
+
+  const query: Filter<IRecruiter> = {
+    status: RECRUITER_STATUS.ACTIF,
+    ...jobFilters,
+  }
+
+  const recruiters = await getDbCollection("recruiters")
+    .aggregate<IJobResult["recruiter"] & { jobs: IJobResult["job"] }>([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [lon, lat] },
+          distanceField: "distance",
+          maxDistance: distance * 1000,
+          query,
+        },
+      },
+      { $limit: limit },
+      { $unwind: { path: "$jobs" } },
+      // Apply filters again on jobs individually
+      { $match: jobFilters },
+      // Limit the actual number of jobs returned
+      { $limit: limit },
+      {
+        $lookup: {
+          from: "referentielromes",
+          localField: "jobs.rome_code.0",
+          foreignField: "rome.code_rome",
+          as: "jobs.rome_detail",
+        },
+      },
+      {
+        $unwind: { path: "$jobs.rome_detail" },
+      },
+    ])
+    .toArray()
+
+  return Promise.all(
+    recruiters.map(async ({ jobs: job, ...recruiter }) => {
+      const contactInfo = await getLbaJobContactInfo(recruiter)
+      return {
+        recruiter: {
+          ...recruiter,
+          ...contactInfo,
+        },
+        job: {
+          ...job,
+          rome_label: job.rome_appellation_label ?? job.rome_label,
+        },
+      }
+    })
+  )
 }
 
 /**
@@ -479,27 +552,41 @@ export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
   }
 }
 
-export const replaceRecruiterFieldsWithCfaFields = async (recruiter: IRecruiter) => {
+const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise<Partial<IJobResult["recruiter"]>> => {
   if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
-    const cfa = await getDbCollection("cfas").findOne({ siret: recruiter.cfa_delegated_siret })
-    if (!cfa) {
-      throw Boom.internal(`inattendu: cfa introuvable avec le siret ${recruiter.cfa_delegated_siret}`)
-    }
     const { managed_by } = recruiter
     if (!managed_by) {
       throw Boom.internal(`managed_by est manquant pour le recruiter avec id=${recruiter._id}`)
     }
-    const cfaUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
+
+    const [cfa, cfaUser] = await Promise.all([
+      getDbCollection("cfas").findOne({ siret: recruiter.cfa_delegated_siret }),
+      getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) }),
+    ])
+    if (!cfa) {
+      throw Boom.internal(`inattendu: cfa introuvable avec le siret ${recruiter.cfa_delegated_siret}`)
+    }
     if (!cfaUser) {
       throw Boom.internal(`le user cfa est introuvable pour le recruiter avec id=${recruiter._id}`)
     }
-    recruiter.phone = cfaUser.phone
-    recruiter.email = cfaUser.email
-    recruiter.last_name = cfaUser.last_name
-    recruiter.first_name = cfaUser.first_name
-    recruiter.establishment_raison_sociale = cfa.raison_sociale
-    recruiter.establishment_enseigne = cfa.enseigne
-    recruiter.establishment_siret = cfa.siret
-    recruiter.address = cfa.address
+
+    return {
+      phone: cfaUser.phone ?? recruiter.phone,
+      email: cfaUser.email ?? recruiter.email,
+      last_name: cfaUser.last_name ?? recruiter.last_name,
+      first_name: cfaUser.first_name ?? recruiter.first_name,
+      establishment_raison_sociale: cfa.raison_sociale ?? recruiter.establishment_raison_sociale,
+      establishment_enseigne: cfa.enseigne ?? recruiter.establishment_enseigne,
+      establishment_siret: cfa.siret ?? recruiter.establishment_siret,
+      address: cfa.address ?? recruiter.address,
+    }
+  }
+
+  return {}
+}
+
+export const replaceRecruiterFieldsWithCfaFields = async (recruiter: IRecruiter) => {
+  if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
+    Object.assign(recruiter, getLbaJobContactInfo(recruiter))
   }
 }

@@ -44,21 +44,22 @@ export const REGEX = {
   GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,
   TELEPHONE: /^[0-9]{10}$/,
 } as const
-export enum OPCOS {
-  AFDAS = "AFDAS",
-  AKTO = "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
-  ATLAS = "ATLAS",
-  CONSTRUCTYS = "Constructys",
-  OPCOMMERCE = "L'Opcommerce",
-  OCAPIAT = "OCAPIAT",
-  OPCO2I = "OPCO 2i",
-  EP = "Opco entreprises de proximité",
-  MOBILITE = "Opco Mobilités",
-  SANTE = "Opco Santé",
-  UNIFORMATION = "Uniformation, l'Opco de la Cohésion sociale",
-  PASS = "pass",
-  MULTIPLE = "Opco multiple",
-}
+
+export const OPCOS = {
+  AFDAS: "AFDAS",
+  AKTO: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+  ATLAS: "ATLAS",
+  CONSTRUCTYS: "Constructys",
+  OPCOMMERCE: "L'Opcommerce",
+  OCAPIAT: "OCAPIAT",
+  OPCO2I: "OPCO 2i",
+  EP: "Opco entreprises de proximité",
+  MOBILITE: "Opco Mobilités",
+  SANTE: "Opco Santé",
+  UNIFORMATION: "Uniformation, l'Opco de la Cohésion sociale",
+  PASS: "pass",
+  MULTIPLE: "Opco multiple",
+} as const
 
 export const NIVEAUX_POUR_LBA = {
   INDIFFERENT: "Indifférent",
@@ -68,6 +69,10 @@ export const NIVEAUX_POUR_LBA = {
   "6 (Licence, BUT...)": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
   "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveau (Bac+5)",
 } as const
+
+export type INiveauPourLbaKey = keyof typeof NIVEAUX_POUR_LBA
+
+export type INiveauPourLbaValue = (typeof NIVEAUX_POUR_LBA)[INiveauPourLbaKey]
 
 export const NIVEAU_DIPLOME_LABEL = {
   "3": NIVEAUX_POUR_LBA["3 (CAP...)"],
@@ -83,10 +88,11 @@ export type INiveauDiplomeEuropeen = keyof typeof NIVEAU_DIPLOME_LABEL
 // en revanche pour l'api offres de France Travail le filtre sur le niveau est le niveau
 // requis en entrée.
 export const NIVEAUX_POUR_OFFRES_PE = {
-  "4 (BAC...)": "NV5",
-  "5 (BTS, DEUST...)": "NV4",
-  "6 (Licence, BUT...)": "NV3",
-  "7 (Master, titre ingénieur...)": "NV2",
+  "3 (CAP...)": "NV5",
+  "4 (BAC...)": "NV4",
+  "5 (BTS, DEUST...)": "NV3",
+  "6 (Licence, BUT...)": "NV2",
+  "7 (Master, titre ingénieur...)": "NV1",
 } as const
 
 export const UNSUBSCRIBE_EMAIL_ERRORS = {

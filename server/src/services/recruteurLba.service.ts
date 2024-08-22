@@ -168,18 +168,19 @@ type IRecruteursLbaSearchParams = {
   opcoUrl?: string
 }
 
-export const getRecruteursLbaFromDB = async ({ radius = 10, romes, opco, opcoUrl, latitude, longitude }: IRecruteursLbaSearchParams): Promise<ILbaCompany[] | []> => {
+export const getRecruteursLbaFromDB = async ({ radius = 10, romes, opco, opcoUrl, latitude, longitude }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
   const query: { rome_codes: object; opco_short_name?: string; opco_url?: string } = {
     rome_codes: { $in: romes },
   }
-  if (opco) {
+  if (opco && opco) {
     query.opco_short_name = opco.toUpperCase()
   }
   if (opcoUrl) {
     query.opco_url = opcoUrl.toLowerCase()
   }
-  return (await getDbCollection("recruteurslba")
-    .aggregate([
+
+  return await getDbCollection("recruteurslba")
+    .aggregate<ILbaCompany>([
       {
         $geoNear: {
           near: { type: "Point", coordinates: [longitude, latitude] },
@@ -192,7 +193,7 @@ export const getRecruteursLbaFromDB = async ({ radius = 10, romes, opco, opcoUrl
         $limit: 150,
       },
     ])
-    .toArray()) as ILbaCompany[]
+    .toArray()
 }
 
 /**
