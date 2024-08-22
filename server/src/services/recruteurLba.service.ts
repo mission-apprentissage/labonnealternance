@@ -483,9 +483,9 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
     const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
 
     if (lbaCompany) {
-      return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }
+      return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret, active: true }
     } else {
-      throw Boom.notFound("Société inconnue")
+      return { siret: siret, active: false }
     }
   } catch (error: any) {
     if (error?.output?.statusCode === 404) {
