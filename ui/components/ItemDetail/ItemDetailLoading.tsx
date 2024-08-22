@@ -52,6 +52,7 @@ const ItemDetailLoading = ({ item }) => {
           src: "/images/loading/hourglass.svg",
           text: "Hum... Ce chargement semble plus long que prévu",
         })
+        clearInterval(interval)
       }
       iterations++
     }, 1000)
