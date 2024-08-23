@@ -1,4 +1,4 @@
-import { NIVEAUX_POUR_LBA, OPCOS } from "../constants/recruteur"
+import { NIVEAUX_POUR_LBA, OPCOS_LABEL } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -11,7 +11,7 @@ const ZJobOpportunityQuerystringBase = z.object({
   longitude: extensions.longitude(),
   radius: z.number().min(0).max(200).default(30),
   diploma: extensions.buildEnum(NIVEAUX_POUR_LBA).default(NIVEAUX_POUR_LBA.INDIFFERENT),
-  opco: extensions.buildEnum(OPCOS).optional(),
+  opco: extensions.buildEnum(OPCOS_LABEL).optional(),
   opcoUrl: z.string().optional(),
 })
 

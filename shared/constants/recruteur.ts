@@ -44,7 +44,8 @@ export const REGEX = {
   GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,
   TELEPHONE: /^[0-9]{10}$/,
 } as const
-export enum OPCOS {
+
+export enum OPCOS_LABEL {
   AFDAS = "AFDAS",
   AKTO = "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
   ATLAS = "ATLAS",

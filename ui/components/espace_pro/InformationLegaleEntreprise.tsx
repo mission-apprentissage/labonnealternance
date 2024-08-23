@@ -2,7 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
 import { useQuery } from "react-query"
 import { parseEnum } from "shared"
-import { CFA, ENTREPRISE, OPCO, OPCOS } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 
 import { useAuth } from "@/context/UserContext"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
@@ -13,7 +13,7 @@ import { FieldWithValue } from "./FieldWithValue"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
 
-export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS }
+export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL }
 
 export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEntrepriseProps) => {
   const { user } = useAuth()
@@ -24,7 +24,7 @@ export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLe
   if (isLoading) return null
 
   const entreprise = type === ENTREPRISE && "data" in entrepriseQuery.data && "siret" in entrepriseQuery.data.data && entrepriseQuery.data.data
-  const finalOpco = opco ?? parseEnum(OPCOS, entreprise?.opco)
+  const finalOpco = opco ?? parseEnum(OPCOS_LABEL, entreprise?.opco)
   const cfa = type === CFA && "data" in cfaQuery.data && "siret" in cfaQuery.data.data && cfaQuery.data.data
   const raisonSociale = entreprise?.raison_sociale ?? cfa?.raison_sociale
 
@@ -85,7 +85,7 @@ const OrganizationInfoFields = ({
   establishment_raison_sociale?: string
   address?: string
   type: typeof CFA | typeof ENTREPRISE
-  opco?: OPCOS
+  opco?: OPCOS_LABEL
   is_qualiopi?: boolean
 }) => {
   const RAISON_SOCIALE =
