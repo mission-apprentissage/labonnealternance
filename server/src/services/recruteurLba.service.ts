@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
-import { ERecruteurLbaUpdateEventType, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
+import { ERecruteurLbaUpdateEventType, IApplication, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
@@ -405,73 +405,72 @@ export const getCompanyFromSiret = async ({
 export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email?: string; phone?: string }) => {
   const now = new Date()
   try {
-    const lbaCompany = await getDbCollection("recruteurslba").findOne({ siret })
+    const recruteurLba = await getDbCollection("recruteurslba").findOne({ siret })
+    let application: IApplication | null = null
     const fieldUpdates: IRecruteurLbaUpdateEvent[] = []
 
-    if (!lbaCompany) {
-      throw Boom.badRequest()
-    }
+    if (!recruteurLba) {
+      application = await getDbCollection("applications").findOne({ company_siret: siret })
 
-    if (email !== undefined) {
-      await getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { email } })
-    }
+      if (!application) {
+        throw Boom.badRequest()
+      }
+    } else {
+      if (email !== undefined) {
+        await getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { email, last_update_at: new Date() } })
+      }
 
-    if (phone !== undefined) {
-      await getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { phone } })
-    }
-    if (lbaCompany.email !== email) {
-      if (!email) {
-        fieldUpdates.push({
-          _id: new ObjectId(),
-          created_at: now,
-          siret,
-          value: "",
-          event: ERecruteurLbaUpdateEventType.DELETE_EMAIL,
-        })
-
-        lbaCompany.email = ""
-      } else {
-        fieldUpdates.push({
-          _id: new ObjectId(),
-          created_at: now,
-          siret,
-          value: email,
-          event: ERecruteurLbaUpdateEventType.UPDATE_EMAIL,
-        })
-        lbaCompany.email = email
+      if (phone !== undefined) {
+        await getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { phone, last_update_at: new Date() } })
       }
     }
 
-    if (lbaCompany.phone !== phone) {
-      if (!phone) {
-        fieldUpdates.push({
-          _id: new ObjectId(),
-          created_at: now,
-          siret,
-          value: "",
-          event: ERecruteurLbaUpdateEventType.DELETE_PHONE,
-        })
-
-        lbaCompany.phone = ""
-      } else {
-        fieldUpdates.push({
-          _id: new ObjectId(),
-          created_at: now,
-          siret,
-          value: phone,
-          event: ERecruteurLbaUpdateEventType.UPDATE_PHONE,
-        })
-
-        lbaCompany.phone = phone
-      }
+    if (email !== undefined && recruteurLba && recruteurLba.email !== email && !email) {
+      fieldUpdates.push({
+        _id: new ObjectId(),
+        created_at: now,
+        siret,
+        value: "",
+        event: ERecruteurLbaUpdateEventType.DELETE_EMAIL,
+      })
     }
+
+    if (phone !== undefined && recruteurLba && recruteurLba.phone !== phone && !phone) {
+      fieldUpdates.push({
+        _id: new ObjectId(),
+        created_at: now,
+        siret,
+        value: "",
+        event: ERecruteurLbaUpdateEventType.DELETE_PHONE,
+      })
+    }
+
+    if (email && (application || (recruteurLba && recruteurLba.email !== email))) {
+      fieldUpdates.push({
+        _id: new ObjectId(),
+        created_at: now,
+        siret,
+        value: email,
+        event: ERecruteurLbaUpdateEventType.UPDATE_EMAIL,
+      })
+    }
+
+    if (phone && (application || (recruteurLba && recruteurLba.phone !== phone))) {
+      fieldUpdates.push({
+        _id: new ObjectId(),
+        created_at: now,
+        siret,
+        value: phone,
+        event: ERecruteurLbaUpdateEventType.UPDATE_PHONE,
+      })
+    }
+
     await Promise.all([
-      getDbCollection("recruteurslba").updateOne({ _id: lbaCompany._id }, { $set: { phone: lbaCompany.phone, email: lbaCompany.email, last_update_at: new Date() } }),
       ...fieldUpdates.map(async (update) => {
         getDbCollection("recruteurlbaupdateevents").insertOne(update)
       }),
     ])
-    return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }
+    return { enseigne: application?.company_name ?? recruteurLba?.enseigne, phone, email, siret, active: recruteurLba ? true : false }
   } catch (err) {
     sentryCaptureException(err)
     throw err
@@ -488,7 +487,7 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
       const application = await getDbCollection("applications").findOne({ company_siret: siret })
 
       if (application) {
-        return { enseigne: application.company_name, siret, active: false }
+        return { enseigne: application.company_name, siret, phone: "", email: "", active: false }
       } else {
         throw Boom.notFound("Société inconnue")
       }
