@@ -17,6 +17,8 @@ import { CustomInput, Layout } from "../../../components/espace_pro"
 import { authProvider, withAuth } from "../../../components/espace_pro/withAuth"
 import { SearchLine } from "../../../theme/components/icons"
 
+const unreferencedLbaRecruteurWarning = "Seules les modifications / ajouts sont supportés dans le cas d'une société déréférencée"
+
 function FormulaireRechercheEntreprise({ onSiretChange }: { onSiretChange: (newSiret: string) => void }) {
   const submitSearchForSiret = async ({ siret }: { siret: string }) => {
     const formattedSiret = siret.replace(/[^0-9]/g, "")
@@ -51,7 +53,19 @@ function FormulaireRechercheEntreprise({ onSiretChange }: { onSiretChange: (newS
 }
 
 function FormulaireModificationEntreprise({ siret }: { siret: string }) {
-  const { isLoading, data, error: readError, refetch } = useQuery(["getCompany", siret], () => getCompanyContactInfo(siret), { enabled: Boolean(siret), retry: false })
+  const {
+    isLoading,
+    data,
+    error: readError,
+    refetch,
+  } = useQuery(
+    ["getCompany", siret],
+    () => {
+      setHasUpdated(false)
+      return getCompanyContactInfo(siret)
+    },
+    { enabled: Boolean(siret), retry: false }
+  )
   const [hasUpdated, setHasUpdated] = useState(false)
   const updateEntreprise = useMutation(
     "updateEntreprise",
@@ -101,6 +115,11 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
 
       <Box p={5} pt={6} mb={6} borderColor="bluefrance.500" borderWidth="1px">
         <Formik
+          validate={(values) => {
+            if (!currentCompany.active && !values.email && !values.phone) return { email: unreferencedLbaRecruteurWarning, phone: unreferencedLbaRecruteurWarning }
+            return {}
+          }}
+          enableReinitialize
           validateOnMount
           initialValues={{ phone: currentCompany.phone, email: currentCompany.email }}
           validationSchema={Yup.object().shape({
