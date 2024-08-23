@@ -1,11 +1,12 @@
 import { z } from "zod"
 
-import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, OPCOS, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
 import { JOB_STATUS, ZJobStartDateCreate } from "./job.model"
+import { zOpcoLabel } from "./opco.model"
 
 const collectionName = "jobs_partners" as const
 
@@ -32,13 +33,15 @@ export const ZJobsPartnersRecruiterApi = z.object({
   }),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
   workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
-  workplace_opco: extensions.buildEnum(OPCOS).nullable().describe("Nom de l'OPCO"), // enum ?
+  workplace_opco: zOpcoLabel.nullable().describe("Nom de l'OPCO"), // enum ?
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
   apply_url: z.string().nullable().describe("URL pour candidater"),
   apply_phone: z.string().nullable().describe("Téléphone de contact"),
 })
+
+const zDiplomaEuropeanLevel = extensions.buildEnumKeys(NIVEAU_DIPLOME_LABEL)
 
 export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   _id: true,
@@ -58,7 +61,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   offer_diploma_level: z
     .object({
-      european: extensions.buildEnumKeys(NIVEAU_DIPLOME_LABEL).nullable().describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
+      european: zDiplomaEuropeanLevel.nullable().describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
       label: z.string().nullable().describe("Libellé du niveau de diplome"),
     })
     .nullable(),
@@ -105,14 +108,14 @@ const ZJobsPartnersPostApiBodyBase = z.object({
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).optional(),
   offer_title: z.string(),
   offer_description: z.string().min(30, "Job description should be at least 30 characters"),
-  offer_diploma_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA),
+  offer_diploma_level_european: zDiplomaEuropeanLevel.optional(),
   offer_desired_skills: ZJobsPartnersOfferPrivate.shape.offer_desired_skills.optional(),
   offer_to_be_acquired_skills: ZJobsPartnersOfferPrivate.shape.offer_to_be_acquired_skills.optional(),
   offer_access_conditions: ZJobsPartnersOfferPrivate.shape.offer_access_conditions.optional(),
   offer_rome_code: ZJobsPartnersOfferPrivate.shape.offer_rome_code.optional(),
   offer_creation: ZJobsPartnersOfferPrivate.shape.offer_creation.optional(),
   offer_expiration: ZJobsPartnersOfferPrivate.shape.offer_expiration.optional(),
-  offer_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.optional(),
+  offer_opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.optional(),
   offer_multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast.optional(),
   offer_origin: ZJobsPartnersOfferPrivate.shape.offer_origin.optional(),
   workplace_siret: extensions.siret,
@@ -136,11 +139,11 @@ export const ZJobsPartnersPatchApiBody = ZJobsPartnersPostApiBodyBase.pick({
   contract_duration: true,
   contract_remote: true,
   offer_description: true,
-  offer_diploma_level_label: true,
+  offer_diploma_level_european: true,
   offer_desired_skills: true,
   offer_to_be_acquired_skills: true,
   offer_access_conditions: true,
-  offer_count: true,
+  offer_opening_count: true,
   offer_multicast: true,
   offer_origin: true,
   apply_url: true,

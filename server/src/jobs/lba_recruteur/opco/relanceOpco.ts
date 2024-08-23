@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { isEnum } from "shared"
-import { IOpco, OPCOS } from "shared/constants/recruteur"
+import { IOpcoLabel, OPCOS } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -35,7 +35,7 @@ export const relanceOpco = async () => {
   const entreprises = await getDbCollection("entreprises")
     .find({ _id: { $in: rolesAwaitingValidation.map(({ authorized_id }) => new ObjectId(authorized_id.toString())) } })
     .toArray()
-  const opcoCounts = entreprises.reduce<Record<IOpco, number>>(
+  const opcoCounts = entreprises.reduce<Record<IOpcoLabel, number>>(
     (acc, entreprise) => {
       const { opco } = entreprise
       if (!isEnum(OPCOS, opco)) {
@@ -45,7 +45,7 @@ export const relanceOpco = async () => {
       acc[opco] = oldCount + 1
       return acc
     },
-    {} as Record<IOpco, number>
+    {} as Record<IOpcoLabel, number>
   )
   await Promise.all(
     Object.entries(opcoCounts).map(async ([opco, count]) => {

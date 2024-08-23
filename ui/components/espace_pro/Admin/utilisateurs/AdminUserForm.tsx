@@ -2,7 +2,7 @@ import { Box, Button, FormControl, FormLabel, HStack, Input, VStack, useToast } 
 import { FormikProvider, useFormik } from "formik"
 import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusEvent, parseEnum } from "shared"
 import { OPCOS } from "shared/constants"
-import { AUTHTYPE, IOpco } from "shared/constants/recruteur"
+import { AUTHTYPE, IOpcoLabel } from "shared/constants/recruteur"
 import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFields } from "shared/models/userWithAccount.model"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
@@ -164,7 +164,7 @@ const UserFieldsForm = ({
   onSubmit,
 }: {
   user?: IUserWithAccountJson
-  opco?: IOpco
+  opco?: IOpcoLabel
   type?: typeof AUTHTYPE.ADMIN | typeof AUTHTYPE.OPCO
   onSubmit: (values: INewSuperUser) => void
 }) => {

@@ -5,6 +5,7 @@ import { createRecruteurLbaTest } from "@tests/utils/user.test.utils"
 import nock from "nock"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
+import { IGeoPoint } from "shared/models"
 import { IJobsPartnersOfferPrivate, ZJobsPartnersPostApiBody } from "shared/models/jobsPartners.model"
 import { afterEach, beforeAll, describe, expect, it } from "vitest"
 
@@ -16,16 +17,20 @@ describe("/jobs", () => {
 
   const rome = ["D1214", "D1212", "D1211"]
   const rncpQuery = "RNCP13620"
-  const geopoint = { type: "Point", coordinates: [7.120835315436125, -45.16534931026399] as [number, number] }
+
+  const porteDeClichy: IGeoPoint = {
+    type: "Point",
+    coordinates: [2.313262, 48.894891],
+  }
   const romesQuery = rome.join(",")
-  const [longitude, latitude] = geopoint.coordinates
+  const [longitude, latitude] = porteDeClichy.coordinates
   const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({
     offer_rome_code: ["D1214"],
     workplace_geopoint: parisFixture.centre,
   })
 
   const mockData = async () => {
-    await createRecruteurLbaTest({ rome_codes: rome, geopoint: geopoint, siret: "58006820882692", email: "email@mail.com" })
+    await createRecruteurLbaTest({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com" })
   }
 
   useMongo(mockData, "beforeAll")
@@ -95,6 +100,7 @@ describe("/jobs", () => {
         "offer_expiration",
         "offer_opening_count",
         "offer_rome_code",
+        "offer_status",
         "offer_title",
         "offer_to_be_acquired_skills",
         "partner",
@@ -190,6 +196,7 @@ describe("/jobs", () => {
         "offer_expiration",
         "offer_opening_count",
         "offer_rome_code",
+        "offer_status",
         "offer_title",
         "offer_to_be_acquired_skills",
         "partner",

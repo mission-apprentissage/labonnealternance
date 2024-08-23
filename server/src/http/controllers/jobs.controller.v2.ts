@@ -1,9 +1,11 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IGeoPoint, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { NIVEAU_DIPLOME_LABEL } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IJobsPartnersOfferPrivate, IJobsPartnersPatchApiBody, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { zOpcoLabel } from "shared/models/opco.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -79,7 +81,7 @@ export default (server: Server) => {
       config,
     },
     async (req, res) => {
-      const { workplace_siret, workplace_address, offer_title, offer_rome_code, ...rest } = req.body
+      const { workplace_siret, workplace_address, offer_title, offer_rome_code, offer_diploma_level_european, ...rest } = req.body
       let geopoint: IGeoPoint | null = null
       let romeCode = offer_rome_code ?? null
 
@@ -115,37 +117,37 @@ export default (server: Server) => {
         romeCode = [romeoResponse]
       }
       const opcoData = await getOpcoData(workplace_siret)
+
       const now = new Date()
       const job: IJobsPartnersOfferPrivate = {
         ...rest,
         _id: new ObjectId(),
         created_at: now,
-        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
         partner_job_id: rest.partner_job_id ?? null,
         offer_title,
         offer_rome_code: romeCode,
         offer_status: JOB_STATUS.ACTIVE,
         offer_creation: rest.offer_creation ?? now,
-        offer_expiration_date: rest.offer_expiration ?? addExpirationPeriod(now).toDate(),
+        offer_expiration: rest.offer_expiration ?? addExpirationPeriod(now).toDate(),
         offer_desired_skills: rest.offer_desired_skills ?? null,
-        offer_acquired_skills: rest.offer_to_be_acquired_skills ?? null,
-        offer_access_condition: rest.offer_access_conditions ?? null,
-        offer_count: rest.offer_count ?? 1,
+        offer_to_be_acquired_skills: rest.offer_to_be_acquired_skills ?? null,
+        offer_access_conditions: rest.offer_access_conditions ?? null,
+        offer_opening_count: rest.offer_opening_count ?? 1,
         offer_multicast: rest.offer_multicast ?? true,
         offer_origin: rest.offer_origin ?? null,
+        offer_diploma_level: offer_diploma_level_european == null ? null : { european: offer_diploma_level_european, label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european] },
         workplace_siret,
         workplace_geopoint: geopoint,
         workplace_address: {
           label: workplace_address ?? siretInformation.address!,
         },
-        workplace_raison_sociale: siretInformation.establishment_raison_sociale ?? null,
-        workplace_enseigne: siretInformation.establishment_enseigne ?? null,
         workplace_website: rest.workplace_website ?? null,
         workplace_description: rest.workplace_description ?? null,
-        workplace_name: null,
+        workplace_name: siretInformation.establishment_raison_sociale ?? siretInformation.establishment_enseigne ?? null,
         workplace_naf_label: siretInformation.naf_label ?? null,
         workplace_naf_code: siretInformation.naf_code ?? null,
-        workplace_opco: opcoData?.opco ?? null,
+        workplace_opco: zOpcoLabel.safeParse(opcoData?.opco).data ?? null,
         workplace_idcc: opcoData?.idcc ? Number(opcoData.idcc) : null,
         workplace_size: siretInformation.establishment_size ?? null,
         contract_remote: rest.contract_remote ?? null,

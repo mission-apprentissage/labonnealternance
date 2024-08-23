@@ -137,7 +137,7 @@ export const prepareReferentielOpcoForInsert = (referentiel: Omit<IReferentielOp
 export const cfaDockOpcoItemToIOpco = (opcoItem: ICfaDockOpcoItem) => {
   const result: Omit<IOpco, "_id"> = {
     siren: opcoItem.filters.siret,
-    opco: opcoItem.opcoName ?? "",
+    opco: opcoItem.opcoName,
     opco_short_name: getMemoizedOpcoShortName(opcoItem.opcoName ?? ""),
     url: opcoItem.url,
     idcc: opcoItem.idcc?.toString(),

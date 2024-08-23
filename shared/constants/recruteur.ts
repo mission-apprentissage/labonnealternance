@@ -63,7 +63,7 @@ export const OPCOS = {
 
 export type IOpcoKey = keyof typeof OPCOS
 
-export type IOpco = (typeof OPCOS)[IOpcoKey]
+export type IOpcoLabel = (typeof OPCOS)[IOpcoKey]
 
 export const NIVEAUX_POUR_LBA = {
   INDIFFERENT: "Indifférent",

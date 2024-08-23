@@ -2,7 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
 import { useQuery } from "react-query"
 import { parseEnum } from "shared"
-import { CFA, ENTREPRISE, IOpco, OPCO, OPCOS } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, IOpcoLabel, OPCO, OPCOS } from "shared/constants/recruteur"
 
 import { useAuth } from "@/context/UserContext"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
@@ -13,7 +13,7 @@ import { FieldWithValue } from "./FieldWithValue"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
 
-export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: IOpco }
+export type InformationLegaleEntrepriseProps = { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: IOpcoLabel }
 
 export const InformationLegaleEntreprise = ({ siret, type, opco }: InformationLegaleEntrepriseProps) => {
   const { user } = useAuth()
@@ -85,7 +85,7 @@ const OrganizationInfoFields = ({
   establishment_raison_sociale?: string
   address?: string
   type: typeof CFA | typeof ENTREPRISE
-  opco?: IOpco
+  opco?: IOpcoLabel
   is_qualiopi?: boolean
 }) => {
   const RAISON_SOCIALE =
