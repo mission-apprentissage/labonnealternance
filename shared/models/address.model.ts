@@ -23,7 +23,7 @@ const ZPolygonGeometry = z
   })
   .strict()
 
-const ZGeometry = z.union([ZPointGeometry, ZPolygonGeometry])
+export const ZGeometry = z.union([ZPointGeometry, ZPolygonGeometry])
 
 export type IGeometry = z.input<typeof ZGeometry>
 
