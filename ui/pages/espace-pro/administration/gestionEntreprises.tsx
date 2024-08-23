@@ -118,6 +118,13 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
                 <Text mb={2} color="grey.425">
                   SIRET {currentCompany.siret}
                 </Text>
+                {!currentCompany.active && (
+                  <Text mb={2} color="#CE0500" fontSize="14px">
+                    Société supprimée de la collection <strong>recruteurslba</strong> mais présente dans <strong>applications</strong>.
+                    <br />
+                    Seules les mises à jour seront enregisrées.
+                  </Text>
+                )}
                 <CustomInput required={false} name="phone" label="Nouveau numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                 <CustomInput required={false} name="email" label="Nouvel email de contact" type="email" value={values.email} />
                 {updateError && (

@@ -484,7 +484,13 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
     if (lbaCompany) {
       return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret, active: true }
     } else {
-      return { siret: siret, active: false }
+      const application = await getDbCollection("applications").findOne({ company_siret: siret })
+
+      if (application) {
+        return { enseigne: application.company_name, siret, active: false }
+      } else {
+        throw Boom.notFound("Société inconnue")
+      }
     }
   } catch (error: any) {
     if (error?.output?.statusCode === 404) {
