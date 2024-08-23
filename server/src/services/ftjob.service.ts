@@ -2,6 +2,7 @@ import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
 import Boom from "boom"
+import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 
@@ -12,7 +13,6 @@ import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
-import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service"
 import { FTJob, FTResponse } from "./ftjob.service.types"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"

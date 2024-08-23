@@ -1,6 +1,7 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
+import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
@@ -14,7 +15,6 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
-import { NIVEAUX_POUR_LBA } from "./constant.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
 import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"

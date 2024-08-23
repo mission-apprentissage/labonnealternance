@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
 import { IUnsubscribedLbaCompany, zRoutes } from "shared"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants"
 import { IUnsubscribeQueryResponse } from "shared/models/unsubscribedRecruteurLba.model"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -9,7 +10,6 @@ import { obfuscateLbaCompanyApplications } from "@/services/application.service"
 import { buildLbaCompanyAddress } from "@/services/recruteurLba.service"
 
 import config from "../../config"
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
 import mailer from "../../services/mailer.service"
 import { Server } from "../server"
 
