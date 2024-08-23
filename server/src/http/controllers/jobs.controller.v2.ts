@@ -14,7 +14,6 @@ import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { getRomeoInfos } from "../../services/cache.service"
 import { getRomesFromRncp } from "../../services/certification.service"
-import { ACTIVE, ANNULEE, POURVUE } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
 import { getEntrepriseDataFromSiret, getGeoCoordinates, getOpcoData } from "../../services/etablissement.service"
 import { addExpirationPeriod, getFormulaires } from "../../services/formulaire.service"
@@ -205,7 +204,8 @@ export default (server: Server) => {
       if (!job) {
         throw Boom.badRequest("Job does not exist")
       }
-      if (job.offer_status === POURVUE) {
+
+      if (job.offer_status === JOB_STATUS.POURVUE) {
         throw Boom.badRequest("Job is already provided")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.POURVUE } })
@@ -226,7 +226,8 @@ export default (server: Server) => {
       if (!job) {
         throw Boom.badRequest("Job does not exists")
       }
-      if (job.offer_status === ANNULEE) {
+
+      if (job.offer_status === JOB_STATUS.ANNULEE) {
         throw Boom.badRequest("Job is already canceled")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.ANNULEE } })
@@ -250,7 +251,8 @@ export default (server: Server) => {
       if (addExpirationPeriod(dayjs()).isSame(dayjs(job.offer_expiration_date), "day")) {
         throw Boom.badRequest("Job is already extended up to two month")
       }
-      if (job.offer_status !== ACTIVE) {
+
+      if (job.offer_status !== JOB_STATUS.ACTIVE) {
         throw Boom.badRequest("Job cannot be extended as it is not active")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_expiration_date: addExpirationPeriod(dayjs()).toDate() } })
