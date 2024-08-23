@@ -110,7 +110,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
       latitude && longitude
         ? {
             type: "Point",
-            coordinates: [latitude, longitude],
+            coordinates: [longitude, latitude],
           }
         : undefined,
     apply_url: url,

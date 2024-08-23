@@ -80,7 +80,7 @@ describe("helloWorkJobToJobsPartners", () => {
       workplace_address: "Stem Propreté Lyon,Villeurbanne,69100 69100 VILLEURBANNE",
       workplace_geopoint: {
         type: "Point",
-        coordinates: [45.770996568, 4.889070834],
+        coordinates: [4.889070834, 45.770996568],
       },
       apply_url: "https://www.url.com/redirect?poc=2&op=5989883668&o=1",
       errors: [],
