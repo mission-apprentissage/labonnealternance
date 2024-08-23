@@ -5,7 +5,7 @@ import { IApplication, ICredential, IEmailBlacklist, IJob, ILbaCompany, IRecruit
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartners, ZJobsPartners } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodArray, ZodObject, ZodString, ZodTypeAny, z } from "zod"
@@ -234,8 +234,8 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   return u
 }
 
-export async function saveJobPartnerTest(data: Partial<IJobsPartners> = {}): Promise<IJobsPartners> {
-  return await saveDbEntity(ZJobsPartners, (item) => getDbCollection("jobs_partners").insertOne(item), data)
+export async function saveJobPartnerTest(data: Partial<IJobsPartnersOfferPrivate> = {}): Promise<IJobsPartnersOfferPrivate> {
+  return await saveDbEntity(ZJobsPartnersOfferPrivate, (item) => getDbCollection("jobs_partners").insertOne(item), data)
 }
 
 export async function createRecruteurLbaTest(data: Partial<ILbaCompany>): Promise<ILbaCompany> {
