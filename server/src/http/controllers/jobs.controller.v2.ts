@@ -205,7 +205,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Job does not exist")
       }
 
-      if (job.job_status === JOB_STATUS.POURVUE) {
+      if (job.offer_status === JOB_STATUS.POURVUE) {
         throw Boom.badRequest("Job is already provided")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.POURVUE } })
@@ -227,7 +227,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Job does not exists")
       }
 
-      if (job.job_status === JOB_STATUS.ANNULEE) {
+      if (job.offer_status === JOB_STATUS.ANNULEE) {
         throw Boom.badRequest("Job is already canceled")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.ANNULEE } })
@@ -252,7 +252,7 @@ export default (server: Server) => {
         throw Boom.badRequest("Job is already extended up to two month")
       }
 
-      if (job.job_status !== JOB_STATUS.ACTIVE) {
+      if (job.offer_status !== JOB_STATUS.ACTIVE) {
         throw Boom.badRequest("Job cannot be extended as it is not active")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_expiration_date: addExpirationPeriod(dayjs()).toDate() } })
