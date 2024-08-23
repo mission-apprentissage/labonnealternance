@@ -8,7 +8,7 @@ import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } fr
 import { IJobsPartners, ZJobsPartners } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
-import { ZodArray, ZodObject, ZodString, ZodTypeAny } from "zod"
+import { ZodArray, ZodObject, ZodString, ZodTypeAny, z } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -71,11 +71,11 @@ function getFixture() {
   ])
 }
 
-export const saveDbEntity = async <T>(schema: ZodTypeAny, saveEntity: (item: T) => Promise<any>, data: Partial<T>) => {
-  const entity = {
+export const saveDbEntity = async <T extends ZodTypeAny>(schema: T, saveEntity: (item: z.output<T>) => Promise<any>, data: Partial<z.input<T>>): Promise<z.output<T>> => {
+  const entity = schema.parse({
     ...getFixture().fromSchema(schema),
     ...data,
-  }
+  })
   await saveEntity(entity)
   return entity
 }
