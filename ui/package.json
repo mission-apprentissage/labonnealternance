@@ -19,7 +19,7 @@
     "@sentry/nextjs": "^7.73.0",
     "@socialgouv/matomo-next": "^1.8.0",
     "@turf/distance": "^6.5.0",
-    "axios": "^1.5.1",
+    "axios": "^1.7.4",
     "dayjs": "^1.11.10",
     "downshift": "5.2.0",
     "email-misspelled": "^3.4.2",
@@ -61,7 +61,7 @@
     "dotenv": "^16.3.1",
     "eslint": "^8.50.0",
     "eslint-config-next": "latest",
-    "nock": "^13.3.3",
+    "nock": "^14.0.0-beta.11",
     "type-fest": "^4.18.2",
     "typescript": "^5.4.5"
   }
