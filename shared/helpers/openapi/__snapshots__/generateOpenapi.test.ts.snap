@@ -2755,7 +2755,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "$ref": "#/components/schemas/RecruiterWritable",
           },
           {
-            "additionalProperties": false,
             "default": undefined,
             "properties": {
               "_id": {
@@ -2785,7 +2784,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
       },
       "RecruiterWritable": {
-        "additionalProperties": false,
         "properties": {
           "address": {
             "description": "Adresse de l'établissement",
