@@ -101,6 +101,7 @@ export const searchForFtJobs = async (params: {
       partenaires: "LABONNEALTERNANCE",
       modeSelectionPartenaires: "EXCLU",
     }
+
     const { data } = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/search`, {
       params: extendedParams,
       headers: {
