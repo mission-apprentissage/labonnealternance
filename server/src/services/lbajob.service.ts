@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { Document, Filter, ObjectId } from "mongodb"
-import { IJob, IRecruiter, JOB_STATUS } from "shared"
+import { IJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -110,6 +110,11 @@ export const getJobs = async ({
   )
 
   return recruitersWithJobs
+}
+
+export type IJobResult = {
+  recruiter: Omit<IRecruiter, "jobs">
+  job: IJob & { rome_detail: IReferentielRomeForJob }
 }
 
 /**
@@ -469,27 +474,42 @@ export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
   }
 }
 
-export const replaceRecruiterFieldsWithCfaFields = async (recruiter: IRecruiter) => {
+const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise<Partial<IJobResult["recruiter"]>> => {
   if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
-    const cfa = await getDbCollection("cfas").findOne({ siret: recruiter.cfa_delegated_siret })
-    if (!cfa) {
-      throw Boom.internal(`inattendu: cfa introuvable avec le siret ${recruiter.cfa_delegated_siret}`)
-    }
     const { managed_by } = recruiter
     if (!managed_by) {
       throw Boom.internal(`managed_by est manquant pour le recruiter avec id=${recruiter._id}`)
     }
-    const cfaUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
+
+    const [cfa, cfaUser] = await Promise.all([
+      getDbCollection("cfas").findOne({ siret: recruiter.cfa_delegated_siret }),
+      getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) }),
+    ])
+
+    if (!cfa) {
+      throw Boom.internal(`inattendu: cfa introuvable avec le siret ${recruiter.cfa_delegated_siret}`)
+    }
     if (!cfaUser) {
       throw Boom.internal(`le user cfa est introuvable pour le recruiter avec id=${recruiter._id}`)
     }
-    recruiter.phone = cfaUser.phone
-    recruiter.email = cfaUser.email
-    recruiter.last_name = cfaUser.last_name
-    recruiter.first_name = cfaUser.first_name
-    recruiter.establishment_raison_sociale = cfa.raison_sociale
-    recruiter.establishment_enseigne = cfa.enseigne
-    recruiter.establishment_siret = cfa.siret
-    recruiter.address = cfa.address
+
+    return {
+      phone: cfaUser.phone,
+      email: cfaUser.email,
+      last_name: cfaUser.last_name,
+      first_name: cfaUser.first_name,
+      establishment_raison_sociale: cfa.raison_sociale,
+      establishment_enseigne: cfa.enseigne,
+      establishment_siret: cfa.siret,
+      address: cfa.address,
+    }
+  }
+
+  return {}
+}
+
+export const replaceRecruiterFieldsWithCfaFields = async (recruiter: IRecruiter) => {
+  if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
+    Object.assign(recruiter, getLbaJobContactInfo(recruiter))
   }
 }
