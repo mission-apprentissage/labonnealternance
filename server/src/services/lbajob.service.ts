@@ -47,7 +47,7 @@ export const getJobs = async ({
   lat: number | undefined
   lon: number | undefined
   romes: string[]
-  niveau: string
+  niveau: string | null
   caller?: string | null
   isMinimalData: boolean
 }): Promise<IRecruiter[]> => {
