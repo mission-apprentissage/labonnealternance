@@ -7,6 +7,14 @@ module.exports = {
     "n/no-extraneous-import": 0,
     "import/no-unresolved": 0,
   },
+  overrides: [
+    {
+      files: "**/*.test.ts",
+      rules: {
+        "n/no-unpublished-import": 0,
+      },
+    },
+  ],
   env: {
     es2022: true,
     node: true,

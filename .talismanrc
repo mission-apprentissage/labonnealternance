@@ -54,7 +54,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/controllers/jobs.controller.v2.test.ts
-  checksum: a558b5537b35ddac94a10c9efb306d72877d33fc9ea7ab3377f04af0856fedc0
+  checksum: b3850d8bb637ae7215e9cc30537769c2b6bd69b82e56855bbb50a5fff3a4a280
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -153,8 +153,12 @@ fileignoreconfig:
   checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
   checksum: e61fa8a7bca174c70714ce633165436127f89e9fd8cf9005af681ca870465806
+- filename: ui/components/ItemDetail/TrainingDetail.tsx
+  checksum: 01556e58758449693529955a0de80ba4a2c243bfb8a41d1829df0daeca83e456
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx
   checksum: 9db6a64f202979b07251fd40445961d8db03bdb18b6668f9813bdbdf0d56aa65
+- filename: ui/components/RDV/DemandeDeContact.tsx
+  checksum: 0ba102126f1de5657601f172cb5348a7e0db77e5b0d06e124563f60c37ae3942
 - filename: ui/components/Ressources/conseilsEtAstuces.tsx
   checksum: b9f16607c1fb319c2940223e7e9ce5acc48b8b5a5b519e2bb79210e3f0feaf17
 - filename: ui/components/Ressources/misesEnSituation.tsx
@@ -185,6 +189,10 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+- filename: cypress/pages/LoginPage.ts
+  checksum: b7f7dceff16e342a7fd4bfe2d017d33edd2ec5da256571ca5ef81a0e058b954e
+- filename: cypress/e2e/check-admin-algo-company.cy.ts
+  checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 scopeconfig:
 - scope: node
 custom_patterns:

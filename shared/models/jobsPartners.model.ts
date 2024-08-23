@@ -5,6 +5,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
+import { JOB_STATUS, ZJobStartDateCreate } from "./job.model"
 
 const collectionName = "jobs_partners" as const
 
@@ -15,9 +16,9 @@ export enum JOBPARTNERS_LABEL {
 }
 
 const ZJobsPartnersApply = z.object({
-  apply_url: z.string().nullable().describe("URL pour candidater"),
-  apply_email: z.string().nullable().describe("Email de contact"),
-  apply_phone: z.string().nullable().describe("Téléphone de contact"),
+  apply_url: z.string().url().nullable().describe("URL pour candidater"),
+  apply_email: z.string().email().nullable().describe("Email de contact"),
+  apply_phone: extensions.telephone().nullable().describe("Téléphone de contact"),
 })
 
 const ZJobsPartnersContract = z.object({
@@ -49,6 +50,7 @@ export const ZJobsPartnersJobOffer = z.object({
   offer_count: z.number().describe("Nombre de poste disponible"),
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur"),
+  offer_status: extensions.buildEnum(JOB_STATUS).nullable().describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 })
 export type IJobsPartnersJobOffer = z.output<typeof ZJobsPartnersJobOffer>
 
@@ -62,7 +64,7 @@ export const ZJobsPartnersWorkplace = z.object({
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
   workplace_address: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
-  workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
+  workplace_idcc: z.string().nullable().describe("Identifiant convention collective"),
   workplace_opco: z.string().nullable().describe("Nom de l'OPCO"),
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
@@ -80,6 +82,58 @@ export type IJobRecruiter = z.output<typeof ZJobRecruiter>
 
 export const ZJobsPartners = ZJobsPartnerBase.merge(ZJobsPartnersWorkplace).merge(ZJobsPartnersApply).merge(ZJobsPartnersContract).merge(ZJobsPartnersJobOffer)
 export type IJobsPartners = z.output<typeof ZJobsPartners>
+
+export const ZJobsPartnersPostApiBody = z
+  .object({
+    partner_id: z.string().optional(),
+    contract_start: ZJobStartDateCreate(),
+    contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)),
+    contract_duration: z.number().min(6).max(36),
+    contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).optional(),
+    offer_title: z.string(),
+    offer_description: z.string().min(30, "Job description should be at least 30 characters"),
+    offer_diploma_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA),
+    offer_desired_skills: z.union([z.array(z.any()), z.string()]).optional(),
+    offer_acquired_skills: z.union([z.array(z.any()), z.string()]).optional(),
+    offer_access_condition: z.union([z.array(z.any()), z.string()]).optional(),
+    offer_rome_code: z.array(extensions.romeCode()).optional(),
+    offer_creation_date: z.date().optional(),
+    offer_expiration_date: z.date().optional(),
+    offer_count: z.number().optional(),
+    offer_multicast: z.boolean().optional(),
+    offer_origin: z.string().optional(),
+    workplace_siret: extensions.siret,
+    workplace_website: z.string().optional(),
+    workplace_description: z.string().optional(),
+    workplace_address: z.string().optional(),
+    apply_url: z.string().optional(),
+    apply_email: z.string().email().optional(),
+    apply_phone: extensions.telephone().optional(),
+  })
+  .refine(({ apply_email, apply_phone, apply_url }) => apply_email || apply_phone || apply_url, {
+    message: "At least one of apply_url, apply_email, or apply_phone is required",
+    path: ["apply_url", "apply_email", "apply_phone"],
+  })
+export type IJobsPartnersPostApiBody = z.output<typeof ZJobsPartnersPostApiBody>
+export const ZJobsPartnersPatchApiBody = z.object({
+  contract_start: z.date().optional(),
+  contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).optional(),
+  contract_duration: z.number().optional(),
+  contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).optional(),
+  offer_description: z.string().optional(),
+  offer_diploma_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA).optional(),
+  offer_desired_skills: z.union([z.array(z.any()), z.string()]).optional(),
+  offer_acquired_skills: z.union([z.array(z.any()), z.string()]).optional(),
+  offer_access_condition: z.union([z.array(z.any()), z.string()]).optional(),
+  offer_count: z.number().optional(),
+  offer_multicast: z.boolean().optional(),
+  offer_origin: z.string().optional(),
+  apply_url: z.string().optional(),
+  apply_email: z.string().email().optional(),
+  apply_phone: extensions.telephone().optional(),
+})
+
+export type IJobsPartnersPatchApiBody = z.output<typeof ZJobsPartnersPatchApiBody>
 
 export const ZJobRecruiterApiFormat = z.object({
   _id: zObjectId,

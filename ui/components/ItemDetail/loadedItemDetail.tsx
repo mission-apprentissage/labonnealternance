@@ -24,10 +24,10 @@ import { BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonRdvShouldBeDisplaye
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
+import ItemDetailApplicationsStatus, { hasApplied } from "./ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "./ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "./ItemDetailServices/JobItemCardHeader"
 import LbaJobDetail from "./LbaJobComponents/LbaJobDetail"
-import LocationDetail from "./LocationDetail"
 import RecruteurLbaDetail from "./RecruteurLbaComponents/RecruteurLbaDetail"
 import TrainingDetail from "./TrainingDetail"
 
@@ -166,12 +166,13 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
 
           {kind === LBA_ITEM_TYPE_OLD.LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
 
-          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && (
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && buttonRdvShouldBeDisplayed(selectedItem) && !hasApplied(selectedItem) && (
             <>
               <Divider my={2} />
               <DemandeDeContact context={selectedItem.rdvContext} referrer="LBA" showInModal />
             </>
           )}
+          {selectedItem.ideaType === LBA_ITEM_TYPE_OLD.FORMATION && <ItemDetailApplicationsStatus item={selectedItem} mt={2} mb={2} />}
         </Box>
       </Box>
 
@@ -179,8 +180,6 @@ const LoadedItemDetail = ({ handleClose, handleSelectItem }) => {
       {kind === LBA_ITEM_TYPE_OLD.MATCHA && <LbaJobDetail job={selectedItem} />}
       {kind === LBA_ITEM_TYPE_OLD.LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompany} />}
       {kind === LBA_ITEM_TYPE_OLD.FORMATION && <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} />}
-
-      {kind !== LBA_ITEM_TYPE_OLD.LBA && <LocationDetail item={selectedItem} isCfa={isCfa} />}
 
       <AideApprentissage />
 
