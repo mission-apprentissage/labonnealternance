@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
-import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 import { ComputedUserAccess, IUserRecruteurPublic } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
@@ -151,7 +151,7 @@ export const getPublicUserRecruteurPropsOrError = async (
     return { ...commonFields, establishment_siret: siret, establishment_id: recruiter.establishment_id }
   }
   if (type === OPCO) {
-    return { ...commonFields, scope: parseEnumOrError(OPCOS, mainRole.authorized_id) }
+    return { ...commonFields, scope: parseEnumOrError(OPCOS_LABEL, mainRole.authorized_id) }
   }
   return commonFields
 }
@@ -166,7 +166,7 @@ export const getComputedUserAccess = (userId: string, grantedRoles: IRoleManagem
     entreprises: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : [])),
     opcos: grantedRoles.flatMap((role) => {
       if (role.authorized_type === AccessEntityType.OPCO) {
-        const opco = parseEnum(OPCOS, role.authorized_id)
+        const opco = parseEnum(OPCOS_LABEL, role.authorized_id)
         if (opco) {
           return [opco]
         }

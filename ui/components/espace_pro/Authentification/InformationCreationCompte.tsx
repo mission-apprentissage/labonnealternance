@@ -3,7 +3,7 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { IRecruiterJson, assertUnreachable, parseEnum } from "shared"
-import { CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { IUserWithAccountJson } from "shared/models/userWithAccount.model"
 import * as Yup from "yup"
 
@@ -26,7 +26,7 @@ const Formulaire = ({ submitForm }) => {
   const informationSiret = JSON.parse(informationSiretString || "{}")
 
   const { email = "", establishment_siret = "" } = informationSiret ?? {}
-  const opco = parseEnum(OPCOS, informationSiret.opco)
+  const opco = parseEnum(OPCOS_LABEL, informationSiret.opco)
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
 
   return (

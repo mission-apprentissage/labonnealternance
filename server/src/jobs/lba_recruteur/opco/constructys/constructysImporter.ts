@@ -3,7 +3,7 @@ import path from "path"
 
 import { oleoduc, transformData, writeData } from "oleoduc"
 import { removeAccents } from "shared"
-import { OPCOS } from "shared/constants/recruteur"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
@@ -14,7 +14,7 @@ import { logger } from "../../../../common/logger"
 import { fileDownloader, parseCsv } from "../../../../common/utils/fileUtils"
 import config from "../../../../config"
 
-const importer = async (filePath: string, opco_label: OPCOS, parallelism: number) => {
+const importer = async (filePath: string, opco_label: OPCOS_LABEL, parallelism: number) => {
   logger.info(`Deleting collection entries for ${opco_label}...`)
   await getDbCollection("referentielopcos").deleteMany({ opco_label })
 
@@ -74,7 +74,7 @@ export const importReferentielOpcoFromConstructys = async (parallelism = 10) => 
   await fileDownloader(filePath, remoteFileName, config.ftp.constructys)
 
   logger.info("Importing file...")
-  const opco_label = OPCOS.CONSTRUCTYS
+  const opco_label = OPCOS_LABEL.CONSTRUCTYS
   const result = await importer(filePath, opco_label, parallelism)
   return result
 }

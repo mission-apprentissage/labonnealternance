@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { OPCOS, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { IApplication, ICredential, IEmailBlacklist, IJob, ILbaCompany, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany } from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
@@ -319,7 +319,7 @@ export const saveOpcoUserTest = async () => {
   })
   const role = await saveRoleManagement({
     user_id: user._id,
-    authorized_id: OPCOS.AKTO,
+    authorized_id: OPCOS_LABEL.AKTO,
     authorized_type: AccessEntityType.OPCO,
     status: [roleManagementEventFactory()],
   })
