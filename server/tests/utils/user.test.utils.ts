@@ -39,7 +39,7 @@ function getFixture() {
       filter: ({ context }) => context.path.at(-1) === "geopoint",
       output: ({ transform }) => ({
         type: "Point",
-        coordinates: [transform.utils.random.float(), transform.utils.random.float()],
+        coordinates: [transform.utils.random.float({ min: -180, max: 180 }), transform.utils.random.float({ min: -90, max: 90 })],
       }),
     }),
     Generator({
@@ -234,11 +234,11 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   return u
 }
 
-export async function saveJobPartnerTest(data: Partial<IJobsPartners> = {}) {
+export async function saveJobPartnerTest(data: Partial<IJobsPartners> = {}): Promise<IJobsPartners> {
   return await saveDbEntity(ZJobsPartners, (item) => getDbCollection("jobs_partners").insertOne(item), data)
 }
 
-export async function createRecruteurLbaTest(data: Partial<ILbaCompany>) {
+export async function createRecruteurLbaTest(data: Partial<ILbaCompany>): Promise<ILbaCompany> {
   return await saveDbEntity(ZLbaCompany, (item) => getDbCollection("recruteurslba").insertOne(item), data)
 }
 
