@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { ObjectId } from "mongodb"
+import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, IRecruiter, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -51,50 +51,40 @@ export const getJobs = async ({
   caller?: string | null
   isMinimalData: boolean
 }): Promise<IRecruiter[]> => {
-  const clauses: any[] = [
-    { "jobs.job_status": JOB_STATUS.ACTIVE },
-    { "jobs.rome_code": { $in: romes } },
-    { status: RECRUITER_STATUS.ACTIF },
-    { jobs: { $exists: true, $not: { $size: 0 } } },
-  ]
+  const query: Filter<IRecruiter> = {
+    status: RECRUITER_STATUS.ACTIF,
+    "jobs.job_status": JOB_STATUS.ACTIVE,
+    "jobs.rome_code": { $in: romes },
+  }
 
-  if (niveau && niveau !== "Indifférent") {
-    clauses.push({
-      $or: [
-        {
-          "jobs.job_level_label": niveau,
-        },
-        {
-          "jobs.job_level_label": NIVEAUX_POUR_LBA["INDIFFERENT"],
-        },
-      ],
-    })
+  if (niveau && niveau !== NIVEAUX_POUR_LBA["INDIFFERENT"]) {
+    query["jobs.job_level_label"] = { $in: [niveau, NIVEAUX_POUR_LBA["INDIFFERENT"]] }
   }
 
   if (caller) {
-    clauses.push({ "jobs.is_multi_published": true })
+    query["jobs.is_multi_published"] = true
   }
 
-  const stages: any[] = [
+  const stages: Document[] = [
+    {
+      $geoNear: {
+        near: { type: "Point", coordinates: [lon, lat] },
+        distanceField: "distance",
+        maxDistance: distance * 1000,
+        query,
+      },
+    },
     {
       $limit: JOB_SEARCH_LIMIT,
     },
   ]
 
-  const query: any = { $and: clauses }
+  // TODO: add a limit stage in romeDetailAggregateStages to limit number of jobs (not only number of recruiters)
+  if (!isMinimalData) {
+    stages.push(...romeDetailAggregateStages)
+  }
 
-  stages.unshift({
-    $geoNear: {
-      near: { type: "Point", coordinates: [lon, lat] },
-      distanceField: "distance",
-      maxDistance: distance * 1000,
-      query,
-    },
-  })
-
-  const recruiters: IRecruiter[] = (await getDbCollection("recruiters")
-    .aggregate(isMinimalData ? stages : [...stages, ...romeDetailAggregateStages])
-    .toArray()) as IRecruiter[]
+  const recruiters = await getDbCollection("recruiters").aggregate<IRecruiter>(stages).toArray()
 
   const recruitersWithJobs = await Promise.all(
     recruiters.map(async (recruiter) => {

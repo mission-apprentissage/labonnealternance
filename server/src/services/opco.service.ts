@@ -1,5 +1,5 @@
 import memoize from "memoizee"
-import { OPCOS } from "shared/constants/recruteur"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { IReferentielOpco, ZReferentielOpcoInsert } from "shared/models"
 import { IOpco } from "shared/models/opco.model"
 
@@ -30,14 +30,14 @@ export const saveOpco = async (opcoData: Omit<IOpco, "_id">) => getDbCollection(
  * @param {string} shortName
  * @returns {string}
  */
-export const getOpcoLongName = memoize((shortName: string) => Object.values(OPCOS).find((k) => OPCOS[k] === shortName.toUpperCase()))
+export const getOpcoLongName = memoize((shortName: string) => Object.values(OPCOS_LABEL).find((k) => OPCOS_LABEL[k] === shortName.toUpperCase()))
 
 /**
  * @description retourne le nom court d'un opco en paramètre
  * @param {string} longName
  * @returns {string}
  */
-const getOpcoShortName = (longName: string) => Object.keys(OPCOS).find((k) => OPCOS[k] === longName)
+const getOpcoShortName = (longName: string) => Object.keys(OPCOS_LABEL).find((k) => OPCOS_LABEL[k] === longName)
 
 export const getMemoizedOpcoShortName = memoize(getOpcoShortName)
 
@@ -70,7 +70,7 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
   }
 
   if (opco) {
-    searchForOpcoParams.opco = OPCOS[opco.toUpperCase()]
+    searchForOpcoParams.opco = OPCOS_LABEL[opco.toUpperCase()]
   }
 
   const foundInMongoOpcos = await getDbCollection("opcos").find(searchForOpcoParams).toArray()
@@ -137,7 +137,7 @@ export const prepareReferentielOpcoForInsert = (referentiel: Omit<IReferentielOp
 export const cfaDockOpcoItemToIOpco = (opcoItem: ICfaDockOpcoItem) => {
   const result: Omit<IOpco, "_id"> = {
     siren: opcoItem.filters.siret,
-    opco: opcoItem.opcoName ?? "",
+    opco: opcoItem.opcoName,
     opco_short_name: getMemoizedOpcoShortName(opcoItem.opcoName ?? ""),
     url: opcoItem.url,
     idcc: opcoItem.idcc?.toString(),

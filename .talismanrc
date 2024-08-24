@@ -113,6 +113,10 @@ fileignoreconfig:
   checksum: d63fdd6737a8592a88458d1948ea96434727c3e7960f038a66a8c30df1652260
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
+- filename: shared/fixtures/recruiter.fixture.ts
+  checksum: c540cb13c2235d69c13e1964e3391b9c935bf7991dafe2cc21e9965c974378e6
+- filename: shared/fixtures/userWithAccount.fixture.ts
+  checksum: bf864b963375d5836150faf3e343e482a8612552581bd39be21b4f1e8f566971
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
@@ -189,10 +193,6 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
-- filename: cypress/pages/LoginPage.ts
-  checksum: b7f7dceff16e342a7fd4bfe2d017d33edd2ec5da256571ca5ef81a0e058b954e
-- filename: cypress/e2e/check-admin-algo-company.cy.ts
-  checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 scopeconfig:
 - scope: node
 custom_patterns:

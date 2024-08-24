@@ -1,7 +1,7 @@
 import { Box, Button, FormControl, FormLabel, HStack, Input, VStack, useToast } from "@chakra-ui/react"
 import { FormikProvider, useFormik } from "formik"
 import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusEvent, parseEnum } from "shared"
-import { OPCOS } from "shared/constants"
+import { OPCOS_LABEL } from "shared/constants"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFields } from "shared/models/userWithAccount.model"
 import { toFormikValidationSchema } from "zod-formik-adapter"
@@ -136,7 +136,7 @@ export const AdminUserForm = ({
           </HStack>
         </>
       )}
-      <UserFieldsForm user={user} onSubmit={onSubmit} type={parseEnum({ OPCO, ADMIN }, role?.authorized_type)} opco={parseEnum(OPCOS, role?.authorized_id)} />
+      <UserFieldsForm user={user} onSubmit={onSubmit} type={parseEnum({ OPCO, ADMIN }, role?.authorized_type)} opco={parseEnum(OPCOS_LABEL, role?.authorized_id)} />
     </>
   )
 }
@@ -164,7 +164,7 @@ const UserFieldsForm = ({
   onSubmit,
 }: {
   user?: IUserWithAccountJson
-  opco?: OPCOS
+  opco?: OPCOS_LABEL
   type?: typeof AUTHTYPE.ADMIN | typeof AUTHTYPE.OPCO
   onSubmit: (values: INewSuperUser) => void
 }) => {
@@ -210,7 +210,7 @@ const UserFieldsForm = ({
             <CustomFormControl name="opco" label="OPCO">
               <CustomSelect
                 name="opco"
-                possibleValues={Object.values(OPCOS)}
+                possibleValues={Object.values(OPCOS_LABEL)}
                 value={values.opco}
                 onChange={(newValue) => formik?.setFieldValue("opco", newValue, true)}
                 dataTestId="select-opco"
