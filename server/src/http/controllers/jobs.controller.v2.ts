@@ -18,7 +18,7 @@ import dayjs from "../../services/dayjs.service"
 import { getEntrepriseDataFromSiret, getGeoCoordinates, getOpcoData } from "../../services/etablissement.service"
 import { addExpirationPeriod, getFormulaires } from "../../services/formulaire.service"
 import { getFtJobFromIdV2 } from "../../services/ftjob.service"
-import { findJobsOpportunityResponseFromRncp, findJobsOpportunityResponseFromRome, getJobsQuery, mergePatchWithDb } from "../../services/jobOpportunity.service"
+import { getJobsQuery, mergePatchWithDb, findJobsOpportunityResponseFromRncp, findJobsOpportunityResponseFromRome } from "../../services/jobOpportunity.service"
 import { addOffreDetailView, getLbaJobByIdV2 } from "../../services/lbajob.service"
 import { getCompanyFromSiret } from "../../services/recruteurLba.service"
 import { Server } from "../server"
@@ -136,19 +136,26 @@ export default (server: Server) => {
         offer_opening_count: rest.offer_opening_count ?? 1,
         offer_multicast: rest.offer_multicast ?? true,
         offer_origin: rest.offer_origin ?? null,
-        offer_diploma_level: offer_diploma_level_european == null ? null : { european: offer_diploma_level_european, label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european] },
         workplace_siret,
         workplace_geopoint: geopoint,
         workplace_address: {
           label: workplace_address ?? siretInformation.address!,
         },
+        offer_diploma_level:
+          offer_diploma_level_european == null
+            ? null
+            : {
+                european: offer_diploma_level_european,
+                label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european],
+              },
         workplace_website: rest.workplace_website ?? null,
         workplace_description: rest.workplace_description ?? null,
-        workplace_name: siretInformation.establishment_raison_sociale ?? siretInformation.establishment_enseigne ?? null,
+        workplace_name: siretInformation.establishment_enseigne ?? siretInformation.establishment_raison_sociale ?? null,
         workplace_naf_label: siretInformation.naf_label ?? null,
         workplace_naf_code: siretInformation.naf_code ?? null,
         workplace_opco: zOpcoLabel.safeParse(opcoData?.opco).data ?? null,
-        workplace_idcc: opcoData?.idcc ? Number(opcoData.idcc) : null,
+        // En cas d'OPCO multiple on met une string invalide dans le champs idcc (getOpcoFromCfaDock)
+        workplace_idcc: opcoData?.idcc == null || Number.isNaN(parseInt(opcoData.idcc, 10)) ? null : parseInt(opcoData.idcc, 10),
         workplace_size: siretInformation.establishment_size ?? null,
         contract_remote: rest.contract_remote ?? null,
         apply_url: rest.apply_url ?? null,
@@ -410,6 +417,6 @@ export default (server: Server) => {
   })
 
   server.get("/jobs/rncp", { schema: zRoutes.get["/jobs/rncp"], onRequest: server.auth(zRoutes.get["/jobs/rncp"]) }, async (req, res) => {
-    return res.send(await findJobsOpportunityResponseFromRncp(req.query, { caller: "api-apprentissage", route: zRoutes.get["/jobs/rome"] }))
+    return res.send(await findJobsOpportunityResponseFromRncp(req.query, { route: zRoutes.get["/jobs/rncp"], caller: "api-apprentissage" }))
   })
 }

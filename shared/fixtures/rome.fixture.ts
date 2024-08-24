@@ -2,12 +2,10 @@ import { ObjectId } from "bson"
 
 import { IReferentielRome } from "../models"
 
-import { getFixtureValue } from "./fixture_helper"
-
 export function generateReferentielRome(data: Partial<IReferentielRome>): IReferentielRome {
   return {
-    _id: getFixtureValue(data, "_id", new ObjectId()),
-    competences: getFixtureValue(data, "competences", {
+    _id: new ObjectId(),
+    competences: {
       savoir_faire: [
         {
           libelle: "Production, Fabrication",
@@ -54,16 +52,16 @@ export function generateReferentielRome(data: Partial<IReferentielRome>): IRefer
           ],
         },
       ],
-    }),
+    },
 
-    numero: getFixtureValue(data, "numero", "8411Z"),
-    rome: getFixtureValue(data, "rome", {
+    numero: "8411Z",
+    rome: {
       code_rome: "M1602",
       intitule: "Opérations administratives",
       code_ogr: "475",
-    }),
-    definition: getFixtureValue(data, "definition", "Exécute des travaux administratifs courants"),
-    acces_metier: getFixtureValue(data, "acces_metier", "Ce métier est accessible avec un diplôme de fin d'études secondaires"),
+    },
+    definition: "Exécute des travaux administratifs courants",
+    acces_metier: "Ce métier est accessible avec un diplôme de fin d'études secondaires",
     ...data,
   }
 }

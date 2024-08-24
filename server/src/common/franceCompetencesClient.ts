@@ -1,5 +1,5 @@
 import axios from "axios"
-import { IOpcoLabel, OPCOS } from "shared/constants/recruteur"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { assertUnreachable, parseEnum } from "shared/utils"
 
@@ -42,24 +42,24 @@ const ZOpcoResponse = z.union([
   }),
 ])
 
-const mappingOpcoNames: Record<string, IOpcoLabel> = {
-  AKTO: OPCOS.AKTO,
-  "OPCO EP": OPCOS.EP,
-  "UNIFORMATION COHESION SOCIALE": OPCOS.UNIFORMATION,
-  "OPCO MOBILITES": OPCOS.MOBILITE,
-  OPCO2I: OPCOS.OPCO2I,
+const mappingOpcoNames: Record<string, OPCOS_LABEL> = {
+  AKTO: OPCOS_LABEL.AKTO,
+  "OPCO EP": OPCOS_LABEL.EP,
+  "UNIFORMATION COHESION SOCIALE": OPCOS_LABEL.UNIFORMATION,
+  "OPCO MOBILITES": OPCOS_LABEL.MOBILITE,
+  OPCO2I: OPCOS_LABEL.OPCO2I,
 }
 
-export const FCOpcoToOpcoEnum = (fcOpco: string): IOpcoLabel => {
-  const parsedOpco = parseEnum(OPCOS, fcOpco)
-  const finalOpco: IOpcoLabel | undefined = mappingOpcoNames[fcOpco] ?? parsedOpco ?? undefined
+export const FCOpcoToOpcoEnum = (fcOpco: string): OPCOS_LABEL => {
+  const parsedOpco = parseEnum(OPCOS_LABEL, fcOpco)
+  const finalOpco: OPCOS_LABEL | undefined = mappingOpcoNames[fcOpco] ?? parsedOpco ?? undefined
   if (!finalOpco) {
     throw new Error(`opco inconnu: ${fcOpco}`)
   }
   return finalOpco
 }
 
-export const FCGetOpcoInfos = async (siret: string): Promise<IOpcoLabel | null> => {
+export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS_LABEL | null> => {
   try {
     const response = await axios.get(`${baseUrl}/siropartfc/${encodeURIComponent(siret)}`, {
       headers: {

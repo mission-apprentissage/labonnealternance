@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
+import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
@@ -10,15 +10,11 @@ import { zOpcoLabel } from "./opco.model"
 
 const collectionName = "jobs_partners" as const
 
-export const JOBPARTNERS_LABEL = {
-  HELLOWORK: "Hellowork",
-  OFFRES_EMPLOI_LBA: "La bonne alternance",
-  OFFRES_EMPLOI_FRANCE_TRAVAIL: "France Travail",
-} as const
-
-export type IJobPartnersKey = keyof typeof JOBPARTNERS_LABEL
-
-export type IJobPartnersLabel = (typeof JOBPARTNERS_LABEL)[IJobPartnersKey]
+export enum JOBPARTNERS_LABEL {
+  HELLOWORK = "Hellowork",
+  OFFRES_EMPLOI_LBA = "La bonne alternance",
+  OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
+}
 
 export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
@@ -41,7 +37,9 @@ export const ZJobsPartnersRecruiterApi = z.object({
   apply_phone: z.string().nullable().describe("Téléphone de contact"),
 })
 
-const zDiplomaEuropeanLevel = extensions.buildEnumKeys(NIVEAU_DIPLOME_LABEL)
+export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
+
+export type INiveauDiplomeEuropeen = z.output<typeof zDiplomaEuropeanLevel>
 
 export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   _id: true,
@@ -61,8 +59,8 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   offer_diploma_level: z
     .object({
-      european: zDiplomaEuropeanLevel.nullable().describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
-      label: z.string().nullable().describe("Libellé du niveau de diplome"),
+      european: zDiplomaEuropeanLevel.describe("Niveau de diplome visé en fin d'étude, transformé pour chaque partenaire"),
+      label: z.string().describe("Libellé du niveau de diplome"),
     })
     .nullable(),
   offer_desired_skills: z.array(z.string()).describe("Compétence attendues par le candidat pour l'offre").nullable(),

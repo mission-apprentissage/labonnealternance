@@ -3,7 +3,7 @@ import { randomUUID } from "crypto"
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IUser } from "shared"
-import { ETAT_UTILISATEUR, IOpcoLabel } from "shared/constants/recruteur"
+import { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
@@ -46,7 +46,7 @@ export const cleanHardbouncedAppointmentUser = async (email: string) => {
 }
 
 export const getUserAndRecruitersDataForOpcoUser = async (
-  opco: IOpcoLabel
+  opco: OPCOS_LABEL
 ): Promise<{
   awaiting: IUserForOpco[]
   active: IUserForOpco[]

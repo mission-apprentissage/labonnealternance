@@ -1,7 +1,6 @@
-import { NIVEAU_DIPLOME_LABEL } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJobsPartnersOfferApi, ZJobsPartnersRecruiterApi } from "../models/jobsPartners.model"
+import { zDiplomaEuropeanLevel, ZJobsPartnersOfferApi, ZJobsPartnersRecruiterApi } from "../models/jobsPartners.model"
 
 const romes = extensions.romeCodeArray()
 const rncp = extensions.rncpCode()
@@ -10,7 +9,7 @@ const ZJobOpportunityQuerystringBase = z.object({
   latitude: extensions.latitude(),
   longitude: extensions.longitude(),
   radius: z.number().min(0).max(200).default(30),
-  diplomaLevel: extensions.buildEnumKeys(NIVEAU_DIPLOME_LABEL).optional(),
+  diplomaLevel: zDiplomaEuropeanLevel.optional(),
 })
 
 export const ZJobOpportunityRome = ZJobOpportunityQuerystringBase.extend({ romes })

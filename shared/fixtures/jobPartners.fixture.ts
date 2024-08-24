@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 
 import { JOB_STATUS } from "../models"
-import { IJobsPartnersOfferPrivate } from "../models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPartners.model"
 
 export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOfferPrivate>): IJobsPartnersOfferPrivate {
   return {
@@ -25,7 +25,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
 
     apply_url: null,
     apply_phone: null,
-    partner: "Hellowork",
+    partner: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: null,
 
     contract_start: null,

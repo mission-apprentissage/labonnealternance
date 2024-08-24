@@ -1,4 +1,4 @@
-import { OPCOS } from "../constants"
+import { OPCOS_LABEL } from "../constants"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -6,7 +6,7 @@ import { zObjectId, IModelDescriptor } from "./common"
 
 const collectionName = "opcos" as const
 
-export const zOpcoLabel = extensions.buildEnum(OPCOS).describe("Opco de rattachement de l'établissement")
+export const zOpcoLabel = extensions.buildEnum(OPCOS_LABEL).describe("Opco de rattachement de l'établissement")
 
 export const ZOpco = z
   .object({

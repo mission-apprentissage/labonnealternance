@@ -45,25 +45,20 @@ export const REGEX = {
   TELEPHONE: /^[0-9]{10}$/,
 } as const
 
-export const OPCOS = {
-  AFDAS: "AFDAS",
-  AKTO: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
-  ATLAS: "ATLAS",
-  CONSTRUCTYS: "Constructys",
-  OPCOMMERCE: "L'Opcommerce",
-  OCAPIAT: "OCAPIAT",
-  OPCO2I: "OPCO 2i",
-  EP: "Opco entreprises de proximité",
-  MOBILITE: "Opco Mobilités",
-  SANTE: "Opco Santé",
-  UNIFORMATION: "Uniformation, l'Opco de la Cohésion sociale",
-  PASS: "pass",
-  MULTIPLE: "Opco multiple",
-} as const
-
-export type IOpcoKey = keyof typeof OPCOS
-
-export type IOpcoLabel = (typeof OPCOS)[IOpcoKey]
+export enum OPCOS_LABEL {
+  AFDAS = "AFDAS",
+  AKTO = "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+  ATLAS = "ATLAS",
+  CONSTRUCTYS = "Constructys",
+  OPCOMMERCE = "L'Opcommerce",
+  OCAPIAT = "OCAPIAT",
+  OPCO2I = "OPCO 2i",
+  EP = "Opco entreprises de proximité",
+  MOBILITE = "Opco Mobilités",
+  SANTE = "Opco Santé",
+  UNIFORMATION = "Uniformation, l'Opco de la Cohésion sociale",
+  PASS = "pass",
+}
 
 export const NIVEAUX_POUR_LBA = {
   INDIFFERENT: "Indifférent",
@@ -76,14 +71,14 @@ export const NIVEAUX_POUR_LBA = {
 
 export type INiveauPourLbaKey = keyof typeof NIVEAUX_POUR_LBA
 
-export type INiveauPourLbaValue = (typeof NIVEAUX_POUR_LBA)[INiveauPourLbaKey]
+export type INiveauPourLbaLabel = (typeof NIVEAUX_POUR_LBA)[INiveauPourLbaKey]
 
 export const NIVEAU_DIPLOME_LABEL = {
-  "3": NIVEAUX_POUR_LBA["3 (CAP...)"],
-  "4": NIVEAUX_POUR_LBA["4 (BAC...)"],
-  "5": NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"],
-  "6": NIVEAUX_POUR_LBA["6 (Licence, BUT...)"],
-  "7": NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"],
+  "3": "Cap, autres formations niveau (Infrabac)",
+  "4": "BP, Bac, autres formations niveau (Bac)",
+  "5": "BTS, DEUST, autres formations niveau (Bac+2)",
+  "6": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+  "7": "Master, titre ingénieur, autres formations niveau (Bac+5)",
 } as const
 
 export type INiveauDiplomeEuropeen = keyof typeof NIVEAU_DIPLOME_LABEL

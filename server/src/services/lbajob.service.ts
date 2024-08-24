@@ -3,7 +3,7 @@ import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { INiveauPourLbaValue, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { INiveauPourLbaLabel, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -42,7 +42,6 @@ export const getJobs = async ({
   niveau,
   caller,
   isMinimalData,
-  limit,
 }: {
   distance: number
   lat: number | undefined
@@ -51,7 +50,6 @@ export const getJobs = async ({
   niveau: string | null
   caller?: string | null
   isMinimalData: boolean
-  limit?: number
 }): Promise<IRecruiter[]> => {
   const query: Filter<IRecruiter> = {
     status: RECRUITER_STATUS.ACTIF,
@@ -77,10 +75,11 @@ export const getJobs = async ({
       },
     },
     {
-      $limit: limit ?? JOB_SEARCH_LIMIT,
+      $limit: JOB_SEARCH_LIMIT,
     },
   ]
 
+  // TODO: add a limit stage in romeDetailAggregateStages to limit number of jobs (not only number of recruiters)
   if (!isMinimalData) {
     stages.push(...romeDetailAggregateStages)
   }
@@ -130,7 +129,7 @@ export const getLbaJobsV2 = async ({
   lat: number
   lon: number
   romes: string[]
-  niveau: INiveauPourLbaValue | null
+  niveau: INiveauPourLbaLabel | null
   limit: number
 }): Promise<IJobResult[]> => {
   const jobFilters: Filter<IRecruiter> = {
@@ -172,9 +171,8 @@ export const getLbaJobsV2 = async ({
           as: "jobs.rome_detail",
         },
       },
-      {
-        $unwind: { path: "$jobs.rome_detail" },
-      },
+      // TODO: what about multiple romes???
+      { $unwind: { path: "$jobs.rome_detail" } },
     ])
     .toArray()
 
