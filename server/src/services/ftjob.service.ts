@@ -269,43 +269,37 @@ export const getFtJobsV2 = async ({
   diploma,
 }: {
   romes: string[]
-  insee?: string
+  insee: string | null
   radius: number
   jobLimit: number
   caller: string
-  diploma: string
+  diploma: keyof typeof NIVEAUX_POUR_OFFRES_PE | null | undefined
   api: string
-}): Promise<FTResponse | { resultats: [] }> => {
+}): Promise<FTResponse> => {
   try {
-    const hasLocation = insee ? true : false
-
-    // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
-    let codeInsee = insee
-    if (insee === "75056") codeInsee = "75101"
-    else if (insee === "13055") codeInsee = "13201"
-    else if (insee === "69123") codeInsee = "69381"
-
     const distance = radius || 10
 
     const params: { codeROME: string; commune?: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
       codeROME: romes.join(","),
-      commune: codeInsee,
-      sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
+      sort: 0,
       natureContrat: "E2,FS", //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
       range: `0-${jobLimit - 1}`,
     }
 
-    if (diploma) {
-      const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
-      if (niveauRequis && niveauRequis !== "NV5") {
-        // pas de filtrage sur niveau requis NV5 car pas de résultats
-        params.niveauFormation = niveauRequis
-      }
+    if (insee) {
+      // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
+      let codeInsee = insee
+      if (insee === "75056") codeInsee = "75101"
+      else if (insee === "13055") codeInsee = "13201"
+      else if (insee === "69123") codeInsee = "69381"
+
+      params.commune = codeInsee
+      params.distance = distance || 10
+      params.sort = 2
     }
 
-    if (hasLocation) {
-      params.insee = codeInsee
-      params.distance = distance
+    if (diploma) {
+      params.niveauFormation = NIVEAUX_POUR_OFFRES_PE[diploma]
     }
 
     const jobs = await searchForFtJobs(params)

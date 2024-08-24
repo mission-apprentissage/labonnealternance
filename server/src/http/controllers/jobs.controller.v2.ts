@@ -419,13 +419,13 @@ export default (server: Server) => {
       getJobs({
         romes: payload.romes,
         distance: payload.radius,
-        niveau: payload.diploma,
+        niveau: null, // payload.diploma,
         lat: payload.latitude,
         lon: payload.longitude,
         isMinimalData: false,
       }),
       getJobsPartnersFromDB(payload),
-      getFtJobsV2({ jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rome"].path, ...payload, insee: payload.insee ?? undefined }),
+      getFtJobsV2({ diploma: null, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rome"].path, ...payload, insee: payload.insee ?? null }),
     ])
 
     return res.send({
@@ -450,13 +450,13 @@ export default (server: Server) => {
       getJobs({
         romes,
         distance: payload.radius,
-        niveau: payload.diploma,
+        niveau: null, // payload.diploma,
         lat: payload.latitude,
         lon: payload.longitude,
         isMinimalData: false,
       }),
       getJobsPartnersFromDB({ ...payload, romes }),
-      getFtJobsV2({ romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rncp"].path, ...payload, insee: payload.insee ?? undefined }),
+      getFtJobsV2({ diploma: null, romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rncp"].path, ...payload, insee: payload.insee ?? null }),
     ])
 
     return res.send({
