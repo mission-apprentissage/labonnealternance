@@ -73,10 +73,11 @@ export const NIVEAUX_POUR_LBA = {
 // en revanche pour l'api offres de France Travail le filtre sur le niveau est le niveau
 // requis en entrée.
 export const NIVEAUX_POUR_OFFRES_PE = {
-  "4 (BAC...)": "NV5",
-  "5 (BTS, DEUST...)": "NV4",
-  "6 (Licence, BUT...)": "NV3",
-  "7 (Master, titre ingénieur...)": "NV2",
+  "3 (CAP...)": "NV5",
+  "4 (BAC...)": "NV4",
+  "5 (BTS, DEUST...)": "NV3",
+  "6 (Licence, BUT...)": "NV2",
+  "7 (Master, titre ingénieur...)": "NV1",
 } as const
 
 export const UNSUBSCRIBE_EMAIL_ERRORS = {
