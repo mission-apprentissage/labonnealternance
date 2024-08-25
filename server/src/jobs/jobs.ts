@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb"
 
 import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
+import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 
 import { getLoggerWithContext } from "../common/logger"
 
@@ -217,6 +218,10 @@ export const CronsMap = {
     cron_string: "*/5 * * * *",
     handler: () => addJob({ name: "francetravail:token-offre", payload: {} }),
   },
+  "Mise à jour du référentiel commune": {
+    cron_string: "3 15 * * 6", // 15h03 le dimanche
+    handler: updateReferentielCommune,
+  },
 } satisfies Record<string, Omit<CronDef, "name">>
 
 export type CronName = keyof typeof CronsMap
@@ -354,6 +359,9 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "referentiel-opco:constructys:import": {
         const { parallelism } = job.payload
         return importReferentielOpcoFromConstructys(parseInt(parallelism))
+      }
+      case "referentiel:commune:import": {
+        return updateReferentielCommune()
       }
       case "anonymize-individual": {
         const { collection, id } = job.payload
