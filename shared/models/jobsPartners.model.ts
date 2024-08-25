@@ -6,6 +6,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
 import { JOB_STATUS, ZJobStartDateCreate } from "./job.model"
+import { zOpcoLabel } from "./opco.model"
 
 const collectionName = "jobs_partners" as const
 
@@ -28,7 +29,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   }),
   workplace_geopoint: ZPointGeometry.describe("Geolocalisation de l'offre"),
   workplace_idcc: z.number().nullable().describe("Identifiant convention collective"),
-  workplace_opco: z.string().nullable().describe("Nom de l'OPCO"), // enum ?
+  workplace_opco: zOpcoLabel.nullable().describe("Nom de l'OPCO"), // enum ?
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
