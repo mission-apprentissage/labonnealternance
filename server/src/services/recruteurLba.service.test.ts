@@ -4,12 +4,21 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
 import { describe, expect, it } from "vitest"
 
-import { getCompanyContactInfo } from "./recruteurLba.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
+import { getCompanyContactInfo, updateContactInfo } from "./recruteurLba.service"
 
 describe("/lbacompany/:siret/contactInfo", () => {
   const mockData = async () => {
     await createApplicationTest({ company_siret: "34843069553553", company_email: "application_company_email@test.com", company_name: "fake_company_name" })
     await createRecruteurLbaTest({ email: "recruteur_lba@test.com", phone: "0610101010", siret: "58006820882692", enseigne: "fake_company_name" })
+  }
+
+  const cleanup = async () => {
+    await getDbCollection("recruteurlbaupdateevents").deleteMany({})
+    await getDbCollection("recruteurslba").deleteMany({})
+    await getDbCollection("applications").deleteMany({})
+    await mockData()
   }
 
   useMongo(mockData, "beforeAll")
@@ -46,6 +55,20 @@ describe("/lbacompany/:siret/contactInfo", () => {
       expect.soft(error?.message).toBe("Société inconnue")
       expect.soft(error?.output?.statusCode).toBe(404)
     }
+  })
+
+  it("La suppression email / phone d'une société présente dans recruteursLba se fait et les événements correspondants sont générés", async () => {
+    const result = await updateContactInfo({ siret: "58006820882692", email: "", phone: "" })
+
+    expect.soft(result).toStrictEqual({
+      active: true,
+      siret: "58006820882692",
+      enseigne: "fake_company_name",
+      phone: "",
+      email: "",
+    })
+
+    await cleanup()
   })
 })
 
