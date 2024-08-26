@@ -1,7 +1,20 @@
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IEmailBlacklist, IJob, ILbaCompany, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany } from "shared/models"
+import {
+  IApplication,
+  ICredential,
+  IEmailBlacklist,
+  IJob,
+  ILbaCompany,
+  IRecruiter,
+  JOB_STATUS,
+  ZApplication,
+  ZCredential,
+  ZEmailBlacklist,
+  ZLbaCompany,
+  ZPointGeometry,
+} from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
@@ -67,6 +80,13 @@ function getFixture() {
           "62006652591225",
           "77147689105960",
         ]),
+    }),
+    Generator({
+      schema: ZPointGeometry,
+      output: ({ transform }) => ({
+        type: "Point",
+        coordinates: [transform.utils.random.float({ min: -180, max: 180 }), transform.utils.random.float({ min: -90, max: 90 })],
+      }),
     }),
   ])
 }
