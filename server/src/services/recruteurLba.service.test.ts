@@ -25,19 +25,32 @@ describe("/lbacompany/:siret/contactInfo", () => {
       email: "recruteur_lba@test.com",
     })
   })
+
+  it("La société issue de l'algo recruteurLba n'existe plus mais candidature dans applications", async () => {
+    const result = await getCompanyContactInfo({ siret: "34843069553553" })
+
+    expect.soft(result).toStrictEqual({
+      active: false,
+      siret: "34843069553553",
+      enseigne: "fake_company_name",
+      phone: "",
+      email: "",
+    })
+  })
+
+  it("La société issue de l'algo recruteurLba n'existe plus et pas de candidature dans applications", async () => {
+    try {
+      await getCompanyContactInfo({ siret: "34843069553555" })
+    } catch (error) {
+      expect.soft(error).toBeInstanceOf(Error)
+      expect.soft(error?.message).toBe("Société inconnue")
+      expect.soft(error?.output?.statusCode).toBe(404)
+    }
+  })
 })
 
 /*
 Liste des tests envisagés
-
-  récupération société issue de l'algo exisante
-  -> retour active: true, email = fixture, phone = fixture, enseigne ...
-
-  récupération société issue de l'algo pas existante mais présente dans applications
-  -> retoune active: false, email = "", phone ="" ; enseigne = fixture
-
-  récupération ni soc ni app
-  -> retourne 404
 
   enregistremen modifs société issue de l'algo suppression email et suppression phone
   -> génération de deux events delete
