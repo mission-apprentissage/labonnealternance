@@ -1,10 +1,10 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IGeoPoint, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { NIVEAU_DIPLOME_LABEL } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJobsPartners, IJobsPartnersPatchApiBody, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IJobOpportunityRncp, IJobOpportunityRome } from "shared/routes/jobOpportunity.routes"
+import { IJobsPartnersOfferPrivate, IJobsPartnersPatchApiBody, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -13,22 +13,13 @@ import { getFileSignedURL } from "../../common/utils/awsUtils"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { getRomeoInfos } from "../../services/cache.service"
-import { getRomesFromRncp } from "../../services/certification.service"
 import dayjs from "../../services/dayjs.service"
 import { getEntrepriseDataFromSiret, getGeoCoordinates, getOpcoData } from "../../services/etablissement.service"
 import { addExpirationPeriod, getFormulaires } from "../../services/formulaire.service"
-import { getFtJobFromIdV2, getFtJobsV2 } from "../../services/ftjob.service"
-import {
-  formatFranceTravailToJobPartner,
-  formatOffreEmploiLbaToJobPartner,
-  formatOffresEmploiPartenaire,
-  formatRecruteurLbaToJobPartner,
-  getJobsPartnersFromDB,
-  getJobsQuery,
-  mergePatchWithDb,
-} from "../../services/jobOpportunity.service"
-import { addOffreDetailView, getJobs, getLbaJobByIdV2 } from "../../services/lbajob.service"
-import { getCompanyFromSiret, getRecruteursLbaFromDB } from "../../services/recruteurLba.service"
+import { getFtJobFromIdV2 } from "../../services/ftjob.service"
+import { getJobsQuery, mergePatchWithDb, findJobsOpportunityResponseFromRncp, findJobsOpportunityResponseFromRome } from "../../services/jobOpportunity.service"
+import { addOffreDetailView, getLbaJobByIdV2 } from "../../services/lbajob.service"
+import { getCompanyFromSiret } from "../../services/recruteurLba.service"
 import { Server } from "../server"
 
 const config = {
@@ -89,7 +80,7 @@ export default (server: Server) => {
       config,
     },
     async (req, res) => {
-      const { workplace_siret, workplace_address, offer_title, offer_rome_code, ...rest } = req.body
+      const { workplace_siret, workplace_address, offer_title, offer_rome_code, offer_diploma_level_european, ...rest } = req.body
       let geopoint: IGeoPoint | null = null
       let romeCode = offer_rome_code ?? null
 
@@ -126,35 +117,43 @@ export default (server: Server) => {
       }
       const opcoData = await getOpcoData(workplace_siret)
       const now = new Date()
-      const job: IJobsPartners = {
+      const job: IJobsPartnersOfferPrivate = {
         ...rest,
         _id: new ObjectId(),
         created_at: now,
-        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-        partner_id: rest.partner_id ?? null,
+        partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        partner_job_id: rest.partner_job_id ?? null,
         offer_title,
         offer_rome_code: romeCode,
         offer_status: JOB_STATUS.ACTIVE,
-        offer_creation_date: rest.offer_creation_date ?? now,
-        offer_expiration_date: rest.offer_expiration_date ?? addExpirationPeriod(now).toDate(),
+        offer_creation: rest.offer_creation ?? now,
+        offer_expiration: rest.offer_expiration ?? addExpirationPeriod(now).toDate(),
         offer_desired_skills: rest.offer_desired_skills ?? null,
-        offer_acquired_skills: rest.offer_acquired_skills ?? null,
-        offer_access_condition: rest.offer_access_condition ?? null,
-        offer_count: rest.offer_count ?? 1,
+        offer_to_be_acquired_skills: rest.offer_to_be_acquired_skills ?? null,
+        offer_access_conditions: rest.offer_access_conditions ?? null,
+        offer_opening_count: rest.offer_opening_count ?? 1,
         offer_multicast: rest.offer_multicast ?? true,
         offer_origin: rest.offer_origin ?? null,
         workplace_siret,
         workplace_geopoint: geopoint,
-        workplace_address: workplace_address ?? siretInformation.address!,
-        workplace_raison_sociale: siretInformation.establishment_raison_sociale ?? null,
-        workplace_enseigne: siretInformation.establishment_enseigne ?? null,
+        workplace_address: {
+          label: workplace_address ?? siretInformation.address!,
+        },
+        offer_diploma_level:
+          offer_diploma_level_european == null
+            ? null
+            : {
+                european: offer_diploma_level_european,
+                label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european],
+              },
         workplace_website: rest.workplace_website ?? null,
         workplace_description: rest.workplace_description ?? null,
-        workplace_name: null,
+        workplace_name: siretInformation.establishment_enseigne ?? siretInformation.establishment_raison_sociale ?? null,
         workplace_naf_label: siretInformation.naf_label ?? null,
         workplace_naf_code: siretInformation.naf_code ?? null,
         workplace_opco: opcoData?.opco ?? null,
-        workplace_idcc: opcoData?.idcc ?? null,
+        // En cas d'OPCO multiple on met une string invalide dans le champs idcc (getOpcoFromCfaDock)
+        workplace_idcc: opcoData?.idcc == null || Number.isNaN(parseInt(opcoData.idcc, 10)) ? null : parseInt(opcoData.idcc, 10),
         workplace_size: siretInformation.establishment_size ?? null,
         contract_remote: rest.contract_remote ?? null,
         apply_url: rest.apply_url ?? null,
@@ -248,7 +247,7 @@ export default (server: Server) => {
       if (!job) {
         throw Boom.badRequest("Job does not exists")
       }
-      if (addExpirationPeriod(dayjs()).isSame(dayjs(job.offer_expiration_date), "day")) {
+      if (addExpirationPeriod(dayjs()).isSame(dayjs(job.offer_expiration), "day")) {
         throw Boom.badRequest("Job is already extended up to two month")
       }
 
@@ -412,60 +411,10 @@ export default (server: Server) => {
   )
 
   server.get("/jobs/rome", { schema: zRoutes.get["/jobs/rome"], onRequest: server.auth(zRoutes.get["/jobs/rome"]) }, async (req, res) => {
-    const payload: IJobOpportunityRome = req.query
-
-    const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
-      getRecruteursLbaFromDB(payload),
-      getJobs({
-        romes: payload.romes,
-        distance: payload.radius,
-        niveau: null, // payload.diploma,
-        lat: payload.latitude,
-        lon: payload.longitude,
-        isMinimalData: false,
-      }),
-      getJobsPartnersFromDB(payload),
-      getFtJobsV2({ diploma: null, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rome"].path, ...payload, insee: payload.insee ?? null }),
-    ])
-
-    return res.send({
-      jobs: [
-        ...formatOffreEmploiLbaToJobPartner(offreEmploiLba),
-        ...formatFranceTravailToJobPartner(franceTravail.resultats),
-        ...formatOffresEmploiPartenaire(offreEmploiPartenaire),
-      ],
-      recruiters: formatRecruteurLbaToJobPartner(recruterLba),
-    })
+    return res.send(await findJobsOpportunityResponseFromRome(req.query, { route: zRoutes.get["/jobs/rncp"], caller: "api-apprentissage" }))
   })
 
   server.get("/jobs/rncp", { schema: zRoutes.get["/jobs/rncp"], onRequest: server.auth(zRoutes.get["/jobs/rncp"]) }, async (req, res) => {
-    const payload: IJobOpportunityRncp = req.query
-    const romes = await getRomesFromRncp(payload.rncp)
-    if (!romes) {
-      throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
-    }
-
-    const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
-      getRecruteursLbaFromDB({ ...payload, romes }),
-      getJobs({
-        romes,
-        distance: payload.radius,
-        niveau: null, // payload.diploma,
-        lat: payload.latitude,
-        lon: payload.longitude,
-        isMinimalData: false,
-      }),
-      getJobsPartnersFromDB({ ...payload, romes }),
-      getFtJobsV2({ diploma: null, romes, jobLimit: 150, caller: "api-apprentissage", api: zRoutes.get["/jobs/rncp"].path, ...payload, insee: payload.insee ?? null }),
-    ])
-
-    return res.send({
-      jobs: [
-        ...formatOffreEmploiLbaToJobPartner(offreEmploiLba),
-        ...formatFranceTravailToJobPartner(franceTravail.resultats),
-        ...formatOffresEmploiPartenaire(offreEmploiPartenaire),
-      ],
-      recruiters: formatRecruteurLbaToJobPartner(recruterLba),
-    })
+    return res.send(await findJobsOpportunityResponseFromRncp(req.query, { route: zRoutes.get["/jobs/rncp"], caller: "api-apprentissage" }))
   })
 }

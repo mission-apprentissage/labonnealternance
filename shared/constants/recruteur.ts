@@ -69,6 +69,14 @@ export const NIVEAUX_POUR_LBA = {
   "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveau (Bac+5)",
 } as const
 
+export const NIVEAU_DIPLOME_LABEL = {
+  "3": "Cap, autres formations niveau (Infrabac)",
+  "4": "BP, Bac, autres formations niveau (Bac)",
+  "5": "BTS, DEUST, autres formations niveau (Bac+2)",
+  "6": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+  "7": "Master, titre ingénieur, autres formations niveau (Bac+5)",
+} as const
+
 // Note: notre moteur de recherche demande le niveau visé ce qui matche avec les offres lba.
 // en revanche pour l'api offres de France Travail le filtre sur le niveau est le niveau
 // requis en entrée.

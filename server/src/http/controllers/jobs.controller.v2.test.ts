@@ -3,7 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { createRecruteurLbaTest, saveJobPartnerTest } from "@tests/utils/user.test.utils"
 import nock from "nock"
-import { IJobsPartners, ZJobsPartnersPostApiBody } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, ZJobsPartnersPostApiBody } from "shared/models/jobsPartners.model"
 import { afterEach, describe, expect, it } from "vitest"
 
 describe("/jobs", () => {
@@ -15,7 +15,7 @@ describe("/jobs", () => {
   const geopoint = { type: "Point", coordinates: [7.120835315436125, -45.16534931026399] as [number, number] }
   const romesQuery = rome.join(",")
   const [longitude, latitude] = geopoint.coordinates
-  let jobPartnerOffer: IJobsPartners
+  let jobPartnerOffer: IJobsPartnersOfferPrivate
 
   const mockData = async () => {
     jobPartnerOffer = await saveJobPartnerTest({ offer_rome_code: rome, workplace_geopoint: geopoint })
@@ -344,7 +344,7 @@ describe("/jobs", () => {
         body: { contract_duration: 36 },
         headers: { authorization: `Bearer ${token}` },
       })
-      const data: IJobsPartners = response.json()
+      const data: IJobsPartnersOfferPrivate = response.json()
       expect(response.statusCode).toBe(200)
       expect(data.contract_duration).toEqual(36)
     })
