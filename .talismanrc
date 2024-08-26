@@ -30,7 +30,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 91d0fc33bf31fd738911d83194e8a749e3c5b0e4ce14254560cf6d08b0cb3fb5
+  checksum: c6e7c3be171a828eddf0ba79992dcef5d9c27bd64d11e817b7aa16c5fb91043a
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/pages/FlowAdminPage.ts
