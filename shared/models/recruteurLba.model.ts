@@ -39,15 +39,14 @@ export const ZLbaCompany = z
 
 export type ILbaCompany = z.output<typeof ZLbaCompany>
 
-export const ZLbaCompanyForContactUpdate = z
-  .object({
-    siret: z.string().describe("Le Siret de la société"), // use extension.siret
-    enseigne: z.string().nullish().describe("Enseigne de l'entreprise"),
-    email: z.string().nullish().describe("Adresse email de contact"),
-    phone: extensions.phone().nullish().describe("Numéro de téléphone de contact"),
-    active: z.boolean().describe("société présente dans recruteurslba ou non"),
-  })
-  .strict()
+export const ZLbaCompanyForContactUpdate = z.object({
+  siret: z.string().describe("Le Siret de la société"), // use extension.siret
+  enseigne: z.string().nullish().describe("Enseigne de l'entreprise"),
+  email: z.string().nullish().describe("Adresse email de contact"),
+  phone: extensions.phone().nullish().describe("Numéro de téléphone de contact"),
+  active: z.boolean().describe("société présente dans recruteurslba ou non"),
+})
+
 export type ILbaCompanyForContactUpdate = z.output<typeof ZLbaCompanyForContactUpdate>
 
 export default {
