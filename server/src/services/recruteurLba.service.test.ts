@@ -2,13 +2,13 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
 import Boom from "boom"
 import { ERecruteurLbaUpdateEventType } from "shared/models"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getCompanyContactInfo, updateContactInfo } from "./recruteurLba.service"
 
-useMongo(mockData, "beforeAll")
+useMongo()
 
 describe("/lbacompany/:siret/contactInfo", () => {
   beforeEach(async () => {
@@ -19,9 +19,9 @@ describe("/lbacompany/:siret/contactInfo", () => {
       await getDbCollection("recruteurlbaupdateevents").deleteMany({})
       await getDbCollection("recruteurslba").deleteMany({})
       await getDbCollection("applications").deleteMany({})
-      await mockData()
     }
   })
+
   it("La société issue de l'algo recruteurLba existe", async () => {
     const result = await getCompanyContactInfo({ siret: "58006820882692" })
 
@@ -74,8 +74,6 @@ describe("/lbacompany/:siret/contactInfo", () => {
 
     eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({ siret: "58006820882692", event: ERecruteurLbaUpdateEventType.DELETE_EMAIL })
     expect.soft(eventCount).toEqual(1)
-
-    await cleanup()
   })
 
   it("La suppression email / phone d'une société absente dans recruteursLba mais dans application. Aucun événement généré", async () => {
@@ -91,8 +89,6 @@ describe("/lbacompany/:siret/contactInfo", () => {
 
     const eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({})
     expect.soft(eventCount).toEqual(0)
-
-    await cleanup()
   })
 
   it("La modification email / phone d'une société présente dans recruteursLba se fait et les événements correspondants sont générés", async () => {
@@ -127,8 +123,6 @@ describe("/lbacompany/:siret/contactInfo", () => {
       value: "recruteur_lba_2@test.com",
     })
     expect.soft(eventCount).toEqual(1)
-
-    await cleanup()
   })
 
   it("La modification email / phone d'une société présente dans recruteursLba se fait et les événements correspondants sont générés", async () => {
@@ -155,8 +149,6 @@ describe("/lbacompany/:siret/contactInfo", () => {
       value: "recruteur_lba_2@test.com",
     })
     expect.soft(eventCount).toEqual(1)
-
-    await cleanup()
   })
 
   it("Tentative de modification si la société issue de l'algo recruteurLba n'existe plus et pas de candidature dans applications", async () => {
@@ -164,7 +156,5 @@ describe("/lbacompany/:siret/contactInfo", () => {
 
     const eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({})
     expect.soft(eventCount).toEqual(0)
-
-    await cleanup()
   })
 })
