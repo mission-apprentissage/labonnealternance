@@ -24,7 +24,7 @@ import {
   zSourcesParams,
 } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
-import { ZJobOpportunityRncp, ZJobOpportunityRome, ZJobsOpportunityResponse } from "./jobOpportunity.routes"
+import { ZJobOpportunityGetQuery, ZJobsOpportunityResponse } from "./jobOpportunity.routes"
 
 export const zJobsRoutesV2 = {
   get: {
@@ -126,73 +126,6 @@ export const zJobsRoutesV2 = {
         tags: ["V2 - Jobs"] as string[],
         description: `Get all jobs related to my organization\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "getJobs",
-      },
-    },
-    "/jobs": {
-      method: "get",
-      path: "/jobs",
-      querystring: z
-        .object({
-          romes: zRomesParams("rncp"),
-          rncp: zRncpsParams,
-          caller: zCallerParam.nullish(),
-          latitude: ZLatitudeParam,
-          longitude: ZLongitudeParam,
-          radius: ZRadiusParam,
-          insee: zInseeParams,
-          sources: zSourcesParams,
-          diploma: zDiplomaParam,
-          opco: zOpcoParams,
-          opcoUrl: zOpcoUrlParams,
-        })
-        .strict()
-        .passthrough(),
-      headers: zRefererHeaders,
-      response: {
-        "200": z
-          .object({
-            peJobs: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemFtJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            matchas: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemLbaJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            lbaCompanies: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemLbaCompany),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            lbbCompanies: z.null(), // always null until removal
-          })
-          .strict(),
-        "400": z.union([ZResError, ZLbacError, ZApiError]),
-        "500": z.union([ZResError, ZLbacError, ZApiError]),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "getJobOpportunities",
-        description: `Get job opportunities matching the query parameters\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs/min": {
@@ -363,23 +296,10 @@ export const zJobsRoutesV2 = {
         })}`,
       },
     },
-    "/jobs/rome": {
+    "/jobs": {
       method: "get",
-      path: "/jobs/rome",
-      querystring: ZJobOpportunityRome,
-      response: {
-        "200": ZJobsOpportunityResponse,
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
-    "/jobs/rncp": {
-      method: "get",
-      path: "/jobs/rncp",
-      querystring: ZJobOpportunityRncp,
+      path: "/jobs",
+      querystring: ZJobOpportunityGetQuery,
       response: {
         "200": ZJobsOpportunityResponse,
       },

@@ -10,7 +10,7 @@ import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
 
-import { getRomesFromRncp } from "./certification.service"
+import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 
 interface IWish {
   id: string

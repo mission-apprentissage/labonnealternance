@@ -265,7 +265,7 @@ export const getFtJobsV2 = async ({
   api,
   diploma,
 }: {
-  romes: string[]
+  romes: string[] | null
   insee: string | null
   radius: number
   jobLimit: number
@@ -276,11 +276,14 @@ export const getFtJobsV2 = async ({
   try {
     const distance = radius || 10
 
-    const params: { codeROME: string; commune?: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
-      codeROME: romes.join(","),
+    const params: Parameters<typeof searchForFtJobs>[0] = {
       sort: 0,
       natureContrat: "E2,FS", //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
       range: `0-${jobLimit - 1}`,
+    }
+
+    if (romes) {
+      params.codeROME = romes.join(",")
     }
 
     if (insee) {
