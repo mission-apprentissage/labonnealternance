@@ -7,22 +7,20 @@ import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getCompanyContactInfo, updateContactInfo } from "./recruteurLba.service"
+useMongo(mockData, "beforeAll")
 
 describe("/lbacompany/:siret/contactInfo", () => {
-  const mockData = async () => {
+  beforeEach(async () => {
     await createApplicationTest({ company_siret: "34843069553553", company_email: "application_company_email@test.com", company_name: "fake_company_name" })
     await createRecruteurLbaTest({ email: "recruteur_lba@test.com", phone: "0610101010", siret: "58006820882692", enseigne: "fake_company_name" })
-  }
-
-  const cleanup = async () => {
+    
+    return async () => {
     await getDbCollection("recruteurlbaupdateevents").deleteMany({})
     await getDbCollection("recruteurslba").deleteMany({})
     await getDbCollection("applications").deleteMany({})
     await mockData()
   }
-
-  useMongo(mockData, "beforeAll")
-
+  });
   it("La société issue de l'algo recruteurLba existe", async () => {
     const result = await getCompanyContactInfo({ siret: "58006820882692" })
 
