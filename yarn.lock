@@ -3571,6 +3571,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry-internal/tracing@npm:7.119.0":
+  version: 7.119.0
+  resolution: "@sentry-internal/tracing@npm:7.119.0"
+  dependencies:
+    "@sentry/core": 7.119.0
+    "@sentry/types": 7.119.0
+    "@sentry/utils": 7.119.0
+  checksum: 23493c08463ea9a296bfb7fbaf315246347e2a1212ff561076d76fefdf33e64d2ee6925912a1be2ec4aff22c7ad36686d0d15609acca26be8d7ed58b658ab773
+  languageName: node
+  linkType: hard
+
 "@sentry/browser@npm:7.117.0":
   version: 7.117.0
   resolution: "@sentry/browser@npm:7.117.0"
@@ -3613,6 +3624,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/core@npm:7.119.0":
+  version: 7.119.0
+  resolution: "@sentry/core@npm:7.119.0"
+  dependencies:
+    "@sentry/types": 7.119.0
+    "@sentry/utils": 7.119.0
+  checksum: 29d9282c9555c64e60d587260ebf1957e4939cc43617a38da4f5fd67723dcf68dad6d5c1d221e75576cf77c0bc0f3362c47ee856193aac120001583186f17e04
+  languageName: node
+  linkType: hard
+
 "@sentry/integrations@npm:7.117.0, @sentry/integrations@npm:^7.72.0, @sentry/integrations@npm:^7.73.0":
   version: 7.117.0
   resolution: "@sentry/integrations@npm:7.117.0"
@@ -3622,6 +3643,18 @@ __metadata:
     "@sentry/utils": 7.117.0
     localforage: ^1.8.1
   checksum: 5b1ba3fb6e12ea2b79cbd2f2ce592621abfc37bf9809e6fcd2b1d1cfa4c589d40534747ef9bb64ed6a342f847130c29fc737a7297d6197a63e0228091bdf96cb
+  languageName: node
+  linkType: hard
+
+"@sentry/integrations@npm:7.119.0":
+  version: 7.119.0
+  resolution: "@sentry/integrations@npm:7.119.0"
+  dependencies:
+    "@sentry/core": 7.119.0
+    "@sentry/types": 7.119.0
+    "@sentry/utils": 7.119.0
+    localforage: ^1.8.1
+  checksum: c256f81e7c6983c5bbf6cd9bcf867e96798b285c53aad053a6d1bc4cc0491588042c7c6eca9d5a79d2661d53bc725ad26d56ee2b6631b6249f2332bd1e4a28d9
   languageName: node
   linkType: hard
 
@@ -3663,6 +3696,19 @@ __metadata:
     "@sentry/types": 7.117.0
     "@sentry/utils": 7.117.0
   checksum: ceed301f26353d224d9e345821ff165bb360f430f7bbbaa6a9a6af9c2b27d62d2c6542f9e1bbdd512331577859049afc6d8d22fb5d70e466914e847ed06337cf
+  languageName: node
+  linkType: hard
+
+"@sentry/node@npm:^7.80.0":
+  version: 7.119.0
+  resolution: "@sentry/node@npm:7.119.0"
+  dependencies:
+    "@sentry-internal/tracing": 7.119.0
+    "@sentry/core": 7.119.0
+    "@sentry/integrations": 7.119.0
+    "@sentry/types": 7.119.0
+    "@sentry/utils": 7.119.0
+  checksum: 31ca65bd7830ff7ddac2ae47f1adbf427e37cadec12448b8cb49a91b14b756c13f44029ec9a05433541c17828e93cfc114f4eb862e0f2b1bb8655ce10de31e44
   languageName: node
   linkType: hard
 
@@ -3709,12 +3755,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/types@npm:7.119.0":
+  version: 7.119.0
+  resolution: "@sentry/types@npm:7.119.0"
+  checksum: ffb8dcaf1d5c96defe860e663553511e602cd6bfbe63b0c3fd8cba5ec1c3ea9ad47597527f4d9ef314ba1b11bccf89c4d6f50435df7cbfb92f5a398c6c261f0b
+  languageName: node
+  linkType: hard
+
 "@sentry/utils@npm:7.117.0, @sentry/utils@npm:^7.60.0":
   version: 7.117.0
   resolution: "@sentry/utils@npm:7.117.0"
   dependencies:
     "@sentry/types": 7.117.0
   checksum: d8cf0db1a1b572ed0fa673aa29864bfb47ffa03ddfba13da253b018f5d1fb16b2d5b7e0e302194af30881c1fec2de5896df60a71bd9507b009f9736b24b89b7d
+  languageName: node
+  linkType: hard
+
+"@sentry/utils@npm:7.119.0":
+  version: 7.119.0
+  resolution: "@sentry/utils@npm:7.119.0"
+  dependencies:
+    "@sentry/types": 7.119.0
+  checksum: 900d5062cc92d9dbbeadd3ac2202da99ba648a78707fdbf878ff0d5eec52fc9d5484d63c281d3a1e7a6151999a5a45a1709ffc5d602e545ddb547182483831d0
   languageName: node
   linkType: hard
 
@@ -11948,6 +12010,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"job-processor@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "job-processor@npm:1.5.0"
+  dependencies:
+    "@sentry/node": ^7.80.0
+    cron-parser: ^4.9.0
+    date-fns: ^2.30.0
+    type-fest: ^4.18.2
+  peerDependencies:
+    "@codegouvfr/react-dsfr": ^1.9.11
+    "@mui/material": ^5.15.18
+    "@mui/x-data-grid": ^7.5.0
+    mongodb: "*"
+    react: ^18.0.0
+    zod: ^3.0.0
+    zod-mongodb-schema: ^1.0.0
+  peerDependenciesMeta:
+    "@codegouvfr/react-dsfr":
+      optional: true
+    "@mui/material":
+      optional: true
+    "@mui/x-data-grid":
+      optional: true
+    react:
+      optional: true
+  checksum: e9e2238cd9e5b94e65c347372bf3fa396ad631cb0aebafc0f7ab20b4983a3d7850a96962e972a45eb3d993623d58b664df20de745c0705b6dcc4da586cd85de9
+  languageName: node
+  linkType: hard
+
 "joi@npm:^17.6.0":
   version: 17.13.1
   resolution: "joi@npm:17.13.1"
@@ -18252,6 +18343,7 @@ __metadata:
     got: ^12.5.2
     iconv-lite: ^0.6.3
     is-semver: ^1.0.11
+    job-processor: ^1.5.0
     joi: ^17.6.0
     jsonwebtoken: ^8.5.1
     lil-http-terminator: ^1.2.3
