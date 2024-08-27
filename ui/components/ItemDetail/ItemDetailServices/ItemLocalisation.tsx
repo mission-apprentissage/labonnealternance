@@ -13,7 +13,9 @@ export default function ItemLocalisation({ item }: { item: ILbaItemFormation2 | 
         Localisation :{" "}
       </Text>
       <Text as="span">
-        <Link ml={4} isExternal variant="basicUnderlined" href={getPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">{item?.place?.fullAddress}<ExternalLinkIcon mb="3px" ml="2px" />
+        <Link isExternal variant="basicUnderlined" href={getPathLink(item)} aria-label="Localisation sur google maps - nouvelle fenêtre">
+          {item?.place?.fullAddress}
+          <ExternalLinkIcon mb="3px" ml="2px" />
         </Link>
       </Text>
       <ItemDistanceToCenter item={item} />
