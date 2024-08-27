@@ -24,9 +24,10 @@ import { getFtJobsV2, getSomeFtJobs } from "./ftjob.service"
 import { FTJob } from "./ftjob.service.types"
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "./lbaitem.shared.service.types"
-import { getJobs, getLbaJobs, incrementLbaJobsViewCount } from "./lbajob.service"
+import { getLbaJobs, getLbaJobsV2, IJobResult, incrementLbaJobsViewCount } from "./lbajob.service"
 import { jobsQueryValidator } from "./queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "./recruteurLba.service"
+import { getNearestCommuneByGeoPoint } from "./referentiel/commune/commune.referentiel.service"
 
 /**
  * @description Retourn la compilation d'opportunités d'emploi au format unifié
@@ -286,9 +287,9 @@ function getDiplomaEuropeanLevel(job: IJob): IJobsPartnersOfferApi["offer_diplom
   }
 }
 
-export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IRecruiter[]): IJobsPartnersOfferApi[] => {
-  return offresEmploiLba.flatMap((recruiter: IRecruiter): IJobsPartnersOfferApi[] =>
-    recruiter.jobs.map((job) => ({
+export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobResult[]): IJobsPartnersOfferApi[] => {
+  return offresEmploiLba.map(
+    ({ recruiter, job }: IJobResult): IJobsPartnersOfferApi => ({
       _id: job._id.toString(),
       partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       partner_job_id: null,
@@ -298,11 +299,11 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IRecrui
       contract_remote: null,
       offer_title: job.rome_label!,
       offer_rome_code: job.rome_code,
-      offer_description: job.rome_detail!.definition,
+      offer_description: job.rome_detail.definition,
       offer_diploma_level: getDiplomaEuropeanLevel(job),
-      offer_desired_skills: job.rome_detail!.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
-      offer_to_be_acquired_skills: job.rome_detail!.competences.savoir_faire?.flatMap((x) => x.items.map((y) => `${x.libelle}: ${y.libelle}`)) ?? [],
-      offer_access_conditions: job.rome_detail!.acces_metier.split("\n"),
+      offer_desired_skills: job.rome_detail.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
+      offer_to_be_acquired_skills: job.rome_detail.competences.savoir_faire?.flatMap((x) => x.items.map((y) => `${x.libelle}: ${y.libelle}`)) ?? [],
+      offer_access_conditions: job.rome_detail.acces_metier.split("\n"),
       offer_creation: job.job_creation_date ?? null,
       offer_expiration: job.job_expiration_date ?? null,
       offer_opening_count: job.job_count ?? 1,
@@ -324,7 +325,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IRecrui
 
       apply_url: `${config.publicUrl}/recherche-apprentissage?type=matcha&itemId=${job._id}`,
       apply_phone: recruiter.phone ?? null,
-    }))
+    })
   )
 }
 
@@ -354,6 +355,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       offer_opening_count: offreFT.nombrePostes,
       offer_status: JOB_STATUS.ACTIVE,
 
+      // Try to find entreprise SIRET from  offreFT.entreprise.siret ?
       workplace_siret: null,
       workplace_website: null,
       workplace_name: offreFT.entreprise.nom,
@@ -362,6 +364,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       workplace_address: { label: offreFT.lieuTravail.libelle },
       workplace_geopoint: convertToGeopoint({ longitude: parseFloat(offreFT.lieuTravail.longitude), latitude: parseFloat(offreFT.lieuTravail.latitude) }),
       workplace_idcc: null,
+      // TODO: try to map opco from FT formation requirement
       workplace_opco: null,
       workplace_naf_code: offreFT.codeNAF ? offreFT.codeNAF : null,
       workplace_naf_label: offreFT.secteurActiviteLibelle ? offreFT.secteurActiviteLibelle : null,
@@ -374,11 +377,13 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
 
 type IJobOpportunityReqContext = { route: Pick<IRouteSchema, "path">; caller: string }
 
-export async function findJobsOpportunityResponseFromRome(payload: IJobOpportunityRome, context: IJobOpportunityReqContext): Promise<IJobsOpportunityResponse> {
+async function findFranceTravailOpportunities(query: IJobOpportunityRome, context: IJobOpportunityReqContext): Promise<IJobsPartnersOfferApi[]> {
+  const commune = await getNearestCommuneByGeoPoint({ type: "Point", coordinates: [query.longitude, query.latitude] })
+
   const getFtDiploma = (diplomaLevel: INiveauDiplomeEuropeen | null): keyof typeof NIVEAUX_POUR_OFFRES_PE | null => {
     switch (diplomaLevel) {
       case "3":
-        return null
+        return "3 (CAP...)"
       case "4":
         return "4 (BAC...)"
       case "5":
@@ -394,30 +399,50 @@ export async function findJobsOpportunityResponseFromRome(payload: IJobOpportuni
     }
   }
 
+  const params: Parameters<typeof getFtJobsV2>[0] = {
+    jobLimit: 150,
+    caller: context.caller,
+    api: context.route.path,
+    romes: query.romes,
+    insee: commune.code,
+    radius: query.radius,
+    diploma: getFtDiploma(query.diplomaLevel ?? null),
+  }
+
+  const ftJobs = await getFtJobsV2(params)
+
+  return convertFranceTravailJobToJobPartnerOfferApi(ftJobs.resultats)
+}
+
+async function findLbaJobOpportunities(query: IJobOpportunityRome): Promise<IJobsPartnersOfferApi[]> {
+  const payload: Parameters<typeof getLbaJobsV2>[0] = {
+    romes: query.romes,
+    distance: query.radius,
+    lat: query.latitude,
+    lon: query.longitude,
+    niveau: null,
+    limit: 150,
+  }
+
+  if (query.diplomaLevel) {
+    payload.niveau = NIVEAU_DIPLOME_LABEL[query.diplomaLevel]
+  }
+
+  const lbaJobs = await getLbaJobsV2(payload)
+
+  return convertLbaRecruiterToJobPartnerOfferApi(lbaJobs)
+}
+
+export async function findJobsOpportunityResponseFromRome(payload: IJobOpportunityRome, context: IJobOpportunityReqContext): Promise<IJobsOpportunityResponse> {
   const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
     getRecruteursLbaFromDB(payload),
-    getJobs({
-      romes: payload.romes,
-      distance: payload.radius,
-      niveau: payload.diplomaLevel ? NIVEAU_DIPLOME_LABEL[payload.diplomaLevel] : NIVEAUX_POUR_LBA.INDIFFERENT,
-      lat: payload.latitude,
-      lon: payload.longitude,
-      isMinimalData: false,
-    }),
+    findLbaJobOpportunities(payload),
     getJobsPartnersFromDB(payload),
-    getFtJobsV2({
-      jobLimit: 150,
-      caller: context.caller,
-      api: context.route.path,
-      diploma: getFtDiploma(payload.diplomaLevel ?? null),
-      ...payload,
-      // TODO: filtre par géolocalisation
-      insee: null,
-    }),
+    findFranceTravailOpportunities(payload, context),
   ])
 
   return {
-    jobs: [...convertLbaRecruiterToJobPartnerOfferApi(offreEmploiLba), ...convertFranceTravailJobToJobPartnerOfferApi(franceTravail.resultats), ...offreEmploiPartenaire],
+    jobs: [...offreEmploiLba, ...franceTravail, ...offreEmploiPartenaire],
     recruiters: convertLbaCompanyToJobPartnerRecruiterApi(recruterLba),
   }
 }
