@@ -3,7 +3,7 @@ import { z } from "zod"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { IModelDescriptor } from "./common"
-import { ZJobsPartners } from "./jobsPartners.model"
+import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model"
 
 const collectionName = "computed_jobs_partners" as const
 
@@ -14,7 +14,7 @@ export enum COMPUTED_ERROR_SOURCE {
   API_ROMEO = "api_romeo",
 }
 
-export const ZComputedJobsPatners = extensions.optionalToNullish(ZJobsPartners.partial()).extend({
+export const ZComputedJobsPatners = extensions.optionalToNullish(ZJobsPartnersOfferPrivate.partial()).extend({
   errors: z.array(
     z
       .object({

@@ -1,9 +1,9 @@
 import { LBA_ITEM_TYPE } from "../constants/lbaitem"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models"
+import { ZBusinessError } from "../models"
 import { zObjectId } from "../models/common"
-import { ZJobsApiResponseV2 } from "../models/jobsPartners.model"
+import { ZJobsPartnersOfferPrivate, ZJobsPartnersPatchApiBody, ZJobsPartnersPostApiBody } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -24,7 +24,7 @@ import {
   zSourcesParams,
 } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
-import { ZJobOpportunityRncp, ZJobOpportunityRome } from "./jobOpportunity.routes"
+import { ZJobOpportunityGetQuery, ZJobsOpportunityResponse } from "./jobOpportunity.routes"
 
 export const zJobsRoutesV2 = {
   get: {
@@ -126,110 +126,6 @@ export const zJobsRoutesV2 = {
         tags: ["V2 - Jobs"] as string[],
         description: `Get all jobs related to my organization\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "getJobs",
-      },
-    },
-    "/jobs/delegations/:jobId": {
-      method: "get",
-      path: "/jobs/delegations/:jobId",
-      params: z
-        .object({
-          jobId: zObjectId,
-        })
-        .strict(),
-      response: {
-        "200": z.array(
-          z
-            .object({
-              _id: zObjectId,
-              numero_voie: z.string().nullish(),
-              type_voie: z.string().nullish(),
-              nom_voie: z.string().nullish(),
-              code_postal: z.string(),
-              nom_departement: z.string(),
-              entreprise_raison_sociale: z.string(),
-              geo_coordonnees: z.string(),
-              distance_en_km: z.number(),
-            })
-            .strict()
-        ),
-        "4xx": z.union([ZLbarError, ZResError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: { job: [{ _id: { type: "params", key: "jobId" } }] },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "getDelegation",
-        description: `Get related training organization related to a job offer.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-      },
-    },
-    "/jobs": {
-      method: "get",
-      path: "/jobs",
-      querystring: z
-        .object({
-          romes: zRomesParams("rncp"),
-          rncp: zRncpsParams,
-          caller: zCallerParam.nullish(),
-          latitude: ZLatitudeParam,
-          longitude: ZLongitudeParam,
-          radius: ZRadiusParam,
-          insee: zInseeParams,
-          sources: zSourcesParams,
-          diploma: zDiplomaParam,
-          opco: zOpcoParams,
-          opcoUrl: zOpcoUrlParams,
-        })
-        .strict()
-        .passthrough(),
-      headers: zRefererHeaders,
-      response: {
-        "200": z
-          .object({
-            peJobs: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemFtJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            matchas: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemLbaJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            lbaCompanies: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemLbaCompany),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            lbbCompanies: z.null(), // always null until removal
-          })
-          .strict(),
-        "400": z.union([ZResError, ZLbacError, ZApiError]),
-        "500": z.union([ZResError, ZLbacError, ZApiError]),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "getJobOpportunities",
-        description: `Get job opportunities matching the query parameters\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs/min": {
@@ -400,25 +296,12 @@ export const zJobsRoutesV2 = {
         })}`,
       },
     },
-    "/jobs/rome": {
+    "/jobs": {
       method: "get",
-      path: "/jobs/rome",
-      querystring: ZJobOpportunityRome,
+      path: "/jobs",
+      querystring: ZJobOpportunityGetQuery,
       response: {
-        "200": ZJobsApiResponseV2,
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
-    "/jobs/rncp": {
-      method: "get",
-      path: "/jobs/rncp",
-      querystring: ZJobOpportunityRncp,
-      response: {
-        "200": ZJobsApiResponseV2,
+        "200": ZJobsOpportunityResponse,
       },
       securityScheme: {
         auth: "api-apprentissage",
@@ -428,214 +311,69 @@ export const zJobsRoutesV2 = {
     },
   },
   post: {
-    "/jobs/establishment": {
+    "/jobs": {
       method: "post",
-      path: "/jobs/establishment",
-      body: z
-        .object({
-          establishment_siret: extensions.siret,
-          first_name: z.string(),
-          last_name: z.string(),
-          phone: z
-            .string()
-            .trim()
-            .regex(/^0[1-9]\d{8}$/)
-            .optional(),
-          email: z.string().email(),
-          idcc: z.string().optional(),
-          origin: z.string().optional().openapi({
-            description:
-              "always prefixed with you identification name declared at the API user creation. BETA GOUV with an origin set to 'campaign2023' will be betagouv-campaign2023.",
-            example: "betagouv-campaign2023",
-          }),
-        })
-        .strict(),
+      path: "/jobs",
+      body: ZJobsPartnersPostApiBody,
       response: {
-        "201": ZRecruiter,
-        "400": z.union([ZResError, ZLbarError]),
+        "201": z.object({ id: zObjectId }),
+        "400": z.union([ZBusinessError, ZResError]),
       },
       securityScheme: {
-        auth: "api-key",
-        access: { every: ["user:validate", "recruiter:manage", "user:manage"] },
+        auth: "api-apprentissage",
+        access: null,
         resources: {},
       },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        description: `Create an establishment entity\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-        operationId: "createEstablishment",
-      },
     },
-    "/jobs/:establishmentId": {
+    "/jobs/provided/:id": {
       method: "post",
-      path: "/jobs/:establishmentId",
-      params: z.object({ establishmentId: z.string() }).strict(),
-      body: ZJobFields.pick({
-        job_level_label: true,
-        job_duration: true,
-        job_type: true,
-        job_count: true,
-        job_rythm: true,
-        job_employer_description: true,
-        job_description: true,
-        is_disabled_elligible: true,
-        custom_address: true,
-        custom_geo_coordinates: true,
-        is_multi_published: true,
-        custom_job_title: true,
-      })
-        .extend({
-          job_start_date: ZJobStartDateCreate(),
-          appellation_code: z.string().regex(/^[0-9]+$/, "appelation code ne doit contenir que des chiffres"),
-        })
-        .strict()
-        .refine(
-          ({ custom_address, custom_geo_coordinates }) => {
-            if ((custom_address !== undefined && custom_geo_coordinates === undefined) || (custom_address === undefined && custom_geo_coordinates !== undefined)) {
-              return false
-            }
-            return true
-          },
-          { message: "custom_geo_coordinates est obligatoire si custom_address est passé en paramètre" }
-        )
-        .refine(
-          ({ job_description }) => {
-            if (job_description && job_description?.length < 30) {
-              return false
-            }
-            return true
-          },
-          { message: "job_description doit avoir un minimum de 30 caractères" }
-        )
-        .refine(
-          ({ job_employer_description }) => {
-            if (job_employer_description && job_employer_description?.length < 30) {
-              return false
-            }
-            return true
-          },
-          { message: "job_employer_description doit avoir un minimum de 30 caractères" }
-        ),
-      response: {
-        "201": ZRecruiter,
-        "400": z.union([ZResError, ZLbarError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: "recruiter:add_job",
-        resources: {
-          recruiter: [
-            {
-              establishment_id: { type: "params", key: "establishmentId" },
-            },
-          ],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        description: `Create a job offer inside an establishment entity.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-        operationId: "createJob",
-      },
-    },
-    "/jobs/delegations/:jobId": {
-      method: "post",
-      path: "/jobs/delegations/:jobId",
+      path: "/jobs/provided/:id",
       params: z
         .object({
-          jobId: zObjectId,
-        })
-        .strict(),
-      body: z
-        .object({
-          establishmentIds: z.array(z.string()),
-        })
-        .strict(),
-      response: {
-        "200": ZRecruiter,
-        "400": z.union([ZResError, ZLbarError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "createDelegation",
-        description: "Create delegation related to a job offer.",
-      },
-    },
-    "/jobs/provided/:jobId": {
-      method: "post",
-      path: "/jobs/provided/:jobId",
-      params: z
-        .object({
-          jobId: zObjectId,
+          id: zObjectId,
         })
         .strict(),
       response: {
         "204": z.object({}).strict(),
       },
       securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        description: `Update a job offer status to Provided\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-        operationId: "setJobAsProvided",
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
       },
     },
-    "/jobs/canceled/:jobId": {
+    "/jobs/canceled/:id": {
       method: "post",
-      path: "/jobs/canceled/:jobId",
+      path: "/jobs/canceled/:id",
       params: z
         .object({
-          jobId: zObjectId,
+          id: zObjectId,
         })
         .strict(),
       response: {
         "204": z.object({}).strict(),
       },
       securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "setJobAsCanceled",
-        description: `Update a job offer status to Canceled\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
       },
     },
-    "/jobs/extend/:jobId": {
+    "/jobs/extend/:id": {
       method: "post",
-      path: "/jobs/extend/:jobId",
+      path: "/jobs/extend/:id",
       params: z
         .object({
-          jobId: zObjectId,
+          id: zObjectId,
         })
         .strict(),
       response: {
         "204": z.object({}).strict(),
       },
       securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "extendJobExpiration",
-        description: `Update a job expiration date by 30 days.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
       },
     },
     "/jobs/matcha/:id/stats/view-details": {
@@ -658,45 +396,20 @@ export const zJobsRoutesV2 = {
     },
   },
   patch: {
-    "/jobs/:jobId": {
+    "/jobs/:id": {
       method: "patch",
-      path: "/jobs/:jobId",
-      params: z
-        .object({
-          jobId: zObjectId,
-        })
-        .strict(),
-      body: ZJob.pick({
-        job_level_label: true,
-        job_duration: true,
-        job_type: true,
-        is_disabled_elligible: true,
-        job_count: true,
-        job_rythm: true,
-        job_employer_description: true,
-        job_description: true,
-        custom_address: true,
-        custom_geo_coordinates: true,
-      })
-        .extend({
-          job_start_date: ZJobStartDateCreate(),
-        })
-        .partial(),
+      path: "/jobs/:id",
+      params: z.object({
+        id: zObjectId,
+      }),
+      body: ZJobsPartnersPatchApiBody,
       response: {
-        "200": ZRecruiter,
-        "400": z.union([ZResError, ZLbarError]),
+        "200": ZJobsPartnersOfferPrivate,
       },
       securityScheme: {
-        auth: "api-key",
-        access: "job:manage",
-        resources: {
-          job: [{ _id: { type: "params", key: "jobId" } }],
-        },
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "updateJob",
-        description: `Update a job offer specific fields inside an establishment entity.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
+        auth: "api-apprentissage",
+        access: null,
+        resources: {},
       },
     },
   },

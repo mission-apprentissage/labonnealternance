@@ -554,6 +554,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("fill-computed-jobs-partners"))
 
+program
+  .command("referentiel:commune:import")
+  .description("Importe le référentiel des communes")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("referentiel:commune:import"))
+
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }

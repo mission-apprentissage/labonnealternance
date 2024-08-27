@@ -4,14 +4,13 @@ import querystring from "querystring"
 import Boom from "boom"
 import { ObjectId } from "bson"
 import FormData from "form-data"
-import { IRomeoApiResponse, ZRomeoApiResponse } from "shared/models/cacheRomeo.model"
+import { IRomeoApiResponse } from "shared/models/cacheRomeo.model"
 import { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
 import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
 import { ZFTApiToken } from "@/services/rome.service.types"
 
-import { updateRomeoCache } from "../../services/cache.service"
 import { logger } from "../logger"
 import { getDbCollection } from "../utils/mongodbUtils"
 import { sentryCaptureException } from "../utils/sentryUtils"
@@ -84,7 +83,7 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
  * @description Search for FT Jobs
  */
 export const searchForFtJobs = async (params: {
-  codeROME: string
+  codeROME?: string
   commune?: string
   sort: number
   natureContrat: string
@@ -102,6 +101,7 @@ export const searchForFtJobs = async (params: {
       partenaires: "LABONNEALTERNANCE",
       modeSelectionPartenaires: "EXCLU",
     }
+
     const { data } = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/search`, {
       params: extendedParams,
       headers: {
@@ -184,8 +184,6 @@ export const getRomeoPredictions = async (payload: IRomeoPayload[], options: IRo
         },
       }
     )
-    await ZRomeoApiResponse.parse(result.data)
-    await updateRomeoCache(result.data)
     return result.data
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })

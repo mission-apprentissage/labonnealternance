@@ -1,7 +1,8 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
+import { ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { CFA, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { CFA, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { IJob, IRecruiter, getUserStatus, parseEnumOrError, zRoutes } from "shared/index"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
@@ -16,7 +17,6 @@ import { activateUser, createSuperUser, getUserWithAccountByEmail, validateUserW
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import config from "../../config"
-import { ENTREPRISE, RECRUITER_STATUS } from "../../services/constant.service"
 import {
   activateEntrepriseRecruiterForTheFirstTime,
   deleteFormulaire,
@@ -50,7 +50,7 @@ export default (server: Server) => {
       if (!opcoRole) {
         throw Boom.forbidden("pas de role opco")
       }
-      const opco = parseEnumOrError(OPCOS, opcoRole.authorized_id)
+      const opco = parseEnumOrError(OPCOS_LABEL, opcoRole.authorized_id)
       return res.status(200).send(await getUserAndRecruitersDataForOpcoUser(opco))
     }
   )

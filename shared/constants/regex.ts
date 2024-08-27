@@ -27,6 +27,7 @@ export const CODE_ROME_REGEX = new RegExp("^[A-Z]\\d{4}$")
 export const LATITUDE_REGEX = new RegExp("^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?)$")
 export const LONGITUDE_REGEX = new RegExp("^[-+]?((1[0-7]?\\d(\\.\\d+)?|180(\\.0+)?|[1-9]?\\d(\\.\\d+)?))$")
 export const CODE_INSEE_REGEX = new RegExp("^[0-9]{1}[0-9A-Z]{1}[0-9]{3}$")
+export const PHONE_REGEX = new RegExp("^0[1-9]\\d{8}$")
 
 export const isValidCFD = (cfd: string) => typeof cfd === "string" && CFD_REGEX.test(cfd)
 export const isValidINE = (ine: string) => typeof ine === "string" && INE_REGEX.test(ine)

@@ -2,7 +2,7 @@ import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { ICFA } from "shared/models/cfa.model"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
@@ -169,7 +169,7 @@ export const createOrganizationUser = async ({
 
 export const createOpcoUser = async (
   userProps: IUserWithAccountFields,
-  opco: OPCOS,
+  opco: OPCOS_LABEL,
   { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }
 ) => {
   const user = await createUser2IfNotExist(
@@ -399,7 +399,7 @@ export const getAdminUsers = async () => {
   })
 }
 
-export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: { opco?: OPCOS; activeRoleLimit?: number }) => {
+export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: { opco?: OPCOS_LABEL; activeRoleLimit?: number }) => {
   const nonGrantedRoles = await getDbCollection("rolemanagements")
     .find({ $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, AccessStatus.GRANTED] } })
     .toArray()

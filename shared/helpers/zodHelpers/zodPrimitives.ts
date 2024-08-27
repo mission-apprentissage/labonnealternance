@@ -1,6 +1,6 @@
 import { capitalize } from "lodash-es"
 
-import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_ROME_REGEX, LATITUDE_REGEX, LONGITUDE_REGEX, PHONE_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 import { validateSIRET } from "../../validators/siretValidator"
 import { removeUrlsFromText } from "../common"
 import { z } from "../zodWithOpenApi"
@@ -16,8 +16,6 @@ const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
   return { message: ctx.defaultError }
 }
 z.setErrorMap(customErrorMap)
-
-//const phoneRegex = new RegExp(/^0[1-9]\d{8}$/)
 
 export const extensions = {
   siret: z
@@ -39,7 +37,8 @@ export const extensions = {
     z
       .string()
       .trim()
-      .transform((value) => removeUrlsFromText(value)) /*.regex(phoneRegex)*/,
+      .transform((value) => removeUrlsFromText(value)), /// is it a phone extensions still ??
+  telephone: () => z.string().trim().regex(PHONE_REGEX, "Téléphone invalide"),
   code_naf: () =>
     z.preprocess(
       (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point
@@ -63,37 +62,35 @@ export const extensions = {
     ),
   codeCommuneInsee: () => z.string().regex(/^([0-9]{2}|2A|2B)[0-9]{3}$/, "Format invalide"),
   brevoWebhook: () =>
-    z
-      .object({
-        event: z.string(),
-        email: z.string(),
-        id: z.number(),
-        ts: z.number(),
-        date: z.string().nullish(),
-        "message-id": z.string().nullish(),
-        ts_event: z.number().nullish(),
-        subject: z.string().nullish(),
-        "X-Mailin-custom": z.string().nullish(),
-        sending_ip: z.string().nullish(),
-        ts_epoch: z.number().nullish(),
-        template_id: z.number().nullish(),
-        tag: z.string().nullish(),
-        tags: z.array(z.string()).nullish(),
-        link: z.string().nullish(),
-        reason: z.string().nullish(),
-        date_sent: z.string().nullish(),
-        date_event: z.string().nullish(),
-        ts_sent: z.number().nullish(),
-        camp_id: z.number().nullish(),
-        campaign_name: z.string().nullish(),
-        URL: z.string().nullish(),
-        list_id: z.array(z.number()).nullish(),
-        sender_email: z.string().nullish(),
-        is_returnpath: z.boolean().nullish(),
-        key: z.string().nullish(),
-        content: z.array(z.string()).nullish(),
-      })
-      .strict(),
+    z.object({
+      event: z.string(),
+      email: z.string(),
+      id: z.number(),
+      ts: z.number(),
+      date: z.string().nullish(),
+      "message-id": z.string().nullish(),
+      ts_event: z.number().nullish(),
+      subject: z.string().nullish(),
+      "X-Mailin-custom": z.string().nullish(),
+      sending_ip: z.string().nullish(),
+      ts_epoch: z.number().nullish(),
+      template_id: z.number().nullish(),
+      tag: z.string().nullish(),
+      tags: z.array(z.string()).nullish(),
+      link: z.string().nullish(),
+      reason: z.string().nullish(),
+      date_sent: z.string().nullish(),
+      date_event: z.string().nullish(),
+      ts_sent: z.number().nullish(),
+      camp_id: z.number().nullish(),
+      campaign_name: z.string().nullish(),
+      URL: z.string().nullish(),
+      list_id: z.array(z.number()).nullish(),
+      sender_email: z.string().nullish(),
+      is_returnpath: z.boolean().nullish(),
+      key: z.string().nullish(),
+      content: z.array(z.string()).nullish(),
+    }),
   buildEnum: <EnumValue extends string>(enumObject: Record<string, EnumValue>) => {
     const values = Object.values(enumObject)
     if (!values.length) {

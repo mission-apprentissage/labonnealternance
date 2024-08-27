@@ -2,12 +2,12 @@
 // The config you add here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import { ExtraErrorData, HttpClient, ReportingObserver } from "@sentry/integrations"
-import * as Sentry from "@sentry/nextjs"
+import { captureConsoleIntegration, extraErrorDataIntegration, httpClientIntegration, reportingObserverIntegration } from "@sentry/integrations"
+import { init } from "@sentry/nextjs"
 
 import { publicConfig } from "./config.public"
 
-Sentry.init({
+init({
   dsn: publicConfig.sentry_dsn,
   tracesSampleRate: publicConfig.env === "production" ? 0.1 : 1.0,
   tracePropagationTargets: [/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/, publicConfig.baseUrl, publicConfig.apiEndpoint, /^\//],
@@ -23,11 +23,9 @@ Sentry.init({
     //   blockAllMedia: true,
     // }),
     // new Sentry.BrowserTracing(),
-    // @ts-ignore
-    new ExtraErrorData({ depth: 8 }),
-    // @ts-ignore
-    new HttpClient({}),
-    // @ts-ignore
-    new ReportingObserver({ types: ["crash", "deprecation", "intervention"] }),
+    captureConsoleIntegration({ levels: ["error"] }),
+    extraErrorDataIntegration({ depth: 8 }),
+    httpClientIntegration({}),
+    reportingObserverIntegration({ types: ["crash", "deprecation", "intervention"] }),
   ],
 })
