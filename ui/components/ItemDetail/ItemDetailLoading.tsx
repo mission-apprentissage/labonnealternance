@@ -16,7 +16,7 @@ const ItemDetailLoading = ({ item }) => {
             text: "Chargement du descriptif de la formation",
           },
           {
-            src: "/images/loading/training_contact_info.svg",
+            src: "/images/loading/search_training.svg",
             text: "Vérification des coordonnées du centre de formation",
           },
           {
@@ -61,7 +61,7 @@ const ItemDetailLoading = ({ item }) => {
     }, 1000)
 
     return () => {
-        clearInterval(interval)
+      clearInterval(interval)
     }
   }, [item.loadedItemDetail, item.id])
 
