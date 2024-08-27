@@ -128,14 +128,17 @@ export const getLbaJobsV2 = async ({
   distance: number
   lat: number
   lon: number
-  romes: string[]
+  romes: string[] | null
   niveau: INiveauPourLbaLabel | null
   limit: number
 }): Promise<IJobResult[]> => {
   const jobFilters: Filter<IRecruiter> = {
     "jobs.job_status": JOB_STATUS.ACTIVE,
-    "jobs.rome_code": { $in: romes },
     "jobs.is_multi_published": true,
+  }
+
+  if (romes) {
+    jobFilters["jobs.rome_code"] = { $in: romes }
   }
 
   if (niveau && niveau !== NIVEAUX_POUR_LBA["INDIFFERENT"]) {
