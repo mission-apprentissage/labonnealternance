@@ -1,4 +1,4 @@
-import { initJobProcessor } from "job-processor"
+import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
@@ -11,9 +11,9 @@ import anonymizeOldAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
+import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
 import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
-import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
@@ -24,10 +24,6 @@ import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCat
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { pocRomeo } from "./franceTravail/pocRomeo"
-import { addJob } from "./jobs_actions"
-import { createApiUser } from "./lba_recruteur/api/createApiUser"
-import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
-import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
@@ -35,8 +31,6 @@ import { importHelloWork } from "./offrePartenaire/importHelloWork"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
-import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
-import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
@@ -50,16 +44,19 @@ import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissemen
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { cancelOfferJob } from "./recruiters/cancelOfferJob"
+import { createApiUser } from "./recruiters/createApiUser"
+import { disableApiUser } from "./recruiters/disableApiUser"
 import { fixJobExpirationDate } from "./recruiters/fixJobExpirationDateJob"
 import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidationJob"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
+import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import updateGeoLocations from "./recruteurLba/updateGeoLocations"
 import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
 import updateLbaCompanies from "./recruteurLba/updateRecruteurLba"
-import { importReferentielRome } from "./seed/referentielRome/referentielRome"
+import { importReferentielRome } from "./referentielRome/referentielRome"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
@@ -138,10 +135,6 @@ export async function setupJobProcessor() {
           "Historisation des formations éligibles à la prise de rendez-vous": {
             cron_string: "55 2 * * *",
             handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
-          },
-          "Anonimisation des prises de rendez-vous de plus d'un an": {
-            cron_string: "10 0 1 * *",
-            handler: anonimizeAppointments,
           },
           "Mise à jour de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
             cron_string: "45 23 * * 2",
@@ -322,9 +315,6 @@ export async function setupJobProcessor() {
       "etablissements:formations:sync": {
         handler: async () => syncEtablissementsAndFormations(),
       },
-      "appointments:anonimize": {
-        handler: async () => anonimizeAppointments(),
-      },
       "users:anonimize": {
         handler: async () => anonymizeOldUsers(),
       },
@@ -410,15 +400,6 @@ export async function setupJobProcessor() {
       },
       "migrations:create": {
         handler: async (job) => createMigration(job.payload as any),
-      },
-      "crons:init": {
-        handler: async () => {
-          await cronsInit()
-          return
-        },
-      },
-      "crons:scheduler": {
-        handler: async () => cronsScheduler(),
       },
       "import-hellowork": {
         handler: async () => importHelloWork(),

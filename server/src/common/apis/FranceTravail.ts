@@ -30,7 +30,7 @@ const updateFranceTravailTokenInDB = async ({ access_type, access_token }: { acc
     { upsert: true }
   )
 
-const ACCESS_PARAMS = {
+export const ACCESS_PARAMS = {
   OFFRE: querystring.stringify({
     grant_type: "client_credentials",
     client_id: config.esdClientId,
@@ -45,7 +45,7 @@ const ACCESS_PARAMS = {
   }),
 }
 
-type IAccessParams = keyof typeof ACCESS_PARAMS
+export type IAccessParams = keyof typeof ACCESS_PARAMS
 
 const getToken = async (access: IAccessParams) => {
   const token = await getFranceTravailTokenFromDB(access)

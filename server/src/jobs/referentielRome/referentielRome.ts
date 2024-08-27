@@ -8,8 +8,8 @@ import * as xml2j from "xml2js"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import __dirname from "../../../common/dirname"
-import { asyncForEach } from "../../../common/utils/asyncUtils"
+import __dirname from "../../common/dirname"
+import { asyncForEach } from "../../common/utils/asyncUtils"
 
 const getGenericItem = (genericItem: { libelle: string; items: { item: any | any[] } }) => {
   const tempsItems = !(genericItem.items.item instanceof Array) ? [genericItem.items.item] : genericItem.items.item
