@@ -83,7 +83,7 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
  * @description Search for FT Jobs
  */
 export const searchForFtJobs = async (params: {
-  codeROME: string
+  codeROME?: string
   commune?: string
   sort: number
   natureContrat: string
