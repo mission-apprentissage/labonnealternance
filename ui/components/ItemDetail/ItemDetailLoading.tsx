@@ -61,9 +61,7 @@ const ItemDetailLoading = ({ item }) => {
     }, 1000)
 
     return () => {
-      if (interval) {
         clearInterval(interval)
-      }
     }
   }, [item.loadedItemDetail, item.id])
 
