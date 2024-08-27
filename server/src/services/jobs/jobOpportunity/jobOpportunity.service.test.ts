@@ -428,6 +428,22 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should resolve RNCP continuity", async () => {
+      scopeFtApi = nock("https://api.francetravail.io:443")
+        .get("/partenaire/offresdemploi/v2/offres/search")
+        .query({
+          // Code ROME correspondant au code RNCP
+          codeROME: "D1210,D1212,D1209,D1214,D1211",
+          commune: "75101", // Special case for paris
+          sort: "2",
+          natureContrat: "E2,FS",
+          range: "0-149",
+          distance: "30",
+          partenaires: "LABONNEALTERNANCE",
+          modeSelectionPartenaires: "EXCLU",
+        })
+        .matchHeader("Authorization", "Bearer ft_token")
+        .reply(200, { resultats: [] })
+
       const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
         .get("/api/certification/v1")
         .query({ "identifiant.rncp": "RNCP37098" })
@@ -1116,7 +1132,6 @@ describe("findJobsOpportunities", () => {
     })
 
     describe("when france travail api returns an error", () => {
-      // Ignorer + ajouter un warning dans la réponse
       it("should ignore france travail jobs", async () => {
         const scopeFtApi = nock("https://api.francetravail.io")
           .get("/partenaire/offresdemploi/v2/offres/search")
@@ -1144,6 +1159,12 @@ describe("findJobsOpportunities", () => {
         )
 
         expect(results.jobs).toHaveLength(0)
+        expect(results.warnings).toEqual([
+          {
+            code: "FRANCE_TRAVAIL_API_ERROR",
+            message: "Unable to retrieve job offers from France Travail API",
+          },
+        ])
 
         expect(scopeAuth.isDone()).toBeTruthy()
         expect(scopeFtApi.isDone()).toBeTruthy()
@@ -1177,6 +1198,7 @@ describe("findJobsOpportunities", () => {
       )
 
       expect(results.jobs).toHaveLength(0)
+      expect(results.warnings).toHaveLength(0)
 
       expect(scopeAuth.isDone()).toBeTruthy()
       expect(scopeFtApi.isDone()).toBeTruthy()
@@ -1218,6 +1240,7 @@ describe("findJobsOpportunities", () => {
         )
 
         expect(results.jobs).toHaveLength(0)
+        expect(results.warnings).toHaveLength(0)
 
         expect(scopeAuth.isDone()).toBeTruthy()
         expect(scopeFtApi.isDone()).toBeTruthy()

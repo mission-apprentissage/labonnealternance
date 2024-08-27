@@ -82,16 +82,21 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
 /**
  * @description Search for FT Jobs
  */
-export const searchForFtJobs = async (params: {
-  codeROME?: string
-  commune?: string
-  sort: number
-  natureContrat: string
-  range: string
-  niveauFormation?: string
-  insee?: string
-  distance?: number
-}): Promise<FTResponse | null | ""> => {
+export const searchForFtJobs = async (
+  params: {
+    codeROME?: string
+    commune?: string
+    sort: number
+    natureContrat: string
+    range: string
+    niveauFormation?: string
+    insee?: string
+    distance?: number
+  },
+  options: {
+    throwOnError: boolean
+  }
+): Promise<FTResponse | null | ""> => {
   const token = await getToken("OFFRE")
 
   try {
@@ -114,6 +119,9 @@ export const searchForFtJobs = async (params: {
     return data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    if (options.throwOnError) {
+      throw error
+    }
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
     return null
   }
