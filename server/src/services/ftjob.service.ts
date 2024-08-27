@@ -261,59 +261,49 @@ export const getFtJobsV2 = async ({
   insee,
   radius,
   jobLimit,
-  caller,
-  api,
   diploma,
 }: {
   romes: string[] | null
   insee: string | null
   radius: number
   jobLimit: number
-  caller: string
   diploma: keyof typeof NIVEAUX_POUR_OFFRES_PE | null | undefined
-  api: string
 }): Promise<FTResponse> => {
-  try {
-    const distance = radius || 10
+  const distance = radius || 10
 
-    const params: Parameters<typeof searchForFtJobs>[0] = {
-      sort: 0,
-      natureContrat: "E2,FS", //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
-      range: `0-${jobLimit - 1}`,
-    }
+  const params: Parameters<typeof searchForFtJobs>[0] = {
+    sort: 0,
+    natureContrat: "E2,FS", //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
+    range: `0-${jobLimit - 1}`,
+  }
 
-    if (romes) {
-      params.codeROME = romes.join(",")
-    }
+  if (romes) {
+    params.codeROME = romes.join(",")
+  }
 
-    if (insee) {
-      // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
-      let codeInsee = insee
-      if (insee === "75056") codeInsee = "75101"
-      else if (insee === "13055") codeInsee = "13201"
-      else if (insee === "69123") codeInsee = "69381"
+  if (insee) {
+    // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
+    let codeInsee = insee
+    if (insee === "75056") codeInsee = "75101"
+    else if (insee === "13055") codeInsee = "13201"
+    else if (insee === "69123") codeInsee = "69381"
 
-      params.commune = codeInsee
-      params.distance = distance || 10
-      params.sort = 2
-    }
+    params.commune = codeInsee
+    params.distance = distance || 10
+    params.sort = 2
+  }
 
-    if (diploma) {
-      params.niveauFormation = NIVEAUX_POUR_OFFRES_PE[diploma]
-    }
+  if (diploma) {
+    params.niveauFormation = NIVEAUX_POUR_OFFRES_PE[diploma]
+  }
 
-    const jobs = await searchForFtJobs(params)
+  const jobs = await searchForFtJobs(params)
 
-    if (jobs === null || jobs === "") {
-      return { resultats: [] }
-    }
-
-    return jobs
-  } catch (error) {
-    trackApiCall({ caller, api_path: api, response: "Error" })
-    sentryCaptureException(error)
+  if (jobs === null || jobs === "") {
     return { resultats: [] }
   }
+
+  return jobs
 }
 
 /**

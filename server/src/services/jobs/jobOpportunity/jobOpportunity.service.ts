@@ -13,6 +13,8 @@ import {
 } from "shared/models/jobsPartners.model"
 import { IJobOpportunityGetQuery, IJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
 
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+
 import { IApiError } from "../../../common/utils/errorManager"
 import { getDbCollection } from "../../../common/utils/mongodbUtils"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
@@ -404,15 +406,18 @@ async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryReso
 
   const params: Parameters<typeof getFtJobsV2>[0] = {
     jobLimit: 150,
-    caller: context.caller,
-    api: context.route.path,
     romes: query.romes ?? null,
     insee: commune.code,
     radius: query.radius,
     diploma: getFtDiploma(query.diplomaLevel ?? null),
   }
 
-  const ftJobs = await getFtJobsV2(params)
+  const ftJobs = await getFtJobsV2(params).catch((error) => {
+    sentryCaptureException(error)
+    context.addWarning("FRANCE_TRAVAIL_API_ERROR")
+
+    return { resultats: [] }
+  })
 
   return convertFranceTravailJobToJobPartnerOfferApi(ftJobs.resultats)
 }
@@ -454,9 +459,9 @@ async function resolveQuery(query: IJobOpportunityGetQuery): Promise<IJobOpportu
 
     if (rncpRomes == null) {
       throw badRequest("Cannot find an active Certification for the given RNCP", { rncp: query.rncp })
-    } else {
-      romeCriteria.push(...rncpRomes)
     }
+
+    romeCriteria.push(...rncpRomes)
   }
 
   return {
