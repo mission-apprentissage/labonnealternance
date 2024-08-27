@@ -1,6 +1,7 @@
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, IApplication, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
+
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
@@ -160,23 +161,17 @@ const transformCompanies = ({
 }
 
 type IRecruteursLbaSearchParams = {
-  romes: string[]
+  romes?: string[]
   latitude: number
   longitude: number
   radius: number
-  opco?: string
-  opcoUrl?: string
 }
 
-export const getRecruteursLbaFromDB = async ({ radius = 10, romes, opco, opcoUrl, latitude, longitude }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
-  const query: { rome_codes: object; opco_short_name?: string; opco_url?: string } = {
-    rome_codes: { $in: romes },
-  }
-  if (opco) {
-    query.opco_short_name = opco.toUpperCase()
-  }
-  if (opcoUrl) {
-    query.opco_url = opcoUrl.toLowerCase()
+export const getRecruteursLbaFromDB = async ({ radius = 10, romes, latitude, longitude }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
+  const query: Filter<ILbaCompany> = {}
+
+  if (romes) {
+    query.rome_codes = { $in: romes }
   }
 
   return await getDbCollection("recruteurslba")

@@ -3,7 +3,7 @@ import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 import { isOriginLocal } from "../common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
 
-import { getRomesFromRncp } from "./certification.service"
+import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types"
 
 /**

@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest } from "boom"
 import { Filter } from "mongodb"
 import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, parseEnum } from "shared"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, TRAINING_CONTRACT_TYPE } from "shared/constants"
@@ -11,23 +11,27 @@ import {
   ZJobsPartnersRecruiterApi,
   INiveauDiplomeEuropeen,
 } from "shared/models/jobsPartners.model"
-import { IRouteSchema } from "shared/routes/common.routes"
-import { IJobOpportunityRncp, IJobOpportunityRome, IJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
+import { IJobOpportunityGetQuery, IJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
 
-import { IApiError } from "../common/utils/errorManager"
-import { getDbCollection } from "../common/utils/mongodbUtils"
-import { trackApiCall } from "../common/utils/sendTrackingEvent"
-import config from "../config"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
-import { getRomesFromRncp } from "./certification.service"
-import { getFtJobsV2, getSomeFtJobs } from "./ftjob.service"
-import { FTJob } from "./ftjob.service.types"
-import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types"
-import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "./lbaitem.shared.service.types"
-import { getLbaJobs, getLbaJobsV2, IJobResult, incrementLbaJobsViewCount } from "./lbajob.service"
-import { jobsQueryValidator } from "./queryValidator.service"
-import { getRecruteursLbaFromDB, getSomeCompanies } from "./recruteurLba.service"
-import { getNearestCommuneByGeoPoint } from "./referentiel/commune/commune.referentiel.service"
+import { IApiError } from "../../../common/utils/errorManager"
+import { getDbCollection } from "../../../common/utils/mongodbUtils"
+import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
+import config from "../../../config"
+import { getRomesFromRncp } from "../../external/api-alternance/certification.service"
+import { getFtJobsV2, getSomeFtJobs } from "../../ftjob.service"
+import { FTJob } from "../../ftjob.service.types"
+import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
+import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
+import { getLbaJobs, getLbaJobsV2, IJobResult, incrementLbaJobsViewCount } from "../../lbajob.service"
+import { jobsQueryValidator } from "../../queryValidator.service"
+import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
+import { getNearestCommuneByGeoPoint } from "../../referentiel/commune/commune.referentiel.service"
+
+import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
+
+type IJobOpportunityGetQueryResolved = Omit<IJobOpportunityGetQuery, "rncp">
 
 /**
  * @description Retourn la compilation d'opportunités d'emploi au format unifié
@@ -188,10 +192,13 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ radius = 10, romes, latitude, longitude, diplomaLevel }: IJobOpportunityRome): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getJobsPartnersFromDB = async ({ radius = 10, romes, latitude, longitude, diplomaLevel }: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
-    offer_rome_code: { $in: romes },
     offer_multicast: true,
+  }
+
+  if (romes) {
+    query.offer_rome_code = { $in: romes }
   }
 
   if (diplomaLevel) {
@@ -375,9 +382,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
   })
 }
 
-type IJobOpportunityReqContext = { route: Pick<IRouteSchema, "path">; caller: string }
-
-async function findFranceTravailOpportunities(query: IJobOpportunityRome, context: IJobOpportunityReqContext): Promise<IJobsPartnersOfferApi[]> {
+async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryResolved, context: JobOpportunityRequestContext): Promise<IJobsPartnersOfferApi[]> {
   const commune = await getNearestCommuneByGeoPoint({ type: "Point", coordinates: [query.longitude, query.latitude] })
 
   const getFtDiploma = (diplomaLevel: INiveauDiplomeEuropeen | null): keyof typeof NIVEAUX_POUR_OFFRES_PE | null => {
@@ -401,22 +406,25 @@ async function findFranceTravailOpportunities(query: IJobOpportunityRome, contex
 
   const params: Parameters<typeof getFtJobsV2>[0] = {
     jobLimit: 150,
-    caller: context.caller,
-    api: context.route.path,
-    romes: query.romes,
+    romes: query.romes ?? null,
     insee: commune.code,
     radius: query.radius,
     diploma: getFtDiploma(query.diplomaLevel ?? null),
   }
 
-  const ftJobs = await getFtJobsV2(params)
+  const ftJobs = await getFtJobsV2(params).catch((error) => {
+    sentryCaptureException(error)
+    context.addWarning("FRANCE_TRAVAIL_API_ERROR")
+
+    return { resultats: [] }
+  })
 
   return convertFranceTravailJobToJobPartnerOfferApi(ftJobs.resultats)
 }
 
-async function findLbaJobOpportunities(query: IJobOpportunityRome): Promise<IJobsPartnersOfferApi[]> {
+async function findLbaJobOpportunities(query: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferApi[]> {
   const payload: Parameters<typeof getLbaJobsV2>[0] = {
-    romes: query.romes,
+    romes: query.romes ?? null,
     distance: query.radius,
     lat: query.latitude,
     lon: query.longitude,
@@ -433,28 +441,50 @@ async function findLbaJobOpportunities(query: IJobOpportunityRome): Promise<IJob
   return convertLbaRecruiterToJobPartnerOfferApi(lbaJobs)
 }
 
-export async function findJobsOpportunityResponseFromRome(payload: IJobOpportunityRome, context: IJobOpportunityReqContext): Promise<IJobsOpportunityResponse> {
+async function resolveQuery(query: IJobOpportunityGetQuery): Promise<IJobOpportunityGetQueryResolved> {
+  const { romes, rncp, ...rest } = query
+
+  if (!romes && !rncp) {
+    return rest
+  }
+
+  const romeCriteria: string[] = []
+
+  if (romes) {
+    romeCriteria.push(...romes)
+  }
+
+  if (query.rncp) {
+    const rncpRomes = await getRomesFromRncp(query.rncp, true)
+
+    if (rncpRomes == null) {
+      throw badRequest("Cannot find an active Certification for the given RNCP", { rncp: query.rncp })
+    }
+
+    romeCriteria.push(...rncpRomes)
+  }
+
+  return {
+    ...rest,
+    romes: romeCriteria,
+  }
+}
+
+export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, context: JobOpportunityRequestContext): Promise<IJobsOpportunityResponse> {
+  const resolvedQuery = await resolveQuery(payload)
+
   const [recruterLba, offreEmploiLba, offreEmploiPartenaire, franceTravail] = await Promise.all([
-    getRecruteursLbaFromDB(payload),
-    findLbaJobOpportunities(payload),
-    getJobsPartnersFromDB(payload),
-    findFranceTravailOpportunities(payload, context),
+    getRecruteursLbaFromDB(resolvedQuery),
+    findLbaJobOpportunities(resolvedQuery),
+    getJobsPartnersFromDB(resolvedQuery),
+    findFranceTravailOpportunities(resolvedQuery, context),
   ])
 
   return {
     jobs: [...offreEmploiLba, ...franceTravail, ...offreEmploiPartenaire],
     recruiters: convertLbaCompanyToJobPartnerRecruiterApi(recruterLba),
+    warnings: context.getWarnings(),
   }
-}
-
-export async function findJobsOpportunityResponseFromRncp(payload: IJobOpportunityRncp, context: IJobOpportunityReqContext): Promise<IJobsOpportunityResponse> {
-  const { rncp, ...rest } = payload
-  const romes = await getRomesFromRncp(rncp)
-  if (!romes) {
-    throw Boom.internal(`Aucun code ROME n'a été trouvé à partir du code RNCP ${payload.rncp}`)
-  }
-
-  return findJobsOpportunityResponseFromRome({ romes, ...rest }, context)
 }
 
 export const mergePatchWithDb = <T extends Record<string, any>, U extends Record<string, any>>(patchObj: T, dbObj: U): Partial<T & U> => {

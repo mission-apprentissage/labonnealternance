@@ -3,7 +3,7 @@ import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { getFormationsQuery } from "../../services/formation.service"
-import { getJobsFromApi } from "../../services/jobOpportunity.service"
+import { getJobsFromApi } from "../../services/jobs/jobOpportunity/jobOpportunity.service"
 import { jobsEtFormationsQueryValidator } from "../../services/queryValidator.service"
 import { Server } from "../server"
 
