@@ -1,5 +1,3 @@
-//import assert from "assert"
-
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
 import { ERecruteurLbaUpdateEventType } from "shared/models"
