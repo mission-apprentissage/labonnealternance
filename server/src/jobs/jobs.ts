@@ -28,16 +28,6 @@ import { addJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
 import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
-import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
-import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
-import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
-import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
-import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
-import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
-import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
-import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
-import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
-import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
@@ -59,7 +49,13 @@ import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { offersToCancelJob } from "./recruiters/offersToCancelJob"
+import { cancelOfferJob } from "./recruiters/cancelOfferJob"
+import { fixJobExpirationDate } from "./recruiters/fixJobExpirationDateJob"
+import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidationJob"
+import { opcoReminderJob } from "./recruiters/opcoReminderJob"
+import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
+import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
+import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import updateGeoLocations from "./recruteurLba/updateGeoLocations"
 import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
 import updateLbaCompanies from "./recruteurLba/updateRecruteurLba"
@@ -81,7 +77,7 @@ export async function setupJobProcessor() {
           },
           "Annulation des offres expirées": {
             cron_string: "15 0 * * *",
-            handler: offersToCancelJob,
+            handler: cancelOfferJob,
           },
           // "Send offer reminder email at J+7": {
           //   cron_string: "20 0 * * *",
@@ -93,7 +89,7 @@ export async function setupJobProcessor() {
           // },
           "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
             cron_string: "30 0 * * 1,3,5",
-            handler: relanceOpco,
+            handler: opcoReminderJob,
           },
           "Envoi des offres à France Travail": {
             cron_string: "30 5 * * *",
@@ -254,12 +250,6 @@ export async function setupJobProcessor() {
       "recruiters:set-missing-job-start-date": {
         handler: async () => updateMissingStartDate(),
       },
-      "recruiters:get-missing-geocoordinates": {
-        handler: async () => repiseGeocoordinates(),
-      },
-      "recruiters:get-missing-address-detail": {
-        handler: async () => updateAddressDetailOnRecruitersCollection(),
-      },
       "import:referentielrome": {
         handler: async () => importReferentielRome(),
       },
@@ -283,12 +273,12 @@ export async function setupJobProcessor() {
       "formulaire:relance": {
         handler: async (job) => {
           const { threshold } = job.payload as any
-          await relanceFormulaire(parseInt(threshold))
+          await recruiterOfferExpirationReminderJob(parseInt(threshold))
           return
         },
       },
       "formulaire:annulation": {
-        handler: async () => offersToCancelJob(),
+        handler: async () => cancelOfferJob(),
       },
       "metabase:role-management:create": {
         handler: async () => createRoleManagement360(),
@@ -297,7 +287,7 @@ export async function setupJobProcessor() {
         handler: async () => createJobsCollectionForMetabase(),
       },
       "opco:relance": {
-        handler: async () => relanceOpco(),
+        handler: async () => opcoReminderJob(),
       },
       "pe:offre:export": {
         handler: async () => updateSiretInfosInError(),
@@ -320,7 +310,6 @@ export async function setupJobProcessor() {
       "etablissement:invite:premium:follow-up": {
         handler: async (job) => inviteEtablissementParcoursupToPremiumFollowUp(job.payload?.bypassDate as any),
       },
-
       "etablissement:invite:premium:affelnet:follow-up": {
         handler: async (job) => inviteEtablissementAffelnetToPremiumFollowUp(job.payload?.bypassDate as any),
       },
@@ -379,15 +368,11 @@ export async function setupJobProcessor() {
           return
         },
       },
-
       "diplomes-metiers:update": {
         handler: async () => updateDiplomesMetiers(),
       },
       "recruiters:expiration-date:fix": {
         handler: async () => fixJobExpirationDate(),
-      },
-      "recruiters:job-type:fix": {
-        handler: async () => fixJobType(),
       },
       "fix-applications": {
         handler: async () => fixApplications(),
@@ -395,14 +380,6 @@ export async function setupJobProcessor() {
       "recruiters:data-validation:fix": {
         handler: async () => fixRecruiterDataValidation(),
       },
-      "referentiel-opco:constructys:import": {
-        handler: async (job) => {
-          const { parallelism } = job.payload as any
-          await importReferentielOpcoFromConstructys(parseInt(parallelism))
-          return
-        },
-      },
-
       "anonymize-individual": {
         handler: async (job) => {
           const { collection, id } = job.payload as any
@@ -410,7 +387,6 @@ export async function setupJobProcessor() {
           return
         },
       },
-
       "db:validate": {
         handler: async () => validateModels(),
       },

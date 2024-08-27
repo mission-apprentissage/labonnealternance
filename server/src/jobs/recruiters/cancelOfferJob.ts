@@ -7,7 +7,7 @@ import { asyncForEach } from "../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import dayjs from "../../services/dayjs.service"
 
-export const offersToCancelJob = async () => {
+export const cancelOfferJob = async () => {
   const today = dayjs().startOf("day").utc(true)
 
   const formulaires = await getDbCollection("recruiters")

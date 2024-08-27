@@ -11,12 +11,12 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { upsertEntrepriseData } from "@/services/organization.service"
 import { setEntrepriseInError } from "@/services/userRecruteur.service"
 
-import { logger } from "../../../../common/logger"
-import { asyncForEach } from "../../../../common/utils/asyncUtils"
-import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
-import { notifyToSlack } from "../../../../common/utils/slackUtils"
-import { EntrepriseData, getEntrepriseDataFromSiret } from "../../../../services/etablissement.service"
-import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
+import { logger } from "../../common/logger"
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import { EntrepriseData, getEntrepriseDataFromSiret } from "../../services/etablissement.service"
+import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../services/formulaire.service"
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await getDbCollection("entreprises")

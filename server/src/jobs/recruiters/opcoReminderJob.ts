@@ -6,15 +6,15 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { asyncForEach } from "../../../common/utils/asyncUtils"
-import config from "../../../config"
-import mailer from "../../../services/mailer.service"
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import config from "../../config"
+import mailer from "../../services/mailer.service"
 
 /**
  * @description send mail to ocpo with awaiting validation user number
  * @returns {}
  */
-export const relanceOpco = async () => {
+export const opcoReminderJob = async () => {
   const rolesAwaitingValidation = await getDbCollection("rolemanagements")
     .find(
       {

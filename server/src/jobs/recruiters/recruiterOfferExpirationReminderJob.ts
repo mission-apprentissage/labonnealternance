@@ -9,14 +9,14 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from "@/services/appLinks.service"
 
-import { logger } from "../../../common/logger"
-import { asyncForEach } from "../../../common/utils/asyncUtils"
-import { notifyToSlack } from "../../../common/utils/slackUtils"
-import config from "../../../config"
-import dayjs from "../../../services/dayjs.service"
-import mailer, { sanitizeForEmail } from "../../../services/mailer.service"
+import { logger } from "../../common/logger"
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import config from "../../config"
+import dayjs from "../../services/dayjs.service"
+import mailer, { sanitizeForEmail } from "../../services/mailer.service"
 
-export const relanceFormulaire = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
+export const recruiterOfferExpirationReminderJob = async (threshold: number /* number of days to expiration for the reminder email to be sent */) => {
   const recruiters = await getDbCollection("recruiters")
     .find({
       $nor: [{ jobs: { $exists: false } }, { jobs: { $size: 0 } }],
