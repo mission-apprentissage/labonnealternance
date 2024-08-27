@@ -1,5 +1,6 @@
 import Boom from "boom"
 import { assertUnreachable, toPublicUser, zRoutes } from "shared"
+import { CFA, ENTREPRISE } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
@@ -37,7 +38,6 @@ import { emailHasActiveRole, getUserWithAccountByEmail, isUserDisabled, isUserEm
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
-import { CFA, ENTREPRISE } from "../../services/constant.service"
 import { Server } from "../server"
 
 export default (server: Server) => {

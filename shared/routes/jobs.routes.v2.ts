@@ -3,7 +3,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZBusinessError } from "../models"
 import { zObjectId } from "../models/common"
-import { ZJobsApiResponseV2, ZJobsPartners, ZJobsPartnersPatchApiBody, ZJobsPartnersPostApiBody } from "../models/jobsPartners.model"
+import { ZJobsPartnersOfferPrivate, ZJobsPartnersPatchApiBody, ZJobsPartnersPostApiBody } from "../models/jobsPartners.model"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemFtJob, ZLbaItemLbaCompany, ZLbaItemLbaJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
@@ -24,7 +24,7 @@ import {
   zSourcesParams,
 } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
-import { ZJobOpportunityRncp, ZJobOpportunityRome } from "./jobOpportunity.routes"
+import { ZJobOpportunityGetQuery, ZJobsOpportunityResponse } from "./jobOpportunity.routes"
 
 export const zJobsRoutesV2 = {
   get: {
@@ -126,73 +126,6 @@ export const zJobsRoutesV2 = {
         tags: ["V2 - Jobs"] as string[],
         description: `Get all jobs related to my organization\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
         operationId: "getJobs",
-      },
-    },
-    "/jobs": {
-      method: "get",
-      path: "/jobs",
-      querystring: z
-        .object({
-          romes: zRomesParams("rncp"),
-          rncp: zRncpsParams,
-          caller: zCallerParam.nullish(),
-          latitude: ZLatitudeParam,
-          longitude: ZLongitudeParam,
-          radius: ZRadiusParam,
-          insee: zInseeParams,
-          sources: zSourcesParams,
-          diploma: zDiplomaParam,
-          opco: zOpcoParams,
-          opcoUrl: zOpcoUrlParams,
-        })
-        .strict()
-        .passthrough(),
-      headers: zRefererHeaders,
-      response: {
-        "200": z
-          .object({
-            peJobs: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemFtJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            matchas: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemLbaJob),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            lbaCompanies: z.union([
-              z
-                .object({
-                  results: z.array(ZLbaItemLbaCompany),
-                })
-                .strict()
-                .nullable(),
-              ZApiError,
-            ]),
-            lbbCompanies: z.null(), // always null until removal
-          })
-          .strict(),
-        "400": z.union([ZResError, ZLbacError, ZApiError]),
-        "500": z.union([ZResError, ZLbacError, ZApiError]),
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-      openapi: {
-        tags: ["V2 - Jobs"] as string[],
-        operationId: "getJobOpportunities",
-        description: `Get job opportunities matching the query parameters\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/jobs/min": {
@@ -363,25 +296,12 @@ export const zJobsRoutesV2 = {
         })}`,
       },
     },
-    "/jobs/rome": {
+    "/jobs": {
       method: "get",
-      path: "/jobs/rome",
-      querystring: ZJobOpportunityRome,
+      path: "/jobs",
+      querystring: ZJobOpportunityGetQuery,
       response: {
-        "200": ZJobsApiResponseV2,
-      },
-      securityScheme: {
-        auth: "api-apprentissage",
-        access: null,
-        resources: {},
-      },
-    },
-    "/jobs/rncp": {
-      method: "get",
-      path: "/jobs/rncp",
-      querystring: ZJobOpportunityRncp,
-      response: {
-        "200": ZJobsApiResponseV2,
+        "200": ZJobsOpportunityResponse,
       },
       securityScheme: {
         auth: "api-apprentissage",
@@ -484,7 +404,7 @@ export const zJobsRoutesV2 = {
       }),
       body: ZJobsPartnersPatchApiBody,
       response: {
-        "200": ZJobsPartners,
+        "200": ZJobsPartnersOfferPrivate,
       },
       securityScheme: {
         auth: "api-apprentissage",

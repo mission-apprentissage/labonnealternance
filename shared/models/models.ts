@@ -29,6 +29,7 @@ import recruiterModel from "./recruiter.model"
 import lbaCompanyModel from "./recruteurLba.model"
 import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model"
+import { referentielCommuneModel } from "./referentiel/communes.model"
 import referentielOnisepModel from "./referentielOnisep.model"
 import referentielOpcoModel from "./referentielOpco.model"
 import reportedCompanyModel from "./reportedCompany.model"
@@ -81,6 +82,7 @@ const modelDescriptorMap = {
   [userModel.collectionName]: userModel,
   [userWithAccountModel.collectionName]: userWithAccountModel,
   [reportedCompanyModel.collectionName]: reportedCompanyModel,
+  [referentielCommuneModel.collectionName]: referentielCommuneModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

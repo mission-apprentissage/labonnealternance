@@ -1,4 +1,4 @@
-import { OPCOS } from "../constants/recruteur"
+import { OPCOS_LABEL } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -9,7 +9,7 @@ const collectionName = "referentielopcos" as const
 export const ZReferentielOpco = z
   .object({
     _id: zObjectId,
-    opco_label: extensions.buildEnum(OPCOS).describe("Dénomination de l'opco"),
+    opco_label: extensions.buildEnum(OPCOS_LABEL).describe("Dénomination de l'opco"),
     siret_code: extensions.siret.describe("Siret de l'établissement"),
     emails: z.array(z.string().email()).describe("Liste des emails disponibles pour l'établissement"),
   })

@@ -15,6 +15,7 @@ import {
   ZAdresseV3,
   ZCfaReferentielData,
 } from "shared"
+import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants"
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
@@ -38,7 +39,6 @@ import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
-import { CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service"
 import dayjs from "./dayjs.service"
 import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementGouv, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
@@ -327,9 +327,7 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
     if (!firstFeature) {
       throw new Error("pas trouvé")
     }
-    const coords = firstFeature.geometry.coordinates.reverse()
-    const latitude = coords.at(0)
-    const longitude = coords.at(1)
+    const [longitude, latitude] = firstFeature.geometry.coordinates
     if (latitude === undefined || longitude === undefined) {
       throw Boom.internal("moins de 2 coordonnées", { latitude, longitude })
     }

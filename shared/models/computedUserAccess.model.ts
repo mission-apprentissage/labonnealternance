@@ -1,4 +1,4 @@
-import { OPCOS } from "../constants/recruteur"
+import { OPCOS_LABEL } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -8,7 +8,7 @@ export const ZComputedUserAccess = z
     users: z.array(z.string()),
     entreprises: z.array(z.string()),
     cfas: z.array(z.string()),
-    opcos: z.array(extensions.buildEnum(OPCOS)),
+    opcos: z.array(extensions.buildEnum(OPCOS_LABEL)),
   })
   .strict()
 

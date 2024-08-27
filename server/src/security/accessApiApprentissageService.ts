@@ -30,19 +30,26 @@ export const parseApiApprentissageToken = (jwtToken: string): ApiApprentissageTo
     return parseResult.data
   } catch (err: unknown) {
     if (err instanceof TokenExpiredError) {
-      throw Boom.forbidden("JWT expired")
+      const e = Boom.forbidden("JWT expired")
+      e.cause = err
+      throw e
     }
+
     if (err instanceof JsonWebTokenError) {
       logger.warn("invalid jwt token", jwtToken, err)
-      throw Boom.forbidden()
+      const e = Boom.forbidden("Invalid JWT token")
+      e.cause = err
+      throw e
     }
+
     if (err instanceof Error && Boom.isBoom(err)) {
       sentryCaptureException(err)
-      throw Boom.forbidden()
+      throw err
     }
-    const e = Boom.internal()
+
+    sentryCaptureException(err)
+    const e = Boom.unauthorized()
     e.cause = err
-    sentryCaptureException(e)
-    throw Boom.unauthorized()
+    throw e
   }
 }

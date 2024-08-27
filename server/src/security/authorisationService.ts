@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
-import { ADMIN, CFA, ENTREPRISE, OPCOS } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { ComputedUserAccess, IApplication, IJob, IRecruiter } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
@@ -245,7 +245,7 @@ async function getResources<S extends WithSecurityScheme>(schema: S, req: IReque
 }
 
 function canAccessRecruiter(userAccess: ComputedUserAccess, resource: RecruiterResource): boolean {
-  const recruiterOpco = parseEnum(OPCOS, resource.recruiter.opco ?? null)
+  const recruiterOpco = parseEnum(OPCOS_LABEL, resource.recruiter.opco ?? null)
   if (recruiterOpco && userAccess.opcos.includes(recruiterOpco)) {
     return true
   }
@@ -276,7 +276,7 @@ function canAccessApplication(userAccess: ComputedUserAccess, resource: Applicat
 
 function canAccessEntreprise(userAccess: ComputedUserAccess, resource: EntrepriseResource): boolean {
   const { entreprise } = resource
-  const entrepriseOpco = parseEnum(OPCOS, entreprise.opco)
+  const entrepriseOpco = parseEnum(OPCOS_LABEL, entreprise.opco)
   return userAccess.entreprises.includes(entreprise._id.toString()) || Boolean(entrepriseOpco && userAccess.opcos.includes(entrepriseOpco))
 }
 
@@ -348,7 +348,7 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
     if (organisation.toLowerCase() === ADMIN.toLowerCase()) {
       return
     }
-    const opco = parseEnum(OPCOS, organisation)
+    const opco = parseEnum(OPCOS_LABEL, organisation)
     const userAccess: ComputedUserAccess = {
       admin: false,
       users: [],
