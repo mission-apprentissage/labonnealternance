@@ -488,9 +488,9 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
 
       if (application) {
         return { enseigne: application.company_name, siret, phone: "", email: "", active: false }
-      } else {
-        throw Boom.notFound("Société inconnue")
       }
+      
+      throw Boom.notFound("Société inconnue")
     }
   } catch (error: any) {
     if (error?.output?.statusCode === 404) {
