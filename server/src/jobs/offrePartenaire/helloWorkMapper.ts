@@ -40,15 +40,25 @@ const teletravailMapping: Record<string, TRAINING_REMOTE_TYPE> = {
   Occasionnel: TRAINING_REMOTE_TYPE.hybrid,
 }
 
-const diplomeValues = Object.values(NIVEAUX_POUR_LBA)
+function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_diploma_level"] {
+  if (job.education == null) return null
 
-const diplomeMapping: Record<string, (typeof diplomeValues)[number]> = {
-  "RJ/Qualif/BEP_CAP": NIVEAUX_POUR_LBA["3 (CAP...)"],
-  "RJ/Qualif/Employe_Operateur": NIVEAUX_POUR_LBA["3 (CAP...)"],
-  "RJ/Qualif/Technicien_B2": NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"],
-  "RJ/Qualif/Agent_maitrise_B3": NIVEAUX_POUR_LBA["6 (Licence, BUT...)"],
-  "RJ/Qualif/Cadre_dirigeant": NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"],
-  "RJ/Qualif/Ingenieur_B5": NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"],
+  switch (job.education) {
+    case "RJ/Qualif/BEP_CAP":
+      return { european: "3", label: NIVEAUX_POUR_LBA["3 (CAP...)"] }
+    case "RJ/Qualif/Employe_Operateur":
+      return { european: "3", label: NIVEAUX_POUR_LBA["3 (CAP...)"] }
+    case "RJ/Qualif/Technicien_B2":
+      return { european: "5", label: NIVEAUX_POUR_LBA["5 (BTS, DEUST...)"] }
+    case "RJ/Qualif/Agent_maitrise_B3":
+      return { european: "6", label: NIVEAUX_POUR_LBA["6 (Licence, BUT...)"] }
+    case "RJ/Qualif/Cadre_dirigeant":
+      return { european: "7", label: NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"] }
+    case "RJ/Qualif/Ingenieur_B5":
+      return { european: "7", label: NIVEAUX_POUR_LBA["7 (Master, titre ingénieur...)"] }
+    default:
+      return null
+  }
 }
 
 export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPartners => {
@@ -59,7 +69,6 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     remote,
     title,
     description,
-    education,
     profile,
     code_rome,
     publication_date,
@@ -80,32 +89,32 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
   const partnerJob: IComputedJobsPartners = {
     _id: new ObjectId(),
     created_at: new Date(),
-    partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_id: job_id,
+    partner: JOBPARTNERS_LABEL.HELLOWORK,
+    partner_job_id: job_id,
     contract_start: parseDate(contract_start_date),
     contract_type: contract.toLowerCase() === "alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
     contract_remote: remote ? teletravailMapping[remote] ?? null : null,
     contract_duration: contractDuration,
     offer_title: title,
     offer_description: description && description.length >= 30 ? description : undefined,
-    offer_diploma_level_label: education ? diplomeMapping[education] ?? null : null,
-    offer_desired_skills: profile ?? null,
-    offer_access_condition: null,
-    offer_acquired_skills: null,
+    offer_diploma_level: getDiplomaLevel(job),
+    offer_desired_skills: profile == null ? null : [profile],
+    offer_access_conditions: null,
+    offer_to_be_acquired_skills: null,
     offer_rome_code: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
-    offer_creation_date: parseDate(publication_date),
-    offer_expiration_date: null,
+    offer_creation: parseDate(publication_date),
+    offer_expiration: null,
     offer_origin: null,
-    offer_count: 1,
+    offer_opening_count: 1,
     offer_multicast: false,
     workplace_siret: siretParsing.success ? siretParsing.data : null,
     workplace_name: company_title,
     workplace_description: company_description && company_description.length >= 30 ? company_description : null,
     workplace_size: null,
     workplace_website: null,
-    workplace_raison_sociale: null,
-    workplace_enseigne: null,
-    workplace_address: [address, postal_code, city].filter((x) => x).join(" "),
+    workplace_address: {
+      label: [address, postal_code, city].filter((x) => x).join(" "),
+    },
     workplace_geopoint:
       latitude && longitude
         ? {

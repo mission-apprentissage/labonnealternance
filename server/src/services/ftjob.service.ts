@@ -231,10 +231,7 @@ export const getFtJobs = async ({
 
     if (diploma) {
       const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
-      if (niveauRequis && niveauRequis !== "NV5") {
-        // pas de filtrage sur niveau requis NV5 car pas de résultats
-        params.niveauFormation = niveauRequis
-      }
+      params.niveauFormation = niveauRequis
     }
 
     if (hasLocation) {
