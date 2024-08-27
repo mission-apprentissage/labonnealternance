@@ -3634,7 +3634,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/integrations@npm:7.117.0, @sentry/integrations@npm:^7.72.0, @sentry/integrations@npm:^7.73.0":
+"@sentry/integrations@npm:7.117.0":
   version: 7.117.0
   resolution: "@sentry/integrations@npm:7.117.0"
   dependencies:
@@ -3646,7 +3646,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/integrations@npm:7.119.0":
+"@sentry/integrations@npm:7.119.0, @sentry/integrations@npm:^7.72.0, @sentry/integrations@npm:^7.73.0":
   version: 7.119.0
   resolution: "@sentry/integrations@npm:7.119.0"
   dependencies:
@@ -3686,7 +3686,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/node@npm:7.117.0, @sentry/node@npm:^7.60.0, @sentry/node@npm:^7.72.0":
+"@sentry/node@npm:7.117.0":
   version: 7.117.0
   resolution: "@sentry/node@npm:7.117.0"
   dependencies:
@@ -3699,7 +3699,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/node@npm:^7.80.0":
+"@sentry/node@npm:^7.60.0, @sentry/node@npm:^7.72.0, @sentry/node@npm:^7.80.0":
   version: 7.119.0
   resolution: "@sentry/node@npm:7.119.0"
   dependencies:
@@ -3748,21 +3748,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/types@npm:7.117.0, @sentry/types@npm:^7.72.0":
+"@sentry/types@npm:7.117.0":
   version: 7.117.0
   resolution: "@sentry/types@npm:7.117.0"
   checksum: f3eabf921ecbe1e89c5dc50fd5f52340484ae710333718a6e027f58462bee552d22a70ff50e2a8b9924f935a3b86e3ec4aca20ab3bc3fbee1f77c3a6d49255df
   languageName: node
   linkType: hard
 
-"@sentry/types@npm:7.119.0":
+"@sentry/types@npm:7.119.0, @sentry/types@npm:^7.72.0":
   version: 7.119.0
   resolution: "@sentry/types@npm:7.119.0"
   checksum: ffb8dcaf1d5c96defe860e663553511e602cd6bfbe63b0c3fd8cba5ec1c3ea9ad47597527f4d9ef314ba1b11bccf89c4d6f50435df7cbfb92f5a398c6c261f0b
   languageName: node
   linkType: hard
 
-"@sentry/utils@npm:7.117.0, @sentry/utils@npm:^7.60.0":
+"@sentry/utils@npm:7.117.0":
   version: 7.117.0
   resolution: "@sentry/utils@npm:7.117.0"
   dependencies:
@@ -3771,7 +3771,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/utils@npm:7.119.0":
+"@sentry/utils@npm:7.119.0, @sentry/utils@npm:^7.60.0":
   version: 7.119.0
   resolution: "@sentry/utils@npm:7.119.0"
   dependencies:
