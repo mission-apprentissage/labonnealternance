@@ -14,4 +14,4 @@ scenarios:
   - name: "Recherche métier"
     flow:
       - get:
-          url: "/api/V1/jobsEtFormations?romes={{ romes}}&radius=30{{ geoloc }}&caller=stresstest"
+          url: "/api/V1/jobsEtFormations?romes={{ romes }}&radius=30{{ geoloc }}&caller=stresstest"

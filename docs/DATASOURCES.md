@@ -2,41 +2,59 @@
 
 ## Introduction
 
-Le Tableau de bord utilise certaines données externes récupérées via API.
+La bonne alternance utilise certaines données externes récupérées via API.
 Ce document détaille la liste des données et l'usage qui en est fait.
 
-## Référentiel
+## Référentiel Onisep
 
-https://referentiel.apprentissage.onisep.fr/ & https://referentiel.apprentissage.onisep.fr/construction/source
+https://referentiel.apprentissage.onisep.fr
 
 Le Référentiel des organismes de formation en apprentissage contient 96% d’organismes validés sur le territoire national.
 
-### Organismes
+## Catalogue RCO
 
-Nous utilisons la listes des organismes du référentiel pour fiabiliser les organismes transmettant des données au TDB.
-Pour cela nous utilisons l'API du référentiel qui nous renvoie le contenu de la collection organismes (construite via l'aggrégation de différentes sources, cf. https://referentiel.apprentissage.onisep.fr/construction)
+https://catalogue-apprentissage.intercariforef.org
 
-### UAIs de la base ACCE
+Récupération du référentiel des formations en apprentissage
 
-Nous utilisons la liste des UAIs du référentiel pour identifier d'éventuels organismes inconnus transmettant des données au TDB.
-Pour cela nous utilisons l'API du référentiel qui nous renvoie le contenu de la collection UAI (construite via la récupération des données de la base ACCE)
+## Catalogue Education national
 
-## Catalogue
+https://catalogue.apprentissage.education.gouv.fr
 
-https://catalogue-apprentissage.intercariforef.org/
+Récupération du référentiel des formations en apprentissage
 
-## Tables de correspondances
+## API Apprentissage
 
-https://tables-correspondances.apprentissage.beta.gouv.fr/api/v1/docs/
+https://api.apprentissage.beta.gouv.fr
+
+Récupération des certifications RNCP
 
 ## API Entreprise
 
 https://entreprise.api.gouv.fr
 
+Récupération des informations entreprises
+
+## API BAN
+
+https://adresse.data.gouv.fr/
+
+Récupération des coordonnées géographiques entreprises
+
 ## API CFADock
 
-https://www.cfadock.fr/Home/ApiDescription
+https://www.cfadock.fr
 
-## LaBonneAlternance
+Récupération des OPCO & IDCC des entreprises
 
-https://labonnealternance.apprentissage.beta.gouv.fr/
+## France Competence
+
+https://www.francecompetences.fr
+
+Récupération des OPCO & IDCC des entreprises
+
+## API France Travail
+
+https://francetravail.io
+
+Usage de divers API, dont celle de récupération des offres
