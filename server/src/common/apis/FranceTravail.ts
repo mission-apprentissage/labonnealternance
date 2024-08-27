@@ -83,7 +83,7 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
  * @description Search for FT Jobs
  */
 export const searchForFtJobs = async (params: {
-  codeROME: string
+  codeROME?: string
   commune?: string
   sort: number
   natureContrat: string
@@ -101,6 +101,7 @@ export const searchForFtJobs = async (params: {
       partenaires: "LABONNEALTERNANCE",
       modeSelectionPartenaires: "EXCLU",
     }
+
     const { data } = await axiosClient.get(`${config.franceTravailIO.baseUrl}/offresdemploi/v2/offres/search`, {
       params: extendedParams,
       headers: {

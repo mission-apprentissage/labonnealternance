@@ -1,11 +1,75 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { describe, expect, it } from "vitest"
+import { saveDbEntity } from "@tests/utils/user.test.utils"
+import { IFormationCatalogue, zFormationCatalogueSchema } from "shared/models"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
-// Skip from CI (ES is not populated correctly)
-describe.skipIf(process.env.CI)("formationRegionV1", () => {
-  useMongo()
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
+useMongo()
+
+describe("formationRegionV1", () => {
   const httpClient = useServer()
+
+  beforeAll(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2024-08-21"))
+
+    return () => {
+      vi.useRealTimers()
+    }
+  })
+
+  let formations: IFormationCatalogue[] = []
+
+  beforeEach(async () => {
+    formations = await Promise.all(
+      [
+        {
+          cle_ministere_educatif: "1",
+          code_postal: "75006",
+          num_departement: "75",
+          rome_codes: ["F1603", "F1606"],
+          tags: ["2024"],
+        },
+        {
+          cle_ministere_educatif: "2",
+          code_postal: "92110",
+          num_departement: "92",
+          rome_codes: ["F1603"],
+          tags: ["2024", "2023"],
+        },
+        {
+          cle_ministere_educatif: "3",
+          code_postal: "91000",
+          num_departement: "91",
+          rome_codes: ["F1603"],
+          tags: ["2024", "2023"],
+        },
+        {
+          cle_ministere_educatif: "4",
+          code_postal: "77000",
+          num_departement: "77",
+          rome_codes: ["I1308"],
+          tags: ["2024", "2023"],
+        },
+        {
+          cle_ministere_educatif: "5",
+          code_postal: "44980",
+          num_departement: "44",
+          rome_codes: ["N4101"],
+          tags: ["2024", "2023"],
+        },
+        {
+          cle_ministere_educatif: "6",
+          code_postal: "44983",
+          num_departement: "44",
+          rome_codes: ["F1603"],
+          tags: ["2024", "2023"],
+        },
+      ].map((data) => saveDbEntity(zFormationCatalogueSchema, (item) => getDbCollection("formationcatalogues").insertOne(item), data))
+    )
+  })
 
   it("Vérifie que la route répond", async () => {
     const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion" })
@@ -15,15 +79,27 @@ describe.skipIf(process.env.CI)("formationRegionV1", () => {
 
   it("Vérifie que la recherche avec Rome et region répond avec des résultats", async () => {
     const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&region=11&caller=a" })
-    expect(res.statusCode).toBe(200)
-    expect(JSON.parse(res.body).results).not.toHaveLength(0)
+    expect.soft(res.statusCode).toBe(200)
+    expect(JSON.parse(res.body)).toEqual({
+      results: expect.arrayContaining([
+        expect.objectContaining({ cleMinistereEducatif: formations[0].cle_ministere_educatif }),
+        expect.objectContaining({ cleMinistereEducatif: formations[1].cle_ministere_educatif }),
+        expect.objectContaining({ cleMinistereEducatif: formations[2].cle_ministere_educatif }),
+        expect.objectContaining({ cleMinistereEducatif: formations[3].cle_ministere_educatif }),
+      ]),
+    })
   })
 
   it("Vérifie que la recherche avec département répond avec des résultats", async () => {
     const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?departement=44&caller=a" })
 
-    expect(res.statusCode).toBe(200)
-    expect(JSON.parse(res.body).results).not.toHaveLength(0)
+    expect.soft(res.statusCode).toBe(200)
+    expect(JSON.parse(res.body)).toEqual({
+      results: expect.arrayContaining([
+        expect.objectContaining({ cleMinistereEducatif: formations[4].cle_ministere_educatif }),
+        expect.objectContaining({ cleMinistereEducatif: formations[5].cle_ministere_educatif }),
+      ]),
+    })
   })
 
   it("Vérifie que les requêtes avec region et departement sont refusées", async () => {

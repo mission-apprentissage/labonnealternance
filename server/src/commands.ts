@@ -548,6 +548,12 @@ program
   .option("-batchSize, [batchSize]", "Maximum de candidatures traitées", "100")
   .action(createJobAction("send-applications"))
 
+program
+  .command("referentiel:commune:import")
+  .description("Importe le référentiel des communes")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("referentiel:commune:import"))
+
 export async function startCLI() {
   await program.parseAsync(process.argv)
 }
