@@ -2,6 +2,7 @@ import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
 import Boom from "boom"
+import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 
@@ -12,7 +13,6 @@ import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
-import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service"
 import { FTJob, FTResponse } from "./ftjob.service.types"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
@@ -201,7 +201,7 @@ export const getFtJobs = async ({
   api = "jobV1",
 }: {
   romes: string[]
-  insee: string
+  insee?: string
   radius: number
   jobLimit: number
   caller: string
@@ -221,7 +221,7 @@ export const getFtJobs = async ({
 
     const distance = radius || 10
 
-    const params: { codeROME: string; commune: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
+    const params: { codeROME: string; commune?: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
       codeROME: romes.join(","),
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
@@ -231,10 +231,7 @@ export const getFtJobs = async ({
 
     if (diploma) {
       const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
-      if (niveauRequis && niveauRequis !== "NV5") {
-        // pas de filtrage sur niveau requis NV5 car pas de résultats
-        params.niveauFormation = niveauRequis
-      }
+      params.niveauFormation = niveauRequis
     }
 
     if (hasLocation) {
@@ -253,6 +250,69 @@ export const getFtJobs = async ({
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
+  }
+}
+
+/**
+ * Récupère une liste d'offres depuis l'API France Travail
+ */
+export const getFtJobsV2 = async ({
+  romes,
+  insee,
+  radius,
+  jobLimit,
+  caller,
+  api,
+  diploma,
+}: {
+  romes: string[] | null
+  insee: string | null
+  radius: number
+  jobLimit: number
+  caller: string
+  diploma: keyof typeof NIVEAUX_POUR_OFFRES_PE | null | undefined
+  api: string
+}): Promise<FTResponse> => {
+  try {
+    const distance = radius || 10
+
+    const params: Parameters<typeof searchForFtJobs>[0] = {
+      sort: 0,
+      natureContrat: "E2,FS", //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
+      range: `0-${jobLimit - 1}`,
+    }
+
+    if (romes) {
+      params.codeROME = romes.join(",")
+    }
+
+    if (insee) {
+      // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
+      let codeInsee = insee
+      if (insee === "75056") codeInsee = "75101"
+      else if (insee === "13055") codeInsee = "13201"
+      else if (insee === "69123") codeInsee = "69381"
+
+      params.commune = codeInsee
+      params.distance = distance || 10
+      params.sort = 2
+    }
+
+    if (diploma) {
+      params.niveauFormation = NIVEAUX_POUR_OFFRES_PE[diploma]
+    }
+
+    const jobs = await searchForFtJobs(params)
+
+    if (jobs === null || jobs === "") {
+      return { resultats: [] }
+    }
+
+    return jobs
+  } catch (error) {
+    trackApiCall({ caller, api_path: api, response: "Error" })
+    sentryCaptureException(error)
+    return { resultats: [] }
   }
 }
 

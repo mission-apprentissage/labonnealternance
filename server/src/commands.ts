@@ -163,6 +163,7 @@ function createJobAction(name) {
   }
 }
 
+program.command("poc:romeo").description("temporaire - poc api romeo").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("poc:romeo"))
 program.command("recreate:indexes").description("Recreate MongoDB indexes").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("recreate:indexes"))
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
@@ -546,6 +547,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .option("-batchSize, [batchSize]", "Maximum de candidatures traitées", "100")
   .action(createJobAction("send-applications"))
+
+program
+  .command("referentiel:commune:import")
+  .description("Importe le référentiel des communes")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("referentiel:commune:import"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

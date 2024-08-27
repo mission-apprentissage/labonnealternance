@@ -5,7 +5,7 @@ import React from "react"
 const StatsInserJeunes = ({ stats }) => {
   return (
     stats.taux_en_formation && (
-      <Box mt={8}>
+      <Box mt={6} padding="16px 24px" background="white" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>
           Que deviennent les étudiants après cette formation ?
         </Text>

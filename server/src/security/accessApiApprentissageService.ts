@@ -5,6 +5,8 @@ import { z } from "zod"
 import { logger } from "@/common/logger"
 import config from "@/config"
 
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+
 const { JsonWebTokenError, TokenExpiredError } = jwt
 
 const jwtPublicKey = config.auth.apiApprentissage.publicKey
@@ -23,21 +25,30 @@ export const parseApiApprentissageToken = (jwtToken: string): ApiApprentissageTo
     })
     const parseResult = ZApiApprentissageTokenData.safeParse(payload)
     if (!parseResult.success) {
-      throw Boom.forbidden("bad token format")
+      throw Boom.forbidden("Payload doesn't match expected schema")
     }
     return parseResult.data
   } catch (err: unknown) {
     if (err instanceof TokenExpiredError) {
-      throw Boom.forbidden("JWT expired")
+      const e = Boom.forbidden("JWT expired")
+      e.cause = err
+      throw e
     }
+
     if (err instanceof JsonWebTokenError) {
       logger.warn("invalid jwt token", jwtToken, err)
-      throw Boom.forbidden()
+      const e = Boom.forbidden("Invalid JWT token")
+      e.cause = err
+      throw e
     }
+
     if (err instanceof Error && Boom.isBoom(err)) {
+      sentryCaptureException(err)
       throw err
     }
-    const e = Boom.internal()
+
+    sentryCaptureException(err)
+    const e = Boom.unauthorized()
     e.cause = err
     throw e
   }

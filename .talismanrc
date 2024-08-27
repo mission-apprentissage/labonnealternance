@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: ffd104ff02d60abf3183694209c5191a0bb7479ce37d8243778275351b4d2228
 - filename: .infra/.env_server
-  checksum: 22ef4e0aa96e1c20bc2d8903afcc34428c3c40e31f3d3cfb72d3e032b5f07d5a
+  checksum: a3a8b9007e4c082a14b3d09ed8386138db9277ea11ca921a989ba87d0ea61f47
 - filename: .infra/env.ini
   checksum: 60d461050d64c0b87831d6918a8696a8dd2f69cd86b4e6d94b40c3b7b285c320
 - filename: .infra/files/configs/mongodb/mongod.conf
@@ -30,17 +30,21 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: fc2fa53c75721579b28d1cb3e1a819e5ff495bba0febf9e57afc4745a7358259
+  checksum: c6e7c3be171a828eddf0ba79992dcef5d9c27bd64d11e817b7aa16c5fb91043a
+- filename: cypress/e2e/check-admin-algo-company.cy.ts
+  checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/pages/FlowAdminPage.ts
   checksum: cbb0a8651ca4c5d807f03eeeba6204c7d6d3a5f17ffb0734921f18d54f99f6b0
+- filename: cypress/pages/LoginPage.ts
+  checksum: b7f7dceff16e342a7fd4bfe2d017d33edd2ec5da256571ca5ef81a0e058b954e
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 20484a96062adc977c1081759bc0376127965d775c6a863412119f88af21af84
+  checksum: 82154bb8da1666737f49535fcb6d2a903a804eea53663259c84366904082fade
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d574deae0842cd3566f831de184324d7c87d7456a90175076a9f5a9b3ad8c129
 - filename: server/src/config.ts
-  checksum: de93df113dbac0016655b113750a591ac1052314b0b700ccf000c2c8f5a4f14a
+  checksum: 4fbe7f8abdfbd25a6c8230b408cd6e1c4acf9a9c91c63469782627743e29554f
 - filename: server/src/db/migrations/20231127120528-remove-password.ts
   checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
@@ -49,6 +53,8 @@ fileignoreconfig:
   checksum: 1f3c9b8cd7c578252a0c41ca9028672712a5bca2ce1686cba83ff60305708305
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
+- filename: server/src/http/controllers/jobs.controller.v2.test.ts
+  checksum: c49c832b4c11a0e2179f0106682e39575a2d8613b8f73f790283d00e76873d40
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -63,10 +69,12 @@ fileignoreconfig:
   checksum: 8e4712bae8747c1f0f2ba8b4ac3f3af118772136c16b6318b14a2d8b7e277dc6
 - filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
+- filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
+  checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.ts
   checksum: 26caf0b5a97ce2ff7451cc2717a3b36f38b20f94db6beb490b98b8311debfd25
 - filename: server/src/security/accessApiApprentissageService.ts
-  checksum: 2f0bf2a0a20e071cbcaec67eebed21acd0de40b7d7a1e8178484ebc14f024ca5
+  checksum: ab427834ccbb6bb3798b0c3a299d1ecea236705187df86eececae7b68218e8bd
 - filename: server/src/security/accessTokenService.ts
   checksum: 2183e326a88ae3c10193a7033ab5fd421ce576cd1e234c323df247da335f74d7
 - filename: server/src/security/apiApprentissageService.ts
@@ -101,8 +109,14 @@ fileignoreconfig:
   checksum: dd0ea5aa2cf75c61cc8f179723bec24e2c1a1599b838bd4940244d913dfed2d1
 - filename: server/tests/unit/validateSendApplication.test.ts
   checksum: 997c5eb4940ea43126f96169dc22fcee7f1890ed19b23aa8b3bffd3522ff7b04
+- filename: server/tests/utils/jwt.test.utils.ts
+  checksum: d63fdd6737a8592a88458d1948ea96434727c3e7960f038a66a8c30df1652260
 - filename: shared/constants/recruteur.ts
-  checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
+  checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
+- filename: shared/fixtures/recruiter.fixture.ts
+  checksum: c540cb13c2235d69c13e1964e3391b9c935bf7991dafe2cc21e9965c974378e6
+- filename: shared/fixtures/userWithAccount.fixture.ts
+  checksum: bf864b963375d5836150faf3e343e482a8612552581bd39be21b4f1e8f566971
 - filename: shared/helpers/generateUri.ts
   checksum: 6542db0d3eca959c6e81d574f8b71d4b18d2f1af21042ca5ed4dff319cd39555
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
@@ -139,8 +153,16 @@ fileignoreconfig:
   checksum: 553720667140e5bbf7cef1969c02cbcd3c234defc30bb08208398c1900e29e3b
 - filename: ui/components/ItemDetail/LbaJobDetail.tsx
   checksum: e1c36f9a6cd1cec8d459da178e5c42d723760a63a867dac1f50dd941a334696c
+- filename: ui/components/ItemDetail/LbaRecruteurComponents/LbaRecruteurDetail.tsx
+  checksum: 6e552b66f9238645f70705a0c43c81905e8dbee1c83d364cd89f951f80cb7ea0
+- filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
+  checksum: e61fa8a7bca174c70714ce633165436127f89e9fd8cf9005af681ca870465806
+- filename: ui/components/ItemDetail/TrainingDetail.tsx
+  checksum: 01556e58758449693529955a0de80ba4a2c243bfb8a41d1829df0daeca83e456
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx
   checksum: 9db6a64f202979b07251fd40445961d8db03bdb18b6668f9813bdbdf0d56aa65
+- filename: ui/components/RDV/DemandeDeContact.tsx
+  checksum: 0ba102126f1de5657601f172cb5348a7e0db77e5b0d06e124563f60c37ae3942
 - filename: ui/components/Ressources/conseilsEtAstuces.tsx
   checksum: b9f16607c1fb319c2940223e7e9ce5acc48b8b5a5b519e2bb79210e3f0feaf17
 - filename: ui/components/Ressources/misesEnSituation.tsx

@@ -1,5 +1,8 @@
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import { getItemId } from "@/utils/getItemId"
+import { localStorageSet } from "@/utils/localStorage"
+
 import { apiPost } from "../../../../utils/api.utils"
 
 export default async function submitCandidature({
@@ -30,6 +33,7 @@ export default async function submitCandidature({
 
   try {
     await apiPost("/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {}, "V2")
+    localStorageSet(`application-${LbaJob.ideaType}-${getItemId(LbaJob)}`, Date.now().toString())
     setSendingState("ok_sent")
     return true
   } catch (error) {

@@ -2,7 +2,7 @@ import { Box } from "@chakra-ui/react"
 import React from "react"
 
 import Job from "../../ItemDetail/Job"
-import LbbCompany from "../../ItemDetail/LbbCompany"
+import RecruteurLba from "../../ItemDetail/RecruteurLbaComponents/RecruteurLba"
 import Training from "../../ItemDetail/Training"
 
 export const renderJob = (isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter) => {
@@ -24,6 +24,6 @@ export const renderLbb = (isTestMode, idx, company, handleSelectItem, searchForT
   if (isTestMode) {
     return <Box key={idx} data-testid={`LbbCompany-${company?.id}`}></Box>
   } else {
-    return <LbbCompany key={idx} company={company} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter} />
+    return <RecruteurLba key={idx} company={company} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter} />
   }
 }

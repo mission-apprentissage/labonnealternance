@@ -1,7 +1,9 @@
+import { randomUUID } from "crypto"
+
 import Boom from "boom"
 import { ObjectId } from "mongodb"
 import { IUser } from "shared"
-import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
+import { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
@@ -33,8 +35,18 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
   }
 }
 
+export const cleanHardbouncedAppointmentUser = async (email: string) => {
+  const fakeEmail = `email-blacklist-par-lba-${randomUUID()}@faux-domaine.fr`
+  await getDbCollection("users").findOneAndUpdate(
+    { email },
+    {
+      $set: { email: fakeEmail },
+    }
+  )
+}
+
 export const getUserAndRecruitersDataForOpcoUser = async (
-  opco: OPCOS
+  opco: OPCOS_LABEL
 ): Promise<{
   awaiting: IUserForOpco[]
   active: IUserForOpco[]

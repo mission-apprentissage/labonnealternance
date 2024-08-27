@@ -13,17 +13,6 @@ const getPathLink = (anyItem) => {
   return res
 }
 
-const getCompanyPathLink = (anyItem) => {
-  let res = ""
-  if (anyItem?.company?.place?.city) {
-    res = `https://www.google.fr/maps/dir//${encodeURIComponent(anyItem.company.place.city)}`
-  } else if (anyItem?.company?.place?.fullAddress) {
-    res = `https://www.google.fr/maps/dir//${encodeURIComponent(rawPostalAddress(anyItem.company.place.fullAddress))}`
-  }
-
-  return res
-}
-
 const getValueFromPath = (key) => {
   let res = ""
   if (typeof window !== "undefined") {
@@ -120,4 +109,4 @@ const logError = (title, error = undefined) => {
   console.error(`Error ${title} sent to Sentry`)
 }
 
-export { getCompanyPathLink, getItemElement, getPathLink, getValueFromPath, logError, scrollToElementInContainer, scrollToNestedElement, scrollToTop }
+export { getItemElement, getPathLink, getValueFromPath, logError, scrollToElementInContainer, scrollToNestedElement, scrollToTop }

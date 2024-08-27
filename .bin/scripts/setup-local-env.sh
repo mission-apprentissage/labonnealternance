@@ -43,6 +43,8 @@ else
     echo "Système d'exploitation non pris en charge : $OS_NAME"
 fi
 
+yarn
+chmod 400 "${ROOT_DIR}/.infra/local/mongo_keyfile"
 yarn services:start
 yarn setup:mongodb
 yarn build:dev

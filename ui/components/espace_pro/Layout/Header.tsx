@@ -48,7 +48,7 @@ const Header = () => {
 
             {user && (
               <Menu>
-                <MenuButton as={Button} variant="pill">
+                <MenuButton as={Button} variant="pill" data-testid="logged-button">
                   <Flex alignItems="center">
                     <Icon width="32px" height="32px" as={RiAccountCircleLine} color="bluefrance.500" />
                     <Box display={["none", "none", "block"]} ml={2}>

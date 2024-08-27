@@ -33,7 +33,6 @@ import formationsV1Route from "./controllers/formations.controller"
 import formationsRouteV2 from "./controllers/formations.controller.v2"
 import formulaireRoute from "./controllers/formulaire.controller"
 import jobsV1Route from "./controllers/jobs.controller"
-import jobsRouteV2 from "./controllers/jobs.controller.v2"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import jobsEtFormationsRouteV2 from "./controllers/jobsEtFormations.controller.v2"
 import login from "./controllers/login.controller"
@@ -42,11 +41,13 @@ import metierv2 from "./controllers/metiers.controller.v2"
 import metiersDAvenirRoute from "./controllers/metiersDAvenir.controller"
 import optoutRoute from "./controllers/optout.controller"
 import partnersRoute from "./controllers/partners.controller"
+import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
 import trainingLinks from "./controllers/trainingLinks.controller"
 import unsubscribeLbaCompany from "./controllers/unsubscribeRecruteurLba.controller"
 import updateLbaCompany from "./controllers/updateRecruteurLba.controller"
 import userRoute from "./controllers/user.controller"
+import jobsRouteV2 from "./controllers/v2/jobs.controller.v2"
 import version from "./controllers/version.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
@@ -132,6 +133,7 @@ export async function bind(app: Server) {
       formationsV1Route(typedSubApp)
       formationsRegionV1Route(typedSubApp)
       jobsEtFormationsV1Route(typedSubApp)
+      reportedCompanyController(typedSubApp)
 
       /**
        * Admin / Auth

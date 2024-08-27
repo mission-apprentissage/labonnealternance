@@ -10,7 +10,7 @@ import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
 
-import { getRomesFromRncp } from "./certification.service"
+import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 
 interface IWish {
   id: string
@@ -97,7 +97,7 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
     }
   }
 
-  return formations
+  return formations || []
 }
 
 const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
@@ -164,7 +164,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   const formations = await getTrainingsFromParameters(wish)
 
   // Handle single formation case
-  if (formations.length === 1) {
+  if (formations?.length === 1) {
     const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
     const [latitude, longitude] = lieu_formation_geo_coordonnees!.split(",")
     return buildEmploiUrl({ params: { romes: rome_codes as string[], lat: latitude, lon: longitude, radius: "60", ...utmData } })
@@ -192,7 +192,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
 
   // Build url based on formations and coordinates
-  if (formations.length) {
+  if (formations?.length) {
     let formation = formations[0]
     let lat, lon
     if (formations.length > 1 && wLat && wLon) {
