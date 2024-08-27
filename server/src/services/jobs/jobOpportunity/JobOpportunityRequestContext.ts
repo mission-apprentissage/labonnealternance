@@ -1,7 +1,9 @@
 import { IRouteSchema } from "shared/routes/common.routes"
 
 // Messages are not constants but the codes are
-export const IJobOpportunityWarningMap = {} as const satisfies Record<string, string>
+export const IJobOpportunityWarningMap = {
+  FRANCE_TRAVAIL_API_ERROR: "Unable to retrieve job offers from France Travail API",
+} as const satisfies Record<string, string>
 
 export type IJobOpportunityWarningCode = keyof typeof IJobOpportunityWarningMap
 
