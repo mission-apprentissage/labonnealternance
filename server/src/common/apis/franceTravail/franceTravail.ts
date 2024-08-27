@@ -11,11 +11,10 @@ import config from "@/config"
 import { FTResponse } from "@/services/ftjob.service.types"
 import { ZFTApiToken } from "@/services/rome.service.types"
 
-import { logger } from "../logger"
-import { getDbCollection } from "../utils/mongodbUtils"
-import { sentryCaptureException } from "../utils/sentryUtils"
-
-import getApiClient from "./client"
+import { logger } from "../../logger"
+import { getDbCollection } from "../../utils/mongodbUtils"
+import { sentryCaptureException } from "../../utils/sentryUtils"
+import getApiClient from "../client"
 
 const axiosClient = getApiClient({}, { cache: false })
 

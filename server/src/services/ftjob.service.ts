@@ -6,7 +6,7 @@ import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 
-import { getFtJob, searchForFtJobs } from "@/common/apis/FranceTravail"
+import { getFtJob, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"

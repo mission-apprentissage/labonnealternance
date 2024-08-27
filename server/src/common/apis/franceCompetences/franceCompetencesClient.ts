@@ -5,7 +5,7 @@ import { assertUnreachable, parseEnum } from "shared/utils"
 
 import config from "@/config"
 
-import { sentryCaptureException } from "./utils/sentryUtils"
+import { sentryCaptureException } from "../../utils/sentryUtils"
 
 const { baseUrl, apiKey, bearerToken } = config.franceCompetences
 
