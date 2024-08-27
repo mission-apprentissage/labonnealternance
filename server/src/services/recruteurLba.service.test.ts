@@ -2,6 +2,7 @@
 
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
+import { ERecruteurLbaUpdateEventType } from "shared/models"
 import { describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -67,6 +68,20 @@ describe("/lbacompany/:siret/contactInfo", () => {
       phone: "",
       email: "",
     })
+
+    const modifiedRecruteurLba = await getDbCollection("recruteurslba").findOne({ siret: "58006820882692" })
+    expect.soft(modifiedRecruteurLba).toEqual(
+      expect.objectContaining({
+        phone: "",
+        email: "",
+      })
+    )
+
+    let eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({ siret: "58006820882692", event: ERecruteurLbaUpdateEventType.DELETE_PHONE })
+    expect.soft(eventCount).toEqual(1)
+
+    eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({ siret: "58006820882692", event: ERecruteurLbaUpdateEventType.DELETE_EMAIL })
+    expect.soft(eventCount).toEqual(1)
 
     await cleanup()
   })
