@@ -10,18 +10,19 @@ import { zOpcoLabel } from "shared/models/opco.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { getRomeoInfos } from "@/services/cache.service"
+import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
-import { getFileSignedURL } from "../../common/utils/awsUtils"
-import { trackApiCall } from "../../common/utils/sendTrackingEvent"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import dayjs from "../../services/dayjs.service"
-import { getEntrepriseDataFromSiret, getGeoCoordinates, getOpcoData } from "../../services/etablissement.service"
-import { addExpirationPeriod, getFormulaires } from "../../services/formulaire.service"
-import { getFtJobFromIdV2 } from "../../services/ftjob.service"
-import { getJobsQuery, mergePatchWithDb, findJobsOpportunityResponseFromRncp, findJobsOpportunityResponseFromRome } from "../../services/jobOpportunity.service"
-import { addOffreDetailView, getLbaJobByIdV2 } from "../../services/lbajob.service"
-import { getCompanyFromSiret } from "../../services/recruteurLba.service"
-import { Server } from "../server"
+import { getFileSignedURL } from "../../../common/utils/awsUtils"
+import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../../../common/utils/sentryUtils"
+import dayjs from "../../../services/dayjs.service"
+import { getEntrepriseDataFromSiret, getGeoCoordinates, getOpcoData } from "../../../services/etablissement.service"
+import { addExpirationPeriod, getFormulaires } from "../../../services/formulaire.service"
+import { getFtJobFromIdV2 } from "../../../services/ftjob.service"
+import { getJobsQuery, mergePatchWithDb, findJobsOpportunities } from "../../../services/jobs/jobOpportunity/jobOpportunity.service"
+import { addOffreDetailView, getLbaJobByIdV2 } from "../../../services/lbajob.service"
+import { getCompanyFromSiret } from "../../../services/recruteurLba.service"
+import { Server } from "../../server"
 
 const config = {
   rateLimit: {
@@ -260,24 +261,6 @@ export default (server: Server) => {
       return res.status(204).send()
     }
   )
-  server.get(
-    "/jobs",
-    {
-      schema: zRoutes.get["/jobs"],
-      onRequest: server.auth(zRoutes.get["/jobs"]),
-      config,
-    },
-    async (req, res) => {
-      const { referer } = req.headers
-      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
-      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, isMinimalData: false })
-
-      if ("error" in result) {
-        return res.status(500).send(result)
-      }
-      return res.status(200).send(result)
-    }
-  )
 
   server.get(
     "/jobs/min",
@@ -412,11 +395,8 @@ export default (server: Server) => {
     }
   )
 
-  server.get("/jobs/rome", { schema: zRoutes.get["/jobs/rome"], onRequest: server.auth(zRoutes.get["/jobs/rome"]) }, async (req, res) => {
-    return res.send(await findJobsOpportunityResponseFromRome(req.query, { route: zRoutes.get["/jobs/rome"], caller: "api-apprentissage" }))
-  })
-
-  server.get("/jobs/rncp", { schema: zRoutes.get["/jobs/rncp"], onRequest: server.auth(zRoutes.get["/jobs/rncp"]) }, async (req, res) => {
-    return res.send(await findJobsOpportunityResponseFromRncp(req.query, { route: zRoutes.get["/jobs/rncp"], caller: "api-apprentissage" }))
+  server.get("/jobs", { schema: zRoutes.get["/jobs"], onRequest: server.auth(zRoutes.get["/jobs"]) }, async (req, res) => {
+    const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/jobs"], "api-apprentissage"))
+    return res.send(result)
   })
 }
