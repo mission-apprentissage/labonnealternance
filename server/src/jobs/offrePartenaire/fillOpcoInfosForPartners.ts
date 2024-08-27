@@ -1,4 +1,6 @@
+import { OPCOS_LABEL } from "shared/constants"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
+import { parseEnum } from "shared/utils"
 
 import { getOpcoData } from "@/services/etablissement.service"
 
@@ -29,7 +31,7 @@ export const fillOpcoInfosForPartners = async () => {
       }
       const result: Partial<Pick<IComputedJobsPartners, (typeof filledFields)[number]>> = {
         workplace_idcc: parsedIdcc,
-        workplace_opco: opco,
+        workplace_opco: parseEnum(OPCOS_LABEL, opco),
       }
       return result
     },

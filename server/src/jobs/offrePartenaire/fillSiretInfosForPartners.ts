@@ -9,15 +9,7 @@ import { formatEntrepriseData } from "@/services/etablissement.service"
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const fillSiretInfosForPartners = async () => {
-  const filledFields = [
-    "workplace_size",
-    "workplace_raison_sociale",
-    "workplace_enseigne",
-    "workplace_address",
-    "workplace_geopoint",
-    "workplace_naf_code",
-    "workplace_naf_label",
-  ] as const
+  const filledFields = ["workplace_size", "workplace_name", "workplace_address", "workplace_geopoint", "workplace_naf_code", "workplace_naf_label"] as const
   return fillFieldsForPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_SIRET,
     sourceFields: ["workplace_siret"],

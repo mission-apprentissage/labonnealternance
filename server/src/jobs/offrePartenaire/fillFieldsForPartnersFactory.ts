@@ -1,14 +1,14 @@
 import Boom from "boom"
 import { Filter } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
-import { IJobsPartners, ZJobsPartners } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model "
 
 import { logger as globalLogger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
-export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartners, FilledFields extends keyof IJobsPartners>({
+export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate>({
   job,
   sourceFields,
   filledFields,
@@ -49,7 +49,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJ
             throw new Error(`inattendu: document id=${document._id} introuvable`)
           }
           const computedJobPartner: IComputedJobsPartners = result
-          if (ZJobsPartners.safeParse(computedJobPartner).success) {
+          if (ZJobsPartnersOfferPrivate.safeParse(computedJobPartner).success) {
             await getDbCollection("computed_jobs_partners").updateOne(
               { _id: document._id },
               {
