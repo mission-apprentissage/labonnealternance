@@ -23,7 +23,7 @@ import {
   provideOffre,
 } from "../../services/formulaire.service"
 import { getFtJobFromId } from "../../services/ftjob.service"
-import { getJobsQuery } from "../../services/jobOpportunity.service"
+import { getJobsQuery } from "../../services/jobs/jobOpportunity/jobOpportunity.service"
 import { addOffreDetailView, getLbaJobById } from "../../services/lbajob.service"
 import { getCompanyFromSiret } from "../../services/recruteurLba.service"
 import { getFicheMetierFromDB } from "../../services/rome.service"

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`findJobsOpportunityResponseFromRome > should execute query 1`] = `
+exports[`findJobsOpportunities > should execute query 1`] = `
 [
   {
     "apply_phone": "0300000000",
@@ -143,7 +143,7 @@ exports[`findJobsOpportunityResponseFromRome > should execute query 1`] = `
 ]
 `;
 
-exports[`findJobsOpportunityResponseFromRome > should execute query 2`] = `
+exports[`findJobsOpportunities > should execute query 2`] = `
 [
   {
     "apply_phone": "0100000000",
