@@ -1,9 +1,8 @@
 import { ObjectId } from "mongodb"
 import { ICustomEmailETFA } from "shared/models"
 
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { asyncForEach } from "../../common/utils/asyncUtils"
 
 export const up = async () => {
   const emailCustom = await getDbCollection("eligible_trainings_for_appointments")

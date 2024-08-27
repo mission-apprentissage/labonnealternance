@@ -1,6 +1,5 @@
+import { addJob } from "job-processor"
 import { Db } from "mongodb"
-
-import { addJob } from "@/jobs/jobs_actions"
 
 export const up = async (db: Db) => {
   await db.collection("bonnesboites").updateMany({}, [

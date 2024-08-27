@@ -1,4 +1,4 @@
-import { getDbCollection } from "../../common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const up = async () => {
   await getDbCollection("recruiters").updateMany({ geo_coordinates: "NOT FOUND" }, { $set: { geo_coordinates: null } })
