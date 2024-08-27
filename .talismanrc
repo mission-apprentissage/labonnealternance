@@ -86,7 +86,7 @@ fileignoreconfig:
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
 - filename: server/src/services/recruteurLba.service.test.ts
-  checksum: fc3d21357468d08ac676819aa9ba183d0e143fd66f3c9d68e617a19fc59b77d9
+  checksum: d29f7fc8d749e38fc3c2d1f556e3e294e58f5fb4a49a0203294aff98c65b632e
 - filename: server/src/services/referrers.service.ts
   checksum: 966b0ece2b18b5a6066df531524c97ba0ad38266e782a334004e8c127b41ade6
 - filename: server/src/services/userRecruteur.service.ts

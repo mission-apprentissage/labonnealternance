@@ -85,30 +85,100 @@ describe("/lbacompany/:siret/contactInfo", () => {
 
     await cleanup()
   })
+
+  it("La suppression email / phone d'une société absente dans recruteursLba mais dans application. Aucun événement généré", async () => {
+    const result = await updateContactInfo({ siret: "34843069553553", email: "", phone: "" })
+
+    expect.soft(result).toStrictEqual({
+      active: false,
+      siret: "34843069553553",
+      enseigne: "fake_company_name",
+      phone: "",
+      email: "",
+    })
+
+    const eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({})
+    expect.soft(eventCount).toEqual(0)
+
+    await cleanup()
+  })
+
+  it("La modification email / phone d'une société présente dans recruteursLba se fait et les événements correspondants sont générés", async () => {
+    const result = await updateContactInfo({ siret: "58006820882692", email: "recruteur_lba_2@test.com", phone: "0610101011" })
+
+    expect.soft(result).toStrictEqual({
+      active: true,
+      siret: "58006820882692",
+      enseigne: "fake_company_name",
+      phone: "0610101011",
+      email: "recruteur_lba_2@test.com",
+    })
+
+    const modifiedRecruteurLba = await getDbCollection("recruteurslba").findOne({ siret: "58006820882692" })
+    expect.soft(modifiedRecruteurLba).toEqual(
+      expect.objectContaining({
+        phone: "0610101011",
+        email: "recruteur_lba_2@test.com",
+      })
+    )
+
+    let eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({
+      siret: "58006820882692",
+      event: ERecruteurLbaUpdateEventType.UPDATE_PHONE,
+      value: "0610101011",
+    })
+    expect.soft(eventCount).toEqual(1)
+
+    eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({
+      siret: "58006820882692",
+      event: ERecruteurLbaUpdateEventType.UPDATE_EMAIL,
+      value: "recruteur_lba_2@test.com",
+    })
+    expect.soft(eventCount).toEqual(1)
+
+    await cleanup()
+  })
+
+  it("La modification email / phone d'une société présente dans recruteursLba se fait et les événements correspondants sont générés", async () => {
+    const result = await updateContactInfo({ siret: "34843069553553", email: "recruteur_lba_2@test.com", phone: "0610101011" })
+
+    expect.soft(result).toStrictEqual({
+      active: false,
+      siret: "34843069553553",
+      enseigne: "fake_company_name",
+      phone: "0610101011",
+      email: "recruteur_lba_2@test.com",
+    })
+
+    let eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({
+      siret: "34843069553553",
+      event: ERecruteurLbaUpdateEventType.UPDATE_PHONE,
+      value: "0610101011",
+    })
+    expect.soft(eventCount).toEqual(1)
+
+    eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({
+      siret: "34843069553553",
+      event: ERecruteurLbaUpdateEventType.UPDATE_EMAIL,
+      value: "recruteur_lba_2@test.com",
+    })
+    expect.soft(eventCount).toEqual(1)
+
+    await cleanup()
+  })
+
+  it("Tentative de modification si la société issue de l'algo recruteurLba n'existe plus et pas de candidature dans applications", async () => {
+    try {
+      await updateContactInfo({ siret: "34843069553555", email: "recruteur_lba_2@test.com", phone: "0610101011" })
+    } catch (error) {
+      expect.soft(error).toBeInstanceOf(Error)
+      expect.soft(error?.message).toBe("Bad Request")
+      expect.soft(error?.output?.statusCode).toBe(400)
+    }
+
+    const eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({})
+    expect.soft(eventCount).toEqual(0)
+
+    await cleanup()
+  })
 })
-
-/*
-Liste des tests envisagés
-
-  enregistremen modifs société issue de l'algo suppression email et suppression phone
-  -> génération de deux events delete
-  -> société issue de l'algo a pour email et phone ""
-
-  enregistrement modifs suppression société inexistante dans lbarecruteur et application
-  -> il ne se passe rien
-
-  enregistrement modifs suppression société inexistante dans lbarecruteur mais dispo dans application
-  -> il ne se passe rien
-
-  enregistrement modifs valeurs société présente dans lbarecruteur 
-  -> data modifiés dans lbarecruteur
-  -> events update enregistrés
-
-  enregistrement modifs valeurs dans application
-  -> ajout des events update
-  
-  enregistrement modifs valeurs 
-
-
-
-*/
