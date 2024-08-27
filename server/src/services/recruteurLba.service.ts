@@ -416,13 +416,10 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
         throw Boom.badRequest()
       }
     } else {
-      if (email !== undefined) {
-        await getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { email, last_update_at: new Date() } })
-      }
-
-      if (phone !== undefined) {
-        await getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { phone, last_update_at: new Date() } })
-      }
+      await Promise.all([
+        email !== undefined && getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { email, last_update_at: new Date() } }),
+        phone !== undefined && getDbCollection("recruteurslba").findOneAndUpdate({ siret }, { $set: { phone, last_update_at: new Date() } }),
+      ])
     }
 
     if (email !== undefined && recruteurLba && recruteurLba.email !== email && !email) {
@@ -489,7 +486,7 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
       if (application) {
         return { enseigne: application.company_name, siret, phone: "", email: "", active: false }
       }
-      
+
       throw Boom.notFound("Société inconnue")
     }
   } catch (error: any) {
