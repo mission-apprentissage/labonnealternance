@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { ObjectId } from "mongodb"
+import { Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, IApplication, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
