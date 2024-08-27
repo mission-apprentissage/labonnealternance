@@ -1,5 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
+import Boom from "boom"
 import { ERecruteurLbaUpdateEventType } from "shared/models"
 import { describe, expect, it } from "vitest"
 
@@ -50,9 +51,11 @@ describe("/lbacompany/:siret/contactInfo", () => {
     try {
       await getCompanyContactInfo({ siret: "34843069553555" })
     } catch (error) {
-      expect.soft(error).toBeInstanceOf(Error)
-      expect.soft(error?.message).toBe("Société inconnue")
-      expect.soft(error?.output?.statusCode).toBe(404)
+      expect.soft(error).toBeInstanceOf(Boom)
+      if (error instanceof Boom) {
+        expect.soft(error?.message).toBe("Société inconnue")
+        expect.soft(error?.output?.statusCode).toBe(404)
+      }
     }
   })
 
@@ -169,9 +172,11 @@ describe("/lbacompany/:siret/contactInfo", () => {
     try {
       await updateContactInfo({ siret: "34843069553555", email: "recruteur_lba_2@test.com", phone: "0610101011" })
     } catch (error) {
-      expect.soft(error).toBeInstanceOf(Error)
-      expect.soft(error?.message).toBe("Bad Request")
-      expect.soft(error?.output?.statusCode).toBe(400)
+      expect.soft(error).toBeInstanceOf(Boom)
+      if (error instanceof Boom) {
+        expect.soft(error?.message).toBe("Bad Request")
+        expect.soft(error?.output?.statusCode).toBe(400)
+      }
     }
 
     const eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({})
