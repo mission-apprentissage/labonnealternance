@@ -7,20 +7,21 @@ import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 import { getCompanyContactInfo, updateContactInfo } from "./recruteurLba.service"
+
 useMongo(mockData, "beforeAll")
 
 describe("/lbacompany/:siret/contactInfo", () => {
   beforeEach(async () => {
     await createApplicationTest({ company_siret: "34843069553553", company_email: "application_company_email@test.com", company_name: "fake_company_name" })
     await createRecruteurLbaTest({ email: "recruteur_lba@test.com", phone: "0610101010", siret: "58006820882692", enseigne: "fake_company_name" })
-    
+
     return async () => {
-    await getDbCollection("recruteurlbaupdateevents").deleteMany({})
-    await getDbCollection("recruteurslba").deleteMany({})
-    await getDbCollection("applications").deleteMany({})
-    await mockData()
-  }
-  });
+      await getDbCollection("recruteurlbaupdateevents").deleteMany({})
+      await getDbCollection("recruteurslba").deleteMany({})
+      await getDbCollection("applications").deleteMany({})
+      await mockData()
+    }
+  })
   it("La société issue de l'algo recruteurLba existe", async () => {
     const result = await getCompanyContactInfo({ siret: "58006820882692" })
 
@@ -46,15 +47,7 @@ describe("/lbacompany/:siret/contactInfo", () => {
   })
 
   it("La société issue de l'algo recruteurLba n'existe plus et pas de candidature dans applications", async () => {
-    try {
-      await getCompanyContactInfo({ siret: "34843069553555" })
-    } catch (error) {
-      expect.soft(error).toBeInstanceOf(Boom)
-      if (error instanceof Boom) {
-        expect.soft(error?.message).toBe("Société inconnue")
-        expect.soft(error?.output?.statusCode).toBe(404)
-      }
-    }
+    await expect(getCompanyContactInfo({ siret: "34843069553555" })).rejects.toThrow(Boom.notFound("Société inconnue"))
   })
 
   it("La suppression email / phone d'une société présente dans recruteursLba se fait et les événements correspondants sont générés", async () => {
@@ -167,15 +160,7 @@ describe("/lbacompany/:siret/contactInfo", () => {
   })
 
   it("Tentative de modification si la société issue de l'algo recruteurLba n'existe plus et pas de candidature dans applications", async () => {
-    try {
-      await updateContactInfo({ siret: "34843069553555", email: "recruteur_lba_2@test.com", phone: "0610101011" })
-    } catch (error) {
-      expect.soft(error).toBeInstanceOf(Boom)
-      if (error instanceof Boom) {
-        expect.soft(error?.message).toBe("Bad Request")
-        expect.soft(error?.output?.statusCode).toBe(400)
-      }
-    }
+    await expect(updateContactInfo({ siret: "34843069553555", email: "recruteur_lba_2@test.com", phone: "0610101011" })).rejects.toThrow(Boom.badRequest())
 
     const eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({})
     expect.soft(eventCount).toEqual(0)
