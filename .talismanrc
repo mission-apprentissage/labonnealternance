@@ -30,7 +30,7 @@ fileignoreconfig:
 - filename: .infra/local/mongod.conf
   checksum: bb2ce0c27102259a5fa39da1fb4460af9ad6ad58adc715312e53dcd69c8e6be7
 - filename: .infra/vault/vault.yml
-  checksum: 91d0fc33bf31fd738911d83194e8a749e3c5b0e4ce14254560cf6d08b0cb3fb5
+  checksum: c6e7c3be171a828eddf0ba79992dcef5d9c27bd64d11e817b7aa16c5fb91043a
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
 - filename: cypress/pages/FlowAdminPage.ts
@@ -40,7 +40,7 @@ fileignoreconfig:
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 96211e16c7ab6f13ebbcebeb6abf265f20214a4b82b5dfa09bd4b3c0ba25157e
+  checksum: e583c6d40e1900180e7ea35df2190549afe4d81c754da6f738a13a471b9d73e0
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d574deae0842cd3566f831de184324d7c87d7456a90175076a9f5a9b3ad8c129
 - filename: server/src/config.ts
@@ -116,7 +116,7 @@ fileignoreconfig:
 - filename: server/tests/utils/jwt.test.utils.ts
   checksum: d63fdd6737a8592a88458d1948ea96434727c3e7960f038a66a8c30df1652260
 - filename: shared/constants/recruteur.ts
-  checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
+  checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/recruiter.fixture.ts
   checksum: c540cb13c2235d69c13e1964e3391b9c935bf7991dafe2cc21e9965c974378e6
 - filename: shared/fixtures/userWithAccount.fixture.ts

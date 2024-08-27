@@ -1,10 +1,15 @@
 import { getApiApprentissageTestingToken } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { createRecruteurLbaTest, saveJobPartnerTest } from "@tests/utils/user.test.utils"
+import { createRecruteurLbaTest } from "@tests/utils/user.test.utils"
 import nock from "nock"
-import { IJobsPartners, ZJobsPartnersPostApiBody } from "shared/models/jobsPartners.model"
-import { afterEach, describe, expect, it } from "vitest"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
+import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
+import { IGeoPoint } from "shared/models"
+import { IJobsPartnersOfferPrivate, ZJobsPartnersPostApiBody } from "shared/models/jobsPartners.model"
+import { afterEach, beforeAll, describe, expect, it } from "vitest"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 describe("/jobs", () => {
   const httpClient = useServer()
@@ -12,19 +17,30 @@ describe("/jobs", () => {
 
   const rome = ["D1214", "D1212", "D1211"]
   const rncpQuery = "RNCP13620"
-  const geopoint = { type: "Point", coordinates: [7.120835315436125, -45.16534931026399] as [number, number] }
+
+  const porteDeClichy: IGeoPoint = {
+    type: "Point",
+    coordinates: [2.313262, 48.894891],
+  }
   const romesQuery = rome.join(",")
-  const [longitude, latitude] = geopoint.coordinates
-  let jobPartnerOffer: IJobsPartners
+  const [longitude, latitude] = porteDeClichy.coordinates
+  const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({
+    offer_rome_code: ["D1214"],
+    workplace_geopoint: parisFixture.centre,
+  })
 
   const mockData = async () => {
-    jobPartnerOffer = await saveJobPartnerTest({ offer_rome_code: rome, workplace_geopoint: geopoint })
-    await createRecruteurLbaTest({ rome_codes: rome, geopoint: geopoint, siret: "58006820882692" })
+    await createRecruteurLbaTest({ rome_codes: rome, geopoint: clichyFixture.centre, siret: "58006820882692", email: "email@mail.com" })
   }
 
   useMongo(mockData, "beforeAll")
 
   describe("/rome", () => {
+    beforeAll(async () => {
+      await getDbCollection("referentiel.communes").insertMany(generateReferentielCommuneFixtures([parisFixture, clichyFixture, levalloisFixture, marseilleFixture]))
+      await getDbCollection("jobs_partners").insertOne(jobPartnerOffer)
+    })
+
     it("should return 401 if no api key provided", async () => {
       const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/rome" })
       expect(response.statusCode).toBe(401)
@@ -65,8 +81,59 @@ describe("/jobs", () => {
       })
       const data = response.json()
       expect(response.statusCode).toBe(200)
-      expect(!!data.jobs.length).toBe(true)
-      expect(!!data.recruiters.length).toBe(true)
+      expect(data.jobs).toHaveLength(1)
+      expect(data.recruiters).toHaveLength(1)
+
+      expect(Object.keys(data.jobs[0]).toSorted()).toEqual([
+        "_id",
+        "apply_phone",
+        "apply_url",
+        "contract_duration",
+        "contract_remote",
+        "contract_start",
+        "contract_type",
+        "offer_access_conditions",
+        "offer_creation",
+        "offer_description",
+        "offer_desired_skills",
+        "offer_diploma_level",
+        "offer_expiration",
+        "offer_opening_count",
+        "offer_rome_code",
+        "offer_status",
+        "offer_title",
+        "offer_to_be_acquired_skills",
+        "partner",
+        "partner_job_id",
+        "workplace_address",
+        "workplace_description",
+        "workplace_geopoint",
+        "workplace_idcc",
+        "workplace_naf_code",
+        "workplace_naf_label",
+        "workplace_name",
+        "workplace_opco",
+        "workplace_siret",
+        "workplace_size",
+        "workplace_website",
+      ])
+
+      expect(Object.keys(data.recruiters[0]).toSorted()).toEqual([
+        "_id",
+        "apply_phone",
+        "apply_url",
+        "workplace_address",
+        "workplace_description",
+        "workplace_geopoint",
+        "workplace_idcc",
+        "workplace_naf_code",
+        "workplace_naf_label",
+        "workplace_name",
+        "workplace_opco",
+        "workplace_siret",
+        "workplace_size",
+        "workplace_website",
+      ])
     })
   })
   describe("/rncp", () => {
@@ -110,8 +177,59 @@ describe("/jobs", () => {
       })
       const data = response.json()
       expect(response.statusCode).toBe(200)
-      expect(!!data.jobs.length).toBe(true)
-      expect(!!data.recruiters.length).toBe(true)
+      expect(data.jobs).toHaveLength(1)
+      expect(data.recruiters).toHaveLength(1)
+
+      expect(Object.keys(data.jobs[0]).toSorted()).toEqual([
+        "_id",
+        "apply_phone",
+        "apply_url",
+        "contract_duration",
+        "contract_remote",
+        "contract_start",
+        "contract_type",
+        "offer_access_conditions",
+        "offer_creation",
+        "offer_description",
+        "offer_desired_skills",
+        "offer_diploma_level",
+        "offer_expiration",
+        "offer_opening_count",
+        "offer_rome_code",
+        "offer_status",
+        "offer_title",
+        "offer_to_be_acquired_skills",
+        "partner",
+        "partner_job_id",
+        "workplace_address",
+        "workplace_description",
+        "workplace_geopoint",
+        "workplace_idcc",
+        "workplace_naf_code",
+        "workplace_naf_label",
+        "workplace_name",
+        "workplace_opco",
+        "workplace_siret",
+        "workplace_size",
+        "workplace_website",
+      ])
+
+      expect(Object.keys(data.recruiters[0]).toSorted()).toEqual([
+        "_id",
+        "apply_phone",
+        "apply_url",
+        "workplace_address",
+        "workplace_description",
+        "workplace_geopoint",
+        "workplace_idcc",
+        "workplace_naf_code",
+        "workplace_naf_label",
+        "workplace_name",
+        "workplace_opco",
+        "workplace_siret",
+        "workplace_size",
+        "workplace_website",
+      ])
     })
   })
   describe("/jobs", async () => {
@@ -344,7 +462,7 @@ describe("/jobs", () => {
         body: { contract_duration: 36 },
         headers: { authorization: `Bearer ${token}` },
       })
-      const data: IJobsPartners = response.json()
+      const data: IJobsPartnersOfferPrivate = response.json()
       expect(response.statusCode).toBe(200)
       expect(data.contract_duration).toEqual(36)
     })

@@ -1,11 +1,24 @@
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { IApplication, ICredential, IEmailBlacklist, IJob, ILbaCompany, IRecruiter, JOB_STATUS, ZApplication, ZCredential, ZEmailBlacklist, ZLbaCompany } from "shared/models"
+import {
+  IApplication,
+  ICredential,
+  IEmailBlacklist,
+  IJob,
+  ILbaCompany,
+  IRecruiter,
+  JOB_STATUS,
+  ZApplication,
+  ZCredential,
+  ZEmailBlacklist,
+  ZLbaCompany,
+  ZPointGeometry,
+} from "shared/models"
 import { ICFA, zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent, ZEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartners, ZJobsPartners } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { IUserWithAccount, UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
 import { ZodArray, ZodObject, ZodString, ZodTypeAny, z } from "zod"
@@ -67,6 +80,13 @@ function getFixture() {
           "62006652591225",
           "77147689105960",
         ]),
+    }),
+    Generator({
+      schema: ZPointGeometry,
+      output: ({ transform }) => ({
+        type: "Point",
+        coordinates: [transform.utils.random.float({ min: -180, max: 180 }), transform.utils.random.float({ min: -90, max: 90 })],
+      }),
     }),
   ])
 }
@@ -234,8 +254,8 @@ export async function createEmailBlacklistTest(data: Partial<IEmailBlacklist>) {
   return u
 }
 
-export async function saveJobPartnerTest(data: Partial<IJobsPartners> = {}): Promise<IJobsPartners> {
-  return await saveDbEntity(ZJobsPartners, (item) => getDbCollection("jobs_partners").insertOne(item), data)
+export async function saveJobPartnerTest(data: Partial<IJobsPartnersOfferPrivate> = {}): Promise<IJobsPartnersOfferPrivate> {
+  return await saveDbEntity(ZJobsPartnersOfferPrivate, (item) => getDbCollection("jobs_partners").insertOne(item), data)
 }
 
 export async function createRecruteurLbaTest(data: Partial<ILbaCompany>): Promise<ILbaCompany> {
