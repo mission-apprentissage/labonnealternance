@@ -462,11 +462,8 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       })
     }
 
-    await Promise.all([
-      ...fieldUpdates.map(async (update) => {
-        await getDbCollection("recruteurlbaupdateevents").insertOne(update)
-      }),
-    ])
+    fieldUpdates.length && (await getDbCollection("recruteurlbaupdateevents").insertMany(fieldUpdates))
+
     return { enseigne: application?.company_name ?? recruteurLba?.enseigne, phone, email, siret, active: recruteurLba ? true : false }
   } catch (err) {
     sentryCaptureException(err)
