@@ -3,7 +3,7 @@ import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
+import { INiveauPourLbaLabel, RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -115,6 +115,83 @@ export const getJobs = async ({
 export type IJobResult = {
   recruiter: Omit<IRecruiter, "jobs">
   job: IJob & { rome_detail: IReferentielRomeForJob }
+}
+
+export const getLbaJobsV2 = async ({
+  distance,
+  lat,
+  lon,
+  romes,
+  niveau,
+  limit,
+}: {
+  distance: number
+  lat: number
+  lon: number
+  romes: string[]
+  niveau: INiveauPourLbaLabel | null
+  limit: number
+}): Promise<IJobResult[]> => {
+  const jobFilters: Filter<IRecruiter> = {
+    "jobs.job_status": JOB_STATUS.ACTIVE,
+    "jobs.rome_code": { $in: romes },
+    "jobs.is_multi_published": true,
+  }
+
+  if (niveau && niveau !== NIVEAUX_POUR_LBA["INDIFFERENT"]) {
+    jobFilters["jobs.job_level_label"] = { $in: [niveau, NIVEAUX_POUR_LBA["INDIFFERENT"]] }
+  }
+
+  const query: Filter<IRecruiter> = {
+    status: RECRUITER_STATUS.ACTIF,
+    ...jobFilters,
+  }
+
+  const recruiters = await getDbCollection("recruiters")
+    .aggregate<IJobResult["recruiter"] & { jobs: IJobResult["job"] }>([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [lon, lat] },
+          distanceField: "distance",
+          maxDistance: distance * 1000,
+          query,
+        },
+      },
+      { $limit: limit },
+      { $unwind: { path: "$jobs" } },
+      // Apply filters again on jobs individually
+      { $match: jobFilters },
+      // Limit the actual number of jobs returned
+      { $limit: limit },
+      // We only lookup the first rome code --> match will be only on the first rome code
+      {
+        $lookup: {
+          from: "referentielromes",
+          localField: "jobs.rome_code.0",
+          foreignField: "rome.code_rome",
+          as: "jobs.rome_detail",
+        },
+      },
+      // Here we will have only one rome_detail, so we unwind it
+      { $unwind: { path: "$jobs.rome_detail" } },
+    ])
+    .toArray()
+
+  return Promise.all(
+    recruiters.map(async ({ jobs: job, ...recruiter }) => {
+      const contactInfo = await getLbaJobContactInfo(recruiter)
+      return {
+        recruiter: {
+          ...recruiter,
+          ...contactInfo,
+        },
+        job: {
+          ...job,
+          rome_label: job.rome_appellation_label ?? job.rome_label,
+        },
+      }
+    })
+  )
 }
 
 /**

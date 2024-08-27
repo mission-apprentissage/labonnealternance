@@ -5,14 +5,15 @@ import { NIVEAU_DIPLOME_LABEL } from "shared/constants"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IJobsPartnersOfferPrivate, IJobsPartnersPatchApiBody, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { zOpcoLabel } from "shared/models/opco.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { getRomeoInfos } from "@/services/cache.service"
 
 import { getFileSignedURL } from "../../common/utils/awsUtils"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { getRomeoInfos } from "../../services/cache.service"
 import dayjs from "../../services/dayjs.service"
 import { getEntrepriseDataFromSiret, getGeoCoordinates, getOpcoData } from "../../services/etablissement.service"
 import { addExpirationPeriod, getFormulaires } from "../../services/formulaire.service"
@@ -116,6 +117,7 @@ export default (server: Server) => {
         romeCode = [romeoResponse]
       }
       const opcoData = await getOpcoData(workplace_siret)
+
       const now = new Date()
       const job: IJobsPartnersOfferPrivate = {
         ...rest,
@@ -151,7 +153,7 @@ export default (server: Server) => {
         workplace_name: siretInformation.establishment_enseigne ?? siretInformation.establishment_raison_sociale ?? null,
         workplace_naf_label: siretInformation.naf_label ?? null,
         workplace_naf_code: siretInformation.naf_code ?? null,
-        workplace_opco: opcoData?.opco ?? null,
+        workplace_opco: zOpcoLabel.safeParse(opcoData?.opco).data ?? null,
         // En cas d'OPCO multiple on met une string invalide dans le champs idcc (getOpcoFromCfaDock)
         workplace_idcc: opcoData?.idcc == null || Number.isNaN(parseInt(opcoData.idcc, 10)) ? null : parseInt(opcoData.idcc, 10),
         workplace_size: siretInformation.establishment_size ?? null,
@@ -411,7 +413,7 @@ export default (server: Server) => {
   )
 
   server.get("/jobs/rome", { schema: zRoutes.get["/jobs/rome"], onRequest: server.auth(zRoutes.get["/jobs/rome"]) }, async (req, res) => {
-    return res.send(await findJobsOpportunityResponseFromRome(req.query, { route: zRoutes.get["/jobs/rncp"], caller: "api-apprentissage" }))
+    return res.send(await findJobsOpportunityResponseFromRome(req.query, { route: zRoutes.get["/jobs/rome"], caller: "api-apprentissage" }))
   })
 
   server.get("/jobs/rncp", { schema: zRoutes.get["/jobs/rncp"], onRequest: server.auth(zRoutes.get["/jobs/rncp"]) }, async (req, res) => {
