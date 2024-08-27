@@ -182,7 +182,7 @@ describe("/jobs", () => {
       expect(response.statusCode).toBe(200)
       expect(data.jobs).toHaveLength(1)
       expect(data.recruiters).toHaveLength(1)
-      expect(data.warnings).toHaveLength(0)
+      expect(data.warnings).toEqual([{ code: "FRANCE_TRAVAIL_API_ERROR", message: "Unable to retrieve job offers from France Travail API" }])
       expect(scope.isDone()).toBe(true)
     })
   })
