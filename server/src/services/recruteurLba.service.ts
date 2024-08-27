@@ -467,7 +467,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
 
     await Promise.all([
       ...fieldUpdates.map(async (update) => {
-        getDbCollection("recruteurlbaupdateevents").insertOne(update)
+        await getDbCollection("recruteurlbaupdateevents").insertOne(update)
       }),
     ])
     return { enseigne: application?.company_name ?? recruteurLba?.enseigne, phone, email, siret, active: recruteurLba ? true : false }
