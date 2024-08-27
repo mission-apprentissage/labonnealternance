@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { Filter } from "mongodb"
+import { Document, Filter } from "mongodb"
 import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, parseEnum } from "shared"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
@@ -11,7 +11,7 @@ import {
   ZJobsPartnersRecruiterApi,
   INiveauDiplomeEuropeen,
 } from "shared/models/jobsPartners.model"
-import { IJobOpportunityGetQuery, IJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
+import { IJobOpportunityGetQuery, IJobOpportunityGetQueryResolved, IJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
@@ -30,8 +30,6 @@ import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.ser
 import { getNearestCommuneByGeoPoint } from "../../referentiel/commune/commune.referentiel.service"
 
 import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
-
-type IJobOpportunityGetQueryResolved = Omit<IJobOpportunityGetQuery, "rncp">
 
 /**
  * @description Retourn la compilation d'opportunités d'emploi au format unifié
@@ -192,7 +190,7 @@ export const getJobsQuery = async (
   return result
 }
 
-export const getJobsPartnersFromDB = async ({ radius = 10, romes, latitude, longitude, diplomaLevel }: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferPrivate[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_multicast: true,
   }
@@ -205,16 +203,23 @@ export const getJobsPartnersFromDB = async ({ radius = 10, romes, latitude, long
     query["offer_diploma_level.european"] = { $in: [diplomaLevel, null] }
   }
 
+  const filterStages: Document[] =
+    geo === null
+      ? [{ $match: query }, { $sort: { offer_creation: -1 } }]
+      : [
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
+              distanceField: "distance",
+              maxDistance: geo.radius * 1000,
+              query,
+            },
+          },
+        ]
+
   return await getDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivate>([
-      {
-        $geoNear: {
-          near: { type: "Point", coordinates: [longitude, latitude] },
-          distanceField: "distance",
-          maxDistance: radius * 1000,
-          query,
-        },
-      },
+      ...filterStages,
       {
         $limit: 150,
       },
@@ -383,8 +388,6 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
 }
 
 async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryResolved, context: JobOpportunityRequestContext): Promise<IJobsPartnersOfferApi[]> {
-  const commune = await getNearestCommuneByGeoPoint({ type: "Point", coordinates: [query.longitude, query.latitude] })
-
   const getFtDiploma = (diplomaLevel: INiveauDiplomeEuropeen | null): keyof typeof NIVEAUX_POUR_OFFRES_PE | null => {
     switch (diplomaLevel) {
       case "3":
@@ -407,9 +410,14 @@ async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryReso
   const params: Parameters<typeof getFtJobsV2>[0] = {
     jobLimit: 150,
     romes: query.romes ?? null,
-    insee: commune.code,
-    radius: query.radius,
+    insee: null,
+    radius: query.geo?.radius ?? 0,
     diploma: getFtDiploma(query.diplomaLevel ?? null),
+  }
+
+  if (query.geo !== null) {
+    const commune = await getNearestCommuneByGeoPoint({ type: "Point", coordinates: [query.geo.longitude, query.geo.latitude] })
+    params.insee = commune.code
   }
 
   const ftJobs = await getFtJobsV2(params).catch((error) => {
@@ -424,10 +432,8 @@ async function findFranceTravailOpportunities(query: IJobOpportunityGetQueryReso
 
 async function findLbaJobOpportunities(query: IJobOpportunityGetQueryResolved): Promise<IJobsPartnersOfferApi[]> {
   const payload: Parameters<typeof getLbaJobsV2>[0] = {
+    geo: query.geo,
     romes: query.romes ?? null,
-    distance: query.radius,
-    lat: query.latitude,
-    lon: query.longitude,
     niveau: null,
     limit: 150,
   }
@@ -442,10 +448,12 @@ async function findLbaJobOpportunities(query: IJobOpportunityGetQueryResolved): 
 }
 
 async function resolveQuery(query: IJobOpportunityGetQuery): Promise<IJobOpportunityGetQueryResolved> {
-  const { romes, rncp, ...rest } = query
+  const { romes, rncp, latitude, longitude, radius, ...rest } = query
+
+  const geo = latitude === null || longitude === null ? null : { latitude, longitude, radius }
 
   if (!romes && !rncp) {
-    return rest
+    return { geo, romes: null, ...rest }
   }
 
   const romeCriteria: string[] = []
@@ -466,6 +474,7 @@ async function resolveQuery(query: IJobOpportunityGetQuery): Promise<IJobOpportu
 
   return {
     ...rest,
+    geo,
     romes: romeCriteria,
   }
 }
