@@ -121,9 +121,7 @@ export const FlowCreationEntreprise = {
     },
     getJobId() {
       return cy.url().then((url) => {
-        const jobJson = new URLSearchParams(url.substring(url.indexOf("?"))).get("job")
-        const job = JSON.parse(jobJson)
-        return job._id
+        return new URLSearchParams(url.substring(url.indexOf("?"))).get("jobId")
       })
     },
   },
