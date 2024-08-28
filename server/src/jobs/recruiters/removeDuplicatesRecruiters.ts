@@ -4,19 +4,20 @@ import { RECRUITER_STATUS } from "shared/constants"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
-type IDuplicates = {
+type IDuplicate = {
+  _id: string
+  jobs_count: number
+  status: string
+  managedBy: string
+  jobs: IJob[]
+}
+type IDuplicatedRecruiters = {
   establishment_siret: string
   email: string
-  duplicates: {
-    _id: string
-    jobs_count: number
-    status: string
-    managedBy: string
-    jobs: IJob[]
-  }[]
+  duplicates: IDuplicate[]
 }
 
-async function mergeJobs(primaryDuplicate, duplicatesToMerge) {
+async function mergeJobs(primaryDuplicate: IDuplicate, duplicatesToMerge: IDuplicatedRecruiters["duplicates"]) {
   // Créer un ensemble pour stocker les combinaisons de jobs uniques
   const uniqueJobCombinations = new Set()
 
@@ -46,7 +47,7 @@ async function mergeJobs(primaryDuplicate, duplicatesToMerge) {
   }
 }
 
-function generateJobPattern(job) {
+function generateJobPattern(job: IJob) {
   // Générer une clé unique pour identifier un job
   return `${job.rome_label}-${job.rome_appellation_label}-${job.job_level_label}`
 }
@@ -87,7 +88,7 @@ export async function removeDuplicateRecruiters() {
         },
       ],
     ])
-    .toArray()) as IDuplicates[]
+    .toArray()) as IDuplicatedRecruiters[]
 
   for await (const recruiter of recruiters) {
     // Trouver le premier doublon actif (si existe)
