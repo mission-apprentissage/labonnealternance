@@ -1,5 +1,5 @@
+import { internal } from "@hapi/boom"
 import axios from "axios"
-import Boom from "boom"
 
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import config from "../../../config"
@@ -18,7 +18,7 @@ const getFirstCertificationFromAPIApprentissage = async (rncp: string, throwOnEr
     sentryCaptureException(error, { responseData: error.response?.data })
 
     if (throwOnError) {
-      const err = Boom.internal("Erreur lors de la récupération des informations de certification", {
+      const err = internal("Erreur lors de la récupération des informations de certification", {
         responseData: error.response?.data,
         rncp: rncp,
       })

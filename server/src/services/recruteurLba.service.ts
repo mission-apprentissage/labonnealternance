@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -408,7 +408,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
     const fieldUpdates: IRecruteurLbaUpdateEvent[] = []
 
     if (!lbaCompany) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     if (email !== undefined) {
@@ -484,13 +484,13 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
     if (lbaCompany) {
       return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }
     } else {
-      throw Boom.notFound("Société inconnue")
+      throw notFound("Société inconnue")
     }
   } catch (error: any) {
     if (error?.output?.statusCode === 404) {
       throw error
     }
     sentryCaptureException(error)
-    throw Boom.internal("Erreur de chargement des informations de la société")
+    throw internal("Erreur de chargement des informations de la société")
   }
 }

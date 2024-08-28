@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { notFound } from "@hapi/boom"
 import { zRoutes } from "shared/index"
 
 import { getRomeDetailsFromDB } from "@/services/rome.service"
@@ -30,7 +30,7 @@ export default function (server: Server) {
       const { rome } = req.params
       const romeData = await getRomeDetailsFromDB(rome)
       if (!romeData) {
-        throw Boom.notFound(`rome ${rome} not found`)
+        throw notFound(`rome ${rome} not found`)
       }
       return res.status(200).send(romeData)
     }

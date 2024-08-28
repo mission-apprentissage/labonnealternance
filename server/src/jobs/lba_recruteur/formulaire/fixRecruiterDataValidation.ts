@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { TRAINING_RYTHM } from "shared/constants/recruteur"
 import { z } from "zod"
 
@@ -68,7 +68,7 @@ const fixRomeDetails = async () => {
         if (rome_detail && typeof rome_detail === "string") {
           const romeData = await getRomeDetailsFromDB(rome_code[0])
           if (!romeData) {
-            throw Boom.internal(`could not find rome infos for rome=${rome_code}`)
+            throw internal(`could not find rome infos for rome=${rome_code}`)
           }
           job.rome_detail = romeData
         }
