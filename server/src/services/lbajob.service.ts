@@ -590,6 +590,6 @@ const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise
 
 export const replaceRecruiterFieldsWithCfaFields = async (recruiter: IRecruiter) => {
   if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
-    Object.assign(recruiter, getLbaJobContactInfo(recruiter))
+    Object.assign(recruiter, await getLbaJobContactInfo(recruiter))
   }
 }
