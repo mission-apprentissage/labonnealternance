@@ -28,6 +28,7 @@ import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollecti
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { importHelloWork } from "./offrePartenaire/importHelloWork"
+import { importKelio } from "./offrePartenaire/importKelio"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -403,6 +404,9 @@ export async function setupJobProcessor() {
       },
       "import-hellowork": {
         handler: async () => importHelloWork(),
+      },
+      "import-kelio": {
+        handler: async () => importKelio(),
       },
       "send-applications": {
         handler: async (job) => {
