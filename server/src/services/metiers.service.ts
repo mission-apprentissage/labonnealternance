@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest } from "@hapi/boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 import { IDiplomesMetiers, IDomainesMetiers } from "shared"
@@ -222,7 +222,7 @@ export const getMetiers = async ({
   withRomeLabels?: boolean
 }): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] }> => {
   if (!title && !romes && !rncps) {
-    throw Boom.badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
+    throw badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
   } else {
     let regexes: RegExp[] = []
 

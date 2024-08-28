@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { assertUnreachable } from "shared"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
@@ -38,7 +38,7 @@ export const controlUserState = async (user: IUserWithAccount): Promise<{ error:
     }
     case null:
     case undefined:
-      throw Boom.badRequest("L'état utilisateur est inconnu")
+      throw badRequest("L'état utilisateur est inconnu")
 
     default:
       assertUnreachable(status)

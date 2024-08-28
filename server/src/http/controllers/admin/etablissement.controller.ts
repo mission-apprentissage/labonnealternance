@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { zRoutes } from "shared/index"
 
@@ -23,7 +23,7 @@ export default (server: Server) => {
       const etablissement = await getDbCollection("etablissements").findOne({ formateur_siret: params.siret })
 
       if (!etablissement) {
-        throw Boom.notFound()
+        throw notFound()
       }
 
       return res.status(200).send(etablissement)
@@ -43,7 +43,7 @@ export default (server: Server) => {
       const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(req.params.id) })
 
       if (!etablissement) {
-        throw Boom.notFound()
+        throw notFound()
       }
 
       return res.send(etablissement)
@@ -63,13 +63,13 @@ export default (server: Server) => {
       const etablissement = await getDbCollection("etablissements").findOne({ _id: new ObjectId(params.id.toString()) })
 
       if (!etablissement) {
-        throw Boom.notFound()
+        throw notFound()
       }
 
       const result = await getDbCollection("etablissements").findOneAndUpdate({ _id: new ObjectId(params.id.toString()) }, { $set: body }, { returnDocument: "after" })
 
       if (!result) {
-        throw Boom.notFound()
+        throw notFound()
       }
 
       res.status(200).send(result)

@@ -1,5 +1,5 @@
+import { internal } from "@hapi/boom"
 import axios from "axios"
-import Boom from "boom"
 import { IMetiersDavenir } from "shared/models"
 
 import { getHttpClient } from "@/common/utils/httpUtils"
@@ -55,7 +55,7 @@ export const getMetiersDAvenir = async (): Promise<IMetiersDavenir> => {
     )
     return data.data
   } catch (error) {
-    const newError = Boom.internal("Error fetching suggestionsMetiersAvenir")
+    const newError = internal("Error fetching suggestionsMetiersAvenir")
     newError.cause = error
     throw newError
   }

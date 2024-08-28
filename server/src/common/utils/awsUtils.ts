@@ -1,8 +1,8 @@
 import fs from "fs"
 import * as stream from "stream"
 
+import { internal } from "@hapi/boom"
 import AWS from "aws-sdk"
-import Boom from "boom"
 import { assertUnreachable } from "shared/utils"
 
 import config from "../../config"
@@ -38,7 +38,7 @@ export async function s3ReadAsString(bucket: Bucket, fileKey: string): Promise<s
   const response = await repository.getObject({ Bucket: getBucketName(bucket), Key: fileKey }).promise()
   const errorOpt = response.$response.error
   if (errorOpt) {
-    const newError = Boom.internal(`error while getting s3 file`, { key: fileKey, bucket: getBucketName(bucket) })
+    const newError = internal(`error while getting s3 file`, { key: fileKey, bucket: getBucketName(bucket) })
     newError.cause = errorOpt
     throw newError
   }
@@ -57,7 +57,7 @@ export async function s3Delete(bucket: Bucket, fileKey: string) {
   const result = await repository.deleteObject({ Bucket: bucketName, Key: fileKey }).promise()
   const errorOpt = result.$response.error
   if (errorOpt) {
-    const newError = Boom.internal(`error while deleting s3 file`, { key: fileKey, bucket: bucketName })
+    const newError = internal(`error while deleting s3 file`, { key: fileKey, bucket: bucketName })
     newError.cause = errorOpt
     throw newError
   }

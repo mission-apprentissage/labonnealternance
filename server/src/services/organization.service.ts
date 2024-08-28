@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { CFA, ENTREPRISE } from "shared/constants"
 import { ICFA } from "shared/models/cfa.model"
@@ -70,7 +70,7 @@ export const upsertEntrepriseData = async (
   if (existingEntreprise) {
     const updatedEntreprise = await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: entrepriseFields }, { returnDocument: "after" })
     if (!updatedEntreprise) {
-      throw Boom.internal("inattendu: aucune entreprise trouvée")
+      throw internal("inattendu: aucune entreprise trouvée")
     }
     savedEntreprise = updatedEntreprise
   } else {
@@ -117,7 +117,7 @@ export const upsertEntrepriseData = async (
         const role = rolesToUpdate.find((role) => role.user_id.toString() === user._id.toString())
         const status = getLastStatusEvent(role?.status)?.status
         if (!status) {
-          throw Boom.internal("inattendu : status du role non trouvé")
+          throw internal("inattendu : status du role non trouvé")
         }
         await sendEmailConfirmationEntreprise(user, recruiter, status, EntrepriseStatus.VALIDE)
       }

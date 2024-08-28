@@ -3,6 +3,10 @@ import { MongoClient } from "mongodb"
 
 export default async () => {
   return async () => {
+    if (process.env.CI || process.env.VITEST_VSCODE) {
+      return
+    }
+
     config({ path: "./server/.env.test" })
 
     const client = new MongoClient(process.env.LBA_MONGODB_URI?.replace("VITEST_POOL_ID", "") ?? "", {
@@ -11,10 +15,6 @@ export default async () => {
       serverSelectionTimeoutMS: 1_000,
     })
     try {
-      if (process.env.CI) {
-        return
-      }
-
       await client.connect()
       const dbs = await client.db().admin().listDatabases()
       await Promise.all(
