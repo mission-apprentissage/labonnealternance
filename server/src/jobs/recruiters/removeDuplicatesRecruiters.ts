@@ -8,7 +8,6 @@ type IDuplicate = {
   _id: string
   jobs_count: number
   status: string
-  managedBy: string
   jobs: IJob[]
 }
 type IDuplicatedRecruiters = {
@@ -68,7 +67,7 @@ export async function removeDuplicateRecruiters() {
                 _id: "$_id",
                 jobs_count: { $size: { $ifNull: ["$jobs", []] } },
                 status: "$status",
-                managedBy: "$managed_by",
+                jobs: "$jobs",
               },
             },
           },
