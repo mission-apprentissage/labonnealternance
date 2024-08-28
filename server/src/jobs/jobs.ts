@@ -65,7 +65,7 @@ export async function setupJobProcessor() {
   return initJobProcessor({
     db: getDatabase(),
     logger: getLoggerWithContext("script"),
-    crons: ["preview", "pentest"].includes(config.env)
+    crons: ["local", "preview", "pentest"].includes(config.env)
       ? {}
       : {
           "Creation de la collection JOBS pour metabase": {
@@ -202,7 +202,7 @@ export async function setupJobProcessor() {
           },
           "Scan et envoi des candidatures": {
             cron_string: "*/10 * * * *",
-            handler: () => processApplications(100),
+            handler: () => processApplications(),
           },
           "Génération du token France Travail pour la récupération des offres": {
             cron_string: "*/5 * * * *",
@@ -405,11 +405,7 @@ export async function setupJobProcessor() {
         handler: async () => importHelloWork(),
       },
       "send-applications": {
-        handler: async (job) => {
-          const { batchSize } = job.payload as any
-          await processApplications(batchSize ? parseInt(batchSize, 10) : 100)
-          return
-        },
+        handler: async () => processApplications(),
       },
     },
   })
