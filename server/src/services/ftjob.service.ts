@@ -272,7 +272,7 @@ export const getFtJobsV2 = async ({
   const distance = radius || 10
 
   const params: Parameters<typeof searchForFtJobs>[0] = {
-    sort: 0,
+    sort: 2,
     natureContrat: "E2,FS", //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
     range: `0-${jobLimit - 1}`,
   }
@@ -290,7 +290,6 @@ export const getFtJobsV2 = async ({
 
     params.commune = codeInsee
     params.distance = distance || 10
-    params.sort = 2
   }
 
   if (diploma) {

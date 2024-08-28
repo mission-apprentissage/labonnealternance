@@ -46,6 +46,7 @@ describe("findJobsOpportunities", () => {
       geopoint: parisFixture.centre,
       insee_city_code: parisFixture.code,
       phone: "0100000000",
+      last_update_at: new Date("2021-01-01"),
     }),
     generateLbaConpanyFixture({
       siret: "77555848900073",
@@ -54,6 +55,7 @@ describe("findJobsOpportunities", () => {
       geopoint: marseilleFixture.centre,
       insee_city_code: marseilleFixture.code,
       phone: "0200000000",
+      last_update_at: new Date("2022-01-01"),
     }),
     generateLbaConpanyFixture({
       siret: "52951974600034",
@@ -63,6 +65,7 @@ describe("findJobsOpportunities", () => {
       geopoint: levalloisFixture.centre,
       insee_city_code: levalloisFixture.code,
       phone: "0100000001",
+      last_update_at: new Date("2023-01-01"),
     }),
   ]
 
@@ -78,6 +81,7 @@ describe("findJobsOpportunities", () => {
           is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+          job_creation_date: new Date("2021-01-01"),
         },
       ],
       address_detail: {
@@ -96,6 +100,7 @@ describe("findJobsOpportunities", () => {
           is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+          job_creation_date: new Date("2022-01-01"),
         },
       ],
       address_detail: {
@@ -106,7 +111,7 @@ describe("findJobsOpportunities", () => {
     generateRecruiterFixture({
       establishment_siret: "20003277900015",
       establishment_raison_sociale: "PARIS MUSEES",
-      geopoint: parisFixture.centre,
+      geopoint: levalloisFixture.centre,
       status: RECRUITER_STATUS.ACTIF,
       jobs: [
         {
@@ -114,10 +119,11 @@ describe("findJobsOpportunities", () => {
           is_multi_published: true,
           job_status: JOB_STATUS.ACTIVE,
           job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+          job_creation_date: new Date("2023-01-01"),
         },
       ],
       address_detail: {
-        code_insee_localite: parisFixture.code,
+        code_insee_localite: levalloisFixture.code,
       },
       phone: "0400000001",
     }),
@@ -126,14 +132,17 @@ describe("findJobsOpportunities", () => {
     generateJobsPartnersOfferPrivate({
       offer_rome_code: ["M1602"],
       workplace_geopoint: parisFixture.centre,
+      offer_creation: new Date("2021-01-01"),
     }),
     generateJobsPartnersOfferPrivate({
       offer_rome_code: ["M1602", "D1214"],
       workplace_geopoint: marseilleFixture.centre,
+      offer_creation: new Date("2022-01-01"),
     }),
     generateJobsPartnersOfferPrivate({
       offer_rome_code: ["D1212"],
-      workplace_geopoint: parisFixture.centre,
+      workplace_geopoint: levalloisFixture.centre,
+      offer_creation: new Date("2023-01-01"),
     }),
   ]
   const ftJobs: FTJob[] = [
@@ -201,6 +210,7 @@ describe("findJobsOpportunities", () => {
         latitude: parisFixture.centre.coordinates[1],
         radius: 30,
         romes: ["M1602"],
+        rncp: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -264,6 +274,8 @@ describe("findJobsOpportunities", () => {
         longitude: parisFixture.centre.coordinates[0],
         latitude: parisFixture.centre.coordinates[1],
         radius: 30,
+        romes: null,
+        rncp: null,
       },
       new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
     )
@@ -310,6 +322,68 @@ describe("findJobsOpportunities", () => {
     expect(scopeFtApi.isDone()).toBeTruthy()
   })
 
+  it("should support query without geo filter", async () => {
+    scopeFtApi = nock("https://api.francetravail.io:443")
+      .get("/partenaire/offresdemploi/v2/offres/search")
+      .query({
+        sort: "2",
+        natureContrat: "E2,FS",
+        range: "0-149",
+        codeROME: "M1602",
+        partenaires: "LABONNEALTERNANCE",
+        modeSelectionPartenaires: "EXCLU",
+      })
+      .matchHeader("Authorization", "Bearer ft_token")
+      .reply(200, { resultats: ftJobs })
+
+    const results = await findJobsOpportunities(
+      {
+        longitude: null,
+        latitude: null,
+        radius: 30,
+        romes: ["M1602"],
+        rncp: null,
+      },
+      new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+    )
+
+    // Order is most recent first
+    expect(results).toEqual({
+      jobs: [
+        expect.objectContaining({
+          _id: lbaJobs[1].jobs[0]._id.toString(),
+        }),
+        expect.objectContaining({
+          _id: lbaJobs[0].jobs[0]._id.toString(),
+        }),
+        expect.objectContaining({
+          _id: null,
+          partner_job_id: ftJobs[0].id,
+          partner: "France Travail",
+        }),
+        expect.objectContaining({
+          _id: partnerJobs[1]._id,
+        }),
+        expect.objectContaining({
+          _id: partnerJobs[0]._id,
+        }),
+      ],
+      recruiters: [
+        expect.objectContaining({
+          _id: recruiters[1]._id,
+          workplace_name: recruiters[1].enseigne,
+        }),
+        expect.objectContaining({
+          _id: recruiters[0]._id,
+          workplace_name: recruiters[0].enseigne,
+        }),
+      ],
+      warnings: [],
+    })
+    expect(scopeAuth.isDone()).toBeTruthy()
+    expect(scopeFtApi.isDone()).toBeTruthy()
+  })
+
   describe("searching by rncp code", async () => {
     it("should return jobs corresponding to the romes codes associated with the requested rncp code", async () => {
       scopeFtApi = nock("https://api.francetravail.io:443")
@@ -340,6 +414,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           rncp: "RNCP37098",
+          romes: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -377,6 +452,7 @@ describe("findJobsOpportunities", () => {
             latitude: parisFixture.centre.coordinates[1],
             radius: 30,
             rncp: "RNCP37098",
+            romes: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -397,6 +473,7 @@ describe("findJobsOpportunities", () => {
             latitude: parisFixture.centre.coordinates[1],
             radius: 30,
             rncp: "RNCP30000",
+            romes: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -419,6 +496,7 @@ describe("findJobsOpportunities", () => {
             latitude: parisFixture.centre.coordinates[1],
             radius: 30,
             rncp: "RNCP9852",
+            romes: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -462,6 +540,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           rncp: "RNCP13620",
+          romes: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -592,6 +671,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -606,6 +686,7 @@ describe("findJobsOpportunities", () => {
           latitude: clichyFixture.centre.coordinates[1],
           radius: 30,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -618,6 +699,7 @@ describe("findJobsOpportunities", () => {
           latitude: clichyFixture.centre.coordinates[1],
           radius: 2,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -671,6 +753,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -724,6 +807,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -765,6 +849,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["M1602"],
             diplomaLevel: "4",
+            rncp: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -808,6 +893,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -846,6 +932,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -880,6 +967,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           romes: ["C1110"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -894,6 +982,7 @@ describe("findJobsOpportunities", () => {
           latitude: clichyFixture.centre.coordinates[1],
           radius: 1,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -928,6 +1017,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -983,6 +1073,7 @@ describe("findJobsOpportunities", () => {
             latitude: parisFixture.centre.coordinates[1],
             radius: 30,
             romes: ["M1602"],
+            rncp: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1044,6 +1135,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1060,6 +1152,7 @@ describe("findJobsOpportunities", () => {
           latitude: clichyFixture.centre.coordinates[1],
           radius: 1,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1083,6 +1176,7 @@ describe("findJobsOpportunities", () => {
           latitude: parisFixture.centre.coordinates[1],
           radius: 30,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1115,6 +1209,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["M1602"],
             diplomaLevel: "3",
+            rncp: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1154,6 +1249,7 @@ describe("findJobsOpportunities", () => {
             latitude: parisFixture.centre.coordinates[1],
             radius: 30,
             romes: ["M1602"],
+            rncp: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
@@ -1193,6 +1289,7 @@ describe("findJobsOpportunities", () => {
           latitude: clichyFixture.centre.coordinates[1],
           radius: 100,
           romes: ["M1602"],
+          rncp: null,
         },
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
@@ -1235,6 +1332,7 @@ describe("findJobsOpportunities", () => {
             radius: 30,
             romes: ["M1602"],
             diplomaLevel,
+            rncp: null,
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )

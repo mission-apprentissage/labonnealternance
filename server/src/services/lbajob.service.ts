@@ -118,16 +118,12 @@ export type IJobResult = {
 }
 
 export const getLbaJobsV2 = async ({
-  distance,
-  lat,
-  lon,
+  geo,
   romes,
   niveau,
   limit,
 }: {
-  distance: number
-  lat: number
-  lon: number
+  geo: { latitude: number; longitude: number; radius: number } | null
   romes: string[] | null
   niveau: INiveauPourLbaLabel | null
   limit: number
@@ -150,18 +146,34 @@ export const getLbaJobsV2 = async ({
     ...jobFilters,
   }
 
+  const filterStage: Document[] =
+    geo === null
+      ? // Sans géoloc, on trie par date de création (Important de le faire avant le $limit)
+        [
+          { $match: query },
+          { $sort: { "jobs.job_creation_date": -1 } },
+          { $limit: limit },
+          { $unwind: { path: "$jobs" } },
+          // Make sure to sort after unwinding
+          { $sort: { "jobs.job_creation_date": -1 } },
+        ]
+      : [
+          // Avec géoloc, on trie par distance (comportement par défaut de $geoNear)
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
+              distanceField: "distance",
+              maxDistance: geo.radius * 1000,
+              query,
+            },
+          },
+          { $limit: limit },
+          { $unwind: { path: "$jobs" } },
+        ]
+
   const recruiters = await getDbCollection("recruiters")
     .aggregate<IJobResult["recruiter"] & { jobs: IJobResult["job"] }>([
-      {
-        $geoNear: {
-          near: { type: "Point", coordinates: [lon, lat] },
-          distanceField: "distance",
-          maxDistance: distance * 1000,
-          query,
-        },
-      },
-      { $limit: limit },
-      { $unwind: { path: "$jobs" } },
+      ...filterStage,
       // Apply filters again on jobs individually
       { $match: jobFilters },
       // Limit the actual number of jobs returned

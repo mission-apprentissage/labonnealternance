@@ -1,5 +1,5 @@
 import Boom from "boom"
-import { Filter, ObjectId } from "mongodb"
+import { Document, Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -160,29 +160,34 @@ const transformCompanies = ({
 }
 
 type IRecruteursLbaSearchParams = {
-  romes?: string[]
-  latitude: number
-  longitude: number
-  radius: number
+  geo: { latitude: number; longitude: number; radius: number } | null
+  romes: string[] | null
 }
 
-export const getRecruteursLbaFromDB = async ({ radius = 10, romes, latitude, longitude }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
+export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
   const query: Filter<ILbaCompany> = {}
 
   if (romes) {
     query.rome_codes = { $in: romes }
   }
 
+  const filterStages: Document[] =
+    geo === null
+      ? [{ $match: query }, { $sort: { last_update_at: -1 } }]
+      : [
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
+              distanceField: "distance",
+              maxDistance: geo.radius * 1000,
+              query,
+            },
+          },
+        ]
+
   return await getDbCollection("recruteurslba")
     .aggregate<ILbaCompany>([
-      {
-        $geoNear: {
-          near: { type: "Point", coordinates: [longitude, latitude] },
-          distanceField: "distance",
-          maxDistance: radius * 1000,
-          query,
-        },
-      },
+      ...filterStages,
       {
         $limit: 150,
       },
