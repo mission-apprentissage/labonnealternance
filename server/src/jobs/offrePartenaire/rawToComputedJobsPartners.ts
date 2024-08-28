@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { oleoduc, writeData } from "oleoduc"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -45,7 +45,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
           counters.success++
         } catch (err) {
           counters.error++
-          const newError = Boom.internal(`error converting raw job to partner job for partner=${partnerLabel}, id=${document._id}`)
+          const newError = internal(`error converting raw job to partner job for partner=${partnerLabel}, id=${document._id}`)
           logger.error(newError.message, err)
           newError.cause = err
           sentryCaptureException(newError)

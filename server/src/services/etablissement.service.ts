@@ -1,7 +1,7 @@
 import { setTimeout } from "timers/promises"
 
+import { badRequest, internal } from "@hapi/boom"
 import { AxiosResponse } from "axios"
-import Boom from "boom"
 import { Filter as MongoDBFilter, ObjectId } from "mongodb"
 import {
   IAdresseV3,
@@ -24,7 +24,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
+import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -273,7 +273,7 @@ const DELAY = 100
 export const getDiffusionStatus = async (siret: string, count = 1) => {
   const isDiffusible = await getEtablissementDiffusionStatus(siret)
   if (isDiffusible === "quota") {
-    if (count > MAX_RETRY) throw Boom.internal(`Api entreprise or cache entreprise not availabe. Tried ${MAX_RETRY} times`)
+    if (count > MAX_RETRY) throw internal(`Api entreprise or cache entreprise not availabe. Tried ${MAX_RETRY} times`)
     await setTimeout(DELAY, "result")
     return await getDiffusionStatus(siret, count++)
   }
@@ -289,7 +289,7 @@ export const checkIsDiffusible = async (siret: string) => (await getDiffusionSta
 export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement | null> => {
   const data = await getEtablissementFromGouvSafe(siret)
   if (data === BusinessErrorCodes.NON_DIFFUSIBLE) {
-    throw Boom.internal(BusinessErrorCodes.NON_DIFFUSIBLE)
+    throw internal(BusinessErrorCodes.NON_DIFFUSIBLE)
   }
   return data
 }
@@ -329,11 +329,11 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
     }
     const [longitude, latitude] = firstFeature.geometry.coordinates
     if (latitude === undefined || longitude === undefined) {
-      throw Boom.internal("moins de 2 coordonnées", { latitude, longitude })
+      throw internal("moins de 2 coordonnées", { latitude, longitude })
     }
     return { latitude, longitude }
   } catch (error: any) {
-    const newError = Boom.internal(`erreur de récupération des geo coordonnées`, { adresse })
+    const newError = internal(`erreur de récupération des geo coordonnées`, { adresse })
     newError.cause = error
     throw newError
   }
@@ -403,7 +403,7 @@ function geometryToGeoCoord(geometry: any): [number, number] {
 export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
   const geojson = d.adresse?.geojson ?? d.lieux_de_formation.at(0)?.adresse?.geojson
   if (!geojson) {
-    throw Boom.internal("impossible de lire la geometry")
+    throw internal("impossible de lire la geometry")
   }
   const coords = geometryToGeoCoord(geojson.geometry)
 
@@ -423,7 +423,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
   }
   const validation = ZCfaReferentielData.safeParse(referentielData)
   if (!validation.success) {
-    sentryCaptureException(Boom.internal(`erreur de validation sur les données du référentiel CFA pour le siret=${d.siret}.`, { validationError: validation.error }))
+    sentryCaptureException(internal(`erreur de validation sur les données du référentiel CFA pour le siret=${d.siret}.`, { validationError: validation.error }))
   }
   return referentielData
 }
@@ -589,7 +589,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, type }: { siret: strin
   }
   const entrepriseData = formatEntrepriseData(result.data)
   if (!entrepriseData.establishment_raison_sociale) {
-    throw Boom.internal("pas de raison sociale trouvée", { siret, type, entrepriseData, apiData: result.data })
+    throw internal("pas de raison sociale trouvée", { siret, type, entrepriseData, apiData: result.data })
   }
   const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
   const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
@@ -621,19 +621,19 @@ export const getCfaSiretInfos = async (siret: string) => {
 export const validateEligibiliteCfa = async (siret: string, origin = "") => {
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
-    throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: BusinessErrorCodes.UNKNOWN })
+    throw badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: BusinessErrorCodes.UNKNOWN })
   }
   if (referentiel.etat_administratif === "fermé") {
-    throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: BusinessErrorCodes.CLOSED })
+    throw badRequest("Le numéro siret indique un établissement fermé.", { reason: BusinessErrorCodes.CLOSED })
   }
   if (!referentiel.adresse) {
-    throw Boom.badRequest("Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.", {
+    throw badRequest("Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.", {
       reason: BusinessErrorCodes.UNSUPPORTED,
     })
   }
   const formattedReferentiel = formatReferentielData(referentiel)
   if (!formattedReferentiel.is_qualiopi) {
-    throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: BusinessErrorCodes.NOT_QUALIOPI, ...formattedReferentiel })
+    throw badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: BusinessErrorCodes.NOT_QUALIOPI, ...formattedReferentiel })
   }
   const { address, address_detail, establishment_raison_sociale, geo_coordinates } = formattedReferentiel
   const cfa = await upsertCfa(
@@ -897,7 +897,7 @@ export const sendEmailConfirmationEntreprise = async (
   } else {
     const user2 = await getDbCollection("userswithaccounts").findOne({ _id: user._id })
     if (!user2) {
-      throw Boom.internal(`could not find user with id=${user._id}`)
+      throw internal(`could not find user with id=${user._id}`)
     }
     await sendUserConfirmationEmail(user2)
   }
@@ -905,7 +905,7 @@ export const sendEmailConfirmationEntreprise = async (
 
 export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "affelnet" | "parcoursup") => {
   if (!etablissement.gestionnaire_email) {
-    throw Boom.badRequest("Gestionnaire email not found")
+    throw badRequest("Gestionnaire email not found")
   }
 
   const subject =

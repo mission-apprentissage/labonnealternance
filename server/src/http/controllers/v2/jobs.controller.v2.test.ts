@@ -182,8 +182,68 @@ describe("/jobs", () => {
       expect(response.statusCode).toBe(200)
       expect(data.jobs).toHaveLength(1)
       expect(data.recruiters).toHaveLength(1)
-      expect(data.warnings).toHaveLength(0)
+      expect(data.warnings).toEqual([{ code: "FRANCE_TRAVAIL_API_ERROR", message: "Unable to retrieve job offers from France Travail API" }])
       expect(scope.isDone()).toBe(true)
+    })
+
+    it("should require latitude when longitude is provided", async () => {
+      const response = await httpClient().inject({
+        method: "GET",
+        path: `/api/v2/jobs?longitude=${longitude}`,
+        headers: { authorization: `Bearer ${token}` },
+      })
+      const data = response.json()
+      expect(response.statusCode).toBe(400)
+      expect(data).toEqual({
+        data: {
+          validationError: {
+            _errors: [],
+            latitude: {
+              _errors: ["latitude is required when longitude is provided"],
+            },
+          },
+        },
+        error: "Bad Request",
+        message: "Request validation failed",
+        statusCode: 400,
+      })
+    })
+
+    it("should require longitude when latitude is provided", async () => {
+      const response = await httpClient().inject({
+        method: "GET",
+        path: `/api/v2/jobs?latitude=${latitude}`,
+        headers: { authorization: `Bearer ${token}` },
+      })
+      const data = response.json()
+      expect(response.statusCode).toBe(400)
+      expect(data).toEqual({
+        data: {
+          validationError: {
+            _errors: [],
+            longitude: {
+              _errors: ["longitude is required when latitude is provided"],
+            },
+          },
+        },
+        error: "Bad Request",
+        message: "Request validation failed",
+        statusCode: 400,
+      })
+    })
+
+    it("should all params be optional", async () => {
+      const response = await httpClient().inject({
+        method: "GET",
+        path: `/api/v2/jobs`,
+        headers: { authorization: `Bearer ${token}` },
+      })
+
+      const data = response.json()
+      expect(response.statusCode).toBe(200)
+      expect(data.jobs).toHaveLength(1)
+      expect(data.recruiters).toHaveLength(1)
+      expect(data.warnings).toEqual([{ code: "FRANCE_TRAVAIL_API_ERROR", message: "Unable to retrieve job offers from France Travail API" }])
     })
   })
 

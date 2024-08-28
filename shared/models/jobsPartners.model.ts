@@ -152,8 +152,11 @@ export type IJobsPartnersPatchApiBody = z.output<typeof ZJobsPartnersPatchApiBod
 export default {
   zod: ZJobsPartnersOfferPrivate,
   indexes: [
-    [{ workplace_geopoint: "2dsphere" }, {}],
-    [{ offer_rome_code: 1 }, {}],
+    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_code: 1 }, {}],
+    [{ offer_multicast: 1, offer_rome_code: 1, offer_creation: -1 }, {}],
+    [{ offer_multicast: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
+    [{ offer_multicast: 1, offer_rome_code: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
+
     [{ partner: 1, partner_job_id: 1 }, {}],
   ],
   collectionName,
