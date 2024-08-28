@@ -221,7 +221,7 @@ export const getFtJobs = async ({
 
     const distance = radius || 10
 
-    const params: { codeROME: string; commune?: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
+    const params: Parameters<typeof searchForFtJobs>[0] = {
       codeROME: romes.join(","),
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
@@ -239,7 +239,7 @@ export const getFtJobs = async ({
       params.distance = distance
     }
 
-    const jobs = await searchForFtJobs(params)
+    const jobs = await searchForFtJobs(params, { throwOnError: false })
 
     if (jobs === null || jobs === "") {
       const emptyPeResponse: FTResponse = { resultats: [] }
@@ -297,7 +297,7 @@ export const getFtJobsV2 = async ({
     params.niveauFormation = NIVEAUX_POUR_OFFRES_PE[diploma]
   }
 
-  const jobs = await searchForFtJobs(params)
+  const jobs = await searchForFtJobs(params, { throwOnError: true })
 
   if (jobs === null || jobs === "") {
     return { resultats: [] }
