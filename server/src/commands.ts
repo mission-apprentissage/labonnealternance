@@ -541,9 +541,8 @@ program
 
 program
   .command("send-applications")
-  .description("Scanne les virus des pièces jointes et envoie les candidatures")
+  .description("Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.")
   .option("-q, --queued", "Run job asynchronously", false)
-  .option("-batchSize, [batchSize]", "Maximum de candidatures traitées", "100")
   .action(createJobAction("send-applications"))
 
 program
