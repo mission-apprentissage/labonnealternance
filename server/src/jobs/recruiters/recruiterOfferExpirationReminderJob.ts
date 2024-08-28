@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { groupBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS } from "shared/models"
@@ -55,11 +55,11 @@ export const recruiterOfferExpirationReminderJob = async (threshold: number /* n
     try {
       const { managed_by } = recruiter.jobs[0]
       if (!managed_by) {
-        throw Boom.internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
+        throw internal(`inattendu : managed_by manquant pour le formulaire id=${recruiter._id}`)
       }
       const contactUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
       if (!contactUser) {
-        throw Boom.internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
+        throw internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
       }
 
       await mailer.sendEmail({

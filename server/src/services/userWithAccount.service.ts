@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { INewSuperUser } from "shared"
 import { ADMIN, OPCO } from "shared/constants"
@@ -62,7 +62,7 @@ export const createUser2IfNotExist = async (
 export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]): Promise<IUserWithAccount> => {
   const userOpt = await getDbCollection("userswithaccounts").findOne({ _id: id })
   if (!userOpt) {
-    throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
+    throw internal(`utilisateur avec id=${id} non trouvé`)
   }
   if (isUserEmailChecked(userOpt)) {
     return userOpt
@@ -80,7 +80,7 @@ export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"]):
     { returnDocument: "after" }
   )
   if (!newUser) {
-    throw Boom.internal(`utilisateur avec id=${id} non trouvé`)
+    throw internal(`utilisateur avec id=${id} non trouvé`)
   }
   return newUser
 }
@@ -102,7 +102,7 @@ export const activateUser = async (user: IUserWithAccount, granted_by: string): 
     { returnDocument: "after" }
   )
   if (!newUser) {
-    throw Boom.internal(`utilisateur avec id=${user._id} non trouvé`)
+    throw internal(`utilisateur avec id=${user._id} non trouvé`)
   }
   return newUser
 }
@@ -131,7 +131,7 @@ export const isUserDisabled = (user: IUserWithAccount): boolean =>
 export const createSuperUser = async (userFields: INewSuperUser, { grantedBy, origin }: { grantedBy: string; origin: string }) => {
   const { email, type } = userFields
   if (await emailHasActiveRole(email)) {
-    throw Boom.badRequest(`User ${email} already have an active role`)
+    throw badRequest(`User ${email} already have an active role`)
   }
   const reason = ""
 

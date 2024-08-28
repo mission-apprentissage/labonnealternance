@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { notFound } from "@hapi/boom"
 import { zRoutes } from "shared"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent"
@@ -68,7 +68,7 @@ export default (server: Server) => {
           }
           return res.send(formationOpt)
         } else {
-          throw Boom.notFound("formation introuvable")
+          throw notFound("formation introuvable")
         }
       } catch (err) {
         if (caller) {

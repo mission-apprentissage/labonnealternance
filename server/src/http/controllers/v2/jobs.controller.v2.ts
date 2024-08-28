@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { IGeoPoint, ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
 import { NIVEAU_DIPLOME_LABEL } from "shared/constants"
@@ -182,12 +182,12 @@ export default (server: Server) => {
       const patchBody = req.body
       const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) {
-        throw Boom.badRequest("Job does not exist")
+        throw badRequest("Job does not exist")
       }
       const update: IJobsPartnersPatchApiBody = mergePatchWithDb(patchBody, job)
       const updatedJob = await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: update }, { returnDocument: "after" })
       if (!updatedJob) {
-        throw Boom.internal(`Job partner updated did not return ${id}`)
+        throw internal(`Job partner updated did not return ${id}`)
       }
       return res.status(200).send(updatedJob)
     }
@@ -204,11 +204,11 @@ export default (server: Server) => {
       const { id } = req.params
       const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) {
-        throw Boom.badRequest("Job does not exist")
+        throw badRequest("Job does not exist")
       }
 
       if (job.offer_status === JOB_STATUS.POURVUE) {
-        throw Boom.badRequest("Job is already provided")
+        throw badRequest("Job is already provided")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.POURVUE } })
       return res.status(204).send()
@@ -226,11 +226,11 @@ export default (server: Server) => {
       const { id } = req.params
       const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) {
-        throw Boom.badRequest("Job does not exists")
+        throw badRequest("Job does not exists")
       }
 
       if (job.offer_status === JOB_STATUS.ANNULEE) {
-        throw Boom.badRequest("Job is already canceled")
+        throw badRequest("Job is already canceled")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.ANNULEE } })
       return res.status(204).send()
@@ -248,14 +248,14 @@ export default (server: Server) => {
       const { id } = req.params
       const job = await getDbCollection("jobs_partners").findOne({ _id: id })
       if (!job) {
-        throw Boom.badRequest("Job does not exists")
+        throw badRequest("Job does not exists")
       }
       if (addExpirationPeriod(dayjs()).isSame(dayjs(job.offer_expiration), "day")) {
-        throw Boom.badRequest("Job is already extended up to two month")
+        throw badRequest("Job is already extended up to two month")
       }
 
       if (job.offer_status !== JOB_STATUS.ACTIVE) {
-        throw Boom.badRequest("Job cannot be extended as it is not active")
+        throw badRequest("Job cannot be extended as it is not active")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_expiration_date: addExpirationPeriod(dayjs()).toDate() } })
       return res.status(204).send()
@@ -380,7 +380,7 @@ export default (server: Server) => {
           return res.send(url)
         } catch (error) {
           sentryCaptureException(error)
-          throw Boom.internal("Une erreur est survenue lors de la génération du lien de téléchargement.")
+          throw internal("Une erreur est survenue lors de la génération du lien de téléchargement.")
         }
       } else {
         try {
@@ -389,7 +389,7 @@ export default (server: Server) => {
           return res.send(url)
         } catch (error) {
           sentryCaptureException(error)
-          throw Boom.internal("Une erreur est survenue lors de la génération du lien de téléchargement.")
+          throw internal("Une erreur est survenue lors de la génération du lien de téléchargement.")
         }
       }
     }

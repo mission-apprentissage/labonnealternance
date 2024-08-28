@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS } from "shared"
 import { ENTREPRISE } from "shared/constants"
@@ -30,7 +30,7 @@ const updateEntreprisesInfosInError = async () => {
     const { siret, _id } = entreprise
     try {
       if (!siret) {
-        throw Boom.internal("unexpected: no siret for entreprise", { id: entreprise._id })
+        throw internal("unexpected: no siret for entreprise", { id: entreprise._id })
       }
       const siretResponse = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
       await upsertEntrepriseData(siret, "script de reprise de données entreprise", siretResponse, false)
@@ -79,19 +79,19 @@ const updateRecruteursSiretInfosInError = async () => {
         const updatedRecruiter = await updateFormulaire(establishment_id, { ...entrepriseData, status: RECRUITER_STATUS.ACTIF })
         const { managed_by } = updatedRecruiter
         if (!managed_by) {
-          throw Boom.internal(`inattendu : managed_by vide`)
+          throw internal(`inattendu : managed_by vide`)
         }
         const managingUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
         if (!managingUser) {
-          throw Boom.internal(`inattendu : managingUser non trouvé pour _id=${managed_by}`)
+          throw internal(`inattendu : managingUser non trouvé pour _id=${managed_by}`)
         }
         const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
         if (!cfa) {
-          throw Boom.internal(`could not find cfa with siret=${cfa_delegated_siret}`)
+          throw internal(`could not find cfa with siret=${cfa_delegated_siret}`)
         }
         const role = await getDbCollection("rolemanagements").findOne({ user_id: managingUser._id, authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() })
         if (!role) {
-          throw Boom.internal(`could not find role with user_id=${managingUser._id} and authorized_id=${cfa._id}`)
+          throw internal(`could not find role with user_id=${managingUser._id} and authorized_id=${cfa._id}`)
         }
         if (getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED) {
           await Promise.all(

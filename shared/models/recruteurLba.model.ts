@@ -56,6 +56,11 @@ export default {
     [{ opco_short_name: 1 }, {}],
     [{ rome_codes: 1, size: 1 }, {}],
     [{ opco_url: 1 }, {}],
+
+    // Support API v2 by ROME code without location
+    [{ rome_codes: 1, last_update_at: -1 }, {}],
+    // Support API v2 without params
+    [{ last_update_at: -1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
