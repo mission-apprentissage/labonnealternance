@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { zRoutes } from "shared/index"
@@ -66,7 +66,7 @@ export default function (server: Server) {
       )
 
       if (!application) {
-        throw Boom.notFound()
+        throw notFound()
       }
 
       await sendMailToApplicant({

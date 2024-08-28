@@ -2337,6 +2337,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hapi/boom@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "@hapi/boom@npm:10.0.1"
+  dependencies:
+    "@hapi/hoek": ^11.0.2
+  checksum: c80f76e86386c65fb5e3f2aae489e82c318615b52c1462af913b1db3d05ebf1564336e2cd88f1ee79d66a8b6f48fa075089c617bfe93ad88e6e1a695d0cde499
+  languageName: node
+  linkType: hard
+
+"@hapi/hoek@npm:^11.0.2":
+  version: 11.0.4
+  resolution: "@hapi/hoek@npm:11.0.4"
+  checksum: 67dc9782a8235e066e3885352e40faa3c239621d7de29bfc88a72aba60eeb8df76b5c05d77962c734c8b0ef3fc7f818cc692689003d270a1b73ea98ba1508c5b
+  languageName: node
+  linkType: hard
+
 "@hapi/hoek@npm:^9.0.0, @hapi/hoek@npm:^9.3.0":
   version: 9.3.0
   resolution: "@hapi/hoek@npm:9.3.0"
@@ -4113,13 +4129,6 @@ __metadata:
     "@types/connect": "*"
     "@types/node": "*"
   checksum: 1e251118c4b2f61029cc43b0dc028495f2d1957fe8ee49a707fb940f86a9bd2f9754230805598278fe99958b49e9b7e66eec8ef6a50ab5c1f6b93e1ba2aaba82
-  languageName: node
-  linkType: hard
-
-"@types/boom@npm:^7.3.3":
-  version: 7.3.5
-  resolution: "@types/boom@npm:7.3.5"
-  checksum: cbf89fe8774db917b27386eb717c97eae3d36370c4be238f3e78bf53d094c5e8a4346e9e11d7e80ccf5bbbcb503bccfb3a3da9314f0c437e6333a51b471ddf7e
   languageName: node
   linkType: hard
 
@@ -5944,15 +5953,6 @@ __metadata:
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
-  languageName: node
-  linkType: hard
-
-"boom@npm:^7.3.0":
-  version: 7.3.0
-  resolution: "boom@npm:7.3.0"
-  dependencies:
-    hoek: 6.x.x
-  checksum: 86d22bef321d3907a5a8f9188e3004efd1bf9e4aff21e358e3a2a8061a8ff5e442843cf5c43041ae5324496fc881562070c65040a59b7265ee84130fb1a8eae3
   languageName: node
   linkType: hard
 
@@ -10731,13 +10731,6 @@ __metadata:
   version: 1.0.8
   resolution: "hey-listen@npm:1.0.8"
   checksum: 6bad60b367688f5348e25e7ca3276a74b59ac5a09b0455e6ff8ab7d4a9e38cd2116c708a7dcd8a954d27253ce1d8717ec891d175723ea739885b828cf44e4072
-  languageName: node
-  linkType: hard
-
-"hoek@npm:6.x.x":
-  version: 6.1.3
-  resolution: "hoek@npm:6.1.3"
-  checksum: d0af183df1b710290de440142d3650268ab2402c0f6cc28de044fc806a78ea5b91ed763ccffc2306204c1191724e80610c11dc4d7c259af55ad87ff9613abfec
   languageName: node
   linkType: hard
 
@@ -18200,6 +18193,7 @@ __metadata:
     "@fastify/rate-limit": ^9.0.1
     "@fastify/swagger": ^8.10.1
     "@fastify/swagger-ui": ^1.9.3
+    "@hapi/boom": ^10.0.1
     "@immobiliarelabs/fastify-sentry": ^7.1.1
     "@sentry/integrations": ^7.72.0
     "@sentry/node": ^7.72.0
@@ -18224,7 +18218,6 @@ __metadata:
     axios: ^1.7.4
     axios-cache-interceptor: ^1.5.3
     basic-ftp: ^5.0.3
-    boom: ^7.3.0
     bson: ^6.7.0
     bunyan: ^1.8.15
     bunyan-slack: ^0.0.10
@@ -18357,7 +18350,6 @@ __metadata:
   dependencies:
     "@asteasolutions/zod-to-openapi": ^5.5.0
     "@fastify/swagger": ^8.11.0
-    "@types/boom": ^7.3.3
     bson: ^6.7.0
     dayjs: ^1.11.10
     eslint-plugin-zod: ^1.4.0

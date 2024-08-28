@@ -1,6 +1,5 @@
+import { internal } from "@hapi/boom"
 import axios from "axios"
-import Boom from "boom"
-
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import config from "../../../config"
 import { CertificationAPIApprentissage } from "../../queryValidator.service.types"

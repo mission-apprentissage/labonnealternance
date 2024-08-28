@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { IGeoPoint, IReferentielCommune } from "shared/models"
 
 import { getCommuneParCodeDepartement, getDepartements, IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
@@ -41,7 +41,7 @@ export async function getNearestCommuneByGeoPoint(geo: IGeoPoint): Promise<IRefe
   })
 
   if (!commune) {
-    throw Boom.internal("No commune found for this point", { geo })
+    throw internal("No commune found for this point", { geo })
   }
 
   return commune
