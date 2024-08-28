@@ -166,6 +166,12 @@ program.command("recreate:indexes").description("Recreate MongoDB indexes").opti
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
+  .command("remove:duplicates:recruiters")
+  .description("Remove duplicate recruiters based on SIRET and EMAIL")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("remove:duplicates:recruiters"))
+
+program
   .command("lbajobs:export:s3")
   .description("Export LBA jobs to JSON files on S3")
   .option("-q, --queued", "Run job asynchronously", false)

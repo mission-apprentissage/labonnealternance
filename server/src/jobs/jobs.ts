@@ -50,6 +50,7 @@ import { fixJobExpirationDate } from "./recruiters/fixJobExpirationDateJob"
 import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidationJob"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
+import { removeDuplicateRecruiters } from "./recruiters/removeDuplicatesRecruiters"
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
@@ -210,6 +211,9 @@ export async function setupJobProcessor() {
           },
         },
     jobs: {
+      "remove:duplicates:recruiters": {
+        handler: async () => removeDuplicateRecruiters(),
+      },
       "poc:romeo": {
         handler: async () => pocRomeo(),
       },
