@@ -99,7 +99,7 @@ export default {
     [{ establishment_siret: 1 }, {}],
     [{ cfa_delegated_siret: 1 }, {}],
     [{ geopoint: "2dsphere", status: 1 }, {}],
-    [{ email: 1 }, {}],
+    [{ email: 1 }, { unique: true }],
     [{ establishment_enseigne: 1 }, {}],
 
     // Support API v2 request (by ROME without location)
