@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, internal } from "@hapi/boom"
 import { Document, Filter, ObjectId } from "mongodb"
 import { IJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants"
@@ -335,7 +335,7 @@ export const getLbaJobByIdV2 = async ({ id, caller }: { id: string; caller?: str
     const rawJob = await getOffreAvecInfoMandataire(id)
 
     if (!rawJob) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     const applicationCountByJob = await getApplicationByJobCount([id])
@@ -570,7 +570,7 @@ const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise
   if (recruiter.is_delegated && recruiter.cfa_delegated_siret) {
     const { managed_by } = recruiter
     if (!managed_by) {
-      throw Boom.internal(`managed_by est manquant pour le recruiter avec id=${recruiter._id}`)
+      throw internal(`managed_by est manquant pour le recruiter avec id=${recruiter._id}`)
     }
 
     const [cfa, cfaUser] = await Promise.all([
@@ -579,10 +579,10 @@ const getLbaJobContactInfo = async (recruiter: IJobResult["recruiter"]): Promise
     ])
 
     if (!cfa) {
-      throw Boom.internal(`inattendu: cfa introuvable avec le siret ${recruiter.cfa_delegated_siret}`)
+      throw internal(`inattendu: cfa introuvable avec le siret ${recruiter.cfa_delegated_siret}`)
     }
     if (!cfaUser) {
-      throw Boom.internal(`le user cfa est introuvable pour le recruiter avec id=${recruiter._id}`)
+      throw internal(`le user cfa est introuvable pour le recruiter avec id=${recruiter._id}`)
     }
 
     return {

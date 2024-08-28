@@ -1,7 +1,7 @@
 import { createReadStream } from "fs"
 import querystring from "querystring"
 
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
 import FormData from "form-data"
 import { IRomeoApiResponse } from "shared/models/cacheRomeo.model"
@@ -67,7 +67,7 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
 
     const validation = ZFTApiToken.safeParse(response.data)
     if (!validation.success) {
-      throw Boom.internal("inattendu: FT api token format non valide", { error: validation.error })
+      throw internal("inattendu: FT api token format non valide", { error: validation.error })
     }
 
     await updateFranceTravailTokenInDB({ access_type: access, access_token: validation.data.access_token })
@@ -75,7 +75,7 @@ export const getFranceTravailTokenFromAPI = async (access: IAccessParams): Promi
     return validation.data.access_token
   } catch (error: any) {
     sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    throw Boom.internal("impossible d'obtenir un token pour l'API france travail")
+    throw internal("impossible d'obtenir un token pour l'API france travail")
   }
 }
 

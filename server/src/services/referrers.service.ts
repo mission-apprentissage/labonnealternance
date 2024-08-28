@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest } from "@hapi/boom"
 import { ReferrerObject, referrers } from "shared/constants/referers"
 
 function isReferrer(name: string): name is keyof typeof referrers {
@@ -6,10 +6,10 @@ function isReferrer(name: string): name is keyof typeof referrers {
 }
 
 export function getReferrerByKeyName(name: string | null | undefined): ReferrerObject {
-  if (!name) throw Boom.badRequest("Referrer introuvable.")
+  if (!name) throw badRequest("Referrer introuvable.")
   const upperName = name.toUpperCase()
   if (!isReferrer(upperName)) {
-    throw Boom.badRequest("Referrer introuvable.")
+    throw badRequest("Referrer introuvable.")
   }
   const referrerFound = referrers[upperName]
   return referrerFound

@@ -1,7 +1,7 @@
 import { setTimeout } from "timers/promises"
 
+import { badRequest, notFound } from "@hapi/boom"
 import distance from "@turf/distance"
-import Boom from "boom"
 import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
@@ -374,10 +374,10 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
     const job = await getFtJob(id)
 
     if (job.status === 204 || job.data === "") {
-      throw Boom.notFound()
+      throw notFound()
     }
     if (job.status === 400) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     const ftJob = transformFtJob({ job: job.data })
@@ -406,10 +406,10 @@ export const getFtJobFromIdV2 = async ({ id, caller }: { id: string; caller: str
     const job = await getFtJob(id)
 
     if (job.status === 204 || job.data === "") {
-      throw Boom.notFound()
+      throw notFound()
     }
     if (job.status === 400) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     const ftJob = transformFtJob({ job: job.data })
