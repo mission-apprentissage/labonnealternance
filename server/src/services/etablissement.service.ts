@@ -681,6 +681,7 @@ export const entrepriseOnboardingWorkflow = {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret })
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
+    // Faut-il rajouter un contrôle sur l'existance du couple email/siret dans la collection recruiters ?
     if (await emailHasActiveRole(formatedEmail)) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
