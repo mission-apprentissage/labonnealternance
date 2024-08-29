@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest } from "boom"
 import { Filter } from "mongodb"
 import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, parseEnum } from "shared"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, TRAINING_CONTRACT_TYPE } from "shared/constants"
@@ -458,7 +458,7 @@ async function resolveQuery(query: IJobOpportunityGetQuery): Promise<IJobOpportu
     const rncpRomes = await getRomesFromRncp(query.rncp, true)
 
     if (rncpRomes == null) {
-      throw Boom.badRequest("Cannot find an active Certification for the given RNCP", { rncp: query.rncp })
+      throw badRequest("Cannot find an active Certification for the given RNCP", { rncp: query.rncp })
     }
 
     romeCriteria.push(...rncpRomes)

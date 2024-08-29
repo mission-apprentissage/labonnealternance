@@ -1,6 +1,6 @@
 import { generateFtJobFixture } from "@tests/fixtures/ftJobs.fixture"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import Boom from "boom"
+import { internal } from "boom"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
@@ -380,7 +380,7 @@ describe("findJobsOpportunities", () => {
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
-      ).rejects.toThrowError(Boom.internal("Erreur lors de la récupération des informations de certification"))
+      ).rejects.toThrowError(internal("Erreur lors de la récupération des informations de certification"))
     })
 
     it("should throw bad request when rncp code is not found", async () => {
@@ -400,7 +400,7 @@ describe("findJobsOpportunities", () => {
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
-      ).rejects.toThrowError(Boom.internal("Cannot find an active Certification for the given RNCP"))
+      ).rejects.toThrowError(internal("Cannot find an active Certification for the given RNCP"))
 
       expect(scopeApiAlternance.isDone()).toBeTruthy()
     })
@@ -422,7 +422,7 @@ describe("findJobsOpportunities", () => {
           },
           new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
         )
-      ).rejects.toThrowError(Boom.internal("Cannot find an active Certification for the given RNCP"))
+      ).rejects.toThrowError(internal("Cannot find an active Certification for the given RNCP"))
 
       expect(scopeApiAlternance.isDone()).toBeTruthy()
     })
