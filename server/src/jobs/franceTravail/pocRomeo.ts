@@ -1,4 +1,4 @@
-import { IRomeoPayload, getRomeoPredictions } from "../../common/apis/FranceTravail"
+import { IRomeoPayload, getRomeoPredictions } from "../../common/apis/franceTravail/franceTravail"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 
 type MainObject = {

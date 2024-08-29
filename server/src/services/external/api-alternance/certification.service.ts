@@ -1,5 +1,5 @@
+import { internal } from "@hapi/boom"
 import axios from "axios"
-import { internal } from "boom"
 
 import { sentryCaptureException } from "../../../common/utils/sentryUtils"
 import config from "../../../config"

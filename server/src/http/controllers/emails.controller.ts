@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { forbidden } from "@hapi/boom"
 import { zRoutes } from "shared/index"
 
 import config from "@/config"
@@ -22,7 +22,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       if (req.query.apiKey !== config.smtp.brevoWebhookApiKey) {
-        throw Boom.forbidden()
+        throw forbidden()
       }
 
       await processWebhookEvent(req.body)
@@ -38,7 +38,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       if (req.query.apiKey !== config.smtp.brevoWebhookApiKey) {
-        throw Boom.forbidden()
+        throw forbidden()
       }
 
       await processHardBounceWebhookEvent(req.body)
