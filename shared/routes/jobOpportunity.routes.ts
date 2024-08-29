@@ -2,16 +2,38 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { zDiplomaEuropeanLevel, ZJobsPartnersOfferApi, ZJobsPartnersRecruiterApi } from "../models/jobsPartners.model"
 
-export const ZJobOpportunityGetQuery = z.object({
-  latitude: extensions.latitude(),
-  longitude: extensions.longitude(),
-  radius: z.number().min(0).max(200).default(30),
-  diplomaLevel: zDiplomaEuropeanLevel.optional(),
-  romes: extensions.romeCodeArray().optional(),
-  rncp: extensions.rncpCode().optional(),
-})
+export const ZJobOpportunityGetQuery = z
+  .object({
+    latitude: extensions.latitude().nullable().default(null),
+    longitude: extensions.longitude().nullable().default(null),
+    radius: z.number().min(0).max(200).default(30),
+    diplomaLevel: zDiplomaEuropeanLevel.optional(),
+    romes: extensions.romeCodeArray().nullable().default(null),
+    rncp: extensions.rncpCode().nullable().default(null),
+  })
+  .superRefine((data, ctx) => {
+    if (data.longitude == null && data.latitude != null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["longitude"],
+        message: "longitude is required when latitude is provided",
+      })
+    }
+
+    if (data.longitude != null && data.latitude == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["latitude"],
+        message: "latitude is required when longitude is provided",
+      })
+    }
+  })
 
 export type IJobOpportunityGetQuery = z.output<typeof ZJobOpportunityGetQuery>
+
+export type IJobOpportunityGetQueryResolved = Omit<IJobOpportunityGetQuery, "latitude" | "longitude" | "radius" | "rncp"> & {
+  geo: { latitude: number; longitude: number; radius: number } | null
+}
 
 export const ZJobsOpportunityResponse = z.object({
   jobs: z.array(ZJobsPartnersOfferApi),

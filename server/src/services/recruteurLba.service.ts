@@ -1,5 +1,5 @@
-import Boom from "boom"
-import { Filter, ObjectId } from "mongodb"
+import { badRequest, internal, notFound } from "@hapi/boom"
+import { Document, Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, IApplication, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -160,29 +160,34 @@ const transformCompanies = ({
 }
 
 type IRecruteursLbaSearchParams = {
-  romes?: string[]
-  latitude: number
-  longitude: number
-  radius: number
+  geo: { latitude: number; longitude: number; radius: number } | null
+  romes: string[] | null
 }
 
-export const getRecruteursLbaFromDB = async ({ radius = 10, romes, latitude, longitude }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
+export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
   const query: Filter<ILbaCompany> = {}
 
   if (romes) {
     query.rome_codes = { $in: romes }
   }
 
+  const filterStages: Document[] =
+    geo === null
+      ? [{ $match: query }, { $sort: { last_update_at: -1 } }]
+      : [
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
+              distanceField: "distance",
+              maxDistance: geo.radius * 1000,
+              query,
+            },
+          },
+        ]
+
   return await getDbCollection("recruteurslba")
     .aggregate<ILbaCompany>([
-      {
-        $geoNear: {
-          near: { type: "Point", coordinates: [longitude, latitude] },
-          distanceField: "distance",
-          maxDistance: radius * 1000,
-          query,
-        },
-      },
+      ...filterStages,
       {
         $limit: 150,
       },
@@ -407,7 +412,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       application = await getDbCollection("applications").findOne({ company_siret: siret })
 
       if (!application) {
-        throw Boom.badRequest()
+        throw badRequest()
       }
     } else {
       await Promise.all([
@@ -478,13 +483,13 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
         return { enseigne: application.company_name, siret, phone: "", email: "", active: false }
       }
 
-      throw Boom.notFound("Société inconnue")
+      throw notFound("Société inconnue")
     }
   } catch (error: any) {
     if (error?.output?.statusCode === 404) {
       throw error
     }
     sentryCaptureException(error)
-    throw Boom.internal("Erreur de chargement des informations de la société")
+    throw internal("Erreur de chargement des informations de la société")
   }
 }

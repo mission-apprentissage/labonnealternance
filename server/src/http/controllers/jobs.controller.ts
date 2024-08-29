@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import { IJob, JOB_STATUS, zRoutes } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -211,11 +211,11 @@ export default (server: Server) => {
       const recruiter = await getOffre(jobId.toString())
 
       if (!recruiter) {
-        throw Boom.badRequest("Job does not exists")
+        throw badRequest("Job does not exists")
       }
 
       if (!recruiter.geo_coordinates) {
-        throw Boom.internal("geo_coordinates is empty", { jobId: recruiter._id })
+        throw internal("geo_coordinates is empty", { jobId: recruiter._id })
       }
 
       const [latitude = "", longitude = ""] = recruiter.geo_coordinates.split(",")
@@ -231,7 +231,7 @@ export default (server: Server) => {
       })
 
       if (!etablissements.length) {
-        throw Boom.notFound("No delegations found")
+        throw notFound("No delegations found")
       }
 
       const top10 = etablissements.slice(0, 10)
@@ -251,7 +251,7 @@ export default (server: Server) => {
       const jobExists = await getOffre(jobId.toString())
 
       if (!jobExists) {
-        throw Boom.badRequest("Job does not exists")
+        throw badRequest("Job does not exists")
       }
 
       const updatedRecruiter = await createJobDelegations({ jobId: jobId.toString(), etablissementCatalogueIds: req.body.establishmentIds })
@@ -272,11 +272,11 @@ export default (server: Server) => {
       const job = await getJob(jobId.toString())
 
       if (!job) {
-        throw Boom.badRequest("Job does not exists")
+        throw badRequest("Job does not exists")
       }
 
       if (job.job_status === JOB_STATUS.POURVUE) {
-        throw Boom.badRequest("Job is already provided")
+        throw badRequest("Job is already provided")
       }
 
       await provideOffre(jobId)
@@ -297,11 +297,11 @@ export default (server: Server) => {
       const job = await getJob(jobId.toString())
 
       if (!job) {
-        throw Boom.badRequest("Job does not exists")
+        throw badRequest("Job does not exists")
       }
 
       if (job.job_status === JOB_STATUS.ANNULEE) {
-        throw Boom.badRequest("Job is already canceled")
+        throw badRequest("Job is already canceled")
       }
 
       await cancelOffre(jobId)
@@ -322,15 +322,15 @@ export default (server: Server) => {
       const job = await getJob(jobId.toString())
 
       if (!job) {
-        throw Boom.badRequest("Job does not exists")
+        throw badRequest("Job does not exists")
       }
 
       if (addExpirationPeriod(dayjs()).isSame(dayjs(job.job_expiration_date), "day")) {
-        throw Boom.badRequest("Job is already extended up to a month")
+        throw badRequest("Job is already extended up to a month")
       }
 
       if (job.job_status !== JOB_STATUS.ACTIVE) {
-        throw Boom.badRequest("Job cannot be extended as it is not active")
+        throw badRequest("Job cannot be extended as it is not active")
       }
 
       await extendOffre(jobId)

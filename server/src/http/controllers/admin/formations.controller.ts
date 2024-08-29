@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest } from "@hapi/boom"
 import { zRoutes } from "shared/index"
 
 import { getCatalogueFormations } from "../../../services/catalogue.service"
@@ -21,7 +21,7 @@ export default (server: Server) => {
       const { search_item } = req.query
 
       if (!search_item) {
-        throw Boom.badRequest("Invalid search_item.")
+        throw badRequest("Invalid search_item.")
       }
 
       const searchItemDecoded = decodeURIComponent(search_item)

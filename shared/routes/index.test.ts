@@ -1,6 +1,7 @@
 import assert from "node:assert"
 
 import { describe, it } from "vitest"
+import { ZodEffects } from "zod"
 
 import { IRouteSchema, IRouteSchemaGet, IRouteSchemaWrite, IRoutesDef, ZResError } from "./common.routes"
 
@@ -43,7 +44,8 @@ describe("zRoutes", () => {
             for (const resourceAccess of resourceAccesses) {
               for (const [, access] of Object.entries(resourceAccess)) {
                 const zodInputShape = access.type === "params" ? typedDef.params : typedDef.querystring
-                assert.notEqual(zodInputShape?.shape?.[access.key], undefined, `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`)
+                const zodInputShapeObj = zodInputShape instanceof ZodEffects ? zodInputShape.innerType() : zodInputShape
+                assert.notEqual(zodInputShapeObj?.shape?.[access.key], undefined, `${method} ${path} ${resourceType}.${access.type}.${access.key}: does not exists`)
               }
             }
           }

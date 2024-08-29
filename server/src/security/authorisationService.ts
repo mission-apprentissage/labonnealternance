@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { forbidden, internal } from "@hapi/boom"
 import { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
@@ -53,13 +53,13 @@ const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<Recr
   if (cfa_delegated_siret) {
     const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
     if (!cfa) {
-      throw Boom.internal(`could not find cfa for recruiter with id=${recruiter._id}`)
+      throw internal(`could not find cfa for recruiter with id=${recruiter._id}`)
     }
     return { recruiter, type: CFA, cfa }
   } else {
     const entreprise = await getDbCollection("entreprises").findOne({ siret: establishment_siret })
     if (!entreprise) {
-      throw Boom.internal(`could not find entreprise for recruiter with id=${recruiter._id}`)
+      throw internal(`could not find entreprise for recruiter with id=${recruiter._id}`)
     }
     return { recruiter, type: ENTREPRISE, entreprise }
   }
@@ -301,7 +301,7 @@ function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, 
 
 export async function authorizationMiddleware<S extends Pick<IRouteSchema, "method" | "path"> & WithSecurityScheme>(schema: S, req: IRequest) {
   if (!schema.securityScheme) {
-    throw Boom.internal(`authorizationMiddleware: route doesn't have security scheme`, { method: schema.method, path: schema.path })
+    throw internal(`authorizationMiddleware: route doesn't have security scheme`, { method: schema.method, path: schema.path })
   }
 
   const requestedAccess = schema.securityScheme.access
@@ -321,10 +321,10 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
   if (userType === "IUser2") {
     const user = userWithType.value
     if (!isUserEmailChecked(user)) {
-      throw Boom.forbidden("l'email doit être validé")
+      throw forbidden("l'email doit être validé")
     }
     if (isUserDisabled(user)) {
-      throw Boom.forbidden("user désactivé")
+      throw forbidden("user désactivé")
     }
     const { _id } = user
     grantedRoles = await getGrantedRoles(_id.toString())
@@ -333,12 +333,12 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       return
     }
     if (!grantedRoles.length) {
-      throw Boom.forbidden("aucun role")
+      throw forbidden("aucun role")
     }
   }
 
   if (requestedAccess === "admin") {
-    throw Boom.forbidden("admin required")
+    throw forbidden("admin required")
   }
 
   const resources = await getResources(schema, req)
@@ -357,17 +357,17 @@ export async function authorizationMiddleware<S extends Pick<IRouteSchema, "meth
       opcos: opco ? [opco] : [],
     }
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
-      throw Boom.forbidden("non autorisé")
+      throw forbidden("non autorisé")
     }
   } else if (userType === "IUser2") {
     const { _id } = userWithType.value
     const userAccess: ComputedUserAccess = getComputedUserAccess(_id.toString(), grantedRoles)
     if (!isAuthorized(requestedAccess, userAccess, resources)) {
-      throw Boom.forbidden("non autorisé")
+      throw forbidden("non autorisé")
     }
   } else if (userType === "IApiApprentissage") {
     if (schema.securityScheme.access !== null) {
-      throw Boom.forbidden("access non autorisé")
+      throw forbidden("access non autorisé")
     }
     // dans le futur, la gestion de droits du client api apprentissage sera ici
   } else {

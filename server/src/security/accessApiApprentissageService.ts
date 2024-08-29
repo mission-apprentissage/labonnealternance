@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { forbidden, isBoom, unauthorized } from "@hapi/boom"
 import jwt from "jsonwebtoken"
 import { z } from "zod"
 
@@ -25,30 +25,30 @@ export const parseApiApprentissageToken = (jwtToken: string): ApiApprentissageTo
     })
     const parseResult = ZApiApprentissageTokenData.safeParse(payload)
     if (!parseResult.success) {
-      throw Boom.forbidden("Payload doesn't match expected schema")
+      throw forbidden("Payload doesn't match expected schema")
     }
     return parseResult.data
   } catch (err: unknown) {
     if (err instanceof TokenExpiredError) {
-      const e = Boom.forbidden("JWT expired")
+      const e = forbidden("JWT expired")
       e.cause = err
       throw e
     }
 
     if (err instanceof JsonWebTokenError) {
       logger.warn("invalid jwt token", jwtToken, err)
-      const e = Boom.forbidden("Invalid JWT token")
+      const e = forbidden("Invalid JWT token")
       e.cause = err
       throw e
     }
 
-    if (err instanceof Error && Boom.isBoom(err)) {
+    if (err instanceof Error && isBoom(err)) {
       sentryCaptureException(err)
       throw err
     }
 
     sentryCaptureException(err)
-    const e = Boom.unauthorized()
+    const e = unauthorized()
     e.cause = err
     throw e
   }
