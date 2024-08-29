@@ -52,7 +52,7 @@ describe("helloWorkJobToJobsPartners", () => {
         ["_id", "created_at"]
       )
     ).toEqual({
-      partner: "Hellowork",
+      partner: "Hello work",
       partner_job_id: "73228597",
       contract_start: new Date("2024-12-01T00:00:00.000+01:00"),
       contract_type: ["Apprentissage", "Professionnalisation"],
