@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -82,7 +82,7 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
 
   const roleType = role.authorized_type === AccessEntityType.OPCO ? OPCO : role.authorized_type === AccessEntityType.ADMIN ? ADMIN : null
   const type = roleType ?? organismeType ?? null
-  if (!type) throw Boom.internal("unexpected: no type found")
+  if (!type) throw internal("unexpected: no type found")
   const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme ?? {}
   let entrepriseFields = {}
   if (organisme && "opco" in organisme) {
@@ -243,7 +243,7 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
     }
   )
   if (!newUser) {
-    throw Boom.badRequest("user not found")
+    throw badRequest("user not found")
   }
   await getDbCollection("recruiters").updateMany(
     { "jobs.managed_by": userId.toString() },
@@ -274,7 +274,7 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]): IUserStatus
   const sortedArray = [...stateArray].sort((a, b) => new Date(a?.date ?? 0).valueOf() - new Date(b?.date ?? 0).valueOf())
   const lastValidationEvent = sortedArray.at(-1)
   if (!lastValidationEvent) {
-    throw Boom.internal("no status found in status array")
+    throw internal("no status found in status array")
   }
   return lastValidationEvent.status
 }
@@ -290,7 +290,7 @@ export const setEntrepriseInError = async (entrepriseId: IEntreprise["_id"], rea
 export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reason: string, status: EntrepriseStatus) => {
   const entreprise = await getDbCollection("entreprises").findOne({ _id: entrepriseId })
   if (!entreprise) {
-    throw Boom.internal(`could not find entreprise with id=${entrepriseId}`)
+    throw internal(`could not find entreprise with id=${entrepriseId}`)
   }
   const lastStatus = getLastStatusEvent(entreprise.status)?.status
   if (lastStatus === status && status === EntrepriseStatus.VALIDE) return
@@ -347,7 +347,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   const { email, first_name, last_name } = user
   const role = await getDbCollection("rolemanagements").findOne({ user_id: user._id, authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] } })
   if (!role) {
-    throw Boom.internal(`inattendu : pas de role pour user id=${user._id}`)
+    throw internal(`inattendu : pas de role pour user id=${user._id}`)
   }
   const isCfa = role.authorized_type === AccessEntityType.CFA
   let organization
@@ -357,7 +357,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
     organization = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id) })
   }
   if (!organization) {
-    throw Boom.internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
+    throw internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }
   const recruiter = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString() })
   const hasJobs = Boolean(recruiter?.jobs.length)

@@ -1,7 +1,7 @@
 import querystring from "node:querystring"
 
+import { notFound } from "@hapi/boom"
 import axios, { AxiosInstance } from "axios"
-import Boom from "boom"
 import { got } from "got"
 import { sortBy } from "lodash-es"
 import { ObjectId } from "mongodb"
@@ -321,7 +321,7 @@ export const getRomesFromCatalogue = async ({
   const result = { romes: [...romes] }
 
   if (!result.romes.length) {
-    throw Boom.notFound("No training found")
+    throw notFound("No training found")
   }
   return result
 }

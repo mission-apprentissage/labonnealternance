@@ -1,17 +1,19 @@
+import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
-import { IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/internalJobs.types"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 
 import { getLoggerWithContext } from "../common/logger"
+import { getDatabase } from "../common/utils/mongodbUtils"
+import config from "../config"
 
 import anonymizeOldAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import anonymizeOldApplications from "./anonymization/anonymizeOldApplications"
 import { anonimizeUsers } from "./anonymization/anonymizeUserRecruteurs"
+import { anonymizeOldUsers } from "./anonymization/anonymizeUsers"
 import fixApplications from "./applications/fixApplications"
 import { processApplications } from "./applications/processApplications"
-import { cronsInit, cronsScheduler } from "./crons_actions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
@@ -22,30 +24,14 @@ import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCat
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { pocRomeo } from "./franceTravail/pocRomeo"
-import { addJob, executeJob } from "./jobs_actions"
-import { createApiUser } from "./lba_recruteur/api/createApiUser"
-import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
-import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
-import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
-import { fixJobExpirationDate } from "./lba_recruteur/formulaire/fixJobExpirationDate"
-import { fixJobType } from "./lba_recruteur/formulaire/fixJobType"
-import { fixRecruiterDataValidation } from "./lba_recruteur/formulaire/fixRecruiterDataValidation"
-import { repiseGeocoordinates } from "./lba_recruteur/formulaire/misc/repriseGeocoordinates"
-import { updateAddressDetailOnRecruitersCollection } from "./lba_recruteur/formulaire/misc/updateAddressDetailOnRecruitersCollection"
-import { updateMissingStartDate } from "./lba_recruteur/formulaire/misc/updateMissingStartDate"
-import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
-import { importReferentielOpcoFromConstructys } from "./lba_recruteur/opco/constructys/constructysImporter"
-import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
-import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
 import { importHelloWork } from "./offrePartenaire/importHelloWork"
+import { importKelio } from "./offrePartenaire/importKelio"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
-import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
-import { anonymizeOldUsers } from "./rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
@@ -58,339 +44,373 @@ import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
+import { cancelOfferJob } from "./recruiters/cancelOfferJob"
+import { createApiUser } from "./recruiters/createApiUser"
+import { disableApiUser } from "./recruiters/disableApiUser"
+import { fixJobExpirationDate } from "./recruiters/fixJobExpirationDateJob"
+import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidationJob"
+import { opcoReminderJob } from "./recruiters/opcoReminderJob"
+import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
+import { resetApiKey } from "./recruiters/resetApiKey"
+import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
+import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import updateGeoLocations from "./recruteurLba/updateGeoLocations"
 import updateOpcoCompanies from "./recruteurLba/updateOpcoCompanies"
 import updateLbaCompanies from "./recruteurLba/updateRecruteurLba"
-import { importReferentielRome } from "./seed/referentielRome/referentielRome"
+import { importReferentielRome } from "./referentielRome/referentielRome"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
 
-const logger = getLoggerWithContext("script")
-
-export const CronsMap = {
-  "Create offre collection for metabase": {
-    cron_string: "55 0 * * *",
-    handler: () => addJob({ name: "metabase:jobs:collection", payload: {} }),
-  },
-  "Cancel lba recruteur expired offers": {
-    cron_string: "15 0 * * *",
-    handler: () => addJob({ name: "formulaire:annulation", payload: {} }),
-  },
-  // "Send offer reminder email at J+7": {
-  //   cron_string: "20 0 * * *",
-  //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "7" } }),
-  // },
-  // "Send offer reminder email at J+1": {
-  //   cron_string: "25 0 * * *",
-  //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
-  // },
-  "Send reminder to OPCO about awaiting validation users": {
-    cron_string: "30 0 * * 1,3,5",
-    handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
-  },
-  "Send CSV offers to France Travail": {
-    cron_string: "30 5 * * *",
-    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: "1" }, productionOnly: true }),
-  },
-  "Mise à jour des recruteurs en erreur": {
-    cron_string: "10 0 * * *",
-    handler: () => addJob({ name: "siret:inError:update", payload: {} }),
-  },
-  "Active tous les établissements qui ont souscrits à l'opt-out.": {
-    cron_string: "50 0 * * *",
-    handler: () => addJob({ name: "etablissement:formations:activate:opt-out", payload: {} }),
-  },
-  "Invite les établissements (via email gestionnaire) à l'opt-out.": {
-    cron_string: "0 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:opt-out", payload: {} }),
-  },
-  "Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
-    cron_string: "0 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:parcoursup", payload: {} }),
-  },
-  "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup).": {
-    cron_string: "30 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:follow-up", payload: {} }),
-  },
-  "Récupère la liste de toutes les formations du Catalogue et les enregistre en base de données.": {
-    cron_string: "45 2 * * *",
-    handler: () => addJob({ name: "etablissements:formations:sync", payload: {} }),
-  },
-  "Suppression des etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
-    cron_string: "30 3 * * *",
-    handler: () => addJob({ name: "remove:duplicates:etablissements", payload: {} }),
-  },
-  "Re-synchronise les referres manquant dans la collection ETFA": {
-    cron_string: "10 3 * * *",
-    handler: () => addJob({ name: "etablissements:formations:inverted:sync", payload: {} }),
-  },
-  "Synchronise les dates des etablissements": {
-    cron_string: "0 5 * * *",
-    handler: () => addJob({ name: "sync:etablissement:dates", payload: {} }),
-  },
-  "Historisation des formations éligibles à la prise de rendez-vous.": {
-    cron_string: "55 2 * * *",
-    handler: () => addJob({ name: "catalogue:trainings:appointments:archive:eligible", payload: {} }),
-  },
-  "Anonimisation des prises de rendez-vous de plus d'un an": {
-    cron_string: "10 0 1 * *",
-    handler: () => addJob({ name: "appointments:anonimize", payload: {} }),
-  },
-  "Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-    cron_string: "15 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:affelnet", payload: {} }),
-  },
-  "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet).": {
-    cron_string: "45 9 * * *",
-    handler: () => addJob({ name: "etablissement:invite:premium:affelnet:follow-up", payload: {} }),
-  },
-  "Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
-    cron_string: "45 23 * * 2",
-    handler: () => addJob({ name: "referentiel:onisep:import", payload: {} }),
-  },
-  "Mise à jour depuis le Catalogue des formations.": {
-    cron_string: "15 2 * * *",
-    handler: () => addJob({ name: "catalogue:trainings:sync", payload: {} }),
-  },
-  "Mise à jour des champs spécifiques de la collection formations catalogue.": {
-    cron_string: "30 2 * * *",
-    handler: () => addJob({ name: "catalogue:trainings:sync:extra", payload: {} }),
-  },
-  "Mise à jour des adresses emails bloquées.": {
-    cron_string: "5 0 * * *",
-    handler: () => addJob({ name: "brevo:blocked:sync", payload: {} }),
-  },
-  "Anonymise les candidatures de plus de un an.": {
-    cron_string: "10 0 * * *",
-    handler: () => addJob({ name: "applications:anonymize", payload: {} }),
-  },
-  "Géolocation de masse des sociétés issues de l'algo": {
-    cron_string: "0 5 * * 6",
-    handler: () => addJob({ name: "geo-locations:update", payload: {} }),
-  },
-  "Détermination des opcos des sociétés issues de l'algo": {
-    cron_string: "30 6 * * 6",
-    handler: () => addJob({ name: "opcos:update", payload: {} }),
-  },
-  "Mise à jour des sociétés issues de l'algo": {
-    cron_string: "0 5 * * 7",
-    handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true } }),
-  },
-  "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
-    cron_string: "5 1 * * *",
-    handler: () => addJob({ name: "users:anonimize", payload: {} }),
-  },
-  "Contrôle quotidien des candidatures": {
-    cron_string: "0 10-19/1 * * 1-5",
-    handler: () => addJob({ name: "control:applications", payload: {}, productionOnly: true }),
-  },
-  "Contrôle quotidien des prises de rendez-vous": {
-    cron_string: "0 11-19/2 * * 1-5",
-    handler: () => addJob({ name: "control:appointments", payload: {}, productionOnly: true }),
-  },
-  "Anonymisation des user recruteurs de plus de 2 ans": {
-    cron_string: "0 1 * * *",
-    handler: () => addJob({ name: "user-recruteurs:anonymize", payload: {} }),
-  },
-  "Anonymisation des appointments de plus de 1 an": {
-    cron_string: "30 1 * * *",
-    handler: () => addJob({ name: "anonymize:appointments", payload: {} }),
-  },
-  "Lancement du garbage collector": {
-    cron_string: "30 3 * * *",
-    handler: () => addJob({ name: "garbage-collector:run", payload: {} }),
-  },
-  "export des offres LBA sur S3": {
-    cron_string: "30 6 * * 1",
-    handler: () => addJob({ name: "lbajobs:export:s3", payload: {}, productionOnly: true }),
-  },
-  "Génération de la collection rolemanagement360": {
-    cron_string: "00 10,13,17 * * *",
-    handler: () => addJob({ name: "metabase:role-management:create", payload: {} }),
-  },
-  "Scan et envoi des candidatures": {
-    cron_string: "*/10 * * * *",
-    handler: () => addJob({ name: "send-applications", payload: { batchSize: 100 } }),
-  },
-  "Génération du token France Travail pour la récupération des offres": {
-    cron_string: "*/5 * * * *",
-    handler: () => addJob({ name: "francetravail:token-offre", payload: {} }),
-  },
-} satisfies Record<string, Omit<CronDef, "name">>
-
-export type CronName = keyof typeof CronsMap
-
-interface CronDef {
-  name: CronName
-  cron_string: string
-  handler: () => Promise<number>
-}
-
-export const CRONS: CronDef[] = Object.entries(CronsMap).map(([name, cronDef]) => ({ ...cronDef, name: name as CronName }))
-
-export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): Promise<number> {
-  return executeJob(job, async () => {
-    if (job.type === "cron_task") {
-      return CronsMap[job.name].handler()
-    }
-    switch (job.name) {
-      case "poc:romeo":
-        return pocRomeo()
-      case "francetravail:token-offre":
-        return generateFranceTravailAccess()
-      case "recreate:indexes":
-        return recreateIndexes()
-      case "lbajobs:export:s3":
-        return exportLbaJobsToS3()
-      case "sync:etablissement:dates":
-        return syncEtablissementDates()
-      case "remove:duplicates:etablissements":
-        return removeDuplicateEtablissements()
-      case "garbage-collector:run":
-        return runGarbageCollector()
-      case "anonymize:appointments":
-        return anonymizeOldAppointments()
-      case "control:applications":
-        return controlApplications()
-      case "control:appointments":
-        return controlAppointments()
-      case "recruiters:set-missing-job-start-date":
-        return updateMissingStartDate()
-      case "recruiters:get-missing-geocoordinates":
-        return repiseGeocoordinates()
-      case "recruiters:get-missing-address-detail":
-        return updateAddressDetailOnRecruitersCollection()
-      case "import:referentielrome":
-        return importReferentielRome()
-      case "api:user:create": {
-        const { nom, prenom, email, organization, scope } = job.payload
-        return createApiUser(nom, prenom, email, organization, scope)
-      }
-      case "api:user:reset":
-        return resetApiKey(job.payload?.email)
-      case "api:user:disable": {
-        const { email, state } = job.payload
-        return disableApiUser(email, state)
-      }
-      case "formulaire:relance": {
-        const { threshold } = job.payload
-        return relanceFormulaire(parseInt(threshold))
-      }
-      case "formulaire:annulation":
-        return annuleFormulaire()
-      case "metabase:role-management:create":
-        return createRoleManagement360()
-      case "metabase:jobs:collection":
-        return createJobsCollectionForMetabase()
-      case "opco:relance":
-        return relanceOpco()
-      case "pe:offre:export":
-        return exportToFranceTravail()
-      case "siret:inError:update":
-        return updateSiretInfosInError()
-      case "etablissement:formations:activate:opt-out":
-        return activateOptoutOnEtablissementAndUpdateReferrersOnETFA()
-      case "etablissement:invite:opt-out":
-        return inviteEtablissementToOptOut()
-      case "etablissement:invite:premium:parcoursup":
-        return inviteEtablissementParcoursupToPremium()
-      case "etablissement:invite:premium:affelnet":
-        return inviteEtablissementAffelnetToPremium()
-      case "etablissement:invite:premium:follow-up": {
-        const { bypassDate } = job.payload
-        return inviteEtablissementParcoursupToPremiumFollowUp(bypassDate)
-      }
-      case "etablissement:invite:premium:affelnet:follow-up": {
-        const { bypassDate } = job.payload
-        return inviteEtablissementAffelnetToPremiumFollowUp(bypassDate)
-      }
-      case "premium:activated:reminder":
-        return premiumActivatedReminder()
-      case "premium:invite:one-shot":
-        return premiumInviteOneShot()
-      case "etablissements:formations:sync":
-        return syncEtablissementsAndFormations()
-      case "appointments:anonimize":
-        return anonimizeAppointments()
-      case "users:anonimize":
-        return anonymizeOldUsers()
-      case "catalogue:trainings:appointments:archive:eligible":
-        return eligibleTrainingsForAppointmentsHistoryWithCatalogue()
-      case "referentiel:onisep:import":
-        return importReferentielOnisep()
-      case "catalogue:trainings:sync":
-        return importCatalogueFormationJob()
-      case "catalogue:trainings:sync:extra":
-        return updateParcoursupAndAffelnetInfoOnFormationCatalogue()
-      case "brevo:blocked:sync":
-        return updateBrevoBlockedEmails(job.payload)
-      case "applications:anonymize":
-        return anonymizeOldApplications()
-      case "user-recruteurs:anonymize":
-        return anonimizeUsers()
-      case "companies:update":
-        return updateLbaCompanies(job.payload)
-      case "geo-locations:update":
-        return updateGeoLocations(job.payload)
-      case "opcos:update":
-        return updateOpcoCompanies(job.payload)
-      case "domaines-metiers:update":
-        return updateDomainesMetiers()
-      case "domaines-metiers:file:update": {
-        const { filename, key } = job.payload
-        return updateDomainesMetiersFile({ filename, key })
-      }
-      case "diplomes-metiers:update":
-        return updateDiplomesMetiers()
-      case "recruiters:expiration-date:fix":
-        return fixJobExpirationDate()
-      case "recruiters:job-type:fix":
-        return fixJobType()
-      case "fix-applications":
-        return fixApplications()
-      case "recruiters:data-validation:fix":
-        return fixRecruiterDataValidation()
-      case "referentiel-opco:constructys:import": {
-        const { parallelism } = job.payload
-        return importReferentielOpcoFromConstructys(parseInt(parallelism))
-      }
-      case "anonymize-individual": {
-        const { collection, id } = job.payload
-        return anonymizeIndividual({ collection, id: new ObjectId(id) })
-      }
-      case "db:validate":
-        return validateModels()
-      case "db:obfuscate":
-        return obfuscateCollections()
-      case "migrations:up": {
-        await upMigration()
-        // Validate all documents after the migration
-        await addJob({ name: "db:validate", queued: true, payload: {} })
-        return
-      }
-      case "migrations:status": {
-        const pendingMigrations = await statusMigration()
-        console.info(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
-        return
-      }
-      case "migrations:create":
-        return createMigration(job.payload as any)
-      case "crons:init": {
-        await cronsInit()
-        return
-      }
-      case "crons:scheduler":
-        return cronsScheduler()
-      case "import-hellowork":
-        return importHelloWork()
-      case "send-applications": {
-        const { batchSize } = job.payload
-        return processApplications(batchSize ? parseInt(batchSize, 10) : 100)
-      }
-      default: {
-        logger.warn(`Job not found ${job.name}`)
-      }
-    }
+export async function setupJobProcessor() {
+  return initJobProcessor({
+    db: getDatabase(),
+    logger: getLoggerWithContext("script"),
+    crons: ["local", "preview", "pentest"].includes(config.env)
+      ? {}
+      : {
+          "Creation de la collection JOBS pour metabase": {
+            cron_string: "55 0 * * *",
+            handler: createJobsCollectionForMetabase,
+          },
+          "Annulation des offres expirées": {
+            cron_string: "15 0 * * *",
+            handler: cancelOfferJob,
+          },
+          // "Send offer reminder email at J+7": {
+          //   cron_string: "20 0 * * *",
+          //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "7" } }),
+          // },
+          // "Send offer reminder email at J+1": {
+          //   cron_string: "25 0 * * *",
+          //   handler: () => addJob({ name: "formulaire:relance", payload: { threshold: "1" } }),
+          // },
+          "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
+            cron_string: "30 0 * * 1,3,5",
+            handler: opcoReminderJob,
+          },
+          "Envoi des offres à France Travail": {
+            cron_string: "30 5 * * *",
+            handler: exportToFranceTravail,
+          },
+          "Mise à jour des recruteurs en erreur": {
+            cron_string: "10 0 * * *",
+            handler: updateSiretInfosInError,
+          },
+          "Active tous les établissements qui ont souscrits à l'opt-out": {
+            cron_string: "50 0 * * *",
+            handler: activateOptoutOnEtablissementAndUpdateReferrersOnETFA,
+          },
+          "Invite les établissements (via email gestionnaire) à l'opt-out": {
+            cron_string: "0 9 * * *",
+            handler: inviteEtablissementToOptOut,
+          },
+          "Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
+            cron_string: "0 9 * * *",
+            handler: inviteEtablissementParcoursupToPremium,
+          },
+          "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
+            cron_string: "30 9 * * *",
+            handler: () => inviteEtablissementParcoursupToPremiumFollowUp(),
+          },
+          "Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
+            cron_string: "15 9 * * *",
+            handler: inviteEtablissementAffelnetToPremium,
+          },
+          "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
+            cron_string: "45 9 * * *",
+            handler: () => inviteEtablissementAffelnetToPremiumFollowUp(),
+          },
+          "Synchronise les formations eligibles à la prise de rendez-vous": {
+            cron_string: "45 2 * * *",
+            handler: syncEtablissementsAndFormations,
+          },
+          "Supprime les etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
+            cron_string: "30 3 * * *",
+            handler: removeDuplicateEtablissements,
+          },
+          "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
+            cron_string: "0 5 * * *",
+            handler: syncEtablissementDates,
+          },
+          "Historisation des formations éligibles à la prise de rendez-vous": {
+            cron_string: "55 2 * * *",
+            handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
+          },
+          "Mise à jour de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
+            cron_string: "45 23 * * 2",
+            handler: importReferentielOnisep,
+          },
+          "Import des formations depuis le Catalogue RCO": {
+            cron_string: "15 2 * * *",
+            handler: importCatalogueFormationJob,
+          },
+          "Mise à jour des champs spécifiques de la collection formations catalogue": {
+            cron_string: "30 2 * * *",
+            handler: updateParcoursupAndAffelnetInfoOnFormationCatalogue,
+          },
+          "Mise à jour des adresses emails bloquées": {
+            cron_string: "5 0 * * *",
+            handler: () => updateBrevoBlockedEmails({}),
+          },
+          "Anonymise les candidatures de plus de un an": {
+            cron_string: "10 0 * * *",
+            handler: anonymizeOldApplications,
+          },
+          "Géolocation de masse des sociétés issues de l'algo": {
+            cron_string: "0 5 * * 6",
+            handler: () => updateGeoLocations({}),
+          },
+          "Détermination des opcos des sociétés issues de l'algo": {
+            cron_string: "30 6 * * 6",
+            handler: () => updateOpcoCompanies({}),
+          },
+          "Mise à jour des sociétés issues de l'algo": {
+            cron_string: "0 5 * * 7",
+            handler: () => updateLbaCompanies({ useAlgoFile: true, clearMongo: true }),
+          },
+          "Anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus de 1 an": {
+            cron_string: "5 1 * * *",
+            handler: anonymizeOldUsers,
+          },
+          "Contrôle quotidien des candidatures": {
+            cron_string: "0 10-19/1 * * 1-5",
+            handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(),
+          },
+          "Contrôle quotidien des prises de rendez-vous": {
+            cron_string: "0 11-19/2 * * 1-5",
+            handler: config.env === "production" ? () => controlAppointments() : () => Promise.resolve(),
+          },
+          "Anonymisation des user recruteurs de plus de 2 ans": {
+            cron_string: "0 1 * * *",
+            handler: anonimizeUsers,
+          },
+          "Anonymisation des appointments de plus de 1 an": {
+            cron_string: "30 1 * * *",
+            handler: anonymizeOldAppointments,
+          },
+          "Lancement du garbage collector": {
+            cron_string: "30 3 * * *",
+            handler: runGarbageCollector,
+          },
+          "export des offres LBA sur S3": {
+            cron_string: "30 6 * * 1",
+            handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(),
+          },
+          "Creation de la collection rolemanagement360": {
+            cron_string: "00 10,13,17 * * *",
+            handler: createRoleManagement360,
+          },
+          "Scan et envoi des candidatures": {
+            cron_string: "*/10 * * * *",
+            handler: () => processApplications(),
+          },
+          "Génération du token France Travail pour la récupération des offres": {
+            cron_string: "*/5 * * * *",
+            handler: generateFranceTravailAccess,
+          },
+        },
+    jobs: {
+      "poc:romeo": {
+        handler: async () => pocRomeo(),
+      },
+      "francetravail:token-offre": {
+        handler: async () => generateFranceTravailAccess(),
+      },
+      "recreate:indexes": {
+        handler: async () => recreateIndexes(),
+      },
+      "lbajobs:export:s3": {
+        handler: async () => exportLbaJobsToS3(),
+      },
+      "sync:etablissement:dates": {
+        handler: async () => syncEtablissementDates(),
+      },
+      "remove:duplicates:etablissements": {
+        handler: async () => removeDuplicateEtablissements(),
+      },
+      "garbage-collector:run": {
+        handler: async () => runGarbageCollector(),
+      },
+      "anonymize:appointments": {
+        handler: async () => anonymizeOldAppointments(),
+      },
+      "control:applications": {
+        handler: async () => controlApplications(),
+      },
+      "control:appointments": {
+        handler: async () => controlAppointments(),
+      },
+      "recruiters:set-missing-job-start-date": {
+        handler: async () => updateMissingStartDate(),
+      },
+      "import:referentielrome": {
+        handler: async () => importReferentielRome(),
+      },
+      "api:user:create": {
+        handler: async (job) => {
+          const { nom, prenom, email, organization, scope } = job.payload as any
+          await createApiUser(nom, prenom, email, organization, scope)
+          return
+        },
+      },
+      "api:user:reset": {
+        handler: async (job) => resetApiKey(job.payload?.email),
+      },
+      "api:user:disable": {
+        handler: async (job) => {
+          const { email, state } = job.payload as any
+          await disableApiUser(email, state)
+          return
+        },
+      },
+      "formulaire:relance": {
+        handler: async (job) => {
+          const { threshold } = job.payload as any
+          await recruiterOfferExpirationReminderJob(parseInt(threshold))
+          return
+        },
+      },
+      "formulaire:annulation": {
+        handler: async () => cancelOfferJob(),
+      },
+      "metabase:role-management:create": {
+        handler: async () => createRoleManagement360(),
+      },
+      "metabase:jobs:collection": {
+        handler: async () => createJobsCollectionForMetabase(),
+      },
+      "opco:relance": {
+        handler: async () => opcoReminderJob(),
+      },
+      "pe:offre:export": {
+        handler: async () => updateSiretInfosInError(),
+      },
+      "siret:inError:update": {
+        handler: async () => updateSiretInfosInError(),
+      },
+      "etablissement:formations:activate:opt-out": {
+        handler: async () => activateOptoutOnEtablissementAndUpdateReferrersOnETFA(),
+      },
+      "etablissement:invite:opt-out": {
+        handler: async () => inviteEtablissementToOptOut(),
+      },
+      "etablissement:invite:premium:parcoursup": {
+        handler: async () => inviteEtablissementParcoursupToPremium(),
+      },
+      "etablissement:invite:premium:affelnet": {
+        handler: async () => inviteEtablissementAffelnetToPremium(),
+      },
+      "etablissement:invite:premium:follow-up": {
+        handler: async (job) => inviteEtablissementParcoursupToPremiumFollowUp(job.payload?.bypassDate as any),
+      },
+      "etablissement:invite:premium:affelnet:follow-up": {
+        handler: async (job) => inviteEtablissementAffelnetToPremiumFollowUp(job.payload?.bypassDate as any),
+      },
+      "premium:activated:reminder": {
+        handler: async () => premiumActivatedReminder(),
+      },
+      "premium:invite:one-shot": {
+        handler: async () => premiumInviteOneShot(),
+      },
+      "etablissements:formations:sync": {
+        handler: async () => syncEtablissementsAndFormations(),
+      },
+      "users:anonimize": {
+        handler: async () => anonymizeOldUsers(),
+      },
+      "catalogue:trainings:appointments:archive:eligible": {
+        handler: async () => eligibleTrainingsForAppointmentsHistoryWithCatalogue(),
+      },
+      "referentiel:onisep:import": {
+        handler: async () => importReferentielOnisep(),
+      },
+      "catalogue:trainings:sync": {
+        handler: async () => importCatalogueFormationJob(),
+      },
+      "catalogue:trainings:sync:extra": {
+        handler: async () => updateParcoursupAndAffelnetInfoOnFormationCatalogue(),
+      },
+      "brevo:blocked:sync": {
+        handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
+      },
+      "applications:anonymize": {
+        handler: async () => anonymizeOldApplications(),
+      },
+      "user-recruteurs:anonymize": {
+        handler: async () => anonimizeUsers(),
+      },
+      "companies:update": {
+        handler: async (job) => updateLbaCompanies(job.payload as any),
+      },
+      "geo-locations:update": {
+        handler: async (job) => updateGeoLocations(job.payload as any),
+      },
+      "opcos:update": {
+        handler: async (job) => updateOpcoCompanies(job.payload as any),
+      },
+      "domaines-metiers:update": {
+        handler: async () => updateDomainesMetiers(),
+      },
+      "domaines-metiers:file:update": {
+        handler: async (job) => {
+          const { filename, key } = job.payload as any
+          await updateDomainesMetiersFile({ filename, key })
+          return
+        },
+      },
+      "diplomes-metiers:update": {
+        handler: async () => updateDiplomesMetiers(),
+      },
+      "recruiters:expiration-date:fix": {
+        handler: async () => fixJobExpirationDate(),
+      },
+      "fix-applications": {
+        handler: async () => fixApplications(),
+      },
+      "recruiters:data-validation:fix": {
+        handler: async () => fixRecruiterDataValidation(),
+      },
+      "anonymize-individual": {
+        handler: async (job) => {
+          const { collection, id } = job.payload as any
+          await anonymizeIndividual({ collection, id: new ObjectId(id) })
+          return
+        },
+      },
+      "db:validate": {
+        handler: async () => validateModels(),
+      },
+      "db:obfuscate": {
+        handler: async () => obfuscateCollections(),
+      },
+      "migrations:up": {
+        handler: async () => {
+          await upMigration()
+          // Validate all documents after the migration
+          await addJob({ name: "db:validate", queued: true, payload: {} })
+          return
+        },
+      },
+      "migrations:status": {
+        handler: async () => {
+          const pendingMigrations = await statusMigration()
+          console.info(`migrations-status=${pendingMigrations === 0 ? "synced" : "pending"}`)
+          return
+        },
+      },
+      "migrations:create": {
+        handler: async (job) => createMigration(job.payload as any),
+      },
+      "import-hellowork": {
+        handler: async () => importHelloWork(),
+      },
+      "import-kelio": {
+        handler: async () => importKelio(),
+      },
+      "send-applications": {
+        handler: async () => processApplications(),
+      },
+    },
   })
 }

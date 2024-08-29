@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { IReferentielCommune, zReferentielCommune } from "shared/models"
 import { z } from "zod"
 
@@ -28,7 +28,7 @@ export async function getCommuneParCodeInsee(insee: string): Promise<IGeoApiComm
       })
       return zGeoApiCommune.parse(data)
     } catch (error) {
-      const err = Boom.internal("Error while fetching commune by insee code", { insee })
+      const err = internal("Error while fetching commune by insee code", { insee })
       err.cause = error
       throw err
     }
@@ -52,7 +52,7 @@ export async function getDepartements(): Promise<IGeoApiDepartement[]> {
       })
       return z.array(zGeoApiDepartement).parse(data)
     } catch (error) {
-      const err = Boom.internal("Error while fetching departements")
+      const err = internal("Error while fetching departements")
       err.cause = error
       throw err
     }
@@ -70,7 +70,7 @@ export async function getCommuneParCodeDepartement(code: string): Promise<IGeoAp
       })
       return z.array(zGeoApiCommune).parse(data)
     } catch (error) {
-      const err = Boom.internal("Error while fetching communes by department code", { code })
+      const err = internal("Error while fetching communes by department code", { code })
       err.cause = error
       throw err
     }
