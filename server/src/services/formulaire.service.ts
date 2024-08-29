@@ -500,7 +500,7 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
       job.job_status = JOB_STATUS.ANNULEE
     })
 
-    await getDbCollection("recruiters").findOneAndUpdate(form._id, { $set: { ...form, updatedAt: new Date() } })
+    await getDbCollection("recruiters").findOneAndUpdate({ _id: form._id }, { $set: { ...form, updatedAt: new Date() } })
   })
 
   return true
