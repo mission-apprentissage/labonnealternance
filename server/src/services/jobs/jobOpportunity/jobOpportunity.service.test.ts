@@ -130,17 +130,17 @@ describe("findJobsOpportunities", () => {
   ]
   const partnerJobs: IJobsPartnersOfferPrivate[] = [
     generateJobsPartnersOfferPrivate({
-      offer_rome_code: ["M1602"],
+      offer_rome_codes: ["M1602"],
       workplace_geopoint: parisFixture.centre,
       offer_creation: new Date("2021-01-01"),
     }),
     generateJobsPartnersOfferPrivate({
-      offer_rome_code: ["M1602", "D1214"],
+      offer_rome_codes: ["M1602", "D1214"],
       workplace_geopoint: marseilleFixture.centre,
       offer_creation: new Date("2022-01-01"),
     }),
     generateJobsPartnersOfferPrivate({
-      offer_rome_code: ["D1212"],
+      offer_rome_codes: ["D1212"],
       workplace_geopoint: levalloisFixture.centre,
       offer_creation: new Date("2023-01-01"),
     }),
@@ -1123,7 +1123,7 @@ describe("findJobsOpportunities", () => {
       const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, () =>
         generateJobsPartnersOfferPrivate({
           workplace_geopoint: parisFixture.centre,
-          offer_rome_code: ["M1602"],
+          offer_rome_codes: ["M1602"],
         })
       )
       await getDbCollection("jobs_partners").insertMany(extraOffers)
@@ -1163,7 +1163,7 @@ describe("findJobsOpportunities", () => {
     it("should not include offer_multicast=false jobs", async () => {
       await getDbCollection("jobs_partners").insertOne(
         generateJobsPartnersOfferPrivate({
-          offer_rome_code: ["M1602"],
+          offer_rome_codes: ["M1602"],
           workplace_geopoint: parisFixture.centre,
           offer_multicast: false,
         })
@@ -1188,12 +1188,12 @@ describe("findJobsOpportunities", () => {
       beforeEach(async () => {
         await getDbCollection("jobs_partners").insertMany([
           generateJobsPartnersOfferPrivate({
-            offer_rome_code: ["M1602"],
+            offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
             offer_diploma_level: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
           }),
           generateJobsPartnersOfferPrivate({
-            offer_rome_code: ["M1602"],
+            offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
             offer_diploma_level: { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" },
           }),

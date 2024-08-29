@@ -26,13 +26,13 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     partner: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: null,
 
-    contract_start: null,
+    contract_start_date: null,
     contract_duration: null,
     contract_type: null,
     contract_remote: null,
 
     offer_title: "Une super offre d'alternance",
-    offer_rome_code: [],
+    offer_rome_codes: [],
     offer_description: "Attention il te faut une super motivation pour ce job",
     offer_diploma_level: null,
     offer_desired_skills: null,

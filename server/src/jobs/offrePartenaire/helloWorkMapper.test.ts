@@ -54,7 +54,7 @@ describe("helloWorkJobToJobsPartners", () => {
     ).toEqual({
       partner: "Hello work",
       partner_job_id: "73228597",
-      contract_start: new Date("2024-12-01T00:00:00.000+01:00"),
+      contract_start_date: new Date("2024-12-01T00:00:00.000+01:00"),
       contract_type: ["Apprentissage", "Professionnalisation"],
       contract_remote: "onsite",
       contract_duration: 12,
@@ -67,7 +67,7 @@ describe("helloWorkJobToJobsPartners", () => {
       offer_desired_skills: ["profile"],
       offer_access_conditions: null,
       offer_to_be_acquired_skills: null,
-      offer_rome_code: ["M1203"],
+      offer_rome_codes: ["M1203"],
       offer_creation: new Date("2024-07-05T22:14:56.000+02:00"),
       offer_expiration: null,
       offer_origin: null,
