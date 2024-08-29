@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto"
-
 import { ObjectId } from "bson"
 
 import { RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "../constants"
@@ -30,7 +28,7 @@ export function generateRecruiterFixture(data: RecruiterFixtureInput): IRecruite
     _id: new ObjectId(),
     establishment_id: "xxxx-xxxx-xxxx-xxxx",
     establishment_siret: "11000001500013",
-    email: `stages-${randomUUID()}@mail.com`,
+    email: "stages@mail.com",
     is_delegated: false,
     status: RECRUITER_STATUS.ACTIF,
     createdAt: new Date("2021-01-28T15:00:00.000Z"),
