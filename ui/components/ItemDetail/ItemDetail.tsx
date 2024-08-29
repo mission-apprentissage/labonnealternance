@@ -1,5 +1,5 @@
 import { assertUnreachable } from "@/../shared"
-import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
+import { Box, Flex, Text } from "@chakra-ui/react"
 import { useContext, useState } from "react"
 import { useQuery } from "react-query"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -14,6 +14,7 @@ import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { fetchTrainingDetails } from "../../services/fetchTrainingDetails"
 import ErrorMessage from "../ErrorMessage"
 
+import ItemDetailLoading from "./ItemDetailLoading"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { BuildSwipe, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getTags from "./ItemDetailServices/getTags"
@@ -161,14 +162,11 @@ const ItemDetail = ({ handleClose, handleSelectItem }) => {
           <ItemDetailCard selectedItem={selectedItem} />
         </Box>
       </Box>
-      <Box>
+      <Box margin="auto" maxWidth="700px">
         {hasError ? (
           <ErrorMessage message={hasError === "not_found" ? "Fiche introuvable" : "Une erreur s'est produite. Détail de la fiche momentanément indisponible"} />
         ) : (
-          <Flex alignItems="center" m={4} color={kindColor}>
-            Chargement des informations en cours
-            <Spinner ml={3} />
-          </Flex>
+          <ItemDetailLoading item={selectedItem} />
         )}
       </Box>
     </Box>
