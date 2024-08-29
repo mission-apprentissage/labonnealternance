@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto"
 
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { IUser } from "shared"
 import { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
@@ -25,7 +25,7 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
   )
   const savedUser = await getDbCollection("users").findOne({ email })
   if (!savedUser) {
-    throw Boom.internal("inattendu : user non sauvegardé")
+    throw internal("inattendu : user non sauvegardé")
   }
 
   return {
@@ -63,7 +63,7 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   recruiters.forEach((recruiter) => {
     recruiter.jobs.forEach((job) => {
       if (!job.managed_by) {
-        throw Boom.internal(`inattendu: managed_by vide pour le job avec id=${job._id}`)
+        throw internal(`inattendu: managed_by vide pour le job avec id=${job._id}`)
       }
       recruiterMap.set(job.managed_by.toString(), recruiter)
     })

@@ -1,7 +1,7 @@
 import { setTimeout } from "timers/promises"
 
+import { badRequest, notFound } from "@hapi/boom"
 import distance from "@turf/distance"
-import Boom from "boom"
 import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
@@ -221,7 +221,7 @@ export const getFtJobs = async ({
 
     const distance = radius || 10
 
-    const params: { codeROME: string; commune?: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
+    const params: Parameters<typeof searchForFtJobs>[0] = {
       codeROME: romes.join(","),
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
@@ -239,7 +239,7 @@ export const getFtJobs = async ({
       params.distance = distance
     }
 
-    const jobs = await searchForFtJobs(params)
+    const jobs = await searchForFtJobs(params, { throwOnError: false })
 
     if (jobs === null || jobs === "") {
       const emptyPeResponse: FTResponse = { resultats: [] }
@@ -272,7 +272,7 @@ export const getFtJobsV2 = async ({
   const distance = radius || 10
 
   const params: Parameters<typeof searchForFtJobs>[0] = {
-    sort: 0,
+    sort: 2,
     natureContrat: "E2,FS", //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
     range: `0-${jobLimit - 1}`,
   }
@@ -290,14 +290,13 @@ export const getFtJobsV2 = async ({
 
     params.commune = codeInsee
     params.distance = distance || 10
-    params.sort = 2
   }
 
   if (diploma) {
     params.niveauFormation = NIVEAUX_POUR_OFFRES_PE[diploma]
   }
 
-  const jobs = await searchForFtJobs(params)
+  const jobs = await searchForFtJobs(params, { throwOnError: true })
 
   if (jobs === null || jobs === "") {
     return { resultats: [] }
@@ -375,10 +374,10 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
     const job = await getFtJob(id)
 
     if (job.status === 204 || job.data === "") {
-      throw Boom.notFound()
+      throw notFound()
     }
     if (job.status === 400) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     const ftJob = transformFtJob({ job: job.data })
@@ -407,10 +406,10 @@ export const getFtJobFromIdV2 = async ({ id, caller }: { id: string; caller: str
     const job = await getFtJob(id)
 
     if (job.status === 204 || job.data === "") {
-      throw Boom.notFound()
+      throw notFound()
     }
     if (job.status === 400) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     const ftJob = transformFtJob({ job: job.data })

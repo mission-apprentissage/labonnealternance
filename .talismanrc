@@ -42,7 +42,7 @@ fileignoreconfig:
 - filename: server/.env.test
   checksum: 82154bb8da1666737f49535fcb6d2a903a804eea53663259c84366904082fade
 - filename: server/src/common/utils/awsUtils.ts
-  checksum: d574deae0842cd3566f831de184324d7c87d7456a90175076a9f5a9b3ad8c129
+  checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
   checksum: 4fbe7f8abdfbd25a6c8230b408cd6e1c4acf9a9c91c63469782627743e29554f
 - filename: server/src/db/migrations/20231127120528-remove-password.ts

@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { forbidden, internal } from "@hapi/boom"
 import jwt from "jsonwebtoken"
 import { ObjectId } from "mongodb"
 import { PathParam, QueryString } from "shared/helpers/generateUri"
@@ -108,7 +108,7 @@ export function generateAccessToken(user: UserForAccessToken, scopes: ReadonlyAr
     issuer: config.publicUrl,
   })
   if (token.length > TOKEN_MAX_LENGTH) {
-    sentryCaptureException(Boom.internal(`Token généré trop long : ${token.length}`))
+    sentryCaptureException(internal(`Token généré trop long : ${token.length}`))
   }
   return token
 }
@@ -211,10 +211,10 @@ export const verifyJwtToken = (jwtToken: string) => {
   } catch (err: any) {
     const errorStr = err + ""
     if (errorStr === "TokenExpiredError: jwt expired") {
-      throw Boom.forbidden("JWT expired")
+      throw forbidden("JWT expired")
     }
     console.warn("invalid jwt token", jwtToken, err)
-    throw Boom.forbidden()
+    throw forbidden()
   }
 }
 
@@ -228,17 +228,17 @@ export async function parseAccessToken<Schema extends SchemaWithSecurity>(
   if (token.identity.type === "IUserRecruteur") {
     const user = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(token.identity._id) })
 
-    if (!user) throw Boom.forbidden()
+    if (!user) throw forbidden()
 
     const userStatus = await controlUserState(user)
 
     if (userStatus.error && !authorizedPaths.includes(schema.path)) {
-      throw Boom.forbidden()
+      throw forbidden()
     }
   }
   const scopeOpt = getAccessTokenScope(token, schema, params, querystring)
   if (!scopeOpt) {
-    throw Boom.forbidden("Aucun scope ne correspond")
+    throw forbidden("Aucun scope ne correspond")
   }
   return token
 }
