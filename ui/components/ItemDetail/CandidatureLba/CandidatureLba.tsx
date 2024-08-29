@@ -62,7 +62,7 @@ const CandidatureLba = ({ item }) => {
     <Box data-testid="CandidatureSpontanee">
       <Box>
         <ItemDetailApplicationsStatus item={item} />
-        {(kind !== LBA_ITEM_TYPE_OLD.MATCHA || item.job.status === JOB_STATUS.ACTIVE) && !hasApplied(item) && (
+        {(kind !== LBA_ITEM_TYPE_OLD.MATCHA || item.job.status === JOB_STATUS.ACTIVE) && (!hasApplied(item) || sendingState === "ok_sent") && (
           <>
             <Box my={4}>
               <Button
@@ -94,7 +94,7 @@ const CandidatureLba = ({ item }) => {
                     {["not_sent", "currently_sending"].includes(sendingState) && (
                       <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
                     )}
-                    {["ok_sent"].includes(sendingState) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
+                    {sendingState === "ok_sent" && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
                     {!["not_sent", "ok_sent", "currently_sending"].includes(sendingState) && <CandidatureLbaFailed sendingState={sendingState} />}
                   </form>
                 </ModalContent>
