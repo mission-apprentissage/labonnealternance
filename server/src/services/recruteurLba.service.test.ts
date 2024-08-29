@@ -1,6 +1,6 @@
+import { notFound, badRequest } from "@hapi/boom"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
-import Boom from "boom"
 import { ERecruteurLbaUpdateEventType } from "shared/models"
 import { beforeEach, describe, expect, it } from "vitest"
 
@@ -47,7 +47,7 @@ describe("/lbacompany/:siret/contactInfo", () => {
   })
 
   it("La société issue de l'algo recruteurLba n'existe plus et pas de candidature dans applications", async () => {
-    await expect(getCompanyContactInfo({ siret: "34843069553555" })).rejects.toThrow(Boom.notFound("Société inconnue"))
+    await expect(getCompanyContactInfo({ siret: "34843069553555" })).rejects.toThrow(notFound("Société inconnue"))
   })
 
   it("La suppression email / phone d'une société présente dans recruteursLba se fait et les événements correspondants sont générés", async () => {
@@ -152,7 +152,7 @@ describe("/lbacompany/:siret/contactInfo", () => {
   })
 
   it("Tentative de modification si la société issue de l'algo recruteurLba n'existe plus et pas de candidature dans applications", async () => {
-    await expect(updateContactInfo({ siret: "34843069553555", email: "recruteur_lba_2@test.com", phone: "0610101011" })).rejects.toThrow(Boom.badRequest())
+    await expect(updateContactInfo({ siret: "34843069553555", email: "recruteur_lba_2@test.com", phone: "0610101011" })).rejects.toThrow(badRequest())
 
     const eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({})
     expect.soft(eventCount).toEqual(0)
