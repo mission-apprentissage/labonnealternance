@@ -11,7 +11,7 @@ import { zOpcoLabel } from "./opco.model"
 const collectionName = "jobs_partners" as const
 
 export enum JOBPARTNERS_LABEL {
-  HELLOWORK = "Hellowork",
+  HELLOWORK = "Hello work",
   OFFRES_EMPLOI_LBA = "La bonne alternance",
   OFFRES_EMPLOI_FRANCE_TRAVAIL = "France Travail",
 }
