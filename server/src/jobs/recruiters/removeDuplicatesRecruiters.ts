@@ -30,10 +30,12 @@ async function mergeJobs(primaryDuplicate: IDuplicate, duplicatesToMerge: IDupli
   duplicatesToMerge.forEach((duplicate) => {
     duplicate.jobs.forEach((job) => {
       const jobPattern = generateJobPattern(job)
+      // Si la combinaison n'existe pas, ajouter le job au doublon principal
       if (!uniqueJobCombinations.has(jobPattern)) {
-        // Si la combinaison n'existe pas, ajouter le job au doublon principal
         primaryDuplicate.jobs.push(job)
         uniqueJobCombinations.add(jobPattern)
+      } else {
+        console.log("Pattern found, job not added :", jobPattern)
       }
     })
   })
@@ -54,67 +56,83 @@ function generateJobPattern(job: IJob) {
 export async function removeDuplicateRecruiters() {
   const recruiters = (await getDbCollection("recruiters")
     .aggregate([
-      [
-        {
-          $group: {
-            _id: {
-              establishment_siret: "$establishment_siret",
-              email: "$email",
-            },
-            count: { $sum: 1 },
-            documents: {
-              $push: {
-                _id: "$_id",
-                jobs_count: { $size: { $ifNull: ["$jobs", []] } },
-                status: "$status",
-                jobs: "$jobs",
-              },
+      {
+        $group: {
+          _id: {
+            establishment_siret: "$establishment_siret",
+            email: "$email",
+          },
+          count: { $sum: 1 },
+          documents: {
+            $push: {
+              _id: "$_id",
+              jobs_count: { $size: { $ifNull: ["$jobs", []] } },
+              status: "$status",
+              jobs: "$jobs",
             },
           },
         },
-        {
-          $match: {
-            count: { $gt: 1 },
-          },
+      },
+      {
+        $match: {
+          count: { $gt: 1 },
         },
-        {
-          $project: {
-            _id: 0,
-            establishment_siret: "$_id.establishment_siret",
-            email: "$_id.email",
-            duplicates: "$documents",
-          },
+      },
+      {
+        $project: {
+          _id: 0,
+          establishment_siret: "$_id.establishment_siret",
+          email: "$_id.email",
+          duplicates: "$documents",
         },
-      ],
+      },
+      {
+        $sort: { email: 1 },
+      },
+      {
+        $limit: 5,
+      },
     ])
     .toArray()) as IDuplicatedRecruiters[]
 
   for await (const recruiter of recruiters) {
+    console.log(`checking ${recruiter.establishment_siret} / ${recruiter.email}`)
     // Trouver le premier doublon actif (si existe)
     const firstActiveDuplicate = recruiter.duplicates.find((duplicate) => duplicate.status === RECRUITER_STATUS.ACTIF)
+
     // Traiter les doublons actifs
     if (firstActiveDuplicate) {
       // Filtrer les doublons avec job_count > 0
-      const activeJobsDuplicates = recruiter.duplicates.filter((duplicate) => duplicate.status === RECRUITER_STATUS.ACTIF && duplicate.jobs_count > 0)
+      const activeJobsDuplicates = recruiter.duplicates.filter(
+        (duplicate) => duplicate.status === RECRUITER_STATUS.ACTIF && duplicate.jobs_count > 0 && duplicate._id.toString() !== firstActiveDuplicate._id.toString()
+      )
+
       // Fusionner les jobs si nécessaire
       if (activeJobsDuplicates.length > 1) {
         mergeJobs(firstActiveDuplicate, activeJobsDuplicates)
       }
-      // Supprimer les doublons actifs restants
-      recruiter.duplicates = recruiter.duplicates.filter((duplicate) => duplicate._id === firstActiveDuplicate._id)
+      // Supprimer les doublons actifs restants avec ou sans job
+
+      await Promise.all(
+        recruiter.duplicates
+          .filter((duplicate) => duplicate._id.toString() !== firstActiveDuplicate._id.toString() && duplicate.status === RECRUITER_STATUS.ACTIF)
+          .map(async (duplicate) => await getDbCollection("recruiters").deleteOne({ _id: new ObjectId(duplicate._id) }))
+      )
     }
     // Traiter les doublons inactifs et les autres
-    for await (const duplicate of recruiter.duplicates) {
-      if (duplicate.jobs_count > 0) {
-        // Fusionner les jobs dans le premier doublon actif (s'il existe) ou le premier doublon
-        if (firstActiveDuplicate) {
-          mergeJobs(firstActiveDuplicate, [duplicate])
-        } else {
-          mergeJobs(recruiter.duplicates[0], [duplicate])
-        }
+    const nonActiveDuplicates = recruiter.duplicates.filter((duplicate) => duplicate.status !== RECRUITER_STATUS.ACTIF)
+    // Si tous les doublons inactif restant n'ont pas de job, on garde le premier et on supprime le reste.
+    if (nonActiveDuplicates.every((duplicate) => duplicate.jobs_count === 0)) {
+      nonActiveDuplicates.shift()
+      await Promise.all(nonActiveDuplicates.map(async (duplicate) => await getDbCollection("recruiters").deleteOne({ _id: new ObjectId(duplicate._id) })))
+      continue
+    }
+    for await (const duplicate of nonActiveDuplicates) {
+      // Fusionner les jobs dans le premier doublon actif (s'il existe) ou le premier doublon
+      if (firstActiveDuplicate) {
+        mergeJobs(firstActiveDuplicate, [duplicate])
       } else {
-        // Supprimer le doublon
-        await getDbCollection("recruiters").deleteOne({ _id: new ObjectId(duplicate._id) })
+        mergeJobs(nonActiveDuplicates[0], [duplicate])
       }
     }
   }
