@@ -44,11 +44,11 @@ const SearchForTrainingsAndJobs = () => {
   const { formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } = displayContext
 
   const [searchRadius, setSearchRadius] = useState(30)
-  const [isTrainingSearchLoading, setIsTrainingSearchLoading] = useState(hasSearch ? false : true)
+  const [isTrainingSearchLoading, setIsTrainingSearchLoading] = useState(hasSearch || !scopeContext.isTraining ? false : true)
   const [shouldShowWelcomeMessage, setShouldShowWelcomeMessage] = useState(hasSearch ? false : true)
 
-  const [isJobSearchLoading, setIsJobSearchLoading] = useState(hasSearch ? false : true)
-  const [isPartnerJobSearchLoading, setIsPartnerJobSearchLoading] = useState(hasSearch ? false : true)
+  const [isJobSearchLoading, setIsJobSearchLoading] = useState(hasSearch || !scopeContext.isJob ? false : true)
+  const [isPartnerJobSearchLoading, setIsPartnerJobSearchLoading] = useState(hasSearch || !scopeContext.isJob ? false : true)
   const [jobSearchError, setJobSearchError] = useState("")
   const [partnerJobSearchError, setPartnerJobSearchError] = useState("")
   const [trainingSearchError, setTrainingSearchError] = useState("")
