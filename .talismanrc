@@ -33,6 +33,8 @@ fileignoreconfig:
   checksum: c6e7c3be171a828eddf0ba79992dcef5d9c27bd64d11e817b7aa16c5fb91043a
 - filename: cypress/e2e/check-admin-algo-company.cy.ts
   checksum: 6a898ee25c84ce2c41da5666aa4f84e6e4aaf0a614dbc0a00153abe99e3617c1
+- filename: cypress/e2e/manual/create-many-applications.cy.ts
+  checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
   checksum: cbb0a8651ca4c5d807f03eeeba6204c7d6d3a5f17ffb0734921f18d54f99f6b0
 - filename: cypress/pages/LoginPage.ts
