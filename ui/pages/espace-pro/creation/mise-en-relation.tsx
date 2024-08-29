@@ -34,7 +34,7 @@ function CreationMiseEnRelationPage({ isWidget }: { isWidget?: boolean }) {
   const goToEndStep = ({ withDelegation }) => {
     router.replace({
       pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(job), email, withDelegation, fromDashboard, userId, establishment_id, token },
+      query: { jobId: job._id.toString(), email, withDelegation, fromDashboard, userId, establishment_id, token },
     })
   }
 

@@ -417,7 +417,7 @@ export const PageAjouterVoeux = ({
 
     router.replace({
       pathname: isWidget ? "/espace-pro/widget/entreprise/fin" : "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId, establishment_id, token: jobToken },
+      query: { jobId: job._id.toString(), email, withDelegation: false, fromDashboard, userId, establishment_id, token: jobToken },
     })
   }
 
