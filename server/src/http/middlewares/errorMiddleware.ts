@@ -1,6 +1,6 @@
+import { internal, Boom, isBoom, badRequest } from "@hapi/boom"
 import { captureException } from "@sentry/node"
-import Boom from "boom"
-import { FastifyError } from "fastify"
+import { FastifyError, FastifyRequest } from "fastify"
 import { ResponseValidationError } from "fastify-type-provider-zod"
 import joi, { ValidationError } from "joi"
 import { IResError } from "shared/routes/common.routes"
@@ -21,26 +21,37 @@ function getZodMessageError(error: ZodError, context: string): string {
   }, "")
 }
 
-export function boomify(rawError: FastifyError | ValidationError | Boom<unknown> | Error | ZodError): Boom<unknown> {
-  if (Boom.isBoom(rawError)) {
+function isApiV2(request: FastifyRequest): boolean {
+  return request.url.startsWith("/api/v2")
+}
+
+export function boomify(rawError: FastifyError | ValidationError | Boom<unknown> | Error | ZodError, request: FastifyRequest): Boom<unknown> {
+  if (isBoom(rawError)) {
     return rawError
   }
 
-  if (rawError.name === "ResponseValidationError") {
+  if (rawError instanceof ResponseValidationError) {
     if (config.env === "local") {
-      return Boom.internal(getZodMessageError((rawError as ResponseValidationError).details as ZodError, "response"), { rawError })
+      const zodError = new ZodError(rawError.details.error)
+      return internal(rawError.message, {
+        validationError: zodError.format(),
+      })
     }
 
-    return Boom.internal("Une erreur est survenue")
+    return internal("Une erreur est survenue")
   }
 
   if (rawError instanceof ZodError) {
-    return Boom.badRequest(getZodMessageError(rawError, (rawError as unknown as FastifyError).validationContext ?? ""), { validationError: rawError })
+    if (isApiV2(request)) {
+      return badRequest("Request validation failed", { validationError: rawError.format() })
+    }
+
+    return badRequest(getZodMessageError(rawError, (rawError as unknown as FastifyError).validationContext ?? ""), { validationError: rawError })
   }
 
   // Joi validation error throw from code
   if (joi.isError(rawError)) {
-    return Boom.badRequest(undefined, { details: rawError.details })
+    return badRequest(undefined, { details: rawError.details })
   }
 
   if ((rawError as FastifyError).statusCode) {
@@ -48,18 +59,18 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
   }
 
   if (config.env === "local") {
-    return Boom.internal(rawError.message, { rawError, cause: rawError })
+    return internal(rawError.message, { rawError, cause: rawError })
   }
 
-  return Boom.internal("Une erreur est survenue")
+  return internal("Une erreur est survenue")
 }
 
 export function errorMiddleware(server: Server) {
-  server.setErrorHandler<FastifyError | ValidationError | Boom<unknown> | Error | ZodError, { Reply: IResError }>(async (rawError, _request, reply) => {
-    const error = boomify(rawError)
+  server.setErrorHandler<FastifyError | ValidationError | Boom<unknown> | Error | ZodError, { Reply: IResError }>(async (rawError, request, reply) => {
+    const error = boomify(rawError, request)
 
     if (error.output.statusCode === 403) {
-      await stopSession(_request, reply)
+      await stopSession(request, reply)
     }
 
     const payload: IResError = {
@@ -69,7 +80,7 @@ export function errorMiddleware(server: Server) {
       ...(error.data ? { data: error.data } : {}),
     }
 
-    if (error.output.statusCode >= 500 || (_request.url.startsWith("/api/emails/webhook") && error.output.statusCode >= 400)) {
+    if (error.output.statusCode >= 500 || (request.url.startsWith("/api/emails/webhook") && error.output.statusCode >= 400)) {
       server.log.error(rawError)
       captureException(rawError)
     }

@@ -1,5 +1,5 @@
-import Boom from "boom"
-import { ObjectId } from "mongodb"
+import { badRequest, internal, notFound } from "@hapi/boom"
+import { Document, Filter, ObjectId } from "mongodb"
 import { ERecruteurLbaUpdateEventType, ILbaCompany, ILbaCompanyForContactUpdate, IRecruteurLbaUpdateEvent } from "shared"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
@@ -160,39 +160,39 @@ const transformCompanies = ({
 }
 
 type IRecruteursLbaSearchParams = {
-  romes: string[]
-  latitude: number
-  longitude: number
-  radius: number
-  opco?: string
-  opcoUrl?: string
+  geo: { latitude: number; longitude: number; radius: number } | null
+  romes: string[] | null
 }
 
-export const getRecruteursLbaFromDB = async ({ radius = 10, romes, opco, opcoUrl, latitude, longitude }: IRecruteursLbaSearchParams): Promise<ILbaCompany[] | []> => {
-  const query: { rome_codes: object; opco_short_name?: string; opco_url?: string } = {
-    rome_codes: { $in: romes },
+export const getRecruteursLbaFromDB = async ({ geo, romes }: IRecruteursLbaSearchParams): Promise<ILbaCompany[]> => {
+  const query: Filter<ILbaCompany> = {}
+
+  if (romes) {
+    query.rome_codes = { $in: romes }
   }
-  if (opco) {
-    query.opco_short_name = opco.toUpperCase()
-  }
-  if (opcoUrl) {
-    query.opco_url = opcoUrl.toLowerCase()
-  }
-  return (await getDbCollection("recruteurslba")
-    .aggregate([
-      {
-        $geoNear: {
-          near: { type: "Point", coordinates: [longitude, latitude] },
-          distanceField: "distance",
-          maxDistance: radius * 1000,
-          query,
-        },
-      },
+
+  const filterStages: Document[] =
+    geo === null
+      ? [{ $match: query }, { $sort: { last_update_at: -1 } }]
+      : [
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [geo.longitude, geo.latitude] },
+              distanceField: "distance",
+              maxDistance: geo.radius * 1000,
+              query,
+            },
+          },
+        ]
+
+  return await getDbCollection("recruteurslba")
+    .aggregate<ILbaCompany>([
+      ...filterStages,
       {
         $limit: 150,
       },
     ])
-    .toArray()) as ILbaCompany[]
+    .toArray()
 }
 
 /**
@@ -408,7 +408,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
     const fieldUpdates: IRecruteurLbaUpdateEvent[] = []
 
     if (!lbaCompany) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     if (email !== undefined) {
@@ -484,13 +484,13 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
     if (lbaCompany) {
       return { enseigne: lbaCompany.enseigne, phone: lbaCompany.phone, email: lbaCompany.email, siret: lbaCompany.siret }
     } else {
-      throw Boom.notFound("Société inconnue")
+      throw notFound("Société inconnue")
     }
   } catch (error: any) {
     if (error?.output?.statusCode === 404) {
       throw error
     }
     sentryCaptureException(error)
-    throw Boom.internal("Erreur de chargement des informations de la société")
+    throw internal("Erreur de chargement des informations de la société")
   }
 }

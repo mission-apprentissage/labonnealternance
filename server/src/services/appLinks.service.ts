@@ -280,7 +280,7 @@ export function createRdvaAppointmentIdPageLink(email: string, siret: string, et
       }),
     ],
     {
-      expiresIn: "30d",
+      expiresIn: "60d",
     }
   )
 

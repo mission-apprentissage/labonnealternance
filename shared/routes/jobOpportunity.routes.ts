@@ -1,21 +1,44 @@
-import { NIVEAUX_POUR_LBA, OPCOS } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
+import { zDiplomaEuropeanLevel, ZJobsPartnersOfferApi, ZJobsPartnersRecruiterApi } from "../models/jobsPartners.model"
 
-const romes = extensions.romeCodeArray()
-const rncp = extensions.rncpCode()
-const insee = extensions.inseeCode().nullish()
+export const ZJobOpportunityGetQuery = z
+  .object({
+    latitude: extensions.latitude().nullable().default(null),
+    longitude: extensions.longitude().nullable().default(null),
+    radius: z.number().min(0).max(200).default(30),
+    diplomaLevel: zDiplomaEuropeanLevel.optional(),
+    romes: extensions.romeCodeArray().nullable().default(null),
+    rncp: extensions.rncpCode().nullable().default(null),
+  })
+  .superRefine((data, ctx) => {
+    if (data.longitude == null && data.latitude != null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["longitude"],
+        message: "longitude is required when latitude is provided",
+      })
+    }
 
-const ZJobOpportunityQuerystringBase = z.object({
-  latitude: extensions.latitude(),
-  longitude: extensions.longitude(),
-  radius: z.number().min(0).max(200).default(30),
-  diploma: extensions.buildEnum(NIVEAUX_POUR_LBA).default(NIVEAUX_POUR_LBA.INDIFFERENT),
-  opco: extensions.buildEnum(OPCOS).optional(),
-  opcoUrl: z.string().optional(),
+    if (data.longitude != null && data.latitude == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["latitude"],
+        message: "latitude is required when longitude is provided",
+      })
+    }
+  })
+
+export type IJobOpportunityGetQuery = z.output<typeof ZJobOpportunityGetQuery>
+
+export type IJobOpportunityGetQueryResolved = Omit<IJobOpportunityGetQuery, "latitude" | "longitude" | "radius" | "rncp"> & {
+  geo: { latitude: number; longitude: number; radius: number } | null
+}
+
+export const ZJobsOpportunityResponse = z.object({
+  jobs: z.array(ZJobsPartnersOfferApi),
+  recruiters: z.array(ZJobsPartnersRecruiterApi),
+  warnings: z.array(z.object({ message: z.string(), code: z.string() })),
 })
 
-export const ZJobOpportunityRome = ZJobOpportunityQuerystringBase.extend({ romes, insee })
-export const ZJobOpportunityRncp = ZJobOpportunityQuerystringBase.extend({ rncp, insee })
-export type IJobOpportunityRome = z.output<typeof ZJobOpportunityRome>
-export type IJobOpportunityRncp = z.output<typeof ZJobOpportunityRncp>
+export type IJobsOpportunityResponse = z.output<typeof ZJobsOpportunityResponse>

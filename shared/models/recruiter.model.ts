@@ -43,7 +43,6 @@ export const ZRecruiterWritable = z
     establishment_creation_date: z.date().nullish().describe("Date de creation de l'établissement"),
     managed_by: z.string().nullish().describe("Id de l'utilisateur gestionnaire"),
   })
-  .strict()
   .openapi("RecruiterWritable")
 
 const collectionName = "recruiters" as const
@@ -89,7 +88,7 @@ export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
   naf_label: true,
   establishment_size: true,
   establishment_creation_date: true,
-}).strict()
+})
 
 export type IAnonymizedRecruiter = z.output<typeof ZAnonymizedRecruiter>
 
@@ -99,9 +98,29 @@ export default {
     [{ establishment_id: 1 }, {}],
     [{ establishment_siret: 1 }, {}],
     [{ cfa_delegated_siret: 1 }, {}],
-    [{ geopoint: "2dsphere" }, {}],
+    [{ geopoint: "2dsphere", status: 1 }, {}],
     [{ email: 1 }, {}],
     [{ establishment_enseigne: 1 }, {}],
+
+    // Support API v2 request (by ROME without location)
+    [
+      {
+        "jobs.status": 1,
+        "jobs.is_multi_published": 1,
+        "jobs.rome_code": 1,
+        "jobs.job_creation_date": -1,
+      },
+      {},
+    ],
+    // Support API v2 request (without params)
+    [
+      {
+        "jobs.status": 1,
+        "jobs.is_multi_published": 1,
+        "jobs.job_creation_date": -1,
+      },
+      {},
+    ],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

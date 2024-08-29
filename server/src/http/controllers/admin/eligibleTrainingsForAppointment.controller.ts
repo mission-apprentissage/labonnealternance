@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest } from "@hapi/boom"
 import { zRoutes } from "shared/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -24,7 +24,7 @@ export default (server: Server) => {
       const parameters = await getDbCollection("eligible_trainings_for_appointments").find({ etablissement_formateur_siret: siret }).toArray()
 
       if (parameters == undefined || parameters.length == 0) {
-        throw Boom.badRequest()
+        throw badRequest()
       }
 
       return res.send({ parameters })

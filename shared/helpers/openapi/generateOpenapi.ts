@@ -1,6 +1,7 @@
 import { OpenApiGeneratorV31, OpenAPIRegistry, ResponseConfig, RouteConfig } from "@asteasolutions/zod-to-openapi"
 import { formatParamUrl } from "@fastify/swagger"
 import type { SecurityRequirementObject } from "openapi3-ts/oas30"
+import { ZodEffects } from "zod"
 
 import { zRoutes } from "../../index"
 import { IRouteSchema } from "../../routes/common.routes"
@@ -38,7 +39,7 @@ function generateOpenApiRequest(route: IRouteSchema): RouteConfig["request"] {
     requestParams.params = route.params
   }
   if (route.querystring) {
-    requestParams.query = route.querystring
+    requestParams.query = route.querystring instanceof ZodEffects ? route.querystring.innerType() : route.querystring
   }
   if (route.headers) {
     requestParams.headers = route.headers

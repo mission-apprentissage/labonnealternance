@@ -1,6 +1,6 @@
 import { Jsonify } from "type-fest"
 
-import { ADMIN, OPCO, OPCOS, VALIDATION_UTILISATEUR } from "../constants/recruteur"
+import { ADMIN, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -56,7 +56,7 @@ export type IUserWithAccountFields = z.output<typeof ZUserWithAccountFields>
 export const ZNewSuperUser = z.union([
   ZUserWithAccountFields.extend({
     type: z.literal(OPCO),
-    opco: extensions.buildEnum(OPCOS),
+    opco: extensions.buildEnum(OPCOS_LABEL),
   }),
   ZUserWithAccountFields.extend({
     type: z.literal(ADMIN),

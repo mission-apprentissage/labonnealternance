@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import { Filter, ObjectId } from "mongodb"
 import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
@@ -69,7 +69,7 @@ const findEligibleTrainingByActionFormation = async (idActionFormation: string) 
   const referentielOnisepIdActionFormation = await getDbCollection("referentieloniseps").findOne({ id_action_ideo2: idActionFormation })
 
   if (!referentielOnisepIdActionFormation) {
-    throw Boom.notFound("Formation not found")
+    throw notFound("Formation not found")
   }
 
   return await getDbCollection("eligible_trainings_for_appointments").findOne({
@@ -97,11 +97,11 @@ export const findElligibleTrainingForAppointment = async (req: any): Promise<IAp
   } else if ("idActionFormation" in req.body) {
     eligibleTrainingsForAppointment = await findEligibleTrainingByActionFormation(req.body.idActionFormation)
   } else {
-    throw Boom.badRequest("Critère de recherche non conforme.")
+    throw badRequest("Critère de recherche non conforme.")
   }
 
   if (!eligibleTrainingsForAppointment) {
-    throw Boom.notFound("Formation introuvable")
+    throw notFound("Formation introuvable")
   }
 
   if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerObj.name)) {
@@ -113,7 +113,7 @@ export const findElligibleTrainingForAppointment = async (req: any): Promise<IAp
   const etablissement = await findEtablissement(eligibleTrainingsForAppointment.etablissement_formateur_siret)
 
   if (!etablissement) {
-    throw Boom.internal("Etablissement formateur non trouvé")
+    throw internal("Etablissement formateur non trouvé")
   }
 
   return {

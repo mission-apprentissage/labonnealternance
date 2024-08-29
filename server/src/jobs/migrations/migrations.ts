@@ -24,7 +24,7 @@ const myConfig = {
   },
 
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
-  migrationsDir: path.join(__dirname(import.meta.url), "./db/migrations"),
+  migrationsDir: path.join(__dirname(import.meta.url), "./migrations"),
 
   // The mongodb collection where the applied changes are stored. Only edit this when really necessary.
   changelogCollectionName: "changelog",
@@ -66,18 +66,18 @@ export async function status(): Promise<number> {
 export async function create({ description }: { description: string }) {
   mconfig.set({
     ...myConfig,
-    migrationsDir: "src/db/migrations",
+    migrationsDir: "src/migrations",
     migrationFileExtension: ".ts",
   })
   const fileName = await mcreate(description)
-  const file = `src/db/migrations/${fileName}`
+  const file = `src/migrations/${fileName}`
   const content = await readFile(file, {
     encoding: "utf-8",
   })
   // ajoute le typage TS et supprime la migration down inutile
-  const newContent = `import { Db } from "mongodb";
+  const newContent = `import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-${content.replaceAll("async (db, client)", "async (db: Db)").replace(/\nexport const down =[\s\S]+/, "")}`
+${content.replaceAll("async (db, client)", "async ()").replace(/\nexport const down =[\s\S]+/, "")}`
 
   await writeFile(file, newContent, { encoding: "utf-8" })
   console.info("Created:", fileName)

@@ -1,6 +1,6 @@
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS } from "shared/constants/recruteur"
+import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 import { ComputedUserAccess, IUserRecruteurPublic } from "shared/models"
 import { ICFA } from "shared/models/cfa.model"
 import { IEntreprise } from "shared/models/entreprise.model"
@@ -35,7 +35,7 @@ export const modifyPermissionToUser = async (
       { returnDocument: "after" }
     )
     if (!newRole) {
-      throw Boom.internal("inattendu")
+      throw internal("inattendu")
     }
     return newRole
   } else {
@@ -115,15 +115,15 @@ export const getPublicUserRecruteurPropsOrError = async (
 ): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
   const mainRole = await getMainRoleManagement(userId, includeUserAwaitingValidation)
   if (!mainRole) {
-    throw Boom.internal(`inattendu : aucun role trouvé pour user id=${userId}`)
+    throw internal(`inattendu : aucun role trouvé pour user id=${userId}`)
   }
   const type = roleToUserType(mainRole)
   if (!type) {
-    throw Boom.internal(`inattendu : aucun type trouvé pour user id=${userId}`)
+    throw internal(`inattendu : aucun type trouvé pour user id=${userId}`)
   }
   const status_current = roleToStatus(mainRole)
   if (!status_current) {
-    throw Boom.internal(`inattendu : aucun status trouvé pour user id=${userId}`)
+    throw internal(`inattendu : aucun status trouvé pour user id=${userId}`)
   }
   const commonFields = {
     type,
@@ -132,7 +132,7 @@ export const getPublicUserRecruteurPropsOrError = async (
   if (type === CFA) {
     const cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(mainRole.authorized_id) })
     if (!cfa) {
-      throw Boom.internal(`inattendu : cfa non trouvé pour user id=${userId}`)
+      throw internal(`inattendu : cfa non trouvé pour user id=${userId}`)
     }
     const { siret } = cfa
     return { ...commonFields, establishment_siret: siret }
@@ -140,18 +140,18 @@ export const getPublicUserRecruteurPropsOrError = async (
   if (type === ENTREPRISE) {
     const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(mainRole.authorized_id.toString()) })
     if (!entreprise) {
-      throw Boom.internal(`inattendu : entreprise non trouvée pour user id=${userId}`)
+      throw internal(`inattendu : entreprise non trouvée pour user id=${userId}`)
     }
     const { siret } = entreprise
     const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
     if (!user) {
-      throw Boom.internal(`inattendu : user non trouvé`, { userId })
+      throw internal(`inattendu : user non trouvé`, { userId })
     }
     const recruiter = await getFormulaireFromUserIdOrError(user._id.toString())
     return { ...commonFields, establishment_siret: siret, establishment_id: recruiter.establishment_id }
   }
   if (type === OPCO) {
-    return { ...commonFields, scope: parseEnumOrError(OPCOS, mainRole.authorized_id) }
+    return { ...commonFields, scope: parseEnumOrError(OPCOS_LABEL, mainRole.authorized_id) }
   }
   return commonFields
 }
@@ -166,7 +166,7 @@ export const getComputedUserAccess = (userId: string, grantedRoles: IRoleManagem
     entreprises: grantedRoles.flatMap((role) => (role.authorized_type === AccessEntityType.ENTREPRISE ? [role.authorized_id] : [])),
     opcos: grantedRoles.flatMap((role) => {
       if (role.authorized_type === AccessEntityType.OPCO) {
-        const opco = parseEnum(OPCOS, role.authorized_id)
+        const opco = parseEnum(OPCOS_LABEL, role.authorized_id)
         if (opco) {
           return [opco]
         }

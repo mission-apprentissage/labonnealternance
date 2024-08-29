@@ -1,6 +1,6 @@
 import { ZRomeoApiResponse } from "shared/models/cacheRomeo.model"
 
-import { IRomeoPayload, getRomeoPredictions } from "../common/apis/FranceTravail"
+import { IRomeoPayload, getRomeoPredictions } from "../common/apis/franceTravail/franceTravail"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
 export const getRomeoInfos = async ({ intitule, contexte }: { intitule: string; contexte?: string }): Promise<string | null> => {

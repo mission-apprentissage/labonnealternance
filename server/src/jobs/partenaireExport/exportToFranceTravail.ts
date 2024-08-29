@@ -6,7 +6,7 @@ import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models"
 
-import { sendCsvToFranceTravail } from "../../common/apis/FranceTravail"
+import { sendCsvToFranceTravail } from "../../common/apis/franceTravail/franceTravail"
 import { logger } from "../../common/logger"
 import { getDepartmentByZipCode } from "../../common/territoires"
 import { asyncForEach } from "../../common/utils/asyncUtils"
