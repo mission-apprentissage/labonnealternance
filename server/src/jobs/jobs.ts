@@ -27,7 +27,7 @@ import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { importHelloWork } from "./offrePartenaire/importHelloWork"
+import { importHelloWork, importRawHelloWorkIntoComputedJobPartners } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportToFranceTravail } from "./partenaireExport/exportToFranceTravail"
@@ -408,6 +408,9 @@ export async function setupJobProcessor() {
       },
       "import-hellowork": {
         handler: async () => importHelloWork(),
+      },
+      "import-hellowork-to-computed": {
+        handler: async () => importRawHelloWorkIntoComputedJobPartners(),
       },
       "import-kelio": {
         handler: async () => importKelio(),
