@@ -3,6 +3,7 @@ import { ILbaCompany, ZLbaCompany } from "shared/models/recruteurLba.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
+import { logger } from "../../common/logger"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
@@ -77,29 +78,27 @@ const processCompanies = async () => {
 }
 
 export default async function updateLbaCompanies({
-  UseAlgoFile = false,
-  ClearMongo = false,
-  ForceRecreate = false,
-  SourceFile = null,
+  useAlgoFile = false,
+  clearMongo = false,
+  forceRecreate = false,
+  sourceFile = null,
 }: {
-  UseAlgoFile?: boolean
-  ClearMongo?: boolean
-  ForceRecreate?: boolean
-  SourceFile?: string | null
+  useAlgoFile?: boolean
+  clearMongo?: boolean
+  forceRecreate?: boolean
+  sourceFile?: string | null
 }) {
   try {
-    logMessage("info", " -- Start updating lbb db with new algo -- ")
-
-    console.info("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - ForceRecreate : ", ForceRecreate)
-
-    if (UseAlgoFile) {
-      if (!ForceRecreate) {
+    logger.info("Start updateLbaCompanies jobs ")
+    console.info({ useAlgoFile, clearMongo, forceRecreate })
+    if (useAlgoFile) {
+      if (!forceRecreate) {
         await checkIfAlgoFileIsNew("algo companies")
       }
 
-      await downloadAlgoCompanyFile(SourceFile)
+      await downloadAlgoCompanyFile(sourceFile)
 
-      if (!ForceRecreate) {
+      if (!forceRecreate) {
         const companyCount = await countCompaniesInFile()
         if (companyCount < MIN_COMPANY_THRESHOLD) {
           await notifyToSlack({
@@ -112,20 +111,20 @@ export default async function updateLbaCompanies({
       }
     }
 
-    if (ClearMongo) {
-      logMessage("info", `Clearing recruteurslba db...`)
+    if (clearMongo) {
+      logger.info("Clear recruteurlba collection")
       await getDbCollection("recruteurslba").deleteMany({})
     }
 
-    if (UseAlgoFile) {
+    if (useAlgoFile) {
       await processCompanies()
     }
 
-    logMessage("info", `End updating lbb db`)
+    logger.info("End updateLbaCompanies jobs ")
 
     await notifyToSlack({ subject: "IMPORT SOCIETES ISSUES DE L'ALGO", message: `Import sociétés issues de l'algo terminé. ${count} sociétés importées`, error: false })
   } catch (err) {
-    logMessage("error", err)
+    logger.error(err)
   } finally {
     await cleanUp()
   }

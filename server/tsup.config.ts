@@ -7,14 +7,14 @@ import { defineConfig } from "tsup"
 export default defineConfig((options) => {
   const isDev = options.env?.NODE_ENV !== "production"
   const isWatched = options.env?.TSUP_WATCH === "true"
-  const migrationFiles = fs.readdirSync("./src/db/migrations")
+  const migrationFiles = fs.readdirSync("./src/migrations")
 
   const entry: Record<string, string> = {
     index: isDev ? "src/dev.ts" : "src/main.ts",
   }
 
   for (const file of migrationFiles) {
-    entry[`db/migrations/${basename(file, ".ts")}`] = `src/db/migrations/${file}`
+    entry[`migrations/${basename(file, ".ts")}`] = `src/migrations/${file}`
   }
 
   return {
