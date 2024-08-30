@@ -130,7 +130,7 @@ export default (server: Server) => {
         offer_rome_codes: romeCode,
         offer_status: JOB_STATUS.ACTIVE,
         offer_creation_date: rest.offer_creation_date ?? now,
-        offer_expiration: rest.offer_expiration ?? addExpirationPeriod(now).toDate(),
+        offer_expiration_date: rest.offer_expiration_date ?? addExpirationPeriod(now).toDate(),
         offer_desired_skills: rest.offer_desired_skills ?? null,
         offer_to_be_acquired_skills: rest.offer_to_be_acquired_skills ?? null,
         offer_access_conditions: rest.offer_access_conditions ?? null,
@@ -250,7 +250,7 @@ export default (server: Server) => {
       if (!job) {
         throw badRequest("Job does not exists")
       }
-      if (addExpirationPeriod(dayjs()).isSame(dayjs(job.offer_expiration), "day")) {
+      if (addExpirationPeriod(dayjs()).isSame(dayjs(job.offer_expiration_date), "day")) {
         throw badRequest("Job is already extended up to two month")
       }
 

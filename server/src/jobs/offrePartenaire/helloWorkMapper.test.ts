@@ -69,7 +69,7 @@ describe("helloWorkJobToJobsPartners", () => {
       offer_to_be_acquired_skills: null,
       offer_rome_codes: ["M1203"],
       offer_creation_date: new Date("2024-07-05T22:14:56.000+02:00"),
-      offer_expiration: null,
+      offer_expiration_date: null,
       offer_origin: null,
       offer_opening_count: 1,
       offer_multicast: false,
