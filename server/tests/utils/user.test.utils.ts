@@ -1,4 +1,6 @@
-import { ObjectId } from "mongodb"
+import { randomUUID } from "crypto"
+
+import { MongoServerError, ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import {
@@ -59,6 +61,11 @@ function getFixture() {
       schema: ZodString,
       filter: ({ context }) => context.path.at(-1) === "email",
       output: () => `rando${seed}@email.com`,
+    }),
+    Generator({
+      schema: ZodString,
+      filter: ({ context }) => context.path.at(-1) === "applicant_attachment_name",
+      output: () => "file.pdf",
     }),
     Generator({
       schema: zObjectId,
@@ -220,7 +227,7 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
     last_name: "last_name",
     first_name: "first_name",
     phone: "phone",
-    email: "email",
+    email: `${randomUUID()}`,
     jobs: [],
     origin: "origin",
     opco: "opco",
@@ -241,7 +248,12 @@ export async function createApplicationTest(data: Partial<IApplication>) {
     ...getFixture().fromSchema(ZApplication),
     ...data,
   }
-  await getDbCollection("applications").insertOne(u)
+  try {
+    await getDbCollection("applications").insertOne(u)
+  } catch (error: any) {
+    const err: MongoServerError = error
+    console.log(err.errorResponse.errInfo.details.schemaRulesNotSatisfied[0].propertiesNotSatisfied[0].details)
+  }
   return u
 }
 
