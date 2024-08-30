@@ -85,6 +85,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
   const { latitude, longitude } = geolocToLatLon(geoloc)
   const siretParsing = extensions.siret.safeParse(siret)
   const codeRomeParsing = extensions.romeCode().safeParse(code_rome)
+  const urlParsing = extensions.url().safeParse(url)
 
   const partnerJob: IComputedJobsPartners = {
     _id: new ObjectId(),
@@ -122,7 +123,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
             coordinates: [longitude, latitude],
           }
         : undefined,
-    apply_url: url,
+    apply_url: urlParsing.success ? urlParsing.data : null,
     errors: [],
     validated: false,
   }
