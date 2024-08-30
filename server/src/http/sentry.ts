@@ -95,5 +95,7 @@ export function initSentryFastify(app: Server) {
     ...getOptions(),
   }
 
-  app.register(options)
+  const _app = app.register(options)
+
+  return Sentry.setupFastifyErrorHandler(app)
 }

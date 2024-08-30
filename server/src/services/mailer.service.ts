@@ -43,15 +43,13 @@ const createTransporter = (): Transporter => {
 const createMailer = () => {
   const transporter = createTransporter()
   const renderEmail = async (template: string, data: Data = {}): Promise<string> => {
-    const onFinally = startSentryPerfRecording("mailer", "renderEmail")
-    try {
+    let html
+    startSentryPerfRecording({ name: "mailer", operation: "renderEmail" }, async () => {
       const buffer = await renderFile(template, { data })
-      const { html } = mjml(buffer.toString(), { minify: true })
-
-      return html
-    } finally {
-      onFinally()
-    }
+      const converted = mjml(buffer.toString(), { minify: true })
+      html = converted.html
+    })
+    return html
   }
 
   return {
@@ -77,10 +75,9 @@ const createMailer = () => {
       attachments?: object[]
     }): Promise<{ messageId: string; accepted?: string[] }> => {
       const html = await renderEmail(template, data)
-      const onFinally = startSentryPerfRecording("mailer", "sendEmail")
-
-      return transporter
-        .sendMail({
+      let mail
+      startSentryPerfRecording({ name: "mailer", operation: "sendEmail" }, () => {
+        mail = transporter.sendMail({
           from,
           to,
           cc,
@@ -89,7 +86,9 @@ const createMailer = () => {
           list: {},
           attachments,
         })
-        .finally(onFinally)
+      })
+
+      return mail
     },
   }
 }
