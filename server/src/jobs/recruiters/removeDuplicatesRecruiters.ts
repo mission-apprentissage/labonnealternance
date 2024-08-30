@@ -41,11 +41,6 @@ async function mergeJobs(primaryDuplicate: IDuplicate, duplicatesToMerge: IDupli
   })
   // Mettre à jour le doublon principal dans la base de données
   await getDbCollection("recruiters").updateOne({ _id: new ObjectId(primaryDuplicate._id) }, { $set: { jobs: primaryDuplicate.jobs } })
-
-  // Supprimer les doublons de l'ensemble des doublons à fusionner
-  for await (const duplicate of duplicatesToMerge) {
-    await getDbCollection("recruiters").deleteOne({ _id: new ObjectId(duplicate._id) })
-  }
 }
 
 function generateJobPattern(job: IJob) {
@@ -89,51 +84,40 @@ export async function removeDuplicateRecruiters() {
       {
         $sort: { email: 1 },
       },
-      {
-        $limit: 5,
-      },
     ])
     .toArray()) as IDuplicatedRecruiters[]
 
   for await (const recruiter of recruiters) {
-    console.log(`checking ${recruiter.establishment_siret} / ${recruiter.email}`)
+    const { duplicates } = recruiter
     // Trouver le premier doublon actif (si existe)
-    const firstActiveDuplicate = recruiter.duplicates.find((duplicate) => duplicate.status === RECRUITER_STATUS.ACTIF)
+    const firstActiveDuplicate = duplicates.find((duplicate) => duplicate.status === RECRUITER_STATUS.ACTIF)
 
     // Traiter les doublons actifs
     if (firstActiveDuplicate) {
       // Filtrer les doublons avec job_count > 0
-      const activeJobsDuplicates = recruiter.duplicates.filter(
-        (duplicate) => duplicate.status === RECRUITER_STATUS.ACTIF && duplicate.jobs_count > 0 && duplicate._id.toString() !== firstActiveDuplicate._id.toString()
-      )
+      const activeJobsDuplicates = duplicates.filter((duplicate) => duplicate.jobs_count > 0 && duplicate._id.toString() !== firstActiveDuplicate._id.toString())
 
       // Fusionner les jobs si nécessaire
       if (activeJobsDuplicates.length > 1) {
         mergeJobs(firstActiveDuplicate, activeJobsDuplicates)
       }
       // Supprimer les doublons actifs restants avec ou sans job
-
       await Promise.all(
-        recruiter.duplicates
-          .filter((duplicate) => duplicate._id.toString() !== firstActiveDuplicate._id.toString() && duplicate.status === RECRUITER_STATUS.ACTIF)
+        duplicates
+          .filter((duplicate) => duplicate._id.toString() !== firstActiveDuplicate._id.toString())
           .map(async (duplicate) => await getDbCollection("recruiters").deleteOne({ _id: new ObjectId(duplicate._id) }))
       )
     }
-    // Traiter les doublons inactifs et les autres
-    const nonActiveDuplicates = recruiter.duplicates.filter((duplicate) => duplicate.status !== RECRUITER_STATUS.ACTIF)
     // Si tous les doublons inactif restant n'ont pas de job, on garde le premier et on supprime le reste.
-    if (nonActiveDuplicates.every((duplicate) => duplicate.jobs_count === 0)) {
-      nonActiveDuplicates.shift()
-      await Promise.all(nonActiveDuplicates.map(async (duplicate) => await getDbCollection("recruiters").deleteOne({ _id: new ObjectId(duplicate._id) })))
+    if (duplicates.every((duplicate) => duplicate.jobs_count === 0)) {
+      duplicates.shift()
+      await Promise.all(duplicates.map(async (duplicate) => await getDbCollection("recruiters").deleteOne({ _id: new ObjectId(duplicate._id) })))
       continue
     }
-    for await (const duplicate of nonActiveDuplicates) {
-      // Fusionner les jobs dans le premier doublon actif (s'il existe) ou le premier doublon
-      if (firstActiveDuplicate) {
-        mergeJobs(firstActiveDuplicate, [duplicate])
-      } else {
-        mergeJobs(nonActiveDuplicates[0], [duplicate])
-      }
-    }
+    // Si doublon inactif avec job, on garde le premier et on merge tous les jobs
+    const firstInactiveDuplicate = duplicates.shift()!
+    mergeJobs(firstInactiveDuplicate, duplicates)
+    // Supprimer les doublons restants
+    await Promise.all(duplicates.map(async (duplicate) => await getDbCollection("recruiters").deleteOne({ _id: new ObjectId(duplicate._id) })))
   }
 }
