@@ -920,7 +920,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "BTS, DEUST, autres formations niveau (Bac+2)",
               "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
               "Master, titre ingénieur, autres formations niveau (Bac+5)",
-              "Indifférent",
             ],
             "type": [
               "string",
@@ -9031,7 +9030,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "BTS, DEUST, autres formations niveau (Bac+2)",
                       "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
                       "Master, titre ingénieur, autres formations niveau (Bac+5)",
-                      "Indifférent",
                     ],
                     "type": [
                       "string",
@@ -9203,7 +9201,6 @@ Limite : 5 appel(s) / 1 seconde(s)
                       "BTS, DEUST, autres formations niveau (Bac+2)",
                       "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
                       "Master, titre ingénieur, autres formations niveau (Bac+5)",
-                      "Indifférent",
                     ],
                     "type": [
                       "string",

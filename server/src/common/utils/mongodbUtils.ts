@@ -123,7 +123,7 @@ export const configureDbSchemaValidation = async (modelDescriptors: IModelDescri
         await db.command({
           collMod: collectionName,
           validationLevel: "strict",
-          validationAction: "error",
+          validationAction: config.env === "production" ? "warn" : "error",
           validator: {
             $jsonSchema: {
               title: `${collectionName} validation schema`,
@@ -131,7 +131,10 @@ export const configureDbSchemaValidation = async (modelDescriptors: IModelDescri
             },
           },
         })
+
+        logger.info(`Validation rule for collection ${collectionName} updated`)
       } catch (error) {
+        logger.error(`Error adding validation rule for collection ${collectionName}`)
         captureException(error)
         logger.error(error)
       }
