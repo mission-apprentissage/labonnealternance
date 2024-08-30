@@ -130,7 +130,7 @@ describe("/jobs", () => {
         "offer_description",
         "offer_desired_skills",
         "offer_diploma_level",
-        "offer_expiration",
+        "offer_expiration_date",
         "offer_opening_count",
         "offer_rome_codes",
         "offer_status",

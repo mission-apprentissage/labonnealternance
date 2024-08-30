@@ -39,7 +39,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     offer_to_be_acquired_skills: null,
     offer_access_conditions: null,
     offer_creation_date: null,
-    offer_expiration: null,
+    offer_expiration_date: null,
     offer_opening_count: 1,
     offer_status: JOB_STATUS.ACTIVE,
 
