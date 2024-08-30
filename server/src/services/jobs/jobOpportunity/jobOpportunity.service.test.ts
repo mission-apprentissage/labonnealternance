@@ -132,17 +132,17 @@ describe("findJobsOpportunities", () => {
     generateJobsPartnersOfferPrivate({
       offer_rome_codes: ["M1602"],
       workplace_geopoint: parisFixture.centre,
-      offer_creation: new Date("2021-01-01"),
+      offer_creation_date: new Date("2021-01-01"),
     }),
     generateJobsPartnersOfferPrivate({
       offer_rome_codes: ["M1602", "D1214"],
       workplace_geopoint: marseilleFixture.centre,
-      offer_creation: new Date("2022-01-01"),
+      offer_creation_date: new Date("2022-01-01"),
     }),
     generateJobsPartnersOfferPrivate({
       offer_rome_codes: ["D1212"],
       workplace_geopoint: levalloisFixture.centre,
-      offer_creation: new Date("2023-01-01"),
+      offer_creation_date: new Date("2023-01-01"),
     }),
   ]
   const ftJobs: FTJob[] = [

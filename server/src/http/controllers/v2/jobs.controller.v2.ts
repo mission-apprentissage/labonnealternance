@@ -119,6 +119,7 @@ export default (server: Server) => {
       }
       const opcoData = await getOpcoData(workplace_siret)
 
+      console.log("weird")
       const now = new Date()
       const job: IJobsPartnersOfferPrivate = {
         ...rest,
@@ -129,7 +130,7 @@ export default (server: Server) => {
         offer_title,
         offer_rome_codes: romeCode,
         offer_status: JOB_STATUS.ACTIVE,
-        offer_creation: rest.offer_creation ?? now,
+        offer_creation_date: rest.offer_creation_date ?? now,
         offer_expiration: rest.offer_expiration ?? addExpirationPeriod(now).toDate(),
         offer_desired_skills: rest.offer_desired_skills ?? null,
         offer_to_be_acquired_skills: rest.offer_to_be_acquired_skills ?? null,

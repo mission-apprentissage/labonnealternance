@@ -205,7 +205,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
 
   const filterStages: Document[] =
     geo === null
-      ? [{ $match: query }, { $sort: { offer_creation: -1 } }]
+      ? [{ $match: query }, { $sort: { offer_creation_date: -1 } }]
       : [
           {
             $geoNear: {
@@ -316,7 +316,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       offer_desired_skills: job.rome_detail.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
       offer_to_be_acquired_skills: job.rome_detail.competences.savoir_faire?.flatMap((x) => x.items.map((y) => `${x.libelle}: ${y.libelle}`)) ?? [],
       offer_access_conditions: job.rome_detail.acces_metier.split("\n"),
-      offer_creation: job.job_creation_date ?? null,
+      offer_creation_date: job.job_creation_date ?? null,
       offer_expiration: job.job_expiration_date ?? null,
       offer_opening_count: job.job_count ?? 1,
       offer_status: job.job_status,
@@ -362,7 +362,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       offer_desired_skills: null,
       offer_to_be_acquired_skills: null,
       offer_access_conditions: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
-      offer_creation: new Date(offreFT.dateCreation),
+      offer_creation_date: new Date(offreFT.dateCreation),
       offer_expiration: null,
       offer_opening_count: offreFT.nombrePostes,
       offer_status: JOB_STATUS.ACTIVE,
