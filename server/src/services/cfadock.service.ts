@@ -1,4 +1,5 @@
 import axios from "axios"
+import { zOpcoLabel } from "shared/models/opco.model"
 import { z } from "zod"
 
 const cfaDockEndpoint = "https://www.cfadock.fr/api/opcos"
@@ -7,7 +8,7 @@ export const CFADOCK_FILTER_LIMIT = 100
 
 const ZResponseItem = z.object({
   filters: z.object({ siret: z.string() }),
-  opcoName: z.string().nullish(),
+  opcoName: zOpcoLabel,
   searchStatus: z.string(),
   url: z.string().nullish(),
   idcc: z.number().nullish(),

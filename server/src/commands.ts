@@ -1,5 +1,6 @@
 import { captureException } from "@sentry/node"
 import { program } from "commander"
+import { addJob, startJobProcessor } from "job-processor"
 import HttpTerminator from "lil-http-terminator"
 
 import { closeMemoryCache } from "./common/apis/client"
@@ -10,9 +11,8 @@ import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { closeSentry, initSentryProcessor } from "./http/sentry"
 import server from "./http/server"
-import { addJob, processor } from "./jobs/jobs_actions"
 
-async function startJobProcessor(signal: AbortSignal) {
+async function startProcessor(signal: AbortSignal) {
   logger.info(`Process jobs queue - start`)
   if (config.env !== "local" && config.env !== "preview") {
     await addJob({
@@ -22,7 +22,7 @@ async function startJobProcessor(signal: AbortSignal) {
     })
   }
 
-  await processor(signal)
+  await startJobProcessor(signal)
   logger.info(`Processor shut down`)
 }
 
@@ -117,7 +117,7 @@ program
       ]
 
       if (withProcessor) {
-        tasks.push(startJobProcessor(signal))
+        tasks.push(startProcessor(signal))
       }
 
       await Promise.all(tasks)
@@ -139,7 +139,7 @@ program
       return
     }
 
-    await startJobProcessor(signal)
+    await startProcessor(signal)
   })
 
 function createJobAction(name) {
@@ -150,7 +150,6 @@ function createJobAction(name) {
         name,
         queued,
         payload,
-        disallowPentest: false,
       })
 
       if (exitCode) {
@@ -167,6 +166,12 @@ program.command("recreate:indexes").description("Recreate MongoDB indexes").opti
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
 program
+  .command("remove:duplicates:recruiters")
+  .description("Remove duplicate recruiters based on SIRET and EMAIL")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("remove:duplicates:recruiters"))
+
+program
   .command("lbajobs:export:s3")
   .description("Export LBA jobs to JSON files on S3")
   .option("-q, --queued", "Run job asynchronously", false)
@@ -179,11 +184,6 @@ program
   .requiredOption("-i, --id <string>", " <id> est l'identifiant de l'élément à anonymiser")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("anonymize-individual"))
-
-program
-  .command("fix:duplicate:users")
-  .description("Fix duplicated users in users collections and update appointment collection accordingly")
-  .action(createJobAction("fix:duplicate:users"))
 
 program.command("db:obfuscate").description("Pseudonymisation des documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:obfuscate"))
 
@@ -538,12 +538,21 @@ program
   .option("-parallelism, [parallelism]", "Number of threads", "10")
   .action(createJobAction("referentiel-opco:constructys:import"))
 
+program.command("import-hellowork").description("Importe les offres hellowork").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import-hellowork"))
+
+program.command("import-kelio").description("Importe les offres kelio").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import-kelio"))
+
 program
-  .command("import-hellowork")
-  .description("Importe les offres hellowork")
+  .command("send-applications")
+  .description("Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.")
   .option("-q, --queued", "Run job asynchronously", false)
-  .option("-parallelism, [parallelism]", "Number of threads", "10")
-  .action(createJobAction("import-hellowork"))
+  .action(createJobAction("send-applications"))
+
+program
+  .command("referentiel:commune:import")
+  .description("Importe le référentiel des communes")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("referentiel:commune:import"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

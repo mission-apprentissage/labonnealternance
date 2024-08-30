@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
 import { JOB_STATUS, ZJob, ZJobWrite } from "../models/job.model"
-import { ZRecruiter, ZRecruiterWritable } from "../models/recruiter.model"
+import { ZRecruiter, ZRecruiterWithApplicationCount, ZRecruiterWritable } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -12,15 +12,7 @@ export const zFormulaireRoute = {
       path: "/formulaire/:establishment_id",
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "200": ZRecruiter.omit({
-          jobs: true,
-        }).extend({
-          jobs: z.array(
-            ZJob.extend({
-              candidatures: z.number(),
-            })
-          ),
-        }),
+        "200": ZRecruiterWithApplicationCount,
       },
       securityScheme: {
         auth: "cookie-session",
@@ -35,15 +27,7 @@ export const zFormulaireRoute = {
       path: "/formulaire/:establishment_id/by-token",
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "200": ZRecruiter.omit({
-          jobs: true,
-        }).extend({
-          jobs: z.array(
-            ZJob.extend({
-              candidatures: z.number(),
-            })
-          ),
-        }),
+        "200": ZRecruiterWithApplicationCount,
       },
       securityScheme: {
         auth: "access-token",
@@ -233,6 +217,7 @@ export const zFormulaireRoute = {
         job_duration: true,
         job_rythm: true,
         job_delegation_count: true,
+        competences_rome: true,
       }).extend({
         job_start_date: z.coerce.date(),
         job_update_date: z.coerce.date(),
@@ -240,7 +225,7 @@ export const zFormulaireRoute = {
         job_expiration_date: z.coerce.date(),
       }),
       response: {
-        "2xx": ZRecruiter,
+        "200": z.object({}),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -324,7 +309,7 @@ export const zFormulaireRoute = {
       params: z.object({ jobId: zObjectId }).strict(),
       querystring: z.object({ siret_formateur: z.string() }).strict(),
       response: {
-        "2xx": ZJob.nullable(),
+        "200": z.object({}),
       },
       securityScheme: {
         auth: "cookie-session",

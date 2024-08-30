@@ -102,12 +102,13 @@ const config = {
     endpoint: env.get("LBA_S3_ENDPOINT").required().asString(),
     region: env.get("LBA_S3_REGION").required().asString(),
     bucket: env.get("LBA_S3_BUCKET").required().asString(),
+    applicationsBucket: env.get("LBA_S3_APPLICATIONS_BUCKET").required().asString(),
   },
   entreprise: {
     baseUrl: "https://entreprise.api.gouv.fr/v3/insee",
-    context: "Matcha MNA",
+    context: "mission-apprentissage",
     recipient: "12000101100010", // Siret Dinum
-    object: "Consolidation des données",
+    object: "consolidation",
     apiKey: env.get("LBA_ENTREPRISE_API_KEY").required().asString(),
     simulateError: env.get("LBA_ENTREPRISE_SIMULATE_ERROR").default("false").asBool(),
   },

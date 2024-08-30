@@ -1,0 +1,17 @@
+config:
+  target: "https://labonnealternance-recette.apprentissage.beta.gouv.fr"
+  phases:
+    - duration: 40
+      arrivalRate: 11
+      name: Simple load
+  payload:
+    path: "romesandgeolocs.csv"
+    fields:
+      - "romes"
+      - "geoloc"
+
+scenarios:
+  - name: "Recherche métier"
+    flow:
+      - get:
+          url: "/api/V1/jobsEtFormations?romes={{ romes }}&radius=30{{ geoloc }}&caller=stresstest"

@@ -1,7 +1,9 @@
-import Boom from "boom"
+import { randomUUID } from "crypto"
+
+import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { IUser } from "shared"
-import { ETAT_UTILISATEUR, OPCOS } from "shared/constants/recruteur"
+import { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
@@ -23,7 +25,7 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
   )
   const savedUser = await getDbCollection("users").findOne({ email })
   if (!savedUser) {
-    throw Boom.internal("inattendu : user non sauvegardé")
+    throw internal("inattendu : user non sauvegardé")
   }
 
   return {
@@ -33,15 +35,18 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
   }
 }
 
-/**
- * @description Returns user from its identifier.
- * @param {string} userId
- * @returns {Promise<IUser>}
- */
-export const getUserById = (userId: string) => getDbCollection("users").findOne({ _id: new ObjectId(userId) })
+export const cleanHardbouncedAppointmentUser = async (email: string) => {
+  const fakeEmail = `email-blacklist-par-lba-${randomUUID()}@faux-domaine.fr`
+  await getDbCollection("users").findOneAndUpdate(
+    { email },
+    {
+      $set: { email: fakeEmail },
+    }
+  )
+}
 
 export const getUserAndRecruitersDataForOpcoUser = async (
-  opco: OPCOS
+  opco: OPCOS_LABEL
 ): Promise<{
   awaiting: IUserForOpco[]
   active: IUserForOpco[]
@@ -58,7 +63,7 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   recruiters.forEach((recruiter) => {
     recruiter.jobs.forEach((job) => {
       if (!job.managed_by) {
-        throw Boom.internal(`inattendu: managed_by vide pour le job avec id=${job._id}`)
+        throw internal(`inattendu: managed_by vide pour le job avec id=${job._id}`)
       }
       recruiterMap.set(job.managed_by.toString(), recruiter)
     })

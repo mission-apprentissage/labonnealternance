@@ -5,7 +5,7 @@ import dayjs from "../helpers/dayjs"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
-import { ZReferentielRomeForJob } from "./rome.model"
+import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model"
 
 export enum JOB_STATUS {
   ACTIVE = "Active",
@@ -15,7 +15,7 @@ export enum JOB_STATUS {
 }
 
 const allJobRythm = Object.values(TRAINING_RYTHM)
-const allJobLevel = [...Object.values(NIVEAUX_POUR_LBA), "Indifférent"]
+const allJobLevel = [...Object.values(NIVEAUX_POUR_LBA)] as const
 const allJobStatus = Object.values(JOB_STATUS)
 const allJobType = Object.values(TRAINING_CONTRACT_TYPE)
 export const ZJobType = z.array(z.enum([allJobType[0], ...allJobType.slice(1)])).describe("Type de contrat")
@@ -57,13 +57,17 @@ export const ZJobFields = z
     is_disabled_elligible: z.boolean().nullish().default(false).describe("Poste ouvert aux personnes en situation de handicap"),
     job_count: z.number().nullish().default(1).describe("Nombre de poste(s) ouvert(s) pour cette offre"),
     job_duration: z.number().min(6).max(36).nullish().describe("Durée du contrat en mois"),
-    job_rythm: z.enum([allJobRythm[0], ...allJobRythm.slice(1)]).describe("Répartition de la présence de l'alternant en formation/entreprise"),
+    job_rythm: z
+      .enum([allJobRythm[0], ...allJobRythm.slice(1)])
+      .nullish()
+      .describe("Répartition de la présence de l'alternant en formation/entreprise"),
     custom_address: z.string().nullish().describe("Adresse personnalisée de l'entreprise"),
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
     custom_job_title: z.string().nullish().describe("Titre personnalisée de l'offre"),
     stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
     managed_by: z.string().nullish().describe("Id de l'utilisateur gérant l'offre"),
+    competences_rome: ZRomeCompetence.nullish().describe("Compétences du code ROME sélectionnées par le recruteur"),
   })
   .strict()
   .openapi("JobWritable")
@@ -98,6 +102,7 @@ export const ZJobWrite = ZJobFields.pick({
   job_rythm: true,
   job_description: true,
   delegations: true,
+  competences_rome: true,
 })
   .extend({
     job_start_date: ZJobStartDateCreate(),

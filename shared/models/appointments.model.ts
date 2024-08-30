@@ -1,10 +1,10 @@
 import { Jsonify } from "type-fest"
 
 import { AppointmentUserType } from "../constants/appointment"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { IModelDescriptor, zObjectId } from "./common"
-import { enumToZod } from "./enumToZod"
 
 const collectionName = "appointments" as const
 
@@ -42,7 +42,7 @@ export type IMailing = z.output<typeof ZMailing>
 export const ZAppointment = z
   .object({
     _id: zObjectId,
-    applicant_id: z.string(),
+    applicant_id: zObjectId,
     cfa_intention_to_applicant: z.string().nullish(),
     cfa_message_to_applicant_date: z.date().nullish(),
     cfa_message_to_applicant: z.string().nullish(),
@@ -57,7 +57,7 @@ export const ZAppointment = z
     cle_ministere_educatif: z.string(),
     created_at: z.date().default(() => new Date()),
     cfa_recipient_email: z.string(),
-    applicant_type: enumToZod(AppointmentUserType).nullish(),
+    applicant_type: extensions.buildEnum(AppointmentUserType).nullish(),
   })
   .strict()
   .openapi("Appointment")
@@ -67,6 +67,10 @@ export type IAppointmentJson = Jsonify<z.input<typeof ZAppointment>>
 
 export default {
   zod: ZAppointment,
-  indexes: [[{ applicant_id: 1 }, {}]],
+  indexes: [
+    [{ applicant_id: 1 }, {}],
+    [{ "to_applicant_mails.message_id": 1 }, {}],
+    [{ "to_cfa_mails.message_id": 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

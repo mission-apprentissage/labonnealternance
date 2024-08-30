@@ -15,7 +15,7 @@ import { getFileFromS3Bucket } from "../../common/utils/awsUtils"
 import { readXLSXFile } from "../../common/utils/fileUtils"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { createAssetsFolder } from "../lbb/lbaCompaniesUtils"
+import { createAssetsFolder } from "../recruteurLba/recruteurLbaUtil"
 
 const currentDirname = __dirname(import.meta.url)
 const FILEPATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")

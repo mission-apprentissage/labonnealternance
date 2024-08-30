@@ -1,18 +1,18 @@
 import { setTimeout } from "timers/promises"
 
+import { badRequest, notFound } from "@hapi/boom"
 import distance from "@turf/distance"
-import Boom from "boom"
+import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 
-import { getFtJob, getFtReferentiels, searchForFtJobs } from "@/common/apis/FranceTravail"
+import { getFtJob, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 
-import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service"
 import { FTJob, FTResponse } from "./ftjob.service.types"
 import { TLbaItemResult } from "./jobOpportunity.service.types"
 import { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
@@ -23,21 +23,6 @@ const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "op
 const correspondancesNatureContrat = {
   "Cont. professionnalisation": TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION,
   "Contrat apprentissage": TRAINING_CONTRACT_TYPE.APPRENTISSAGE,
-}
-
-/**
- * Utilitaire à garder pour interroger les référentiels PE non documentés par ailleurs
- * Liste des référentiels disponible sur https://www.emploi-store-dev.fr/portail-developpeur-cms/home/catalogue-des-api/documentation-des-api/api/api-offres-demploi-v2/referentiels.html
- *
- * @param {string} referentiel
- */
-export const getFtApiReferentiels = async (referentiel: string) => {
-  try {
-    const referentiels = await getFtReferentiels(referentiel)
-    console.info(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
-  } catch (error) {
-    console.error("error getReferentiel ", error)
-  }
 }
 
 /**
@@ -216,7 +201,7 @@ export const getFtJobs = async ({
   api = "jobV1",
 }: {
   romes: string[]
-  insee: string
+  insee?: string
   radius: number
   jobLimit: number
   caller: string
@@ -236,7 +221,7 @@ export const getFtJobs = async ({
 
     const distance = radius || 10
 
-    const params: { codeROME: string; commune: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
+    const params: Parameters<typeof searchForFtJobs>[0] = {
       codeROME: romes.join(","),
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
@@ -246,10 +231,7 @@ export const getFtJobs = async ({
 
     if (diploma) {
       const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
-      if (niveauRequis && niveauRequis !== "NV5") {
-        // pas de filtrage sur niveau requis NV5 car pas de résultats
-        params.niveauFormation = niveauRequis
-      }
+      params.niveauFormation = niveauRequis
     }
 
     if (hasLocation) {
@@ -257,7 +239,7 @@ export const getFtJobs = async ({
       params.distance = distance
     }
 
-    const jobs = await searchForFtJobs(params)
+    const jobs = await searchForFtJobs(params, { throwOnError: false })
 
     if (jobs === null || jobs === "") {
       const emptyPeResponse: FTResponse = { resultats: [] }
@@ -269,6 +251,58 @@ export const getFtJobs = async ({
     sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
   }
+}
+
+/**
+ * Récupère une liste d'offres depuis l'API France Travail
+ */
+export const getFtJobsV2 = async ({
+  romes,
+  insee,
+  radius,
+  jobLimit,
+  diploma,
+}: {
+  romes: string[] | null
+  insee: string | null
+  radius: number
+  jobLimit: number
+  diploma: keyof typeof NIVEAUX_POUR_OFFRES_PE | null | undefined
+}): Promise<FTResponse> => {
+  const distance = radius || 10
+
+  const params: Parameters<typeof searchForFtJobs>[0] = {
+    sort: 2,
+    natureContrat: "E2,FS", //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
+    range: `0-${jobLimit - 1}`,
+  }
+
+  if (romes) {
+    params.codeROME = romes.join(",")
+  }
+
+  if (insee) {
+    // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
+    let codeInsee = insee
+    if (insee === "75056") codeInsee = "75101"
+    else if (insee === "13055") codeInsee = "13201"
+    else if (insee === "69123") codeInsee = "69381"
+
+    params.commune = codeInsee
+    params.distance = distance || 10
+  }
+
+  if (diploma) {
+    params.niveauFormation = NIVEAUX_POUR_OFFRES_PE[diploma]
+  }
+
+  const jobs = await searchForFtJobs(params, { throwOnError: true })
+
+  if (jobs === null || jobs === "") {
+    return { resultats: [] }
+  }
+
+  return jobs
 }
 
 /**
@@ -340,10 +374,10 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
     const job = await getFtJob(id)
 
     if (job.status === 204 || job.data === "") {
-      throw Boom.notFound()
+      throw notFound()
     }
     if (job.status === 400) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     const ftJob = transformFtJob({ job: job.data })
@@ -372,10 +406,10 @@ export const getFtJobFromIdV2 = async ({ id, caller }: { id: string; caller: str
     const job = await getFtJob(id)
 
     if (job.status === 204 || job.data === "") {
-      throw Boom.notFound()
+      throw notFound()
     }
     if (job.status === 400) {
-      throw Boom.badRequest()
+      throw badRequest()
     }
 
     const ftJob = transformFtJob({ job: job.data })

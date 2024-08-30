@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest } from "@hapi/boom"
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
 import { assertUnreachable, type IFormationCatalogue, type ILbaItemFormation2 } from "shared"
@@ -332,8 +332,8 @@ const transformFormations = (rawFormations: IFormationCatalogue[], isMinimalData
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
 const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormation => {
-  const geoSource = rawFormation.lieu_formation_geo_coordonnees
-  const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
+  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
+  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
   const sessions = setSessions(rawFormation)
   const duration = getDurationFromSessions(sessions)
 
@@ -417,8 +417,9 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
 const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormation2 => {
-  const geoSource = rawFormation.lieu_formation_geo_coordonnees
-  const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
+  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
+  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
+
   const sessions = setSessions(rawFormation)
   const duration = getDurationFromSessions(sessions)
 
@@ -492,8 +493,8 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue): ILbaItemFormat
 }
 
 const transformFormationWithMinimalDataV2 = (rawFormation: IFormationCatalogue): ILbaItemFormation2 => {
-  const geoSource = rawFormation.lieu_formation_geo_coordonnees
-  const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
+  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
+  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
 
   const resultFormation: ILbaItemFormation2 = {
     type: LBA_ITEM_TYPE.FORMATION,
@@ -525,8 +526,8 @@ const transformFormationWithMinimalDataV2 = (rawFormation: IFormationCatalogue):
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
  */
 const transformFormationWithMinimalData = (rawFormation: IFormationCatalogue): ILbaItemFormation => {
-  const geoSource = rawFormation.lieu_formation_geo_coordonnees
-  const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
+  const latOpt = rawFormation.lieu_formation_geopoint?.coordinates[0] ?? null
+  const longOpt = rawFormation.lieu_formation_geopoint?.coordinates[1] ?? null
 
   const resultFormation: ILbaItemFormation = {
     ideaType: LBA_ITEM_TYPE_OLD.FORMATION,
@@ -717,7 +718,7 @@ export const getFormationsV2 = async ({
     if ("error" in parameterControl) {
       switch (parameterControl.error) {
         case "wrong_parameters":
-          throw Boom.badRequest("wrong_parameters", parameterControl)
+          throw badRequest("wrong_parameters", parameterControl)
         default:
           assertUnreachable(parameterControl.error)
       }
@@ -856,7 +857,7 @@ export const getFormationsParRegionV2 = async ({
     if ("error" in queryValidationResult) {
       switch (queryValidationResult.error) {
         case "wrong_parameters":
-          throw Boom.badRequest("wrong_parameters", queryValidationResult)
+          throw badRequest("wrong_parameters", queryValidationResult)
         default:
           assertUnreachable(queryValidationResult.error)
       }

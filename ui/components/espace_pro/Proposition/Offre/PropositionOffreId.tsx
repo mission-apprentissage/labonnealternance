@@ -1,22 +1,27 @@
-import { /*Accordion, AccordionButton, AccordionItem, AccordionPanel,*/ Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
-
-import { RomeDetail } from "@/components/DepotOffre/RomeDetail"
+import { useEffect } from "react"
+import { useQuery } from "react-query"
+import { IJobJson } from "shared"
 
 import { LoadingEmptySpace } from "../.."
 import { dayjs } from "../../../../common/dayjs"
 import { publicConfig } from "../../../../config.public"
-import { Copy /*, InfoCircle, Minus, Plus*/ } from "../../../../theme/components/icons"
+import { Copy } from "../../../../theme/components/icons"
 import { getDelegationDetails, patchOffreDelegation } from "../../../../utils/api"
+import { RomeDetailReadOnly } from "../../../DepotOffre/RomeDetailReadOnly"
 
 export default function PropositionOffreId() {
   const router = useRouter()
   const { idFormulaire, jobId, siretFormateur, token } = router.query as { idFormulaire: string; jobId: string; siretFormateur: string; token: string }
   const toast = useToast()
 
-  const [job, setJob]: [any, (t: any) => void] = useState()
-  const [formulaire, setFormulaire]: [any, (t: any) => void] = useState()
+  const formulaireQuery = useQuery(["getFormulaire", idFormulaire, token], () => getDelegationDetails(idFormulaire, token), {
+    enabled: Boolean(idFormulaire && token && siretFormateur),
+  })
+
+  const formulaire = formulaireQuery?.data
+  const job = (formulaire?.jobs as IJobJson[])?.find((job) => job._id === jobId)
 
   /**
    * @description Copy in clipboard.
@@ -37,25 +42,16 @@ export default function PropositionOffreId() {
    * @return {void}
    */
   useEffect(() => {
-    const fetchData = async () => {
-      const data: any = await getDelegationDetails(idFormulaire, token)
-      const job = data.jobs.find((job) => job._id === jobId)
-
-      if (siretFormateur) {
-        await patchOffreDelegation(job._id, null, { params: { siret_formateur: siretFormateur } })
-      }
-
-      setFormulaire(data)
-      setJob(job)
+    if (job?._id && siretFormateur) {
+      patchOffreDelegation(job._id, siretFormateur)
     }
-    if (idFormulaire && siretFormateur && jobId) {
-      fetchData().catch(console.error)
-    }
-  }, [idFormulaire])
+  }, [job?._id, siretFormateur])
 
   if (!job) {
     return <LoadingEmptySpace />
   }
+
+  const competencesRome = job.competences_rome ?? job?.rome_detail?.competences
 
   return (
     <Container maxW="container.xl" mb={20}>
@@ -168,7 +164,7 @@ export default function PropositionOffreId() {
           </Stack>
         </Box>
       </SimpleGrid>
-      {job.rome_detail && <RomeDetail {...job.rome_detail} />}
+      {competencesRome && <RomeDetailReadOnly romeReferentiel={job.rome_detail} competences={competencesRome} appellation={job.rome_appellation_label} />}
     </Container>
   )
 }

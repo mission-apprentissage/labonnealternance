@@ -20,15 +20,6 @@ x-deploy-default: &deploy-default
 x-default: &default
   networks:
     - mna_network
-  dns:
-    - 1.1.1.1
-    - 1.0.0.1
-    - 2606:4700:4700::1111
-    - 2606:4700:4700::1001
-    - 8.8.8.8
-    - 8.8.4.4
-    - 2001:4860:4860::8888
-    - 2001:4860:4860::8844
 
 services:
   server:
@@ -41,6 +32,7 @@ services:
           memory: 2g
       replicas: 2
     env_file: .env_server
+    stop_grace_period: 2m
     volumes:
       - /opt/app/data/server:/data
     logging:
@@ -66,6 +58,7 @@ services:
           memory: 2g
     command: ["yarn", "cli", "job_processor:start"]
     env_file: .env_server
+    stop_grace_period: 5m
     volumes:
       - /opt/app/data/server:/data
     logging:

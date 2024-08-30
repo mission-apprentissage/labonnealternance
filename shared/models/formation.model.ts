@@ -1,3 +1,4 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
 import { ZPointGeometry } from "./address.model"
@@ -10,7 +11,7 @@ const geoCoordSchema = z.string()
 const etablissementFormateurSchema = z
   .object({
     etablissement_formateur_id: z.string().nullish(),
-    etablissement_formateur_siret: z.string().nullish(),
+    etablissement_formateur_siret: extensions.siret.nullish(),
     etablissement_formateur_enseigne: z.string().nullish(),
     etablissement_formateur_uai: z.string().nullish(),
     etablissement_formateur_type: z.string().nullish(),
@@ -43,7 +44,7 @@ const etablissementFormateurSchema = z
 const etablissementGestionnaireSchema = z
   .object({
     etablissement_gestionnaire_id: z.string().nullish(),
-    etablissement_gestionnaire_siret: z.string().nullish(),
+    etablissement_gestionnaire_siret: extensions.siret.nullish(),
     etablissement_gestionnaire_enseigne: z.string().nullish(),
     etablissement_gestionnaire_uai: z.string().nullish(),
     etablissement_gestionnaire_type: z.string().nullish(),
@@ -161,7 +162,7 @@ export const zFormationCatalogueSchema = z
     lieu_formation_geopoint: ZPointGeometry.nullish(),
     lieu_formation_adresse: z.string().nullish(),
     lieu_formation_adresse_computed: z.string().nullish(),
-    lieu_formation_siret: z.string().nullish(),
+    lieu_formation_siret: extensions.siret.nullish(),
     id_rco_formation: z.string().nullish(),
     id_formation: z.string().nullish(),
     id_action: z.string().nullish(),
@@ -202,13 +203,14 @@ export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>
 export default {
   zod: zFormationCatalogueSchema,
   indexes: [
+    [{ lieu_formation_geopoint: "2dsphere" }, {}],
     [{ cle_ministere_educatif: 1 }, {}],
+    [{ uai_formation: 1 }, {}],
+    [{ rome_codes: 1 }, {}],
+    [{ rncp_code: 1 }, {}],
     [{ cfd: 1 }, {}],
     [{ cfd_entree: 1 }, {}],
-    [{ uai_formation: 1 }, {}],
     [{ niveau: 1 }, {}],
-    [{ rncp_code: 1 }, {}],
-    [{ rome_codes: 1 }, {}],
     [{ parcoursup_id: 1 }, {}],
     [{ published: 1 }, {}],
     [{ to_update: 1 }, {}],
@@ -219,7 +221,6 @@ export default {
     [{ id_certifinfo: 1 }, {}],
     [{ tags: 1 }, {}],
     [{ catalogue_published: 1 }, {}],
-    [{ lieu_formation_geopoint: "2dsphere" }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

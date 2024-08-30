@@ -1,6 +1,6 @@
 import { Readable } from "stream"
 
-import Boom from "boom"
+import { internal } from "@hapi/boom"
 import NodeClam from "clamscan"
 
 import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils/sentryUtils"
@@ -24,7 +24,7 @@ async function createClamav() {
 async function getClamav(): Promise<NodeClam> {
   if (clamavCache === null) {
     const retry = (error) => {
-      const err = Boom.internal("Error initializing ClamAV")
+      const err = internal("Error initializing ClamAV")
       err.cause = error
       logger.error(err)
       sentryCaptureException(err)
@@ -34,7 +34,7 @@ async function getClamav(): Promise<NodeClam> {
     const watch = (instance: NodeClam) => {
       watcher = setInterval(() => {
         instance.getVersion().catch((error) => {
-          const err = Boom.internal("Error with ClamAV health check")
+          const err = internal("Error with ClamAV health check")
           err.cause = error
           logger.error(err)
           sentryCaptureException(err)
@@ -64,10 +64,19 @@ export async function getVersion(): Promise<string> {
     return versions
   } catch (error) {
     handleClamavError()
-    const err = Boom.internal("Error getting ClamAV versions")
+    const err = internal("Error getting ClamAV versions")
     logger.error(err)
     err.cause = error
     throw err
+  }
+}
+
+export async function isClamavAvailable(): Promise<boolean> {
+  try {
+    await getVersion()
+    return true
+  } catch (err) {
+    return false
   }
 }
 
@@ -79,7 +88,7 @@ export async function isInfected(file: string): Promise<boolean> {
   try {
     const { isInfected, viruses } = await clamav.scanStream(rs)
     if (isInfected === null) {
-      throw Boom.internal("Unable to scan file for viruses", { viruses })
+      throw internal("Unable to scan file for viruses", { viruses })
     }
     if (isInfected) {
       logger.error(`Virus detected ${viruses.toString()}`)
@@ -88,7 +97,7 @@ export async function isInfected(file: string): Promise<boolean> {
     return isInfected
   } catch (error) {
     handleClamavError()
-    const err = Boom.internal("Error scanning file for viruses")
+    const err = internal("Error scanning file for viruses")
     err.cause = error
     throw err
   } finally {

@@ -1,0 +1,18 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M50.8568 8.66229H49.4307V24.917H50.8568V8.66229Z" fill="#2E186A"/>
+<path d="M61.9725 8.66229H50.855V15.6676H61.9725V8.66229Z" fill="#2E186A"/>
+<path d="M91.3381 51.5409H8.6626L18.0715 35.0062H81.9291L91.3381 51.5409Z" fill="#FF8B7E"/>
+<path d="M61.2889 35.0065L49.9995 23.9086L38.7102 35.0065L49.9995 46.1044L61.2889 35.0065Z" fill="#FF8B7E"/>
+<path d="M85.0658 51.5408H14.9341V91.3377H85.0658V51.5408Z" fill="#EDEDED"/>
+<path d="M61.2889 51.5408L49.9995 40.4429L38.7102 51.5408L49.9995 62.6388L61.2889 51.5408Z" fill="#EDEDED"/>
+<path d="M57.983 69.4775H42.3022V91.3378H57.983V69.4775Z" fill="#00AC8C"/>
+<path d="M26.3385 54.9657H18.9253V64.9877H26.3385V54.9657Z" stroke="#2E186A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M39.4523 54.9657H32.0391V64.9877H39.4523V54.9657Z" stroke="#2E186A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M26.3385 69.1609H18.9253V79.1829H26.3385V69.1609Z" stroke="#2E186A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M39.4523 69.1609H32.0391V79.1829H39.4523V69.1609Z" stroke="#2E186A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M67.9616 54.9657H60.5483V64.9877H67.9616V54.9657Z" stroke="#2E186A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M81.0749 54.9657H73.6616V64.9877H81.0749V54.9657Z" stroke="#2E186A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M67.9616 69.1609H60.5483V79.1829H67.9616V69.1609Z" stroke="#2E186A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M81.0749 69.1609H73.6616V79.1829H81.0749V69.1609Z" stroke="#2E186A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M50.0007 63.8091C53.9364 63.8091 57.1268 60.4983 57.1268 56.4141C57.1268 52.33 53.9364 49.0191 50.0007 49.0191C46.065 49.0191 42.8745 52.33 42.8745 56.4141C42.8745 60.4983 46.065 63.8091 50.0007 63.8091Z" fill="#00AC8C"/>
+</svg>

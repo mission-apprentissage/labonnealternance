@@ -1,4 +1,4 @@
-import Boom from "boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
@@ -46,11 +46,11 @@ export default (server: Server) => {
       })
 
       if (!eligibleTrainingsForAppointment) {
-        throw Boom.badRequest("Formation introuvable.")
+        throw badRequest("Formation introuvable.")
       }
 
       if (!eligibleTrainingsForAppointment.lieu_formation_email) {
-        throw Boom.internal("Le lieu de formation n'a aucun email")
+        throw internal("Le lieu de formation n'a aucun email")
       }
 
       const { user, isNew } = await users.createOrUpdateUserByEmail(
@@ -62,7 +62,7 @@ export default (server: Server) => {
 
       if (!isNew) {
         const appointment = await appointmentService.findOne({
-          applicant_id: user._id.toString(),
+          applicant_id: user._id,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
           created_at: {
             $gte: dayjs().subtract(4, "days").toDate(),
@@ -70,17 +70,17 @@ export default (server: Server) => {
         })
 
         if (appointment) {
-          throw Boom.badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement en cours de traitement.`)
+          throw badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement en cours de traitement.`)
         }
       }
 
       if (!eligibleTrainingsForAppointment.lieu_formation_email) {
-        throw Boom.internal("Le lieu de formation n'a aucun email")
+        throw internal("Le lieu de formation n'a aucun email")
       }
 
       const [createdAppointement, etablissement] = await Promise.all([
         appointmentService.createAppointment({
-          applicant_id: user._id.toString(),
+          applicant_id: user._id,
           cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
           cfa_formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
           applicant_message_to_cfa: applicantMessageToCfa,
@@ -122,7 +122,7 @@ export default (server: Server) => {
       const appointment = await getDbCollection("appointments").findOne({ _id: new ObjectId(appointmentId) }, { projection: { cle_ministere_educatif: 1, applicant_id: 1 } })
 
       if (!appointment) {
-        throw Boom.notFound()
+        throw notFound()
       }
 
       const [formation, user] = await Promise.all([
@@ -147,11 +147,11 @@ export default (server: Server) => {
       ])
 
       if (!formation) {
-        throw Boom.internal("Etablissment not found")
+        throw internal("Etablissment not found")
       }
 
       if (!user) {
-        throw Boom.internal("User not found")
+        throw internal("User not found")
       }
 
       res.status(200).send({
@@ -187,7 +187,7 @@ export default (server: Server) => {
       )
 
       if (!appointment) {
-        throw Boom.notFound()
+        throw notFound()
       }
 
       if (!appointment.cfa_read_appointment_details_date) {
@@ -209,7 +209,7 @@ export default (server: Server) => {
           }
         ),
         getDbCollection("users").findOne(
-          { _id: new ObjectId(appointment.applicant_id) },
+          { _id: appointment.applicant_id },
           {
             projection: {
               type: 1,
@@ -223,7 +223,7 @@ export default (server: Server) => {
       ])
 
       if (!user) {
-        throw Boom.internal("User not found")
+        throw internal("User not found")
       }
 
       res.status(200).send({
@@ -245,10 +245,10 @@ export default (server: Server) => {
 
       const appointment = await getDbCollection("appointments").findOne({ _id: appointment_id })
 
-      if (!appointment) throw Boom.notFound()
+      if (!appointment) throw notFound()
 
       if (!appointment.applicant_id) {
-        throw Boom.internal("Applicant id not found.")
+        throw internal("Applicant id not found.")
       }
 
       const { cle_ministere_educatif } = appointment
@@ -256,10 +256,10 @@ export default (server: Server) => {
         getParameterByCleMinistereEducatif({
           cleMinistereEducatif: cle_ministere_educatif,
         }),
-        users.getUserById(appointment.applicant_id.toString()),
+        getDbCollection("users").findOne({ _id: appointment.applicant_id }),
       ])
 
-      if (!user) throw Boom.notFound()
+      if (!user) throw notFound()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
         const formationCatalogue = cle_ministere_educatif ? await getDbCollection("formationcatalogues").findOne({ cle_ministere_educatif }) : undefined

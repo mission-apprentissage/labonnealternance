@@ -1,4 +1,4 @@
-import { ZUnsubscribeQueryParams, ZUnsubscribeQueryResponse } from "../models/unsubscribeLbaCompany.model"
+import { ZUnsubscribeQueryParams, ZUnsubscribeQueryResponse } from "../models/unsubscribedRecruteurLba.model"
 
 import { IRoutesDef } from "./common.routes"
 

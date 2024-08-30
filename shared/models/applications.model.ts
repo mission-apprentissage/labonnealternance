@@ -8,6 +8,14 @@ import { IModelDescriptor, zObjectId } from "./common"
 
 const collectionName = "applications" as const
 
+export enum ApplicationScanStatus {
+  WAITING_FOR_SCAN = "WAITING_FOR_SCAN",
+  VIRUS_DETECTED = "VIRUS_DETECTED",
+  ERROR_CLAMAV = "ERROR_CLAMAV",
+  NO_VIRUS_DETECTED = "NO_VIRUS_DETECTED",
+  DO_NOT_SEND = "DO_NOT_SEND",
+}
+
 export const ZApplication = z
   .object({
     _id: zObjectId,
@@ -71,7 +79,7 @@ export const ZApplication = z
       example: "38 RUE DES HAMECONS, 75021 PARIS-21",
     }),
     job_origin: z
-      .enum([allLbaItemType[0], ...allLbaItemType.slice(1), ...allLbaItemTypeOLD])
+      .enum([allLbaItemType[0], ...allLbaItemType.slice(1), ...allLbaItemTypeOLD.slice(1)]) // suppression intentionnelle du premier élément de allLbaItemTypeOLD pour éviter un duplicat
       .nullable()
       .openapi({
         description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
@@ -96,6 +104,7 @@ export const ZApplication = z
     caller: z.string().nullish().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
     created_at: z.date().nullable().describe("La date création de la demande"),
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
+    scan_status: extensions.buildEnum(ApplicationScanStatus).describe("Status du processus de scan de virus"),
   })
   .strict()
   .openapi("Application")
@@ -140,6 +149,7 @@ export const ZNewApplication = ZApplication.extend({
     company_feedback_date: true,
     created_at: true,
     last_update_at: true,
+    scan_status: true,
   })
   .openapi("ApplicationUi")
 
@@ -199,6 +209,7 @@ export const ZNewApplicationV2 = ZApplication.extend({
     company_feedback: true,
     company_feedback_date: true,
     created_at: true,
+    scan_status: true,
     last_update_at: true,
   })
   .openapi("ApplicationUi")
@@ -242,6 +253,8 @@ export default {
     [{ job_id: 1 }, {}],
     [{ caller: 1 }, {}],
     [{ created_at: 1 }, {}],
+    [{ scan_status: 1 }, {}],
+    [{ scan_status: 1, to_applicant_message_id: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

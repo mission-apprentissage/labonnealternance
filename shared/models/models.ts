@@ -3,6 +3,7 @@ import { z } from "zod"
 import apicallsModel from "./apicalls.model"
 import applicationsModel from "./applications.model"
 import appointmentsModel from "./appointments.model"
+import cacheRomeoModel from "./cacheRomeo.model"
 import cfaModel from "./cfa.model"
 import { IModelDescriptor } from "./common"
 import credentialsModel from "./credentials.model"
@@ -19,20 +20,25 @@ import franceTravailAccessModel from "./franceTravailAccess.model"
 import geolocationsModel from "./geolocations.model"
 import internalJobModel from "./internalJob.model"
 import jobsModel from "./jobs.model"
-import lbaCompanyModel from "./lbaCompany.model"
-import lbaCompanyLegacyModel from "./lbaCompanyLegacy.model"
+import jobsPartnersModel from "./jobsPartners.model"
+import jobsPartnersComputedModel from "./jobsPartnersComputed.model "
 import opcoModel from "./opco.model"
 import optoutModel from "./optout.model"
 import rawHelloWorkModel from "./rawHelloWork.model"
+import rawKelioModel from "./rawKelio.model"
 import recruiterModel from "./recruiter.model"
+import lbaCompanyModel from "./recruteurLba.model"
+import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model"
+import { referentielCommuneModel } from "./referentiel/communes.model"
 import referentielOnisepModel from "./referentielOnisep.model"
 import referentielOpcoModel from "./referentielOpco.model"
+import reportedCompanyModel from "./reportedCompany.model"
 import roleManagementModel from "./roleManagement.model"
 import romeModel from "./rome.model"
 import sessionModel from "./session.model"
 import siretDiffusibleStatusModel from "./siretDiffusibleStatus.model"
-import unsubscribedLbaCompanyModel from "./unsubscribedLbaCompany.model"
+import unsubscribedLbaCompanyModel from "./unsubscribedRecruteurLba.model"
 import unsubscribeOFModel from "./unsubscribeOF.model"
 import userModel from "./user.model"
 import userWithAccountModel from "./userWithAccount.model"
@@ -41,6 +47,7 @@ const modelDescriptorMap = {
   [appointmentsModel.collectionName]: appointmentsModel,
   [apicallsModel.collectionName]: apicallsModel,
   [applicationsModel.collectionName]: applicationsModel,
+  [cacheRomeoModel.collectionName]: cacheRomeoModel,
   [cfaModel.collectionName]: cfaModel,
   [credentialsModel.collectionName]: credentialsModel,
   [customEmailETFAModel.collectionName]: customEmailETFAModel,
@@ -56,6 +63,8 @@ const modelDescriptorMap = {
   [geolocationsModel.collectionName]: geolocationsModel,
   [internalJobModel.collectionName]: internalJobModel,
   [jobsModel.collectionName]: jobsModel,
+  [jobsPartnersModel.collectionName]: jobsPartnersModel,
+  [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
   [lbaCompanyModel.collectionName]: lbaCompanyModel,
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,
@@ -73,6 +82,9 @@ const modelDescriptorMap = {
   [unsubscribeOFModel.collectionName]: unsubscribeOFModel,
   [userModel.collectionName]: userModel,
   [userWithAccountModel.collectionName]: userWithAccountModel,
+  [reportedCompanyModel.collectionName]: reportedCompanyModel,
+  [referentielCommuneModel.collectionName]: referentielCommuneModel,
+  [rawKelioModel.collectionName]: rawKelioModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]
