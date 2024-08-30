@@ -119,7 +119,6 @@ export default (server: Server) => {
       }
       const opcoData = await getOpcoData(workplace_siret)
 
-      console.log("weird")
       const now = new Date()
       const job: IJobsPartnersOfferPrivate = {
         ...rest,
