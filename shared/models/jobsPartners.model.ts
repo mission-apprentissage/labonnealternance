@@ -33,7 +33,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
-  apply_url: extensions.url().nullable().describe("URL pour candidater"),
+  apply_url: z.string().nullable().describe("URL pour candidater"),
   apply_phone: z.string().nullable().describe("Téléphone de contact"),
 })
 
