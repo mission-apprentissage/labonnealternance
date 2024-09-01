@@ -20,9 +20,9 @@ export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
 
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
-  workplace_website: z.string().nullable().describe("Site web de l'entreprise"),
+  workplace_website: z.string().nullable().describe("Site web de l'entreprise").default(null),
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise"),
-  workplace_description: z.string().nullable().describe("description de l'entreprise"),
+  workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
   workplace_address: z.object({
     label: z.string().describe("Adresse de l'offre, provenant du SIRET ou du partenaire"),
@@ -33,8 +33,8 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
-  apply_url: z.string().nullable().describe("URL pour candidater"),
-  apply_phone: z.string().nullable().describe("Téléphone de contact"),
+  apply_url: z.string().nullable().describe("URL pour candidater").default(null),
+  apply_phone: z.string().nullable().describe("Téléphone de contact").default(null),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
@@ -46,15 +46,16 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
 }).extend({
   _id: z.union([zObjectId, z.string()]).nullable().describe("Identifiant de l'offre"),
 
-  partner: extensions.buildEnum(JOBPARTNERS_LABEL).describe("Référence du partenaire"),
-  partner_job_id: z.string().nullable().describe("Identifiant d'origine l'offre provenant du partenaire"),
+  partner: z.string().describe("Référence du partenaire"),
+  partner_job_id: z.string().nullable().describe("Identifiant d'origine l'offre provenant du partenaire").default(null),
 
   contract_start: z.date().nullable().describe("Date de début de contrat"),
   contract_duration: z.number().int().min(0).nullable().describe("Durée du contrat en mois"),
   contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contrat, formaté à l'insertion"),
-  contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
+  contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre").default(null),
 
   offer_title: z.string().describe("Titre de l'offre"),
+  // TODO: pluriel ?
   offer_rome_code: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   offer_diploma_level: z
@@ -63,19 +64,19 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
       label: z.string().describe("Libellé du niveau de diplome"),
     })
     .nullable(),
-  offer_desired_skills: z.array(z.string()).describe("Compétence attendues par le candidat pour l'offre").nullable(),
-  offer_to_be_acquired_skills: z.array(z.string()).describe("Compétence acuqises durant l'alternance").nullable(),
-  offer_access_conditions: z.array(z.string()).nullable().describe("Conditions d'accès à l'offre"),
-  offer_creation: z.date().nullable().describe("Date de creation de l'offre"),
-  offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j"),
-  offer_opening_count: z.number().describe("Nombre de poste disponible"),
-  offer_status: extensions.buildEnum(JOB_STATUS).nullable().describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
+  offer_desired_skills: z.array(z.string()).describe("Compétence attendues par le candidat pour l'offre").default([]),
+  offer_to_be_acquired_skills: z.array(z.string()).describe("Compétence acuqises durant l'alternance").default([]),
+  offer_access_conditions: z.array(z.string()).describe("Conditions d'accès à l'offre").default([]),
+  offer_creation: z.date().nullable().describe("Date de creation de l'offre").default(null),
+  offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j").default(null),
+  offer_opening_count: z.number().describe("Nombre de poste disponible").default(1),
+  offer_status: extensions.buildEnum(JOB_STATUS).default(JOB_STATUS.ACTIVE).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({
-  apply_email: z.string().nullable().describe("Email de contact"),
+  apply_email: z.string().nullable().describe("Email de contact").default(null),
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
-  offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur"),
+  offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur").default(null),
 
   created_at: z.date().describe("Date de creation de l'offre"),
 })
