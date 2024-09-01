@@ -14,7 +14,7 @@ import { certificationFixtures } from "@/services/external/api-alternance/certif
 
 describe("/jobs", () => {
   const httpClient = useServer()
-  const token = getApiApprentissageTestingToken({ email: "test@test.fr" })
+  const token = getApiApprentissageTestingToken({ email: "test@test.fr", organisation: "Un super Partenaire", habilitations: { "jobs:write": true } })
 
   const rome = ["D1214", "D1212", "D1211"]
   const rncpQuery = "RNCP37098"
