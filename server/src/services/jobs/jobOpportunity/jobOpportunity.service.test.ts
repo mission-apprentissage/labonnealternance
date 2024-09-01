@@ -11,8 +11,9 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS } from "shared/models"
 import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-import { beforeEach, beforeAll, afterEach, describe, expect, it } from "vitest"
+import { beforeEach, beforeAll, afterEach, describe, expect, it, vi } from "vitest"
 
+import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 import { generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
@@ -23,6 +24,9 @@ import { findJobsOpportunities } from "./jobOpportunity.service"
 import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 
 useMongo()
+
+vi.mock("@/common/apis/franceTravail/franceTravail.client")
+vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")
 
 beforeAll(async () => {
   nock.disableNetConnect()
@@ -162,47 +166,16 @@ describe("findJobsOpportunities", () => {
     ...certificationFixtures["RNCP37098-46T31203"].domaines.rome.rncp.map(({ code, intitule }) => generateReferentielRome({ rome: { code_rome: code, intitule, code_ogr: "" } })),
   ]
 
-  let scopeAuth: nock.Scope
-  let scopeFtApi: nock.Scope
-
   beforeEach(async () => {
     await getDbCollection("recruteurslba").insertMany(recruiters)
     await getDbCollection("recruiters").insertMany(lbaJobs)
     await getDbCollection("jobs_partners").insertMany(partnerJobs)
     await getDbCollection("referentielromes").insertMany(romes)
     await getDbCollection("referentiel.communes").insertMany(generateReferentielCommuneFixtures([parisFixture, clichyFixture, levalloisFixture, marseilleFixture]))
-
-    scopeAuth = nock("https://entreprise.francetravail.fr:443")
-      .post(
-        "/connexion/oauth2/access_token",
-        [
-          "grant_type=client_credentials",
-          "client_id=LBA_ESD_CLIENT_ID",
-          "client_secret=LBA_ESD_CLIENT_SECRET",
-          "scope=application_LBA_ESD_CLIENT_ID%20api_offresdemploiv2%20o2dsoffre",
-        ].join("&")
-      )
-      .query({
-        realm: "partenaire",
-      })
-      .reply(200, { access_token: "ft_token", expires_in: 300 })
   })
 
   it("should execute query", async () => {
-    scopeFtApi = nock("https://api.francetravail.io:443")
-      .get("/partenaire/offresdemploi/v2/offres/search")
-      .query({
-        codeROME: "M1602",
-        commune: "75101", // Special case for paris
-        sort: "2",
-        natureContrat: "E2,FS",
-        range: "0-149",
-        distance: "30",
-        partenaires: "LABONNEALTERNANCE",
-        modeSelectionPartenaires: "EXCLU",
-      })
-      .matchHeader("Authorization", "Bearer ft_token")
-      .reply(200, { resultats: ftJobs })
+    vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
 
     const results = await findJobsOpportunities(
       {
@@ -240,8 +213,21 @@ describe("findJobsOpportunities", () => {
       ],
       warnings: [],
     })
-    expect(scopeAuth.isDone()).toBeTruthy()
-    expect(scopeFtApi.isDone()).toBeTruthy()
+
+    expect(searchForFtJobs).toHaveBeenCalledTimes(1)
+    expect(searchForFtJobs).toHaveBeenNthCalledWith(
+      1,
+      {
+        codeROME: "M1602",
+        commune: "75101", // Special case for paris
+        sort: 2,
+        natureContrat: "E2,FS",
+        range: "0-149",
+        distance: 30,
+      },
+      { throwOnError: true }
+    )
+
     expect(
       results.jobs.map(({ _id, apply_url, ...j }) => {
         return j
@@ -255,19 +241,7 @@ describe("findJobsOpportunities", () => {
   })
 
   it("should support query without rncp or rome filter", async () => {
-    scopeFtApi = nock("https://api.francetravail.io:443")
-      .get("/partenaire/offresdemploi/v2/offres/search")
-      .query({
-        commune: "75101", // Special case for paris
-        sort: "2",
-        natureContrat: "E2,FS",
-        range: "0-149",
-        distance: "30",
-        partenaires: "LABONNEALTERNANCE",
-        modeSelectionPartenaires: "EXCLU",
-      })
-      .matchHeader("Authorization", "Bearer ft_token")
-      .reply(200, { resultats: ftJobs })
+    vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
 
     const results = await findJobsOpportunities(
       {
@@ -318,23 +292,23 @@ describe("findJobsOpportunities", () => {
       ],
       warnings: [],
     })
-    expect(scopeAuth.isDone()).toBeTruthy()
-    expect(scopeFtApi.isDone()).toBeTruthy()
+
+    expect(searchForFtJobs).toHaveBeenCalledTimes(1)
+    expect(searchForFtJobs).toHaveBeenNthCalledWith(
+      1,
+      {
+        commune: "75101", // Special case for paris
+        sort: 2,
+        natureContrat: "E2,FS",
+        range: "0-149",
+        distance: 30,
+      },
+      { throwOnError: true }
+    )
   })
 
   it("should support query without geo filter", async () => {
-    scopeFtApi = nock("https://api.francetravail.io:443")
-      .get("/partenaire/offresdemploi/v2/offres/search")
-      .query({
-        sort: "2",
-        natureContrat: "E2,FS",
-        range: "0-149",
-        codeROME: "M1602",
-        partenaires: "LABONNEALTERNANCE",
-        modeSelectionPartenaires: "EXCLU",
-      })
-      .matchHeader("Authorization", "Bearer ft_token")
-      .reply(200, { resultats: ftJobs })
+    vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
 
     const results = await findJobsOpportunities(
       {
@@ -380,27 +354,22 @@ describe("findJobsOpportunities", () => {
       ],
       warnings: [],
     })
-    expect(scopeAuth.isDone()).toBeTruthy()
-    expect(scopeFtApi.isDone()).toBeTruthy()
+    expect(searchForFtJobs).toHaveBeenCalledTimes(1)
+    expect(searchForFtJobs).toHaveBeenNthCalledWith(
+      1,
+      {
+        sort: 2,
+        natureContrat: "E2,FS",
+        range: "0-149",
+        codeROME: "M1602",
+      },
+      { throwOnError: true }
+    )
   })
 
   describe("searching by rncp code", async () => {
     it("should return jobs corresponding to the romes codes associated with the requested rncp code", async () => {
-      scopeFtApi = nock("https://api.francetravail.io:443")
-        .get("/partenaire/offresdemploi/v2/offres/search")
-        .query({
-          // Code ROME correspondant au code RNCP
-          codeROME: "D1210,D1212,D1209,D1214,D1211",
-          commune: "75101", // Special case for paris
-          sort: "2",
-          natureContrat: "E2,FS",
-          range: "0-149",
-          distance: "30",
-          partenaires: "LABONNEALTERNANCE",
-          modeSelectionPartenaires: "EXCLU",
-        })
-        .matchHeader("Authorization", "Bearer ft_token")
-        .reply(200, { resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
 
       const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
         .get("/api/certification/v1")
@@ -439,9 +408,21 @@ describe("findJobsOpportunities", () => {
         ],
         warnings: [],
       })
-      expect(scopeAuth.isDone()).toBeTruthy()
-      expect(scopeFtApi.isDone()).toBeTruthy()
       expect(scopeApiAlternance.isDone()).toBeTruthy()
+      expect(searchForFtJobs).toHaveBeenCalledTimes(1)
+      expect(searchForFtJobs).toHaveBeenNthCalledWith(
+        1,
+        {
+          // Code ROME correspondant au code RNCP
+          codeROME: "D1210,D1212,D1209,D1214,D1211",
+          commune: "75101", // Special case for paris
+          sort: 2,
+          natureContrat: "E2,FS",
+          range: "0-149",
+          distance: 30,
+        },
+        { throwOnError: true }
+      )
     })
 
     it("should error internal when API Alternance request fail", async () => {
@@ -506,21 +487,7 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should resolve RNCP continuity", async () => {
-      scopeFtApi = nock("https://api.francetravail.io:443")
-        .get("/partenaire/offresdemploi/v2/offres/search")
-        .query({
-          // Code ROME correspondant au code RNCP
-          codeROME: "D1210,D1212,D1209,D1214,D1211",
-          commune: "75101", // Special case for paris
-          sort: "2",
-          natureContrat: "E2,FS",
-          range: "0-149",
-          distance: "30",
-          partenaires: "LABONNEALTERNANCE",
-          modeSelectionPartenaires: "EXCLU",
-        })
-        .matchHeader("Authorization", "Bearer ft_token")
-        .reply(200, { resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
 
       const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
         .get("/api/certification/v1")
@@ -565,28 +532,25 @@ describe("findJobsOpportunities", () => {
         ],
         warnings: [],
       })
-      expect(scopeAuth.isDone()).toBeTruthy()
-      expect(scopeFtApi.isDone()).toBeTruthy()
+      expect(searchForFtJobs).toHaveBeenCalledTimes(1)
+      expect(searchForFtJobs).toHaveBeenCalledWith(
+        {
+          // Code ROME correspondant au code RNCP
+          codeROME: "D1210,D1212,D1209,D1214,D1211",
+          commune: "75101", // Special case for paris
+          sort: 2,
+          natureContrat: "E2,FS",
+          range: "0-149",
+          distance: 30,
+        },
+        { throwOnError: true }
+      )
       expect(scopeApiAlternance.isDone()).toBeTruthy()
     })
   })
 
   it("should RNCP & ROME filter appliy as OR condition", async () => {
-    scopeFtApi = nock("https://api.francetravail.io:443")
-      .get("/partenaire/offresdemploi/v2/offres/search")
-      .query({
-        // Code ROME correspondant au code RNCP
-        codeROME: "M1602,D1210,D1212,D1209,D1214,D1211",
-        commune: "75101", // Special case for paris
-        sort: "2",
-        natureContrat: "E2,FS",
-        range: "0-149",
-        distance: "30",
-        partenaires: "LABONNEALTERNANCE",
-        modeSelectionPartenaires: "EXCLU",
-      })
-      .matchHeader("Authorization", "Bearer ft_token")
-      .reply(200, { resultats: ftJobs })
+    vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
 
     const scopeApiAlternance = nock("https://api.apprentissage.beta.gouv.fr:443")
       .get("/api/certification/v1")
@@ -643,8 +607,19 @@ describe("findJobsOpportunities", () => {
       ],
       warnings: [],
     })
-    expect(scopeAuth.isDone()).toBeTruthy()
-    expect(scopeFtApi.isDone()).toBeTruthy()
+
+    expect(searchForFtJobs).toHaveBeenCalledTimes(1)
+    expect(searchForFtJobs).toHaveBeenCalledWith(
+      {
+        codeROME: "M1602,D1210,D1212,D1209,D1214,D1211",
+        commune: "75101", // Special case for paris
+        sort: 2,
+        natureContrat: "E2,FS",
+        range: "0-149",
+        distance: 30,
+      },
+      { throwOnError: true }
+    )
     expect(scopeApiAlternance.isDone()).toBeTruthy()
   })
 
@@ -710,12 +685,7 @@ describe("findJobsOpportunities", () => {
 
   describe("labonnealternance jobs", () => {
     beforeEach(async () => {
-      scopeFtApi = nock("https://api.francetravail.io:443")
-        .get("/partenaire/offresdemploi/v2/offres/search")
-        .query(() => {
-          return true
-        })
-        .reply(200, { resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
 
       await getDbCollection("jobs_partners").deleteMany({})
     })
@@ -758,7 +728,6 @@ describe("findJobsOpportunities", () => {
         new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
       )
 
-      expect(scopeFtApi.isDone()).toBeTruthy()
       expect(results.jobs).toHaveLength(1)
     })
 
@@ -1114,10 +1083,7 @@ describe("findJobsOpportunities", () => {
 
   describe("jobs partners", () => {
     beforeEach(async () => {
-      nock("https://api.francetravail.io")
-        .get("/partenaire/offresdemploi/v2/offres/search")
-        .query(() => true)
-        .reply(200, { resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
     })
     it("should limit jobs to 150", async () => {
       const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, () =>
@@ -1228,20 +1194,7 @@ describe("findJobsOpportunities", () => {
 
     describe("when france travail api returns an error", () => {
       it("should ignore france travail jobs", async () => {
-        const scopeFtApi = nock("https://api.francetravail.io")
-          .get("/partenaire/offresdemploi/v2/offres/search")
-          .query({
-            codeROME: "M1602",
-            commune: "75101", // Special case for paris
-            sort: "2",
-            natureContrat: "E2,FS",
-            range: "0-149",
-            distance: "30",
-            partenaires: "LABONNEALTERNANCE",
-            modeSelectionPartenaires: "EXCLU",
-          })
-          .matchHeader("Authorization", "Bearer ft_token")
-          .reply(500, { error: "Internal server error" })
+        vi.mocked(searchForFtJobs).mockRejectedValue(new Error("oops"))
 
         const results = await findJobsOpportunities(
           {
@@ -1261,27 +1214,11 @@ describe("findJobsOpportunities", () => {
             message: "Unable to retrieve job offers from France Travail API",
           },
         ])
-
-        expect(scopeAuth.isDone()).toBeTruthy()
-        expect(scopeFtApi.isDone()).toBeTruthy()
       })
     })
 
     it("should select jobs within the radius", async () => {
-      const scopeFtApi = nock("https://api.francetravail.io")
-        .get("/partenaire/offresdemploi/v2/offres/search")
-        .query({
-          codeROME: "M1602",
-          commune: clichyFixture.code,
-          sort: "2",
-          natureContrat: "E2,FS",
-          range: "0-149",
-          distance: "100",
-          partenaires: "LABONNEALTERNANCE",
-          modeSelectionPartenaires: "EXCLU",
-        })
-        .matchHeader("Authorization", "Bearer ft_token")
-        .reply(200, { resultats: [] })
+      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
 
       const results = await findJobsOpportunities(
         {
@@ -1297,8 +1234,18 @@ describe("findJobsOpportunities", () => {
       expect(results.jobs).toHaveLength(0)
       expect(results.warnings).toHaveLength(0)
 
-      expect(scopeAuth.isDone()).toBeTruthy()
-      expect(scopeFtApi.isDone()).toBeTruthy()
+      expect(searchForFtJobs).toHaveBeenCalledTimes(1)
+      expect(searchForFtJobs).toHaveBeenCalledWith(
+        {
+          codeROME: "M1602",
+          commune: clichyFixture.code,
+          sort: 2,
+          natureContrat: "E2,FS",
+          range: "0-149",
+          distance: 100,
+        },
+        { throwOnError: true }
+      )
     })
 
     describe("when searching for jobs with a specific diploma", () => {
@@ -1309,21 +1256,7 @@ describe("findJobsOpportunities", () => {
         ["6", "NV2"],
         ["7", "NV1"],
       ])("should support filter by diploma %s as level %s", async (diplomaLevel, ftLevel) => {
-        const scopeFtApi = nock("https://api.francetravail.io")
-          .get("/partenaire/offresdemploi/v2/offres/search")
-          .query({
-            codeROME: "M1602",
-            commune: clichyFixture.code,
-            sort: "2",
-            natureContrat: "E2,FS",
-            range: "0-149",
-            distance: "30",
-            partenaires: "LABONNEALTERNANCE",
-            modeSelectionPartenaires: "EXCLU",
-            niveauFormation: ftLevel,
-          })
-          .matchHeader("Authorization", "Bearer ft_token")
-          .reply(200, { resultats: [] })
+        vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: [] })
 
         const results = await findJobsOpportunities(
           {
@@ -1340,8 +1273,19 @@ describe("findJobsOpportunities", () => {
         expect(results.jobs).toHaveLength(0)
         expect(results.warnings).toHaveLength(0)
 
-        expect(scopeAuth.isDone()).toBeTruthy()
-        expect(scopeFtApi.isDone()).toBeTruthy()
+        expect(searchForFtJobs).toHaveBeenCalledTimes(1)
+        expect(searchForFtJobs).toHaveBeenCalledWith(
+          {
+            codeROME: "M1602",
+            commune: clichyFixture.code,
+            sort: 2,
+            natureContrat: "E2,FS",
+            range: "0-149",
+            distance: 30,
+            niveauFormation: ftLevel,
+          },
+          { throwOnError: true }
+        )
       })
     })
   })
