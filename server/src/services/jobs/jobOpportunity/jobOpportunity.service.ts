@@ -1,4 +1,5 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
 import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, parseEnum } from "shared"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, TRAINING_CONTRACT_TYPE } from "shared/constants"
@@ -20,7 +21,6 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { IApiApprentissageTokenData } from "@/security/accessApiApprentissageService"
 import { getRomeoInfos } from "@/services/cache.service"
 import { getEntrepriseDataFromSiret, getGeoPoint, getOpcoData } from "@/services/etablissement.service"
-import { addExpirationPeriod } from "@/services/formulaire.service"
 
 import { IApiError } from "../../../common/utils/errorManager"
 import { getDbCollection } from "../../../common/utils/mongodbUtils"
@@ -600,7 +600,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     offer_rome_code: romeCode,
     offer_status: JOB_STATUS.ACTIVE,
     offer_creation: offer_creation ?? invariantData.created_at,
-    offer_expiration: offer_expiration ?? addExpirationPeriod(invariantData.created_at).toDate(),
+    offer_expiration: offer_expiration ?? DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate(),
     offer_diploma_level:
       offer_diploma_level_european == null
         ? null

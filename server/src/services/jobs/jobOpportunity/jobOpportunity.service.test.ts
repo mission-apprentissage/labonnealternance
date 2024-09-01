@@ -1305,7 +1305,7 @@ describe("createJobOffer", () => {
   }
 
   const now = new Date("2024-06-18T00:00:00.000Z")
-  const in2Month = new Date("2024-08-18T00:00:00.000Z")
+  const in2Month = new Date("2024-08-17T22:00:00.000Z")
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
   const minimalData: IJobsPartnersWritableApi = {

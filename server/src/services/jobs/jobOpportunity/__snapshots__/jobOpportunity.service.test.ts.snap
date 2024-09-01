@@ -16,7 +16,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "offer_description": "Envie de devenir développeur web ? Rejoignez-nous !",
   "offer_desired_skills": [],
   "offer_diploma_level": null,
-  "offer_expiration": 2024-08-18T00:00:00.000Z,
+  "offer_expiration": 2024-08-17T22:00:00.000Z,
   "offer_multicast": true,
   "offer_opening_count": 1,
   "offer_origin": null,

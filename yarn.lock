@@ -4391,6 +4391,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "@types/luxon@npm:3.4.2"
+  checksum: 6f92d5bd02e89f310395753506bcd9cef3a56f5940f7a50db2a2b9822bce753553ac767d143cb5b4f9ed5ddd4a84e64f89ff538082ceb4d18739af7781b56925
+  languageName: node
+  linkType: hard
+
 "@types/mdast@npm:^3.0.0":
   version: 3.0.15
   resolution: "@types/mdast@npm:3.0.15"
@@ -13115,6 +13122,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"luxon@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "luxon@npm:3.5.0"
+  checksum: f290fe5788c8e51e748744f05092160d4be12150dca70f9fadc0d233e53d60ce86acd82e7d909a114730a136a77e56f0d3ebac6141bbb82fd310969a4704825b
+  languageName: node
+  linkType: hard
+
 "lz-string@npm:^1.5.0":
   version: 1.5.0
   resolution: "lz-string@npm:1.5.0"
@@ -18297,6 +18311,7 @@ __metadata:
     "@types/iconv-lite": ^0.0.1
     "@types/jsonwebtoken": ^9.0.3
     "@types/lodash-es": ^4.17.9
+    "@types/luxon": ^3.4.2
     "@types/memoizee": ^0.4.9
     "@types/mjml": ^4.7.2
     "@types/netmask": ^2.0.3
@@ -18341,6 +18356,7 @@ __metadata:
     jsonwebtoken: ^8.5.1
     lil-http-terminator: ^1.2.3
     lodash-es: ^4.17.21
+    luxon: ^3.5.0
     match-sorter: ^6.3.1
     memoizee: ^0.4.15
     migrate-mongo: ^11.0.0
