@@ -239,6 +239,7 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
 export async function createApplicationTest(data: Partial<IApplication>) {
   const u: IApplication = {
     ...getFixture().fromSchema(ZApplication),
+    applicant_attachment_name: "my-cv.pdf",
     ...data,
   }
   await getDbCollection("applications").insertOne(u)

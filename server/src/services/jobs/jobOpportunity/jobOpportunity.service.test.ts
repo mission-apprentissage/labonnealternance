@@ -1,5 +1,4 @@
 import { internal } from "@hapi/boom"
-import { generateFtJobFixture } from "@tests/fixtures/ftJobs.fixture"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
@@ -14,6 +13,7 @@ import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS } from "shared/mo
 import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { beforeEach, beforeAll, afterEach, describe, expect, it } from "vitest"
 
+import { generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 

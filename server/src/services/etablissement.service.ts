@@ -1,6 +1,6 @@
 import { setTimeout } from "timers/promises"
 
-import { badRequest, internal } from "@hapi/boom"
+import { badRequest, internal, isBoom } from "@hapi/boom"
 import { AxiosResponse } from "axios"
 import { Filter as MongoDBFilter, ObjectId } from "mongodb"
 import { IAdresseV3, IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, ILbaCompany, ILbaCompanyLegacy, IRecruiter, ZCfaReferentielData, ZPointGeometry } from "shared"
@@ -14,7 +14,7 @@ import { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getEtablissementDiffusionStatus, getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
-import { FCGetOpcoInfos } from "@/common/franceCompetencesClient"
+import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -215,15 +215,15 @@ export const getGeoPoint = async (adresse: string): Promise<IGeoPoint> => {
     const response: AxiosResponse<IAPIAdresse> = await getHttpClient().get(`https://api-adresse.data.gouv.fr/search?q=${encodeURIComponent(adresse)}&limit=1`)
     const firstFeature = response.data?.features.at(0)
     if (!firstFeature) {
-      throw Boom.internal("getGeoPoint: addresse non trouvée", { adresse })
+      throw internal("getGeoPoint: addresse non trouvée", { adresse })
     }
 
     return ZPointGeometry.parse(firstFeature.geometry)
   } catch (error: any) {
-    if (Boom.isBoom(error)) {
+    if (isBoom(error)) {
       throw error
     }
-    const newError = Boom.internal(`getGeoPoint: erreur de récupération des geo coordonnées`, { adresse })
+    const newError = internal(`getGeoPoint: erreur de récupération des geo coordonnées`, { adresse })
     newError.cause = error
     throw newError
   }
