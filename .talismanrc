@@ -42,7 +42,7 @@ fileignoreconfig:
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
-  checksum: 82154bb8da1666737f49535fcb6d2a903a804eea53663259c84366904082fade
+  checksum: 91999951702279c5dd4836cd3a9fdfc904ac019edc9e799c68c277741d450395
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
@@ -60,7 +60,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/updateRecruteurLba.controller.test.ts
   checksum: 71dd55af4f1f44fd2b69dee91f0fc8006f3b9e0bd80d40271c73697d4eea9ea2
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
-  checksum: 18f3bd82238f0518f19d2f31be7945ceb68e8174b4b0c9bd97d9090bf97a5644
+  checksum: 5d0ff6b14c5c635c149ae700c05574439449e3a3755b49b3e24a9973b304992d
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
@@ -89,6 +89,8 @@ fileignoreconfig:
   checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
+- filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
+  checksum: 7c2a7f5d8ec1c82652296c3271bd435f5998e9c61f9ead2d528a5f2a7195a07d
 - filename: server/src/services/recruteurLba.service.test.ts
   checksum: 98a1f338a0721200ace9b9a62f755996ad395035621c5830681e721ca58d67c2
 - filename: server/src/services/referrers.service.ts
@@ -118,7 +120,7 @@ fileignoreconfig:
 - filename: server/tests/unit/validateSendApplication.test.ts
   checksum: 997c5eb4940ea43126f96169dc22fcee7f1890ed19b23aa8b3bffd3522ff7b04
 - filename: server/tests/utils/jwt.test.utils.ts
-  checksum: d63fdd6737a8592a88458d1948ea96434727c3e7960f038a66a8c30df1652260
+  checksum: 27b6e1af0a5e079720d525534486bb02552431fe4cff9560ebf2cc9e16468b7b
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/recruiter.fixture.ts

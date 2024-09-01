@@ -96,59 +96,61 @@ export type IJobsPartnersOfferApi = z.output<typeof ZJobsPartnersOfferApi>
 
 export type IJobsPartnersRecruiterPrivate = z.output<typeof ZJobsPartnersRecruiterPrivate>
 export type IJobsPartnersOfferPrivate = z.output<typeof ZJobsPartnersOfferPrivate>
+export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPrivate>
 
-const ZJobsPartnersPostApiBodyBase = z.object({
-  partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
-  contract_start: ZJobStartDateCreate(),
-  contract_type: ZJobsPartnersOfferPrivate.shape.contract_type,
-  contract_duration: z.number().int().min(6).max(36),
-  contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).optional(),
-  offer_title: z.string(),
-  offer_description: z.string().min(30, "Job description should be at least 30 characters"),
-  offer_diploma_level_european: zDiplomaEuropeanLevel.optional(),
-  offer_desired_skills: ZJobsPartnersOfferPrivate.shape.offer_desired_skills.optional(),
-  offer_to_be_acquired_skills: ZJobsPartnersOfferPrivate.shape.offer_to_be_acquired_skills.optional(),
-  offer_access_conditions: ZJobsPartnersOfferPrivate.shape.offer_access_conditions.optional(),
-  offer_rome_code: ZJobsPartnersOfferPrivate.shape.offer_rome_code.optional(),
-  offer_creation: ZJobsPartnersOfferPrivate.shape.offer_creation.optional(),
-  offer_expiration: ZJobsPartnersOfferPrivate.shape.offer_expiration.optional(),
-  offer_opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.optional(),
-  offer_multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast.optional(),
-  offer_origin: ZJobsPartnersOfferPrivate.shape.offer_origin.optional(),
-  workplace_siret: extensions.siret,
-  workplace_website: ZJobsPartnersOfferPrivate.shape.workplace_website.optional(),
-  workplace_description: ZJobsPartnersOfferPrivate.shape.workplace_description.optional(),
-  workplace_address: z.string().optional(),
-  apply_url: ZJobsPartnersOfferPrivate.shape.apply_url.optional(),
-  apply_email: ZJobsPartnersOfferPrivate.shape.apply_email.optional(),
-  apply_phone: ZJobsPartnersOfferPrivate.shape.apply_phone.optional(),
-})
+const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
+  partner_job_id: true,
 
-export const ZJobsPartnersPostApiBody = ZJobsPartnersPostApiBodyBase.refine(({ apply_email, apply_phone, apply_url }) => apply_email || apply_phone || apply_url, {
-  message: "At least one of apply_url, apply_email, or apply_phone is required",
-  path: ["apply_url", "apply_email", "apply_phone"],
-})
-
-export type IJobsPartnersPostApiBody = z.output<typeof ZJobsPartnersPostApiBody>
-export const ZJobsPartnersPatchApiBody = ZJobsPartnersPostApiBodyBase.pick({
-  contract_start: true,
-  contract_type: true,
   contract_duration: true,
+  contract_type: true,
   contract_remote: true,
-  offer_description: true,
-  offer_diploma_level_european: true,
+
+  offer_title: true,
+  offer_rome_code: true,
   offer_desired_skills: true,
   offer_to_be_acquired_skills: true,
   offer_access_conditions: true,
+  offer_creation: true,
+  offer_expiration: true,
   offer_opening_count: true,
-  offer_multicast: true,
   offer_origin: true,
+  offer_multicast: true,
+  // offer_status: true,
+
   apply_url: true,
   apply_email: true,
   apply_phone: true,
-}).partial()
 
-export type IJobsPartnersPatchApiBody = z.output<typeof ZJobsPartnersPatchApiBody>
+  workplace_description: true,
+  workplace_website: true,
+}).extend({
+  // TODO: job start date must be greate or equal to today's date --> why ?
+  contract_start: ZJobStartDateCreate(),
+
+  offer_rome_code: ZJobsPartnersOfferPrivate.shape.offer_rome_code.nullable().default(null),
+  offer_description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
+  offer_diploma_level_european: zDiplomaEuropeanLevel.nullable().default(null),
+
+  workplace_siret: extensions.siret,
+  workplace_address_label: z.string().nullable().default(null),
+})
+
+export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine((data, ctx) => {
+  const keys = ["apply_url", "apply_email", "apply_phone"] as const
+  if (keys.every((key) => data[key] == null)) {
+    ;["apply_url", "apply_email", "apply_phone"].forEach((key) => {
+      ctx.addIssue({
+        code: "custom",
+        message: "At least one of apply_url, apply_email, or apply_phone is required",
+        path: [key],
+      })
+    })
+  }
+
+  return data
+})
+
+export type IJobsPartnersWritableApi = z.output<typeof ZJobsPartnersWritableApi>
 
 export default {
   zod: ZJobsPartnersOfferPrivate,

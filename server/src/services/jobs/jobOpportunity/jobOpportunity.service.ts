@@ -1,5 +1,5 @@
-import { badRequest } from "@hapi/boom"
-import { Document, Filter } from "mongodb"
+import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import { Document, Filter, ObjectId } from "mongodb"
 import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, parseEnum } from "shared"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
@@ -10,10 +10,17 @@ import {
   IJobsPartnersOfferApi,
   ZJobsPartnersRecruiterApi,
   INiveauDiplomeEuropeen,
+  IJobsPartnersWritableApi,
 } from "shared/models/jobsPartners.model"
+import { zOpcoLabel } from "shared/models/opco.model"
 import { IJobOpportunityGetQuery, IJobOpportunityGetQueryResolved, IJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
+import { ZodError } from "zod"
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { IApiApprentissageTokenData } from "@/security/accessApiApprentissageService"
+import { getRomeoInfos } from "@/services/cache.service"
+import { getEntrepriseDataFromSiret, getGeoPoint, getOpcoData } from "@/services/etablissement.service"
+import { addExpirationPeriod } from "@/services/formulaire.service"
 
 import { IApiError } from "../../../common/utils/errorManager"
 import { getDbCollection } from "../../../common/utils/mongodbUtils"
@@ -496,18 +503,145 @@ export async function findJobsOpportunities(payload: IJobOpportunityGetQuery, co
   }
 }
 
-export const mergePatchWithDb = <T extends Record<string, any>, U extends Record<string, any>>(patchObj: T, dbObj: U): Partial<T & U> => {
-  const result: Partial<T & U> = {}
+type WorkplaceAddressData = Pick<IJobsPartnersOfferApi, "workplace_geopoint" | "workplace_address">
 
-  ;(Object.keys(patchObj) as (keyof T)[]).forEach((key) => {
-    const patchValue = patchObj[key]
-    const dbValue = dbObj[key as keyof U]
+async function resolveWorkplaceLocationFromAddress(workplace_address_label: string | null, zodError: ZodError): Promise<WorkplaceAddressData | null> {
+  if (workplace_address_label === null) {
+    return null
+  }
 
-    if (patchValue !== null && patchValue !== undefined && dbValue !== undefined) {
-      // If patch value is not null and the key exists in dbObj, include it in the result
-      result[key] = patchValue as (T & U)[keyof (T & U)]
-    }
-  })
+  const geopoint = await getGeoPoint(workplace_address_label)
 
-  return result
+  if (!geopoint) {
+    zodError.addIssue({ code: "custom", path: ["workplace_address_label"], message: "Cannot resolve geo-coordinates for the given address" })
+    return null
+  }
+
+  return {
+    workplace_geopoint: geopoint,
+    workplace_address: { label: workplace_address_label },
+  }
+}
+
+// List of fields impacted by change of the siret
+type WorkplaceSiretData = Pick<
+  IJobsPartnersOfferApi,
+  "workplace_geopoint" | "workplace_address" | "workplace_name" | "workplace_naf_label" | "workplace_naf_code" | "workplace_opco" | "workplace_idcc" | "workplace_size"
+>
+
+async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: ZodError): Promise<WorkplaceSiretData | null> {
+  const [entrepriseData, opcoData] = await Promise.all([getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE" }), getOpcoData(workplace_siret)])
+
+  if ("error" in entrepriseData) {
+    zodError.addIssue({ code: "custom", path: ["workplace_siret"], message: entrepriseData.message })
+    return null
+  }
+
+  return {
+    workplace_geopoint: entrepriseData.geopoint,
+    workplace_address: { label: entrepriseData.address! },
+    workplace_name: entrepriseData.establishment_enseigne ?? entrepriseData.establishment_raison_sociale ?? null,
+    workplace_naf_label: entrepriseData.naf_label ?? null,
+    workplace_naf_code: entrepriseData.naf_code ?? null,
+    workplace_opco: zOpcoLabel.safeParse(opcoData?.opco).data ?? null,
+    // En cas d'OPCO multiple on met une string invalide dans le champs idcc (getOpcoFromCfaDock)
+    workplace_idcc: opcoData?.idcc == null || Number.isNaN(parseInt(opcoData.idcc, 10)) ? null : parseInt(opcoData.idcc, 10),
+    workplace_size: entrepriseData.establishment_size ?? null,
+  }
+}
+
+async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: WorkplaceSiretData | null, zodError: ZodError): Promise<string[] | null> {
+  if (data.offer_rome_code && data.offer_rome_code.length > 0) {
+    return data.offer_rome_code
+  }
+
+  if (siretData === null) {
+    return null
+  }
+
+  const romeoResponse = await getRomeoInfos({ intitule: data.offer_title, contexte: siretData.workplace_naf_label ?? undefined })
+  if (!romeoResponse) {
+    zodError.addIssue({ code: "custom", path: ["offer_rome_code"], message: "ROME is not provided and we are unable to retrieve ROME code for the given job title" })
+    return null
+  }
+
+  return [romeoResponse]
+}
+
+type InvariantFields = "_id" | "created_at" | "partner"
+
+async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiApprentissageTokenData, current: IJobsPartnersOfferPrivate | null): Promise<ObjectId> {
+  const zodError = new ZodError([])
+
+  const [siretData, addressData] = await Promise.all([
+    resolveWorkplaceDataFromSiret(data.workplace_siret, zodError),
+    resolveWorkplaceLocationFromAddress(data.workplace_address_label, zodError),
+  ])
+
+  const romeCode = await resolveRomeCodes(data, siretData, zodError)
+
+  if (!zodError.isEmpty) {
+    throw zodError
+  }
+
+  if (!romeCode || !siretData) {
+    throw internal("unexpected: cannot resolve all required data for the job offer")
+  }
+
+  const { offer_creation, offer_expiration, offer_rome_code, offer_diploma_level_european, workplace_address_label, ...rest } = data
+
+  const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
+    _id: current?._id ?? new ObjectId(),
+    created_at: current?.created_at ?? new Date(),
+    partner: identity.organisation,
+  }
+
+  const writableData: Omit<IJobsPartnersOfferPrivate, InvariantFields> = {
+    offer_rome_code: romeCode,
+    offer_status: JOB_STATUS.ACTIVE,
+    offer_creation: offer_creation ?? invariantData.created_at,
+    offer_expiration: offer_expiration ?? addExpirationPeriod(invariantData.created_at).toDate(),
+    offer_diploma_level:
+      offer_diploma_level_european == null
+        ? null
+        : {
+            european: offer_diploma_level_european,
+            label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european],
+          },
+    ...rest,
+    // Data derived from workplace_address_label take priority over workplace_siret
+    ...siretData,
+    ...addressData,
+  }
+
+  await getDbCollection("jobs_partners").updateOne({ _id: invariantData._id }, { $set: writableData, $setOnInsert: invariantData }, { upsert: true })
+
+  return invariantData._id
+}
+
+export async function createJobOffer(identity: IApiApprentissageTokenData, data: IJobsPartnersWritableApi): Promise<ObjectId> {
+  // TODO: Move to authorisation service
+  if (!identity.habilitations["jobs:write"]) {
+    throw forbidden("You are not allowed to create a job offer")
+  }
+  return upsertJobOffer(data, identity, null)
+}
+
+export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTokenData, data: IJobsPartnersWritableApi): Promise<void> {
+  const current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ _id: id })
+
+  // TODO: Move to authorisation service
+  if (!current) {
+    throw notFound("Job offer not found")
+  }
+
+  if (current.partner !== identity.organisation) {
+    throw forbidden("You are not allowed to update this job offer")
+  }
+
+  if (!identity.habilitations["jobs:write"]) {
+    throw forbidden("You are not allowed to update this job offer")
+  }
+
+  await upsertJobOffer(data, identity, current)
 }

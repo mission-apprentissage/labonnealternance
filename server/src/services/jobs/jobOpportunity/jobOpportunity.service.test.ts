@@ -1,5 +1,6 @@
 import { internal } from "@hapi/boom"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, RECRUITER_STATUS } from "shared/constants"
 import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
@@ -10,17 +11,20 @@ import { parisFixture, clichyFixture, marseilleFixture, levalloisFixture, genera
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS } from "shared/models"
-import { IJobsPartnersOfferPrivate, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApi, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { beforeEach, beforeAll, afterEach, describe, expect, it, vi } from "vitest"
 
-import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
-import { generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
+import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
+import { getRomeoPredictions, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
+import { franceTravailRomeoFixture, generateFtJobFixture } from "@/common/apis/franceTravail/franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { IApiApprentissageTokenData } from "@/security/accessApiApprentissageService"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 
 import { FTJob } from "../../ftjob.service.types"
 
-import { findJobsOpportunities } from "./jobOpportunity.service"
+import { createJobOffer, findJobsOpportunities, updateJobOffer } from "./jobOpportunity.service"
 import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 
 useMongo()
@@ -1288,5 +1292,259 @@ describe("findJobsOpportunities", () => {
         )
       })
     })
+  })
+})
+
+describe("createJobOffer", () => {
+  const identity: IApiApprentissageTokenData = {
+    email: "mail@mailType.com",
+    organisation: "Some organisation",
+    habilitations: {
+      "jobs:write": true,
+    },
+  }
+
+  const now = new Date("2024-06-18T00:00:00.000Z")
+  const in2Month = new Date("2024-08-18T00:00:00.000Z")
+  const inSept = new Date("2024-09-01T00:00:00.000Z")
+
+  const minimalData: IJobsPartnersWritableApi = {
+    partner_job_id: null,
+
+    contract_start: inSept,
+    contract_duration: null,
+    contract_type: null,
+    contract_remote: null,
+
+    offer_title: "Apprentis en développement web",
+    offer_rome_code: ["M1602"],
+    offer_desired_skills: [],
+    offer_to_be_acquired_skills: [],
+    offer_access_conditions: [],
+    offer_creation: null,
+    offer_expiration: null,
+    offer_opening_count: 1,
+    offer_origin: null,
+    offer_multicast: true,
+    offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    offer_diploma_level_european: null,
+
+    apply_url: null,
+    apply_email: null,
+    apply_phone: null,
+
+    workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    workplace_address_label: null,
+    workplace_description: null,
+    workplace_website: null,
+  }
+
+  beforeEach(async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(now)
+
+    vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
+
+    nock("https://api-adresse.data.gouv.fr:443")
+      .get("/search")
+      .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
+      .reply(200, {
+        features: [{ geometry: parisFixture.centre }],
+      })
+
+    await getDbCollection("opcos").insertOne({
+      _id: new ObjectId(),
+      siren: "130025265",
+      opco: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+      opco_short_name: "AKTO",
+      idcc: "1459",
+      url: null,
+    })
+
+    return () => {
+      vi.useRealTimers()
+    }
+  })
+
+  it("should create a job offer with the minimal data", async () => {
+    const result = await createJobOffer(identity, minimalData)
+    expect(result).toBeInstanceOf(ObjectId)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: result })
+    expect(job?.created_at).toEqual(now)
+    expect(job?.partner).toEqual(identity.organisation)
+    expect(job?.offer_rome_code).toEqual(["M1602"])
+    expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
+    expect(job?.offer_creation).toEqual(now)
+    expect(job?.offer_expiration).toEqual(in2Month)
+    expect(job?.offer_diploma_level).toEqual(null)
+    expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
+    expect(job?.workplace_address?.label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
+
+    expect(job).toMatchSnapshot({
+      _id: expect.any(ObjectId),
+    })
+
+    expect(nock.isDone()).toBeTruthy()
+  })
+
+  it("should get default rome from ROMEO", async () => {
+    vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
+
+    const result = await createJobOffer(identity, { ...minimalData, offer_rome_code: [] })
+    expect(result).toBeInstanceOf(ObjectId)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: result })
+    expect(job?.offer_rome_code).toEqual(["E1206"])
+    expect(nock.isDone()).toBeTruthy()
+  })
+
+  it('should get workplace location from given "workplace_address_label"', async () => {
+    nock("https://api-adresse.data.gouv.fr:443")
+      .get("/search")
+      .query({ q: "1T impasse Passoir Clichy", limit: "1" })
+      .reply(200, {
+        features: [{ geometry: clichyFixture.centre }],
+      })
+
+    const result = await createJobOffer(identity, { ...minimalData, workplace_address_label: "1T impasse Passoir Clichy" })
+    expect(result).toBeInstanceOf(ObjectId)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id: result })
+    expect(job?.workplace_address).toEqual({ label: "1T impasse Passoir Clichy" })
+    expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
+    expect(nock.isDone()).toBeTruthy()
+  })
+})
+
+describe("updateJobOffer", () => {
+  const _id = new ObjectId()
+  const identity: IApiApprentissageTokenData = {
+    email: "mail@mailType.com",
+    organisation: "Some organisation",
+    habilitations: {
+      "jobs:write": true,
+    },
+  }
+
+  const originalCreatedAt = new Date("2023-09-06T00:00:00.000+02:00")
+  const originalCreatedAtPlus2Months = new Date("2023-11-06T00:00:00.000+01:00")
+  const now = new Date("2024-06-18T00:00:00.000Z")
+  const inSept = new Date("2024-09-01T00:00:00.000Z")
+
+  const originalJob = generateJobsPartnersOfferPrivate({
+    _id,
+    partner: identity.organisation,
+    created_at: originalCreatedAt,
+    offer_creation: originalCreatedAt,
+    offer_expiration: originalCreatedAtPlus2Months,
+  })
+
+  const minimalData: IJobsPartnersWritableApi = {
+    partner_job_id: null,
+
+    contract_start: inSept,
+    contract_duration: null,
+    contract_type: null,
+    contract_remote: null,
+
+    offer_title: "Apprentis en développement web",
+    offer_rome_code: ["M1602"],
+    offer_desired_skills: [],
+    offer_to_be_acquired_skills: [],
+    offer_access_conditions: [],
+    offer_creation: null,
+    offer_expiration: null,
+    offer_opening_count: 1,
+    offer_origin: null,
+    offer_multicast: true,
+    offer_description: "Envie de devenir développeur web ? Rejoignez-nous !",
+    offer_diploma_level_european: null,
+
+    apply_url: null,
+    apply_email: null,
+    apply_phone: null,
+
+    workplace_siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+    workplace_address_label: null,
+    workplace_description: null,
+    workplace_website: null,
+  }
+
+  beforeEach(async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(now)
+
+    vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
+
+    nock("https://api-adresse.data.gouv.fr:443")
+      .get("/search")
+      .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
+      .reply(200, {
+        features: [{ geometry: parisFixture.centre }],
+      })
+
+    await getDbCollection("jobs_partners").insertOne(originalJob)
+
+    await getDbCollection("opcos").insertOne({
+      _id: new ObjectId(),
+      siren: "130025265",
+      opco: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+      opco_short_name: "AKTO",
+      idcc: "1459",
+      url: null,
+    })
+
+    return () => {
+      vi.useRealTimers()
+    }
+  })
+
+  it("should update a job offer with the minimal data", async () => {
+    await updateJobOffer(_id, identity, minimalData)
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id })
+    expect(job?.created_at).toEqual(originalCreatedAt)
+    expect(job?.partner).toEqual(identity.organisation)
+    expect(job?.offer_rome_code).toEqual(["M1602"])
+    expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
+    expect(job?.offer_creation).toEqual(originalCreatedAt)
+    // TODO: figure out if the expiration should be updated
+    expect(job?.offer_expiration).toEqual(originalCreatedAtPlus2Months)
+    expect(job?.offer_diploma_level).toEqual(null)
+    expect(job?.workplace_geopoint).toEqual(parisFixture.centre)
+    expect(job?.workplace_address?.label).toEqual("20 AVENUE DE SEGUR 75007 PARIS")
+
+    expect(job).toMatchSnapshot({
+      _id: expect.any(ObjectId),
+    })
+
+    expect(nock.isDone()).toBeTruthy()
+  })
+
+  it("should get default rome from ROMEO", async () => {
+    vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
+
+    await updateJobOffer(_id, identity, { ...minimalData, offer_rome_code: [] })
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id })
+    expect(job?.offer_rome_code).toEqual(["E1206"])
+    expect(nock.isDone()).toBeTruthy()
+  })
+
+  it('should get workplace location from given "workplace_address_label"', async () => {
+    nock("https://api-adresse.data.gouv.fr:443")
+      .get("/search")
+      .query({ q: "1T impasse Passoir Clichy", limit: "1" })
+      .reply(200, {
+        features: [{ geometry: clichyFixture.centre }],
+      })
+
+    await updateJobOffer(_id, identity, { ...minimalData, workplace_address_label: "1T impasse Passoir Clichy" })
+
+    const job = await getDbCollection("jobs_partners").findOne({ _id })
+    expect(job?.workplace_address).toEqual({ label: "1T impasse Passoir Clichy" })
+    expect(job?.workplace_geopoint).toEqual(clichyFixture.centre)
+    expect(nock.isDone()).toBeTruthy()
   })
 })

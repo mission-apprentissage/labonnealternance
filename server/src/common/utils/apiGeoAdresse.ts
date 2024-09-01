@@ -1,3 +1,5 @@
+import { logger } from "../logger"
+
 import { getHttpClient } from "./httpUtils"
 
 // Cf Documentation : https://geo.api.gouv.fr/adresse
@@ -54,7 +56,7 @@ class ApiGeoAdresse {
 
       return response
     } catch (error) {
-      console.error(`geo search error : ${q} ${postcode} ${error}`)
+      logger.error(`geo search error : ${q} ${postcode} ${error}`)
       return null
     }
   }
@@ -83,7 +85,7 @@ class ApiGeoAdresse {
       const response = await getHttpClient().get<IGeoAddress>(`${apiEndpoint}/search/?q=${postcode}&postcode=${postcode}`)
       return response.data
     } catch (error) {
-      console.error(`geo searchPostcodeOnly error : ${postcode} ${error}`)
+      logger.error(`geo searchPostcodeOnly error : ${postcode} ${error}`)
       return null
     }
   }
