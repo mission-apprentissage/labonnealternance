@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from "@asteasolutions/zod-to-openapi"
+import { oas31 } from "openapi3-ts"
 import { Jsonify } from "type-fest"
 import { AnyZodObject, ZodEffects, ZodType } from "zod"
 
@@ -81,7 +81,7 @@ interface IRouteSchemaCommon {
   headers?: AnyZodObject
   params?: AnyZodObject
   response: { [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]: ZodType }
-  openapi?: null | Omit<OpenAPIV3.OperationObject, "parameters" | "requestBody" | "requestParams" | "responses">
+  openapi?: null | Omit<oas31.OperationObject, "parameters" | "requestBody" | "requestParams" | "responses">
   securityScheme: SecurityScheme | null
 }
 
