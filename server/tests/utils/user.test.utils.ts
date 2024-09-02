@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto"
 
-import { MongoServerError, ObjectId } from "mongodb"
+import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import {
@@ -248,12 +248,7 @@ export async function createApplicationTest(data: Partial<IApplication>) {
     ...getFixture().fromSchema(ZApplication),
     ...data,
   }
-  try {
-    await getDbCollection("applications").insertOne(u)
-  } catch (error: any) {
-    const err: MongoServerError = error
-    console.log(err.errorResponse.errInfo.details.schemaRulesNotSatisfied[0].propertiesNotSatisfied[0].details)
-  }
+  await getDbCollection("applications").insertOne(u)
   return u
 }
 
