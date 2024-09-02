@@ -227,7 +227,7 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
     last_name: "last_name",
     first_name: "first_name",
     phone: "phone",
-    email: `${randomUUID()}`,
+    email: `${randomUUID()}@email.fr`,
     jobs: [],
     origin: "origin",
     opco: "opco",
