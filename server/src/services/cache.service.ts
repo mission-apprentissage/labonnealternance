@@ -1,6 +1,7 @@
+import { ObjectId } from "mongodb"
 import { ZRomeoApiResponse } from "shared/models/cacheRomeo.model"
 
-import { IRomeoPayload, getRomeoPredictions } from "../common/apis/franceTravail/franceTravail"
+import { IRomeoPayload, getRomeoPredictions } from "../common/apis/franceTravail/franceTravail.client"
 import { getDbCollection } from "../common/utils/mongodbUtils"
 
 export const getRomeoInfos = async ({ intitule, contexte }: { intitule: string; contexte?: string }): Promise<string | null> => {
@@ -13,7 +14,7 @@ export const getRomeoInfos = async ({ intitule, contexte }: { intitule: string; 
   if (!response) {
     return null
   }
-  await ZRomeoApiResponse.parse(response)
-  await getDbCollection("cache_romeo").insertMany(response)
-  return response[0].metiersRome[0].codeRome
+  const data = ZRomeoApiResponse.parse(response)
+  await getDbCollection("cache_romeo").insertMany(data.map((d) => ({ ...d, _id: new ObjectId() })))
+  return data[0].metiersRome[0].codeRome
 }
