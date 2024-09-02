@@ -14,7 +14,7 @@ export enum COMPUTED_ERROR_SOURCE {
   API_ROMEO = "api_romeo",
 }
 
-export const ZComputedJobsPatners = ZJobsPartnersOfferPrivate.partial().extend({
+export const ZComputedJobsPartners = ZJobsPartnersOfferPrivate.partial().extend({
   errors: z.array(
     z
       .object({
@@ -26,10 +26,10 @@ export const ZComputedJobsPatners = ZJobsPartnersOfferPrivate.partial().extend({
   ),
   validated: z.boolean().default(false).describe("Toutes les données nécessaires au passage vers jobs_partners sont présentes et valides"),
 })
-export type IComputedJobsPartners = z.output<typeof ZComputedJobsPatners>
+export type IComputedJobsPartners = z.output<typeof ZComputedJobsPartners>
 
 export default {
-  zod: ZComputedJobsPatners,
+  zod: ZComputedJobsPartners,
   indexes: [
     [{ partner_id: 1 }, {}],
     [{ partner_label: 1 }, {}],
