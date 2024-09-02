@@ -126,7 +126,7 @@ describe("/jobs", () => {
         "contract_start_date",
         "contract_type",
         "offer_access_conditions",
-        "offer_creation_date",
+        "offer_creation",
         "offer_description",
         "offer_desired_skills",
         "offer_diploma_level",
