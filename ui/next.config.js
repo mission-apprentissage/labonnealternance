@@ -73,7 +73,7 @@ const nextConfig = withImages({
   },
   sentry: {
     disableServerWebpackPlugin: true,
-    disableClientWebpackPlugin: true,
+    disableClientWebpackPlugin: false,
     hideSourceMaps: false,
     widenClientFileUpload: true,
   },
