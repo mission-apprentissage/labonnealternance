@@ -16,8 +16,7 @@
     "esbenp.prettier-vscode",
     "yoavbls.pretty-ts-errors",
     "pflannery.vscode-versionlens",
-    "Orta.vscode-jest",
-    "fabiospampinato.vscode-terminals",
+    "vitest.explorer",
     "redhat.vscode-yaml"
   ]
 }
