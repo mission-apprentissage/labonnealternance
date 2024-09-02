@@ -458,7 +458,7 @@ describe("PUT /jobs/:id", async () => {
 
   beforeEach(async () => {
     // Do not mock nextTick
-    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.useFakeTimers({ shouldAdvanceTime: true })
     vi.setSystemTime(now)
 
     vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)

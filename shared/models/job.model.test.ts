@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { ZJobStartDateCreate } from "."
 
@@ -47,6 +47,24 @@ describe("job.model", () => {
       it("should fail", () => {
         expect(zJobStartDate.safeParse("2023-11-19").success).toBe(false)
         expect(zJobStartDate.safeParse("2023-11-20").success).toBe(false)
+      })
+    })
+
+    describe("long running", () => {
+      beforeEach(() => {
+        vi.useFakeTimers()
+        vi.setSystemTime(new Date("2023-11-21T00:00:00.000+0100"))
+
+        return () => {
+          vi.useRealTimers()
+        }
+      })
+
+      it("should use real today", () => {
+        const zJobStartDate = ZJobStartDateCreate()
+        expect(zJobStartDate.safeParse("2023-11-21").success).toBe(true)
+        vi.advanceTimersByTime(24 * 60 * 60 * 1000)
+        expect(zJobStartDate.safeParse("2023-11-21").success).toBe(false)
       })
     })
   })
