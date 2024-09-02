@@ -544,7 +544,7 @@ program.command("import-kelio").description("Importe les offres kelio").option("
 
 program
   .command("import-computed-to-jobs-partners")
-  .description("Met à jour la collection jobs_partners à partir de computed_jobs_partners")
+  .description("Mets à jour la collection jobs_partners à partir de computed_jobs_partners")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("import-computed-to-jobs-partners"))
 
