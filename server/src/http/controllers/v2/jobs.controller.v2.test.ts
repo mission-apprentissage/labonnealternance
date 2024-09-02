@@ -27,7 +27,7 @@ describe("/jobs", () => {
   const romesQuery = rome.join(",")
   const [longitude, latitude] = porteDeClichy.coordinates
   const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({
-    offer_rome_codes: ["D1214"],
+    offer_rome_code: ["D1214"],
     workplace_geopoint: parisFixture.centre,
   })
 
@@ -123,7 +123,7 @@ describe("/jobs", () => {
         "apply_url",
         "contract_duration",
         "contract_remote",
-        "contract_start_date",
+        "contract_start",
         "contract_type",
         "offer_access_conditions",
         "offer_creation",
@@ -132,7 +132,7 @@ describe("/jobs", () => {
         "offer_diploma_level",
         "offer_expiration",
         "offer_opening_count",
-        "offer_rome_codes",
+        "offer_rome_code",
         "offer_status",
         "offer_title",
         "offer_to_be_acquired_skills",
@@ -251,7 +251,7 @@ describe("/jobs", () => {
     describe("POST API entry validation", () => {
       const validData = {
         workplace_siret: "12345678901234",
-        contract_start_date: "2024-01-01",
+        contract_start: "2024-01-01",
         contract_duration: "12 months",
         offer_title: "Software Engineer",
         offer_description: "Develop and maintain software.",
@@ -434,7 +434,7 @@ describe("/jobs", () => {
       it("should create an offer", async () => {
         const newOffer = {
           workplace_siret: "42476141900045",
-          contract_start_date: new Date(),
+          contract_start: new Date(),
           contract_duration: 12,
           contract_type: ["Apprentissage"],
           offer_title: "Software Engineer",

@@ -196,7 +196,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
   }
 
   if (romes) {
-    query.offer_rome_codes = { $in: romes }
+    query.offer_rome_code = { $in: romes }
   }
 
   if (diplomaLevel) {
@@ -305,12 +305,12 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       _id: job._id.toString(),
       partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       partner_job_id: null,
-      contract_start_date: job.job_start_date,
+      contract_start: job.job_start_date,
       contract_duration: job.job_duration ?? null,
       contract_type: job.job_type,
       contract_remote: null,
       offer_title: job.rome_label!,
-      offer_rome_codes: job.rome_code,
+      offer_rome_code: job.rome_code,
       offer_description: job.rome_detail.definition,
       offer_diploma_level: getDiplomaEuropeanLevel(job),
       offer_desired_skills: job.rome_detail.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
@@ -350,13 +350,13 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       partner_job_id: offreFT.id,
       partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
 
-      contract_start_date: null,
+      contract_start: null,
       contract_duration: isNaN(contractDuration) ? null : contractDuration,
       contract_type: contractType ? [contractType] : [],
       contract_remote: null,
 
       offer_title: offreFT.intitule,
-      offer_rome_codes: [offreFT.romeCode],
+      offer_rome_code: [offreFT.romeCode],
       offer_description: offreFT.description,
       offer_diploma_level: null,
       offer_desired_skills: null,

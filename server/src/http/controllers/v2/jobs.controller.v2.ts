@@ -82,9 +82,9 @@ export default (server: Server) => {
       config,
     },
     async (req, res) => {
-      const { workplace_siret, workplace_address, offer_title, offer_rome_codes, offer_diploma_level_european, ...rest } = req.body
+      const { workplace_siret, workplace_address, offer_title, offer_rome_code, offer_diploma_level_european, ...rest } = req.body
       let geopoint: IGeoPoint | null = null
-      let romeCode = offer_rome_codes ?? null
+      let romeCode = offer_rome_code ?? null
 
       const siretInformation = await getEntrepriseDataFromSiret({ siret: workplace_siret, type: "ENTREPRISE" })
 
@@ -127,7 +127,7 @@ export default (server: Server) => {
         partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
         partner_job_id: rest.partner_job_id ?? null,
         offer_title,
-        offer_rome_codes: romeCode,
+        offer_rome_code: romeCode,
         offer_status: JOB_STATUS.ACTIVE,
         offer_creation: rest.offer_creation ?? now,
         offer_expiration: rest.offer_expiration ?? addExpirationPeriod(now).toDate(),

@@ -49,13 +49,13 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   partner: extensions.buildEnum(JOBPARTNERS_LABEL).describe("Référence du partenaire"),
   partner_job_id: z.string().nullable().describe("Identifiant d'origine l'offre provenant du partenaire"),
 
-  contract_start_date: z.date().nullable().describe("Date de début de contrat"),
+  contract_start: z.date().nullable().describe("Date de début de contrat"),
   contract_duration: z.number().int().min(0).nullable().describe("Durée du contrat en mois"),
   contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable().describe("type de contrat, formaté à l'insertion"),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
 
   offer_title: z.string().describe("Titre de l'offre"),
-  offer_rome_codes: z.array(extensions.romeCode()).describe("Codes romes de l'offre"),
+  offer_rome_code: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   offer_diploma_level: z
     .object({
@@ -98,7 +98,7 @@ export type IJobsPartnersOfferPrivate = z.output<typeof ZJobsPartnersOfferPrivat
 
 const ZJobsPartnersPostApiBodyBase = z.object({
   partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
-  contract_start_date: ZJobStartDateCreate(),
+  contract_start: ZJobStartDateCreate(),
   contract_type: ZJobsPartnersOfferPrivate.shape.contract_type,
   contract_duration: z.number().int().min(6).max(36),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).optional(),
@@ -108,7 +108,7 @@ const ZJobsPartnersPostApiBodyBase = z.object({
   offer_desired_skills: ZJobsPartnersOfferPrivate.shape.offer_desired_skills.optional(),
   offer_to_be_acquired_skills: ZJobsPartnersOfferPrivate.shape.offer_to_be_acquired_skills.optional(),
   offer_access_conditions: ZJobsPartnersOfferPrivate.shape.offer_access_conditions.optional(),
-  offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.optional(),
+  offer_rome_code: ZJobsPartnersOfferPrivate.shape.offer_rome_code.optional(),
   offer_creation: ZJobsPartnersOfferPrivate.shape.offer_creation.optional(),
   offer_expiration: ZJobsPartnersOfferPrivate.shape.offer_expiration.optional(),
   offer_opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.optional(),
@@ -130,7 +130,7 @@ export const ZJobsPartnersPostApiBody = ZJobsPartnersPostApiBodyBase.refine(({ a
 
 export type IJobsPartnersPostApiBody = z.output<typeof ZJobsPartnersPostApiBody>
 export const ZJobsPartnersPatchApiBody = ZJobsPartnersPostApiBodyBase.pick({
-  contract_start_date: true,
+  contract_start: true,
   contract_type: true,
   contract_duration: true,
   contract_remote: true,
@@ -152,10 +152,10 @@ export type IJobsPartnersPatchApiBody = z.output<typeof ZJobsPartnersPatchApiBod
 export default {
   zod: ZJobsPartnersOfferPrivate,
   indexes: [
-    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1 }, {}],
-    [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
+    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_code: 1 }, {}],
+    [{ offer_multicast: 1, offer_rome_code: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
-    [{ offer_multicast: 1, offer_rome_codes: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
+    [{ offer_multicast: 1, offer_rome_code: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
 
     [{ partner: 1, partner_job_id: 1 }, {}],
   ],
