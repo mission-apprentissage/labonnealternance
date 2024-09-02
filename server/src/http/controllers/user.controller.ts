@@ -307,14 +307,21 @@ export default (server: Server) => {
         }
       )
 
-      const { email, last_name, first_name } = user
-
       const newEvent = getLastStatusEvent(updatedRole.status)
       if (!newEvent) {
         throw internal("inattendu : aucun event sauvegardé")
       }
       // if user is disabled, return the user data directly
       if (newEvent.status === AccessStatus.DENIED) {
+        const organization =
+          updatedRole.authorized_type === AccessEntityType.CFA
+            ? await getDbCollection("cfas").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
+            : await getDbCollection("entreprises").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
+        if (!organization) {
+          throw internal("inattendu: organization introuvable")
+        }
+        const { email, last_name, first_name, phone } = user
+        const { siret, raison_sociale } = organization
         // send email to user to notify him his account has been disabled
         await mailer.sendEmail({
           to: email,
@@ -324,10 +331,15 @@ export default (server: Server) => {
             images: {
               accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+              logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             },
             last_name: sanitizeForEmail(last_name),
             first_name: sanitizeForEmail(first_name),
             reason: sanitizeForEmail(newEvent.reason),
+            email,
+            siret: sanitizeForEmail(siret),
+            raison_sociale: sanitizeForEmail(raison_sociale),
+            phone: sanitizeForEmail(phone),
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
