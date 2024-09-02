@@ -1,4 +1,4 @@
-import { notFound, badRequest } from "@hapi/boom"
+import { badRequest, notFound } from "@hapi/boom"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { createApplicationTest, createRecruteurLbaTest } from "@tests/utils/user.test.utils"
 import { ERecruteurLbaUpdateEventType } from "shared/models"

@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto"
+
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
@@ -59,6 +61,11 @@ function getFixture() {
       schema: ZodString,
       filter: ({ context }) => context.path.at(-1) === "email",
       output: () => `rando${seed}@email.com`,
+    }),
+    Generator({
+      schema: ZodString,
+      filter: ({ context }) => context.path.at(-1) === "applicant_attachment_name",
+      output: () => "file.pdf",
     }),
     Generator({
       schema: zObjectId,
@@ -220,7 +227,7 @@ export async function saveRecruiter(data: Partial<IRecruiter>) {
     last_name: "last_name",
     first_name: "first_name",
     phone: "phone",
-    email: "email",
+    email: `${randomUUID()}@email.fr`,
     jobs: [],
     origin: "origin",
     opco: "opco",
