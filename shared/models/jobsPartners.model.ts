@@ -67,7 +67,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_to_be_acquired_skills: z.array(z.string()).describe("Compétence acuqises durant l'alternance").nullable(),
   offer_access_conditions: z.array(z.string()).nullable().describe("Conditions d'accès à l'offre"),
   offer_creation_date: z.date().nullable().describe("Date de creation de l'offre"),
-  offer_expiration_date: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j"),
+  offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j"),
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
   offer_status: extensions.buildEnum(JOB_STATUS).nullable().describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 })
@@ -110,7 +110,7 @@ const ZJobsPartnersPostApiBodyBase = z.object({
   offer_access_conditions: ZJobsPartnersOfferPrivate.shape.offer_access_conditions.optional(),
   offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.optional(),
   offer_creation_date: ZJobsPartnersOfferPrivate.shape.offer_creation_date.optional(),
-  offer_expiration_date: ZJobsPartnersOfferPrivate.shape.offer_expiration_date.optional(),
+  offer_expiration: ZJobsPartnersOfferPrivate.shape.offer_expiration.optional(),
   offer_opening_count: ZJobsPartnersOfferPrivate.shape.offer_opening_count.optional(),
   offer_multicast: ZJobsPartnersOfferPrivate.shape.offer_multicast.optional(),
   offer_origin: ZJobsPartnersOfferPrivate.shape.offer_origin.optional(),

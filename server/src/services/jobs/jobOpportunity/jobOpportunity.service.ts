@@ -317,7 +317,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       offer_to_be_acquired_skills: job.rome_detail.competences.savoir_faire?.flatMap((x) => x.items.map((y) => `${x.libelle}: ${y.libelle}`)) ?? [],
       offer_access_conditions: job.rome_detail.acces_metier.split("\n"),
       offer_creation_date: job.job_creation_date ?? null,
-      offer_expiration_date: job.job_expiration_date ?? null,
+      offer_expiration: job.job_expiration_date ?? null,
       offer_opening_count: job.job_count ?? 1,
       offer_status: job.job_status,
 
@@ -363,7 +363,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       offer_to_be_acquired_skills: null,
       offer_access_conditions: offreFT.formations ? offreFT.formations?.map((formation) => `${formation.domaineLibelle} - ${formation.niveauLibelle}`) : null,
       offer_creation_date: new Date(offreFT.dateCreation),
-      offer_expiration_date: null,
+      offer_expiration: null,
       offer_opening_count: offreFT.nombrePostes,
       offer_status: JOB_STATUS.ACTIVE,
 

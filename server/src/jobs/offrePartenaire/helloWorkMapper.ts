@@ -104,7 +104,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_to_be_acquired_skills: null,
     offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
     offer_creation_date: parseDate(publication_date),
-    offer_expiration_date: null,
+    offer_expiration: null,
     offer_origin: null,
     offer_opening_count: 1,
     offer_multicast: false,
