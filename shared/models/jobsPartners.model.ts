@@ -22,6 +22,8 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   workplace_website: z.string().nullable().describe("Site web de l'entreprise").default(null),
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise"),
+  workplace_brand: z.string().nullable().describe("Nom d'enseigne de l'établissement"),
+  workplace_legal_name: z.string().nullable().describe("Nom légal de l'entreprise"),
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
   workplace_address: z.object({

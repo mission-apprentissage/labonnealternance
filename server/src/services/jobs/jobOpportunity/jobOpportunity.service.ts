@@ -253,6 +253,8 @@ export const convertLbaCompanyToJobPartnerRecruiterApi = (recruteursLba: ILbaCom
       workplace_siret: recruteurLba.siret,
       workplace_website: recruteurLba.website,
       workplace_name: recruteurLba.enseigne ?? recruteurLba.raison_sociale,
+      workplace_brand: recruteurLba.enseigne,
+      workplace_legal_name: recruteurLba.raison_sociale,
       workplace_description: null,
       workplace_size: recruteurLba.company_size,
       workplace_address: {
@@ -331,6 +333,8 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       workplace_siret: recruiter.establishment_siret,
       workplace_website: null,
       workplace_name: recruiter.establishment_enseigne ?? recruiter.establishment_raison_sociale ?? null,
+      workplace_brand: recruiter.establishment_enseigne ?? null,
+      workplace_legal_name: recruiter.establishment_raison_sociale ?? null,
       workplace_description: null,
       workplace_size: recruiter.establishment_size ?? null,
       workplace_address: {
@@ -376,6 +380,8 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
 
       // Try to find entreprise SIRET from  offreFT.entreprise.siret ?
       workplace_siret: null,
+      workplace_brand: null,
+      workplace_legal_name: null,
       workplace_website: null,
       workplace_name: offreFT.entreprise.nom,
       workplace_description: offreFT.entreprise.description,
@@ -526,7 +532,16 @@ async function resolveWorkplaceLocationFromAddress(workplace_address_label: stri
 // List of fields impacted by change of the siret
 type WorkplaceSiretData = Pick<
   IJobsPartnersOfferApi,
-  "workplace_geopoint" | "workplace_address" | "workplace_name" | "workplace_naf_label" | "workplace_naf_code" | "workplace_opco" | "workplace_idcc" | "workplace_size"
+  | "workplace_geopoint"
+  | "workplace_address"
+  | "workplace_name"
+  | "workplace_legal_name"
+  | "workplace_brand"
+  | "workplace_naf_label"
+  | "workplace_naf_code"
+  | "workplace_opco"
+  | "workplace_idcc"
+  | "workplace_size"
 >
 
 async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: ZodError): Promise<WorkplaceSiretData | null> {
@@ -541,6 +556,8 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
     workplace_geopoint: entrepriseData.geopoint,
     workplace_address: { label: entrepriseData.address! },
     workplace_name: entrepriseData.establishment_enseigne ?? entrepriseData.establishment_raison_sociale ?? null,
+    workplace_brand: entrepriseData.establishment_enseigne ?? null,
+    workplace_legal_name: entrepriseData.establishment_raison_sociale ?? null,
     workplace_naf_label: entrepriseData.naf_label ?? null,
     workplace_naf_code: entrepriseData.naf_code ?? null,
     workplace_opco: zOpcoLabel.safeParse(opcoData?.opco).data ?? null,

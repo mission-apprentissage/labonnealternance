@@ -9,6 +9,8 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     workplace_siret: null,
     workplace_website: null,
     workplace_name: null,
+    workplace_brand: null,
+    workplace_legal_name: null,
     workplace_description: null,
     workplace_size: null,
     workplace_address: { label: "126 RUE DE L'UNIVERSITE 75007 PARIS" },
