@@ -39,7 +39,7 @@ const porteDeClichy: IGeoPoint = {
 const romesQuery = rome.join(",")
 const [longitude, latitude] = porteDeClichy.coordinates
 const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPrivate({
-  offer_rome_code: ["D1214"],
+  offer_rome_codes: ["D1214"],
   workplace_geopoint: parisFixture.centre,
 })
 
@@ -157,7 +157,7 @@ describe("GET /jobs", () => {
       "offer_diploma_level",
       "offer_expiration",
       "offer_opening_count",
-      "offer_rome_code",
+      "offer_rome_codes",
       "offer_status",
       "offer_title",
       "offer_to_be_acquired_skills",
@@ -289,7 +289,7 @@ describe("POST /jobs", async () => {
     contract_remote: null,
 
     offer_title: "Apprentis en développement web",
-    offer_rome_code: ["M1602"],
+    offer_rome_codes: ["M1602"],
     offer_desired_skills: [],
     offer_to_be_acquired_skills: [],
     offer_access_conditions: [],
@@ -438,7 +438,7 @@ describe("PUT /jobs/:id", async () => {
     contract_remote: null,
 
     offer_title: "Apprentis en développement web",
-    offer_rome_code: ["M1602"],
+    offer_rome_codes: ["M1602"],
     offer_desired_skills: [],
     offer_to_be_acquired_skills: [],
     offer_access_conditions: [],

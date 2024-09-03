@@ -20,7 +20,7 @@ exports[`createJobOffer > should create a job offer with the minimal data 1`] = 
   "offer_multicast": true,
   "offer_opening_count": 1,
   "offer_origin": null,
-  "offer_rome_code": [
+  "offer_rome_codes": [
     "M1602",
   ],
   "offer_status": "Active",
@@ -73,7 +73,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_diploma_level": null,
     "offer_expiration": null,
     "offer_opening_count": 1,
-    "offer_rome_code": [
+    "offer_rome_codes": [
       "M1602",
     ],
     "offer_status": "Active",
@@ -120,7 +120,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_diploma_level": null,
     "offer_expiration": null,
     "offer_opening_count": 1,
-    "offer_rome_code": [
+    "offer_rome_codes": [
       "M1602",
     ],
     "offer_status": "Active",
@@ -168,7 +168,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
-    "offer_rome_code": [
+    "offer_rome_codes": [
       "M1602",
     ],
     "offer_status": "Active",
@@ -251,7 +251,7 @@ exports[`updateJobOffer > should update a job offer with the minimal data 1`] = 
   "offer_multicast": true,
   "offer_opening_count": 1,
   "offer_origin": null,
-  "offer_rome_code": [
+  "offer_rome_codes": [
     "M1602",
   ],
   "offer_status": "Active",

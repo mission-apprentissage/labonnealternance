@@ -34,7 +34,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     contract_remote: null,
 
     offer_title: "Une super offre d'alternance",
-    offer_rome_code: [],
+    offer_rome_codes: [],
     offer_description: "Attention il te faut une super motivation pour ce job",
     offer_diploma_level: null,
     offer_desired_skills: [],

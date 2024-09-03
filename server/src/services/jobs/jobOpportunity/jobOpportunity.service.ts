@@ -203,7 +203,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
   }
 
   if (romes) {
-    query.offer_rome_code = { $in: romes }
+    query.offer_rome_codes = { $in: romes }
   }
 
   if (diplomaLevel) {
@@ -319,7 +319,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       contract_type: job.job_type,
       contract_remote: null,
       offer_title: job.rome_label!,
-      offer_rome_code: job.rome_code,
+      offer_rome_codes: job.rome_code,
       offer_description: job.rome_detail.definition,
       offer_diploma_level: getDiplomaEuropeanLevel(job),
       offer_desired_skills: job.rome_detail.competences.savoir_etre_professionnel?.map((x) => x.libelle) ?? [],
@@ -367,7 +367,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       contract_remote: null,
 
       offer_title: offreFT.intitule,
-      offer_rome_code: [offreFT.romeCode],
+      offer_rome_codes: [offreFT.romeCode],
       offer_description: offreFT.description,
       offer_diploma_level: null,
       offer_desired_skills: [],
@@ -568,8 +568,8 @@ async function resolveWorkplaceDataFromSiret(workplace_siret: string, zodError: 
 }
 
 async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: WorkplaceSiretData | null, zodError: ZodError): Promise<string[] | null> {
-  if (data.offer_rome_code && data.offer_rome_code.length > 0) {
-    return data.offer_rome_code
+  if (data.offer_rome_codes && data.offer_rome_codes.length > 0) {
+    return data.offer_rome_codes
   }
 
   if (siretData === null) {
@@ -578,7 +578,7 @@ async function resolveRomeCodes(data: IJobsPartnersWritableApi, siretData: Workp
 
   const romeoResponse = await getRomeoInfos({ intitule: data.offer_title, contexte: siretData.workplace_naf_label ?? undefined })
   if (!romeoResponse) {
-    zodError.addIssue({ code: "custom", path: ["offer_rome_code"], message: "ROME is not provided and we are unable to retrieve ROME code for the given job title" })
+    zodError.addIssue({ code: "custom", path: ["offer_rome_codes"], message: "ROME is not provided and we are unable to retrieve ROME code for the given job title" })
     return null
   }
 
@@ -605,7 +605,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     throw internal("unexpected: cannot resolve all required data for the job offer")
   }
 
-  const { offer_creation, offer_expiration, offer_rome_code, offer_diploma_level_european, workplace_address_label, ...rest } = data
+  const { offer_creation, offer_expiration, offer_rome_codes, offer_diploma_level_european, workplace_address_label, ...rest } = data
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
@@ -614,7 +614,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   }
 
   const writableData: Omit<IJobsPartnersOfferPrivate, InvariantFields> = {
-    offer_rome_code: romeCode,
+    offer_rome_codes: romeCode,
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     offer_creation: offer_creation ?? invariantData.created_at,
     offer_expiration: offer_expiration ?? DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate(),

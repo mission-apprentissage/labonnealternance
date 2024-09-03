@@ -138,17 +138,17 @@ describe("findJobsOpportunities", () => {
   ]
   const partnerJobs: IJobsPartnersOfferPrivate[] = [
     generateJobsPartnersOfferPrivate({
-      offer_rome_code: ["M1602"],
+      offer_rome_codes: ["M1602"],
       workplace_geopoint: parisFixture.centre,
       offer_creation: new Date("2021-01-01"),
     }),
     generateJobsPartnersOfferPrivate({
-      offer_rome_code: ["M1602", "D1214"],
+      offer_rome_codes: ["M1602", "D1214"],
       workplace_geopoint: marseilleFixture.centre,
       offer_creation: new Date("2022-01-01"),
     }),
     generateJobsPartnersOfferPrivate({
-      offer_rome_code: ["D1212"],
+      offer_rome_codes: ["D1212"],
       workplace_geopoint: levalloisFixture.centre,
       offer_creation: new Date("2023-01-01"),
     }),
@@ -1093,7 +1093,7 @@ describe("findJobsOpportunities", () => {
       const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, () =>
         generateJobsPartnersOfferPrivate({
           workplace_geopoint: parisFixture.centre,
-          offer_rome_code: ["M1602"],
+          offer_rome_codes: ["M1602"],
         })
       )
       await getDbCollection("jobs_partners").insertMany(extraOffers)
@@ -1133,7 +1133,7 @@ describe("findJobsOpportunities", () => {
     it("should not include offer_multicast=false jobs", async () => {
       await getDbCollection("jobs_partners").insertOne(
         generateJobsPartnersOfferPrivate({
-          offer_rome_code: ["M1602"],
+          offer_rome_codes: ["M1602"],
           workplace_geopoint: parisFixture.centre,
           offer_multicast: false,
         })
@@ -1158,12 +1158,12 @@ describe("findJobsOpportunities", () => {
       beforeEach(async () => {
         await getDbCollection("jobs_partners").insertMany([
           generateJobsPartnersOfferPrivate({
-            offer_rome_code: ["M1602"],
+            offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
             offer_diploma_level: { european: "4", label: "BP, Bac, autres formations niveau (Bac)" },
           }),
           generateJobsPartnersOfferPrivate({
-            offer_rome_code: ["M1602"],
+            offer_rome_codes: ["M1602"],
             workplace_geopoint: parisFixture.centre,
             offer_diploma_level: { european: "3", label: "CAP, BEP, autres formations niveau (CAP)" },
           }),
@@ -1317,7 +1317,7 @@ describe("createJobOffer", () => {
     contract_remote: null,
 
     offer_title: "Apprentis en développement web",
-    offer_rome_code: ["M1602"],
+    offer_rome_codes: ["M1602"],
     offer_desired_skills: [],
     offer_to_be_acquired_skills: [],
     offer_access_conditions: [],
@@ -1373,7 +1373,7 @@ describe("createJobOffer", () => {
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
     expect(job?.created_at).toEqual(now)
     expect(job?.partner).toEqual(identity.organisation)
-    expect(job?.offer_rome_code).toEqual(["M1602"])
+    expect(job?.offer_rome_codes).toEqual(["M1602"])
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(now)
     expect(job?.offer_expiration).toEqual(in2Month)
@@ -1391,11 +1391,11 @@ describe("createJobOffer", () => {
   it("should get default rome from ROMEO", async () => {
     vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
 
-    const result = await createJobOffer(identity, { ...minimalData, offer_rome_code: [] })
+    const result = await createJobOffer(identity, { ...minimalData, offer_rome_codes: [] })
     expect(result).toBeInstanceOf(ObjectId)
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
-    expect(job?.offer_rome_code).toEqual(["E1206"])
+    expect(job?.offer_rome_codes).toEqual(["E1206"])
     expect(nock.isDone()).toBeTruthy()
   })
 
@@ -1449,7 +1449,7 @@ describe("updateJobOffer", () => {
     contract_remote: null,
 
     offer_title: "Apprentis en développement web",
-    offer_rome_code: ["M1602"],
+    offer_rome_codes: ["M1602"],
     offer_desired_skills: [],
     offer_to_be_acquired_skills: [],
     offer_access_conditions: [],
@@ -1506,7 +1506,7 @@ describe("updateJobOffer", () => {
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.created_at).toEqual(originalCreatedAt)
     expect(job?.partner).toEqual(identity.organisation)
-    expect(job?.offer_rome_code).toEqual(["M1602"])
+    expect(job?.offer_rome_codes).toEqual(["M1602"])
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(originalCreatedAt)
     // TODO: figure out if the expiration should be updated
@@ -1525,10 +1525,10 @@ describe("updateJobOffer", () => {
   it("should get default rome from ROMEO", async () => {
     vi.mocked(getRomeoPredictions).mockResolvedValue(franceTravailRomeoFixture["Software Engineer"])
 
-    await updateJobOffer(_id, identity, { ...minimalData, offer_rome_code: [] })
+    await updateJobOffer(_id, identity, { ...minimalData, offer_rome_codes: [] })
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
-    expect(job?.offer_rome_code).toEqual(["E1206"])
+    expect(job?.offer_rome_codes).toEqual(["E1206"])
     expect(nock.isDone()).toBeTruthy()
   })
 

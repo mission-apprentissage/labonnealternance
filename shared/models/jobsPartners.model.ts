@@ -58,7 +58,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
 
   offer_title: z.string().describe("Titre de l'offre"),
   // TODO: pluriel ?
-  offer_rome_code: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
+  offer_rome_codes: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   offer_diploma_level: z
     .object({
@@ -108,7 +108,7 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   contract_remote: true,
 
   offer_title: true,
-  offer_rome_code: true,
+  offer_rome_codes: true,
   offer_desired_skills: true,
   offer_to_be_acquired_skills: true,
   offer_access_conditions: true,
@@ -128,7 +128,7 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   // TODO: job start date must be greate or equal to today's date --> why ?
   contract_start: ZJobStartDateCreate(),
 
-  offer_rome_code: ZJobsPartnersOfferPrivate.shape.offer_rome_code.nullable().default(null),
+  offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
   offer_description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
   offer_diploma_level_european: zDiplomaEuropeanLevel.nullable().default(null),
 
@@ -156,10 +156,10 @@ export type IJobsPartnersWritableApi = z.output<typeof ZJobsPartnersWritableApi>
 export default {
   zod: ZJobsPartnersOfferPrivate,
   indexes: [
-    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_code: 1 }, {}],
-    [{ offer_multicast: 1, offer_rome_code: 1, offer_creation: -1 }, {}],
+    [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1 }, {}],
+    [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
-    [{ offer_multicast: 1, offer_rome_code: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
+    [{ offer_multicast: 1, offer_rome_codes: 1, "offer_diploma_level.european": 1, offer_creation: -1 }, {}],
 
     [{ partner: 1, partner_job_id: 1 }, {}],
   ],
