@@ -5,7 +5,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
-import { JOB_STATUS, ZJobStartDateCreate } from "./job.model"
+import { JOB_STATUS_ENGLISH, ZJobStartDateCreate } from "./job.model"
 import { zOpcoLabel } from "./opco.model"
 
 const collectionName = "jobs_partners" as const
@@ -72,7 +72,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_creation: z.date().nullable().describe("Date de creation de l'offre").default(null),
   offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j").default(null),
   offer_opening_count: z.number().describe("Nombre de poste disponible").default(1),
-  offer_status: extensions.buildEnum(JOB_STATUS).default(JOB_STATUS.ACTIVE).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
+  offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).default(JOB_STATUS_ENGLISH.ACTIVE).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({
@@ -117,7 +117,6 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   offer_opening_count: true,
   offer_origin: true,
   offer_multicast: true,
-  // offer_status: true,
 
   apply_url: true,
   apply_email: true,

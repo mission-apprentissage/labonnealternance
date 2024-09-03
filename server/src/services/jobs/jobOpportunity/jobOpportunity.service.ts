@@ -1,7 +1,7 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, parseEnum } from "shared"
+import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS_ENGLISH, parseEnum, translateJobStatus } from "shared"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
@@ -328,7 +328,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
       offer_creation: job.job_creation_date ?? null,
       offer_expiration: job.job_expiration_date ?? null,
       offer_opening_count: job.job_count ?? 1,
-      offer_status: job.job_status,
+      offer_status: translateJobStatus(job.job_status),
 
       workplace_siret: recruiter.establishment_siret,
       workplace_website: null,
@@ -376,7 +376,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
       offer_creation: new Date(offreFT.dateCreation),
       offer_expiration: null,
       offer_opening_count: offreFT.nombrePostes,
-      offer_status: JOB_STATUS.ACTIVE,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
 
       // Try to find entreprise SIRET from  offreFT.entreprise.siret ?
       workplace_siret: null,
@@ -615,7 +615,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
 
   const writableData: Omit<IJobsPartnersOfferPrivate, InvariantFields> = {
     offer_rome_code: romeCode,
-    offer_status: JOB_STATUS.ACTIVE,
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     offer_creation: offer_creation ?? invariantData.created_at,
     offer_expiration: offer_expiration ?? DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate(),
     offer_diploma_level:

@@ -1,5 +1,5 @@
 import { badRequest, internal } from "@hapi/boom"
-import { ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS, assertUnreachable, zRoutes } from "shared"
+import { ILbaItemFtJob, ILbaItemLbaJob, JOB_STATUS_ENGLISH, assertUnreachable, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -109,10 +109,10 @@ export default (server: Server) => {
         throw badRequest("Job does not exist")
       }
 
-      if (job.offer_status === JOB_STATUS.POURVUE) {
+      if (job.offer_status === JOB_STATUS_ENGLISH.POURVUE) {
         throw badRequest("Job is already provided")
       }
-      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.POURVUE } })
+      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS_ENGLISH.POURVUE } })
       return res.status(204).send()
     }
   )
@@ -131,10 +131,10 @@ export default (server: Server) => {
         throw badRequest("Job does not exists")
       }
 
-      if (job.offer_status === JOB_STATUS.ANNULEE) {
+      if (job.offer_status === JOB_STATUS_ENGLISH.ANNULEE) {
         throw badRequest("Job is already canceled")
       }
-      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS.ANNULEE } })
+      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
       return res.status(204).send()
     }
   )
@@ -156,7 +156,7 @@ export default (server: Server) => {
         throw badRequest("Job is already extended up to two month")
       }
 
-      if (job.offer_status !== JOB_STATUS.ACTIVE) {
+      if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
         throw badRequest("Job cannot be extended as it is not active")
       }
       await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_expiration_date: addExpirationPeriod(dayjs()).toDate() } })

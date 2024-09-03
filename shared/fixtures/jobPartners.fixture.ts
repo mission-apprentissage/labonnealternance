@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import { JOB_STATUS } from "../models"
+import { JOB_STATUS_ENGLISH } from "../models"
 import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPartners.model"
 
 export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOfferPrivate>): IJobsPartnersOfferPrivate {
@@ -43,7 +43,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     offer_creation: null,
     offer_expiration: null,
     offer_opening_count: 1,
-    offer_status: JOB_STATUS.ACTIVE,
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
 
     apply_email: null,
     offer_multicast: true,
