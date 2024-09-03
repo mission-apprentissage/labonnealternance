@@ -34,7 +34,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
   apply_url: z.string().url().nullable().describe("URL pour candidater").default(null),
-  apply_phone: z.string().nullable().describe("Téléphone de contact").default(null),
+  apply_phone: extensions.telephone.nullable().describe("Téléphone de contact").default(null),
 })
 
 export const zDiplomaEuropeanLevel = z.enum(["3", "4", "5", "6", "7"])
