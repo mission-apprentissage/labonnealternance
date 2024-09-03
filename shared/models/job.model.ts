@@ -84,11 +84,17 @@ export const ZJobWithRomeDetail = ZJob.extend({
   .strict()
   .openapi("JobWithRomeDetail")
 
-export const ZJobStartDateCreate = (now: dayjs.Dayjs = dayjs.tz()) =>
+export const ZJobStartDateCreate = (now: dayjs.Dayjs | null = null) =>
   // Le changement de jour se fait à minuit (heure de Paris)
-  ZJobFields.shape.job_start_date.refine((date) => dayjs.tz(date).isSameOrAfter(dayjs.tz(now).startOf("days")), {
-    message: "job_start_date must be greater or equal to today's date",
-  })
+  ZJobFields.shape.job_start_date.refine(
+    (date) => {
+      const startOfDay = dayjs.tz(now ?? dayjs.tz()).startOf("days")
+      return dayjs.tz(date).isSameOrAfter(startOfDay)
+    },
+    {
+      message: "job_start_date must be greater or equal to today's date",
+    }
+  )
 
 export const ZJobWrite = ZJobFields.pick({
   rome_appellation_label: true,

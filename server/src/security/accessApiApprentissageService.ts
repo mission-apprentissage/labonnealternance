@@ -13,11 +13,15 @@ const jwtPublicKey = config.auth.apiApprentissage.publicKey
 
 const ZApiApprentissageTokenData = z.object({
   email: z.string().email(),
+  organisation: z.string(),
+  habilitations: z.object({
+    "jobs:write": z.boolean(),
+  }),
 })
 
-export type ApiApprentissageTokenData = z.output<typeof ZApiApprentissageTokenData>
+export type IApiApprentissageTokenData = z.output<typeof ZApiApprentissageTokenData>
 
-export const parseApiApprentissageToken = (jwtToken: string): ApiApprentissageTokenData => {
+export const parseApiApprentissageToken = (jwtToken: string): IApiApprentissageTokenData => {
   try {
     const { payload } = jwt.verify(jwtToken, jwtPublicKey, {
       complete: true,

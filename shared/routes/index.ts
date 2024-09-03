@@ -112,6 +112,7 @@ const zRoutesPut = {
   ...zFormulaireRoute.put,
   ...zRecruiterRoutes.put,
   ...zUpdateLbaCompanyRoutes.put,
+  ...zJobsRoutesV2.put,
 } as const
 
 const zRoutesDelete = {
@@ -124,7 +125,6 @@ const zRoutesPatch = {
   ...zFormulaireRoute.patch,
   ...zEtablissementRoutes.patch,
   ...zEligibleTrainingsForAppointmentRoutes.patch,
-  ...zJobsRoutesV2.patch,
 } as const
 
 export type IGetRoutes = typeof zRoutesGet
