@@ -40,5 +40,7 @@ describe("Importing computed_jobs_partners into jobs_partners", () => {
     // les éléments validated et absents initialement de jobs partners doivent se rerouver dans jobs partners
 
     // les éléments validated et déjà dans jobs partners doivent toujours y être avec les data modifiées à jour
+    const existing_3 = await getDbCollection("jobs_partners").findOne({ partner_job_id: "existing_3" })
+    expect.soft(existing_3?.offer_description === newDesc)
   })
 })
