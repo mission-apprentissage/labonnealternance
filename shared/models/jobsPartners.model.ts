@@ -21,7 +21,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
 
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   workplace_website: z.string().url().nullable().describe("Site web de l'entreprise").default(null),
-  workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise"),
+  workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise").default(null),
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
   workplace_address: z.object({
@@ -74,7 +74,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
 })
 
 const ZJobsPartnersRecruiterPrivateFields = z.object({
-  apply_email: z.string().nullable().describe("Email de contact").default(null),
+  apply_email: z.string().email().nullable().describe("Email de contact").default(null),
   offer_multicast: z.boolean().default(true).describe("Si l'offre peut être diffusé sur l'ensemble des plateformes partenaires"),
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur").default(null),
 
