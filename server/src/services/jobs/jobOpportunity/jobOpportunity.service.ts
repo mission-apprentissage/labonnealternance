@@ -637,6 +637,10 @@ export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTo
     throw notFound("Job offer not found")
   }
 
+  if (current.offer_status !== JOB_STATUS.ACTIVE) {
+    throw forbidden("Job must be active in order to be modified")
+  }
+
   if (current.partner !== identity.organisation) {
     throw forbidden("You are not allowed to update this job offer")
   }
