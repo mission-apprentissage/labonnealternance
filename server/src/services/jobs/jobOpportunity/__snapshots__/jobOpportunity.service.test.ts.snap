@@ -167,8 +167,8 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     ],
     "offer_status": "Active",
     "offer_title": "Une super offre d'alternance",
-    "partner": "Hello work",
     "offer_to_be_acquired_skills": [],
+    "partner": "Hello work",
     "partner_job_id": null,
     "workplace_address": {
       "label": "126 RUE DE L'UNIVERSITE 75007 PARIS",
