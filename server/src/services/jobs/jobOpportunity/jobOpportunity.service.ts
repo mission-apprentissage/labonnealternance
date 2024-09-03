@@ -589,10 +589,11 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   }
 
   const { offer_creation, offer_expiration, offer_rome_code, offer_diploma_level_european, workplace_address_label, ...rest } = data
+  const now = new Date()
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
-    created_at: current?.created_at ?? new Date(),
+    created_at: current?.created_at ?? now,
     partner: identity.organisation,
   }
 
@@ -608,6 +609,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
             european: offer_diploma_level_european,
             label: NIVEAU_DIPLOME_LABEL[offer_diploma_level_european],
           },
+    updated_at: now,
     ...rest,
     // Data derived from workplace_address_label take priority over workplace_siret
     ...siretData,

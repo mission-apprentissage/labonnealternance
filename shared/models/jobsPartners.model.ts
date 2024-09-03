@@ -79,6 +79,7 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   offer_origin: z.string().nullable().describe("Origine de l'offre provenant d'un aggregateur").default(null),
 
   created_at: z.date().describe("Date de creation de l'offre"),
+  updated_at: z.date().describe("Date de mise à jour de l'offre"),
 })
 
 export const ZJobsPartnersRecruiterPrivate = ZJobsPartnersRecruiterApi.merge(ZJobsPartnersRecruiterPrivateFields)

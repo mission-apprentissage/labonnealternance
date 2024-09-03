@@ -7,12 +7,12 @@ import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateLbaConpanyFixture } from "shared/fixtures/recruteurLba.fixture"
-import { parisFixture, clichyFixture, marseilleFixture, levalloisFixture, generateReferentielCommuneFixtures } from "shared/fixtures/referentiel/commune.fixture"
+import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { ILbaCompany, IRecruiter, IReferentielRome, JOB_STATUS } from "shared/models"
 import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApi, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-import { beforeEach, beforeAll, afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
@@ -1337,6 +1337,7 @@ describe("createJobOffer", () => {
     workplace_address_label: null,
     workplace_description: null,
     workplace_website: null,
+    workplace_name: null,
   }
 
   beforeEach(async () => {
@@ -1469,6 +1470,7 @@ describe("updateJobOffer", () => {
     workplace_address_label: null,
     workplace_description: null,
     workplace_website: null,
+    workplace_name: null,
   }
 
   beforeEach(async () => {
