@@ -1347,6 +1347,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "rome_code",
           "job_status",
           "job_type",
+          "is_multi_published",
         ],
         "type": "object",
       },
@@ -2860,17 +2861,17 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Coordonnées geographique de l'établissement",
             "properties": {
               "coordinates": {
-                "prefixItems": [
-                  {
-                    "type": "number",
-                  },
-                  {
-                    "type": "number",
-                  },
-                ],
+                "items": {
+                  "type": "number",
+                },
+                "maxItems": 2,
+                "minItems": 2,
                 "type": "array",
               },
               "type": {
+                "enum": [
+                  "Point",
+                ],
                 "type": "string",
               },
             },
@@ -2962,9 +2963,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           },
         },
         "required": [
+          "establishment_id",
           "establishment_siret",
+          "is_delegated",
           "email",
           "jobs",
+          "status",
         ],
         "type": "object",
       },
@@ -5685,7 +5689,6 @@ Limite : 5 appel(s) / 1 seconde(s)
         "operationId": "statsViewLbaJob",
         "parameters": [
           {
-            "description": "Identifiant unique",
             "in": "path",
             "name": "id",
             "required": false,
@@ -7813,7 +7816,6 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
-            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -7980,7 +7982,6 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
-            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -8080,7 +8081,6 @@ Limite : 5 appel(s) / 1 seconde(s)
         "description": "Create delegation related to a job offer.",
         "parameters": [
           {
-            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -8316,7 +8316,6 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
-            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -8583,7 +8582,6 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
-            "description": "Identifiant unique",
             "in": "path",
             "name": "id",
             "required": false,
@@ -8904,7 +8902,6 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
-            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
@@ -9075,6 +9072,7 @@ Limite : 5 appel(s) / 1 seconde(s)
                 },
                 "required": [
                   "job_type",
+                  "is_multi_published",
                   "job_start_date",
                   "appellation_code",
                 ],
@@ -9130,7 +9128,6 @@ Limite : 5 appel(s) / 1 seconde(s)
 ",
         "parameters": [
           {
-            "description": "Identifiant unique",
             "in": "path",
             "name": "jobId",
             "required": false,
