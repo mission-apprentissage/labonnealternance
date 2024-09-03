@@ -57,7 +57,6 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre").default(null),
 
   offer_title: z.string().describe("Titre de l'offre"),
-  // TODO: pluriel ?
   offer_rome_codes: z.array(extensions.romeCode()).describe("Code rome de l'offre"),
   offer_description: z.string().describe("description de l'offre, soit définit par le partenaire, soit celle du ROME si pas suffisament grande"),
   offer_diploma_level: z

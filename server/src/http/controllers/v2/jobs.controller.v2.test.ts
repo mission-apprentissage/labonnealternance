@@ -61,7 +61,7 @@ afterEach(() => {
   nock.cleanAll()
 })
 
-describe("GET /jobs", () => {
+describe("GET /jobs/search", () => {
   beforeEach(async () => {
     await getDbCollection("referentiel.communes").insertMany(generateReferentielCommuneFixtures([parisFixture, clichyFixture, levalloisFixture, marseilleFixture]))
     await getDbCollection("jobs_partners").insertOne(jobPartnerOffer)
@@ -69,13 +69,13 @@ describe("GET /jobs", () => {
   })
 
   it("should return 401 if no api key provided", async () => {
-    const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs" })
+    const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/search" })
     expect(response.statusCode).toBe(401)
     expect(response.json()).toEqual({ statusCode: 401, error: "Unauthorized", message: "Unauthorized" })
   })
 
   it("should return 403 if api key is invalid", async () => {
-    const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs", headers: { authorization: `Bearer ${fakeToken}` } })
+    const response = await httpClient().inject({ method: "GET", path: "/api/v2/jobs/search", headers: { authorization: `Bearer ${fakeToken}` } })
     expect.soft(response.statusCode).toBe(403)
     expect(response.json()).toEqual({ statusCode: 403, error: "Forbidden", message: "Invalid JWT token" })
   })
@@ -84,7 +84,7 @@ describe("GET /jobs", () => {
     const romesQuery = "D4354,D864,F67"
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
+      path: `/api/v2/jobs/search?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
@@ -108,7 +108,7 @@ describe("GET /jobs", () => {
     const [latitude, longitude] = [300, 200]
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
+      path: `/api/v2/jobs/search?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
@@ -134,7 +134,7 @@ describe("GET /jobs", () => {
   it("should perform search and return data", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
+      path: `/api/v2/jobs/search?romes=${romesQuery}&latitude=${latitude}&longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
@@ -203,7 +203,7 @@ describe("GET /jobs", () => {
 
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs?rncp=${rncpQuery}&latitude=${latitude}&longitude=${longitude}`,
+      path: `/api/v2/jobs/search?rncp=${rncpQuery}&latitude=${latitude}&longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
 
@@ -218,7 +218,7 @@ describe("GET /jobs", () => {
   it("should require latitude when longitude is provided", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs?longitude=${longitude}`,
+      path: `/api/v2/jobs/search?longitude=${longitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
@@ -241,7 +241,7 @@ describe("GET /jobs", () => {
   it("should require longitude when latitude is provided", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs?latitude=${latitude}`,
+      path: `/api/v2/jobs/search?latitude=${latitude}`,
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
@@ -264,7 +264,7 @@ describe("GET /jobs", () => {
   it("should all params be optional", async () => {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/api/v2/jobs`,
+      path: `/api/v2/jobs/search`,
       headers: { authorization: `Bearer ${token}` },
     })
 

@@ -297,8 +297,8 @@ export default (server: Server) => {
     }
   )
 
-  server.get("/jobs", { schema: zRoutes.get["/jobs"], onRequest: server.auth(zRoutes.get["/jobs"]) }, async (req, res) => {
-    const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/jobs"], "api-apprentissage"))
+  server.get("/jobs/search", { schema: zRoutes.get["/jobs/search"], onRequest: server.auth(zRoutes.get["/jobs/search"]) }, async (req, res) => {
+    const result = await findJobsOpportunities(req.query, new JobOpportunityRequestContext(zRoutes.get["/jobs/search"], "api-apprentissage"))
     return res.send(result)
   })
 }
