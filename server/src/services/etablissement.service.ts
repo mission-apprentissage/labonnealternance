@@ -317,7 +317,7 @@ export const formatReferentielData = (d: IReferentiel): ICfaReferentielData => {
       type: "Point",
       coordinates: coords,
     },
-  }
+  } as ICfaReferentielData
   const validation = ZCfaReferentielData.safeParse(referentielData)
   if (!validation.success) {
     sentryCaptureException(internal(`erreur de validation sur les données du référentiel CFA pour le siret=${d.siret}.`, { validationError: validation.error }))
