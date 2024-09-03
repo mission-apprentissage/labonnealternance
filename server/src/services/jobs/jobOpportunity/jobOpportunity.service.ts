@@ -222,6 +222,7 @@ export const getJobsPartnersFromDB = async ({ romes, geo, diplomaLevel }: IJobOp
               query,
             },
           },
+          { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
   return await getDbCollection("jobs_partners")

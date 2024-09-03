@@ -1293,6 +1293,197 @@ describe("findJobsOpportunities", () => {
       })
     })
   })
+
+  describe("when seaching with location", () => {
+    it("should sort by source, distance and then by creation date", async () => {
+      vi.mocked(searchForFtJobs).mockResolvedValue({ resultats: ftJobs })
+
+      const extraLbaJob = generateRecruiterFixture({
+        establishment_siret: "20003277900015",
+        establishment_raison_sociale: "EXTRA LBA JOB 1",
+        geopoint: levalloisFixture.centre,
+        status: RECRUITER_STATUS.ACTIF,
+        jobs: [
+          {
+            rome_code: ["D1209"],
+            is_multi_published: true,
+            job_status: JOB_STATUS.ACTIVE,
+            job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+            job_creation_date: new Date("2021-01-01"),
+          },
+          {
+            rome_code: ["D1209"],
+            is_multi_published: true,
+            job_status: JOB_STATUS.ACTIVE,
+            job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
+            job_creation_date: new Date("2024-01-01"),
+          },
+        ],
+        address_detail: {
+          code_insee_localite: levalloisFixture.code,
+        },
+        phone: "0400000001",
+      })
+
+      await getDbCollection("recruiters").insertOne(extraLbaJob)
+
+      const extraOffers = [
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["D1212"],
+          workplace_geopoint: levalloisFixture.centre,
+          offer_creation: new Date("2024-01-01"),
+          // created_at reference the creation date of the job in LBA, not the offer so we don't sort by it
+          created_at: new Date("2021-01-01"),
+        }),
+        generateJobsPartnersOfferPrivate({
+          offer_rome_codes: ["D1212"],
+          workplace_geopoint: levalloisFixture.centre,
+          offer_creation: new Date("2021-01-01"),
+          // created_at reference the creation date of the job in LBA, not the offer so we don't sort by it
+          created_at: new Date("2024-01-01"),
+        }),
+      ]
+
+      await getDbCollection("jobs_partners").insertMany(extraOffers)
+
+      const extraLbaCompanies = [
+        generateLbaConpanyFixture({
+          siret: "52951974600034",
+          raison_sociale: "EXTRA LBA COMPANY 1",
+          rome_codes: ["D1211"],
+          geopoint: levalloisFixture.centre,
+          insee_city_code: levalloisFixture.code,
+          last_update_at: new Date("2024-01-01"),
+        }),
+        generateLbaConpanyFixture({
+          siret: "52951974600034",
+          raison_sociale: "EXTRA LBA COMPANY 2",
+          rome_codes: ["D1211"],
+          geopoint: levalloisFixture.centre,
+          insee_city_code: levalloisFixture.code,
+          last_update_at: new Date("2021-01-01"),
+        }),
+      ]
+
+      await getDbCollection("recruteurslba").insertMany(extraLbaCompanies)
+
+      const results = await findJobsOpportunities(
+        {
+          longitude: parisFixture.centre.coordinates[0],
+          latitude: parisFixture.centre.coordinates[1],
+          radius: 30,
+          romes: null,
+          rncp: null,
+        },
+        new JobOpportunityRequestContext({ path: "/api/route" }, "api-alternance")
+      )
+
+      expect({
+        jobs: results.jobs.map((j) => ({ _id: j._id, partner_job_id: j.partner_job_id, partner: j.partner, workplace_legal_name: j.workplace_legal_name })),
+        recruiters: results.recruiters.map((j) => ({ _id: j._id, workplace_legal_name: j.workplace_legal_name })),
+      }).toEqual({
+        jobs: [
+          {
+            // Paris
+            _id: lbaJobs[0].jobs[0]._id.toString(),
+            partner: "La bonne alternance",
+            partner_job_id: null,
+            workplace_legal_name: lbaJobs[0].establishment_raison_sociale,
+          },
+          {
+            // Levallois - 2024-01-01
+            _id: extraLbaJob.jobs[1]._id.toString(),
+            partner: "La bonne alternance",
+            partner_job_id: null,
+            workplace_legal_name: extraLbaJob.establishment_raison_sociale,
+          },
+          {
+            // Levallois - 2023-01-01
+            _id: lbaJobs[2].jobs[0]._id.toString(),
+            partner: "La bonne alternance",
+            partner_job_id: null,
+            workplace_legal_name: lbaJobs[2].establishment_raison_sociale,
+          },
+          {
+            // Levallois - 2021-01-01
+            _id: extraLbaJob.jobs[0]._id.toString(),
+            partner: "La bonne alternance",
+            partner_job_id: null,
+            workplace_legal_name: extraLbaJob.establishment_raison_sociale,
+          },
+          {
+            _id: null,
+            partner_job_id: ftJobs[0].id,
+            partner: "France Travail",
+            workplace_legal_name: null,
+          },
+          // Paris
+          {
+            _id: partnerJobs[0]._id,
+            partner: "Hellowork",
+            partner_job_id: null,
+            workplace_legal_name: partnerJobs[0].workplace_legal_name,
+          },
+          // Levallois - 2024-01-01
+          {
+            _id: extraOffers[0]._id,
+            partner: "Hellowork",
+            partner_job_id: null,
+            workplace_legal_name: extraOffers[0].workplace_legal_name,
+          },
+          // Levallois - 2023-01-01
+          {
+            _id: partnerJobs[2]._id,
+            partner: "Hellowork",
+            partner_job_id: null,
+            workplace_legal_name: partnerJobs[2].workplace_legal_name,
+          },
+          // Levallois - 2021-01-01
+          {
+            _id: extraOffers[1]._id,
+            partner: "Hellowork",
+            partner_job_id: null,
+            workplace_legal_name: extraOffers[1].workplace_legal_name,
+          },
+        ],
+        recruiters: [
+          // Paris
+          {
+            _id: recruiters[0]._id,
+            workplace_legal_name: recruiters[0].raison_sociale,
+          },
+          // Levallois - 2024-01-01
+          {
+            _id: extraLbaCompanies[0]._id,
+            workplace_legal_name: extraLbaCompanies[0].raison_sociale,
+          },
+          // Levallois - 2023-01-01
+          {
+            _id: recruiters[2]._id,
+            workplace_legal_name: recruiters[2].raison_sociale,
+          },
+          // Levallois - 2021-01-01
+          {
+            _id: extraLbaCompanies[1]._id,
+            workplace_legal_name: extraLbaCompanies[1].raison_sociale,
+          },
+        ],
+      })
+
+      expect(searchForFtJobs).toHaveBeenCalledTimes(1)
+      expect(searchForFtJobs).toHaveBeenNthCalledWith(
+        1,
+        {
+          commune: "75101", // Special case for paris
+          sort: 2, // Sort by distance and then by creation date
+          natureContrat: "E2,FS",
+          range: "0-149",
+          distance: 30,
+        },
+        { throwOnError: true }
+      )
+    })
+  })
 })
 
 describe("createJobOffer", () => {
