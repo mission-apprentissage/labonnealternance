@@ -549,6 +549,12 @@ program
   .action(createJobAction("import-computed-to-jobs-partners"))
 
 program
+  .command("cancel-removed-jobs-partners")
+  .description("Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("cancel-removed-jobs-partners"))
+
+program
   .command("send-applications")
   .description("Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.")
   .option("-q, --queued", "Run job asynchronously", false)
