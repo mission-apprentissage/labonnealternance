@@ -38,6 +38,12 @@ describe("Importing computed_jobs_partners into jobs_partners", () => {
     expect.soft(countNonValidatedInJobsPartners).toEqual(0)
 
     // les éléments validated et absents initialement de jobs partners doivent se rerouver dans jobs partners
+    const countNewValidatedInJobsPartners = await getDbCollection("jobs_partners").countDocuments({ partner_job_id: { $in: ["computed_1"] } })
+    expect.soft(countNewValidatedInJobsPartners).toEqual(1)
+
+    // les éléments qui existaient avant l'import sont toujours là
+    const countExistingStillHere = await getDbCollection("jobs_partners").countDocuments({ partner_job_id: { $in: ["existing_1", "existing_2", "existing_3"] } })
+    expect.soft(countExistingStillHere).toEqual(3)
 
     // les éléments validated et déjà dans jobs partners doivent toujours y être avec les data modifiées à jour
     const existing_3 = await getDbCollection("jobs_partners").findOne({ partner_job_id: "existing_3" })
