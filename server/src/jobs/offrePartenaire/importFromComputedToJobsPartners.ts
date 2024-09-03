@@ -7,7 +7,7 @@ import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const importFromComputedToJobsPartners = async () => {
-  const cursor = await getDbCollection("computed_jobs_partners").find({ validated: true }).project({ _id: 0, validated: 0 }).stream()
+  const cursor = await getDbCollection("computed_jobs_partners").find({ validated: true }).project({ _id: 0, validated: 0, errors: 0 }).stream()
 
   const transform = new Transform({
     objectMode: true,
