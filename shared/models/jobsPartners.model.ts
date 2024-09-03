@@ -115,7 +115,6 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   offer_opening_count: true,
   offer_origin: true,
   offer_multicast: true,
-  // offer_status: true,
 
   apply_url: true,
   apply_email: true,
@@ -123,6 +122,7 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
 
   workplace_description: true,
   workplace_website: true,
+  workplace_name: true,
 }).extend({
   // TODO: job start date must be greate or equal to today's date --> why ?
   contract_start: ZJobStartDateCreate(),

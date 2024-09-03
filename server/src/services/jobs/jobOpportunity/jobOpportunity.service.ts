@@ -1,17 +1,17 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { DateTime } from "luxon"
 import { Document, Filter, ObjectId } from "mongodb"
-import { assertUnreachable, IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, parseEnum } from "shared"
-import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, TRAINING_CONTRACT_TYPE } from "shared/constants"
+import { IGeoPoint, IJob, ILbaCompany, IRecruiter, JOB_STATUS, assertUnreachable, parseEnum } from "shared"
+import { NIVEAUX_POUR_LBA, NIVEAUX_POUR_OFFRES_PE, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import {
-  IJobsPartnersRecruiterApi,
-  IJobsPartnersOfferPrivate,
-  JOBPARTNERS_LABEL,
   IJobsPartnersOfferApi,
-  ZJobsPartnersRecruiterApi,
-  INiveauDiplomeEuropeen,
+  IJobsPartnersOfferPrivate,
+  IJobsPartnersRecruiterApi,
   IJobsPartnersWritableApi,
+  INiveauDiplomeEuropeen,
+  JOBPARTNERS_LABEL,
+  ZJobsPartnersRecruiterApi,
 } from "shared/models/jobsPartners.model"
 import { zOpcoLabel } from "shared/models/opco.model"
 import { IJobOpportunityGetQuery, IJobOpportunityGetQueryResolved, IJobsOpportunityResponse } from "shared/routes/jobOpportunity.routes"
@@ -31,7 +31,7 @@ import { getFtJobsV2, getSomeFtJobs } from "../../ftjob.service"
 import { FTJob } from "../../ftjob.service.types"
 import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
 import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
-import { getLbaJobs, getLbaJobsV2, IJobResult, incrementLbaJobsViewCount } from "../../lbajob.service"
+import { IJobResult, getLbaJobs, getLbaJobsV2, incrementLbaJobsViewCount } from "../../lbajob.service"
 import { jobsQueryValidator } from "../../queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
 import { getNearestCommuneByGeoPoint } from "../../referentiel/commune/commune.referentiel.service"
