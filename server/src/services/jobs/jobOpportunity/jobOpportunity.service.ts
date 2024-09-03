@@ -601,7 +601,11 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
     offer_rome_code: romeCode,
     offer_status: JOB_STATUS.ACTIVE,
     offer_creation: offer_creation ?? invariantData.created_at,
-    offer_expiration: offer_expiration ?? DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate(),
+    offer_expiration: offer_expiration
+      ? offer_expiration
+      : current?.offer_expiration
+        ? current.offer_expiration
+        : DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate(),
     offer_diploma_level:
       offer_diploma_level_european == null
         ? null
