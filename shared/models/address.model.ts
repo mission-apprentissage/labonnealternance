@@ -12,7 +12,7 @@ const Z2DCoord = z.tuple([z.number(), z.number()])
 export const ZPointGeometry = z
   .object({
     coordinates: Z2DCoord,
-    type: z.string(),
+    type: z.literal("Point"),
   })
   .strict()
 
