@@ -204,6 +204,7 @@ describe("GET /jobs", () => {
     })
 
     const data = response.json()
+
     expect(response.statusCode).toBe(200)
     expect(data.jobs).toHaveLength(1)
     expect(data.recruiters).toHaveLength(1)
@@ -305,6 +306,7 @@ describe("POST /jobs", async () => {
     workplace_address_label: null,
     workplace_description: null,
     workplace_website: null,
+    workplace_name: null,
   }
 
   beforeEach(async () => {
@@ -454,6 +456,7 @@ describe("PUT /jobs/:id", async () => {
     workplace_address_label: null,
     workplace_description: null,
     workplace_website: null,
+    workplace_name: null,
   }
 
   beforeEach(async () => {
