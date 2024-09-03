@@ -543,6 +543,12 @@ program.command("import-hellowork").description("Importe les offres hellowork").
 program.command("import-kelio").description("Importe les offres kelio").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import-kelio"))
 
 program
+  .command("import-computed-to-jobs-partners")
+  .description("Met à jour la collection jobs_partners à partir de computed_jobs_partners")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("import-computed-to-jobs-partners"))
+
+program
   .command("send-applications")
   .description("Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.")
   .option("-q, --queued", "Run job asynchronously", false)
