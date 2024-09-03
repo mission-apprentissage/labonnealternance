@@ -135,6 +135,8 @@ fileignoreconfig:
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
   checksum: 0db1feff739fda6ff77b2a460e214c03bbeb0451c2e4cf44556f5314c1896bd7
+- filename: shared/models/jobPartners/jobPartners.model.test.ts
+  checksum: 0a83cdb4c968e270d2e6bd8593b6941bb68f1e0c0df55f43b6cbc94a781a233c
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/appointments.routes.ts

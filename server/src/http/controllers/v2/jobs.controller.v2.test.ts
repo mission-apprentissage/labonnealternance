@@ -7,7 +7,7 @@ import nock from "nock"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { IGeoPoint } from "shared/models"
-import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApi } from "shared/models/jobsPartners.model"
+import { IJobsPartnersOfferPrivate, IJobsPartnersWritableApiInput } from "shared/models/jobsPartners.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
@@ -280,10 +280,10 @@ describe("POST /jobs", async () => {
   const now = new Date("2024-06-18T00:00:00.000Z")
   const inSept = new Date("2024-09-01T00:00:00.000Z")
 
-  const data: IJobsPartnersWritableApi = {
+  const data: IJobsPartnersWritableApiInput = {
     partner_job_id: null,
 
-    contract_start: inSept,
+    contract_start: inSept.toJSON(),
     contract_duration: null,
     contract_type: null,
     contract_remote: null,
@@ -429,10 +429,10 @@ describe("PUT /jobs/:id", async () => {
 
   const originalJob = generateJobsPartnersOfferPrivate({ _id: id, offer_title: "Old title", partner: "Un super Partenaire" })
 
-  const data: IJobsPartnersWritableApi = {
+  const data: IJobsPartnersWritableApiInput = {
     partner_job_id: null,
 
-    contract_start: inSept,
+    contract_start: inSept.toJSON(),
     contract_duration: null,
     contract_type: null,
     contract_remote: null,

@@ -5,7 +5,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZPointGeometry } from "./address.model"
 import { IModelDescriptor, zObjectId } from "./common"
-import { JOB_STATUS_ENGLISH, ZJobStartDateCreate } from "./job.model"
+import { JOB_STATUS_ENGLISH } from "./job.model"
 import { zOpcoLabel } from "./opco.model"
 
 const collectionName = "jobs_partners" as const
@@ -99,6 +99,8 @@ export type IJobsPartnersRecruiterPrivate = z.output<typeof ZJobsPartnersRecruit
 export type IJobsPartnersOfferPrivate = z.output<typeof ZJobsPartnersOfferPrivate>
 export type IJobsPartnersOfferPrivateInput = z.input<typeof ZJobsPartnersOfferPrivate>
 
+const TIME_CLOCK_TOLERANCE = 300_000
+
 const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   partner_job_id: true,
 
@@ -111,8 +113,6 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   offer_desired_skills: true,
   offer_to_be_acquired_skills: true,
   offer_access_conditions: true,
-  offer_creation: true,
-  offer_expiration: true,
   offer_opening_count: true,
   offer_origin: true,
   offer_multicast: true,
@@ -124,9 +124,25 @@ const ZJobsPartnersPostApiBodyBase = ZJobsPartnersOfferPrivate.pick({
   workplace_description: true,
   workplace_website: true,
 }).extend({
-  // TODO: job start date must be greate or equal to today's date --> why ?
-  contract_start: ZJobStartDateCreate(),
-
+  contract_start: z.string({ message: "Expected ISO 8601 date string" }).datetime({ offset: true, message: "Expected ISO 8601 date string" }).pipe(z.coerce.date()),
+  offer_creation: z
+    .string({ message: "Expected ISO 8601 date string" })
+    .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+    .pipe(
+      z.coerce.date().refine((value) => value.getTime() < Date.now() + TIME_CLOCK_TOLERANCE, {
+        message: "Creation date cannot be in the future",
+      })
+    )
+    .nullable(),
+  offer_expiration: z
+    .string({ message: "Expected ISO 8601 date string" })
+    .datetime({ offset: true, message: "Expected ISO 8601 date string" })
+    .pipe(
+      z.coerce.date().refine((value) => value === null || value.getTime() > Date.now() - TIME_CLOCK_TOLERANCE, {
+        message: "Expiration date cannot be in the past",
+      })
+    )
+    .nullable(),
   offer_rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),
   offer_description: ZJobsPartnersOfferPrivate.shape.offer_description.min(30, "Job description should be at least 30 characters"),
   offer_diploma_level_european: zDiplomaEuropeanLevel.nullable().default(null),
@@ -151,6 +167,7 @@ export const ZJobsPartnersWritableApi = ZJobsPartnersPostApiBodyBase.superRefine
 })
 
 export type IJobsPartnersWritableApi = z.output<typeof ZJobsPartnersWritableApi>
+export type IJobsPartnersWritableApiInput = z.input<typeof ZJobsPartnersWritableApi>
 
 export default {
   zod: ZJobsPartnersOfferPrivate,
