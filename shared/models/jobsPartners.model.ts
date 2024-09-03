@@ -20,7 +20,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   _id: zObjectId,
 
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
-  workplace_website: z.string().nullable().describe("Site web de l'entreprise").default(null),
+  workplace_website: z.string().url().nullable().describe("Site web de l'entreprise").default(null),
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise"),
   workplace_description: z.string().nullable().describe("description de l'entreprise").default(null),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
@@ -33,7 +33,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_naf_code: z.string().nullable().describe("code NAF"),
   workplace_naf_label: z.string().nullable().describe("Libelle NAF"),
 
-  apply_url: z.string().nullable().describe("URL pour candidater").default(null),
+  apply_url: z.string().url().nullable().describe("URL pour candidater").default(null),
   apply_phone: z.string().nullable().describe("Téléphone de contact").default(null),
 })
 
