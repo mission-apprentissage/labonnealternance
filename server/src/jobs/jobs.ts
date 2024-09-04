@@ -27,7 +27,7 @@ import { pocRomeo } from "./franceTravail/pocRomeo"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { runGarbageCollector } from "./misc/runGarbageCollector"
-import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
+import { cancelRemovedJobsPartners, importFromComputedToJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { importHelloWork } from "./offrePartenaire/importHelloWork"
 import { importKelio } from "./offrePartenaire/importKelio"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -415,6 +415,9 @@ export async function setupJobProcessor() {
       },
       "import-computed-to-jobs-partners": {
         handler: async () => importFromComputedToJobsPartners(),
+      },
+      "cancel-removed-jobs-partners": {
+        handler: async () => cancelRemovedJobsPartners(),
       },
       "send-applications": {
         handler: async () => processApplications(),
