@@ -1372,7 +1372,7 @@ describe("createJobOffer", () => {
 
     const job = await getDbCollection("jobs_partners").findOne({ _id: result })
     expect(job?.created_at).toEqual(now)
-    expect(job?.partner).toEqual(identity.organisation)
+    expect(job?.partner_label).toEqual(identity.organisation)
     expect(job?.offer_rome_code).toEqual(["M1602"])
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(now)
@@ -1434,7 +1434,7 @@ describe("updateJobOffer", () => {
 
   const originalJob = generateJobsPartnersOfferPrivate({
     _id,
-    partner: identity.organisation,
+    partner_label: identity.organisation,
     created_at: originalCreatedAt,
     offer_creation: originalCreatedAt,
     offer_expiration: originalCreatedAtPlus2Months,
@@ -1505,7 +1505,7 @@ describe("updateJobOffer", () => {
 
     const job = await getDbCollection("jobs_partners").findOne({ _id })
     expect(job?.created_at).toEqual(originalCreatedAt)
-    expect(job?.partner).toEqual(identity.organisation)
+    expect(job?.partner_label).toEqual(identity.organisation)
     expect(job?.offer_rome_code).toEqual(["M1602"])
     expect(job?.offer_status).toEqual(JOB_STATUS.ACTIVE)
     expect(job?.offer_creation).toEqual(originalCreatedAt)

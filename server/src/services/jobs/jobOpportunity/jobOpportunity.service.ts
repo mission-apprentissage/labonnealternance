@@ -310,7 +310,7 @@ export const convertLbaRecruiterToJobPartnerOfferApi = (offresEmploiLba: IJobRes
   return offresEmploiLba.map(
     ({ recruiter, job }: IJobResult): IJobsPartnersOfferApi => ({
       _id: job._id.toString(),
-      partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       partner_job_id: null,
       contract_start: job.job_start_date,
       contract_duration: job.job_duration ?? null,
@@ -355,7 +355,7 @@ export const convertFranceTravailJobToJobPartnerOfferApi = (offresEmploiFranceTr
     return {
       _id: null,
       partner_job_id: offreFT.id,
-      partner: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_FRANCE_TRAVAIL,
 
       contract_start: null,
       contract_duration: isNaN(contractDuration) ? null : contractDuration,
@@ -593,7 +593,7 @@ async function upsertJobOffer(data: IJobsPartnersWritableApi, identity: IApiAppr
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
     _id: current?._id ?? new ObjectId(),
     created_at: current?.created_at ?? new Date(),
-    partner: identity.organisation,
+    partner_label: identity.organisation,
   }
 
   const writableData: Omit<IJobsPartnersOfferPrivate, InvariantFields> = {
@@ -635,7 +635,7 @@ export async function updateJobOffer(id: ObjectId, identity: IApiApprentissageTo
     throw notFound("Job offer not found")
   }
 
-  if (current.partner !== identity.organisation) {
+  if (current.partner_label !== identity.organisation) {
     throw forbidden("You are not allowed to update this job offer")
   }
 

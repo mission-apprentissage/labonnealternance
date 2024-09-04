@@ -89,7 +89,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
   const partnerJob: IComputedJobsPartners = {
     _id: new ObjectId(),
     created_at: new Date(),
-    partner: JOBPARTNERS_LABEL.HELLOWORK,
+    partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: job_id,
     contract_start: parseDate(contract_start_date),
     contract_type: contract.toLowerCase() === "alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
